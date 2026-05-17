@@ -83,7 +83,8 @@ inline void for_each_block(
 
 } // namespace
 
-// Explicit SIMD-level alias for the virtual interface below.
+// SIMD-level alias for the virtual interface fallback (always NONE so the
+// base-class signature is stable across translation units in DD mode).
 using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
 
 struct SIMDResultHandler {
@@ -100,12 +101,19 @@ struct SIMDResultHandler {
 
     /**  called when 32 distances are computed and provided in two
      *   simd16uint16. (q, b) indicate which entry it is
-     * in the block. */
+     * in the block.
+     *
+     * Non-pure: concrete handlers define their own handle() with the
+     * SIMD types matching their SL template parameter.  When SL != NONE
+     * the handler's handle() hides this base version (different param
+     * types); when SL == NONE it overrides it.  The kernel code always
+     * calls handle() through a concrete-type reference, so virtual
+     * dispatch is not on the hot path. */
     virtual void handle(
-            size_t q,
-            size_t b,
-            simd16uint16 d0,
-            simd16uint16 d1) = 0;
+            size_t /* q */,
+            size_t /* b */,
+            simd16uint16 /* d0 */,
+            simd16uint16 /* d1 */) {}
 
     /// set the sub-matrix that is being computed
     virtual void set_block_origin(size_t i0, size_t j0) = 0;
@@ -179,18 +187,17 @@ namespace simd_result_handlers {
  * (to avoid the computation to be optimized away) */
 template <SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct DummyResultHandler : SIMDResultHandler {
+    using SIMDResultHandler::handle;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
 
     size_t cs = 0;
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         cs += q * 123 + b * 789 + d0.get_scalar_0() + d1.get_scalar_0();
     }
 
     void set_block_origin(size_t, size_t) final {}
-
-    ~DummyResultHandler() {}
 };
 
 /** memorize results in a nq-by-nb matrix.
@@ -199,6 +206,7 @@ struct DummyResultHandler : SIMDResultHandler {
  */
 template <SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct StoreResultHandler : SIMDResultHandler {
+    using SIMDResultHandler::handle;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
 
@@ -209,7 +217,7 @@ struct StoreResultHandler : SIMDResultHandler {
 
     StoreResultHandler(uint16_t* data, size_t ld) : data(data), ld(ld) {}
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         size_t ofs = (q + i0) * ld + j0 + b * 32;
         d0.storeu(data + ofs);
         d1.storeu(data + ofs + 16);
@@ -224,13 +232,14 @@ struct StoreResultHandler : SIMDResultHandler {
 /** stores results in fixed-size matrix. */
 template <int NQ, int BB, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct FixedStorageHandler : SIMDResultHandler {
+    using SIMDResultHandler::handle;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
 
     simd16uint16 dis[NQ][BB];
     int i0 = 0;
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         dis[q + i0][2 * b] = d0;
         dis[q + i0][2 * b + 1] = d1;
     }
@@ -248,13 +257,12 @@ struct FixedStorageHandler : SIMDResultHandler {
             }
         }
     }
-
-    virtual ~FixedStorageHandler() {}
 };
 
 /** Result handler that compares distances to check if they need to be kept */
 template <class C, bool with_id_map, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct ResultHandlerCompare : SIMDResultHandlerToFloat {
+    using SIMDResultHandler::handle;
     using TI = typename C::TI;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
@@ -332,8 +340,6 @@ struct ResultHandlerCompare : SIMDResultHandlerToFloat {
         }
         return lt_mask;
     }
-
-    virtual ~ResultHandlerCompare() {}
 };
 
 /** Special version for k=1 */
@@ -345,6 +351,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
     using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::handle;
     using RHC::normalizers;
     using typename RHC::simd16uint16;
 
@@ -365,7 +372,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
         }
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         if (this->disable) {
             return;
         }
@@ -438,6 +445,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
     using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::handle;
     using RHC::normalizers;
     using typename RHC::simd16uint16;
 
@@ -480,7 +488,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
         return C::neutral();
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         if (this->disable) {
             return;
         }
@@ -580,6 +588,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
     using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::handle;
     using RHC::normalizers;
     using typename RHC::simd16uint16;
 
@@ -617,7 +626,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
         }
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         if (this->disable) {
             return;
         }
@@ -714,6 +723,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
     using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::handle;
     using RHC::normalizers;
     using RHC::nq;
     using typename RHC::simd16uint16;
@@ -751,7 +761,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         }
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         if (this->disable) {
             return;
         }
@@ -902,6 +912,7 @@ struct SingleQueryResultCollectHandler
     using T = typename C::T;
     using TI = typename C::TI;
     using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::handle;
     using RHC::normalizers;
     using simd16uint16 = typename RHC::simd16uint16;
 
@@ -921,7 +932,7 @@ struct SingleQueryResultCollectHandler
         normalizers = norms;
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         if (this->disable) {
             return;
         }
