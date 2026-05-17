@@ -11,6 +11,28 @@
 #include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
 #include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
 
+#include <faiss/impl/fast_scan/decompose_qbs.h>
+
+namespace faiss {
+
+using namespace simd_result_handlers;
+
+template <>
+void accumulate_to_mem_impl<SIMDLevel::ARM_NEON>(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    StoreResultHandler<SIMDLevel::ARM_NEON> handler(accu, ntotal2);
+    DummyScaler<SIMDLevel::ARM_NEON> scaler;
+    accumulate<SIMDLevel::ARM_NEON>(
+            nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
+}
+
+} // namespace faiss
+
 // ARM_SVE: forward to ARM_NEON implementation until a dedicated SVE
 // specialization is written (same pattern as scalar_quantizer/sq-neon.cpp).
 #ifdef COMPILE_SIMD_ARM_SVE

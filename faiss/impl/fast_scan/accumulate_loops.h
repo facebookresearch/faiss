@@ -47,7 +47,12 @@ using namespace simd_result_handlers;
  * Search_1 path helpers (multi-BB kernel, bbs > 32)
  ***************************************************************/
 
-template <int NQ, int BB, class ResultHandler, class Scaler>
+template <
+        int NQ,
+        int BB,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void accumulate_fixed_blocks(
         size_t nb,
         int nsq,
@@ -58,13 +63,17 @@ void accumulate_fixed_blocks(
         size_t block_stride) {
     constexpr int bbs = 32 * BB;
     for_each_block<bbs>(nb, codes, block_stride, res, [&](size_t) {
-        FixedStorageHandler<NQ, 2 * BB> res2;
-        kernel_accumulate_block<NQ, BB>(nsq, codes, LUT, res2, scaler);
+        FixedStorageHandler<NQ, 2 * BB, KernelSL> res2;
+        kernel_accumulate_block<NQ, BB, KernelSL>(
+                nsq, codes, LUT, res2, scaler);
         res2.to_other_handler(res);
     });
 }
 
-template <class ResultHandler, class Scaler>
+template <
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void pq4_accumulate_loop_fixed_scaler(
         int nq,
         size_t nb,
@@ -82,7 +91,7 @@ void pq4_accumulate_loop_fixed_scaler(
 
 #define FAISS_ACCLOOP_DISPATCH(NQ, BB)                           \
     case NQ * 1000 + BB:                                         \
-        accumulate_fixed_blocks<NQ, BB>(                         \
+        accumulate_fixed_blocks<NQ, BB, KernelSL>(               \
                 nb, nsq, codes, LUT, res, scaler, block_stride); \
         break
 
@@ -106,7 +115,11 @@ void pq4_accumulate_loop_fixed_scaler(
  * QBS path helpers (bbs == 32, 256-bit kernel only)
  ***************************************************************/
 
-template <int QBS, class ResultHandler, class Scaler>
+template <
+        int QBS,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void accumulate_q_4step_256(
         size_t ntotal2,
         int nsq,
@@ -122,29 +135,32 @@ void accumulate_q_4step_256(
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
     for_each_block<32>(ntotal2, codes, block_stride, res, [&](size_t) {
-        FixedStorageHandler<SQ, 2> res2;
+        FixedStorageHandler<SQ, 2, KernelSL> res2;
         const uint8_t* LUT = LUT0;
-        pq4_kernel_qbs_256<Q1>(nsq, codes, LUT, res2, scaler);
+        pq4_kernel_qbs_256<Q1, KernelSL>(nsq, codes, LUT, res2, scaler);
         LUT += Q1 * nsq * 16;
         if (Q2 > 0) {
             res2.set_block_origin(Q1, 0);
-            pq4_kernel_qbs_256<Q2>(nsq, codes, LUT, res2, scaler);
+            pq4_kernel_qbs_256<Q2, KernelSL>(nsq, codes, LUT, res2, scaler);
             LUT += Q2 * nsq * 16;
         }
         if (Q3 > 0) {
             res2.set_block_origin(Q1 + Q2, 0);
-            pq4_kernel_qbs_256<Q3>(nsq, codes, LUT, res2, scaler);
+            pq4_kernel_qbs_256<Q3, KernelSL>(nsq, codes, LUT, res2, scaler);
             LUT += Q3 * nsq * 16;
         }
         if (Q4 > 0) {
             res2.set_block_origin(Q1 + Q2 + Q3, 0);
-            pq4_kernel_qbs_256<Q4>(nsq, codes, LUT, res2, scaler);
+            pq4_kernel_qbs_256<Q4, KernelSL>(nsq, codes, LUT, res2, scaler);
         }
         res2.to_other_handler(res);
     });
 }
 
-template <class ResultHandler, class Scaler>
+template <
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void pq4_accumulate_loop_qbs_fixed_scaler_256(
         int qbs,
         size_t ntotal2,
@@ -161,7 +177,7 @@ void pq4_accumulate_loop_qbs_fixed_scaler_256(
     switch (qbs) {
 #define FAISS_QBS256_DISPATCH(QBS)                                     \
     case QBS:                                                          \
-        accumulate_q_4step_256<QBS>(                                   \
+        accumulate_q_4step_256<QBS, KernelSL>(                         \
                 ntotal2, nsq, codes, LUT0, res, scaler, block_stride); \
         return;
         FAISS_QBS256_DISPATCH(0x3333); // 12
@@ -199,9 +215,9 @@ void pq4_accumulate_loop_qbs_fixed_scaler_256(
             int nq = qi & 15;
             qi >>= 4;
             res.set_block_origin(i0, j0);
-#define FAISS_NQ256_DISPATCH(NQ)                              \
-    case NQ:                                                  \
-        pq4_kernel_qbs_256<NQ>(nsq, codes, LUT, res, scaler); \
+#define FAISS_NQ256_DISPATCH(NQ)                                        \
+    case NQ:                                                            \
+        pq4_kernel_qbs_256<NQ, KernelSL>(nsq, codes, LUT, res, scaler); \
         break
             switch (nq) {
                 FAISS_NQ256_DISPATCH(1);
