@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/fast_scan.h" line="179" column="13"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="189" column="13"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1a0af7645f58fb55f768d90363ba3b3fd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="structfaiss_1_1SIMDResultHandlerToFloat" kindref="compound">SIMDResultHandlerToFloat</ref> *</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/fast_scan.h" line="182" column="38"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="192" column="38"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1ae2cec99c36ede244e20670032cb80e34" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -80,7 +80,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/fast_scan.h" line="185" column="18"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="195" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1aec4fc179b44c1153c833cb95660c3981" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -124,7 +124,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/fast_scan.h" line="196" column="18"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="206" column="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -143,7 +143,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/impl/fast_scan/fast_scan.h" line="178" column="1" bodyfile="faiss/impl/fast_scan/fast_scan.h" bodystart="178" bodyend="204"/>
+    <location file="faiss/impl/fast_scan/fast_scan.h" line="188" column="1" bodyfile="faiss/impl/fast_scan/fast_scan.h" bodystart="188" bodyend="214"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FastScanCodeScanner_1ae2cec99c36ede244e20670032cb80e34" prot="public" virt="pure-virtual"><scope>faiss::FastScanCodeScanner</scope><name>accumulate_loop</name></member>
       <member refid="structfaiss_1_1FastScanCodeScanner_1aec4fc179b44c1153c833cb95660c3981" prot="public" virt="pure-virtual"><scope>faiss::FastScanCodeScanner</scope><name>accumulate_loop_qbs</name></member>
