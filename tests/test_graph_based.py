@@ -248,6 +248,26 @@ class TestHNSWNaN(unittest.TestCase):
         index.add(vec)
         self.assertEqual(index.ntotal, nb + 1)
 
+    def test_add_rejects_nonfinite(self):
+        # IndexHNSW::add must reject NaN/Inf before touching storage — NaN
+        # distances corrupt the graph construction priority-queue ordering
+        # (distinct from search, which MinimaxHeap already protects).
+        d = 32
+        rng = np.random.default_rng(7)
+        good = rng.random((50, d), dtype='float32')
+
+        for bad_value in [np.nan, np.inf, -np.inf]:
+            for nb_prefix in [0, 50]:
+                with self.subTest(bad=bad_value, prefix=nb_prefix):
+                    index = faiss.IndexHNSWFlat(d, 16)
+                    if nb_prefix:
+                        index.add(good[:nb_prefix])
+                    bad_vec = np.zeros((1, d), dtype='float32')
+                    bad_vec[0, 0] = bad_value
+                    with self.assertRaisesRegex(RuntimeError, "NaN or Inf"):
+                        index.add(bad_vec)
+                    self.assertEqual(index.ntotal, nb_prefix)
+
 
 class Issue3684(unittest.TestCase):
 

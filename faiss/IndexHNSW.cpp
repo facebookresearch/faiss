@@ -10,6 +10,7 @@
 #include <omp.h>
 #include <atomic>
 #include <cinttypes>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -370,6 +371,18 @@ void IndexHNSW::add(idx_t n, const float* x) {
             storage,
             "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
     FAISS_THROW_IF_NOT(is_trained);
+
+    // NaN/Inf corrupt priority-queue ordering in graph construction
+    // (search is protected by MinimaxHeap). Check before storage->add
+    // so state is unchanged on rejection.
+    const size_t total = static_cast<size_t>(n) * d;
+    bool has_nonfinite = false;
+    for (size_t i = 0; i < total; i++) {
+        has_nonfinite |= !std::isfinite(x[i]);
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            !has_nonfinite, "IndexHNSW::add: input vectors contain NaN or Inf");
+
     size_t n0 = ntotal;
     storage->add(n, x);
     ntotal = storage->ntotal;
