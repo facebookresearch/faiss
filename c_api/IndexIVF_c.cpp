@@ -170,6 +170,9 @@ void faiss_IndexIVF_invlists_get_ids(
                     list_no);
     size_t list_size =
             reinterpret_cast<const IndexIVF*>(index)->get_list_size(list_no);
+    FAISS_THROW_IF_NOT_MSG(
+            list_size == 0 || list_size <= (size_t)-1 / sizeof(idx_t),
+            "list_size overflow in invlists_get_ids");
     memcpy(invlist, list, list_size * sizeof(idx_t));
 }
 
