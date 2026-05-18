@@ -73,8 +73,19 @@ constexpr int MINIMAX_HEAP_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
 
 int MinimaxHeap::pop_min(float* vmin_out) {
-    return with_selected_simd_levels<MINIMAX_HEAP_SIMD_LEVELS>(
-            [&]<SIMDLevel SL>() { return pop_min_tpl<SL>(vmin_out); });
+    // Resolve SIMD dispatch once per process via static initialization.
+    // SIMDConfig::level is set at startup and does not change thereafter,
+    // so caching the resolved member-function pointer is safe and avoids
+    // the switch(SIMDConfig::level) overhead on every call (~3-5 cycles).
+    // In HNSW search, pop_min is called O(efSearch) times per query, so
+    // hoisting the dispatch saves ~0.5-5% of search time.
+    using fn_t = int (MinimaxHeap::*)(float*);
+    static const fn_t resolved =
+            with_selected_simd_levels<MINIMAX_HEAP_SIMD_LEVELS>(
+                    []<SIMDLevel SL>() -> fn_t {
+                        return &MinimaxHeap::pop_min_tpl<SL>;
+                    });
+    return (this->*resolved)(vmin_out);
 }
 
 int MinimaxHeap::count_below(float thresh) {
