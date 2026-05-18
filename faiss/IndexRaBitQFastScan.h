@@ -134,6 +134,7 @@ template <
 struct RaBitQHeapHandler
         : simd_result_handlers::ResultHandlerCompare<C, with_id_map, SL> {
     using RHC = simd_result_handlers::ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::handle;
     using RHC::normalizers;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
@@ -187,7 +188,7 @@ struct RaBitQHeapHandler
         }
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         ALIGNED(32) uint16_t d32tab[32];
         d0.store(d32tab);
         d1.store(d32tab + 16);

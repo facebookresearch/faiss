@@ -38,6 +38,7 @@ using rabitq_utils::SignBitFactorsWithError;
 template <class C, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     using RHC = ResultHandlerCompare<C, true, SL>;
+    using RHC::handle;
     using typename RHC::simd16uint16;
 
     const IndexIVFRaBitQFastScan* index;
@@ -82,7 +83,7 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             const FastScanDistancePostProcessing* ctx = nullptr,
             bool multibit = false);
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1);
 
     void set_list_context(size_t list_no, const std::vector<int>& probe_map)
             override;
