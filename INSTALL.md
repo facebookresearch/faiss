@@ -38,8 +38,8 @@ $ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 # GPU(+CPU) version
 $ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.1
 
-# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.6)
-conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=12.6'
+# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 13.2)
+conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=13.2'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -87,7 +87,7 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 The libcuvs dependency should be installed via conda:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.02 'cuda-version=12.6'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.02 'cuda-version=13.2'
 ```
 For more ways to install cuVS 26.02, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 

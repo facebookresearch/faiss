@@ -788,6 +788,8 @@ def handle_Index(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='float32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='float32')
 
         self.search_preassigned_c(
             n, swig_ptr(x),
@@ -841,6 +843,8 @@ def handle_Index(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='float32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='float32')
 
         thresh = float(thresh)
         res = RangeSearchResult(n)
@@ -1018,6 +1022,8 @@ def handle_IndexBinary(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='int32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='int32')
 
         self.search_preassigned_c(
             n, swig_ptr(x),
@@ -1053,6 +1059,8 @@ def handle_IndexBinary(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='int32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='int32')
 
         thresh = int(thresh)
         res = RangeSearchResult(n)

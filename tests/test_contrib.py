@@ -464,6 +464,29 @@ class TestPreassigned(unittest.TestCase):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
+    def test_range_search_preassigned_coarse_dis_none_matches_zeros(self):
+        """coarse_dis=None must match coarse_dis=zeros. Before the fix,
+        np.empty left uninitialized values that IVFPQ by_residual=True
+        reads for distance correction, producing nondeterministic results."""
+        ds = datasets.SyntheticDataset(32, 1000, 500, 50)
+        index = faiss.index_factory(ds.d, "IVF10,PQ4x4")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 5
+        self.assertTrue(index.by_residual)
+        xq = ds.get_queries()
+        _, list_nos = index.quantizer.search(xq, index.nprobe)
+        zero_dis = np.zeros(list_nos.shape, dtype=np.float32)
+        lz, Dz, Iz = ivf_tools.range_search_preassigned(
+            index, xq, 10.0, list_nos, zero_dis
+        )
+        ln, Dn, In = ivf_tools.range_search_preassigned(
+            index, xq, 10.0, list_nos
+        )
+        np.testing.assert_array_equal(lz, ln)
+        np.testing.assert_array_equal(Iz, In)
+        np.testing.assert_array_equal(Dz, Dn)
+
 
 class TestRangeSearchMaxResults(unittest.TestCase):
 
