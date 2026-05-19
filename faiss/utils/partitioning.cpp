@@ -386,6 +386,10 @@ void simd_histogram_16(
         uint16_t min,
         int shift,
         int* hist) {
+    // GCC 12 miscompiles the AVX2 SIMD histogram — fall back to scalar.
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ == 12
+    simd_histogram_16_scalar(data, n, min, shift, hist);
+#else
     with_simd_level_256bit([&]<SIMDLevel SL>() {
         if constexpr (SL == SIMDLevel::NONE) {
             simd_histogram_16_scalar(data, n, min, shift, hist);
@@ -393,6 +397,7 @@ void simd_histogram_16(
             faiss::simd_histogram_16<SL>(data, n, min, shift, hist);
         }
     });
+#endif
 }
 
 void PartitionStats::reset() {

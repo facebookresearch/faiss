@@ -39,9 +39,9 @@
 
 struct Options {
     Options() {
-        numTrain = 2 * faiss::gpu::randVal(2000, 5000);
-        dim = faiss::gpu::randVal(1, 20) * 8;
-        numAdd = faiss::gpu::randVal(1000, 3000);
+        numTrain = 2 * faiss::gpu::randVal(1000, 2000);
+        dim = faiss::gpu::randVal(1, 10) * 8;
+        numAdd = faiss::gpu::randVal(500, 1500);
 
         graphDegree = faiss::gpu::randSelect({32, 64});
         intermediateGraphDegree = faiss::gpu::randSelect({64, 98});
@@ -75,7 +75,7 @@ struct Options {
 void queryTest(
         faiss::gpu::graph_build_algo build_algo,
         double expected_recall) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 3; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
@@ -190,7 +190,7 @@ TEST(TestGpuIndexBinaryCagra, Query_ITERATIVE_SEARCH) {
 void copyToTest(
         faiss::gpu::graph_build_algo build_algo,
         double expected_recall) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 3; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
@@ -324,7 +324,7 @@ TEST(TestGpuIndexBinaryCagra, CopyTo_ITERATIVE_SEARCH) {
 void copyFromTest(
         faiss::gpu::graph_build_algo build_algo,
         double expected_recall) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 3; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);

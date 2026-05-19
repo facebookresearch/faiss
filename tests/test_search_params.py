@@ -581,3 +581,197 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_knn_and_range_FS(self):
         self.do_test_knn_and_range("IVF32,PQ8x4fs", range=False)
+
+
+class TestIVFEarlyTermination(unittest.TestCase):
+    """
+    Coverage for the new SearchParametersIVF early-stop fields:
+      - ensure_topk_full
+      - max_empty_result_buckets
+      - max_lists_num
+    """
+
+    def _build(self, factory, mt=faiss.METRIC_L2, d=32):
+        ds = datasets.SyntheticDataset(d, 2000, 500, 30)
+        index = faiss.index_factory(d, factory, mt)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        return ds, index
+
+    def test_ensure_topk_full_fills_heap(self):
+        ds, index = self._build("IVF32,Flat")
+        k = 10
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 32
+        params.max_codes = k // 2    # tight budget: forces truncation
+        params.ensure_topk_full = False
+        _, I_tight = index.search(ds.get_queries(), k, params=params)
+
+        params.ensure_topk_full = True
+        _, I_full = index.search(ds.get_queries(), k, params=params)
+
+        # ensure_topk_full=true must produce at least as many valid slots.
+        miss_tight = np.sum(I_tight == -1)
+        miss_full = np.sum(I_full == -1)
+        self.assertLessEqual(miss_full, miss_tight)
+        # Test precondition: tight budget produced some misses.
+        self.assertGreater(miss_tight, 0)
+
+    def test_range_default_matches_baseline(self):
+        """Default max_empty_result_buckets=0 must preserve pre-existing
+        range_search results byte-for-byte."""
+        ds, index = self._build("IVF32,Flat")
+        # Set nprobe via the index attribute for the no-params baseline.
+        index.nprobe = 8
+        radius = 2.0
+        Lref, Dref, Iref = index.range_search(ds.get_queries(), radius)
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 8
+        # all new fields are at defaults
+        Lnew, Dnew, Inew = index.range_search(
+            ds.get_queries(), radius, params=params
+        )
+
+        np.testing.assert_array_equal(Lref, Lnew)
+        # Per-query (id, distance) pairs must match as sorted sets since
+        # within-query order is not guaranteed across OMP threads.
+        for q in range(ds.nq):
+            a = sorted(zip(
+                Iref[Lref[q]: Lref[q + 1]].tolist(),
+                Dref[Lref[q]: Lref[q + 1]].tolist(),
+            ))
+            b = sorted(zip(
+                Inew[Lnew[q]: Lnew[q + 1]].tolist(),
+                Dnew[Lnew[q]: Lnew[q + 1]].tolist(),
+            ))
+            self.assertEqual(a, b)
+
+    def test_range_early_exit_is_subset(self):
+        ds, index = self._build("IVF32,Flat")
+        # Radius chosen empirically against this synthetic dataset
+        # (d=32, nb=500, IVF32) so that several probed buckets per
+        # query yield zero in-radius hits — required to exercise
+        # the empty-bucket exit path. Too-tight or too-wide radii
+        # leave the test vacuous.
+        radius = 15.0
+        p_full = faiss.SearchParametersIVF()
+        p_full.nprobe = 32
+        p_full.max_empty_result_buckets = 0    # disabled
+        Lf, Df, If = index.range_search(
+            ds.get_queries(), radius, params=p_full
+        )
+
+        p_early = faiss.SearchParametersIVF()
+        p_early.nprobe = 32
+        p_early.max_empty_result_buckets = 1   # aggressive early-exit
+        Le, De, Ie = index.range_search(
+            ds.get_queries(), radius, params=p_early
+        )
+
+        # Early-exit must never expand the result set.
+        self.assertTrue(np.all(np.diff(Le) <= np.diff(Lf)))
+        # And each per-query id-set must be a subset of the full result.
+        for q in range(ds.nq):
+            full = set(If[Lf[q]: Lf[q + 1]].tolist())
+            early = set(Ie[Le[q]: Le[q + 1]].tolist())
+            self.assertTrue(early.issubset(full))
+        # At least one query must strictly shrink.
+        any_shrunk = bool(np.any(np.diff(Le) < np.diff(Lf)))
+        self.assertTrue(
+            any_shrunk,
+            "no query shrank: max_empty_result_buckets has no effect",
+        )
+
+    def test_range_early_exit_counter_resets_on_hit(self):
+        """Tightening max_empty_result_buckets (1 vs 3) must never
+        produce *more* results. With 3 the loop tolerates two
+        intervening empty buckets between non-empty ones; with 1 it
+        terminates on the first empty bucket. Per-query result
+        counts must therefore satisfy tight ≤ relaxed."""
+        ds, index = self._build("IVF32,Flat")
+        radius = 15.0
+        p_tight = faiss.SearchParametersIVF()
+        p_tight.nprobe = 32
+        p_tight.max_empty_result_buckets = 1
+        Lt, _, _ = index.range_search(
+            ds.get_queries(), radius, params=p_tight
+        )
+
+        p_relaxed = faiss.SearchParametersIVF()
+        p_relaxed.nprobe = 32
+        p_relaxed.max_empty_result_buckets = 3
+        Lr, _, _ = index.range_search(
+            ds.get_queries(), radius, params=p_relaxed
+        )
+
+        self.assertTrue(np.all(np.diff(Lt) <= np.diff(Lr)))
+
+    def test_range_rejects_non_default_parallel_mode(self):
+        ds, index = self._build("IVF32,Flat")
+        ivf = faiss.downcast_index(index)
+        ivf.parallel_mode = 1
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        params.max_empty_result_buckets = 2
+        with self.assertRaises(RuntimeError):
+            index.range_search(ds.get_queries()[:1], 1.0, params=params)
+
+    def test_ndis_stats_post_filter(self):
+        """IndexIVFStats::ndis is documented as 'nb of distances
+        computed' — a post-filter quantity. With a 50%-keep selector,
+        ndis must drop because rejected codes don't have a distance
+        computed."""
+        ds, index = self._build("IVF32,Flat")
+        index.nprobe = 32
+        stats = faiss.cvar.indexIVF_stats
+
+        stats.reset()
+        index.search(ds.get_queries(), 10)
+        ndis_no_sel = stats.ndis
+        self.assertGreater(ndis_no_sel, 0)
+
+        # 50%-keep batch selector.
+        keep = np.arange(0, ds.nb, 2).astype("int64")
+        sel = faiss.IDSelectorBatch(keep)
+        params = faiss.SearchParametersIVF(nprobe=32, sel=sel)
+        stats.reset()
+        index.search(ds.get_queries(), 10, params=params)
+        ndis_with_sel = stats.ndis
+
+        self.assertLess(ndis_with_sel, ndis_no_sel)
+        # Loose-bound sanity: ~50% retention should drop ndis at least
+        # noticeably below the no-selector value.
+        self.assertLess(ndis_with_sel * 4, ndis_no_sel * 3)
+
+    def test_ensure_topk_full_with_restrictive_selector(self):
+        """Under a 10%-keep selector and
+        max_codes < k, the heap must still be filled (no -1 entries)
+        because the post-filter break condition keeps probing until k
+        valid candidates have been observed."""
+        ds, index = self._build("IVF32,Flat")
+        # 10%-keep selector — 50 valid ids in 500-vector dataset.
+        keep = np.arange(0, ds.nb, 10).astype("int64")
+        sel = faiss.IDSelectorBatch(keep)
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 32
+        params.max_codes = 5            # tight pre-filter budget
+        params.ensure_topk_full = True  # post-filter soft cap
+        params.sel = sel
+        _, I = index.search(ds.get_queries(), 10, params=params)
+
+        self.assertEqual(int(np.sum(I == -1)), 0)
+
+    def test_fields_exposed_and_defaulted(self):
+        p = faiss.SearchParametersIVF()
+        self.assertEqual(p.max_lists_num, 0)
+        self.assertIs(p.ensure_topk_full, False)
+        self.assertEqual(p.max_empty_result_buckets, 0)
+        p.max_lists_num = 5
+        p.ensure_topk_full = True
+        p.max_empty_result_buckets = 2
+        self.assertEqual(p.max_lists_num, 5)
+        self.assertIs(p.ensure_topk_full, True)
+        self.assertEqual(p.max_empty_result_buckets, 2)

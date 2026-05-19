@@ -118,6 +118,73 @@ int test_params_override(const char* index_key, MetricType metric) {
  * Test subsets
  *************************************************************/
 
+/*************************************************************
+ * Test ensure_topk_full behavior
+ *************************************************************/
+
+// With a tight max_codes budget the default search (ensure_topk_full=false)
+// should truncate results, yielding -1 placeholders. With ensure_topk_full=true
+// the same budget becomes soft: the probe loop keeps running until k raw
+// candidates have been scanned, so placeholders disappear (data permitting).
+int test_ensure_topk_full(const char* index_key, MetricType metric) {
+    std::vector<float> xb = make_data(nb);
+    auto index = make_index(index_key, metric, xb);
+    std::vector<float> xq = make_data(nq);
+
+    constexpr int k = 10;
+    // Budget: smaller than k codes per query. Guaranteed truncation when
+    // ensure_topk_full is false.
+    const size_t tight_budget = k / 2;
+
+    IVFSearchParameters p;
+    p.nprobe = 32;
+    p.max_codes = tight_budget;
+    p.ensure_topk_full = false;
+    auto res_tight = search_index_with_params(index.get(), xq.data(), &p);
+
+    p.ensure_topk_full = true;
+    auto res_full = search_index_with_params(index.get(), xq.data(), &p);
+
+    size_t miss_tight =
+            std::count(res_tight.begin(), res_tight.end(), (idx_t)-1);
+    size_t miss_full = std::count(res_full.begin(), res_full.end(), (idx_t)-1);
+
+    // ensure_topk_full=true must produce at least as many valid slots as
+    // ensure_topk_full=false; in practice it must strictly reduce -1 count
+    // given our tight budget.
+    if (miss_full > miss_tight) {
+        return 1;
+    }
+    if (miss_tight == 0) {
+        // Test assumption violated: budget should have caused truncation.
+        return 2;
+    }
+    return 0;
+}
+
+// Regression test: when all three new fields are left at defaults the
+// search behaves identically to a search with no params at all. This is the
+// backward-compatibility guarantee for pre-existing baseline callers.
+int test_defaults_preserve_baseline(const char* index_key, MetricType metric) {
+    std::vector<float> xb = make_data(nb);
+    auto index = make_index(index_key, metric, xb);
+    std::vector<float> xq = make_data(nq);
+
+    ParameterSpace ps;
+    ps.set_index_parameter(index.get(), "nprobe", 4);
+    auto res_no_params = search_index(index.get(), xq.data());
+
+    IVFSearchParameters p; // default-constructed: all new fields at 0/false
+    p.nprobe = 4;
+    auto res_default_params =
+            search_index_with_params(index.get(), xq.data(), &p);
+
+    if (res_no_params != res_default_params) {
+        return 1;
+    }
+    return 0;
+}
+
 int test_selector(const char* index_key) {
     std::vector<float> xb = make_data(nb); // database vectors
     std::vector<float> xq = make_data(nq);
@@ -190,6 +257,33 @@ TEST(TPO, IVFFlatPP) {
     EXPECT_EQ(err1, 0);
     int err2 = test_params_override("PCA16,IVF32,SQ8", METRIC_INNER_PRODUCT);
     EXPECT_EQ(err2, 0);
+}
+
+TEST(TPOEnsureTopK, IVFFlat) {
+    EXPECT_EQ(test_ensure_topk_full("IVF32,Flat", METRIC_L2), 0);
+    EXPECT_EQ(test_ensure_topk_full("IVF32,Flat", METRIC_INNER_PRODUCT), 0);
+}
+
+TEST(TPOEnsureTopK, IVFPQ) {
+    EXPECT_EQ(test_ensure_topk_full("IVF32,PQ8np", METRIC_L2), 0);
+    EXPECT_EQ(test_ensure_topk_full("IVF32,PQ8np", METRIC_INNER_PRODUCT), 0);
+}
+
+TEST(TPOEnsureTopK, IVFSQ) {
+    EXPECT_EQ(test_ensure_topk_full("IVF32,SQ8", METRIC_L2), 0);
+    EXPECT_EQ(test_ensure_topk_full("IVF32,SQ8", METRIC_INNER_PRODUCT), 0);
+}
+
+TEST(TPODefaults, IVFFlat) {
+    EXPECT_EQ(test_defaults_preserve_baseline("IVF32,Flat", METRIC_L2), 0);
+}
+
+TEST(TPODefaults, IVFPQ) {
+    EXPECT_EQ(test_defaults_preserve_baseline("IVF32,PQ8np", METRIC_L2), 0);
+}
+
+TEST(TPODefaults, IVFSQ) {
+    EXPECT_EQ(test_defaults_preserve_baseline("IVF32,SQ8", METRIC_L2), 0);
 }
 
 TEST(TSEL, IVFFlat) {

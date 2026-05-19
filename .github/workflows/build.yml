@@ -15,3 +15,5 @@ jobs:
     secrets:
       ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+  build-pip:
+    uses: ./.github/workflows/build-pip.yml

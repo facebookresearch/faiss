@@ -12,7 +12,7 @@ import unittest
 
 from faiss.contrib.datasets import SyntheticDataset
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 
 
 @for_all_simd_levels
@@ -63,6 +63,26 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
     def test_tqmse_8bit(self):
         faiss.normalize_L2(self.xb)
         self.do_encode_decode(faiss.ScalarQuantizer.QT_8bit_tqmse, 0.1)
+
+    def test_codes_match_none(self):
+        """SQ codes are integer; encode dispatch (sq-dispatch.h) must
+        produce bit-identical output at every SIMD level. Catches drift in
+        the per-ISA scalar-quantizer encode kernels."""
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
+        for qtype in (
+                faiss.ScalarQuantizer.QT_8bit,
+                faiss.ScalarQuantizer.QT_4bit,
+                faiss.ScalarQuantizer.QT_8bit_uniform,
+                faiss.ScalarQuantizer.QT_4bit_uniform,
+                faiss.ScalarQuantizer.QT_fp16):
+            with self.subTest(qtype=qtype):
+                sq = faiss.ScalarQuantizer(self.d, qtype)
+                sq.train(self.xb)
+                codes = sq.compute_codes(self.xb)
+                with NoneSIMDLevel():
+                    codes_none = sq.compute_codes(self.xb)
+                np.testing.assert_array_equal(codes, codes_none)
 
 
 @for_all_simd_levels

@@ -184,15 +184,7 @@ set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS 
 if(AIX)
   set_target_properties(swigfaiss PROPERTIES SUFFIX .a)
   set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .a)
-elseif(NOT WIN32)
-  # NOTE: Python does not recognize the dylib extension.
-  set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
-  set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
-  set_target_properties(swigfaiss_avx512 PROPERTIES SUFFIX .so)
-  set_target_properties(swigfaiss_avx512_spr PROPERTIES SUFFIX .so)
-  set_target_properties(swigfaiss_sve PROPERTIES SUFFIX .so)
-  set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .so)
-else()
+elseif(WIN32)
   # we need bigobj for the swig wrapper
   target_compile_options(swigfaiss PRIVATE /bigobj)
   target_compile_options(swigfaiss_avx2 PRIVATE /bigobj)
@@ -200,6 +192,15 @@ else()
   target_compile_options(swigfaiss_avx512_spr PRIVATE /bigobj)
   target_compile_options(swigfaiss_sve PRIVATE /bigobj)
   target_compile_options(faiss_example_external_module PRIVATE /bigobj)
+elseif(NOT SKBUILD_SABI_VERSION)
+  # NOTE: Python does not recognize the dylib extension.
+  # When building abi3, the suffix is set to .abi3.so below.
+  set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
+  set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
+  set_target_properties(swigfaiss_avx512 PROPERTIES SUFFIX .so)
+  set_target_properties(swigfaiss_avx512_spr PROPERTIES SUFFIX .so)
+  set_target_properties(swigfaiss_sve PROPERTIES SUFFIX .so)
+  set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .so)
 endif()
 
 if(FAISS_ENABLE_SVS)
@@ -239,43 +240,80 @@ endif()
 
 find_package(OpenMP REQUIRED)
 
+# When scikit-build-core requests abi3 (Stable ABI), it passes
+# SKBUILD_SABI_VERSION. Use Development.SABIModule to link against the
+# stable Python ABI instead of the version-specific one.
+if(SKBUILD_SABI_VERSION)
+  find_package(Python REQUIRED
+    COMPONENTS Development.SABIModule NumPy
+  )
+else()
+  find_package(Python REQUIRED
+    COMPONENTS Development.Module NumPy
+  )
+endif()
+
+# Select the Python module target based on whether abi3 is requested.
+if(SKBUILD_SABI_VERSION)
+  set(FAISS_PYTHON_MODULE_TARGET Python::SABIModule)
+else()
+  set(FAISS_PYTHON_MODULE_TARGET Python::Module)
+endif()
+
+# When building for abi3, define Py_LIMITED_API and set the .abi3.so suffix
+# so the wheel is tagged as abi3-compatible.
+if(SKBUILD_SABI_VERSION)
+  # 0x030A0000 = Python 3.10
+  set(FAISS_PY_LIMITED_API "0x030A0000")
+  foreach(tgt swigfaiss swigfaiss_avx2 swigfaiss_avx512
+      swigfaiss_avx512_spr swigfaiss_sve faiss_example_external_module)
+    if(TARGET ${tgt})
+      target_compile_definitions(${tgt}
+        PRIVATE Py_LIMITED_API=${FAISS_PY_LIMITED_API})
+      if(NOT WIN32)
+        set_target_properties(${tgt} PROPERTIES SUFFIX ".abi3.so")
+      endif()
+    endif()
+  endforeach()
+endif()
+
 target_link_libraries(swigfaiss PRIVATE
   faiss
-  Python::Module
+  ${FAISS_PYTHON_MODULE_TARGET}
   Python::NumPy
   OpenMP::OpenMP_CXX
 )
 
 target_link_libraries(swigfaiss_avx2 PRIVATE
   faiss_avx2
-  Python::Module
+  ${FAISS_PYTHON_MODULE_TARGET}
   Python::NumPy
   OpenMP::OpenMP_CXX
 )
 
 target_link_libraries(swigfaiss_avx512 PRIVATE
   faiss_avx512
-  Python::Module
+  ${FAISS_PYTHON_MODULE_TARGET}
   Python::NumPy
   OpenMP::OpenMP_CXX
 )
 
 target_link_libraries(swigfaiss_avx512_spr PRIVATE
   faiss_avx512_spr
-  Python::Module
+  ${FAISS_PYTHON_MODULE_TARGET}
   Python::NumPy
   OpenMP::OpenMP_CXX
 )
 
 target_link_libraries(swigfaiss_sve PRIVATE
   faiss_sve
-  Python::Module
+  ${FAISS_PYTHON_MODULE_TARGET}
   Python::NumPy
   OpenMP::OpenMP_CXX
 )
 
 target_link_libraries(faiss_example_external_module PRIVATE
-  Python::Module
+  ${FAISS_PYTHON_MODULE_TARGET}
   Python::NumPy
   OpenMP::OpenMP_CXX
   swigfaiss
@@ -291,16 +329,16 @@ target_include_directories(swigfaiss_avx512_spr PRIVATE ${PROJECT_SOURCE_DIR}/..
 target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
-find_package(Python REQUIRED
-  COMPONENTS Development.Module NumPy
-)
-
 add_library(faiss_python_callbacks STATIC EXCLUDE_FROM_ALL
   python_callbacks.cpp
 )
 set_property(TARGET faiss_python_callbacks
   PROPERTY POSITION_INDEPENDENT_CODE ON
 )
+if(SKBUILD_SABI_VERSION)
+  target_compile_definitions(faiss_python_callbacks
+    PRIVATE Py_LIMITED_API=${FAISS_PY_LIMITED_API})
+endif()
 
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "AIX")
 target_link_libraries(faiss_python_callbacks PRIVATE faiss)
@@ -328,3 +366,95 @@ configure_file(array_conversions.py array_conversions.py COPYONLY)
 
 # file(GLOB files "${PROJECT_SOURCE_DIR}/../../contrib/*.py")
 file(COPY ${PROJECT_SOURCE_DIR}/../../contrib  DESTINATION .)
+
+# Install targets for scikit-build-core / pip wheel packaging.
+
+# Set RPATH so the SWIG modules find libfaiss in the same directory.
+# auditwheel/delocate follow RPATH to locate libraries for bundling.
+foreach(tgt swigfaiss swigfaiss_avx2 swigfaiss_avx512
+    swigfaiss_avx512_spr swigfaiss_sve)
+  if(TARGET ${tgt})
+    if(APPLE)
+      set_target_properties(${tgt} PROPERTIES INSTALL_RPATH "@loader_path")
+    else()
+      set_target_properties(${tgt} PROPERTIES INSTALL_RPATH "$ORIGIN")
+    endif()
+  endif()
+endforeach()
+
+# Install the SWIG extension modules (.so/.pyd).
+# In DD mode, swigfaiss_avx2/avx512/avx512_spr/sve are also built and
+# loader.py selects the best one at runtime based on CPU capabilities.
+foreach(tgt swigfaiss swigfaiss_avx2 swigfaiss_avx512
+    swigfaiss_avx512_spr swigfaiss_sve)
+  if(TARGET ${tgt})
+    get_target_property(_excluded ${tgt} EXCLUDE_FROM_ALL)
+    if(NOT _excluded)
+      install(TARGETS ${tgt}
+        LIBRARY DESTINATION faiss
+        RUNTIME DESTINATION faiss
+      )
+    endif()
+  endif()
+endforeach()
+
+# Install the core faiss shared libraries into the Python package directory
+# so that auditwheel/delocate can find and bundle them with the SWIG modules.
+# Guard: when Python bindings are built standalone (e.g. conda), the faiss
+# target is an installed import library, not a build target.
+foreach(tgt faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve)
+  if(TARGET ${tgt})
+    get_target_property(_imported ${tgt} IMPORTED)
+    get_target_property(_excluded ${tgt} EXCLUDE_FROM_ALL)
+    if(NOT _imported AND NOT _excluded)
+      install(TARGETS ${tgt}
+        LIBRARY DESTINATION faiss
+        RUNTIME DESTINATION faiss
+      )
+    endif()
+  endif()
+endforeach()
+
+# Install SWIG-generated Python wrappers.
+# In DD mode, each variant has its own .py wrapper that loader.py imports.
+foreach(mod swigfaiss swigfaiss_avx2 swigfaiss_avx512
+    swigfaiss_avx512_spr swigfaiss_sve)
+  if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${mod}.py" OR TARGET ${mod})
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${mod}.py"
+      DESTINATION faiss
+      OPTIONAL
+    )
+  endif()
+endforeach()
+
+# Install hand-written Python source files
+install(FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/loader.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/class_wrappers.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/extra_wrappers.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/gpu_wrappers.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/array_conversions.py"
+  DESTINATION faiss
+)
+
+# Install type stubs if present
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi")
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi" DESTINATION faiss)
+endif()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/py.typed")
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/py.typed" DESTINATION faiss)
+endif()
+
+# Install contrib subpackage (excluding Meta-internal *_fb.py files)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/"
+  DESTINATION faiss/contrib
+  FILES_MATCHING PATTERN "*.py"
+  PATTERN "*_fb.py" EXCLUDE
+)
+
+# Install contrib/torch subpackage data files
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/torch/"
+  DESTINATION faiss/contrib/torch
+  FILES_MATCHING PATTERN "*.md"
+)

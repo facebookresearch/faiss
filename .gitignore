@@ -8,6 +8,7 @@
 *.pyc
 *~
 /build/
+/build_metal/
 /config.*
 /aclocal.m4
 /autom4te.cache/

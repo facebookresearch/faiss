@@ -385,20 +385,6 @@ int pq4_preferred_qbs(int n) {
     }
 }
 
-void accumulate_to_mem(
-        int nq,
-        size_t ntotal2,
-        int nsq,
-        const uint8_t* codes,
-        const uint8_t* LUT,
-        uint16_t* accu) {
-    using namespace simd_result_handlers;
-    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
-    StoreResultHandler<> handler(accu, ntotal2);
-    DummyScaler<> scaler;
-    accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
-}
-
 } // namespace faiss
 
 /***************************************************************
@@ -413,6 +399,43 @@ void accumulate_to_mem(
 #include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
 #include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
 #undef THE_LEVEL_TO_DISPATCH
+
+namespace faiss {
+
+using namespace simd_result_handlers;
+
+/***************************************************************
+ * accumulate_to_mem: NONE specialization + runtime dispatch.
+ ***************************************************************/
+
+template <>
+void accumulate_to_mem_impl<SIMDLevel::NONE>(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    StoreResultHandler<SIMDLevel::NONE> handler(accu, ntotal2);
+    DummyScaler<SIMDLevel::NONE> scaler;
+    accumulate<SIMDLevel::NONE>(
+            nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
+}
+
+void accumulate_to_mem(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
+    with_simd_level([&]<SIMDLevel SL>() {
+        accumulate_to_mem_impl<SL>(nq, ntotal2, nsq, codes, LUT, accu);
+    });
+}
+
+} // namespace faiss
 
 namespace faiss {
 

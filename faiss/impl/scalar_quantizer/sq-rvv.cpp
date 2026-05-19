@@ -186,7 +186,7 @@ struct DCTemplate<
         const float inv_scale = (vdiff == 0.0f) ? 0.0f : 15.0f / vdiff;
         for (size_t i = 0; i < d; i++) {
             float val = (x[i] - vmin) * inv_scale;
-            int code = static_cast<int>(std::floor(val + 0.5f));
+            int code = static_cast<int>(val);
             if (code < 0) {
                 code = 0;
             }
