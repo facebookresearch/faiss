@@ -19,6 +19,7 @@ set(FAISS_METAL_SRC
   impl/MetalIVFFlat.mm
   StandardMetalResources.mm
   MetalCloner.mm
+  MetalPythonBridge.mm
 )
 
 add_library(faiss_metal STATIC ${FAISS_METAL_SRC})

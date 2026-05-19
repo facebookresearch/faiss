@@ -58,6 +58,11 @@ macro(configure_swigfaiss source)
       )
     endif()
   endif()
+  if(FAISS_ENABLE_METAL)
+    set_property(SOURCE ${source} APPEND PROPERTY
+      COMPILE_DEFINITIONS FAISS_ENABLE_METAL
+    )
+  endif()
 endmacro()
 
 # CMake's SWIG wrappers only allow tweaking certain settings at source level, so
@@ -236,6 +241,16 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(swigfaiss_avx512_spr PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
     target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
   endif()
+endif()
+
+if(FAISS_ENABLE_METAL)
+  target_link_libraries(swigfaiss PRIVATE
+    faiss_metal
+    "-framework Metal"
+    "-framework MetalKit"
+    "-framework MetalPerformanceShaders"
+    "-framework Foundation"
+  )
 endif()
 
 find_package(OpenMP REQUIRED)
