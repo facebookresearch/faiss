@@ -44,8 +44,9 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         size_t degree,
         MetricType metric,
         size_t leanvec_dims,
-        SVSStorageKind storage_kind)
-        : IndexSVSVamana(d, degree, metric, storage_kind) {
+        SVSStorageKind storage_kind,
+        bool is_static)
+        : IndexSVSVamana(d, degree, metric, storage_kind, is_static) {
     is_trained = false;
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
 }
@@ -120,7 +121,8 @@ void IndexSVSVamanaLeanVec::deserialize_training_data(std::istream& in) {
     training_data = tdata;
 }
 
-void IndexSVSVamanaLeanVec::create_impl() {
+void IndexSVSVamanaLeanVec::create_impl(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(!impl);
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
@@ -136,29 +138,68 @@ void IndexSVSVamanaLeanVec::create_impl() {
             .search_window_size = search_window_size,
             .search_buffer_capacity = search_buffer_capacity,
     };
-    auto status = svs_runtime::Status_Ok;
-    if (training_data) {
-        status = svs_runtime::DynamicVamanaIndexLeanVec::build(
-                &impl,
-                d,
-                svs_metric,
-                svs_storage_kind,
-                training_data,
-                build_params,
-                search_params);
-    } else {
-        status = svs_runtime::DynamicVamanaIndexLeanVec::build(
-                &impl,
-                d,
-                svs_metric,
-                svs_storage_kind,
-                leanvec_d,
-                build_params,
-                search_params);
-    }
 
-    if (!status.ok()) {
-        FAISS_THROW_MSG(status.message());
+    auto status = svs_runtime::Status_Ok;
+    if (is_static) {
+        FAISS_THROW_IF_NOT_MSG(
+                n > 0 && x != nullptr,
+                "Static Vamana LeanVec index requires data at build time.");
+        if (training_data) {
+            status = svs_runtime::VamanaIndexLeanVec::build(
+                    &impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    training_data,
+                    build_params,
+                    search_params);
+        } else {
+            status = svs_runtime::VamanaIndexLeanVec::build(
+                    &impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    leanvec_d,
+                    build_params,
+                    search_params);
+        }
+        if (!status.ok()) {
+            FAISS_THROW_MSG(status.message());
+        }
+        FAISS_THROW_IF_NOT(impl);
+        // Populate the static index with the full dataset (one-shot add).
+        status = impl->add(static_cast<size_t>(n), x);
+        if (!status.ok()) {
+            auto destroy_status = svs_runtime::VamanaIndex::destroy(impl);
+            FAISS_ASSERT(destroy_status.ok());
+            impl = nullptr;
+            FAISS_THROW_MSG(status.message());
+        }
+    } else {
+        svs_runtime::DynamicVamanaIndex* dyn_impl = nullptr;
+        if (training_data) {
+            status = svs_runtime::DynamicVamanaIndexLeanVec::build(
+                    &dyn_impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    training_data,
+                    build_params,
+                    search_params);
+        } else {
+            status = svs_runtime::DynamicVamanaIndexLeanVec::build(
+                    &dyn_impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    leanvec_d,
+                    build_params,
+                    search_params);
+        }
+        if (!status.ok()) {
+            FAISS_THROW_MSG(status.message());
+        }
+        impl = dyn_impl;
     }
     FAISS_THROW_IF_NOT(impl);
 }

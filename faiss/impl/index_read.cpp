@@ -2575,6 +2575,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->use_full_search_history);
 
         svs->storage_kind = read_svs_storage_kind(f);
+        READ1(svs->is_static);
 
         if (h == fourcc("ISVL")) {
             auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
