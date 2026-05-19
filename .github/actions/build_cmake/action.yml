@@ -176,7 +176,7 @@ runs:
       shell: bash
       run: |
         brew install cmake libomp gflags swig
-        pip3 install numpy pytest
+        pip3 install --break-system-packages numpy pytest
     - name: Build all targets
       if: inputs.metal != 'ON'
       shell: bash
@@ -230,13 +230,11 @@ runs:
       if: inputs.metal == 'ON'
       shell: bash
       working-directory: build/faiss/python
-      run: python3 setup.py install
+      run: pip3 install --break-system-packages .
     - name: Python tests (Metal)
       if: inputs.metal == 'ON'
       shell: bash
-      run: |
-        sudo cp build/faiss/libfaiss.dylib /usr/local/lib/
-        python3 -m pytest faiss/gpu_metal/test/test_metal_python.py -v
+      run: python3 -m pytest faiss/gpu_metal/test/test_metal_python.py -v
     - name: C++ perf benchmarks
       if: inputs.rocm == 'OFF' && inputs.metal != 'ON'
       shell: bash
