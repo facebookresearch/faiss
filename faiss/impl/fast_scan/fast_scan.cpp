@@ -353,9 +353,6 @@ int pq4_pack_LUT_qbs_q_map(
     return i0;
 }
 
-// declared in simd_result_handlers.h
-bool simd_result_handlers_accept_virtual = true;
-
 int pq4_qbs_to_nq(int qbs) {
     int i0 = 0;
     int qi = qbs;
