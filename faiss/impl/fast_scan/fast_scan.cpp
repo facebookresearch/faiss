@@ -385,20 +385,6 @@ int pq4_preferred_qbs(int n) {
     }
 }
 
-void accumulate_to_mem(
-        int nq,
-        size_t ntotal2,
-        int nsq,
-        const uint8_t* codes,
-        const uint8_t* LUT,
-        uint16_t* accu) {
-    using namespace simd_result_handlers;
-    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
-    StoreResultHandler<> handler(accu, ntotal2);
-    DummyScaler<> scaler;
-    accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
-}
-
 } // namespace faiss
 
 /***************************************************************
@@ -416,81 +402,42 @@ void accumulate_to_mem(
 
 namespace faiss {
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-template <>
-std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
-        SIMDLevel::RISCV_RVV>(
-        bool is_max,
-        int impl,
-        size_t nq,
-        size_t ntotal,
-        int64_t k,
-        float* distances,
-        int64_t* ids,
-        const IDSelector* sel,
-        bool with_id_map) {
-    return make_fast_scan_scanner_impl<SIMDLevel::NONE>(
-            is_max, impl, nq, ntotal, k, distances, ids, sel, with_id_map);
-}
+using namespace simd_result_handlers;
+
+/***************************************************************
+ * accumulate_to_mem: NONE specialization + runtime dispatch.
+ ***************************************************************/
 
 template <>
-std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl<
-        SIMDLevel::RISCV_RVV>(
-        bool is_max,
-        RangeSearchResult& rres,
-        float radius,
-        size_t ntotal,
-        const IDSelector* sel) {
-    return make_range_scanner_impl<SIMDLevel::NONE>(
-            is_max, rres, radius, ntotal, sel);
+void accumulate_to_mem_impl<SIMDLevel::NONE>(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    StoreResultHandler<SIMDLevel::NONE> handler(accu, ntotal2);
+    DummyScaler<SIMDLevel::NONE> scaler;
+    accumulate<SIMDLevel::NONE>(
+            nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
 }
 
-template <>
-std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
-        SIMDLevel::RISCV_RVV>(
-        bool is_max,
-        RangeSearchPartialResult& pres,
-        float radius,
-        size_t ntotal,
-        size_t q0,
-        size_t q1,
-        const IDSelector* sel) {
-    return make_partial_range_scanner_impl<SIMDLevel::NONE>(
-            is_max, pres, radius, ntotal, q0, q1, sel);
+void accumulate_to_mem(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
+    with_simd_level([&]<SIMDLevel SL>() {
+        accumulate_to_mem_impl<SL>(nq, ntotal2, nsq, codes, LUT, accu);
+    });
 }
 
-template <>
-std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner_impl<
-        SIMDLevel::RISCV_RVV>(
-        const IndexRaBitQFastScan* index,
-        bool is_max,
-        size_t nq,
-        int64_t k,
-        float* distances,
-        int64_t* ids,
-        const IDSelector* sel,
-        const FastScanDistancePostProcessing& context,
-        bool is_multi_bit) {
-    return rabitq_make_knn_scanner_impl<SIMDLevel::NONE>(
-            index, is_max, nq, k, distances, ids, sel, context, is_multi_bit);
-}
+} // namespace faiss
 
-template <>
-std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl<
-        SIMDLevel::RISCV_RVV>(
-        bool is_max,
-        const IndexIVFRaBitQFastScan* index,
-        size_t nq,
-        size_t k,
-        float* distances,
-        int64_t* ids,
-        const IDSelector* sel,
-        const FastScanDistancePostProcessing* context,
-        bool multi_bit) {
-    return rabitq_ivf_make_knn_scanner_impl<SIMDLevel::NONE>(
-            is_max, index, nq, k, distances, ids, sel, context, multi_bit);
-}
-#endif // COMPILE_SIMD_RISCV_RVV
+namespace faiss {
 
 std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
         bool is_max,

@@ -5,43 +5,29 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_ARM_NEON
+// RISC-V RVV: forward all fast_scan specializations to NONE until
+// dedicated RVV implementations are written.
 
-#define THE_LEVEL_TO_DISPATCH SIMDLevel::ARM_NEON
-#include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
-#include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
+#ifdef COMPILE_SIMD_RISCV_RVV
 
-#include <faiss/impl/fast_scan/decompose_qbs.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 
 namespace faiss {
 
-using namespace simd_result_handlers;
-
 template <>
-void accumulate_to_mem_impl<SIMDLevel::ARM_NEON>(
+void accumulate_to_mem_impl<SIMDLevel::RISCV_RVV>(
         int nq,
         size_t ntotal2,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
         uint16_t* accu) {
-    StoreResultHandler<SIMDLevel::ARM_NEON> handler(accu, ntotal2);
-    DummyScaler<SIMDLevel::ARM_NEON> scaler;
-    accumulate<SIMDLevel::ARM_NEON>(
-            nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
+    accumulate_to_mem_impl<SIMDLevel::NONE>(nq, ntotal2, nsq, codes, LUT, accu);
 }
-
-} // namespace faiss
-
-// ARM_SVE: forward to ARM_NEON implementation until a dedicated SVE
-// specialization is written (same pattern as scalar_quantizer/sq-neon.cpp).
-#ifdef COMPILE_SIMD_ARM_SVE
-
-namespace faiss {
 
 template <>
 std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
-        SIMDLevel::ARM_SVE>(
+        SIMDLevel::RISCV_RVV>(
         bool is_max,
         int impl,
         size_t nq,
@@ -51,25 +37,25 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
         int64_t* ids,
         const IDSelector* sel,
         bool with_id_map) {
-    return make_fast_scan_scanner_impl<SIMDLevel::ARM_NEON>(
+    return make_fast_scan_scanner_impl<SIMDLevel::NONE>(
             is_max, impl, nq, ntotal, k, distances, ids, sel, with_id_map);
 }
 
 template <>
 std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl<
-        SIMDLevel::ARM_SVE>(
+        SIMDLevel::RISCV_RVV>(
         bool is_max,
         RangeSearchResult& rres,
         float radius,
         size_t ntotal,
         const IDSelector* sel) {
-    return make_range_scanner_impl<SIMDLevel::ARM_NEON>(
+    return make_range_scanner_impl<SIMDLevel::NONE>(
             is_max, rres, radius, ntotal, sel);
 }
 
 template <>
 std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
-        SIMDLevel::ARM_SVE>(
+        SIMDLevel::RISCV_RVV>(
         bool is_max,
         RangeSearchPartialResult& pres,
         float radius,
@@ -77,13 +63,13 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
         size_t q0,
         size_t q1,
         const IDSelector* sel) {
-    return make_partial_range_scanner_impl<SIMDLevel::ARM_NEON>(
+    return make_partial_range_scanner_impl<SIMDLevel::NONE>(
             is_max, pres, radius, ntotal, q0, q1, sel);
 }
 
 template <>
 std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner_impl<
-        SIMDLevel::ARM_SVE>(
+        SIMDLevel::RISCV_RVV>(
         const IndexRaBitQFastScan* index,
         bool is_max,
         size_t nq,
@@ -93,13 +79,13 @@ std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner_impl<
         const IDSelector* sel,
         const FastScanDistancePostProcessing& context,
         bool is_multi_bit) {
-    return rabitq_make_knn_scanner_impl<SIMDLevel::ARM_NEON>(
+    return rabitq_make_knn_scanner_impl<SIMDLevel::NONE>(
             index, is_max, nq, k, distances, ids, sel, context, is_multi_bit);
 }
 
 template <>
 std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl<
-        SIMDLevel::ARM_SVE>(
+        SIMDLevel::RISCV_RVV>(
         bool is_max,
         const IndexIVFRaBitQFastScan* index,
         size_t nq,
@@ -109,12 +95,10 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl<
         const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit) {
-    return rabitq_ivf_make_knn_scanner_impl<SIMDLevel::ARM_NEON>(
+    return rabitq_ivf_make_knn_scanner_impl<SIMDLevel::NONE>(
             is_max, index, nq, k, distances, ids, sel, context, multi_bit);
 }
 
 } // namespace faiss
 
-#endif // COMPILE_SIMD_ARM_SVE
-
-#endif // COMPILE_SIMD_ARM_NEON
+#endif // COMPILE_SIMD_RISCV_RVV
