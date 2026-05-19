@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1simd256bit__tpl" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd256bit_tpl</compoundname>
     <derivedcompoundref refid="structfaiss_1_1simd16uint16__tpl" prot="public" virt="non-virtual">faiss::simd16uint16_tpl&lt; SL256 &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1simd16uint16__tpl" prot="public" virt="non-virtual">faiss::simd16uint16_tpl&lt; SINGLE_SIMD_LEVEL_256 &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd16uint16__tpl" prot="public" virt="non-virtual">faiss::simd16uint16_tpl&lt; SL &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd32uint8__tpl" prot="public" virt="non-virtual">faiss::simd32uint8_tpl&lt; SL &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd8float32__tpl" prot="public" virt="non-virtual">faiss::simd8float32_tpl&lt; SL &gt;</derivedcompoundref>
@@ -19,7 +20,7 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
+      <node id="4">
         <label>faiss::simd16uint16_tpl&lt; SL &gt;</label>
         <link refid="structfaiss_1_1simd16uint16__tpl"/>
         <childnode refid="1" relation="public-inheritance">
@@ -29,21 +30,27 @@
         <label>faiss::simd256bit_tpl&lt; SL &gt;</label>
         <link refid="structfaiss_1_1simd256bit__tpl"/>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::simd32uint8_tpl&lt; SL &gt;</label>
         <link refid="structfaiss_1_1simd32uint8__tpl"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss::simd8float32_tpl&lt; SL &gt;</label>
         <link refid="structfaiss_1_1simd8float32__tpl"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss::simd8uint32_tpl&lt; SL &gt;</label>
         <link refid="structfaiss_1_1simd8uint32__tpl"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::simd16uint16_tpl&lt; SINGLE_SIMD_LEVEL_256 &gt;</label>
+        <link refid="structfaiss_1_1simd16uint16__tpl"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

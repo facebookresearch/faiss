@@ -36,7 +36,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="723" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="723" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="713" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="713" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a501fd3cb8ef8d64c9bcebcbf3c2353bc" prot="public" static="no">
         <type>typename C::TI</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="724" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="724" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="714" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="714" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1ae58a393a5b4ee56df048863f38c044c3" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref>&lt; C, with_id_map, SL &gt;</type>
@@ -64,21 +64,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="725" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="725" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="715" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="715" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a132c15fa0532ca8b32fbb5f000e0f174" prot="public" static="no">
+      <memberdef kind="typedef" id="structfaiss_1_1SIMDResultHandler_1a2b2ed4eb9b4e3b05e03c7085c6092240" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SL256 &gt;</type>
-        <definition>using faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;::simd16uint16 =  simd16uint16_tpl&lt;SL256&gt;</definition>
+        <definition>using faiss::SIMDResultHandler&lt; SL &gt;::simd16uint16 =  simd16uint16_tpl&lt;SL256&gt;</definition>
         <argsstring></argsstring>
         <name>simd16uint16</name>
-        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::simd16uint16</qualifiedname>
+        <qualifiedname>faiss::SIMDResultHandler::simd16uint16</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="268" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="268" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="167" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="167" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="731" column="23" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="731" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="720" column="23" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="720" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1aa395cb2d0e70151df365dbb98b0f90cc" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="732" column="11" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="732" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="721" column="11" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="721" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a4b9e3166c1fdc33b2a46aa917a8aaccd" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint16_t &gt;</type>
@@ -122,7 +122,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="733" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="733" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="722" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="722" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a0f92dc33d7c0ac5c4066c98b2313f933" prot="public" static="no" mutable="no">
         <type>std::vector&lt; size_t &gt;</type>
@@ -136,7 +136,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="734" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="734" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="723" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="723" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1aac58a9f5d39683f7452ad819234cb74f" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="735" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="735" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="724" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="724" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a196ebfe3fe501aff24adc301c04571d5" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet" kindref="compound">Triplet</ref> &gt;</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="744" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="744" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="733" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="733" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1add21d14cc5acbea717996ff6da3208f6" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="270" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="270" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="254" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="254" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a3667a6f5b1fb6a0095327cca3a92af2a" prot="public" static="no" mutable="no">
         <type>int64_t</type>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="272" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="272" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="256" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="256" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a8c361bd2336aeca923531567a1809598" prot="public" static="no" mutable="no">
         <type>int64_t</type>
@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="273" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="273" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="257" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="257" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a4f7532da541a3c3a5f0003a2ef1c5b84" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -224,7 +224,67 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="275" column="22" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="275" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="259" column="22" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="259" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a49f49013e5e6d40ed8643798d957ef83" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SIMDResultHandlerToFloat::is_CMax</definition>
+        <argsstring></argsstring>
+        <name>is_CMax</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::is_CMax</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="91" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a2888bde7a0907e7f1f3f1acb2ec96336" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::SIMDResultHandlerToFloat::sizeof_ids</definition>
+        <argsstring></argsstring>
+        <name>sizeof_ids</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::sizeof_ids</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="92" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a7a72f56901a69265da592167b484c00c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SIMDResultHandlerToFloat::with_fields</definition>
+        <argsstring></argsstring>
+        <name>with_fields</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::with_fields</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="93" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a722f2bb64370b1891808d328f2094cf8" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::SIMDResultHandlerToFloat::in_range_num</definition>
+        <argsstring></argsstring>
+        <name>in_range_num</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::in_range_num</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="99" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a30494be4f565d354faf49c9c2db31b07" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -232,13 +292,14 @@
         <argsstring></argsstring>
         <name>nq</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::nq</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="126" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="126" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="101" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="101" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a9c3b4afb6e9d2327c65e7bbfcdc80d76" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -246,13 +307,14 @@
         <argsstring></argsstring>
         <name>ntotal</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::ntotal</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="127" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="127" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="102" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1aa0cd900277b35f820861167b221f3b07" prot="public" static="no" mutable="no">
         <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
@@ -268,7 +330,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="130" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="130" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="105" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a434326ed5aca83b4d48f5c85587b8c48" prot="public" static="no" mutable="no">
         <type>const int *</type>
@@ -283,7 +345,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="131" column="15" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="131" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="106" column="15" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a40766ad7b1c6b0b248d8a4bdab29fbba" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -298,7 +360,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="132" column="19" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="132" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="107" column="19" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="107" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" prot="public" static="no" mutable="no">
         <type>const uint16_t *</type>
@@ -314,7 +376,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="133" column="20" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="133" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="108" column="20" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a5cab3c9b7ffdcd62d507147aa99ab4c5" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -329,7 +391,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="135" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="135" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="110" column="17" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="110" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a46f20a1f71eff2fca145c440ef997939" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -344,67 +406,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="137" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="137" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::SIMDResultHandler::is_CMax</definition>
-        <argsstring></argsstring>
-        <name>is_CMax</name>
-        <qualifiedname>faiss::SIMDResultHandler::is_CMax</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="92" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="92" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478" prot="public" static="no" mutable="no">
-        <type>uint8_t</type>
-        <definition>uint8_t faiss::SIMDResultHandler::sizeof_ids</definition>
-        <argsstring></argsstring>
-        <name>sizeof_ids</name>
-        <qualifiedname>faiss::SIMDResultHandler::sizeof_ids</qualifiedname>
-        <initializer>= 0</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="93" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="93" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::SIMDResultHandler::with_fields</definition>
-        <argsstring></argsstring>
-        <name>with_fields</name>
-        <qualifiedname>faiss::SIMDResultHandler::with_fields</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="94" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="94" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1ae405f42d913652fffede258a52b72ec5" prot="public" static="no" mutable="no">
-        <type>size_t</type>
-        <definition>size_t faiss::SIMDResultHandler::in_range_num</definition>
-        <argsstring></argsstring>
-        <name>in_range_num</name>
-        <qualifiedname>faiss::SIMDResultHandler::in_range_num</qualifiedname>
-        <initializer>= 0</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="100" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="100" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="112" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="112" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -436,11 +438,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="746" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="746" bodyend="754"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="735" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="735" bodyend="743"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a875f0f99bbb133ebe061be563b12158c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map, SL &gt;::begin</definition>
+        <definition>void faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map, SL &gt;::begin</definition>
         <argsstring>(const float *norms) override</argsstring>
         <name>begin</name>
         <qualifiedname>faiss::simd_result_handlers::RangeHandler::begin</qualifiedname>
@@ -455,14 +457,15 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="756" column="18" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="756" bodyend="762"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="745" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="745" bodyend="751"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1ab8b232487a65c32e664aa03a16bdfa02" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a0bcebe5a42eb6a447983c56da25ddcf7" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
         <definition>void faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map, SL &gt;::handle</definition>
-        <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final</argsstring>
         <name>handle</name>
         <qualifiedname>faiss::simd_result_handlers::RangeHandler::handle</qualifiedname>
+        <reimplements refid="structfaiss_1_1SIMDResultHandler_1a14410b115e8728835cbec0721cf3dfa8">handle</reimplements>
         <param>
           <type>size_t</type>
           <declname>q</declname>
@@ -485,7 +488,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="764" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="764" bodyend="806"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="753" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="753" bodyend="795"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1aaf38c9ba5d73429457a93eb7e3cee707" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -500,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="808" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="808" bodyend="827"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="797" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="797" bodyend="816"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -508,23 +511,22 @@
         <argsstring>(size_t i0_in, size_t j0_in) final</argsstring>
         <name>set_block_origin</name>
         <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::set_block_origin</qualifiedname>
-        <reimplements refid="structfaiss_1_1SIMDResultHandler_1a37668ebbd0d270cabb0a651bce2063f0">set_block_origin</reimplements>
+        <reimplements refid="structfaiss_1_1SIMDResultHandlerToFloat_1ab6fac88210c3b03561f227b049002708">set_block_origin</reimplements>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_in</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>j0</declname>
+          <declname>j0_in</declname>
         </param>
         <briefdescription>
-<para>set the sub-matrix that is being computed </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="284" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="284" bodyend="287"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="268" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="268" bodyend="271"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1accca23229dd97c08791abb1d530e3155" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -550,7 +552,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="290" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="290" bodyend="302"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="274" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="274" bodyend="286"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a907dc5c1142d316c35c2856251143fc7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int64_t</type>
@@ -572,7 +574,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="305" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="305" bodyend="311"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="289" column="13" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="289" bodyend="295"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ad15f3bb2ca56b7f1a5baed8a743079ea" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint32_t</type>
@@ -603,35 +605,43 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="315" column="14" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="315" bodyend="342"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="299" column="14" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="299" bodyend="326"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1SIMDResultHandler_1a9ecc0bbf1d02cc889cf3b3edf890f5d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::SIMDResultHandler::handle</definition>
-        <argsstring>(size_t, size_t, simd16uint16, simd16uint16)</argsstring>
-        <name>handle</name>
-        <qualifiedname>faiss::SIMDResultHandler::handle</qualifiedname>
+      <memberdef kind="function" id="structfaiss_1_1SIMDResultHandler_1ac8d227a65f209475e668b2ef625b2d09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SIMDResultHandlerToFloat::SIMDResultHandlerToFloat</definition>
+        <argsstring>()=default</argsstring>
+        <name>SIMDResultHandlerToFloat</name>
+        <qualifiedname>faiss::SIMDResultHandler::SIMDResultHandlerToFloat</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="164" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SIMDResultHandler_1ae11e305aeb4d8845fe9efe6a7a833ae8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SIMDResultHandlerToFloat::SIMDResultHandlerToFloat</definition>
+        <argsstring>(size_t nq, size_t ntotal)</argsstring>
+        <name>SIMDResultHandlerToFloat</name>
+        <qualifiedname>faiss::SIMDResultHandler::SIMDResultHandlerToFloat</qualifiedname>
         <param>
           <type>size_t</type>
+          <declname>nq</declname>
         </param>
         <param>
           <type>size_t</type>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref></type>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref></type>
+          <declname>ntotal</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>called when 32 distances are computed and provided in two simd16uint16. (q, b) indicate which entry it is in the block.</para>
-<para>Non-pure: concrete handlers define their own <ref refid="structfaiss_1_1SIMDResultHandler_1a9ecc0bbf1d02cc889cf3b3edf890f5d1" kindref="member">handle()</ref> with the SIMD types matching their SL template parameter. When SL != NONE the handler&apos;s <ref refid="structfaiss_1_1SIMDResultHandler_1a9ecc0bbf1d02cc889cf3b3edf890f5d1" kindref="member">handle()</ref> hides this base version (different param types); when SL == NONE it overrides it. The kernel code always calls <ref refid="structfaiss_1_1SIMDResultHandler_1a9ecc0bbf1d02cc889cf3b3edf890f5d1" kindref="member">handle()</ref> through a concrete-type reference, so virtual dispatch is not on the hot path. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="112" column="18" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="112" bodyend="116"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="164" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="115" bodyend="116"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDResultHandlerToFloat_1a23a416943defceea8d0cd7811a61fa60" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -645,7 +655,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="155" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="155" bodyend="157"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="131" column="12" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="131" bodyend="133"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDResultHandlerToFloat_1a7242b05f6297ae26519d5a90e07403a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>size_t</type>
@@ -661,7 +671,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="161" column="20" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="161" bodyend="163"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="137" column="20" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="137" bodyend="139"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDResultHandlerToFloat_1acf5c696ddb1a7c507fa0de0cff998b1c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -702,16 +712,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="174" column="18" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="174" bodyend="179"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="150" column="18" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="150" bodyend="152"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af2d4039487ec998a115cc3457440af42" prot="public" static="yes" constexpr="yes" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1ae7a493ebdd78f2889531670ed630a4f1" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr SIMDLevel</type>
-        <definition>constexpr SIMDLevel faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;::SL256</definition>
+        <definition>constexpr SIMDLevel faiss::SIMDResultHandler&lt; SL &gt;::SL256</definition>
         <argsstring></argsstring>
         <name>SL256</name>
-        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::SL256</qualifiedname>
+        <qualifiedname>faiss::SIMDResultHandler::SL256</qualifiedname>
         <initializer>= <ref refid="structfaiss_1_1simd256__level__selector" kindref="compound">simd256_level_selector</ref>&lt;SL&gt;::value</initializer>
         <briefdescription>
         </briefdescription>
@@ -719,7 +729,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="267" column="32" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="267" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="166" column="32" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="166" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -728,15 +738,15 @@
 <para>Result handler for range search. The difficulty is that the range distances have to be scaled using the scaler. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="4">
-        <label>faiss::SIMDResultHandler</label>
-        <link refid="structfaiss_1_1SIMDResultHandler"/>
-      </node>
       <node id="3">
-        <label>faiss::SIMDResultHandlerToFloat</label>
-        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
+        <label>faiss::SIMDResultHandler&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::SIMDResultHandlerToFloat</label>
+        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
       </node>
       <node id="5">
         <label>faiss::simd_result_handlers::PartialRangeHandler&lt; C, with_id_map, SL &gt;</label>
@@ -766,15 +776,15 @@
         <label>faiss::RangeSearchResult</label>
         <link refid="structfaiss_1_1RangeSearchResult"/>
       </node>
-      <node id="4">
-        <label>faiss::SIMDResultHandler</label>
-        <link refid="structfaiss_1_1SIMDResultHandler"/>
-      </node>
       <node id="3">
-        <label>faiss::SIMDResultHandlerToFloat</label>
-        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
+        <label>faiss::SIMDResultHandler&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::SIMDResultHandlerToFloat</label>
+        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
       </node>
       <node id="1">
         <label>faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map, SL &gt;</label>
@@ -795,22 +805,21 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="722" column="1" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="722" bodyend="828"/>
+    <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="712" column="1" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="712" bodyend="817"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a907dc5c1142d316c35c2856251143fc7" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>adjust_id</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1accca23229dd97c08791abb1d530e3155" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>adjust_with_origin</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a875f0f99bbb133ebe061be563b12158c" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>begin</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a23a416943defceea8d0cd7811a61fa60" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>count_scanned_rows</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>dbias</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1add21d14cc5acbea717996ff6da3208f6" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>disable</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1aaf38c9ba5d73429457a93eb7e3cee707" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>end</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ad15f3bb2ca56b7f1a5baed8a743079ea" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>get_lt_mask</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1ab8b232487a65c32e664aa03a16bdfa02" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>handle</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandler_1a9ecc0bbf1d02cc889cf3b3edf890f5d1" prot="public" virt="virtual" ambiguityscope="faiss::SIMDResultHandlerToFloat::"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a0bcebe5a42eb6a447983c56da25ddcf7" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>handle</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a3667a6f5b1fb6a0095327cca3a92af2a" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>i0</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1aa0cd900277b35f820861167b221f3b07" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>id_map</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandler_1ae405f42d913652fffede258a52b72ec5" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>in_range_num</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>is_CMax</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a722f2bb64370b1891808d328f2094cf8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>in_range_num</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a49f49013e5e6d40ed8643798d957ef83" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>is_CMax</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a8c361bd2336aeca923531567a1809598" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>j0</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a40766ad7b1c6b0b248d8a4bdab29fbba" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>list_codes_ptr</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a0f92dc33d7c0ac5c4066c98b2313f933" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>n_per_query</name></member>
@@ -829,16 +838,17 @@
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a4f7532da541a3c3a5f0003a2ef1c5b84" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>sel</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>set_block_origin</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1acf5c696ddb1a7c507fa0de0cff998b1c" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>set_list_context</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a132c15fa0532ca8b32fbb5f000e0f174" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>simd16uint16</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1ae11e305aeb4d8845fe9efe6a7a833ae8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>SIMDResultHandlerToFloat</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>sizeof_ids</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af2d4039487ec998a115cc3457440af42" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>SL256</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1a2b2ed4eb9b4e3b05e03c7085c6092240" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>simd16uint16</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1ac8d227a65f209475e668b2ef625b2d09" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>SIMDResultHandlerToFloat</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1ae11e305aeb4d8845fe9efe6a7a833ae8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>SIMDResultHandlerToFloat</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a2888bde7a0907e7f1f3f1acb2ec96336" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>sizeof_ids</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1ae7a493ebdd78f2889531670ed630a4f1" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>SL256</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1ad2a47b353beb2e66611e3f2792cedbf3" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>T</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a4b9e3166c1fdc33b2a46aa917a8aaccd" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>thresholds</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a501fd3cb8ef8d64c9bcebcbf3c2353bc" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>TI</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a196ebfe3fe501aff24adc301c04571d5" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>triplets</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>with_fields</name></member>
-      <member refid="structfaiss_1_1SIMDResultHandler_1ad4a58b63990a088da138ee73e76c86f4" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>~SIMDResultHandler</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a7a72f56901a69265da592167b484c00c" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>with_fields</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a06d023979100286e8353342e400cfc89" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::RangeHandler</scope><name>~SIMDResultHandlerToFloat</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
