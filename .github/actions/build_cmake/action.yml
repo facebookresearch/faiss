@@ -249,15 +249,6 @@ runs:
           ROCM_LIBS="${ROCM_LIBS}:/opt/rocm/lib64"
         fi
         export LD_LIBRARY_PATH="${ROCM_LIBS}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
-        ROCM_HOME="$(readlink -f /opt/rocm)"
-        for libdir in "${ROCM_HOME}/lib" "${ROCM_HOME}/lib64"; do
-          for lib in libhsa-runtime64.so.1 libhsa-runtime64.so; do
-            if [ -f "${libdir}/${lib}" ]; then
-              export LD_PRELOAD="${libdir}/${lib}${LD_PRELOAD:+:${LD_PRELOAD}}"
-              break 2
-            fi
-          done
-        done
         pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.2
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
@@ -289,6 +280,11 @@ runs:
         fi
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+        # LD_PRELOAD fixes torch-before-faiss import; it segfaults when FAISS and
+        # PyTorch both use the GPU, so drop it before faiss/gpu torch tests.
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          unset LD_PRELOAD
+        fi
         cp tests/common_faiss_tests.py faiss/gpu/test
         pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
