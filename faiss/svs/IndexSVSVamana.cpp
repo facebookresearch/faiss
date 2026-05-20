@@ -158,6 +158,7 @@ void IndexSVSVamana::add(idx_t n, const float* x) {
         std::memcpy(stored_vectors.data() + prev, x, sizeof(float) * n * d);
     }
     ntotal += n;
+    is_trained = true;
 }
 
 void IndexSVSVamana::reconstruct(idx_t key, float* recons) const {
