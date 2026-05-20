@@ -71,6 +71,7 @@ IndexSVSVamana::IndexSVSVamana(
           graph_max_degree{degree},
           is_static{is_static},
           storage_kind{storage} {
+    is_trained = false;
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 
