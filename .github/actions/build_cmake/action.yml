@@ -73,10 +73,10 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-libraries-dev=12.6 cuda-nvcc=12.6 cuda-nvtx=12.6 cuda-cupti=12.6 cuda-cudart-dev=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
+          conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=12.9' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=26.02 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
           # Clean index cache to prevent sqlite3 "database is locked" errors
           # from conda-libmamba-solver's shards cache between consecutive installs.
           # See: https://github.com/conda/conda-libmamba-solver/issues/667
@@ -93,7 +93,10 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.9"
+          # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
+          # so we install via pip for CUDA builds. --break-system-packages is needed
+          # because the CI runner's Python is PEP 668 externally-managed.
+          pip install "torch>=2.7" --break-system-packages --index-url https://download.pytorch.org/whl/cu132
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
