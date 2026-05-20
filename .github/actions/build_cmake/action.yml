@@ -118,7 +118,7 @@ runs:
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="7.1"
+        ROCM_VERSION="7.2"
 
         sudo mkdir -p /etc/apt/keyrings
         wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
@@ -244,7 +244,21 @@ runs:
       run: |
         conda list --show-channel-urls
         conda install -y -q "pip<26"
-        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.1
+        ROCM_LIBS="/opt/rocm/lib"
+        if [ -d /opt/rocm/lib64 ]; then
+          ROCM_LIBS="${ROCM_LIBS}:/opt/rocm/lib64"
+        fi
+        export LD_LIBRARY_PATH="${ROCM_LIBS}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+        ROCM_HOME="$(readlink -f /opt/rocm)"
+        for libdir in "${ROCM_HOME}/lib" "${ROCM_HOME}/lib64"; do
+          for lib in libhsa-runtime64.so.1 libhsa-runtime64.so; do
+            if [ -f "${libdir}/${lib}" ]; then
+              export LD_PRELOAD="${libdir}/${lib}${LD_PRELOAD:+:${LD_PRELOAD}}"
+              break 2
+            fi
+          done
+        done
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.2
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
@@ -257,6 +271,22 @@ runs:
       shell: bash
       run: |
         conda list --show-channel-urls
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          ROCM_LIBS="/opt/rocm/lib"
+          if [ -d /opt/rocm/lib64 ]; then
+            ROCM_LIBS="${ROCM_LIBS}:/opt/rocm/lib64"
+          fi
+          export LD_LIBRARY_PATH="${ROCM_LIBS}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+          ROCM_HOME="$(readlink -f /opt/rocm)"
+          for libdir in "${ROCM_HOME}/lib" "${ROCM_HOME}/lib64"; do
+            for lib in libhsa-runtime64.so.1 libhsa-runtime64.so; do
+              if [ -f "${libdir}/${lib}" ]; then
+                export LD_PRELOAD="${libdir}/${lib}${LD_PRELOAD:+:${LD_PRELOAD}}"
+                break 2
+              fi
+            done
+          done
+        fi
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test

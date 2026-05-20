@@ -3,15 +3,14 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import torch
+import unittest
+import numpy as np
 import faiss
 import faiss.contrib.torch_utils
 
 from faiss.contrib import datasets
 from faiss.contrib.torch import clustering
-
-import torch
-import unittest
-import numpy as np
 
 
 def to_column_major_torch(x):
