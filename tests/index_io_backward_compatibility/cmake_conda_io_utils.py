@@ -46,6 +46,13 @@ INDEX_TYPES = [
     "RaBitQfs4_64",  # multibit FS, batch size 64
     "IVF256,RaBitQfs3",  # IVF FS multibit
     "IVF256,RaBitQfs7_64",  # IVF FS multibit, batch size 64
+    # EDEN indexes
+    "EDEN",  # Lloyd-Max quantizer, original unbiased scale
+    "EDEN4",  # multibit
+    "EDEN4BIASED",  # multibit with MSE-minimizing scale
+    "IVF256,EDEN",  # IVF
+    "IVF256,EDEN4",  # IVF multibit
+    "IVF256,EDEN4BIASED",  # IVF multibit with MSE-minimizing scale
     # HNSW indexes
     "HNSW32",
     "HNSW32_SQ8",

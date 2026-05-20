@@ -14,6 +14,7 @@
  */
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <vector>
 
 namespace faiss {
 
@@ -48,6 +49,20 @@ void train_NonUniform(
  *                   where k = 2^nbits
  */
 void train_TurboQuantMSE(size_t d, size_t nbits, std::vector<float>& trained);
+
+/** Lloyd-Max codebook for a standard normal source.
+ *
+ *  @param nbits    bits per component (1-8)
+ *  @return         sorted centroids, size 2^nbits
+ */
+const std::vector<float>& lloyd_max_normal_centroids(size_t nbits);
+
+/** Boundaries for the positive half of the standard-normal Lloyd-Max codebook.
+ *
+ *  @param nbits    bits per component (1-8)
+ *  @return         positive half boundaries, size 2^(nbits - 1) - 1
+ */
+const std::vector<float>& lloyd_max_normal_half_boundaries(size_t nbits);
 
 } // namespace scalar_quantizer
 

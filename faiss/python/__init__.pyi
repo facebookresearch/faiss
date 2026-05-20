@@ -21,6 +21,7 @@ except ImportError:
 
 idx_t = int
 MetricType = int
+EDENScaleType = int
 METRIC_INNER_PRODUCT: int
 METRIC_L2: int
 METRIC_L1: int
@@ -42,6 +43,10 @@ IO_FLAG_SKIP_PRECOMPUTE_TABLE: int  # don't initialize precomputed table after l
 IO_FLAG_PQ_SKIP_SDC_TABLE: int  # don't compute the sdc table for PQ-based indices
 IO_FLAG_MMAP: int  # try to memmap data (useful to load as OnDiskInvertedLists)
 IO_FLAG_MMAP_IFC: int  # mmap for IndexFlatCodes-derived indices and HNSW
+
+# EDEN scale type enum
+EDENScaleType_UNBIASED: int
+EDENScaleType_BIASED: int
 
 # Numeric type enum
 Float32: int
@@ -1253,6 +1258,55 @@ class RaBitQuantizer(Quantizer):
         qb: int,
         centroid_in: npt.NDArray[np.float32] | None = None,
     ) -> Any: ...  # FlatCodesDistanceComputer*
+
+class EDENQuantizer(Quantizer):
+    centroid: Any
+    metric_type: MetricType
+    scale_type: EDENScaleType
+    nb_bits: int
+
+    def __init__(
+        self,
+        d: int = 0,
+        metric: MetricType = METRIC_L2,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
+    ) -> None: ...
+    @overload
+    def compute_codes_core(
+        self,
+        x: torch.Tensor,
+        codes: torch.Tensor,
+        n: int,
+        centroid_in: torch.Tensor,
+    ) -> None: ...
+    @overload
+    def compute_codes_core(
+        self,
+        x: npt.NDArray[np.float32],
+        codes: npt.NDArray[np.uint8],
+        n: int,
+        centroid_in: npt.NDArray[np.float32],
+    ) -> None: ...
+    @overload
+    def decode_core(
+        self,
+        codes: torch.Tensor,
+        x: torch.Tensor,
+        n: int,
+        centroid_in: torch.Tensor,
+    ) -> None: ...
+    @overload
+    def decode_core(
+        self,
+        codes: npt.NDArray[np.uint8],
+        x: npt.NDArray[np.float32],
+        n: int,
+        centroid_in: npt.NDArray[np.float32],
+    ) -> None: ...
+    def get_distance_computer(
+        self, centroid_in: npt.NDArray[np.float32] | None = None
+    ) -> Any: ...
 
 class ProductAdditiveQuantizer(AdditiveQuantizer):
     nsplits: int  # number of sub-vectors we split a vector into
@@ -3543,6 +3597,33 @@ class IndexIVFRaBitQ(IndexIVF):
         metric: MetricType = METRIC_L2,
         own_invlists: bool = True,
         nb_bits: int = 1,
+    ) -> None: ...
+
+# EDEN indices
+class IndexEDEN(Index):
+    eden: EDENQuantizer
+    center: Float32Vector
+
+    def __init__(
+        self,
+        d: int,
+        metric: MetricType = METRIC_L2,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
+    ) -> None: ...
+
+class IndexIVFEDEN(IndexIVF):
+    eden: EDENQuantizer
+
+    def __init__(
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        own_invlists: bool = True,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
     ) -> None: ...
 
 class IndexRaBitQFastScan(IndexFastScan):

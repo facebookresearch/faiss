@@ -30,11 +30,13 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
@@ -68,6 +70,7 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
+#include <faiss/impl/EDENQuantizer.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -1378,6 +1381,45 @@ static void read_RaBitQuantizer(
             expected_d);
 }
 
+static void read_EDENQuantizer(
+        EDENQuantizer& eden,
+        IOReader* f,
+        int expected_d,
+        bool read_scale_type) {
+    READ1(eden.d);
+    READ1(eden.code_size);
+    int metric_type_int;
+    READ1(metric_type_int);
+    eden.metric_type = metric_type_from_int(metric_type_int);
+    READ1(eden.nb_bits);
+    if (read_scale_type) {
+        int scale_type_int;
+        READ1(scale_type_int);
+        if (scale_type_int == 0) {
+            eden.scale_type = EDENScaleType_UNBIASED;
+        } else {
+            eden.scale_type = static_cast<EDENScaleType>(scale_type_int);
+        }
+    } else {
+        eden.scale_type = EDENScaleType_UNBIASED;
+    }
+
+    FAISS_THROW_IF_NOT_FMT(
+            eden.d == static_cast<size_t>(expected_d),
+            "EDENQuantizer dimension mismatch: eden.d=%zu vs index d=%d",
+            eden.d,
+            expected_d);
+    FAISS_THROW_IF_NOT_FMT(
+            eden.nb_bits >= 1 && eden.nb_bits <= 8,
+            "invalid EDEN nb_bits=%zu (must be in [1, 8])",
+            eden.nb_bits);
+    FAISS_THROW_IF_NOT_FMT(
+            eden.scale_type == EDENScaleType_UNBIASED ||
+                    eden.scale_type == EDENScaleType_BIASED,
+            "invalid EDEN scale_type=%d",
+            static_cast<int>(eden.scale_type));
+}
+
 void read_direct_map(DirectMap* dm, IOReader* f) {
     char maintain_direct_map;
     READ1(maintain_direct_map);
@@ -2443,6 +2485,29 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = std::move(imm);
+    } else if (h == fourcc("IxEd") || h == fourcc("IxEe")) {
+        auto idxe = std::make_unique<IndexEDEN>();
+        read_index_header(*idxe, f);
+        read_EDENQuantizer(idxe->eden, f, idxe->d, h == fourcc("IxEe"));
+        READVECTOR(idxe->codes);
+        READVECTOR(idxe->center);
+
+        idxe->code_size = idxe->eden.code_size;
+        FAISS_THROW_IF_NOT(
+                idxe->codes.size() == idxe->ntotal * idxe->code_size);
+        idx = std::move(idxe);
+    } else if (h == fourcc("IwEd") || h == fourcc("IwEe")) {
+        auto iveden = std::make_unique<IndexIVFEDEN>();
+        read_ivf_header(iveden.get(), f);
+        read_EDENQuantizer(iveden->eden, f, iveden->d, h == fourcc("IwEe"));
+        READ1(iveden->code_size);
+        READ1(iveden->by_residual);
+
+        iveden->eden.code_size =
+                iveden->eden.compute_code_size(iveden->d, iveden->eden.nb_bits);
+        iveden->code_size = iveden->eden.code_size;
+        read_InvertedLists(*iveden, f, io_flags);
+        idx = std::move(iveden);
     } else if (h == fourcc("Irfn") || h == fourcc("Irfs")) {
         // Irfn = new format (aux data embedded in SIMD blocks)
         // Irfs = legacy format (flat_storage separate, needs migration)

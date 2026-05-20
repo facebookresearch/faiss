@@ -14,8 +14,10 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIDMap.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -59,6 +61,17 @@ int get_hnsw_M(const faiss::IndexBinaryHNSW* index) {
     }
     // Avoid runtime error, just return 0.
     return 0;
+}
+
+std::string eden_factory_string(const faiss::EDENQuantizer& eden) {
+    std::string result = "EDEN";
+    if (eden.nb_bits != 1) {
+        result += std::to_string(eden.nb_bits);
+    }
+    if (eden.scale_type == faiss::EDENScaleType_BIASED) {
+        result += "BIASED";
+    }
+    return result;
 }
 
 } // namespace
@@ -112,6 +125,10 @@ std::string reverse_index_factory(const faiss::Index* index) {
                     std::to_string(ivfpqfs_index->pq.nbits) + "fs";
         } else if (dynamic_cast<const faiss::IndexIVFRaBitQ*>(ivf_index)) {
             return prefix + ",RaBitQ";
+        } else if (
+                const faiss::IndexIVFEDEN* ivf_eden =
+                        dynamic_cast<const faiss::IndexIVFEDEN*>(ivf_index)) {
+            return prefix + "," + eden_factory_string(ivf_eden->eden);
         }
     } else if (
             const faiss::IndexPreTransform* pretransform_index =
@@ -186,6 +203,10 @@ std::string reverse_index_factory(const faiss::Index* index) {
         return std::string("IDMap,") + reverse_index_factory(idmap->index);
     } else if (dynamic_cast<const faiss::IndexRaBitQ*>(index)) {
         return "RaBitQ";
+    } else if (
+            const faiss::IndexEDEN* eden =
+                    dynamic_cast<const faiss::IndexEDEN*>(index)) {
+        return eden_factory_string(eden->eden);
     }
     // Avoid runtime error, just return empty string for logging.
     return "";
