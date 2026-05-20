@@ -3,6 +3,24 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
+
+# ROCm CI: load system ROCR before PyTorch/FAISS (see FAISS_ROCM_PRELOAD_LIBHSA).
+# Do not use process-wide LD_PRELOAD for these tests; it segfaults when both
+# frameworks use the GPU.
+_rocr_lib = os.environ.get("FAISS_ROCM_PRELOAD_LIBHSA")
+if _rocr_lib:
+    import ctypes
+    ctypes.CDLL(_rocr_lib, mode=ctypes.RTLD_GLOBAL)
+
+import torch  # usort: skip
+import unittest  # usort: skip
+import numpy as np  # usort: skip
+
+# PyTorch must open the HIP device before FAISS GPU indices initialize.
+if torch.cuda.is_available():
+    torch.cuda.set_device(0)
+
 import faiss  # usort: skip
 import faiss.contrib.torch_utils  # usort: skip
 

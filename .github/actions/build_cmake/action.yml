@@ -269,19 +269,25 @@ runs:
           fi
           export LD_LIBRARY_PATH="${ROCM_LIBS}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
           ROCM_HOME="$(readlink -f /opt/rocm)"
+          FAISS_ROCR_LIB=""
           for libdir in "${ROCM_HOME}/lib" "${ROCM_HOME}/lib64"; do
             for lib in libhsa-runtime64.so.1 libhsa-runtime64.so; do
               if [ -f "${libdir}/${lib}" ]; then
-                export LD_PRELOAD="${libdir}/${lib}${LD_PRELOAD:+:${LD_PRELOAD}}"
+                FAISS_ROCR_LIB="${libdir}/${lib}"
                 break 2
               fi
             done
           done
+          if [ -n "${FAISS_ROCR_LIB}" ]; then
+            export FAISS_ROCM_PRELOAD_LIBHSA="${FAISS_ROCR_LIB}"
+            export LD_PRELOAD="${FAISS_ROCR_LIB}${LD_PRELOAD:+:${LD_PRELOAD}}"
+          fi
         fi
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
-        # LD_PRELOAD fixes torch-before-faiss import; it segfaults when FAISS and
-        # PyTorch both use the GPU, so drop it before faiss/gpu torch tests.
+        # LD_PRELOAD fixes torch-before-faiss import in tests/; it segfaults when
+        # FAISS and PyTorch both use the GPU. GPU torch tests use
+        # FAISS_ROCM_PRELOAD_LIBHSA + module preload instead.
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           unset LD_PRELOAD
         fi
