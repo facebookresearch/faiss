@@ -71,7 +71,6 @@ IndexSVSVamana::IndexSVSVamana(
           graph_max_degree{degree},
           is_static{is_static},
           storage_kind{storage} {
-    is_trained = false;
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 
@@ -158,7 +157,6 @@ void IndexSVSVamana::add(idx_t n, const float* x) {
         std::memcpy(stored_vectors.data() + prev, x, sizeof(float) * n * d);
     }
     ntotal += n;
-    is_trained = true;
 }
 
 void IndexSVSVamana::reconstruct(idx_t key, float* recons) const {

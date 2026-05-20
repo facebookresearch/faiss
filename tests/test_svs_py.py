@@ -1346,7 +1346,6 @@ class TestSVSStaticVamana(unittest.TestCase):
         """is_static is set on the constructed index"""
         index = self._create_static()
         self.assertTrue(index.is_static)
-        self.assertFalse(index.is_trained)
 
     def test_static_add_and_search(self):
         """add() builds the static index and search returns shaped output"""
