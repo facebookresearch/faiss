@@ -287,10 +287,10 @@ jobs:
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
   linux-x86_64-GPU-conda:
-    name: Linux x86_64 GPU (conda, CUDA 12.6)
+    name: Linux x86_64 GPU (conda, CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
-      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+      CUDA_ARCHS: "75-real;80;86-real;90;100;120"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -300,7 +300,7 @@ jobs:
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
         with:
-          cuda: "12.6"
+          cuda: "13.2"
   linux-x86_64-svs:
     name: Linux x86_64 w/ SVS (cmake)
     needs: linux-x86_64-cmake

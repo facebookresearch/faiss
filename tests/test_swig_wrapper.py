@@ -241,6 +241,43 @@ class TestAddSACodes(unittest.TestCase):
         self.assertIs(codes_pre, buf)
 
 
+class TestSearchPreassignedDqNone(unittest.TestCase):
+    """Dq=None must behave like Dq=zeros for search_preassigned and
+    range_search_preassigned (regression: swig_ptr(None) raised ValueError)."""
+
+    def _check(self, index, xq, Iq, k, thresh, zero_dtype):
+        Dq_zero = np.zeros(Iq.shape, dtype=zero_dtype)
+        _, I_zero = index.search_preassigned(xq, k, Iq, Dq_zero)
+        _, I_none = index.search_preassigned(xq, k, Iq, None)
+        np.testing.assert_array_equal(I_zero, I_none)
+        lz, _, Iz = index.range_search_preassigned(xq, thresh, Iq, Dq_zero)
+        ln, _, In = index.range_search_preassigned(xq, thresh, Iq, None)
+        np.testing.assert_array_equal(lz, ln)
+        np.testing.assert_array_equal(Iz, In)
+
+    def test_float_ivf(self):
+        rng = np.random.default_rng(42)
+        xb = rng.random((200, 16), dtype=np.float32)
+        xq = rng.random((10, 16), dtype=np.float32)
+        index = faiss.index_factory(16, "IVF4,Flat")
+        index.train(xb)
+        index.add(xb)
+        index.nprobe = 2
+        _, Iq = index.quantizer.search(xq, 2)
+        self._check(index, xq, Iq, k=5, thresh=2.0, zero_dtype=np.float32)
+
+    def test_binary_ivf(self):
+        rng = np.random.default_rng(42)
+        xb = rng.integers(0, 256, size=(200, 8), dtype=np.uint8)
+        xq = rng.integers(0, 256, size=(10, 8), dtype=np.uint8)
+        index = faiss.IndexBinaryIVF(faiss.IndexBinaryFlat(64), 64, 4)
+        index.train(xb)
+        index.add(xb)
+        index.nprobe = 2
+        _, Iq = index.quantizer.search(xq, 2)
+        self._check(index, xq, Iq, k=5, thresh=20, zero_dtype=np.int32)
+
+
 @unittest.skipIf(faiss.swig_version() < 0x040000, "swig < 4 does not support Doxygen comments")
 class TestDoxygen(unittest.TestCase):
 
