@@ -78,12 +78,12 @@ void run_complex() {
 
     auto or_selector = faiss::IDSelectorOr(&range_selector, &array_selector);
 
-    auto bitmap_faiss_cpu = std::vector<uint8_t>((spec.bitset_len + 8) / 8);
+    auto bitmap_faiss_cpu = std::vector<uint8_t>((spec.bitset_len + 7) / 8);
     for (indexing_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
         bitmap_faiss_cpu[i] = (uint8_t)faiss::gpu::randVal(0, 255);
     }
-    auto bitmap_selector =
-            faiss::IDSelectorBitmap(spec.bitset_len, bitmap_faiss_cpu.data());
+    auto bitmap_selector = faiss::IDSelectorBitmap(
+            bitmap_faiss_cpu.size(), bitmap_faiss_cpu.data());
     auto not_bitmap_selector = faiss::IDSelectorNot(&bitmap_selector);
 
     auto xor_selector =
@@ -163,12 +163,12 @@ void run_bitmap() {
     const raft::device_resources& raft_handle =
             gpuRes->getRaftHandleCurrentDevice();
     // generate random bitmap selector
-    auto bitmap_faiss_cpu = std::vector<uint8_t>((spec.bitset_len + 8) / 8);
+    auto bitmap_faiss_cpu = std::vector<uint8_t>((spec.bitset_len + 7) / 8);
     for (indexing_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
         bitmap_faiss_cpu[i] = (uint8_t)faiss::gpu::randVal(0, 255);
     }
-    auto bitmap_selector =
-            faiss::IDSelectorBitmap(spec.bitset_len, bitmap_faiss_cpu.data());
+    auto bitmap_selector = faiss::IDSelectorBitmap(
+            bitmap_faiss_cpu.size(), bitmap_faiss_cpu.data());
     auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), bitmap_selector, bitset.view());
@@ -230,6 +230,64 @@ void run_array() {
                     << i << " bitset_len: " << spec.bitset_len);
         }
     }
+}
+
+void run_bitmap_byte_convention() {
+    // Explicitly tests that n = byte count works correctly.
+    // This is the convention used by the Python wrapper:
+    //   faiss.IDSelectorBitmap(numpy_uint8_array)
+    //   -> IDSelectorBitmap(len(array), array.data())
+    using bitset_t = uint32_t;
+    using indexing_t = int64_t;
+
+    // Use a bit count that is NOT a multiple of 8 to stress edge cases
+    size_t bit_count = 100003;
+    size_t byte_count = (bit_count + 7) / 8; // 12501
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+    auto gpuRes = res.getResources();
+    const raft::device_resources& raft_handle =
+            gpuRes->getRaftHandleCurrentDevice();
+
+    // Generate random bitmap
+    auto bitmap_faiss_cpu = std::vector<uint8_t>(byte_count);
+    for (size_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
+        bitmap_faiss_cpu[i] = (uint8_t)faiss::gpu::randVal(0, 255);
+    }
+
+    // Construct with n = byte_count (the only valid convention)
+    auto bitmap_selector =
+            faiss::IDSelectorBitmap(byte_count, bitmap_faiss_cpu.data());
+
+    // Create bitset with the actual number of bits
+    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
+            raft_handle, bit_count, false);
+
+    faiss::gpu::convert_to_bitset(gpuRes.get(), bitmap_selector, bitset.view());
+
+    // Verify every bit matches
+    auto bitset_converted_cpu =
+            raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
+    raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
+    raft::resource::sync_stream(raft_handle);
+    auto bitset_converted_cpu_view =
+            cuvs::core::bitset_view<bitset_t, indexing_t>(
+                    bitset_converted_cpu.data_handle(), bit_count);
+    for (indexing_t i = 0; i < static_cast<indexing_t>(bit_count); i++) {
+        if (bitset_converted_cpu_view.test(i) != bitmap_selector.is_member(i)) {
+            ASSERT_TRUE(
+                    testing::AssertionFailure()
+                    << "actual=" << bitset_converted_cpu_view.test(i)
+                    << " != expected=" << bitmap_selector.is_member(i) << " @"
+                    << i << " bit_count: " << bit_count
+                    << " byte_count (n): " << byte_count);
+        }
+    }
+}
+
+TEST(TestGpuFilterConvert, BitmapByteConvention) {
+    run_bitmap_byte_convention();
 }
 
 TEST(TestGpuFilterConvert, Complex) {
