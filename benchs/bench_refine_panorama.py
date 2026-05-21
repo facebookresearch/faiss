@@ -5,46 +5,33 @@
 
 import multiprocessing as mp
 import time
-import math
 
 import faiss
 import matplotlib.pyplot as plt
-import numpy as np
 
 try:
-    from faiss.contrib.datasets_fb import DatasetGIST1M
+    from faiss.contrib.datasets_fb import DatasetGIST1M, DatasetSIFT1M
 except ImportError:
-    from faiss.contrib.datasets import DatasetGIST1M
+    from faiss.contrib.datasets import DatasetGIST1M, DatasetSIFT1M
 
-
-ds = DatasetGIST1M()
-
-nq = 100
-xq = ds.get_queries()[:nq]
-xb = ds.get_database()
-gt = ds.get_groundtruth()[:nq]
-
-xt = ds.get_train()
-
-nb, d = xb.shape
-nt, d = xt.shape
 
 k = 10
-gt = gt[:, :k]
+# Single-threaded so the comparison is apples-to-apples.
+faiss.omp_set_num_threads(1)
 
 
-def eval_once(index, queries, params=None):
+def eval_once(index, queries, gt, params=None):
+    nq = len(queries)
     t0 = time.time()
-    D, I = index.search(queries, k=k, params=params)
+    _, I = index.search(queries, k=k, params=params)
     t = time.time() - t0
-    speed_ms = t * 1000 / nq
-    qps = 1000.0 / speed_ms
+    qps = nq / t
     corrects = (gt == I).sum()
     recall = corrects / (nq * k)
     return recall, qps
 
 
-def build_refine_indexes(factory_string, n_levels):
+def build_refine_indexes(d, xt, xb, factory_string, n_levels):
     base_index = faiss.index_factory(d, factory_string)
     faiss.omp_set_num_threads(mp.cpu_count())
 
@@ -57,73 +44,115 @@ def build_refine_indexes(factory_string, n_levels):
 
     faiss.omp_set_num_threads(1)
 
-    # Refine wrappers
     idx_flat = faiss.IndexRefineFlat(base_index, faiss.swig_ptr(xb))
     idx_pano = faiss.IndexRefinePanorama(base_index, refine_pano)
 
     return base_index, idx_flat, idx_pano
 
 
-factory = "IVF256,PQ60x4fs"
-nlevels = 8
+def benchmark_dataset(
+    name,
+    ds,
+    factory,
+    nlevels,
+    nq=100,
+    nprobe_list=(4, 16, 64, 256),
+    kfactor_list=(1, 8, 64, 256, 1024),
+    fixed_nprobe=16,
+):
+    xq = ds.get_queries()[:nq]
+    xb = ds.get_database()
+    gt = ds.get_groundtruth()[:nq, :k]
+    xt = ds.get_train()
+    nb, d = xb.shape
 
-base_index, idx_flat, idx_pano = build_refine_indexes(factory, nlevels)
+    print(f"\n{'=' * 72}")
+    print(
+        f"Benchmark on {name} (d={d}, nb={nb}, nq={nq}) "
+        f"with base '{factory}', nlevels={nlevels}, k={k}"
+    )
+    print(f"{'=' * 72}")
+    print(
+        f"{'nprobe':>6}  {'k_fac':>7}   "
+        f"{'recall_flat':>11}  {'qps_flat':>9}   "
+        f"{'recall_pano':>11}  {'qps_pano':>9}   "
+        f"{'dims(%)':>8}  speedup"
+    )
 
-# Parameter sweeps
-nprobe_list = [4, 16, 64, 256]
-kfactor_list = [1, 8, 64, 256, 1024]
+    base_index, idx_flat, idx_pano = build_refine_indexes(
+        d, xt, xb, factory, nlevels
+    )
 
-print(f"Benchmark on GIST1M with base '{factory}', k={k}, nq={nq}")
-print("nprobe  k_factor   recall_flat   qps_flat   recall_pano   qps_pano   dims_scanned(%)  speedup(x)")
+    plt.figure(figsize=(8, 5), dpi=300)
+    qps_f_list, qps_p_list = [], []
 
-faiss.omp_set_num_threads(1)
+    for nprobe in nprobe_list:
+        base_index.nprobe = nprobe
+        for kf in kfactor_list:
+            params = faiss.IndexRefineSearchParameters(k_factor=float(kf))
 
-# Visualization at a fixed nprobe
-plt.figure(figsize=(8, 5), dpi=300)
-qps_f_list, qps_p_list = [], []
-fixed_nprobe = 16
+            recall_f, qps_f = eval_once(idx_flat, xq, gt, params=params)
 
-for nprobe in nprobe_list:
-    base_index.nprobe = nprobe
+            faiss.cvar.indexPanorama_stats.reset()
+            recall_p, qps_p = eval_once(idx_pano, xq, gt, params=params)
+            dims_pct = faiss.cvar.indexPanorama_stats.ratio_dims_scanned * 100.0
 
-    for kf in kfactor_list:
-        params = faiss.IndexRefineSearchParameters(k_factor=kf)
+            speedup = qps_p / qps_f
 
-        # Flat refinement
-        recall_f, qps_f = eval_once(idx_flat, xq, params=params)
+            print(
+                f"{nprobe:6d}  {kf:7.1f}   "
+                f"{recall_f:11.6f}  {qps_f:9.2f}   "
+                f"{recall_p:11.6f}  {qps_p:9.2f}   "
+                f"{dims_pct:7.2f}%  {speedup:6.2f}x"
+            )
 
-        # Panorama refinement
-        faiss.cvar.indexPanorama_stats.reset()
-        recall_p, qps_p = eval_once(idx_pano, xq, params=params)
-        dims_pct = faiss.cvar.indexPanorama_stats.ratio_dims_scanned * 100.0
+            if nprobe == fixed_nprobe:
+                qps_f_list.append(qps_f)
+                qps_p_list.append(qps_p)
+                plt.plot([kf, kf], [qps_f, qps_p],
+                         "k--", linewidth=1, alpha=0.7)
+                mid_y = (qps_f * qps_p) ** 0.5
+                plt.text(
+                    kf * 1.05, mid_y,
+                    f"{speedup:.2f}x\nr={recall_p:.2f}",
+                    ha="left", va="center", fontsize=8,
+                )
 
-        speedup = qps_p / qps_f
-
-        print(
-            f"{nprobe:6d}  {kf:7.1f}   "
-            f"{recall_f:11.6f}  {qps_f:9.2f}   "
-            f"{recall_p:11.6f}  {qps_p:9.2f}   "
-            f"{dims_pct:15.2f}  {speedup:9.2f}x"
+    if qps_f_list:
+        plt.plot(kfactor_list, qps_f_list, marker="o", label="RefineFlat")
+        plt.plot(
+            kfactor_list, qps_p_list, marker="o",
+            label=f"RefineFlatPanorama({nlevels})",
         )
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.xlabel("k_factor (k_base = k * k_factor)")
+        plt.ylabel("QPS")
+        plt.title(
+            f"{name}, base={factory}, nprobe={fixed_nprobe}, "
+            f"nlevels={nlevels}, k={k}"
+        )
+        plt.legend()
+        plt.tight_layout()
+        out = f"bench_refine_panorama_{name}.png"
+        plt.savefig(out, bbox_inches="tight")
+        print(f"\nSaved plot to {out}")
+    plt.close()
 
-        if nprobe == fixed_nprobe:
-            qps_f_list.append(qps_f)
-            qps_p_list.append(qps_p)
 
-            # Draw speedup and recall
-            plt.plot([kf, kf], [qps_f, qps_p], 'k--', linewidth=1, alpha=0.7)
-            mid_y = (qps_f * qps_p) ** 0.5
-            plt.text(kf + 10, mid_y, f"{speedup:.2f}x\nr={recall_p:.2f}", 
-            ha="left", va="center", fontsize=8)
+if __name__ == "__main__":
+    # SIFT1M: low-dim (128), use few Panorama levels (level width 64).
+    benchmark_dataset(
+        "SIFT1M",
+        DatasetSIFT1M(),
+        factory="IVF256,PQ32x4fs",
+        nlevels=2,
+    )
 
-plt.plot(kfactor_list, qps_f_list, label="RefineFlat")
-plt.plot(kfactor_list, qps_p_list, label=f"RefineFlatPanorama({nlevels})")
-plt.yscale("log")
-plt.ylim(bottom=100)
-plt.xlim(right=kfactor_list[-1] * 1.075)
-plt.xlabel("k_factor (k_base = k * k_factor)")
-plt.ylabel("QPS")
-plt.title(f"GIST1M, base={factory}, nprobe={fixed_nprobe}, nlevels={nlevels}, k={k}")
-plt.legend()
-plt.tight_layout()
-plt.savefig("bench_refine_panorama.png", bbox_inches="tight")
+    # GIST1M: high-dim (960), use many Panorama levels (level width 120).
+    benchmark_dataset(
+        "GIST1M",
+        DatasetGIST1M(),
+        factory="IVF256,PQ60x4fs",
+        nlevels=8,
+    )

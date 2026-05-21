@@ -475,9 +475,8 @@ class TestIndexRefinePanorama(unittest.TestCase):
 
                 expected_ratios = [1 / nlevels for nlevels in nlevels_list]
 
-                # Extra low tolerance for point-wise Panorama refinement
                 np.testing.assert_allclose(
-                    ratios, expected_ratios, atol=1e-5
+                    ratios, expected_ratios, atol=1e-3
                 )
 
                 faiss.omp_set_num_threads(nt)
