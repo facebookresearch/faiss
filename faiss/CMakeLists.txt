@@ -10,6 +10,7 @@
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
+  impl/panorama_kernels/panorama_kernels-avx2.cpp
   impl/hnsw/avx2.cpp
   impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
@@ -24,6 +25,7 @@ set(FAISS_SIMD_AVX2_SRC
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
+  impl/panorama_kernels/panorama_kernels-avx512.cpp
   impl/hnsw/avx512.cpp
   impl/pq_code_distance/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
@@ -36,6 +38,7 @@ set(FAISS_SIMD_AVX512_SRC
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
+  impl/panorama_kernels/panorama_kernels-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   impl/binary_hamming/neon.cpp
@@ -47,6 +50,7 @@ set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/rabitq_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
+  impl/panorama_kernels/panorama_kernels-sve.cpp
   impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
 )
@@ -94,6 +98,7 @@ set(FAISS_SRC
   IndexIVFFlat.cpp
   IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
+  IndexIVFPQPanorama.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
@@ -140,6 +145,7 @@ set(FAISS_SRC
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
+  impl/panorama_kernels/panorama_kernels-generic.cpp
   impl/pq_code_distance/pq_code_distance-generic.cpp
   impl/pq_code_distance/IVFPQ_QueryTables.cpp
   impl/AdditiveQuantizer.cpp
@@ -162,6 +168,7 @@ set(FAISS_SRC
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
+  impl/PanoramaPQ.cpp
   impl/PanoramaStats.cpp
   impl/PdxLayout.cpp
   invlists/BlockInvertedLists.cpp
@@ -223,6 +230,7 @@ set(FAISS_HEADERS
   IndexIVFFlat.h
   IndexIVFFlatPanorama.h
   IndexIVFPQ.h
+  IndexIVFPQPanorama.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
@@ -279,6 +287,7 @@ set(FAISS_HEADERS
   impl/NNDescent.h
   impl/NSG.h
   impl/Panorama.h
+  impl/PanoramaPQ.h
   impl/PanoramaStats.h
   impl/PdxLayout.h
   impl/PolysemousTraining.h
@@ -321,6 +330,8 @@ set(FAISS_HEADERS
   impl/simd_dispatch.h
   impl/fast_scan/simd_result_handlers.h
   impl/zerocopy_io.h
+  impl/panorama_kernels/panorama_kernels.h
+  impl/panorama_kernels/panorama_kernels-inl.h
   impl/pq_code_distance/pq_code_distance-inl.h
   impl/pq_code_distance/pq_code_distance-avx2.h
   impl/pq_code_distance/pq_code_distance-avx512.h

@@ -186,7 +186,7 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     }
 
     std::vector<float> cum_sums;
-    Panorama pano;
+    PanoramaFlat pano;
     const size_t num_panorama_levels;
 };
 
