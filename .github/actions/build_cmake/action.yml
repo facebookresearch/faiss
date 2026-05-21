@@ -285,14 +285,17 @@ runs:
         fi
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
-        # LD_PRELOAD fixes torch-before-faiss import in tests/; it segfaults when
-        # FAISS and PyTorch both use the GPU. GPU torch tests use
-        # FAISS_ROCM_PRELOAD_LIBHSA + module preload instead.
         if [ "${{ inputs.rocm }}" = "ON" ]; then
+          # LD_PRELOAD for all of tests/ breaks FAISS+PyTorch GPU runtime; drop it
+          # for non-torch GPU tests (faiss-only import order).
           unset LD_PRELOAD
         fi
         cp tests/common_faiss_tests.py faiss/gpu/test
         pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+        if [ "${{ inputs.rocm }}" = "ON" ] && [ -n "${FAISS_ROCM_PRELOAD_LIBHSA:-}" ]; then
+          # torch-before-faiss in torch_test_contrib_gpu.py needs system ROCR at import.
+          export LD_PRELOAD="${FAISS_ROCM_PRELOAD_LIBHSA}${LD_PRELOAD:+:${LD_PRELOAD}}"
+        fi
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
     - name: Test avx2 loading
       if: inputs.opt_level == 'avx2'
