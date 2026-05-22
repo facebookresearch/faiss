@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <limits>
+#include <unordered_map>
 #include <vector>
 
 #include <omp.h>
@@ -61,15 +61,55 @@ idx_t subsample_training_set(
             perm[i] = rng.rand_int64() % nx;
         }
     } else {
-        FAISS_THROW_IF_NOT_FMT(
-                nx <= static_cast<idx_t>(std::numeric_limits<int>::max()),
-                "Dataset too large (%" PRId64
-                ") for standard subsampling; "
-                "set use_faster_subsampling=true",
-                nx);
-        std::vector<int> int_perm(nx);
-        rand_perm(int_perm.data(), nx, actual_seed);
-        perm.assign(int_perm.begin(), int_perm.end());
+        // Partial Fisher-Yates shuffle: uniform without-replacement sampling
+        // in O(target) time and O(target) memory.  The previous implementation
+        // allocated two O(nx)-sized buffers (a 4-byte permutation array and an
+        // 8-byte idx_t copy), causing OOM for large training sets — e.g.
+        // nx=100 M yielded ~1.2 GB of temporaries for a ~2 MB output.
+        // It also capped nx at INT_MAX, forcing users with large datasets onto
+        // the with-replacement faster path.
+        //
+        // This implementation uses an unordered_map as a sparse swap table:
+        // only positions touched by the partial shuffle are stored, bounding
+        // memory at O(target) regardless of nx.  The statistical guarantee is
+        // identical to a full Fisher-Yates: each of the C(nx, target) possible
+        // subsets is equally likely, drawn in uniformly random order.
+        const idx_t target = clus.k * clus.max_points_per_centroid;
+        perm.resize(target);
+
+        // sparse_swap[j] = current logical value at position j.  Positions
+        // absent from the map hold their identity value (position j → value j).
+        std::unordered_map<idx_t, idx_t> sparse_swap;
+        sparse_swap.reserve(static_cast<size_t>(target) * 2);
+
+        SplitMix64RandomGenerator rng(actual_seed);
+
+        for (idx_t i = 0; i < target; i++) {
+            // Pick j uniformly from [i, nx).
+            const idx_t range = nx - i;
+            const idx_t j = i + rng.rand_int64() % range;
+
+            // Retrieve values at positions i and j; default to identity.
+            auto it_j = sparse_swap.find(j);
+            const idx_t val_j = (it_j != sparse_swap.end()) ? it_j->second : j;
+
+            auto it_i = sparse_swap.find(i);
+            const idx_t val_i = (it_i != sparse_swap.end()) ? it_i->second : i;
+
+            // Draw the element at position j.
+            perm[i] = val_j;
+
+            // Move i's value to position j (completing the logical swap).
+            if (val_i == j) {
+                // Identity case — erase rather than storing the no-op j→j.
+                sparse_swap.erase(j);
+            } else {
+                sparse_swap[j] = val_i;
+            }
+
+            // Position i is consumed; remove it to keep the map compact.
+            sparse_swap.erase(i);
+        }
     }
 
     nx = clus.k * clus.max_points_per_centroid;

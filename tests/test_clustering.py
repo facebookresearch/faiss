@@ -219,6 +219,59 @@ class TestCompositeClustering(unittest.TestCase):
 
         self.assertGreater(obj10, obj1)
 
+    def test_subsampling_converges(self):
+        # Verify that standard subsampling (use_faster_subsampling=False)
+        # produces finite centroids when nx > k * max_points_per_centroid.
+        d = 32
+        k = 10
+        rs = np.random.RandomState(7)
+        # 5000 > k * 50 = 500: subsampling fires
+        x = rs.uniform(size=(5000, d)).astype('float32')
+
+        for faster in (False, True):
+            with self.subTest(faster=faster):
+                clus = faiss.Clustering(d, k)
+                clus.max_points_per_centroid = 50
+                clus.niter = 10
+                clus.seed = 42
+                clus.use_faster_subsampling = faster
+                clus.train(x, faiss.IndexFlatL2(d))
+                cents = faiss.vector_to_array(clus.centroids).reshape(k, d)
+                self.assertTrue(
+                    np.all(np.isfinite(cents)),
+                    f'non-finite centroids with use_faster_subsampling={faster}',
+                )
+
+    def test_subsampling_deterministic(self):
+        # Standard subsampling must be deterministic: same seed -> identical
+        # centroids.  Different seeds must give different centroids.
+        d = 32
+        k = 10
+        rs = np.random.RandomState(7)
+        x = rs.uniform(size=(5000, d)).astype('float32')
+
+        def train(seed):
+            clus = faiss.Clustering(d, k)
+            clus.max_points_per_centroid = 50
+            clus.niter = 10
+            clus.seed = seed
+            clus.use_faster_subsampling = False
+            clus.train(x, faiss.IndexFlatL2(d))
+            return faiss.vector_to_array(clus.centroids).reshape(k, d).copy()
+
+        c1 = train(42)
+        c2 = train(42)
+        c3 = train(99)
+
+        self.assertTrue(
+            np.allclose(c1, c2),
+            'standard subsampling: same seed produced different centroids',
+        )
+        self.assertFalse(
+            np.allclose(c1, c3),
+            'standard subsampling: different seeds produced identical centroids',
+        )
+
     def test_progressive_dim(self):
         d = 32
         n = 10000
