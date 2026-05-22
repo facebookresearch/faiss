@@ -627,7 +627,7 @@ inline void flat_pano_search_core(
     {
         SingleResultHandler res(handler);
 
-        std::vector<float> query_cum_norms(index.n_levels + 1);
+        std::vector<float> query_cum_norms(index.pano.n_levels + 1);
         std::vector<uint32_t> active_indices(index.batch_size);
         std::vector<uint8_t> active_byteset(index.batch_size);
         std::vector<float> exact_distances(index.batch_size);
@@ -698,7 +698,7 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     size_t num_batches = (ntotal + batch_size - 1) / batch_size;
 
     codes.resize(num_batches * batch_size * code_size);
-    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+    cum_sums.resize(num_batches * batch_size * (pano.n_levels + 1));
 
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
@@ -771,7 +771,7 @@ size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
         ntotal = j;
         size_t num_batches = (ntotal + batch_size - 1) / batch_size;
         codes.resize(num_batches * batch_size * code_size);
-        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+        cum_sums.resize(num_batches * batch_size * (pano.n_levels + 1));
     }
     return nremove;
 }
@@ -843,7 +843,7 @@ void IndexFlatPanorama::search_subset(
             {
                 SingleResultHandler res(handler);
 
-                std::vector<float> query_cum_norms(n_levels + 1);
+                std::vector<float> query_cum_norms(pano.n_levels + 1);
 
                 // Panorama's optimized point-wise refinement (Algorithm 2):
                 // Batch-wise Panorama, as implemented in Panorama.h, incurs
@@ -881,7 +881,7 @@ void IndexFlatPanorama::search_subset(
                             continue;
                         }
 
-                        size_t cum_sum_offset = (n_levels + 1) * idx;
+                        size_t cum_sum_offset = (pano.n_levels + 1) * idx;
                         float cum_sum = cum_sums[cum_sum_offset];
                         float exact_distance = 0.0f;
                         if constexpr (!is_sim) {
@@ -897,7 +897,7 @@ void IndexFlatPanorama::search_subset(
                         local_stats.total_dims += d;
 
                         bool pruned = false;
-                        for (size_t level = 0; level < n_levels; level++) {
+                        for (size_t level = 0; level < pano.n_levels; level++) {
                             local_stats.total_dims_scanned +=
                                     pano.level_width_floats;
 
