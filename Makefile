@@ -2,7 +2,7 @@
 
 # FAISS GPU Wheel Build Makefile for CUDA 13.2
 
-CUDA_ARCHS ?= 75\;80\;86\;89\;90\;100\;120
+CUDA_ARCHS ?= 75\;80\;86\;89\;90\;120
 CUDA_HOME ?= /usr/local/cuda
 FAISS_BUILD_JOBS ?= $(shell nproc)
 PYTHON ?= python3
@@ -29,7 +29,7 @@ help:
 	@echo "  make test              - Run tests"
 	@echo ""
 	@echo "Environment Variables:"
-	@echo "  CUDA_ARCHS             - GPU architectures (default: 75;80;86;89;90;100;120)"
+	@echo "  CUDA_ARCHS             - GPU architectures (default: 75;80;86;89;90;120)"
 	@echo "  CUDA_HOME              - CUDA installation path"
 	@echo "  FAISS_BUILD_JOBS       - Parallel build jobs"
 	@echo "  PYTHON                 - Python executable"

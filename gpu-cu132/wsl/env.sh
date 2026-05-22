@@ -13,7 +13,7 @@ export MKL_INCLUDE_DIR="$MKL_ROOT/include"
 export MKL_LIB="$MKL_ROOT/lib/libmkl_rt.so"
 
 # Default to all supported CUDA compute capabilities
-export CUDA_ARCHS="${CUDA_ARCHS:-75;80;86;89;90;100;120}"
+export CUDA_ARCHS="${CUDA_ARCHS:-75;80;86;89;90;120}"
 
 # Wheel variant suffix: faiss-{FAISS_VARIANT}.  Pattern: {processor}-{cuda-version}
 # Examples: gpu-cu132  gpu-cu128  gpu  cpu

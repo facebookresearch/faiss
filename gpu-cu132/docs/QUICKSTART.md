@@ -100,7 +100,7 @@ wsl -e bash gpu-cu132/wsl/build.sh
 wsl -e bash -c "CUDA_ARCHS='89' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"   # RTX 4090 (Ada)
 wsl -e bash -c "CUDA_ARCHS='90' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"   # H100 (Hopper)
 wsl -e bash -c "CUDA_ARCHS='86' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"   # RTX 3080 Ti (Ampere)
-wsl -e bash -c "CUDA_ARCHS='90;100;120' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"  # Hopper + Blackwell
+wsl -e bash -c "CUDA_ARCHS='90;120' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"  # Hopper + Blackwell
 
 # Parallel jobs
 wsl -e bash -c "FAISS_BUILD_JOBS=16 bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"
@@ -126,12 +126,12 @@ Set `CUDA_ARCHS` environment variable before building:
 | `86` | sm_86 | RTX 3080 Ti, RTX 3070 (Ampere) |
 | `89` | sm_89 | RTX 4090, RTX 4080 (Ada) |
 | `90` | sm_90 | H100 (Hopper) |
-| `100` | sm_100 | GB10 Grace Blackwell (DGX Spark) |
-| `120` | sm_120 | RTX 5090 (Blackwell) |
+| `120` | sm_120 | GB200, B200, RTX 5090+ (Blackwell) |
+| `121` | sm_121 | GB10 Grace Blackwell — DGX Spark (aarch64 only) |
 
 ```powershell
 # Build for multiple architectures
-wsl -e bash -c "CUDA_ARCHS='75;80;86;89;90;100;120' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"
+wsl -e bash -c "CUDA_ARCHS='75;80;86;89;90;120' bash /mnt/f/GitHub/faiss/gpu-cu132/wsl/build.sh"
 ```
 
 ## 📁 Directory Structure After Build

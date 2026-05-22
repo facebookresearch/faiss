@@ -33,8 +33,8 @@ The wheel includes GPU kernels for all modern NVIDIA architectures supported by 
 | `86` | **sm_86** | Ampere | RTX 3080 Ti, RTX 3070 |
 | `89` | **sm_89** | Ada | RTX 4090, RTX 4080 |
 | `90` | **sm_90** | Hopper | H100, H200 |
-| `100` | **sm_100** | Blackwell | GB10 Grace |
-| `120` | **sm_120** | Blackwell | RTX 5090 |
+| `120` | **sm_120** | Blackwell | GB200, B200, RTX 5090+ |
+| `121` | **sm_121** | Blackwell | GB10 Grace (DGX Spark) |
 
 ### GPU Support by Workload
 
@@ -135,6 +135,14 @@ print(f"Search complete: found {I.shape[0]} results")
 - **Python**: 3.14.3
 - **Architecture**: x86_64 (Linux), ARM64 (macOS)
 
+### DGX Spark Build Artifacts (SM 121, aarch64)
+- **Main library**: `libfaiss-spark-cu132.so` — FAISS GPU + cuVS, SM 121 only
+- **C API**: `libfaiss_c-spark-cu132.so` — C shim over `libfaiss-spark-cu132`
+- **Python wheel**: `faiss-gpu-cu132-spark` — variant name in `setup.py`
+- **cuVS**: `libcuvs-spark.so` — from `zbrad/cuvs`, SM 121 native
+- **Build scripts**: `gpu-cu132/scripts/build_lib_spark.sh`, `build_pkg_spark.sh`, `package_wheel_spark.sh`, `build_wheel_spark.sh`
+- **Stage dir**: `_libfaiss_stage_spark/lib/`
+
 ---
 
 ## Features Validated
@@ -155,7 +163,7 @@ print(f"Search complete: found {I.shape[0]} results")
 - [x] AVX2 SIMD optimization
 - [x] AVX512 SIMD optimization
 - [x] Intel MKL integration
-- [x] CUDA kernel compilation for sm_75-sm_120
+- [x] CUDA kernel compilation for sm_75, sm_80, sm_86, sm_89, sm_90, sm_120, sm_121
 - [x] GPU memory management
 - [x] Asynchronous GPU operations
 

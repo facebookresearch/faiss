@@ -50,7 +50,7 @@ Ensure the following are installed on your system:
 export CUDA_HOME=/usr/local/cuda-13.2  # Adjust if using different path
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
-export CUDA_ARCHS="75;80;86;89;90;100;120"  # Adjust for your GPU architectures
+export CUDA_ARCHS="75;80;86;89;90;120"  # Adjust for your GPU architectures
 ```
 
 ### 1.1 Set Intel MKL Paths (Required)
@@ -86,8 +86,8 @@ Available CUDA architectures (CUDA 13.2 supported):
 - `86`: Ampere (RTX 3080 Ti, RTX 3070)
 - `89`: Ada Lovelace (RTX 4090, RTX 4080)
 - `90`: Hopper (H100)
-- `100`: Blackwell (GB10 Grace Blackwell / DGX Spark)
-- `120`: Blackwell (RTX 5090)
+- `120`: Blackwell (GB200, B200, RTX 5090+)
+- `121`: Blackwell (GB10 Grace Blackwell / DGX Spark, aarch64)
 
 > **Note:** Volta (70) and Turing (75) are **not supported** in CUDA 13.2 — NVIDIA removed
 > offline compilation and library support in CUDA 13.0. For older GPUs, use CUDA 12.x.
@@ -138,10 +138,47 @@ During build, you can customize:
 - **GPU Architectures**: Set `CUDA_ARCHS` environment variable (space/semicolon separated)
   - Examples:
     - `CUDA_ARCHS="120"` - RTX 5090 (Blackwell) only
-    - `CUDA_ARCHS="100"` - DGX Spark GB10 (Blackwell) only
-    - `CUDA_ARCHS="90"` - H100 (Hopper) only  
-    - `CUDA_ARCHS="90;100;120"` - Hopper + Blackwell
-    - `CUDA_ARCHS="75;80;86;89;90;100;120"` - All supported (default)
+    - `CUDA_ARCHS="121-real"` - DGX Spark GB10 (SM 121, aarch64) only — see DGX Spark build below
+    - `CUDA_ARCHS="90"` - H100 (Hopper) only
+    - `CUDA_ARCHS="90;120"` - Hopper + Blackwell
+    - `CUDA_ARCHS="75;80;86;89;90;120"` - All supported (default)
+
+## DGX Spark Build (SM 121, aarch64)
+
+For NVIDIA DGX Spark (GB10 Grace Blackwell Superchip, SM 121, aarch64), use the
+dedicated Spark wheel build script which parallels the standard `build_wheel.sh`:
+
+```bash
+# Full build: C++ libs -> SWIG bindings -> wheel
+bash gpu-cu132/scripts/build_wheel_spark.sh
+
+# Step by step:
+bash gpu-cu132/scripts/build_lib_spark.sh    # libfaiss-spark-cu132.so
+bash gpu-cu132/scripts/build_pkg_spark.sh    # SWIG Python bindings
+bash gpu-cu132/scripts/package_wheel_spark.sh  # faiss-gpu-cu132-spark wheel
+```
+
+Script responsibilities mirror the standard pipeline:
+
+| Spark script | Standard equivalent | Purpose |
+|---|---|---|
+| `build_lib_spark.sh` | `build_lib_cuda132.sh` | C++ library (SM 121, OpenBLAS, libcuvs-spark) |
+| `build_pkg_spark.sh` | `build_pkg_cuda132.sh` | SWIG bindings (generic opt-level, no AVX) |
+| `package_wheel_spark.sh` | `package_wheel.sh` | Wheel packaging + auditwheel repair |
+| `build_wheel_spark.sh` | `build_wheel.sh` | Unified orchestrator |
+
+Outputs:
+
+| Artifact | Location | Description |
+|----------|----------|-------------|
+| `libfaiss-spark-cu132.so` | `_libfaiss_stage_spark/lib/` | Main FAISS GPU library, SM 121 only |
+| `libfaiss_c-spark-cu132.so` | `_libfaiss_stage_spark/lib/` | C API wrapper |
+| `faiss-gpu-cu132-spark` wheel | `build_output_spark/` | Python wheel for DGX Spark |
+| Links to `libcuvs-spark.so` | `zbrad/cuvs` build | SM 121 native cuVS |
+
+The library names are controlled by cmake variables `FAISS_OUTPUT_NAME` and
+`FAISS_C_OUTPUT_NAME` (see `faiss/CMakeLists.txt` and `c_api/CMakeLists.txt`).
+The wheel variant `gpu-cu132-spark` is set via `FAISS_VARIANT` in `setup.py`.
 
 - **Optimization Level**: 
   - `generic`: Baseline optimization

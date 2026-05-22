@@ -50,7 +50,7 @@ Ensure the following are installed on your system:
 export CUDA_HOME=/usr/local/cuda-13.2  # Adjust if using different path
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
-export CUDA_ARCHS="75;80;86;89;90;100;120"  # Adjust for your GPU architectures
+export CUDA_ARCHS="75;80;86;89;90;120"  # Adjust for your GPU architectures
 ```
 
 ### 1.1 Set Intel MKL Paths (Required)
@@ -138,10 +138,10 @@ During build, you can customize:
 - **GPU Architectures**: Set `CUDA_ARCHS` environment variable (space/semicolon separated)
   - Examples:
     - `CUDA_ARCHS="120"` - RTX 5090 (Blackwell) only
-    - `CUDA_ARCHS="100"` - DGX Spark GB10 (Blackwell) only
-    - `CUDA_ARCHS="90"` - H100 (Hopper) only  
-    - `CUDA_ARCHS="90;100;120"` - Hopper + Blackwell
-    - `CUDA_ARCHS="75;80;86;89;90;100;120"` - All supported (default)
+    - `CUDA_ARCHS="121-real"` - DGX Spark GB10 (SM 121, aarch64) only
+    - `CUDA_ARCHS="90"` - H100 (Hopper) only
+    - `CUDA_ARCHS="90;120"` - Hopper + Blackwell
+    - `CUDA_ARCHS="75;80;86;89;90;120"` - All supported (default)
 
 - **Optimization Level**: 
   - `generic`: Baseline optimization

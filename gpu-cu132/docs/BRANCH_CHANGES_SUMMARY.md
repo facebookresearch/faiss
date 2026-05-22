@@ -16,6 +16,12 @@ This summary captures semantic (non-whitespace) branch changes against `upstream
 - `.github/workflows`: release workflow to publish notes on tag push
 - `.vscode`: terminal profile settings for WSL automation
 - `faiss/python/setup.py`: wheel metadata and variant information
+- `faiss/CMakeLists.txt`: added `FAISS_OUTPUT_NAME` and `FAISS_CUVS_SPARK_LIBRARY` cmake options
+- `c_api/CMakeLists.txt`: added `FAISS_C_OUTPUT_NAME` cmake option
+- `gpu-cu132/scripts/build_lib_spark.sh`: DGX Spark C++ lib — SM 121, aarch64, `libcuvs-spark`, produces `libfaiss-spark-cu132.so` / `libfaiss_c-spark-cu132.so`
+- `gpu-cu132/scripts/build_pkg_spark.sh`: DGX Spark SWIG Python bindings
+- `gpu-cu132/scripts/package_wheel_spark.sh`: DGX Spark wheel packaging (`faiss-gpu-cu132-spark`)
+- `gpu-cu132/scripts/build_wheel_spark.sh`: Unified DGX Spark wheel orchestrator
 
 ## Reorganization Performed
 

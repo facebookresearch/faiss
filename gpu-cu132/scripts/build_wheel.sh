@@ -67,7 +67,7 @@ check_prerequisites() {
 show_config() {
     log_info "Build Configuration:"
     echo "  CUDA_HOME: ${CUDA_HOME:-/usr/local/cuda}"
-    echo "  CUDA_ARCHS: ${CUDA_ARCHS:-75;80;86;89;90;100;120}"
+    echo "  CUDA_ARCHS: ${CUDA_ARCHS:-75;80;86;89;90;120}"
     echo "  Python: $(python --version 2>&1 || python3 --version 2>&1)"
     echo "  Build output: $BUILD_OUTPUT_DIR"
 }

@@ -114,10 +114,10 @@ The build system uses a three-stage process:
 
 #### Common Build Commands
 
-**For DGX Spark (GB10 Blackwell):**
+**For DGX Spark (GB10 Blackwell, aarch64):**
 ```bash
-# Build for GB10 Blackwell only (DGX Spark)
-CUDA_ARCHS="100" make build
+# DGX Spark uses a dedicated build pipeline (SM 121, aarch64)
+bash gpu-cu132/scripts/build_wheel_spark.sh
 ```
 
 **For RTX 4090:**
@@ -135,7 +135,7 @@ CUDA_ARCHS="120" make build
 **For Multiple Architectures:**
 ```bash
 # Build for Hopper + Blackwell
-CUDA_ARCHS="90;100;120" make build
+CUDA_ARCHS="90;120" make build
 
 # Build all supported (default)
 make build

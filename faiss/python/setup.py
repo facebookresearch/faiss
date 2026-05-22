@@ -123,20 +123,29 @@ _package_name = f"faiss-{_variant}" if _variant else "faiss"
 
 # Append GPU/arch details when building a GPU variant.
 _cuda_archs = os.environ.get("CUDA_ARCHS", "").strip()
+import re as _re
 if _variant and "gpu" in _variant and _cuda_archs:
-    # Normalise "75;80;86;89;90;100;120" → "sm_75, sm_80, ..."
+    # Normalise "75;80;86;89;90;100;120" or "103-real" → "sm_75, sm_80, ..."
     _arch_list = ", ".join(
-        f"sm_{a.strip()}" for a in _cuda_archs.replace(",", ";").split(";") if a.strip()
+        f"sm_{a.strip().replace('-real', '').replace('-virtual', '')}"
+        for a in _cuda_archs.replace(",", ";").split(";") if a.strip()
     )
     # Extract CUDA version suffix, e.g. "gpu-cu132" → "13.2"
-    import re as _re
     _cu_match = _re.search(r"cu(\d+)", _variant)
     if _cu_match:
         _cu_str = _cu_match.group(1)           # "132"
         _cuda_ver = f"{_cu_str[:-1]}.{_cu_str[-1]}"  # "13.2"
     else:
         _cuda_ver = ""
-    _gpu_details = f"\nThis wheel was built with CUDA {_cuda_ver} and targets: {_arch_list}.\n"
+    # Detect DGX Spark variant
+    if "spark" in _variant:
+        _gpu_details = (
+            f"\nThis wheel targets the NVIDIA DGX Spark (GB10 Grace Blackwell, "
+            f"SM 103, aarch64). Built with CUDA {_cuda_ver}. "
+            f"Requires libcuvs-spark.so from github.com/zbrad/cuvs.\n"
+        )
+    else:
+        _gpu_details = f"\nThis wheel was built with CUDA {_cuda_ver} and targets: {_arch_list}.\n"
 else:
     _gpu_details = ""
 

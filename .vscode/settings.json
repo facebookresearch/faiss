@@ -1,9 +1,0 @@
-{
-  "chat.tools.terminal.autoApprove": {
-    "mkdir": true,
-    "cmake": true,
-    "make": true,
-    "nproc": true,
-    "nvcc": true
-  }
-}

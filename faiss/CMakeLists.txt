@@ -514,6 +514,10 @@ set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve P
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
+if(FAISS_OUTPUT_NAME)
+  set_target_properties(faiss PROPERTIES OUTPUT_NAME "${FAISS_OUTPUT_NAME}")
+endif()
+
 if(WIN32)
   target_compile_definitions(faiss PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx2 PRIVATE FAISS_MAIN_LIB)

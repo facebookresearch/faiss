@@ -77,10 +77,54 @@ to `setup.py` at wheel-build time. The resulting package name is
 | Scenario | `FAISS_VARIANT` | Resulting wheel name | Alignment |
 |----------|-----------------|----------------------|-----------|
 | **This branch** — CUDA 13.2 GPU | `gpu-cu132` | `faiss-gpu-cu132` | Novel; follows torch convention |
+| **DGX Spark** — CUDA 13.2, SM 103, aarch64 | `gpu-cu132-spark` | `faiss-gpu-cu132-spark` | Spark-specific variant |
 | CUDA 12.8 GPU build | `gpu-cu128` | `faiss-gpu-cu128` | Same pattern |
 | Generic GPU (no CUDA-version lock) | `gpu` | `faiss-gpu` | Matches Anaconda + archived PyPI |
 | CPU-only build | `cpu` | `faiss-cpu` | Exact match for active PyPI package |
 | Upstream canonical/untagged | *(unset)* | `faiss` | Plain upstream name |
+
+---
+
+## Library Naming Convention (C++ / Shared Object)
+
+When building the C++ libraries directly (without a Python wheel), the following
+naming scheme is used. The base names follow CMake target names; GPU-specific and
+variant builds append a suffix derived from the same `-{variant}-cu{ver}` pattern
+used for wheels.
+
+### Standard (x86_64) build — `build_lib_cuda132.sh`
+
+| Library | Filename | Notes |
+|---------|----------|-------|
+| Main C++ library | `libfaiss.so` | Default CMake target name |
+| AVX2 variant | `libfaiss_avx2.so` | CPU SIMD opt-level |
+| AVX512 variant | `libfaiss_avx512.so` | CPU SIMD opt-level |
+| C API wrapper | `libfaiss_c.so` | Thin C shim over `libfaiss` |
+| C API AVX2 | `libfaiss_c_avx2.so` | Paired with `libfaiss_avx2` |
+| cuVS companion | `libcuvs.so` | From `rapidsai/cuvs` |
+
+### DGX Spark (aarch64, SM 103) build — `build_lib_spark.sh`
+
+| Library | Filename | Notes |
+|---------|----------|-------|
+| Main C++ library | `libfaiss-spark-cu132.so` | `FAISS_OUTPUT_NAME=faiss-spark-cu132` |
+| C API wrapper | `libfaiss_c-spark-cu132.so` | `FAISS_C_OUTPUT_NAME=faiss_c-spark-cu132` |
+| cuVS companion | `libcuvs-spark.so` | From `zbrad/cuvs`, SM 103 only |
+
+### DGX Spark Python wheel — `build_wheel_spark.sh`
+
+| Artifact | Name | Notes |
+|----------|------|-------|
+| Python wheel | `faiss-gpu-cu132-spark` | `FAISS_VARIANT=gpu-cu132-spark` in `setup.py` |
+| Built by | `build_wheel_spark.sh` | Orchestrates lib → pkg → wheel steps |
+| Stage dir | `_libfaiss_stage_spark/` | Mirrors `_libfaiss_stage/` for x86_64 build |
+
+The `FAISS_OUTPUT_NAME` and `FAISS_C_OUTPUT_NAME` cmake variables are defined in
+`faiss/CMakeLists.txt` and `c_api/CMakeLists.txt` respectively and have no effect
+when left unset (standard build produces `libfaiss.so` / `libfaiss_c.so`).
+
+The cuVS companion library name mirrors the zbrad/cuvs project convention:
+`libcuvs-spark-{version}-cuda{ver}-{arch}-sm{arch}.tar.gz` → `libcuvs-spark.so`.
 
 ---
 
