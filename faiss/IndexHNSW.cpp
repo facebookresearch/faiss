@@ -707,7 +707,10 @@ IndexHNSWFlat::IndexHNSWFlat(int d_in, int M, MetricType metric)
  **************************************************************/
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
-        : IndexHNSWFlat(), cum_sums(), pano(0, 1, 1), num_panorama_levels(0) {}
+        : IndexHNSWFlat(),
+          cum_sums(),
+          pano(sizeof(float), 1, 1),
+          num_panorama_levels(0) {}
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int d_in,
