@@ -12,13 +12,13 @@ To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch -c conda-forge faiss-cpu=1.14.1
+$ conda install -c pytorch -c conda-forge faiss-cpu=1.14.2
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.14.1
+$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.14.2
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.14.1
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.14.2
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,15 +34,15 @@ If you prefer [Pixi](https://pixi.sh/latest/), you can use the same channels and
 ``` shell
 # CPU-only version
 $ pixi init -c pytorch -c conda-forge
-$ pixi add faiss-cpu=1.14.1
+$ pixi add faiss-cpu=1.14.2
 
 # GPU(+CPU) version
 $ pixi init -c pytorch -c nvidia -c conda-forge
-$ pixi add faiss-gpu=1.14.1
+$ pixi add faiss-gpu=1.14.2
 
 # GPU(+CPU) version with NVIDIA cuVS
 $ pixi init -c pytorch -c nvidia -c rapidsai -c conda-forge
-$ pixi add libnvjitlink faiss-gpu-cuvs=1.14.1
+$ pixi add libnvjitlink faiss-gpu-cuvs=1.14.2
 ```
 
 Pixi resolves packages from the listed Conda channels, so the same channel requirements described above still apply.
@@ -54,7 +54,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.1
+$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.2
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 13.2)
 conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=13.2'
