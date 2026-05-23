@@ -30,6 +30,7 @@ set(FAISS_TEST_SRC
   test_fastscan_perf.cpp
   test_pqfs_unaligned.cpp
   test_common_ivf_empty_index.cpp
+  test_ivf_early_termination.cpp
   test_callback.cpp
   test_utils.cpp
   test_hamming.cpp
@@ -43,6 +44,7 @@ set(FAISS_TEST_SRC
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
+  test_super_kmeans_foundations.cpp
 )
 
 # Tests that use POSIX APIs or have platform-specific issues on Windows
@@ -144,7 +146,11 @@ target_link_libraries(faiss_test PRIVATE
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
-if(WIN32)
+if(CMAKE_CROSSCOMPILING)
+  # Skip test discovery when cross-compiling: the binary cannot run on the
+  # host, so gtest_discover_tests() would fail.  The build itself verifies
+  # that the binary compiles and links correctly.
+elseif(WIN32)
   # On Windows, defer test discovery to ctest time (PRE_TEST) instead of
   # build time (POST_BUILD) because faiss.dll is not in PATH during build.
   gtest_discover_tests(faiss_test DISCOVERY_MODE PRE_TEST)

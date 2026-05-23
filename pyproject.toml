@@ -1,0 +1,168 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+[build-system]
+requires = ["scikit-build-core>=0.10", "swig>=4.2,<5", "numpy>=2.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "faiss-cpu"
+dynamic = ["version"]
+description = "A library for efficient similarity search and clustering of dense vectors."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES"]
+requires-python = ">=3.10"
+authors = [
+  {name = "Meta AI Research"},
+]
+keywords = ["search", "nearest-neighbors", "clustering", "vectors", "similarity"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["numpy>=1.25", "packaging"]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/faiss"
+Documentation = "https://github.com/facebookresearch/faiss/wiki"
+Repository = "https://github.com/facebookresearch/faiss"
+Issues = "https://github.com/facebookresearch/faiss/issues"
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+
+# Pull version from CMakeLists.txt's project(VERSION ...) — single source of truth.
+metadata.version.provider = "scikit_build_core.metadata.regex"
+metadata.version.input = "CMakeLists.txt"
+metadata.version.regex = '^\s+VERSION\s+(?P<value>[0-9]+\.[0-9]+\.[0-9]+)'
+
+# Exclude C++ headers, cmake configs, static libs, and binaries from the wheel.
+# Only the Python package (faiss/) and bundled shared libs remain.
+wheel.exclude = ["include/**", "share/**", "lib/**", "lib64/**", "bin/**"]
+
+[tool.scikit-build.cmake.define]
+FAISS_OPT_LEVEL = "dd"
+FAISS_ENABLE_GPU = "OFF"
+FAISS_ENABLE_PYTHON = "ON"
+FAISS_ENABLE_MKL = "OFF"
+FAISS_ENABLE_C_API = "OFF"
+FAISS_ENABLE_EXTRAS = "OFF"
+FAISS_ENABLE_SVS = "OFF"
+FAISS_USE_LTO = "OFF"
+BUILD_TESTING = "OFF"
+BUILD_SHARED_LIBS = "ON"
+
+# Linux: enable LTO and strip dead code and symbols to reduce wheel size.
+[[tool.scikit-build.overrides]]
+if.platform-system = "linux"
+inherit.cmake.define = "append"
+cmake.define.FAISS_USE_LTO = "ON"
+cmake.define.CMAKE_C_FLAGS = "-fdata-sections -ffunction-sections"
+cmake.define.CMAKE_CXX_FLAGS = "-fdata-sections -ffunction-sections"
+cmake.define.CMAKE_SHARED_LINKER_FLAGS = "-Wl,--gc-sections -Wl,--strip-all"
+cmake.define.CMAKE_MODULE_LINKER_FLAGS = "-Wl,--gc-sections -Wl,--strip-all"
+
+# macOS: enable LTO and strip dead code to reduce wheel size.
+[[tool.scikit-build.overrides]]
+if.platform-system = "darwin"
+inherit.cmake.define = "append"
+cmake.define.FAISS_USE_LTO = "ON"
+cmake.define.CMAKE_SHARED_LINKER_FLAGS = "-Wl,-dead_strip"
+cmake.define.CMAKE_MODULE_LINKER_FLAGS = "-Wl,-dead_strip"
+
+# Stable ABI (abi3): one cp310 wheel covers all 3.10+.
+# Excluded: Windows (abi3+SWIG+NumPy broken), free-threaded (no stable ABI).
+[[tool.scikit-build.overrides]]
+if.platform-system = "^(darwin|linux)"
+if.abi-flags = "^$"  # Free-threaded Python does not support stable ABI.
+wheel.py-api = "cp310"
+
+# macOS arm64: AppleClang lacks OpenMP; point CMake at Homebrew's libomp.
+# BLAS uses Apple Accelerate (found automatically).
+[[tool.scikit-build.overrides]]
+if.platform-system = "darwin"
+if.platform-machine = "arm64"
+inherit.cmake.define = "append"
+cmake.define.OpenMP_CXX_FLAGS = "-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+cmake.define.OpenMP_CXX_LIB_NAMES = "omp"
+cmake.define.OpenMP_omp_LIBRARY = "/opt/homebrew/opt/libomp/lib/libomp.dylib"
+
+# macOS Intel: Homebrew installs to /usr/local instead of /opt/homebrew.
+[[tool.scikit-build.overrides]]
+if.platform-system = "darwin"
+if.platform-machine = "x86_64"
+inherit.cmake.define = "append"
+cmake.define.OpenMP_CXX_FLAGS = "-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"
+cmake.define.OpenMP_CXX_LIB_NAMES = "omp"
+cmake.define.OpenMP_omp_LIBRARY = "/usr/local/opt/libomp/lib/libomp.dylib"
+
+# Windows: compile generic (no SIMD), use OpenBLAS.
+[[tool.scikit-build.overrides]]
+if.platform-system = "win32"
+inherit.cmake.define = "append"
+cmake.define.FAISS_OPT_LEVEL = "generic"
+
+[tool.cibuildwheel]
+# Build all Python versions on Windows (no abi3); cp310 only on Linux/macOS (abi3).
+# Skip 32-bit, musl, and free-threaded builds.
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
+skip = "*-win32 *-manylinux_i686 *-musllinux_* cp3*t-*"
+test-requires = ["numpy", "pytest", "scipy"]
+test-command = "python -m pytest {project}/tests/test_wheel_smoke.py -v"
+
+# On Linux and macOS, only build the cp310 abi3 wheel.
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux* *-macosx*"
+build = "cp310-*"
+
+# Run abi3audit on Linux and macOS to guarantee Stable ABI compliance.
+# We use 'append' so that the default auditwheel/delocate commands still run first.
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux* *-macosx*"
+inherit.repair-wheel-command = "append"
+repair-wheel-command = "pipx run abi3audit --strict --report {wheel}"
+
+# Linux: Install OpenBLAS (threaded variant for multi-threaded BLAS).
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux*"
+before-all = "dnf install -y openblas-devel openblas-openmp"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install libomp"
+
+# Deployment target must match brew dylibs' minos for delocate compatibility.
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_arm64"
+environment = {MACOSX_DEPLOYMENT_TARGET = "14.0"}
+
+# macOS Intel: runner uses macOS 15, so brew dylibs have minos 15.0.
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_x86_64"
+environment = {MACOSX_DEPLOYMENT_TARGET = "15.0"}
+
+[tool.cibuildwheel.windows]
+# Install prebuilt OpenBLAS (statically-linked MinGW runtime, no external deps).
+before-all = "powershell -Command \"Invoke-WebRequest -Uri 'https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.30/OpenBLAS-0.3.30-x64.zip' -OutFile openblas.zip; Expand-Archive openblas.zip -DestinationPath C:/openblas -Force\""
+repair-wheel-command = "pip install delvewheel && delvewheel repair -w {dest_dir} {wheel} --add-path C:/openblas/bin --ignore-in-wheel"
+
+[tool.cibuildwheel.windows.environment]
+# BLAS_ROOT tells CMake's FindBLAS (via CMP0074) where to find OpenBLAS.
+# PATH includes the bin/ dir so delvewheel and tests can find libopenblas.dll.
+BLAS_ROOT = "C:/openblas"
+LAPACK_ROOT = "C:/openblas"
+PATH = "C:/openblas/bin;$PATH"

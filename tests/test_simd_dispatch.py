@@ -35,6 +35,8 @@ def get_available_simd_levels():
         # AVX512_SPR is typically not enabled in DD builds
     elif arch in ("aarch64", "arm64"):
         levels.append("ARM_NEON")
+    elif arch in ("riscv64", "riscv"):
+        levels.append("RISCV_RVV")
 
     return levels
 

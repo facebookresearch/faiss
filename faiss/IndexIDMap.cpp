@@ -196,9 +196,10 @@ void IndexIDMapTemplate<IndexT>::search_ex(
     }
     index->search_ex(n, x, numeric_type, k, distances, labels, params);
     idx_t* li = labels;
+    const idx_t id_map_size = static_cast<idx_t>(id_map.size());
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; i++) {
-        li[i] = li[i] < 0 ? li[i] : id_map[li[i]];
+        li[i] = (li[i] < 0 || li[i] >= id_map_size) ? idx_t(-1) : id_map[li[i]];
     }
 }
 
@@ -237,10 +238,12 @@ void IndexIDMapTemplate<IndexT>::range_search(
         index->range_search(n, x, radius, result);
     }
 
+    const idx_t id_map_size = static_cast<idx_t>(id_map.size());
 #pragma omp parallel for
     for (idx_t i = 0; i < static_cast<idx_t>(result->lims[result->nq]); i++) {
-        result->labels[i] = result->labels[i] < 0 ? result->labels[i]
-                                                  : id_map[result->labels[i]];
+        const idx_t label = result->labels[i];
+        result->labels[i] =
+                (label < 0 || label >= id_map_size) ? idx_t(-1) : id_map[label];
     }
 }
 

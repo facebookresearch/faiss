@@ -58,6 +58,9 @@
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
@@ -83,6 +86,24 @@ namespace faiss {
 namespace {
 size_t deserialization_loop_limit_ = 0;
 size_t deserialization_vector_byte_limit_ = uint64_t{1} << 40; // 1 TB
+
+#ifdef FAISS_ENABLE_SVS
+// Read and validate an SVSStorageKind from the stream. Centralizes the
+// [0, SVS_count) range check so every SVS read site rejects out-of-range
+// values uniformly at the deserialization boundary, instead of letting
+// to_svs_storage_kind() surface the failure later from inside an SVS
+// runtime load.
+SVSStorageKind read_svs_storage_kind(IOReader* f) {
+    int sk;
+    READ1(sk);
+    FAISS_THROW_IF_NOT_FMT(
+            sk >= 0 && sk < static_cast<int>(SVS_count),
+            "invalid SVS storage_kind=%d (must be in [0, %d))",
+            sk,
+            static_cast<int>(SVS_count));
+    return static_cast<SVSStorageKind>(sk);
+}
+#endif // FAISS_ENABLE_SVS
 } // namespace
 
 size_t get_deserialization_loop_limit() {
@@ -515,16 +536,19 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 nlist, code_size, n_levels, bs);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Do resize + read in a single pass per list. See the matching
+        // comment in the `ilar` branch below for rationale.
         size_t byte_limit = get_deserialization_vector_byte_limit();
         for (size_t i = 0; i < nlist; i++) {
+            size_t n = sizes[i];
             FAISS_THROW_IF_NOT_FMT(
-                    sizes[i] <= byte_limit / sizeof(idx_t),
+                    n <= byte_limit / sizeof(idx_t),
                     "inverted list %zu ids size %zu exceeds "
                     "deserialization byte limit",
                     i,
-                    sizes[i]);
-            ailp->ids[i].resize(sizes[i]);
-            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
+                    n);
+            ailp->ids[i].resize(n);
+            size_t num_elems = ((n + bs - 1) / bs) * bs;
             size_t codes_bytes = mul_no_overflow(
                     num_elems, code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
@@ -546,9 +570,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     cum_sums_count);
             ailp->cum_sums[i].resize(cum_sums_count);
-        }
-        for (size_t i = 0; i < nlist; i++) {
-            size_t n = sizes[i];
             if (n > 0) {
                 read_vector_with_known_size(
                         ailp->codes[i], f, ailp->codes[i].size());
@@ -624,17 +645,23 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         ails->codes.resize(ails->nlist);
         std::vector<size_t> sizes(ails->nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Resize + read in a single pass per list so that each list's
+        // heap allocation is released by the mmap view-substitution
+        // before the next list is allocated. This bounds peak heap to
+        // one list's worth of memory, which matters for large IVF
+        // indexes (hundreds of GB) under IO_FLAG_MMAP_IFC.
         size_t ilar_byte_limit = get_deserialization_vector_byte_limit();
-        for (size_t i = 0; i < ails->nlist; i++) {
+        for (size_t i = 0; i < sizes.size(); i++) {
+            size_t n = sizes[i];
             FAISS_THROW_IF_NOT_FMT(
-                    sizes[i] <= ilar_byte_limit / sizeof(idx_t),
+                    n <= ilar_byte_limit / sizeof(idx_t),
                     "inverted list %zu ids size %zu exceeds "
                     "deserialization byte limit",
                     i,
-                    sizes[i]);
-            ails->ids[i].resize(sizes[i]);
-            size_t codes_bytes = mul_no_overflow(
-                    sizes[i], ails->code_size, "inverted list codes");
+                    n);
+            ails->ids[i].resize(n);
+            size_t codes_bytes =
+                    mul_no_overflow(n, ails->code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
                     codes_bytes <= ilar_byte_limit,
                     "inverted list %zu codes size %zu exceeds "
@@ -642,9 +669,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     codes_bytes);
             ails->codes[i].resize(codes_bytes);
-        }
-        for (size_t i = 0; i < ails->nlist; i++) {
-            size_t n = ails->ids[i].size();
             if (n > 0) {
                 read_vector_with_known_size(
                         ails->codes[i],
@@ -706,6 +730,13 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
         FAISS_THROW_IF_NOT_MSG(
                 n < get_deserialization_vector_byte_limit() / sizeof(float),
                 "PQ centroids allocation would exceed deserialization byte limit");
+        // Per-subquantizer tables (e.g. IVFPQ residual norms, search-time
+        // distance tables) are sized M * ksub.
+        size_t m_ksub = mul_no_overflow(pq->M, ksub, "PQ M*ksub");
+        FAISS_THROW_IF_NOT_MSG(
+                m_ksub <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "PQ M*ksub allocation would exceed deserialization byte limit");
     }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
@@ -853,6 +884,18 @@ static void validate_aq_dimension_match(
             index_type,
             aq.d,
             idx_d);
+}
+
+static void validate_code_size_match(
+        size_t stored,
+        size_t expected,
+        const char* index_type) {
+    FAISS_THROW_IF_NOT_FMT(
+            stored == expected,
+            "%s code_size mismatch: stored %zd vs derived %zd",
+            index_type,
+            stored,
+            expected);
 }
 
 static void read_ResidualQuantizer(
@@ -1493,6 +1536,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READVECTOR(idxl->thresholds);
         int code_size_i;
         READ1(code_size_i);
+        FAISS_THROW_IF_NOT_FMT(
+                code_size_i >= 0,
+                "IndexLSH invalid code_size %d (must be >= 0)",
+                code_size_i);
         idxl->code_size = code_size_i;
         if (h == fourcc("IxHE")) {
             FAISS_THROW_IF_NOT_FMT(
@@ -1503,6 +1550,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             // leak
             idxl->code_size *= 8;
         }
+        validate_code_size_match(
+                idxl->code_size, (idxl->nbits + 7) / 8, "IndexLSH");
         {
             // Read, dereference, discard.
             auto sub_vt = read_VectorTransform_up(f);
@@ -1550,6 +1599,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxr->rq, idxr->d, "IndexResidualQuantizer");
         READ1(idxr->code_size);
+        validate_code_size_match(
+                idxr->code_size, idxr->rq.code_size, "IndexResidualQuantizer");
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
                 idxr->codes.size() == idxr->ntotal * idxr->code_size);
@@ -1561,6 +1612,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxr->lsq, idxr->d, "IndexLocalSearchQuantizer");
         READ1(idxr->code_size);
+        validate_code_size_match(
+                idxr->code_size,
+                idxr->lsq.code_size,
+                "IndexLocalSearchQuantizer");
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
                 idxr->codes.size() == idxr->ntotal * idxr->code_size);
@@ -1572,6 +1627,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxpr->prq, idxpr->d, "IndexProductResidualQuantizer");
         READ1(idxpr->code_size);
+        validate_code_size_match(
+                idxpr->code_size,
+                idxpr->prq.code_size,
+                "IndexProductResidualQuantizer");
         read_vector(idxpr->codes, f);
         FAISS_THROW_IF_NOT(
                 idxpr->codes.size() == idxpr->ntotal * idxpr->code_size);
@@ -1583,6 +1642,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxpl->plsq, idxpl->d, "IndexProductLocalSearchQuantizer");
         READ1(idxpl->code_size);
+        validate_code_size_match(
+                idxpl->code_size,
+                idxpl->plsq.code_size,
+                "IndexProductLocalSearchQuantizer");
         read_vector(idxpl->codes, f);
         FAISS_THROW_IF_NOT(
                 idxpl->codes.size() == idxpl->ntotal * idxpl->code_size);
@@ -1847,6 +1910,27 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 nsq,
                 dsq);
         auto idxl = std::make_unique<IndexLattice>(d, nsq, scale_nbit, r2);
+        // IndexLattice is a lossy compressor: code_size should be
+        // smaller than the uncompressed vector (d floats). A corrupt
+        // scale_nbit can overflow the total_nbit computation, producing
+        // a code_size that wraps to a huge value.
+        {
+            size_t max_code_size = mul_no_overflow(
+                    static_cast<size_t>(d),
+                    sizeof(float),
+                    "IndexLattice uncompressed vector size");
+            FAISS_THROW_IF_NOT_FMT(
+                    idxl->code_size <= max_code_size,
+                    "IndexLattice code_size %zd exceeds uncompressed "
+                    "vector size %zd (likely corrupt scale_nbit=%d, "
+                    "d=%d, nsq=%d, r2=%d)",
+                    idxl->code_size,
+                    max_code_size,
+                    scale_nbit,
+                    d,
+                    nsq,
+                    r2);
+        }
         read_index_header(*idxl, f);
         READVECTOR(idxl->trained);
         idx = std::move(idxl);
@@ -1856,6 +1940,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ivf_header(ivsc.get(), f, &ids);
         read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
+        validate_code_size_match(
+                ivsc->code_size, ivsc->sq.code_size, "IndexIVFScalarQuantizer");
         ArrayInvertedLists* ail = set_array_invlist(ivsc.get(), ids);
         for (size_t i = 0; i < ivsc->nlist; i++)
             READVECTOR(ail->codes[i]);
@@ -1865,6 +1951,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ivf_header(ivsc.get(), f);
         read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
+        validate_code_size_match(
+                ivsc->code_size, ivsc->sq.code_size, "IndexIVFScalarQuantizer");
         if (h == fourcc("IwSQ")) {
             ivsc->by_residual = true;
         } else {
@@ -1903,6 +1991,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
         validate_aq_dimension_match(
                 *iva->aq, iva->d, "IndexIVFAdditiveQuantizer");
+        validate_code_size_match(
+                iva->code_size,
+                iva->aq->code_size,
+                "IndexIVFAdditiveQuantizer");
         READ1(iva->by_residual);
         READ1(iva->use_precomputed_table);
         read_InvertedLists(*iva, f, io_flags);
@@ -2053,6 +2145,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 ") does not match ntotal (%" PRId64 ")",
                 int64_t(idxmap->id_map.size()),
                 idxmap->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmap->index->ntotal == idxmap->ntotal,
+                "IndexIDMap inner index ntotal (%" PRId64
+                ") does not match IndexIDMap ntotal (%" PRId64 ")",
+                idxmap->index->ntotal,
+                idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexIDMap2*>(idxmap.get())->construct_rev_map();
         }
@@ -2061,12 +2159,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxp = std::make_unique<Index2Layer>();
         read_index_header(*idxp, f);
         idxp->q1.quantizer = read_index(f, io_flags);
+        idxp->q1.own_fields = true;
         READ1(idxp->q1.nlist);
         READ1(idxp->q1.quantizer_trains_alone);
         read_ProductQuantizer(&idxp->pq, f);
         READ1(idxp->code_size_1);
         READ1(idxp->code_size_2);
         READ1(idxp->code_size);
+        validate_code_size_match(
+                idxp->code_size_2,
+                idxp->pq.code_size,
+                "Index2Layer code_size_2");
+        validate_code_size_match(
+                idxp->code_size,
+                idxp->code_size_1 + idxp->code_size_2,
+                "Index2Layer");
         read_vector(idxp->codes, f);
         idx = std::move(idxp);
     } else if (
@@ -2446,13 +2553,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     }
 #ifdef FAISS_ENABLE_SVS
     else if (
-            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
+            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD") ||
+            h == fourcc("ISV2")) {
         std::unique_ptr<IndexSVSVamana> svs;
         if (h == fourcc("ILVQ")) {
             svs = std::make_unique<IndexSVSVamanaLVQ>();
         } else if (h == fourcc("ISVL")) {
             svs = std::make_unique<IndexSVSVamanaLeanVec>();
-        } else if (h == fourcc("ISVD")) {
+        } else if (h == fourcc("ISVD") || h == fourcc("ISV2")) {
             svs = std::make_unique<IndexSVSVamana>();
         }
 
@@ -2466,14 +2574,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
 
-        int sk;
-        READ1(sk);
-        FAISS_THROW_IF_NOT_FMT(
-                sk >= 0 && sk < static_cast<int>(SVS_count),
-                "invalid SVS storage_kind=%d (must be in [0, %d))",
-                sk,
-                static_cast<int>(SVS_count));
-        svs->storage_kind = static_cast<SVSStorageKind>(sk);
+        svs->storage_kind = read_svs_storage_kind(f);
 
         if (h == fourcc("ISVL")) {
             auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
@@ -2504,6 +2605,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 leanvec->deserialize_training_data(is);
             }
         }
+        if (h == fourcc("ISV2")) {
+            READVECTOR(svs->stored_vectors);
+        } else {
+            svs->stored_vectors_valid = false;
+        }
         idx = std::move(svs);
     } else if (h == fourcc("ISVF")) {
         auto svs = std::make_unique<IndexSVSFlat>();
@@ -2518,6 +2624,59 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             svs->deserialize_impl(is);
         }
         idx = std::move(svs);
+    } else if (
+            h == fourcc("ISIQ") || h == fourcc("ISIL") || h == fourcc("ISID")) {
+        std::unique_ptr<IndexSVSIVF> svs_ivf;
+        if (h == fourcc("ISIQ")) {
+            svs_ivf = std::make_unique<IndexSVSIVFLVQ>();
+        } else if (h == fourcc("ISIL")) {
+            svs_ivf = std::make_unique<IndexSVSIVFLeanVec>();
+        } else if (h == fourcc("ISID")) {
+            svs_ivf = std::make_unique<IndexSVSIVF>();
+        }
+
+        read_index_header(*svs_ivf, f);
+        READ1(svs_ivf->num_centroids);
+        READ1(svs_ivf->minibatch_size);
+        READ1(svs_ivf->num_iterations);
+        READ1(svs_ivf->is_hierarchical);
+        READ1(svs_ivf->training_fraction);
+        READ1(svs_ivf->hierarchical_level1_clusters);
+        READ1(svs_ivf->seed);
+        READ1(svs_ivf->n_probes);
+        READ1(svs_ivf->k_reorder);
+        READ1(svs_ivf->num_threads);
+        READ1(svs_ivf->intra_query_threads);
+        svs_ivf->storage_kind = read_svs_storage_kind(f);
+        READ1(svs_ivf->is_static);
+        if (h == fourcc("ISIL")) {
+            auto* leanvec = dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
+            READ1(leanvec->leanvec_d);
+        }
+
+        bool initialized;
+        READ1(initialized);
+        if (initialized) {
+            faiss::svs_io::ReaderStreambuf rbuf(f);
+            std::istream is(&rbuf);
+            svs_ivf->deserialize_impl(is);
+        }
+        if (h == fourcc("ISIL")) {
+            bool trained;
+            READ1(trained);
+            if (trained) {
+                faiss::svs_io::ReaderStreambuf rbuf(f);
+                std::istream is(&rbuf);
+                auto* leanvec =
+                        dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+                FAISS_THROW_IF_NOT_MSG(
+                        leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
+                leanvec->deserialize_training_data(is);
+            }
+        }
+        idx = std::move(svs_ivf);
     }
 #endif // FAISS_ENABLE_SVS
     else if (h == fourcc("Iwrn") || h == fourcc("Iwrf")) {
@@ -2880,7 +3039,18 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmap->index = read_index_binary(f, io_flags);
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
-        FAISS_THROW_IF_NOT(idxmap->id_map.size() == idxmap->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmap->id_map.size() == idxmap->ntotal,
+                "IndexBinaryIDMap id_map size (%" PRId64
+                ") does not match ntotal (%" PRId64 ")",
+                int64_t(idxmap->id_map.size()),
+                idxmap->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmap->index->ntotal == idxmap->ntotal,
+                "IndexBinaryIDMap inner index ntotal (%" PRId64
+                ") does not match IndexBinaryIDMap ntotal (%" PRId64 ")",
+                idxmap->index->ntotal,
+                idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexBinaryIDMap2*>(idxmap.get())->construct_rev_map();
         }

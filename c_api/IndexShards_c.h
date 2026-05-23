@@ -22,7 +22,7 @@ extern "C" {
 FAISS_DECLARE_CLASS_INHERITED(IndexShards, Index)
 FAISS_DECLARE_DESTRUCTOR(IndexShards)
 
-FAISS_DECLARE_GETTER_SETTER(IndexShards, int, own_fields)
+FAISS_DECLARE_GETTER_SETTER(IndexShards, int, own_indices)
 FAISS_DECLARE_GETTER_SETTER(IndexShards, int, successive_ids)
 
 int faiss_IndexShards_new(FaissIndexShards** p_index, idx_t d);

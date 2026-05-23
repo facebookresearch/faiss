@@ -11,28 +11,37 @@
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/hnsw/avx2.cpp
-  impl/pq_code_distance/pq_code_distance-avx2.cpp
+  impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
+  impl/binary_hamming/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/hamming_distance/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
   utils/simd_impl/rabitq_avx2.cpp
+  utils/simd_impl/super_kmeans_kernels_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
-  impl/pq_code_distance/pq_code_distance-avx512.cpp
+  impl/pq_code_distance/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
+  impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
   utils/distances_fused/avx512.cpp
+  utils/hamming_distance/hamming_avx512.cpp
   utils/simd_impl/rabitq_avx512.cpp
+  utils/simd_impl/super_kmeans_kernels_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
+  impl/binary_hamming/neon.cpp
+  impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/hamming_distance/hamming_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
@@ -41,11 +50,22 @@ set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
 )
+set(FAISS_SIMD_RVV_SRC
+  impl/fast_scan/impl-riscv.cpp
+  impl/pq_code_distance/rvv.cpp
+  impl/scalar_quantizer/sq-rvv.cpp
+  impl/binary_hamming/rvv.cpp
+  utils/simd_impl/distances_rvv.cpp
+  utils/hamming_distance/hamming_rvv.cpp
+  utils/simd_impl/rabitq_rvv.cpp
+)
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_RVV_SRC})
 else()
   set(FAISS_SIMD_SRC "")
 endif()
@@ -54,6 +74,7 @@ endif()
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
+  SuperKMeans.cpp
   IVFlib.cpp
   Index.cpp
   Index2Layer.cpp
@@ -104,9 +125,11 @@ set(FAISS_SRC
   VectorTransform.cpp
   clone_index.cpp
   index_factory.cpp
+  impl/AdSampling.cpp
   impl/AuxIndexStructures.cpp
   impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
+  impl/ClusteringHelpers.cpp
   impl/CodePacker.cpp
   impl/CodePackerRaBitQ.cpp
   impl/IDSelector.cpp
@@ -118,6 +141,7 @@ set(FAISS_SRC
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
   impl/pq_code_distance/pq_code_distance-generic.cpp
+  impl/pq_code_distance/IVFPQ_QueryTables.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
   impl/RaBitQuantizerMultiBit.cpp
@@ -139,6 +163,7 @@ set(FAISS_SRC
   impl/NNDescent.cpp
   impl/Panorama.cpp
   impl/PanoramaStats.cpp
+  impl/PdxLayout.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
   invlists/InvertedLists.cpp
@@ -167,6 +192,9 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSVamana.cpp
     svs/IndexSVSVamanaLVQ.cpp
     svs/IndexSVSVamanaLeanVec.cpp
+    svs/IndexSVSIVF.cpp
+    svs/IndexSVSIVFLVQ.cpp
+    svs/IndexSVSIVFLeanVec.cpp
     impl/svs_io.cpp
   )
 endif()
@@ -174,6 +202,7 @@ endif()
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
+  SuperKMeans.h
   IVFlib.h
   Index.h
   Index2Layer.h
@@ -227,10 +256,12 @@ set(FAISS_HEADERS
   index_factory.h
   factory_tools.h
   index_io.h
+  impl/AdSampling.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
   impl/VisitedTable.h
   impl/ClusteringInitialization.h
+  impl/ClusteringHelpers.h
   impl/CodePacker.h
   impl/CodePackerRaBitQ.h
   impl/IDSelector.h
@@ -249,6 +280,7 @@ set(FAISS_HEADERS
   impl/NSG.h
   impl/Panorama.h
   impl/PanoramaStats.h
+  impl/PdxLayout.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
@@ -289,8 +321,13 @@ set(FAISS_HEADERS
   impl/simd_dispatch.h
   impl/fast_scan/simd_result_handlers.h
   impl/zerocopy_io.h
-  utils/pq_code_distance.h
   impl/pq_code_distance/pq_code_distance-inl.h
+  impl/pq_code_distance/pq_code_distance-avx2.h
+  impl/pq_code_distance/pq_code_distance-avx512.h
+  impl/pq_code_distance/pq_code_distance-generic.h
+  impl/pq_code_distance/IVFPQ_QueryTables.h
+  impl/pq_code_distance/IVFPQScanner_impl.h
+  impl/pq_code_distance/PQDistanceComputer_impl.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
@@ -336,14 +373,18 @@ set(FAISS_HEADERS
   utils/transpose/transpose-avx2-inl.h
   utils/transpose/transpose-avx512-inl.h
   utils/hamming_distance/common.h
-  utils/hamming_distance/generic-inl.h
-  utils/hamming_distance/hamdis-inl.h
-  utils/hamming_distance/neon-inl.h
-  utils/hamming_distance/avx2-inl.h
-  utils/hamming_distance/avx512-inl.h
+  utils/hamming_distance/hamming_computer.h
+  utils/hamming_distance/hamming_computer-avx2.h
+  utils/hamming_distance/hamming_computer-avx512.h
+  utils/hamming_distance/hamming_computer-generic.h
+  utils/hamming_distance/hamming_computer-neon.h
+  utils/hamming_distance/hamming_computer-rvv.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
+  utils/hamming_distance/hamming_impl.h
   utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
+  utils/simd_impl/super_kmeans_dispatch.h
+  utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )
@@ -354,6 +395,9 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSVamana.h
     svs/IndexSVSVamanaLVQ.h
     svs/IndexSVSVamanaLeanVec.h
+    svs/IndexSVSIVF.h
+    svs/IndexSVSIVFLVQ.h
+    svs/IndexSVSIVFLeanVec.h
   )
 endif()
 
@@ -501,6 +545,14 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       TARGET_DIRECTORY faiss
       PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
     )
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+    target_compile_definitions(faiss PRIVATE COMPILE_SIMD_RISCV_RVV)
+    if(FAISS_SIMD_RVV_SRC)
+      set_source_files_properties(${FAISS_SIMD_RVV_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+      )
+    endif()
   endif()
 endif()
 
@@ -510,6 +562,22 @@ endif()
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
+endif()
+
+# RVV is the baseline SIMD on rv64 builds compiled with rv64gcv. Compile RVV
+# sources into the main faiss target, mirroring the ARM NEON story on aarch64.
+# Guard against DD mode: in dd builds, FAISS_SIMD_SRC already contains
+# FAISS_SIMD_RVV_SRC and is added via target_sources above, so we must not
+# add it a second time or we get duplicate symbol errors at link time.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)" AND NOT FAISS_OPT_LEVEL STREQUAL "dd")
+  target_compile_definitions(faiss PRIVATE COMPILE_SIMD_RISCV_RVV)
+  target_sources(faiss PRIVATE ${FAISS_SIMD_RVV_SRC})
+  if(NOT WIN32 AND FAISS_SIMD_RVV_SRC)
+    set_source_files_properties(${FAISS_SIMD_RVV_SRC}
+      TARGET_DIRECTORY faiss
+      PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+    )
+  endif()
 endif()
 
 if(FAISS_ENABLE_SVS)
@@ -606,14 +674,28 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${MKL_LIBRARIES})
 else()
-  find_package(BLAS REQUIRED)
+  # Prefer threaded OpenBLAS (OpenMP or pthreads) over the serial default.
+  # On RHEL/Fedora, the default libopenblas.so is the serial variant;
+  # libopenblaso is OpenMP-threaded and libopenblasp is pthreads-threaded.
+  find_library(BLAS_PREFER_THREADED NAMES openblaso openblasp)
+  if(BLAS_PREFER_THREADED)
+    message(STATUS "Using threaded OpenBLAS: ${BLAS_PREFER_THREADED}")
+    set(BLAS_LIBRARIES "${BLAS_PREFER_THREADED}")
+    # OpenBLAS bundles LAPACK routines, so no separate find_package(LAPACK)
+    # is needed. Calling it would trigger FindBLAS internally, which
+    # unconditionally resets BLAS_LIBRARIES to the serial libopenblas,
+    # causing auditwheel to bundle both serial and threaded variants.
+    set(LAPACK_LIBRARIES "${BLAS_PREFER_THREADED}")
+  else()
+    find_package(BLAS REQUIRED)
+    find_package(LAPACK REQUIRED)
+  endif()
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx512_spr PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${BLAS_LIBRARIES})
 
-  find_package(LAPACK REQUIRED)
   target_link_libraries(faiss PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})

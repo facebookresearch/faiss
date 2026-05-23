@@ -83,16 +83,15 @@ namespace pq_code_distance {
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
-float pq_code_distance_single_impl<SIMDLevel::ARM_SVE>(
+float pq_code_distance_8bit_single_impl<SIMDLevel::ARM_SVE>(
         size_t M,
-        size_t nbits,
         const float* sim_table,
         const uint8_t* code) {
     if (M <= svcntw())
         return distance_single_code_sve_for_small_m(M, sim_table, code);
 
     const float* tab = sim_table;
-    const size_t ksub = 1 << nbits;
+    constexpr size_t ksub = 1 << 8;
 
     const auto offsets_0 = svindex_u32(0, static_cast<uint32_t>(ksub));
     auto partialSum = svdup_n_f32(0.f);
@@ -159,12 +158,11 @@ float pq_code_distance_single_impl<SIMDLevel::ARM_SVE>(
     return svaddv_f32(svptrue_b32(), partialSum);
 }
 
-// Combines 4 operations of pq_code_distance_single_impl().
+// Combines 4 operations of pq_code_distance_8bit_single_impl().
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
-void pq_code_distance_four_impl<SIMDLevel::ARM_SVE>(
+void pq_code_distance_8bit_four_impl<SIMDLevel::ARM_SVE>(
         size_t M,
-        size_t nbits,
         const float* sim_table,
         const uint8_t* __restrict code0,
         const uint8_t* __restrict code1,
@@ -190,7 +188,7 @@ void pq_code_distance_four_impl<SIMDLevel::ARM_SVE>(
     }
 
     const float* tab = sim_table;
-    const size_t ksub = 1 << nbits;
+    constexpr size_t ksub = 1 << 8;
 
     const auto offsets_0 = svindex_u32(0, static_cast<uint32_t>(ksub));
 

@@ -72,8 +72,8 @@ struct ScannerMixIn : FastScanCodeScanner {
             int pq2x4_scale,
             size_t block_stride) override {
         if (pq2x4_scale) {
-            NormTableScaler<> scaler(pq2x4_scale);
-            pq4_accumulate_loop_fixed_scaler(
+            NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+            pq4_accumulate_loop_fixed_scaler<THE_LEVEL_TO_DISPATCH>(
                     nq,
                     nb,
                     bbs,
@@ -84,8 +84,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                     scaler,
                     block_stride);
         } else {
-            DummyScaler<> dummy;
-            pq4_accumulate_loop_fixed_scaler(
+            DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+            pq4_accumulate_loop_fixed_scaler<THE_LEVEL_TO_DISPATCH>(
                     nq,
                     nb,
                     bbs,
@@ -140,8 +140,8 @@ struct ScannerMixIn : FastScanCodeScanner {
             }
         } else {
             if (pq2x4_scale) {
-                NormTableScaler<> scaler(pq2x4_scale);
-                pq4_accumulate_loop_qbs_fixed_scaler_256(
+                NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
@@ -151,8 +151,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                         scaler,
                         block_stride);
             } else {
-                DummyScaler<> dummy;
-                pq4_accumulate_loop_qbs_fixed_scaler_256(
+                DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
@@ -190,15 +190,15 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
     // Helper lambda: given comparator C and with_id_map W, select handler
     auto make = [&]<class C, bool W>() -> std::unique_ptr<FastScanCodeScanner> {
         if (k == 1) {
-            using H = SingleResultHandler<C, W>;
+            using H = SingleResultHandler<C, W, THE_LEVEL_TO_DISPATCH>;
             return std::make_unique<ScannerMixIn<H>>(
                     nq, ntotal, distances, ids, sel);
         } else if (impl % 2 == 0) {
-            using H = HeapHandler<C, W>;
+            using H = HeapHandler<C, W, THE_LEVEL_TO_DISPATCH>;
             return std::make_unique<ScannerMixIn<H>>(
                     nq, ntotal, k, distances, ids, sel);
         } else {
-            using H = ReservoirHandler<C, W>;
+            using H = ReservoirHandler<C, W, THE_LEVEL_TO_DISPATCH>;
             return std::make_unique<ScannerMixIn<H>>(
                     nq, ntotal, size_t(k), size_t(2 * k), distances, ids, sel);
         }
@@ -233,11 +233,13 @@ std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl<
         const IDSelector* sel) {
     if (is_max) {
         using C = CMax<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<RangeHandler<C, true>>>(
+        return std::make_unique<
+                ScannerMixIn<RangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 rres, radius, ntotal, sel);
     } else {
         using C = CMin<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<RangeHandler<C, true>>>(
+        return std::make_unique<
+                ScannerMixIn<RangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 rres, radius, ntotal, sel);
     }
 }
@@ -254,11 +256,13 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
         const IDSelector* sel) {
     if (is_max) {
         using C = CMax<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<PartialRangeHandler<C, true>>>(
+        return std::make_unique<ScannerMixIn<
+                PartialRangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 pres, radius, ntotal, q0, q1, sel);
     } else {
         using C = CMin<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<PartialRangeHandler<C, true>>>(
+        return std::make_unique<ScannerMixIn<
+                PartialRangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 pres, radius, ntotal, q0, q1, sel);
     }
 }

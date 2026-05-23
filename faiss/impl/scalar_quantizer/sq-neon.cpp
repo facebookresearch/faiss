@@ -481,6 +481,42 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
     float query_to_code(const uint8_t* code) const final {
         return compute_distance(q, code);
     }
+
+    void query_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const final {
+        Similarity sim0(q);
+        Similarity sim1(q);
+        Similarity sim2(q);
+        Similarity sim3(q);
+
+        sim0.begin_8();
+        sim1.begin_8();
+        sim2.begin_8();
+        sim3.begin_8();
+
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 xi0 = quant.reconstruct_8_components(code_0, i);
+            simd8float32 xi1 = quant.reconstruct_8_components(code_1, i);
+            simd8float32 xi2 = quant.reconstruct_8_components(code_2, i);
+            simd8float32 xi3 = quant.reconstruct_8_components(code_3, i);
+            sim0.add_8_components(xi0);
+            sim1.add_8_components(xi1);
+            sim2.add_8_components(xi2);
+            sim3.add_8_components(xi3);
+        }
+
+        dis0 = sim0.result_8();
+        dis1 = sim1.result_8();
+        dis2 = sim2.result_8();
+        dis3 = sim3.result_8();
+    }
 };
 
 template <class Similarity>

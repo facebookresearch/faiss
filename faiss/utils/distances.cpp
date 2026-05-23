@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 
 #include <omp.h>
 
@@ -589,6 +590,169 @@ int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
 
+// Database-parallel KNN: parallelizes over database segments instead of
+// queries, for the case where nx < nthreads and the database is large.
+static constexpr size_t kDbParallelMinVectors = 10000;
+
+template <class C>
+static void knn_db_parallel_impl(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        const float* y_norms) {
+    using T = typename C::T;
+    using TI = typename C::TI;
+
+    int nt = omp_get_max_threads();
+    const size_t bs_y = distance_compute_blas_database_bs;
+
+    // Per-thread result heaps: nt threads x nx queries x k results
+    std::vector<T> all_dis(static_cast<size_t>(nt) * nx * k);
+    std::vector<TI> all_ids(static_cast<size_t>(nt) * nx * k);
+
+    std::unique_ptr<float[]> x_norms_storage;
+    std::unique_ptr<float[]> y_norms_storage;
+    const float* x_norms = nullptr;
+    // C::is_max corresponds to L2 (CMax), not IP (CMin)
+    if constexpr (C::is_max) {
+        x_norms_storage.reset(new float[nx]);
+        fvec_norms_L2sqr(x_norms_storage.get(), x, d, nx);
+        x_norms = x_norms_storage.get();
+
+        if (!y_norms) {
+            y_norms_storage.reset(new float[ny]);
+            y_norms = y_norms_storage.get();
+        }
+    }
+
+#pragma omp parallel num_threads(nt)
+    {
+        int tid = omp_get_thread_num();
+        size_t j_begin = static_cast<size_t>(tid) * ny / nt;
+        size_t j_end = static_cast<size_t>(tid + 1) * ny / nt;
+        size_t local_ny = j_end - j_begin;
+
+        // Compute y_norms for this thread's segment (cache locality)
+        if constexpr (C::is_max) {
+            if (y_norms_storage && local_ny > 0) {
+                fvec_norms_L2sqr(
+                        y_norms_storage.get() + j_begin,
+                        y + j_begin * d,
+                        d,
+                        local_ny);
+            }
+        }
+
+        T* my_dis = all_dis.data() + tid * nx * k;
+        TI* my_ids = all_ids.data() + tid * nx * k;
+
+        // Each thread initializes its own heaps
+        for (size_t i = 0; i < nx; i++) {
+            heap_heapify<C>(k, my_dis + i * k, my_ids + i * k);
+        }
+
+        if (local_ny > 0) {
+            size_t max_block = std::min(bs_y, local_ny);
+            std::unique_ptr<float[]> ip_block(new float[nx * max_block]);
+
+            for (size_t jj0 = 0; jj0 < local_ny; jj0 += bs_y) {
+                size_t jj1 = std::min(jj0 + bs_y, local_ny);
+                size_t block_ny = jj1 - jj0;
+
+                {
+                    float one = 1, zero = 0;
+                    FINTEGER nyi = static_cast<FINTEGER>(block_ny);
+                    FINTEGER nxi = static_cast<FINTEGER>(nx);
+                    FINTEGER di = static_cast<FINTEGER>(d);
+                    sgemm_("Transpose",
+                           "Not transpose",
+                           &nyi,
+                           &nxi,
+                           &di,
+                           &one,
+                           y + (j_begin + jj0) * d,
+                           &di,
+                           x,
+                           &di,
+                           &zero,
+                           ip_block.get(),
+                           &nyi);
+                }
+
+                for (size_t i = 0; i < nx; i++) {
+                    T* heap_dis = my_dis + i * k;
+                    TI* heap_ids = my_ids + i * k;
+                    const float* ip_line = ip_block.get() + i * block_ny;
+                    T thresh = heap_dis[0];
+
+                    for (size_t jj = 0; jj < block_ny; jj++) {
+                        size_t global_j = j_begin + jj0 + jj;
+                        float ip = ip_line[jj];
+                        T dis;
+
+                        if constexpr (C::is_max) {
+                            dis = x_norms[i] + y_norms[global_j] - 2 * ip;
+                            if (dis < 0) {
+                                dis = 0;
+                            }
+                        } else {
+                            dis = ip;
+                        }
+
+                        if (C::cmp(thresh, dis)) {
+                            heap_replace_top<C>(
+                                    k, heap_dis, heap_ids, dis, global_j);
+                            thresh = heap_dis[0];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Merge per-thread heaps into output, parallelized over queries
+#pragma omp parallel for
+    for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
+        heap_heapify<C>(k, vals + i * k, ids + i * k);
+
+        for (int t = 0; t < nt; t++) {
+            T* t_dis = all_dis.data() + (t * nx + i) * k;
+            TI* t_ids = all_ids.data() + (t * nx + i) * k;
+            T* out_dis = vals + i * k;
+            TI* out_ids = ids + i * k;
+
+            for (size_t j = 0; j < k; j++) {
+                if (t_ids[j] >= 0 && C::cmp(out_dis[0], t_dis[j])) {
+                    heap_replace_top<C>(
+                            k, out_dis, out_ids, t_dis[j], t_ids[j]);
+                }
+            }
+        }
+
+        heap_reorder<C>(k, vals + i * k, ids + i * k);
+    }
+}
+
+static bool should_use_db_parallel(
+        size_t nx,
+        size_t ny,
+        const IDSelector* sel) {
+    if (sel) {
+        return false;
+    }
+    int nt = omp_get_max_threads();
+    size_t min_ny = std::max(
+            kDbParallelMinVectors,
+            static_cast<size_t>(nt) *
+                    static_cast<size_t>(distance_compute_blas_database_bs));
+    return nt > 1 && nx < static_cast<size_t>(nt) && ny >= min_ny;
+}
+
 void knn_inner_product(
         const float* x,
         const float* y,
@@ -613,9 +777,26 @@ void knn_inner_product(
         return;
     }
 
-    Run_search_inner_product r;
-    dispatch_knn_ResultHandler(
-            nx, vals, ids, k, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
+    if (should_use_db_parallel(nx, ny, sel)) {
+        knn_db_parallel_impl<CMin<float, int64_t>>(
+                x, y, d, nx, ny, k, vals, ids, nullptr);
+    } else {
+        Run_search_inner_product r;
+        // @lint-ignore CLANGTIDY facebook-hte-NullableDereference
+        dispatch_knn_ResultHandler(
+                nx,
+                vals,
+                ids,
+                k,
+                METRIC_INNER_PRODUCT,
+                sel,
+                r,
+                x,
+                y,
+                d,
+                nx,
+                ny);
+    }
 
     if (imin != 0) {
         for (size_t i = 0; i < nx * k; i++) {
@@ -662,9 +843,15 @@ void knn_L2sqr(
         return;
     }
 
-    Run_search_L2sqr r;
-    dispatch_knn_ResultHandler(
-            nx, vals, ids, k, METRIC_L2, sel, r, x, y, d, nx, ny, y_norm2);
+    if (should_use_db_parallel(nx, ny, sel)) {
+        knn_db_parallel_impl<CMax<float, int64_t>>(
+                x, y, d, nx, ny, k, vals, ids, y_norm2);
+    } else {
+        Run_search_L2sqr r;
+        // @lint-ignore CLANGTIDY facebook-hte-NullableDereference
+        dispatch_knn_ResultHandler(
+                nx, vals, ids, k, METRIC_L2, sel, r, x, y, d, nx, ny, y_norm2);
+    }
 
     if (imin != 0) {
         for (size_t i = 0; i < nx * k; i++) {

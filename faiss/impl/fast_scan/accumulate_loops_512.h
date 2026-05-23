@@ -15,10 +15,9 @@
  * (from kernels_simd512.h) instead of pq4_kernel_qbs_256.
  *
  * The 512-bit kernels produce simd16uint16_tpl<AVX2> results (via
- * combine4x2). The virtual SIMDResultHandler::handle() expects
- * simd16uint16_tpl<NONE> in DD mode. FixedStorage512 bridges this gap:
- * it stores AVX2-level results internally, then converts to the handler's
- * level via storeu/load in to_other_handler().
+ * combine4x2). FixedStorage512 stores these results without virtual
+ * dispatch, then forwards them to the outer handler via
+ * to_other_handler().
  *
  * Only included from the AVX512 per-ISA TU (impl-avx512.cpp) via
  * dispatching.h's conditional include.
@@ -46,8 +45,8 @@ using namespace simd_result_handlers;
  * 512-bit kernels produce simd16uint16_tpl<AVX2>. By avoiding
  * inheritance, handle() can accept AVX2-level types directly.
  *
- * The conversion to the outer handler's type happens in
- * to_other_handler() via a store-to-memory roundtrip.
+ * to_other_handler() passes AVX2-level values directly to the
+ * outer handler.
  ***************************************************************/
 
 template <int NQ, int BB>
@@ -72,17 +71,9 @@ struct FixedStorage512 {
 
     template <class OtherResultHandler>
     void to_other_handler(OtherResultHandler& other) const {
-        using handler_simd16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
         for (int q = 0; q < NQ; q++) {
             for (int b = 0; b < BB; b += 2) {
-                // Convert AVX2 → handler level (NONE in DD mode)
-                ALIGNED(32) uint16_t buf0[16], buf1[16];
-                dis[q][b].storeu(buf0);
-                dis[q][b + 1].storeu(buf1);
-                handler_simd16 h0, h1;
-                h0.loadu(buf0);
-                h1.loadu(buf1);
-                other.handle(q, b / 2, h0, h1);
+                other.handle(q, b / 2, dis[q][b], dis[q][b + 1]);
             }
         }
     }
@@ -176,17 +167,16 @@ void pq4_accumulate_loop_qbs_fixed_scaler_512(
 #undef FAISS_QBS512_DISPATCH
     }
 
-    // Fallback for unknown QBS values: use 256-bit path with NONE-level
-    // scalers for type compatibility. This is rare — pq4_preferred_qbs()
-    // covers all values above.
+    // Fallback for unknown QBS values: use 256-bit path.
+    // This is rare — pq4_preferred_qbs() covers all values above.
     if constexpr (Scaler::nscale == 0) {
-        DummyScaler<> scaler_none;
-        pq4_accumulate_loop_qbs_fixed_scaler_256(
-                qbs, ntotal2, nsq, codes, LUT0, res, scaler_none, block_stride);
+        DummyScaler<SIMDLevel::AVX2> scaler_avx2;
+        pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
     } else {
-        NormTableScaler<> scaler_none(scaler.scale_int);
-        pq4_accumulate_loop_qbs_fixed_scaler_256(
-                qbs, ntotal2, nsq, codes, LUT0, res, scaler_none, block_stride);
+        NormTableScaler<SIMDLevel::AVX2> scaler_avx2(scaler.scale_int);
+        pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
     }
 }
 

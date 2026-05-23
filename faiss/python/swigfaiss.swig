@@ -74,7 +74,6 @@ typedef uint64_t size_t;
 
 #ifdef SWIGPYTHON
 
-#undef popcount64
 
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -94,6 +93,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/Index2Layer.h>
@@ -188,10 +188,12 @@ typedef uint64_t size_t;
 #endif // !_MSC_VER
 
 #include <faiss/Clustering.h>
+#include <faiss/SuperKMeans.h>
 #include <faiss/impl/ClusteringInitialization.h>
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/hamming_distance/common.h>
+#include <faiss/utils/popcount.h>
 
 #include <faiss/AutoTune.h>
 #include <faiss/MatrixStats.h>
@@ -214,6 +216,9 @@ typedef uint64_t size_t;
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif
 
 %}
@@ -343,6 +348,7 @@ namespace std {
 
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
+%include <faiss/utils/popcount.h>
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
 
@@ -516,6 +522,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFlat.h>
 %include  <faiss/impl/ClusteringInitialization.h>
 %include  <faiss/Clustering.h>
+%include  <faiss/SuperKMeans.h>
 
 %include  <faiss/utils/extra_distances.h>
 
@@ -546,6 +553,7 @@ void gpu_sync_all_devices()
 %ignore BlockInvertedListsIOHook;
 %include  <faiss/invlists/BlockInvertedLists.h>
 %include  <faiss/invlists/DirectMap.h>
+%include  <faiss/impl/InvertedListScannerStats.h>
 %include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.
@@ -568,6 +576,9 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/NNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
+// IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
+// built-in destructor for; ignore the field to avoid memory leak warnings.
+%ignore faiss::IndexIVFFlatDedup::instances;
 %include  <faiss/IndexIVFFlat.h>
 %include  <faiss/IndexIVFFlatPanorama.h>
 
@@ -702,6 +713,9 @@ void gpu_sync_all_devices()
 %include  <faiss/svs/IndexSVSFlat.h>
 %include  <faiss/svs/IndexSVSVamanaLVQ.h>
 %include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+%include  <faiss/svs/IndexSVSIVF.h>
+%include  <faiss/svs/IndexSVSIVFLVQ.h>
+%include  <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
@@ -713,6 +727,25 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
 #ifdef FAISS_ENABLE_CUVS
+// IVFPQSearchCagraConfig.lut_dtype and .internal_distance_dtype are typed as
+// cudaDataType_t (a C enum from <library_types.h>). Without an int typemap
+// SWIG generates accessors that read/write a cudaDataType_t* SwigPyObject,
+// which Python users cannot construct, so the fields are effectively
+// read-only from Python and the documented values (CUDA_R_16F, CUDA_R_8U)
+// are not exported. Treat cudaDataType_t as int for SWIG and expose the
+// relevant enum values so:
+//
+//     c = faiss.IVFPQSearchCagraConfig()
+//     c.lut_dtype = faiss.CUDA_R_16F
+//
+// works as expected. Values match cudaDataType_t in <library_types.h>.
+typedef int cudaDataType_t;
+%apply int { cudaDataType_t };
+%constant int CUDA_R_32F = 0;
+%constant int CUDA_R_64F = 1;
+%constant int CUDA_R_16F = 2;
+%constant int CUDA_R_8I  = 3;
+%constant int CUDA_R_8U  = 8;
 %include  <faiss/gpu/GpuIndexCagra.h>
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
@@ -843,6 +876,9 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexSVSVamanaLeanVec )
     DOWNCAST ( IndexSVSVamanaLVQ )
     DOWNCAST ( IndexSVSVamana )
+    DOWNCAST ( IndexSVSIVFLeanVec )
+    DOWNCAST ( IndexSVSIVFLVQ )
+    DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS

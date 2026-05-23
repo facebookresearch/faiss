@@ -16,6 +16,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -467,33 +468,39 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     if (n * cq_nprobe > 0) {
         memset(biases.get(), 0, sizeof(float) * n * cq_nprobe);
     }
+    // Use per-thread buffers instead of one O(n * nprobe * d) allocation.
+    // rotated_q / centroid_buf keep their capacity across iterations so the
+    // allocator is only hit once per thread.
+#pragma omp parallel if (n * cq_nprobe > 1000)
+    {
+        std::vector<float> rotated_q(d);
+        std::vector<float> centroid_buf(d);
 
-#pragma omp parallel for if (n * cq_nprobe > 1000)
-    for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
-        idx_t i = ij / cq_nprobe;
-        idx_t cij = cq.ids[ij];
+#pragma omp for
+        for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
+            idx_t i = ij / cq_nprobe;
+            idx_t cij = cq.ids[ij];
 
-        if (cij >= 0) {
-            std::vector<float> rotated_q(d);
-            std::vector<float> centroid_buf(d);
-            QueryFactorsData query_factors_data;
+            if (cij >= 0) {
+                QueryFactorsData query_factors_data;
 
-            compute_residual_LUT(
-                    x + i * d,
-                    cij,
-                    query_factors_data,
-                    dis_tables.get() + ij * dim12,
-                    used_qb,
-                    used_centered,
-                    rotated_q,
-                    centroid_buf);
+                compute_residual_LUT(
+                        x + i * d,
+                        cij,
+                        query_factors_data,
+                        dis_tables.get() + ij * dim12,
+                        used_qb,
+                        used_centered,
+                        rotated_q,
+                        centroid_buf);
 
-            if (context.query_factors != nullptr) {
-                context.query_factors[ij] = query_factors_data;
+                if (context.query_factors != nullptr) {
+                    context.query_factors[ij] = std::move(query_factors_data);
+                }
+
+            } else {
+                memset(dis_tables.get() + ij * dim12, 0, sizeof(float) * dim12);
             }
-
-        } else {
-            memset(dis_tables.get() + ij * dim12, 0, sizeof(float) * dim12);
         }
     }
 }
@@ -868,64 +875,84 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
             size_t ntotal,
             const uint8_t* codes,
             const idx_t* ids,
-            float* distances,
-            idx_t* labels,
-            size_t k) const override {
-        std::vector<float> curr_dists(k, distances[0]);
-        std::vector<idx_t> curr_labels(k, labels[0]);
+            ResultHandler& result_handler) const override {
+        auto scan_with_heap = [&](auto* heap_handler) -> size_t {
+            const size_t k = heap_handler->k;
+            if (k == 0) {
+                return 0;
+            }
 
-        auto scanner = index.make_knn_scanner(
-                !keep_max,
-                nq,
-                k,
-                curr_dists.data(),
-                curr_labels.data(),
-                sel,
-                0,
-                context);
-        auto* handler = scanner->handler();
+            std::vector<float> curr_dists(k, result_handler.threshold);
+            std::vector<idx_t> curr_labels(k, -1);
 
-        int qmap1[1] = {0};
-        handler->q_map = qmap1;
-        handler->begin(&normalizers[0]);
-        handler->dbias = biases.get();
-        handler->ntotal = ntotal;
-        handler->id_map = ids;
-
-        handler->set_list_context(list_no, probe_map);
-        if (!handler->list_codes_ptr) {
-            handler->list_codes_ptr = codes;
-        }
-
-        scanner->accumulate_loop(
-                1,
-                roundup(ntotal, index.bbs),
-                index.bbs,
-                static_cast<int>(index.M2),
-                codes,
-                dis_tables.get(),
-                0,
-                index.get_block_stride());
-
-        handler->end();
-        if (keep_max) {
-            minheap_addn(
+            auto scanner = index.make_knn_scanner(
+                    !keep_max,
+                    nq,
                     k,
-                    distances,
-                    labels,
                     curr_dists.data(),
                     curr_labels.data(),
-                    k);
+                    sel,
+                    0,
+                    context);
+            auto* handler = scanner->handler();
+
+            int qmap1[1] = {0};
+            handler->q_map = qmap1;
+            handler->begin(&normalizers[0]);
+            handler->dbias = biases.get();
+            handler->ntotal = ntotal;
+            handler->id_map = ids;
+
+            handler->set_list_context(list_no, probe_map);
+            if (!handler->list_codes_ptr) {
+                handler->list_codes_ptr = codes;
+            }
+
+            scanner->accumulate_loop(
+                    1,
+                    roundup(ntotal, index.bbs),
+                    index.bbs,
+                    static_cast<int>(index.M2),
+                    codes,
+                    dis_tables.get(),
+                    0,
+                    index.get_block_stride());
+
+            const size_t scan_cnt = handler->count_scanned_rows();
+            handler->end();
+
+            result_handler.stats.scan_cnt += scan_cnt;
+            size_t nup = 0;
+            for (size_t j = 0; j < k; j++) {
+                if (curr_labels[j] < 0) {
+                    continue;
+                }
+                if (result_handler.add_result(curr_dists[j], curr_labels[j])) {
+                    result_handler.stats.nheap_updates++;
+                    nup++;
+                }
+            }
+            return nup;
+        };
+
+        if (!keep_max) {
+            using C = CMax<float, idx_t>;
+            if (auto* heap_handler = dynamic_cast<HeapResultHandler<C, false>*>(
+                        &result_handler)) {
+                return scan_with_heap(heap_handler);
+            }
         } else {
-            maxheap_addn(
-                    k,
-                    distances,
-                    labels,
-                    curr_dists.data(),
-                    curr_labels.data(),
-                    k);
+            using C = CMin<float, idx_t>;
+            if (auto* heap_handler = dynamic_cast<HeapResultHandler<C, false>*>(
+                        &result_handler)) {
+                return scan_with_heap(heap_handler);
+            }
         }
-        return handler->num_updates();
+
+        FAISS_THROW_MSG(
+                "IVFRaBitQFastScanScanner::scan_codes requires "
+                "HeapResultHandler; custom ResultHandler scan is not supported "
+                "by this optimized scanner");
     }
 };
 

@@ -45,6 +45,13 @@ struct VisitedTable {
         }
     }
 
+    /// pre-allocate bucket space to avoid rehashing during repeated set() calls
+    void reserve(size_t n) {
+        if (visno == 0) {
+            visited_set.reserve(n);
+        }
+    }
+
     /// get flag #no
     bool get(size_t no) const {
         if (visno == 0) {

@@ -38,6 +38,7 @@
 #include <faiss/utils/ordered_key_value.h>
 
 #include <faiss/impl/platform_macros.h>
+#include <faiss/utils/popcount.h>
 
 namespace faiss {
 
@@ -127,8 +128,8 @@ void count_lt_and_eq(
         simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
         uint32_t bits = get_MSBs(uint16_to_uint8_saturate(eqmask, gemask));
-        int i_eq = __builtin_popcount(bits & 0x00ff00ff);
-        int i_ge = __builtin_popcount(bits) - i_eq;
+        int i_eq = popcount32(bits & 0x00ff00ff);
+        int i_ge = popcount32(bits) - i_eq;
         n_eq += i_eq;
         n_lt += 16 - i_ge;
     }

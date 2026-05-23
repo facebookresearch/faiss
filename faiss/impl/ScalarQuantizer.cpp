@@ -103,6 +103,8 @@ void ScalarQuantizer::train(size_t n, const float* x) {
     switch (qtype) {
         case QT_4bit_uniform:
         case QT_8bit_uniform:
+            FAISS_THROW_IF_NOT(n > 0);
+            FAISS_THROW_IF_NOT(x != nullptr);
             train_Uniform(
                     rangestat,
                     rangestat_arg,
@@ -114,6 +116,8 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_4bit:
         case QT_8bit:
         case QT_6bit:
+            FAISS_THROW_IF_NOT(n > 0);
+            FAISS_THROW_IF_NOT(x != nullptr);
             train_NonUniform(
                     rangestat,
                     rangestat_arg,

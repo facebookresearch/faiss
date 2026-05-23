@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 import unittest
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 
 
 @for_all_simd_levels
@@ -73,6 +73,23 @@ class TestProductQuantizer(unittest.TestCase):
     def test_codec(self):
         for i in range(16):
             self.do_test_codec(i + 1)
+
+    def test_codes_match_none(self):
+        """PQ codes are integer; encode dispatch must produce bit-identical
+        output at every SIMD level."""
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
+        d, cs = 64, 4
+        np.random.seed(123)
+        x = np.random.random(size=(2000, d)).astype('float32')
+        for nbits in (4, 6, 8):
+            with self.subTest(nbits=nbits):
+                pq = faiss.ProductQuantizer(d, cs, nbits)
+                pq.train(x)
+                codes = pq.compute_codes(x)
+                with NoneSIMDLevel():
+                    codes_none = pq.compute_codes(x)
+                np.testing.assert_array_equal(codes, codes_none)
 
 
 @for_all_simd_levels
