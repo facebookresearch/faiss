@@ -9,7 +9,7 @@ import numpy as np
 import faiss
 from faiss.contrib import datasets
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 
 
 def random_rotation(d, seed=123):
@@ -539,6 +539,22 @@ class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
     def test_encode_decode_IP(self):
         self.do_test_encode_decode(16, faiss.METRIC_INNER_PRODUCT)
 
+    def test_codes_match_none(self):
+        """RaBitQ codes are integer; encode must be bit-identical across
+        SIMD levels."""
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
+        d = 64
+        rs = np.random.RandomState(123)
+        vec = rs.standard_normal((100, d)).astype(np.float32)
+        for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+            with self.subTest(metric=metric):
+                quantizer = faiss.RaBitQuantizer(d, metric)
+                codes = quantizer.compute_codes(vec)
+                with NoneSIMDLevel():
+                    codes_none = quantizer.compute_codes(vec)
+                np.testing.assert_array_equal(codes, codes_none)
+
 
 # ==============================================================================
 # Multi-bit RaBitQ Test Suite
@@ -1014,85 +1030,6 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         err_msg=f"nb_bits={nb_bits}")
 
 
-@for_all_simd_levels
-class TestRaBitQStats(unittest.TestCase):
-    """Test RaBitQStats tracking for multi-bit two-stage search."""
-
-    INDEX_TYPES = [
-        "IndexRaBitQ",
-        "IndexIVFRaBitQ",
-    ]
-
-    @classmethod
-    def setUpClass(cls):
-        cls.stats_available = hasattr(faiss, 'cvar') and hasattr(
-            faiss.cvar, 'rabitq_stats'
-        )
-        if cls.stats_available:
-            cls.rabitq_stats = faiss.cvar.rabitq_stats
-
-    def test_stats_reset_and_skip_percentage(self):
-        """Test that stats can be reset and skip_percentage works."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        self.rabitq_stats.reset()
-        self.assertEqual(self.rabitq_stats.n_1bit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.n_multibit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.skip_percentage(), 0.0)
-
-    def test_stats_collected_multibit_all_index_types(self):
-        """Test that stats are collected for all multi-bit index types."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        ds = datasets.SyntheticDataset(384, 50000, 50000, 10)
-        nlist = 16
-
-        for index_type in self.INDEX_TYPES:
-            for nb_bits in [2, 4]:
-                with self.subTest(index_type=index_type, nb_bits=nb_bits):
-                    self.rabitq_stats.reset()
-
-                    if index_type == "IndexRaBitQ":
-                        index = faiss.IndexRaBitQ(
-                            ds.d, faiss.METRIC_L2, nb_bits
-                        )
-                    elif index_type == "IndexIVFRaBitQ":
-                        quantizer = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
-                        index = faiss.IndexIVFRaBitQ(
-                            quantizer, ds.d, nlist, faiss.METRIC_L2,
-                            True, nb_bits
-                        )
-                        index.nprobe = 4
-                    else:
-                        raise ValueError(f"Unknown index type: {index_type}")
-
-                    index.train(ds.get_train())
-                    index.add(ds.get_database())
-                    index.search(ds.get_queries(), 10)
-
-                    self.assertGreater(
-                        self.rabitq_stats.n_1bit_evaluations, 0
-                    )
-                    self.assertGreater(
-                        self.rabitq_stats.n_multibit_evaluations, 0
-                    )
-                    # For multi-bit, filtering should skip some candidates
-                    self.assertLess(
-                        self.rabitq_stats.n_multibit_evaluations,
-                        self.rabitq_stats.n_1bit_evaluations,
-                    )
-                    skip_pct = self.rabitq_stats.skip_percentage()
-                    self.assertGreater(skip_pct, 0.0)
-                    self.assertLessEqual(skip_pct, 100.0)
-
-                    n_1bit = self.rabitq_stats.n_1bit_evaluations
-                    n_multibit = self.rabitq_stats.n_multibit_evaluations
-                    print(
-                        f"{index_type} nb_bits={nb_bits}: "
-                        f"n_1bit={n_1bit}, "
-                        f"n_multibit={n_multibit}, "
-                        f"skip={skip_pct:.1f}%"
-                    )
 
 if __name__ == "__main__":
     unittest.main()

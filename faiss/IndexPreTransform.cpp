@@ -62,9 +62,9 @@ IndexPreTransform::~IndexPreTransform() {
 void IndexPreTransform::train(idx_t n, const float* x) {
     int last_untrained = 0;
     if (!index->is_trained) {
-        last_untrained = chain.size();
+        last_untrained = static_cast<int>(chain.size());
     } else {
-        for (int i = chain.size() - 1; i >= 0; i--) {
+        for (int i = static_cast<int>(chain.size()) - 1; i >= 0; i--) {
             if (!chain[i]->is_trained) {
                 last_untrained = i;
                 break;
@@ -129,7 +129,9 @@ const float* IndexPreTransform::apply_chain(idx_t n, const float* x) const {
         del2.swap(del);
         prev_x = xt;
     }
-    del.release();
+    // Intentionally release ownership: caller takes ownership of the returned
+    // buffer
+    (void)del.release();
     return prev_x;
 }
 
@@ -138,7 +140,7 @@ void IndexPreTransform::reverse_chain(idx_t n, const float* xt, float* x)
     const float* next_x = xt;
     std::unique_ptr<const float[]> del;
 
-    for (int i = chain.size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(chain.size()) - 1; i >= 0; i--) {
         float* prev_x = (i == 0) ? x : new float[n * chain[i]->d_in];
         std::unique_ptr<const float[]> del2((prev_x == x) ? nullptr : prev_x);
         chain[i]->reverse_transform(n, next_x, prev_x);

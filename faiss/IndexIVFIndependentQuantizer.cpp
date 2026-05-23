@@ -91,7 +91,7 @@ void IndexIVFIndependentQuantizer::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(!params, "search parameters not supported");
-    int nprobe = index_ivf->nprobe;
+    size_t nprobe = index_ivf->nprobe;
     std::vector<float> D(n * nprobe);
     std::vector<idx_t> I(n * nprobe);
     quantizer->search(n, x, nprobe, D.data(), I.data());

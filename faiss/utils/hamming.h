@@ -30,9 +30,13 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/popcount.h>
+#include <faiss/utils/simd_levels.h>
 
 // Low-level Hamming distance computations and hamdis_t.
-#include <faiss/utils/hamming_distance/hamdis-inl.h>
+#include <faiss/utils/hamming_distance/hamming_computer.h>
+// Scalar (NONE) HammingComputer struct specializations.
+#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
 
 #include <faiss/impl/approx_topk/approx_topk.h>
 
@@ -283,6 +287,92 @@ void unpack_bitstrings(
         const uint8_t* packed,
         size_t code_size,
         int32_t* unpacked);
+
+/** Per-SIMD-level Hamming function implementations.
+ *  Specializations live in per-ISA TUs (hamming_avx2.cpp, etc.).
+ *  The `_fixSL` suffix marks these as pinned-to-a-SIMDLevel (no dispatch),
+ *  distinguishing them from the non-templated DD entry points above. */
+
+template <SIMDLevel SL>
+void hammings_knn_hc_fixSL(
+        int_maxheap_array_t* ha,
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t nb,
+        size_t ncodes,
+        int ordered,
+        ApproxTopK_mode_t approx_topk_mode,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hammings_knn_mc_fixSL(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        size_t k,
+        size_t ncodes,
+        int32_t* distances,
+        int64_t* labels,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hamming_range_search_fixSL(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        int radius,
+        size_t code_size,
+        RangeSearchResult* result,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hammings_fixSL(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* dis);
+
+template <SIMDLevel SL>
+void generalized_hammings_knn_hc_fixSL(
+        int_maxheap_array_t* ha,
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t nb,
+        size_t code_size,
+        int ordered);
+
+template <SIMDLevel SL>
+void hamming_count_thres_fixSL(
+        const uint8_t* bs1,
+        const uint8_t* bs2,
+        size_t n1,
+        size_t n2,
+        hamdis_t ht,
+        size_t ncodes,
+        size_t* nptr);
+
+template <SIMDLevel SL>
+void crosshamming_count_thres_fixSL(
+        const uint8_t* dbs,
+        size_t n,
+        hamdis_t ht,
+        size_t ncodes,
+        size_t* nptr);
+
+template <SIMDLevel SL>
+size_t match_hamming_thres_fixSL(
+        const uint8_t* bs1,
+        const uint8_t* bs2,
+        size_t n1,
+        size_t n2,
+        hamdis_t ht,
+        size_t ncodes,
+        int64_t* idx,
+        hamdis_t* dis);
 
 } // namespace faiss
 

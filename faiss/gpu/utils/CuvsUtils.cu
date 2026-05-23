@@ -33,6 +33,7 @@
 #include <thrust/gather.h>
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/reduce.h>
+#include <thrust/transform.h>
 
 namespace faiss {
 namespace gpu {
@@ -113,6 +114,24 @@ idx_t inplaceGatherFilteredRows(
                 indices.data());
     }
     return n_rows_valid;
+}
+
+void sanitizeCuvsIndices(
+        GpuResources* res,
+        uint32_t* src,
+        idx_t* dst,
+        size_t count,
+        idx_t n) {
+    raft::device_resources& raft_handle = res->getRaftHandleCurrentDevice();
+    thrust::transform(
+            raft_handle.get_thrust_policy(),
+            src,
+            src + count,
+            dst,
+            [n] __device__(uint32_t idx) -> idx_t {
+                return idx < static_cast<uint32_t>(n) ? static_cast<idx_t>(idx)
+                                                      : idx_t{-1};
+            });
 }
 
 } // namespace gpu

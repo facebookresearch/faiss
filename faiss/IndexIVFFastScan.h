@@ -41,14 +41,14 @@ struct Quantizer;
 
 struct IndexIVFFastScan : IndexIVF {
     // size of the kernel
-    int bbs; // set at build time
+    int bbs = 0; // set at build time
 
-    size_t M;
-    size_t nbits;
-    size_t ksub;
+    size_t M = 0;
+    size_t nbits = 0;
+    size_t ksub = 0;
 
     // M rounded up to a multiple of 2
-    size_t M2;
+    size_t M2 = 0;
 
     // search-time implementation
     int implem = 0;
@@ -156,7 +156,7 @@ struct IndexIVFFastScan : IndexIVF {
      * @param context       processing context containing query factors
      * processor
      */
-    void compute_LUT_uint8(
+    virtual void compute_LUT_uint8(
             size_t n,
             const float* x,
             const CoarseQuantized& cq,
@@ -292,10 +292,11 @@ struct IndexIVFFastScan : IndexIVF {
             const IVFSearchParameters* params = nullptr) const;
 
     // implem 10 and 12 are not multithreaded internally, so
-    // export search stats
+    // export search stats. k is required for ensure_topk_full support.
     void search_implem_10(
             idx_t n,
             const float* x,
+            idx_t k,
             SIMDResultHandlerToFloat& handler,
             const CoarseQuantized& cq,
             size_t* ndis_out,

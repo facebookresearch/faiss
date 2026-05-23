@@ -30,6 +30,8 @@
 #include <svs/runtime/dynamic_vamana_index.h>
 
 #include <iostream>
+#include <type_traits>
+#include <vector>
 
 namespace faiss {
 
@@ -46,9 +48,11 @@ enum SVSStorageKind {
     SVS_LVQ4x0,
     SVS_LVQ4x4,
     SVS_LVQ4x8,
+    SVS_LVQ8x0,
     SVS_LeanVec4x4,
     SVS_LeanVec4x8,
     SVS_LeanVec8x8,
+    SVS_count,
 };
 
 inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
@@ -65,6 +69,8 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
             return svs_runtime::StorageKind::LVQ4x4;
         case SVS_LVQ4x8:
             return svs_runtime::StorageKind::LVQ4x8;
+        case SVS_LVQ8x0:
+            return svs_runtime::StorageKind::LVQ8x0;
         case SVS_LeanVec4x4:
             return svs_runtime::StorageKind::LeanVec4x4;
         case SVS_LeanVec4x8:
@@ -72,7 +78,9 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
         case SVS_LeanVec8x8:
             return svs_runtime::StorageKind::LeanVec8x8;
         default:
-            FAISS_ASSERT(false && "not supported SVS storage kind");
+            FAISS_THROW_FMT(
+                    "SVSStorageKind (%d) not supported",
+                    static_cast<std::underlying_type_t<SVSStorageKind>>(kind));
     }
 }
 
@@ -86,7 +94,7 @@ struct IndexSVSVamana : Index {
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
 
-    SVSStorageKind storage_kind;
+    SVSStorageKind storage_kind = SVS_FP32;
 
     IndexSVSVamana();
 
@@ -103,6 +111,8 @@ struct IndexSVSVamana : Index {
     static bool is_lvq_leanvec_enabled();
 
     void add(idx_t n, const float* x) override;
+
+    void reconstruct(idx_t key, float* recons) const override;
 
     void search(
             idx_t n,
@@ -129,6 +139,12 @@ struct IndexSVSVamana : Index {
 
     /* The actual SVS implementation */
     svs_runtime::DynamicVamanaIndex* impl{nullptr};
+
+    // The SVS runtime API does not expose vector retrieval, so we keep a copy
+    // of added vectors to support reconstruct(). When used as a coarse
+    // quantizer this holds only nlist centroids.
+    std::vector<float> stored_vectors;
+    bool stored_vectors_valid{true};
 
    protected:
     /* Initializes the implementation*/

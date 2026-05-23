@@ -161,6 +161,10 @@ endif()
 add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
 
+add_executable(example_search_params_ivf_c EXCLUDE_FROM_ALL
+  example_search_params_ivf_c.c)
+target_link_libraries(example_search_params_ivf_c PRIVATE faiss_c)
+
 if(FAISS_ENABLE_GPU)
   add_subdirectory(gpu)
 endif()

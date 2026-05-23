@@ -256,6 +256,8 @@ void NSG::search_on_graph(
     retset.resize(pool_size + 1);
     std::vector<int> init_ids(pool_size);
 
+    vt.reserve(pool_size);
+
     int num_ids = 0;
     std::vector<index_t> neighbors(graph.K);
     size_t nneigh = graph.get_neighbors(ep, neighbors.data());

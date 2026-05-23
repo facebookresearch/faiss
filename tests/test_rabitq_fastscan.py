@@ -1070,73 +1070,58 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
         self.assertEqual(D.shape, (ds.nq, 5))
 
 
-@for_all_simd_levels
-class TestRaBitQStatsFastScan(unittest.TestCase):
-    """Test RaBitQStats tracking for multi-bit two-stage search in FastScan."""
+class TestRaBitQFastScanSearchParams(unittest.TestCase):
+    """Test that IVFRaBitQSearchParameters qb/centered are respected."""
 
-    NLIST = 16
-    NPROBE = 4
+    def test_higher_qb_improves_recall(self):
+        """Search with qb=4 should give better recall than qb=1."""
+        d = 64
+        nlist = 16
+        nprobe = 4
+        k = 10
+        ds = datasets.SyntheticDataset(d, 5000, 5000, 50)
 
-    @classmethod
-    def setUpClass(cls):
-        cls.stats_available = hasattr(faiss, 'cvar') and hasattr(
-            faiss.cvar, 'rabitq_stats'
+        # Ground truth with flat index
+        index_flat = faiss.IndexFlatL2(d)
+        index_flat.add(ds.get_database())
+        _, I_gt = index_flat.search(ds.get_queries(), k)
+
+        # Build IVF RaBitQ FastScan index with default qb=8
+        quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, nlist, faiss.METRIC_L2, 32, True
         )
-        if cls.stats_available:
-            cls.rabitq_stats = faiss.cvar.rabitq_stats
+        index.nprobe = nprobe
+        index.train(ds.get_train())
+        index.add(ds.get_database())
 
-    def test_stats_reset_and_skip_percentage(self):
-        """Test that stats can be reset and skip_percentage works."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        self.rabitq_stats.reset()
-        self.assertEqual(self.rabitq_stats.n_1bit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.n_multibit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.skip_percentage(), 0.0)
+        # Search with qb=1 (coarse quantization)
+        params_qb1 = faiss.IVFRaBitQSearchParameters()
+        params_qb1.nprobe = nprobe
+        params_qb1.qb = 1
+        _, I_qb1 = index.search(ds.get_queries(), k, params=params_qb1)
 
-    def test_stats_collected_multibit_all_index_types(self):
-        """Test stats are collected for all multi-bit FastScan index types."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        ds = datasets.SyntheticDataset(384, 50000, 50000, 10)
+        # Search with qb=4 (finer quantization)
+        params_qb4 = faiss.IVFRaBitQSearchParameters()
+        params_qb4.nprobe = nprobe
+        params_qb4.qb = 4
+        _, I_qb4 = index.search(ds.get_queries(), k, params=params_qb4)
 
-        for use_ivf in [False, True]:
-            for nb_bits in [2, 4]:
-                with self.subTest(use_ivf=use_ivf, nb_bits=nb_bits):
-                    self.rabitq_stats.reset()
+        # Compute recall@k
+        recall_qb1 = np.mean([
+            len(np.intersect1d(I_qb1[i], I_gt[i])) / k
+            for i in range(ds.nq)
+        ])
+        recall_qb4 = np.mean([
+            len(np.intersect1d(I_qb4[i], I_gt[i])) / k
+            for i in range(ds.nq)
+        ])
 
-                    index = _create_fastscan_index(
-                        ds.d, faiss.METRIC_L2,
-                        use_ivf=use_ivf, nb_bits=nb_bits,
-                    )
-                    index.train(ds.get_train())
-                    index.add(ds.get_database())
-                    index.search(ds.get_queries(), 10)
-
-                    self.assertGreater(
-                        self.rabitq_stats.n_1bit_evaluations, 0
-                    )
-                    self.assertGreater(
-                        self.rabitq_stats.n_multibit_evaluations, 0
-                    )
-                    self.assertLess(
-                        self.rabitq_stats.n_multibit_evaluations,
-                        self.rabitq_stats.n_1bit_evaluations
-                    )
-                    skip_pct = self.rabitq_stats.skip_percentage()
-                    self.assertGreater(skip_pct, 0.0)
-                    self.assertLessEqual(skip_pct, 100.0)
-
-                    index_type = (
-                        "IndexIVFRaBitQFastScan" if use_ivf
-                        else "IndexRaBitQFastScan"
-                    )
-                    print(
-                        f"{index_type} nb_bits={nb_bits}: "
-                        f"total={self.rabitq_stats.n_1bit_evaluations}, "
-                        f"refined={self.rabitq_stats.n_multibit_evaluations}, "
-                        f"skip={skip_pct:.1f}%"
-                    )
+        self.assertGreater(
+            recall_qb4, recall_qb1,
+            f"qb=4 recall ({recall_qb4:.3f}) should be higher "
+            f"than qb=1 recall ({recall_qb1:.3f})"
+        )
 
 
 if __name__ == "__main__":

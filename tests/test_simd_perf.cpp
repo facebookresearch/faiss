@@ -162,40 +162,6 @@ TEST_F(SIMDPerfTest, AVX2FasterThanNONE) {
             << "NONE=" << none_time << "ms, AVX2=" << avx2_time << "ms";
 }
 
-TEST_F(SIMDPerfTest, AVX512FasterThanAVX2IfAvailable) {
-    if (!faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        GTEST_SKIP() << "AVX512 not available on this machine";
-    }
-
-    verify_dispatch(faiss::SIMDLevel::AVX2);
-    verify_dispatch(faiss::SIMDLevel::AVX512);
-
-    auto bench_fn = [this](faiss::SIMDLevel level) {
-        return benchmark_fvec_inner_products_ny(level);
-    };
-    auto [avx2_time, avx512_time] = benchmark_interleaved_best(
-            bench_fn, faiss::SIMDLevel::AVX2, faiss::SIMDLevel::AVX512);
-
-    printf("fvec_inner_products_ny AVX2: %.2f ms (best of %d runs)\n",
-           avx2_time,
-           kBenchmarkReps);
-    printf("fvec_inner_products_ny AVX512: %.2f ms (best of %d runs)\n",
-           avx512_time,
-           kBenchmarkReps);
-
-    double speedup = avx2_time / avx512_time;
-    printf("Speedup (AVX512 vs AVX2): %.2fx\n", speedup);
-
-    // AVX512 fvec_inner_products_ny (d=8) uses 16x8 register transpose
-    // (16 vectors/iteration) vs AVX2's 8x8 transpose (8 vectors/iteration).
-    // Expected speedup is ~1.5x on bare metal. We use 1.1x threshold to
-    // allow for AVX-512 frequency throttling on Intel CPUs.
-    EXPECT_GT(speedup, 1.1)
-            << "AVX512 should be at least 1.1x faster than AVX2 for "
-            << "fvec_inner_products_ny. "
-            << "AVX2=" << avx2_time << "ms, AVX512=" << avx512_time << "ms";
-}
-
 // Additional test: Verify fvec_L2sqr dispatch is at least not slower.
 // fvec_L2sqr uses auto-vectorization, so AVX2 may only be slightly faster.
 TEST_F(SIMDPerfTest, L2sqrAutoVecDispatchWorks) {

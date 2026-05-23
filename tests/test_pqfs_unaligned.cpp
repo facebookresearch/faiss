@@ -59,9 +59,7 @@ TEST(FastScanUnaligned, TestUnalignedCodesAccess) {
 #endif
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dist(
-            std::numeric_limits<uint8_t>::min(),
-            std::numeric_limits<uint8_t>::max());
+    std::uniform_int_distribution<int> dist(0, 255);
 
     std::vector<uint8_t> aligned_buffer =
             create_aligned_buffer(code_size, alignment);

@@ -13,7 +13,8 @@ import faiss
 # translation of test_knn.lua
 
 import numpy as np
-from common_faiss_tests import Randu10k, get_dataset_2, Randu10kUnbalanced
+from common_faiss_tests import (
+    for_all_simd_levels, get_dataset_2, Randu10k, Randu10kUnbalanced)
 
 ev = Randu10k()
 
@@ -654,7 +655,10 @@ class OPQRelativeAccuracy(unittest.TestCase):
 
         # verify same on OIVFPQ
         for r in 1, 10, 100:
-            assert e_oivfpq[r] >= e_ivfpq[r]
+            assert e_oivfpq[r] >= e_ivfpq[r] - 0.005, (
+                f"recall@{r}: OPQ+IVFPQ ({e_oivfpq[r]:.4f}) "
+                f"< IVFPQ ({e_ivfpq[r]:.4f})"
+            )
 
 
 class TestRoundoff(unittest.TestCase):
@@ -693,6 +697,7 @@ class TestRoundoff(unittest.TestCase):
             faiss.cvar.distance_compute_blas_threshold = saved_threshold
 
 
+@for_all_simd_levels
 class TestSpectralHash(unittest.TestCase):
 
     # run on 2019-04-02

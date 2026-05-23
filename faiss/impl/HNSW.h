@@ -16,9 +16,7 @@
 #include <faiss/Index.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/impl/maybe_owned_vector.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
 
@@ -27,6 +25,8 @@ namespace faiss {
 // Forward declarations to avoid circular dependency.
 struct IndexHNSW;
 struct IndexHNSWFlatPanorama;
+struct MinimaxHeap;
+class LockVector;
 
 /** Implementation of the Hierarchical Navigable Small World
  * datastructure.
@@ -170,7 +170,7 @@ struct HNSW {
             storage_idx_t nearest,
             float d_nearest,
             int level,
-            omp_lock_t* locks,
+            LockVector& locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
@@ -180,7 +180,7 @@ struct HNSW {
             DistanceComputer& ptdis,
             int pt_level,
             int pt_id,
-            std::vector<omp_lock_t>& locks,
+            LockVector& locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 

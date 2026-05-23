@@ -22,11 +22,11 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
-  linux-x86_64-GPU-packages-CUDA-12-4-0:
-    name: Linux x86_64 GPU packages (CUDA 12.6)
+  linux-x86_64-GPU-packages-CUDA-13-2-0:
+    name: Linux x86_64 GPU packages (CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
-      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+      CUDA_ARCHS: "75-real;80;86-real;90;100;120"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,12 +39,12 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
-          cuda: "12.6"
-  linux-x86_64-GPU-CUVS-packages-CUDA12-4-0:
-    name: Linux x86_64 GPU w/ cuVS packages (CUDA 12.6)
+          cuda: "13.2"
+  linux-x86_64-GPU-CUVS-packages-CUDA13-2-0:
+    name: Linux x86_64 GPU w/ cuVS packages (CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
-      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+      CUDA_ARCHS: "75-real;80;86-real;90;100;120"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
         with:
           label: main
           cuvs: "ON"
-          cuda: "12.6"
+          cuda: "13.2"
   windows-x86_64-packages:
     name: Windows x86_64 packages
     runs-on: windows-2022
