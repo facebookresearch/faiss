@@ -203,7 +203,7 @@ void IndexShardsTemplate<IndexT>::search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
-    int64_t nshard = this->count();
+    int nshard = this->count();
 
     std::vector<distance_t> all_distances(nshard * k * n);
     std::vector<idx_t> all_labels(nshard * k * n);

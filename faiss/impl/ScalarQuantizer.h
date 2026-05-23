@@ -33,6 +33,12 @@ struct ScalarQuantizer : Quantizer {
         QT_bf16,
         QT_8bit_direct_signed, ///< fast indexing of signed int8s ranging from
                                ///< [-128 to 127]
+        QT_0bit, ///< 0 bits per component, centroid-only distance (for IVF)
+        QT_1bit_tqmse, ///< TurboQuant MSE-optimized, 1 bit per component
+        QT_2bit_tqmse, ///< TurboQuant MSE-optimized, 2 bits per component
+        QT_3bit_tqmse, ///< TurboQuant MSE-optimized, 3 bits per component
+        QT_4bit_tqmse, ///< TurboQuant MSE-optimized, 4 bits per component
+        QT_8bit_tqmse, ///< TurboQuant MSE-optimized, 8 bits per component
         QT_count
     };
 
@@ -100,6 +106,25 @@ struct ScalarQuantizer : Quantizer {
         SQDistanceComputer() : FlatCodesDistanceComputer(nullptr) {}
 
         virtual float query_to_code(const uint8_t* code) const = 0;
+
+        /// Compute four query-to-code distances in one call. Default loops
+        /// query_to_code four times; per-SIMD specializations may batch the
+        /// inner dim loop across the four codes to amortize query state and
+        /// expose ILP across independent accumulators.
+        virtual void query_to_codes_batch_4(
+                const uint8_t* code_0,
+                const uint8_t* code_1,
+                const uint8_t* code_2,
+                const uint8_t* code_3,
+                float& dis0,
+                float& dis1,
+                float& dis2,
+                float& dis3) const {
+            dis0 = query_to_code(code_0);
+            dis1 = query_to_code(code_1);
+            dis2 = query_to_code(code_2);
+            dis3 = query_to_code(code_3);
+        }
 
         float distance_to_code(const uint8_t* code) final {
             return query_to_code(code);

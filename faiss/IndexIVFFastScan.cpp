@@ -254,14 +254,14 @@ void estimators_from_tables_generic(
         const dis_t* __restrict dt = dis_table;
 
         for (size_t m = 0; m < index.M - nscale; m++) {
-            uint64_t c = bsr.read(index.nbits);
+            uint64_t c = bsr.read(static_cast<int>(index.nbits));
             dis += dt[c];
             dt += index.ksub;
         }
 
         if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
-                uint64_t c = bsr.read(index.nbits);
+                uint64_t c = bsr.read(static_cast<int>(index.nbits));
                 dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
@@ -368,7 +368,11 @@ void IndexIVFFastScan::search_preassigned(
         IndexIVFStats* stats) const {
     size_t cur_nprobe = this->nprobe;
     if (params) {
-        FAISS_THROW_IF_NOT(params->max_codes == 0);
+        // Range-search-only option.
+        FAISS_THROW_IF_NOT_MSG(
+                params->max_empty_result_buckets == 0,
+                "max_empty_result_buckets is a range-search knob and is "
+                "not honored by fastscan knn search");
         cur_nprobe = params->nprobe;
     }
 
@@ -395,6 +399,18 @@ void IndexIVFFastScan::range_search(
         params = dynamic_cast<const IVFSearchParameters*>(params_in);
         FAISS_THROW_IF_NOT_MSG(
                 params, "IndexIVFFastScan params have incorrect type");
+        // k-NN-only options.
+        FAISS_THROW_IF_NOT_MSG(
+                params->max_lists_num == 0,
+                "max_lists_num is a knn knob and is not honored by "
+                "fastscan range search");
+        FAISS_THROW_IF_NOT_MSG(
+                !params->ensure_topk_full,
+                "ensure_topk_full is a knn knob and is not honored by "
+                "fastscan range search");
+        FAISS_THROW_IF_NOT_MSG(
+                params->max_codes == 0,
+                "max_codes is not honored by fastscan range search");
         cur_nprobe = params->nprobe;
     }
     FastScanDistancePostProcessing empty_context{};
@@ -462,7 +478,7 @@ int compute_search_nslice(
         size_t cur_nprobe) {
     int nslice;
     if (n <= static_cast<size_t>(omp_get_max_threads())) {
-        nslice = n;
+        nslice = static_cast<int>(n);
     } else if (index->lookup_table_is_3d()) {
         // make sure we don't make too big LUT tables
         size_t lut_size_per_query = index->M * index->ksub * cur_nprobe *
@@ -471,8 +487,8 @@ int compute_search_nslice(
         size_t max_lut_size = precomputed_table_max_bytes;
         // how many queries we can handle within mem budget
         size_t nq_ok = std::max(max_lut_size / lut_size_per_query, size_t(1));
-        nslice = roundup(
-                std::max(size_t(n / nq_ok), size_t(1)), omp_get_max_threads());
+        nslice = static_cast<int>(roundup(
+                std::max(size_t(n / nq_ok), size_t(1)), omp_get_max_threads()));
     } else {
         // LUTs unlikely to be a limiting factor
         nslice = omp_get_max_threads();
@@ -526,8 +542,14 @@ void IndexIVFFastScan::search_dispatch_implem(
     // actual implementation used
     int impl = implem;
 
+    // Early-stop k-NN options require the per-query implementations.
+    const bool any_early_term_knob = params &&
+            (params->max_codes != 0 || params->max_lists_num != 0 ||
+             params->ensure_topk_full);
+
     if (impl == 0) {
-        if (bbs == 32) {
+        // Auto-select the per-query path when early-stop budgets are used.
+        if (bbs == 32 && !any_early_term_knob) {
             impl = 12;
         } else {
             impl = 10;
@@ -544,6 +566,15 @@ void IndexIVFFastScan::search_dispatch_implem(
         impl -= 100;
     }
 
+    if (any_early_term_knob) {
+        FAISS_THROW_IF_NOT_MSG(
+                impl == 10 || impl == 11,
+                "max_codes / max_lists_num / ensure_topk_full are only "
+                "supported by IndexIVFFastScan implem 10/11; set "
+                "index.implem = 10 (or 11 for k>20) explicitly, or leave it "
+                "at the default 0");
+    }
+
     CoarseQuantizedWithBuffer cq(cq_in);
     cq.nprobe = cur_nprobe;
 
@@ -552,7 +583,7 @@ void IndexIVFFastScan::search_dispatch_implem(
         // sliced over threads (then it is more efficient to have each thread do
         // its own coarse quantization)
         cq.quantize(quantizer, n, x, quantizer_params);
-        invlists->prefetch_lists(cq.ids, n * cq.nprobe);
+        invlists->prefetch_lists(cq.ids, static_cast<int>(n * cq.nprobe));
     }
 
     if (impl == 1) {
@@ -597,6 +628,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                     search_implem_10(
                             n,
                             x,
+                            k,
                             *handler,
                             cq,
                             &ndis,
@@ -658,6 +690,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                         search_implem_10(
                                 i1 - i0,
                                 x + i0 * d,
+                                k,
                                 *handler,
                                 cq_i,
                                 &ndis,
@@ -695,11 +728,23 @@ void IndexIVFFastScan::range_search_dispatch_implem(
     if (n == 0) {
         return;
     }
+    // FastScan range early-stop budget: enabled only for ordered per-query
+    // scanning below.
+    const bool use_empty_result_early_exit =
+            params && params->max_empty_result_buckets != 0;
+    const int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
+    FAISS_THROW_IF_NOT_MSG(
+            !use_empty_result_early_exit || pmode == 0,
+            "max_empty_result_buckets supported only for parallel_mode = 0");
+
     // actual implementation used
     int impl = implem;
 
     if (impl == 0) {
-        if (bbs == 32) {
+        if (use_empty_result_early_exit) {
+            // Empty-bucket early stop needs per-query probe order.
+            impl = 10;
+        } else if (bbs == 32) {
             impl = 12;
         } else {
             impl = 10;
@@ -715,9 +760,14 @@ void IndexIVFFastScan::range_search_dispatch_implem(
         impl -= 100;
     }
 
+    FAISS_THROW_IF_NOT_MSG(
+            !use_empty_result_early_exit || impl == 10,
+            "max_empty_result_buckets is only supported by "
+            "IndexIVFFastScan range-search implem 10");
+
     if (!multiple_threads && !cq.done()) {
         cq.quantize(quantizer, n, x, quantizer_params);
-        invlists->prefetch_lists(cq.ids, n * cq.nprobe);
+        invlists->prefetch_lists(cq.ids, static_cast<int>(n * cq.nprobe));
     }
 
     size_t ndis = 0, nlist_visited = 0;
@@ -740,12 +790,13 @@ void IndexIVFFastScan::range_search_dispatch_implem(
             search_implem_10(
                     n,
                     x,
+                    /*k=*/0, // range search has no k
                     *handler,
                     cq,
                     &ndis,
                     &nlist_visited,
                     context,
-                    nullptr,
+                    params,
                     *scanner);
         } else {
             FAISS_THROW_FMT("Range search implem %d not implemented", impl);
@@ -784,12 +835,13 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                     search_implem_10(
                             i1 - i0,
                             x + i0 * d,
+                            /*k=*/0,
                             *handler,
                             cq_i,
                             &ndis,
                             &nlist_visited,
                             context,
-                            nullptr,
+                            params,
                             *scanner);
                 }
             }
@@ -962,12 +1014,13 @@ void IndexIVFFastScan::search_implem_2(
 void IndexIVFFastScan::search_implem_10(
         idx_t n,
         const float* x,
+        idx_t k,
         SIMDResultHandlerToFloat& handler,
         const CoarseQuantized& cq,
         size_t* ndis_out,
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
-        const IVFSearchParameters* /* params */,
+        const IVFSearchParameters* params,
         FastScanCodeScanner& scanner) const {
     size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> dis_tables;
@@ -984,18 +1037,56 @@ void IndexIVFFastScan::search_implem_10(
     handler.begin(skip & 16 ? nullptr : normalizers.get());
     size_t cur_nprobe = cq.nprobe;
 
+    // Per-query early-stop options from SearchParametersIVF.
+    const size_t param_max_codes = params ? params->max_codes : 0;
+    const size_t param_max_lists_num = params ? params->max_lists_num : 0;
+    const bool ensure_topk_full = params ? params->ensure_topk_full : false;
+    const size_t cur_max_codes = (param_max_codes == 0)
+            ? std::numeric_limits<size_t>::max()
+            : param_max_codes;
+    const size_t cur_max_lists_num =
+            (param_max_lists_num == 0) ? cur_nprobe : param_max_lists_num;
+    // Effective budgets are the values tested in the probe loop below.
+    // ensure_topk_full raises small budgets to reduce empty result slots.
+    const size_t effective_max_codes = ensure_topk_full
+            ? std::max(cur_max_codes, (size_t)k)
+            : cur_max_codes;
+    const size_t effective_max_lists_num = ensure_topk_full
+            ? std::max(cur_max_lists_num, (size_t)k)
+            : cur_max_lists_num;
+    const bool is_range_search = k == 0;
+    const size_t max_empty_result_buckets =
+            (is_range_search && params) ? params->max_empty_result_buckets : 0;
+
     // Allocate probe_map once and reuse it
     std::vector<int> probe_map;
     probe_map.reserve(1);
 
     for (idx_t i = 0; i < n; i++) {
         const uint8_t* LUT = nullptr;
-        qmap1[0] = i;
+        qmap1[0] = static_cast<int>(i);
 
         if (single_LUT) {
             LUT = dis_tables.get() + i * dim12;
         }
+        // Per-query counters. For k-NN, the handler count excludes rows
+        // filtered by IDSelector.
+        const size_t scan0 = handler.count_scanned_rows();
+        size_t nscan_q = 0;
+        size_t nlists_visited_q = 0;
+        size_t nempty_result_buckets = 0;
         for (size_t j = 0; j < cur_nprobe; j++) {
+            if (!is_range_search) {
+                nscan_q = handler.count_scanned_rows() - scan0;
+            }
+            // Early-stop check: apply k-NN max_codes/max_lists_num before
+            // starting the next list. nscan_q excludes IDSelector-filtered
+            // rows.
+            if (nscan_q >= effective_max_codes ||
+                nlists_visited_q >= effective_max_lists_num) {
+                break;
+            }
+            const size_t prev_in_range_num = handler.in_range_num;
             size_t ij = i * cur_nprobe + j;
             if (!single_LUT) {
                 LUT = dis_tables.get() + ij * dim12;
@@ -1006,10 +1097,22 @@ void IndexIVFFastScan::search_implem_10(
 
             idx_t list_no = cq.ids[ij];
             if (list_no < 0) {
+                // Early-stop check: invalid probes count as empty range
+                // buckets.
+                if (max_empty_result_buckets > 0 &&
+                    ++nempty_result_buckets >= max_empty_result_buckets) {
+                    break;
+                }
                 continue;
             }
             size_t ls = invlists->list_size(list_no);
             if (ls == 0) {
+                // Early-stop check: empty inverted lists count as empty range
+                // buckets.
+                if (max_empty_result_buckets > 0 &&
+                    ++nempty_result_buckets >= max_empty_result_buckets) {
+                    break;
+                }
                 continue;
             }
 
@@ -1036,6 +1139,23 @@ void IndexIVFFastScan::search_implem_10(
 
             ndis += ls;
             nlist_visited++;
+            if (is_range_search) {
+                nscan_q += ls;
+            }
+            nlists_visited_q++;
+
+            if (max_empty_result_buckets > 0) {
+                // Early-stop check: apply the range-search empty-bucket
+                // budget after each visited list; any hit resets the counter.
+                if (handler.in_range_num == prev_in_range_num) {
+                    nempty_result_buckets++;
+                    if (nempty_result_buckets >= max_empty_result_buckets) {
+                        break;
+                    }
+                } else {
+                    nempty_result_buckets = 0;
+                }
+            }
         }
     }
 
@@ -1094,7 +1214,7 @@ void IndexIVFFastScan::search_implem_12(
 
     // prepare the result handlers
 
-    int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
+    int actual_qbs2 = static_cast<int>(this->qbs2 ? this->qbs2 : 11);
 
     std::vector<uint16_t> tmp_bias;
     if (biases.get()) {
@@ -1131,7 +1251,7 @@ void IndexIVFFastScan::search_implem_12(
         nlist_visited++;
 
         // re-organize LUTs and biases into the right order
-        int nc = i1 - i0;
+        int nc = static_cast<int>(i1 - i0);
 
         std::vector<int> q_map(nc), lut_entries(nc);
         AlignedTable<uint8_t> LUT(nc * dim12);
@@ -1141,7 +1261,7 @@ void IndexIVFFastScan::search_implem_12(
         for (size_t i = i0; i < i1; i++) {
             const QC& qc = qcs[i];
             q_map[i - i0] = qc.qno;
-            int ij = qc.qno * cur_nprobe + qc.rank;
+            int ij = static_cast<int>(qc.qno * cur_nprobe + qc.rank);
             lut_entries[i - i0] = single_LUT ? qc.qno : ij;
             if (biases.get()) {
                 tmp_bias[i - i0] = biases[ij];
@@ -1149,7 +1269,7 @@ void IndexIVFFastScan::search_implem_12(
         }
         pq4_pack_LUT_qbs_q_map(
                 qbs_for_list,
-                M2,
+                static_cast<int>(M2),
                 dis_tables.get(),
                 lut_entries.data(),
                 LUT.get());
@@ -1180,7 +1300,7 @@ void IndexIVFFastScan::search_implem_12(
         scanner.accumulate_loop_qbs(
                 qbs_for_list,
                 list_size,
-                M2,
+                static_cast<int>(M2),
                 codes.get(),
                 LUT.get(),
                 context.pq2x4_scale,
@@ -1328,7 +1448,7 @@ void IndexIVFFastScan::search_implem_14(
         SIMDResultHandlerToFloat* handler_ptr = scanner->handler();
         handler_ptr->begin(normalizers.get());
 
-        int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
+        int actual_qbs2 = static_cast<int>(this->qbs2 ? this->qbs2 : 11);
 
         std::vector<uint16_t> tmp_bias;
         if (biases.get()) {
@@ -1353,7 +1473,7 @@ void IndexIVFFastScan::search_implem_14(
             int list_no = qcs[i0].list_no;
 
             // re-organize LUTs and biases into the right order
-            int nc = i1 - i0;
+            int nc = static_cast<int>(i1 - i0);
 
             std::vector<int> q_map(nc), lut_entries(nc);
             AlignedTable<uint8_t> LUT(nc * dim12);
@@ -1364,7 +1484,7 @@ void IndexIVFFastScan::search_implem_14(
                 const QC& qc = qcs[i];
                 q_map[i - i0] = qc.qno;
                 q_set.insert(qc.qno);
-                int ij = qc.qno * cur_nprobe + qc.rank;
+                int ij = static_cast<int>(qc.qno * cur_nprobe + qc.rank);
                 lut_entries[i - i0] = single_LUT ? qc.qno : ij;
                 if (biases.get()) {
                     tmp_bias[i - i0] = biases[ij];
@@ -1372,7 +1492,7 @@ void IndexIVFFastScan::search_implem_14(
             }
             pq4_pack_LUT_qbs_q_map(
                     qbs_for_list,
-                    M2,
+                    static_cast<int>(M2),
                     dis_tables.get(),
                     lut_entries.data(),
                     LUT.get());
@@ -1403,7 +1523,7 @@ void IndexIVFFastScan::search_implem_14(
             scanner->accumulate_loop_qbs(
                     qbs_for_list,
                     list_size,
-                    M2,
+                    static_cast<int>(M2),
                     codes.get(),
                     LUT.get(),
                     context.pq2x4_scale,
@@ -1465,7 +1585,7 @@ void IndexIVFFastScan::reconstruct_from_offset(
     for (size_t m = 0; m < M; m++) {
         uint8_t c =
                 pq4_get_packed_element(list_codes.get(), bbs, M2, offset, m);
-        bsw.write(c, nbits);
+        bsw.write(c, static_cast<int>(nbits));
     }
 
     sa_decode(1, code.data(), recons);
@@ -1488,7 +1608,7 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
             for (size_t m = 0; m < M; m++) {
                 uint8_t c =
                         pq4_get_packed_element(codes.get(), bbs, M2, offset, m);
-                bsw.write(c, nbits);
+                bsw.write(c, static_cast<int>(nbits));
             }
 
             // get id

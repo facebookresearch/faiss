@@ -126,6 +126,24 @@ def handle_Clustering(the_class):
     replace_method(the_class, 'train_encoded', replacement_train_encoded)
 
 
+def handle_SuperKMeans(the_class):
+
+    def replacement_train(self, x):
+        """Perform SuperKMeans clustering on a set of vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, self.d). `dtype` must be float32.
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        self.train_c(n, swig_ptr(x))
+
+    replace_method(the_class, 'train', replacement_train)
+
+
 def handle_Clustering1D(the_class):
 
     def replacement_train_exact(self, x):
@@ -770,6 +788,8 @@ def handle_Index(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='float32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='float32')
 
         self.search_preassigned_c(
             n, swig_ptr(x),
@@ -823,6 +843,8 @@ def handle_Index(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='float32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='float32')
 
         thresh = float(thresh)
         res = RangeSearchResult(n)
@@ -842,11 +864,12 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype='float32')
+        code_size = self.sa_code_size()
 
         if codes is None:
-            codes = np.empty((n, self.sa_code_size()), dtype=np.uint8)
+            codes = np.empty((n, code_size), dtype=np.uint8)
         else:
-            assert codes.shape == (n, self.sa_code_size())
+            assert codes.shape == (n, code_size)
 
         self.sa_encode_c(n, swig_ptr(x), swig_ptr(codes))
         return codes
@@ -869,10 +892,12 @@ def handle_Index(the_class):
         assert cs == self.sa_code_size()
         codes = _check_dtype_uint8(codes)
 
+        ids_ptr = None
         if ids is not None:
             assert ids.shape == (n,)
-            ids = swig_ptr(ids)
-        self.add_sa_codes_c(n, swig_ptr(codes), ids)
+            ids = np.ascontiguousarray(ids, dtype="int64")
+            ids_ptr = swig_ptr(ids)
+        self.add_sa_codes_c(n, swig_ptr(codes), ids_ptr)
 
     def replacement_permute_entries(self, perm):
         n, = perm.shape
@@ -997,6 +1022,8 @@ def handle_IndexBinary(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='int32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='int32')
 
         self.search_preassigned_c(
             n, swig_ptr(x),
@@ -1032,6 +1059,8 @@ def handle_IndexBinary(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='int32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='int32')
 
         thresh = int(thresh)
         res = RangeSearchResult(n)
@@ -1295,11 +1324,9 @@ class RememberSwigOwnership:
 
 
 def handle_SearchParameters(the_class):
-    """ this wrapper is to enable initializations of the form
-    SearchParametersXX(a=3, b=SearchParamsYY)
-    This also requires the enclosing class to keep a reference on the
-    sub-object, since the C++ code assumes the object ownership is
-    handled externally.
+    """Protect SearchParameters from leaking SWIG-owned sub-objects assigned
+    via either kwargs construction (SearchParametersXX(sel=x)) or bare
+    attribute assignment (params.sel = x).
     """
     the_class.original_init = the_class.__init__
 
@@ -1307,12 +1334,32 @@ def handle_SearchParameters(the_class):
         self.original_init()
         for k, v in args.items():
             assert hasattr(self, k)
-            with RememberSwigOwnership(v):
-                setattr(self, k, v)
-            if type(v) not in (int, float, bool, str):
-                add_to_referenced_objects(self, v)
+            setattr(self, k, v)
 
     the_class.__init__ = replacement_init
+
+    # Install __setattr__ once per hierarchy; subclasses inherit via MRO.
+    if getattr(the_class, "_protected_setattr", False):
+        return
+    parent_setattr = the_class.__setattr__
+
+    def replacement_setattr(self, k, v):
+        # Per-field ref dict. Reassigning the same field drops the prior
+        # ref instead of accumulating, so a long-lived SearchParameters
+        # with repeated `params.sel = ...` does not leak.
+        if v is not None and hasattr(v, "thisown"):
+            if not hasattr(self, "_sp_field_refs"):
+                parent_setattr(self, "_sp_field_refs", {})
+            with RememberSwigOwnership(v):
+                parent_setattr(self, k, v)
+            self._sp_field_refs[k] = v
+        else:
+            parent_setattr(self, k, v)
+            if hasattr(self, "_sp_field_refs"):
+                self._sp_field_refs.pop(k, None)
+
+    the_class.__setattr__ = replacement_setattr
+    the_class._protected_setattr = True
 
 
 def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):

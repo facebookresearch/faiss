@@ -298,7 +298,6 @@ struct ArrayInvertedLists : InvertedLists {
 /// Level-oriented storage as defined in the IVFFlat section of Panorama
 /// (https://www.arxiv.org/pdf/2510.00566).
 struct ArrayInvertedListsPanorama : ArrayInvertedLists {
-    static constexpr size_t kBatchSize = 128;
     std::vector<MaybeOwnedVector<float>> cum_sums;
     const size_t n_levels;
     const size_t level_width; // in code units
@@ -307,7 +306,8 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     ArrayInvertedListsPanorama(
             size_t nlist_in,
             size_t code_size_in,
-            size_t n_levels_in);
+            size_t n_levels_in,
+            size_t batch_size = Panorama::kDefaultBatchSize);
 
     const float* get_cum_sums(size_t list_no) const;
 

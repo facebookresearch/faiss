@@ -33,6 +33,30 @@ class TestPCA(unittest.TestCase):
             self.assertGreater(prev, o)
             prev = o
 
+    def test_pca_retraining_gram_path(self):
+        # Regression test for the sgemm_ beta=0 fix in PCAMatrix::train.
+        # When n < d_in, train() takes the Gram-matrix code path and
+        # writes PCAMat via sgemm_. Before the fix, beta=1.0 caused the
+        # second train() call to accumulate stale values from the first
+        # call, corrupting the PCA basis. Calling train() twice with the
+        # same data must produce the same projection.
+        d = 64
+        n = 20  # n < d_in exercises the Gram-matrix branch
+        np.random.seed(123)
+        x = np.random.random(size=(n, d)).astype('float32')
+
+        pca = faiss.PCAMatrix(d, 8)
+        pca.train(x)
+        y_first = pca.apply_py(x)
+
+        pca.train(x)
+        y_second = pca.apply_py(x)
+
+        # Eigenvectors are unique up to per-component sign; compare abs.
+        np.testing.assert_allclose(
+            np.abs(y_first), np.abs(y_second), atol=1e-4
+        )
+
     def test_pca_epsilon(self):
         d = 64
         n = 1000

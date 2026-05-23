@@ -12,7 +12,7 @@ import unittest
 import faiss
 import re
 
-from common_faiss_tests import get_dataset, get_dataset_2
+from common_faiss_tests import for_all_simd_levels, get_dataset, get_dataset_2
 from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
@@ -23,6 +23,7 @@ class TestModuleInterface(unittest.TestCase):
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
 
 
+@for_all_simd_levels
 class TestIndexFlat(unittest.TestCase):
 
     def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
@@ -110,6 +111,92 @@ class TestIndexFlat(unittest.TestCase):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
 
+@for_all_simd_levels
+class TestDbParallelSearch(unittest.TestCase):
+    """Test the database-parallel search path that activates when
+    the number of queries is smaller than the thread count and the
+    database is large enough. Validates correctness for both IP and L2
+    metrics, multiple k values, and edge cases."""
+
+    def _check(self, metric_type, nq, nb, k):
+        d = 64
+        np.random.seed(1234)
+        xb = np.random.random((nb, d)).astype('float32')
+        xq = np.random.random((nq, d)).astype('float32')
+
+        index = faiss.IndexFlat(d, metric_type)
+        index.add(xb)
+        D, I = index.search(xq, k)
+
+        # compute ground truth with numpy
+        if metric_type == faiss.METRIC_L2:
+            all_dis = (
+                (xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2
+            ).sum(2)
+            Iref = all_dis.argsort(axis=1)[:, :k]
+        else:
+            all_dis = np.dot(xq, xb.T)
+            Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
+
+        Dref = all_dis[np.arange(nq)[:, None], Iref]
+        np.testing.assert_almost_equal(Dref, D, decimal=5)
+
+    def test_ip_single_query(self):
+        """nx=1, triggers db-parallel when nthreads > 1"""
+        self._check(faiss.METRIC_INNER_PRODUCT, nq=1, nb=20000, k=10)
+
+    def test_ip_few_queries(self):
+        """nx=4, typical case for db-parallel"""
+        self._check(faiss.METRIC_INNER_PRODUCT, nq=4, nb=20000, k=10)
+
+    def test_l2_single_query(self):
+        self._check(faiss.METRIC_L2, nq=1, nb=20000, k=10)
+
+    def test_l2_few_queries(self):
+        self._check(faiss.METRIC_L2, nq=4, nb=20000, k=10)
+
+    def test_ip_k1(self):
+        """k=1 uses Top1BlockResultHandler in original path"""
+        self._check(faiss.METRIC_INNER_PRODUCT, nq=2, nb=20000, k=1)
+
+    def test_l2_k1(self):
+        self._check(faiss.METRIC_L2, nq=2, nb=20000, k=1)
+
+    def test_ip_large_k(self):
+        """k=200 uses ReservoirBlockResultHandler in original path"""
+        self._check(faiss.METRIC_INNER_PRODUCT, nq=2, nb=20000, k=200)
+
+    def test_l2_large_k(self):
+        self._check(faiss.METRIC_L2, nq=2, nb=20000, k=200)
+
+    def test_thread_scaling(self):
+        """Verify results are identical across different thread counts."""
+        d = 64
+        nb = 30000
+        nq = 2
+        k = 10
+        np.random.seed(42)
+        xb = np.random.random((nb, d)).astype('float32')
+        xq = np.random.random((nq, d)).astype('float32')
+
+        index = faiss.IndexFlatIP(d)
+        index.add(xb)
+
+        saved_nt = faiss.omp_get_max_threads()
+        try:
+            faiss.omp_set_num_threads(1)
+            D1, I1 = index.search(xq, k)
+
+            for nt in [2, 4, 8]:
+                faiss.omp_set_num_threads(nt)
+                Dn, In = index.search(xq, k)
+                np.testing.assert_array_equal(I1, In)
+                np.testing.assert_almost_equal(D1, Dn, decimal=5)
+        finally:
+            faiss.omp_set_num_threads(saved_nt)
+
+
+@for_all_simd_levels
 class TestIndexFlatL2(unittest.TestCase):
     def test_indexflat_l2_sync_norms_1(self):
         d = 32
@@ -145,6 +232,7 @@ class TestIndexFlatL2(unittest.TestCase):
         np.testing.assert_equal(D3, D1)
 
 
+@for_all_simd_levels
 class TestIndexFlatL2Panorama(unittest.TestCase):
     def test_indexflat_l2_panorama(self):
         d = 32
@@ -191,6 +279,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
             )
 
 
+@for_all_simd_levels
 class EvalIVFPQAccuracy(unittest.TestCase):
 
     def test_IndexIVFPQ(self):
@@ -343,6 +432,7 @@ class TestMultiIndexQuantizer(unittest.TestCase):
         self.assertEqual(np.abs(D1[:, :1] - D5[:, :1]).max(), 0)
 
 
+@for_all_simd_levels
 class TestScalarQuantizer(unittest.TestCase):
 
     def test_4variants_ivf(self):

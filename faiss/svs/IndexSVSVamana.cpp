@@ -31,6 +31,7 @@
 #include <svs/runtime/vamana_index.h>
 
 #include <cstddef>
+#include <cstring>
 #include <numeric>
 #include <span>
 #include <type_traits>
@@ -114,13 +115,32 @@ void IndexSVSVamana::add(idx_t n, const float* x) {
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
+
+    if (stored_vectors_valid) {
+        size_t prev = static_cast<size_t>(ntotal) * d;
+        stored_vectors.resize(prev + static_cast<size_t>(n) * d);
+        std::memcpy(stored_vectors.data() + prev, x, sizeof(float) * n * d);
+    }
     ntotal += n;
+}
+
+void IndexSVSVamana::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(
+            key >= 0 && key < ntotal,
+            "IndexSVSVamana::reconstruct: key out of range");
+    FAISS_THROW_IF_NOT_MSG(
+            stored_vectors_valid && !stored_vectors.empty(),
+            "IndexSVSVamana::reconstruct: stored_vectors unavailable "
+            "(invalidated by remove_ids or not restored after deserialization)");
+    std::memcpy(recons, stored_vectors.data() + key * d, sizeof(float) * d);
 }
 
 void IndexSVSVamana::reset() {
     if (impl) {
         impl->reset();
     }
+    stored_vectors.clear();
+    stored_vectors_valid = true;
     is_trained = false;
     ntotal = 0;
 }
@@ -189,6 +209,8 @@ size_t IndexSVSVamana::remove_ids(const IDSelector& sel) {
     size_t removed = 0;
     auto Status = impl->remove_selected(&removed, id_filter);
     ntotal -= removed;
+    stored_vectors.clear();
+    stored_vectors_valid = false;
     return removed;
 }
 

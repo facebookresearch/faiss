@@ -12,7 +12,6 @@
 
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexRaBitQ.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -188,7 +187,7 @@ struct RaBitQHeapHandler
         }
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
         ALIGNED(32) uint16_t d32tab[32];
         d0.store(d32tab);
         d1.store(d32tab + 16);
@@ -213,21 +212,12 @@ struct RaBitQHeapHandler
         const uint8_t* aux_base = rabitq_index->codes.get() +
                 block_idx * full_block_size + packed_block_size;
 
-#ifndef NDEBUG
-        size_t local_1bit_evaluations = 0;
-        size_t local_multibit_evaluations = 0;
-#endif
-
         for (size_t i = 0; i < max_vectors; i++) {
             const size_t db_idx = base_db_idx + i;
             const float normalized_distance = d32tab[i] * one_a + bias;
             const uint8_t* base_ptr = aux_base + i * storage_size;
 
             if (is_multi_bit) {
-#ifndef NDEBUG
-                local_1bit_evaluations++;
-#endif
-
                 const SignBitFactorsWithError& full_factors =
                         *reinterpret_cast<const SignBitFactorsWithError*>(
                                 base_ptr);
@@ -252,9 +242,6 @@ struct RaBitQHeapHandler
                         is_similarity);
 
                 if (should_refine) {
-#ifndef NDEBUG
-                    local_multibit_evaluations++;
-#endif
                     float dist_full = compute_full_multibit_distance(db_idx, q);
 
                     if (Cfloat::cmp(heap_dis[0], dist_full)) {
@@ -282,13 +269,6 @@ struct RaBitQHeapHandler
                 }
             }
         }
-
-#ifndef NDEBUG
-#pragma omp atomic
-        rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-        rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
-#endif
     }
 
     void begin(const float* norms) override {

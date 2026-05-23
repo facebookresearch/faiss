@@ -15,6 +15,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
 #include <algorithm>
@@ -28,6 +29,9 @@ template <typename T, typename TI>
 struct ResultHandlerUnordered {
     // if not better than threshold, then not necessary to call add_result
     T threshold{};
+
+    // per-list scan statistics populated by inverted-list scanners
+    InvertedListScannerStats stats;
 
     // return whether threshold was updated
     virtual bool add_result(T dis, TI idx) = 0;
@@ -373,8 +377,9 @@ struct HeapBlockResultHandler : TopkBlockResultHandler<C, use_sel> {
 
     /// series of results for queries i0..i1 is done
     void end_multiple() final {
-        // maybe parallel for
-        for (size_t i = i0; i < i1; i++) {
+#pragma omp parallel for schedule(static) if ((i1 - i0) * k >= 1024)
+        for (int64_t i = static_cast<int64_t>(i0); i < static_cast<int64_t>(i1);
+             i++) {
             heap_reorder<C>(k, this->dis_tab + i * k, this->ids_tab + i * k);
         }
     }
@@ -564,9 +569,10 @@ struct ReservoirBlockResultHandler : TopkBlockResultHandler<C, use_sel> {
 
     /// series of results for queries i0..i1 is done
     void end_multiple() final {
-        // maybe parallel for
-        for (size_t i = i0; i < i1; i++) {
-            reservoirs[i - i0].to_result(
+#pragma omp parallel for schedule(static) if ((i1 - i0) * this->k >= 1024)
+        for (int64_t i = static_cast<int64_t>(i0); i < static_cast<int64_t>(i1);
+             i++) {
+            reservoirs[i - static_cast<int64_t>(i0)].to_result(
                     this->dis_tab + i * this->k, this->ids_tab + i * this->k);
         }
     }
@@ -592,6 +598,7 @@ struct RangeResultHandler : ResultHandlerT<C> {
     bool add_result(T dis, TI idx) final {
         if (C::cmp(threshold, dis)) {
             qr->add(dis, idx);
+            return true;
         }
         return false;
     }

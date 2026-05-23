@@ -106,17 +106,8 @@ struct Run_search_with_dc_res {
                 resi.begin(q);
                 dc_base->set_query(xq + d * q);
 
-                // Stats tracking for multi-bit two-stage search only
-                // n_1bit_evaluations: candidates evaluated using 1-bit lower
-                // bound n_multibit_evaluations: candidates requiring full
-                // multi-bit distance
-#ifndef NDEBUG
-                size_t local_1bit_evaluations = 0;
-                size_t local_multibit_evaluations = 0;
-#endif
-
                 if (ex_bits == 0) {
-                    // 1-bit: Standard single-stage search (no stats tracking)
+                    // 1-bit: Standard single-stage search
                     for (size_t i = 0; i < ntotal; i++) {
                         if (res.is_in_selection(i)) {
                             float dis = (*dc_base)(i);
@@ -135,7 +126,6 @@ struct Run_search_with_dc_res {
                             dc != nullptr,
                             "Failed to cast to RaBitQDistanceComputer for two-stage search");
 
-                    // Use appropriate comparison based on metric type
                     bool is_similarity =
                             is_similarity_metric(index->metric_type);
 
@@ -144,18 +134,9 @@ struct Run_search_with_dc_res {
                             const uint8_t* code =
                                     index->codes.data() + i * index->code_size;
 
-#ifndef NDEBUG
-                            local_1bit_evaluations++;
-#endif
-
-                            // Stage 1: Compute distance bound using 1-bit codes
-                            // For L2 (min-heap): use lower_bound (est -
-                            // error) For IP (max-heap): use upper_bound (est
-                            // + error)
                             float est_distance =
                                     dc->distance_to_code_1bit(code);
 
-                            // Extract f_error for filtering
                             size_t code_size_base = (index->d + 7) / 8;
                             const rabitq_utils::SignBitFactorsWithError*
                                     base_fac = reinterpret_cast<
@@ -163,7 +144,6 @@ struct Run_search_with_dc_res {
                                                     SignBitFactorsWithError*>(
                                             code + code_size_base);
 
-                            // Stage 2: Adaptive filtering
                             bool should_refine =
                                     rabitq_utils::should_refine_candidate(
                                             est_distance,
@@ -172,10 +152,6 @@ struct Run_search_with_dc_res {
                                             resi.threshold,
                                             is_similarity);
                             if (should_refine) {
-#ifndef NDEBUG
-                                local_multibit_evaluations++;
-#endif
-                                // Compute full multi-bit distance
                                 float dist_full =
                                         dc->distance_to_code_full(code);
                                 resi.add_result(dist_full, i);
@@ -183,15 +159,6 @@ struct Run_search_with_dc_res {
                         }
                     }
                 }
-
-#ifndef NDEBUG
-                // Update global stats atomically
-#pragma omp atomic
-                rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-                rabitq_stats.n_multibit_evaluations +=
-                        local_multibit_evaluations;
-#endif
 
                 resi.end();
             }

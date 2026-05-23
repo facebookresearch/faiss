@@ -21,9 +21,8 @@
  *   #include <faiss/impl/fast_scan/dispatching.h>
  *
  * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path
- * and QBS 256-bit path). The QBS helpers use pq4_kernel_qbs_256 only
- * because decompose_qbs.h pulls in 512-bit types that fail with
- * SINGLE_SIMD_LEVEL=NONE in DD mode.
+ * and QBS 256-bit path) and accumulate_loops_512.h (QBS 512-bit path,
+ * AVX512 TU only).
  */
 
 #ifndef THE_LEVEL_TO_DISPATCH
@@ -34,6 +33,10 @@
 
 #include <faiss/impl/fast_scan/accumulate_loops.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#include <faiss/impl/fast_scan/accumulate_loops_512.h>
+#endif
 
 namespace faiss {
 
@@ -67,8 +70,8 @@ struct ScannerMixIn : FastScanCodeScanner {
             int pq2x4_scale,
             size_t block_stride) override {
         if (pq2x4_scale) {
-            NormTableScaler<> scaler(pq2x4_scale);
-            pq4_accumulate_loop_fixed_scaler(
+            NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+            pq4_accumulate_loop_fixed_scaler<THE_LEVEL_TO_DISPATCH>(
                     nq,
                     nb,
                     bbs,
@@ -79,8 +82,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                     scaler,
                     block_stride);
         } else {
-            DummyScaler<> dummy;
-            pq4_accumulate_loop_fixed_scaler(
+            DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+            pq4_accumulate_loop_fixed_scaler<THE_LEVEL_TO_DISPATCH>(
                     nq,
                     nb,
                     bbs,
@@ -101,14 +104,62 @@ struct ScannerMixIn : FastScanCodeScanner {
             const uint8_t* LUT,
             int pq2x4_scale,
             size_t block_stride) override {
-        if (pq2x4_scale) {
-            NormTableScaler<> scaler(pq2x4_scale);
-            pq4_accumulate_loop_qbs_fixed_scaler_256(
-                    qbs, nb, nsq, codes, LUT, handler_, scaler, block_stride);
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+        constexpr bool use_avx512_qbs =
+                (THE_LEVEL_TO_DISPATCH == SIMDLevel::AVX512 ||
+                 THE_LEVEL_TO_DISPATCH == SIMDLevel::AVX512_SPR);
+#else
+        constexpr bool use_avx512_qbs = false;
+#endif
+        if constexpr (use_avx512_qbs) {
+            // Use 512-bit QBS kernels with properly-leveled scalers.
+            if (pq2x4_scale) {
+                NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+                pq4_accumulate_loop_qbs_fixed_scaler_512(
+                        qbs,
+                        nb,
+                        nsq,
+                        codes,
+                        LUT,
+                        handler_,
+                        scaler,
+                        block_stride);
+            } else {
+                DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+                pq4_accumulate_loop_qbs_fixed_scaler_512(
+                        qbs,
+                        nb,
+                        nsq,
+                        codes,
+                        LUT,
+                        handler_,
+                        dummy,
+                        block_stride);
+            }
         } else {
-            DummyScaler<> dummy;
-            pq4_accumulate_loop_qbs_fixed_scaler_256(
-                    qbs, nb, nsq, codes, LUT, handler_, dummy, block_stride);
+            if (pq2x4_scale) {
+                NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                        qbs,
+                        nb,
+                        nsq,
+                        codes,
+                        LUT,
+                        handler_,
+                        scaler,
+                        block_stride);
+            } else {
+                DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                        qbs,
+                        nb,
+                        nsq,
+                        codes,
+                        LUT,
+                        handler_,
+                        dummy,
+                        block_stride);
+            }
         }
     }
 };
@@ -137,15 +188,15 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
     // Helper lambda: given comparator C and with_id_map W, select handler
     auto make = [&]<class C, bool W>() -> std::unique_ptr<FastScanCodeScanner> {
         if (k == 1) {
-            using H = SingleResultHandler<C, W>;
+            using H = SingleResultHandler<C, W, THE_LEVEL_TO_DISPATCH>;
             return std::make_unique<ScannerMixIn<H>>(
                     nq, ntotal, distances, ids, sel);
         } else if (impl % 2 == 0) {
-            using H = HeapHandler<C, W>;
+            using H = HeapHandler<C, W, THE_LEVEL_TO_DISPATCH>;
             return std::make_unique<ScannerMixIn<H>>(
                     nq, ntotal, k, distances, ids, sel);
         } else {
-            using H = ReservoirHandler<C, W>;
+            using H = ReservoirHandler<C, W, THE_LEVEL_TO_DISPATCH>;
             return std::make_unique<ScannerMixIn<H>>(
                     nq, ntotal, size_t(k), size_t(2 * k), distances, ids, sel);
         }
@@ -180,11 +231,13 @@ std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl<
         const IDSelector* sel) {
     if (is_max) {
         using C = CMax<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<RangeHandler<C, true>>>(
+        return std::make_unique<
+                ScannerMixIn<RangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 rres, radius, ntotal, sel);
     } else {
         using C = CMin<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<RangeHandler<C, true>>>(
+        return std::make_unique<
+                ScannerMixIn<RangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 rres, radius, ntotal, sel);
     }
 }
@@ -201,11 +254,13 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
         const IDSelector* sel) {
     if (is_max) {
         using C = CMax<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<PartialRangeHandler<C, true>>>(
+        return std::make_unique<ScannerMixIn<
+                PartialRangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 pres, radius, ntotal, q0, q1, sel);
     } else {
         using C = CMin<uint16_t, int64_t>;
-        return std::make_unique<ScannerMixIn<PartialRangeHandler<C, true>>>(
+        return std::make_unique<ScannerMixIn<
+                PartialRangeHandler<C, true, THE_LEVEL_TO_DISPATCH>>>(
                 pres, radius, ntotal, q0, q1, sel);
     }
 }

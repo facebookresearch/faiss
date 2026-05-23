@@ -13,7 +13,6 @@
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/fast_scan/rabitq_result_handler.h>
@@ -112,17 +111,29 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Compute per-vector auxiliary storage size based on nb_bits
     size_t compute_per_vector_storage_size() const;
 
-   private:
-    /// Compute query factors and lookup table for a residual vector
-    /// (similar to IndexRaBitQFastScan::compute_float_LUT)
+    /// Override: compute and quantize LUT per-query to avoid O(n*nprobe*M*16)
+    /// float table allocation.
+    void compute_LUT_uint8(
+            size_t n,
+            const float* x,
+            const CoarseQuantized& cq,
+            AlignedTable<uint8_t>& dis_tables,
+            AlignedTable<uint16_t>& biases,
+            float* normalizers,
+            const FastScanDistancePostProcessing& context) const override;
+
+    /// Compute residual, query factors, and float LUT in two passes over d.
     void compute_residual_LUT(
-            const float* residual,
+            const float* query,
+            idx_t centroid_id,
             QueryFactorsData& query_factors,
             float* lut_out,
             uint8_t qb_param,
             bool centered_param,
-            const float* original_query = nullptr) const;
+            std::vector<float>& rotated_q,
+            std::vector<float>& centroid_buf) const;
 
+   private:
     /// Decode FastScan code to RaBitQ residual vector with explicit
     /// dp_multiplier
     void decode_fastscan_to_residual(
@@ -214,9 +225,6 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
     }
 }
 
-// Explicit alias — must match SIMDResultHandler::handle() signature.
-using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
-
 template <class C, SIMDLevel SL>
 void IVFRaBitQHeapHandler<C, SL>::handle(
         size_t q,
@@ -271,11 +279,6 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
     const size_t qb = context->qb > 0 ? context->qb : index->qb;
     const size_t d = index->d;
 
-#ifndef NDEBUG
-    size_t local_1bit_evaluations = 0;
-    size_t local_multibit_evaluations = 0;
-#endif
-
     for (size_t j = 0; j < max_positions; j++) {
         const int64_t result_id = this->adjust_id(b, j);
         if (result_id < 0) {
@@ -291,9 +294,6 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
         const uint8_t* base_ptr = aux_base + j * storage_size;
 
         if (is_multibit) {
-#ifndef NDEBUG
-            local_1bit_evaluations++;
-#endif
             const SignBitFactorsWithError& full_factors =
                     *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
 
@@ -312,9 +312,6 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                     heap_dis[0],
                     is_similarity);
             if (should_refine) {
-#ifndef NDEBUG
-                local_multibit_evaluations++;
-#endif
                 size_t local_offset = idx_base + j;
                 float dist_full = compute_full_multibit_distance(
                         local_q, q, local_offset, base_ptr);
@@ -342,13 +339,6 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
             }
         }
     }
-
-#ifndef NDEBUG
-#pragma omp atomic
-    rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-    rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
-#endif
 }
 
 template <class C, SIMDLevel SL>

@@ -9,7 +9,7 @@ import numpy as np
 import faiss
 from faiss.contrib import datasets
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 
 
 def random_rotation(d, seed=123):
@@ -538,6 +538,22 @@ class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
 
     def test_encode_decode_IP(self):
         self.do_test_encode_decode(16, faiss.METRIC_INNER_PRODUCT)
+
+    def test_codes_match_none(self):
+        """RaBitQ codes are integer; encode must be bit-identical across
+        SIMD levels."""
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
+        d = 64
+        rs = np.random.RandomState(123)
+        vec = rs.standard_normal((100, d)).astype(np.float32)
+        for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+            with self.subTest(metric=metric):
+                quantizer = faiss.RaBitQuantizer(d, metric)
+                codes = quantizer.compute_codes(vec)
+                with NoneSIMDLevel():
+                    codes_none = quantizer.compute_codes(vec)
+                np.testing.assert_array_equal(codes, codes_none)
 
 
 # ==============================================================================

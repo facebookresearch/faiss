@@ -9,6 +9,7 @@
 
 #include <faiss/IndexNSG.h>
 
+#include <atomic>
 #include <cinttypes>
 #include <memory>
 
@@ -17,7 +18,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/VisitedTable.h>
-#include <faiss/utils/distances.h>
 
 namespace faiss {
 
@@ -74,24 +74,39 @@ void IndexNSG::search(
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
 
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal, nsg.use_visited_hashset);
-
-            std::unique_ptr<DistanceComputer> dis(
-                    storage_distance_computer(storage));
+            std::unique_ptr<DistanceComputer> dis;
+            std::unique_ptr<VisitedTable> vt;
+            try {
+                vt = std::make_unique<VisitedTable>(
+                        ntotal, nsg.use_visited_hashset);
+                dis.reset(storage_distance_computer(storage));
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
 
 #pragma omp for
             for (idx_t i = i0; i < i1; i++) {
-                idx_t* idxi = labels + i * k;
-                float* simi = distances + i * k;
-                dis->set_query(x + i * d);
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
+                }
+                try {
+                    idx_t* idxi = labels + i * k;
+                    float* simi = distances + i * k;
+                    dis->set_query(x + i * d);
 
-                nsg.search(*dis, k, idxi, simi, vt);
+                    nsg.search(*dis, static_cast<int>(k), idxi, simi, *vt);
 
-                vt.advance();
+                    vt->advance();
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
             }
         }
+        omp_rethrow_if_exception(ex);
         InterruptCallback::check();
     }
 
@@ -116,7 +131,7 @@ void IndexNSG::build(idx_t n, const float* x, idx_t* knn_graph, int gk) {
     // check the knn graph
     check_knn_graph(knn_graph, n, gk);
 
-    const nsg::Graph<idx_t> knng(knn_graph, n, gk);
+    const nsg::Graph<idx_t> knng(knn_graph, static_cast<int>(n), gk);
     nsg.build(storage, n, knng, verbose);
     is_built = true;
 }
@@ -224,7 +239,7 @@ void IndexNSG::add(idx_t n, const float* x) {
         printf("  nsg building\n");
     }
 
-    const nsg::Graph<idx_t> knn_graph(knng.data(), n, GK);
+    const nsg::Graph<idx_t> knn_graph(knng.data(), static_cast<int>(n), GK);
     nsg.build(storage, n, knn_graph, verbose);
     is_built = true;
 }

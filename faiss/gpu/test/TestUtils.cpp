@@ -6,6 +6,7 @@
  */
 
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
 #include <time.h>
@@ -425,6 +426,77 @@ void compareLists(
                     }
                 }
             }
+        }
+    }
+}
+
+TestIDSelectorStruct::TestIDSelectorStruct(int numAdd) {
+    // Range selector [20%, 80%] of the database
+    size_t min_id = numAdd / 5;
+    size_t max_id = numAdd * 4 / 5;
+    selector_map["Range"] =
+            std::make_unique<faiss::IDSelectorRange>(min_id, max_id);
+
+    // Array selector (every 3rd element)
+    array_ids.clear();
+    for (int i = 0; i < numAdd; i += 3) {
+        array_ids.push_back(i);
+    }
+    selector_map["Array"] = std::make_unique<faiss::IDSelectorArray>(
+            array_ids.size(), array_ids.data());
+
+    // Batch selector (every 5th element)
+    batch_ids.clear();
+    for (int i = 1; i < numAdd; i += 5) {
+        batch_ids.push_back(i);
+    }
+    selector_map["Batch"] = std::make_unique<faiss::IDSelectorBatch>(
+            batch_ids.size(), batch_ids.data());
+
+    // Bitmap selector (every 4th element selected)
+    size_t bitmap_size = (numAdd + 7) / 8;
+    bitmap.resize(bitmap_size, 0);
+    for (int i = 0; i < numAdd; i += 4) {
+        int byte_idx = i / 8;
+        int bit_idx = i % 8;
+        bitmap[byte_idx] |= (1 << bit_idx);
+    }
+    selector_map["Bitmap"] =
+            std::make_unique<faiss::IDSelectorBitmap>(numAdd, bitmap.data());
+
+    selector_map["Not"] =
+            std::make_unique<faiss::IDSelectorNot>(selector_map["Range"].get());
+    selector_map["And"] = std::make_unique<faiss::IDSelectorAnd>(
+            selector_map["Range"].get(), selector_map["Array"].get());
+    selector_map["Or"] = std::make_unique<faiss::IDSelectorOr>(
+            selector_map["Range"].get(), selector_map["Batch"].get());
+    selector_map["XOr"] = std::make_unique<faiss::IDSelectorXOr>(
+            selector_map["Not"].get(), selector_map["Array"].get());
+}
+
+void testIDSelectorSearch(
+        faiss::Index* index,
+        faiss::SearchParameters* search_params,
+        const std::vector<float>& queryVecs,
+        int numQuery,
+        int k,
+        const std::string& selectorName) {
+    FAISS_ASSERT(search_params && search_params->sel);
+    std::vector<float> distances(numQuery * k, 0);
+    std::vector<faiss::idx_t> labels(numQuery * k, -1);
+    index->search(
+            numQuery,
+            queryVecs.data(),
+            k,
+            distances.data(),
+            labels.data(),
+            search_params);
+    faiss::IDSelector* selector = search_params->sel;
+    for (int i = 0; i < numQuery * k; ++i) {
+        if (labels[i] >= 0) {
+            EXPECT_TRUE(selector->is_member(labels[i]))
+                    << "Label " << labels[i] << " @ " << i << " not in "
+                    << selectorName << " selector";
         }
     }
 }

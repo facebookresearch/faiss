@@ -11,7 +11,6 @@
 #include <vector>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -83,7 +82,7 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             const FastScanDistancePostProcessing* ctx = nullptr,
             bool multibit = false);
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final;
 
     void set_list_context(size_t list_no, const std::vector<int>& probe_map)
             override;
