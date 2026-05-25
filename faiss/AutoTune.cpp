@@ -743,7 +743,8 @@ void ParameterSpace::explore(
         size_t nq,
         const float* xq,
         const AutoTuneCriterion& crit,
-        OperatingPoints* ops) const {
+        OperatingPoints* ops,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             nq == static_cast<size_t>(crit.nq),
             "criterion does not have the same nb of queries");
@@ -757,7 +758,7 @@ void ParameterSpace::explore(
             std::vector<float> D(nq * crit.nnn);
 
             double t0 = getmillisecs();
-            index->search(nq, xq, crit.nnn, D.data(), I.data());
+            index->search(nq, xq, crit.nnn, D.data(), I.data(), params);
             double t_search = (getmillisecs() - t0) / 1e3;
 
             double perf = crit.evaluate(D.data(), I.data());
@@ -850,7 +851,8 @@ void ParameterSpace::explore(
                             xq + q0 * index->d,
                             crit.nnn,
                             D.data() + q0 * crit.nnn,
-                            I.data() + q0 * crit.nnn);
+                            I.data() + q0 * crit.nnn,
+                            params);
                 }
             } else {
                 for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
@@ -863,7 +865,8 @@ void ParameterSpace::explore(
                             xq + q0 * index->d,
                             crit.nnn,
                             D.data() + q0 * crit.nnn,
-                            I.data() + q0 * crit.nnn);
+                            I.data() + q0 * crit.nnn,
+                            params);
                 }
             }
             nrun++;

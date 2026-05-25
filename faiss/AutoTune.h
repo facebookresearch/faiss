@@ -209,13 +209,15 @@ struct ParameterSpace {
      * @param xq      query vectors (size nq * index.d)
      * @param crit    selection criterion
      * @param ops     resulting operating points
+     * @param params  optional search parameters forwarded to index->search
      */
     void explore(
             Index* index,
             size_t nq,
             const float* xq,
             const AutoTuneCriterion& crit,
-            OperatingPoints* ops) const;
+            OperatingPoints* ops,
+            const SearchParameters* params = nullptr) const;
 
     virtual ~ParameterSpace() {}
 };
