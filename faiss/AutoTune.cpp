@@ -446,39 +446,52 @@ static void set_index_parameters_string_common(
 }
 
 /// set a combination of parameters on an index
-void ParameterSpace::set_index_parameters(Index* index, size_t cno) const {
+void ParameterSpace::set_index_parameters(
+        Index* index,
+        size_t cno,
+        SearchParameters* params) const {
     set_index_parameters_common(
-            this, cno, [this, index](const std::string& name, double val) {
-                this->set_index_parameter(index, name, val);
+            this,
+            cno,
+            [this, index, params](const std::string& name, double val) {
+                this->set_index_parameter(index, name, val, params);
             });
 }
 
 /// set a combination of parameters on an index
 void ParameterSpace::set_index_parameters(
         Index* index,
-        const char* description_in) const {
+        const char* description_in,
+        SearchParameters* params) const {
     set_index_parameters_string_common(
-            description_in, [this, index](const std::string& name, double val) {
-                this->set_index_parameter(index, name, val);
-            });
-}
-
-/// set a combination of parameters on a binary index
-void ParameterSpace::set_index_parameters(IndexBinary* index, size_t cno)
-        const {
-    set_index_parameters_common(
-            this, cno, [this, index](const std::string& name, double val) {
-                this->set_index_parameter(index, name, val);
+            description_in,
+            [this, index, params](const std::string& name, double val) {
+                this->set_index_parameter(index, name, val, params);
             });
 }
 
 /// set a combination of parameters on a binary index
 void ParameterSpace::set_index_parameters(
         IndexBinary* index,
-        const char* description_in) const {
+        size_t cno,
+        SearchParameters* params) const {
+    set_index_parameters_common(
+            this,
+            cno,
+            [this, index, params](const std::string& name, double val) {
+                this->set_index_parameter(index, name, val, params);
+            });
+}
+
+/// set a combination of parameters on a binary index
+void ParameterSpace::set_index_parameters(
+        IndexBinary* index,
+        const char* description_in,
+        SearchParameters* params) const {
     set_index_parameters_string_common(
-            description_in, [this, index](const std::string& name, double val) {
-                this->set_index_parameter(index, name, val);
+            description_in,
+            [this, index, params](const std::string& name, double val) {
+                this->set_index_parameter(index, name, val, params);
             });
 }
 
@@ -489,7 +502,8 @@ void ParameterSpace::set_index_parameters(
 void ParameterSpace::set_index_parameter(
         Index* index,
         const std::string& name,
-        double val) const {
+        double val,
+        SearchParameters* params) const {
     if (verbose > 1) {
         printf("    set_index_parameter %s=%g\n", name.c_str(), val);
     }
@@ -499,11 +513,11 @@ void ParameterSpace::set_index_parameter(
         // and fall through to also enable it on sub-indexes
     }
     if (DC(IndexIDMap)) {
-        set_index_parameter(ix_->index, name, val);
+        set_index_parameter(ix_->index, name, val, params);
         return;
     }
     if (DC(IndexPreTransform)) {
-        set_index_parameter(ix_->index, name, val);
+        set_index_parameter(ix_->index, name, val, params);
         return;
     }
     if (DC(IndexShardsIVF)) {
@@ -512,14 +526,14 @@ void ParameterSpace::set_index_parameter(
         if (name.find("quantizer_") == 0 && name != "nprobe" &&
             name != "quantizer_nprobe") {
             std::string sub_name = name.substr(strlen("quantizer_"));
-            set_index_parameter(ix_->quantizer, sub_name, val);
+            set_index_parameter(ix_->quantizer, sub_name, val, params);
             return;
         }
     }
     if (DC(ThreadedIndex<Index>)) {
         // call on all sub-indexes
-        auto fn = [this, name, val](int /* no */, Index* subIndex) {
-            set_index_parameter(subIndex, name, val);
+        auto fn = [this, name, val, params](int /* no */, Index* subIndex) {
+            set_index_parameter(subIndex, name, val, params);
         };
         ix_->runOnIndex(fn);
         return;
@@ -530,7 +544,7 @@ void ParameterSpace::set_index_parameter(
             return;
         }
         // otherwise it is for the sub-index
-        set_index_parameter(ix_->base_index, name, val);
+        set_index_parameter(ix_->base_index, name, val, params);
         return;
     }
 
@@ -541,6 +555,12 @@ void ParameterSpace::set_index_parameter(
     if (name == "nprobe") {
         if (DC(IndexIVF)) {
             ix_->nprobe = int(val);
+            // IndexIVF::search prefers params->nprobe whenever params is
+            // non-null. Keep them in sync so callers that route per-search
+            // params through Index::search see the new value too.
+            if (auto* ivfParams = dynamic_cast<SearchParametersIVF*>(params)) {
+                ivfParams->nprobe = size_t(val);
+            }
             return;
         }
     }
@@ -573,7 +593,12 @@ void ParameterSpace::set_index_parameter(
     }
     if (name == "max_codes") {
         if (DC(IndexIVF)) {
-            ix_->max_codes = std::isfinite(val) ? size_t(val) : 0;
+            size_t const v = std::isfinite(val) ? size_t(val) : 0;
+            ix_->max_codes = v;
+            // Keep params in sync — see the nprobe branch above.
+            if (auto* ivfParams = dynamic_cast<SearchParametersIVF*>(params)) {
+                ivfParams->max_codes = v;
+            }
             return;
         }
     }
@@ -614,7 +639,7 @@ void ParameterSpace::set_index_parameter(
     if (name.find("quantizer_") == 0) {
         if (DC(IndexIVF)) {
             std::string sub_name = name.substr(strlen("quantizer_"));
-            set_index_parameter(ix_->quantizer, sub_name, val);
+            set_index_parameter(ix_->quantizer, sub_name, val, params);
             return;
         }
     }
@@ -628,7 +653,8 @@ void ParameterSpace::set_index_parameter(
 void ParameterSpace::set_index_parameter(
         IndexBinary* index,
         const std::string& name,
-        double val) const {
+        double val,
+        SearchParameters* /*params*/) const {
     if (verbose > 1) {
         printf("    set_index_parameter (binary) %s=%g\n", name.c_str(), val);
     }
@@ -744,7 +770,7 @@ void ParameterSpace::explore(
         const float* xq,
         const AutoTuneCriterion& crit,
         OperatingPoints* ops,
-        const SearchParameters* params) const {
+        SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             nq == static_cast<size_t>(crit.nq),
             "criterion does not have the same nb of queries");
@@ -753,7 +779,7 @@ void ParameterSpace::explore(
 
     if (n_experiments == 0) {
         for (size_t cno = 0; cno < n_comb; cno++) {
-            set_index_parameters(index, cno);
+            set_index_parameters(index, cno, params);
             std::vector<idx_t> I(nq * crit.nnn);
             std::vector<float> D(nq * crit.nnn);
 
@@ -828,7 +854,7 @@ void ParameterSpace::explore(
             }
         }
 
-        set_index_parameters(index, cno);
+        set_index_parameters(index, cno, params);
         std::vector<idx_t> I(nq * crit.nnn);
         std::vector<float> D(nq * crit.nnn);
 

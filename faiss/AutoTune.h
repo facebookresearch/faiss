@@ -172,29 +172,42 @@ struct ParameterSpace {
     virtual void initialize(const Index* index);
 
     /// set a combination of parameters on an index
-    void set_index_parameters(Index* index, size_t cno) const;
+    void set_index_parameters(
+            Index* index,
+            size_t cno,
+            SearchParameters* params = nullptr) const;
 
     /// set a combination of parameters described by a string
-    void set_index_parameters(Index* index, const char* param_string) const;
+    void set_index_parameters(
+            Index* index,
+            const char* param_string,
+            SearchParameters* params = nullptr) const;
 
     /// set one of the parameters
     virtual void set_index_parameter(
             Index* index,
             const std::string& name,
-            double val) const;
+            double val,
+            SearchParameters* params = nullptr) const;
 
     /// set a combination of parameters on a binary index
-    void set_index_parameters(IndexBinary* index, size_t cno) const;
+    void set_index_parameters(
+            IndexBinary* index,
+            size_t cno,
+            SearchParameters* params = nullptr) const;
 
     /// set a combination of parameters described by a string on a binary index
-    void set_index_parameters(IndexBinary* index, const char* param_string)
-            const;
+    void set_index_parameters(
+            IndexBinary* index,
+            const char* param_string,
+            SearchParameters* params = nullptr) const;
 
     /// set one of the parameters on a binary index
     virtual void set_index_parameter(
             IndexBinary* index,
             const std::string& name,
-            double val) const;
+            double val,
+            SearchParameters* params = nullptr) const;
 
     /** find an upper bound on the performance and a lower bound on t
      * for configuration cno given another operating point op */
@@ -217,7 +230,7 @@ struct ParameterSpace {
             const float* xq,
             const AutoTuneCriterion& crit,
             OperatingPoints* ops,
-            const SearchParameters* params = nullptr) const;
+            SearchParameters* params = nullptr) const;
 
     virtual ~ParameterSpace() {}
 };
