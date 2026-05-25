@@ -555,9 +555,9 @@ void ParameterSpace::set_index_parameter(
     if (name == "nprobe") {
         if (DC(IndexIVF)) {
             ix_->nprobe = int(val);
-            // IndexIVF::search prefers params->nprobe whenever params is
-            // non-null. Keep them in sync so callers that route per-search
-            // params through Index::search see the new value too.
+            // When SearchParameters are set, search() reads the parameter
+            // from params rather than the index field. Keep both in sync so
+            // either call path sees the updated value.
             if (auto* ivfParams = dynamic_cast<SearchParametersIVF*>(params)) {
                 ivfParams->nprobe = size_t(val);
             }
