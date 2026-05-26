@@ -11012,11 +11012,11 @@
     <member refid="structfaiss_1_1ScalarQuantizer_1a5290e85695dc1f45a0f80d130ace7ce8" kind="function"><name>select_InvertedListScanner</name></member>
   </compound>
   <compound refid="structfaiss_1_1ScannerMixIn" kind="struct"><name>faiss::ScannerMixIn</name>
-    <member refid="structfaiss_1_1ScannerMixIn_1a81ff5468abf3db31014bf68306a386fa" kind="variable"><name>handler_</name></member>
-    <member refid="structfaiss_1_1ScannerMixIn_1a41286705318b1fb11826cce09e67766d" kind="function"><name>ScannerMixIn</name></member>
-    <member refid="structfaiss_1_1ScannerMixIn_1a23eb8ae56c9143004e240861965369aa" kind="function"><name>handler</name></member>
-    <member refid="structfaiss_1_1ScannerMixIn_1ab28bc50fdd5c5caf15aa8b31b8e59a94" kind="function"><name>accumulate_loop</name></member>
-    <member refid="structfaiss_1_1ScannerMixIn_1adfe4dcbae905391707e1e97b5bb1a22e" kind="function"><name>accumulate_loop_qbs</name></member>
+    <member refid="structfaiss_1_1ScannerMixIn_1a6fcffa850ce04427e35d87c7637be31a" kind="variable"><name>handler_</name></member>
+    <member refid="structfaiss_1_1ScannerMixIn_1aad1ecb7e4688d9ff88277843ab3ebff8" kind="function"><name>ScannerMixIn</name></member>
+    <member refid="structfaiss_1_1ScannerMixIn_1a845401d12c7b8f1319dc3ece990c1f55" kind="function"><name>handler</name></member>
+    <member refid="structfaiss_1_1ScannerMixIn_1a71dea2c0711aa373b1e060e9d5da3e22" kind="function"><name>accumulate_loop</name></member>
+    <member refid="structfaiss_1_1ScannerMixIn_1a6cef6f862cf777bfbec80bdc340b575e" kind="function"><name>accumulate_loop_qbs</name></member>
   </compound>
   <compound refid="structfaiss_1_1InvertedLists_1_1ScopedCodes" kind="struct"><name>faiss::InvertedLists::ScopedCodes</name>
     <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a4b1977ab80c851569d5ca37eabc528c0" kind="variable"><name>il</name></member>

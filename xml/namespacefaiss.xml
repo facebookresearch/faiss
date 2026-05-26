@@ -4140,7 +4140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="178" bodyend="218"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="180" bodyend="220"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a2d3e9cd9d40435718609da7c23eb4ba6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4176,7 +4176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="226" bodyend="243"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="228" bodyend="245"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acb1d57950137617e347418b97d661736" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4220,7 +4220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="247" bodyend="266"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="249" bodyend="268"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
