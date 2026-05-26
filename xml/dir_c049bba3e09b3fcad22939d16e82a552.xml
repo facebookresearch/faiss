@@ -8,6 +8,7 @@
     <innerfile refid="pq__code__distance-avx512_8h">pq_code_distance-avx512.h</innerfile>
     <innerfile refid="pq__code__distance-generic_8h">pq_code_distance-generic.h</innerfile>
     <innerfile refid="pq__code__distance-inl_8h">pq_code_distance-inl.h</innerfile>
+    <innerfile refid="pq__scan__impl_8h">pq_scan_impl.h</innerfile>
     <innerfile refid="PQDistanceComputer__impl_8h">PQDistanceComputer_impl.h</innerfile>
     <briefdescription>
     </briefdescription>

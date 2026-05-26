@@ -499,6 +499,154 @@
         </inbodydescription>
         <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="236" column="16" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="236" declcolumn="16"/>
       </memberdef>
+      <memberdef kind="function" id="pq__code__distance-inl_8h_1a7f7dcedc5acc4f68dc6649f62a5b9fd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::pq_scan_8bit_impl</definition>
+        <argsstring>(size_t M, const float *dis_table, const uint8_t *codes, size_t ncodes, size_t k, float *heap_dis, int64_t *heap_ids, bool max_heap)</argsstring>
+        <name>pq_scan_8bit_impl</name>
+        <qualifiedname>faiss::pq_code_distance::pq_scan_8bit_impl</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>dis_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncodes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>heap_dis</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>heap_ids</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>max_heap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="261" column="6" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="261" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__code__distance-inl_8h_1ac76218c21c10273e4f6bec79d7192151" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>FAISS_API void</type>
+        <definition>FAISS_API void faiss::pq_code_distance::pq_scan_8bit</definition>
+        <argsstring>(size_t M, const float *dis_table, const uint8_t *codes, size_t ncodes, size_t k, float *heap_dis, int64_t *heap_ids, bool max_heap)</argsstring>
+        <name>pq_scan_8bit</name>
+        <qualifiedname>faiss::pq_code_distance::pq_scan_8bit</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>dis_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncodes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>heap_dis</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>heap_ids</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>max_heap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Scan all ncodes 8-bit PQ codes, dispatching to the best SIMD level. max_heap=true for L2 (<ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>), false for IP (<ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="273" column="16" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="273" declcolumn="16"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__scan__impl_8h_1a7a4f9155a8bdf90b740912cf77c80aac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::pq_scan_8bit_impl&lt; THE_SIMD_LEVEL &gt;</definition>
+        <argsstring>(size_t M, const float *dis_table, const uint8_t *codes, size_t ncodes, size_t k, float *heap_dis, int64_t *heap_ids, bool max_heap)</argsstring>
+        <name>pq_scan_8bit_impl&lt; THE_SIMD_LEVEL &gt;</name>
+        <qualifiedname>faiss::pq_code_distance::pq_scan_8bit_impl&lt; THE_SIMD_LEVEL &gt;</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>dis_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncodes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>heap_dis</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>heap_ids</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>max_heap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_scan_impl.h" line="86" column="1" bodyfile="faiss/impl/pq_code_distance/pq_scan_impl.h" bodystart="86" bodyend="102"/>
+      </memberdef>
       <memberdef kind="function" id="PQDistanceComputer__impl_8h_1ac0f61604a0d9a19dec87e128fe7216d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>

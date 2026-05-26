@@ -13,6 +13,7 @@
     <includedby refid="pq__code__distance-avx2_8h" local="no">faiss/impl/pq_code_distance/pq_code_distance-avx2.h</includedby>
     <includedby refid="pq__code__distance-avx512_8h" local="no">faiss/impl/pq_code_distance/pq_code_distance-avx512.h</includedby>
     <includedby refid="pq__code__distance-generic_8h" local="no">faiss/impl/pq_code_distance/pq_code_distance-generic.h</includedby>
+    <includedby refid="pq__scan__impl_8h" local="no">faiss/impl/pq_code_distance/pq_scan_impl.h</includedby>
     <incdepgraph>
       <node id="8">
         <label>faiss/Clustering.h</label>
@@ -269,6 +270,12 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/pq_code_distance/pq_scan_impl.h</label>
+        <link refid="pq__scan__impl_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" prot="public">faiss::pq_code_distance::PQCodeDistanceScalar</innerclass>
@@ -529,15 +536,51 @@
 <codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>result2,</highlight></codeline>
 <codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>result3);</highlight></codeline>
 <codeline lineno="247"><highlight class="normal"></highlight></codeline>
-<codeline lineno="248"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>pq_code_distance</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="249"><highlight class="normal"></highlight></codeline>
-<codeline lineno="250"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Re-export<sp/>public<sp/>API<sp/>into<sp/>namespace<sp/>faiss<sp/>for<sp/>convenience</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="251"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_code_distance_8bit_four;</highlight></codeline>
-<codeline lineno="252"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_code_distance_8bit_single;</highlight></codeline>
-<codeline lineno="253"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kindref="compound">pq_code_distance::PQCodeDistance</ref>;</highlight></codeline>
-<codeline lineno="254"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">pq_code_distance::PQCodeDistanceScalar</ref>;</highlight></codeline>
-<codeline lineno="255"><highlight class="normal"></highlight></codeline>
-<codeline lineno="256"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="249"><highlight class="comment"><sp/>*<sp/>Standalone<sp/>PQ<sp/>scan<sp/>—<sp/>SIMD-dispatched<sp/>full-index<sp/>scan.</highlight></codeline>
+<codeline lineno="250"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="251"><highlight class="comment"><sp/>*<sp/>Scans<sp/>all<sp/>ncodes<sp/>PQ<sp/>codes<sp/>against<sp/>a<sp/>precomputed<sp/>distance<sp/>table,</highlight></codeline>
+<codeline lineno="252"><highlight class="comment"><sp/>*<sp/>maintaining<sp/>a<sp/>k-nearest-neighbor<sp/>heap.<sp/>Uses<sp/>the<sp/>SIMD<sp/>PQ<sp/>distance</highlight></codeline>
+<codeline lineno="253"><highlight class="comment"><sp/>*<sp/>kernels<sp/>(AVX2<sp/>gathers,<sp/>etc.)<sp/>for<sp/>the<sp/>inner<sp/>loop,<sp/>with<sp/>the<sp/>SIMD</highlight></codeline>
+<codeline lineno="254"><highlight class="comment"><sp/>*<sp/>gathers<sp/>inlined<sp/>into<sp/>the<sp/>scan<sp/>loop<sp/>in<sp/>each<sp/>per-SIMD<sp/>TU.</highlight></codeline>
+<codeline lineno="255"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="256"><highlight class="comment"><sp/>*<sp/>Definitions<sp/>are<sp/>in<sp/>pq_scan_impl.h<sp/>(per-SIMD<sp/>TUs)<sp/>and</highlight></codeline>
+<codeline lineno="257"><highlight class="comment"><sp/>*<sp/>pq_code_distance-generic.cpp<sp/>(dispatch<sp/>wrapper).</highlight></codeline>
+<codeline lineno="258"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>pq_scan_8bit_impl(</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis_table,</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncodes,</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>heap_dis,</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>heap_ids,</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>max_heap);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="271"><highlight class="comment">///<sp/>Scan<sp/>all<sp/>ncodes<sp/>8-bit<sp/>PQ<sp/>codes,<sp/>dispatching<sp/>to<sp/>the<sp/>best<sp/>SIMD<sp/>level.</highlight></codeline>
+<codeline lineno="272"><highlight class="comment">///<sp/>max_heap=true<sp/>for<sp/>L2<sp/>(CMax),<sp/>false<sp/>for<sp/>IP<sp/>(CMin).</highlight></codeline>
+<codeline lineno="273" refid="pq__code__distance-inl_8h_1ac76218c21c10273e4f6bec79d7192151" refkind="member"><highlight class="comment"></highlight><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="pq__code__distance-inl_8h_1ac76218c21c10273e4f6bec79d7192151" kindref="member">pq_scan_8bit</ref>(</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis_table,</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncodes,</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>heap_dis,</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>heap_ids,</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>max_heap);</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>pq_code_distance</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="284"><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Re-export<sp/>public<sp/>API<sp/>into<sp/>namespace<sp/>faiss<sp/>for<sp/>convenience</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_code_distance_8bit_four;</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_code_distance_8bit_single;</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_scan_8bit;</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kindref="compound">pq_code_distance::PQCodeDistance</ref>;</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">pq_code_distance::PQCodeDistanceScalar</ref>;</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"></highlight></codeline>
+<codeline lineno="292"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h"/>
   </compounddef>
