@@ -59,6 +59,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc  # release/v1
         with:
           verbose: true
+          attestations: false
 
   publish-testpypi:
     name: Publish to TestPyPI

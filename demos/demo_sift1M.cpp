@@ -31,7 +31,7 @@
  *****************************************************/
 
 float* fvecs_read(const char* fname, size_t* d_out, size_t* n_out) {
-    FILE* f = fopen(fname, "r");
+    FILE* f = fopen(fname, "rb");
     if (!f) {
         fprintf(stderr, "could not open %s\n", fname);
         perror("");

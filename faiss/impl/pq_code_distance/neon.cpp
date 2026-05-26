@@ -14,6 +14,8 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/hamming_distance/hamming_computer-neon.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/pq_code_distance/pq_scan_impl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/PQDistanceComputer_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/IVFPQScanner_impl.h>
