@@ -51,7 +51,7 @@ if(FAISS_ENABLE_CUVS)
 endif()
 
 project(faiss
-  VERSION 1.14.1
+  VERSION 1.14.2
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
