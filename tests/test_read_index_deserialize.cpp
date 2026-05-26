@@ -417,6 +417,58 @@ TEST(ReadIndexDeserialize, IndexLatticeR2TooLarge) {
 }
 
 // -----------------------------------------------------------------------
+// Test: the configurable deserialization_lattice_r2_limit rejects
+// IndexLattice payloads whose r2 exceeds the limit, separately from
+// the in-codec decode-cache memory cap.  The limit's purpose is to
+// let callers that operate on untrusted index payloads cap the
+// ZnSphereCodecRec decode-cache build cost (which grows polynomially
+// in r2) before it dominates load time, even for parameter
+// combinations that the memory cap permits.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLatticeR2ConfigurableLimit) {
+    const size_t old_limit = get_deserialization_lattice_r2_limit();
+
+    // d=4, nsq=1, scale_nbit=4 produces dsq=4 -- a configuration that
+    // passes the existing structural checks.  r2 at the limit must
+    // deserialize cleanly (the cap is "r2 > limit", not "r2 >= limit");
+    // r2 above the limit must be rejected with a FaissException whose
+    // message names the limit, before the IndexLattice constructor
+    // (and the underlying ZnSphereCodecRec) is invoked.
+    constexpr int d = 4;
+    auto build = [](int r2) {
+        std::vector<uint8_t> buf;
+        push_fourcc(buf, "IxLa");
+        push_val<int>(buf, d);  // d
+        push_val<int>(buf, 1);  // nsq
+        push_val<int>(buf, 4);  // scale_nbit
+        push_val<int>(buf, r2); // r2
+        push_index_header(buf, d, /*ntotal=*/0);
+        // Untrained: empty trained vector.
+        push_vector<float>(buf, {});
+        return buf;
+    };
+
+    set_deserialization_lattice_r2_limit(2);
+    {
+        // r2 == limit: the limit check passes (since it is r2 > limit,
+        // not r2 >= limit) and the underlying ZnSphereCodecRec
+        // constructor runs to completion.
+        auto buf = build(2);
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_NO_THROW(read_index_up(&reader));
+    }
+    {
+        // r2 == limit + 1: rejected at the limit check with the
+        // configured limit value in the error message.
+        auto buf = build(3);
+        expect_read_throws_with(buf, "deserialization_lattice_r2_limit");
+    }
+
+    set_deserialization_lattice_r2_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
 // Binary index helpers
 // -----------------------------------------------------------------------
 
