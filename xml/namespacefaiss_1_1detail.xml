@@ -402,7 +402,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="175" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="175" bodyend="185"/>
+        <location file="faiss/impl/Panorama.h" line="186" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="186" bodyend="196"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1a7ac15bd4c2cdcd899265c3c2e3fb17c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

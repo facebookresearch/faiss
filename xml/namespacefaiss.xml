@@ -6333,7 +6333,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="41" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="41" bodyend="85"/>
+        <location file="faiss/impl/Panorama.h" line="46" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="46" bodyend="90"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9831b89f0165e35baa42f0613aeecdd7" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6396,7 +6396,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="97" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="97" bodyend="130"/>
+        <location file="faiss/impl/Panorama.h" line="106" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="106" bodyend="139"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a827b618a63e28ed37e15d58bac2651bf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_PRAGMA_IMPRECISE_FUNCTION_END size_t</type>
@@ -6423,7 +6423,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="137" column="15" bodyfile="faiss/impl/Panorama.h" bodystart="137" bodyend="167"/>
+        <location file="faiss/impl/Panorama.h" line="148" column="15" bodyfile="faiss/impl/Panorama.h" bodystart="148" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae6f31f1aa3caf51109b4826f5beea953" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6451,7 +6451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="190" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="190" bodyend="193"/>
+        <location file="faiss/impl/Panorama.h" line="201" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="201" bodyend="204"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acbfa0bb394a6f92972d97f6d4b1f8d3c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6478,7 +6478,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="196" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="196" bodyend="202"/>
+        <location file="faiss/impl/Panorama.h" line="207" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="207" bodyend="213"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abd58cb9ccddf108229bd3f2d3f0d2bac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

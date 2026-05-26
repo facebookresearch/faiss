@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="225" column="29" bodyfile="faiss/impl/Panorama.h" bodystart="225" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="236" column="29" bodyfile="faiss/impl/Panorama.h" bodystart="236" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="227" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="227" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="238" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="238" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="228" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="228" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="239" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="239" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Panorama_1ac885ad39deed6034073c8d839fcd113e" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="229" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="229" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="240" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="240" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Panorama_1a859f77843d41b3387d75a473c6dbb24a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="230" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="230" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="241" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="241" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Panorama_1a65a851d0bf7d13acf749f19f7b7d3808" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="231" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="231" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="242" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="242" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Panorama_1a2c2df437f13dae47d220b41a6364d99b" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="232" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="232" bodyend="-1"/>
+        <location file="faiss/impl/Panorama.h" line="243" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="243" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -137,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="234" column="14"/>
+        <location file="faiss/impl/Panorama.h" line="245" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1a42c42d538990fad33d2a93bdb97a2c6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="236" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="247" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1a800a0a45dbcb83ee4e612cc11567a8f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -182,7 +182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="240" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="251" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1ab721afb080cbcc7bf0af53d71c2f65be" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -213,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="249" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="260" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -236,7 +236,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="256" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="267" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1a890cce5c088cd98066dc5210ccfa31a8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -275,7 +275,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="260" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="271" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1a5f996d9544137bc259eb9296ddb5eea9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -372,7 +372,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="285" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="285" bodyend="384"/>
+        <location file="faiss/impl/Panorama.h" line="296" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="296" bodyend="395"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1ae8c69dd7c911cf621b7110f4ad576819" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -398,7 +398,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="387" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="398" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -409,7 +409,7 @@
 <para>In order to enable speedups, the dimensions (or codes) of each vector are stored in a batched, level-major manner. Within each batch of b vectors, the dimensions corresponding to level 1 will be stored first (for all elements in that batch), followed by level 2, and so on. This allows for efficient memory access patterns.</para>
 <para>Coupled with the appropriate orthogonal PreTransform (e.g. PCA, Cayley, etc.), <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> can prune the vast majority of dimensions, greatly accelerating the refinement stage. </para>
     </detaileddescription>
-    <location file="faiss/impl/Panorama.h" line="224" column="1" bodyfile="faiss/impl/Panorama.h" bodystart="224" bodyend="388"/>
+    <location file="faiss/impl/Panorama.h" line="235" column="1" bodyfile="faiss/impl/Panorama.h" bodystart="235" bodyend="399"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Panorama_1a2c2df437f13dae47d220b41a6364d99b" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>batch_size</name></member>
       <member refid="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>code_size</name></member>
