@@ -2164,6 +2164,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 : std::make_unique<IndexIDMap>();
         read_index_header(*idxmap, f);
         idxmap->index = read_index(f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(idxmap->index, "IndexIDMap inner index is null");
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
         FAISS_THROW_IF_NOT_FMT(
@@ -3011,6 +3012,8 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         read_index_binary_header(*idxff, f);
         idxff->own_fields = true;
         idxff->index = read_index(f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(
+                idxff->index, "IndexBinaryFromFloat inner index is null");
         idx = std::move(idxff);
     } else if (h == fourcc("IBHf")) {
         auto idxhnsw = std::make_unique<IndexBinaryHNSW>();
