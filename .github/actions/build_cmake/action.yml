@@ -76,7 +76,7 @@ runs:
           conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=26.06 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
           # Clean index cache to prevent sqlite3 "database is locked" errors
           # from conda-libmamba-solver's shards cache between consecutive installs.
           # See: https://github.com/conda/conda-libmamba-solver/issues/667
