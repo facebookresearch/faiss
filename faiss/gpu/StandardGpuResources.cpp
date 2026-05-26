@@ -546,9 +546,8 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
     } else if (adjReq.space == MemorySpace::Device) {
 #if defined USE_NVIDIA_CUVS
         try {
-            auto current_mr =
-                    rmm::mr::get_per_device_resource_ref(
-                            rmm::cuda_device_id{adjReq.device});
+            auto current_mr = rmm::mr::get_per_device_resource_ref(
+                    rmm::cuda_device_id{adjReq.device});
             p = current_mr.allocate(adjReq.stream, adjReq.size);
             adjReq.mr = current_mr;
         } catch (const std::bad_alloc& rmm_ex) {
