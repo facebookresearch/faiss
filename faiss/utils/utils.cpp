@@ -364,8 +364,15 @@ size_t ranklist_intersection_size(
     if (k2 > k1)
         return ranklist_intersection_size(k2, v2_in, k1, v1);
     // Build a set from the smaller side; erase on hit so a duplicate in v1
-    // doesn't double-count the same v2 entry.
-    std::unordered_set<int64_t> remaining(v2_in, v2_in + k2);
+    // doesn't double-count the same v2 entry. Negative values (-1 padding)
+    // are excluded as they denote missing results, not valid IDs.
+    std::unordered_set<int64_t> remaining;
+    remaining.reserve(k2);
+    for (size_t i = 0; i < k2; i++) {
+        if (v2_in[i] >= 0) {
+            remaining.insert(v2_in[i]);
+        }
+    }
     size_t count = 0;
     for (size_t i = 0; i < k1; i++) {
         if (remaining.erase(v1[i]) != 0) {
