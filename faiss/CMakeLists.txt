@@ -51,6 +51,7 @@ set(FAISS_SIMD_SVE_SRC
   utils/simd_impl/distances_arm_sve.cpp
 )
 set(FAISS_SIMD_RVV_SRC
+  impl/fast_scan/impl-riscv.cpp
   impl/pq_code_distance/rvv.cpp
   impl/scalar_quantizer/sq-rvv.cpp
   impl/binary_hamming/rvv.cpp
