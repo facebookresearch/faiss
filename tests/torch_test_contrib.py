@@ -15,7 +15,6 @@ from faiss.contrib.torch import clustering, quantization
 
 
 
-
 class TestTorchUtilsCPU(unittest.TestCase):
     # tests add, search
     def test_lookup(self):

@@ -102,7 +102,7 @@ jobs:
     runs-on: linux-amd-rocm-mi325-ubuntu-24
     container:
       image: ubuntu:24.04
-      options: --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN
+      options: --privileged --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN
     steps:
       - name: Container setup
         run: |

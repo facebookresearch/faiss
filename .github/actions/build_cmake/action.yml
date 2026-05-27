@@ -295,10 +295,6 @@ runs:
         fi
         cp tests/common_faiss_tests.py faiss/gpu/test
         pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
-        if [ "${{ inputs.rocm }}" = "ON" ] && [ -n "${FAISS_ROCM_PRELOAD_LIBHSA:-}" ]; then
-          # torch-before-faiss in torch_test_contrib_gpu.py needs system ROCR at import.
-          export LD_PRELOAD="${FAISS_ROCM_PRELOAD_LIBHSA}${LD_PRELOAD:+:${LD_PRELOAD}}"
-        fi
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
     - name: Test avx2 loading
       if: inputs.opt_level == 'avx2'
