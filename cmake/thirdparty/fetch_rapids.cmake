@@ -17,9 +17,10 @@
 # =============================================================================
 set(RAPIDS_VERSION "26.06")
 set(rapids-cmake-version ${RAPIDS_VERSION})
+set(rapids-cmake-branch "release/${RAPIDS_VERSION}")
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
-    file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/release/${RAPIDS_VERSION}/RAPIDS.cmake
+    file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/${rapids-cmake-branch}/RAPIDS.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
 endif()
 include(${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
