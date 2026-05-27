@@ -285,6 +285,8 @@ runs:
       if: inputs.gpu == 'ON'
       shell: bash
       run: |
+        eval "$(conda shell.bash hook)"
+        conda activate
         conda list --show-channel-urls
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           ROCM_LIBS="/opt/rocm/lib"

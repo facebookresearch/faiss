@@ -12,6 +12,18 @@ import sys
 from packaging.version import Version
 
 
+def _preload_rocm_hsa_runtime() -> None:
+    """Load system ROCR before Faiss HIP when FAISS_ROCM_PRELOAD_LIBHSA is set (ROCm CI)."""
+    path = os.environ.get("FAISS_ROCM_PRELOAD_LIBHSA")
+    if not path:
+        return
+    import ctypes
+    ctypes.CDLL(path, mode=ctypes.RTLD_GLOBAL)
+
+
+_preload_rocm_hsa_runtime()
+
+
 def supported_instruction_sets():
     """
     Returns the set of supported CPU features, see
