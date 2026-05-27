@@ -12782,6 +12782,7 @@
     <member refid="namespacefaiss_1a12459a18353dd0cbfcc26e1090da53a5" kind="variable"><name>AVAILABLE_SIMD_LEVELS_NONE</name></member>
     <member refid="namespacefaiss_1a03185176b24e9b601eb79d7b7949cd1e" kind="variable"><name>AVAILABLE_SIMD_LEVELS_AVX2_NEON</name></member>
     <member refid="namespacefaiss_1a9b43fb0796b0483d4d4130299cec2003" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A0</name></member>
+    <member refid="namespacefaiss_1ab30e8a84f9df9ddb4edf159c264c36f4" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A0_SPR</name></member>
     <member refid="namespacefaiss_1a0d8ae4f704665bcac4c7cfc5d9e12263" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A1</name></member>
     <member refid="namespacefaiss_1ab8d377f6d5b19269ac10ad54227a805d" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A2</name></member>
     <member refid="namespacefaiss_1a1fb891890806e64ce75bb0aa12704659" kind="variable"><name>AVAILABLE_SIMD_LEVELS_ALL</name></member>
