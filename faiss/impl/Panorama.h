@@ -36,7 +36,12 @@ namespace faiss {
 ///                    from active_indices (subsequent levels after pruning).
 /// @tparam LevelWidth Compile-time level width in floats (0 = use runtime
 ///                    level_width_dims). Enables full loop unrolling.
+// Skip pragmas under nvcc: its EDG frontend warns on `#pragma GCC optimize`
+// (#1675-D) for every `.cu` that transitively includes this header. These
+// templates are CPU-only, so the hint is irrelevant during nvcc parse.
+#if !defined(__NVCC__)
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+#endif
 template <bool AllActive = false, size_t LevelWidth = 0>
 static inline void compute_level_dot_kernel(
         const float* FAISS_RESTRICT query_level,
@@ -83,7 +88,9 @@ static inline void compute_level_dot_kernel(
         dot_products[i] = dp;
     }
 }
+#if !defined(__NVCC__)
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#endif
 
 /// Update exact distances with the current level's dot products, then apply
 /// Panorama pruning: for each active vector, compute a lower bound on
@@ -92,7 +99,9 @@ FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 ///
 /// Uses `if constexpr` on C::is_max rather than C::cmp() to ensure the
 /// comparison autovectorizes (C::cmp generates scalar function calls).
+#if !defined(__NVCC__)
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+#endif
 template <bool AllActive, typename C, MetricType M>
 static inline void prune_kernel(
         float* FAISS_RESTRICT exact_distances,
@@ -128,7 +137,9 @@ static inline void prune_kernel(
         }
     }
 }
+#if !defined(__NVCC__)
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#endif
 
 /// Compact active_indices in-place, removing entries where active_byteset[i]
 /// is zero. Returns the new count of active elements. Uses a branchless BMI2 +
