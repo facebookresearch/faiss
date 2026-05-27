@@ -3,11 +3,20 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import torch  # usort: skip
-import unittest  # usort: skip
-import numpy as np  # usort: skip
-import faiss  # usort: skip
-import faiss.contrib.torch_utils  # usort: skip
+import os
+
+# ROCm: bind system ROCR before torch (if needed). Do not use LD_PRELOAD here;
+# it segfaults when FAISS and PyTorch both use the GPU in the same process.
+_rocr_lib = os.environ.get("FAISS_ROCM_PRELOAD_LIBHSA")
+if _rocr_lib:
+    import ctypes
+    ctypes.CDLL(_rocr_lib, mode=ctypes.RTLD_GLOBAL)
+
+import torch
+import unittest
+import numpy as np
+import faiss
+import faiss.contrib.torch_utils
 
 from faiss.contrib import datasets
 from faiss.contrib.torch import clustering
