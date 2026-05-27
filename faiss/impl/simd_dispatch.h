@@ -36,6 +36,12 @@ constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
 constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
         (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
 
+// A0_SPR: same as A0 + AVX512_SPR (for functions with a dedicated SPR
+// specialization on top of an AVX512 fallback). Currently used by the
+// RaBitQ popcount kernels, which use VPOPCNTDQ on SPR+.
+constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
+        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_SPR));
+
 // A1: same + ARM_SVE (for functions with dedicated SVE implementations)
 constexpr int AVAILABLE_SIMD_LEVELS_A1 =
         AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::ARM_SVE));
