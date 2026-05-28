@@ -9297,6 +9297,38 @@
         </inbodydescription>
         <location file="faiss/index_io.h" line="138" column="6" declfile="faiss/index_io.h" declline="138" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a0f71b513d715f4189b3bf6e9ef7de7d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::get_deserialization_lattice_r2_limit</definition>
+        <argsstring>()</argsstring>
+        <name>get_deserialization_lattice_r2_limit</name>
+        <qualifiedname>faiss::get_deserialization_lattice_r2_limit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="149" column="8" declfile="faiss/index_io.h" declline="149" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a1325ebbb014218b1035f13439e65f4f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::set_deserialization_lattice_r2_limit</definition>
+        <argsstring>(size_t value)</argsstring>
+        <name>set_deserialization_lattice_r2_limit</name>
+        <qualifiedname>faiss::set_deserialization_lattice_r2_limit</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="154" column="6" declfile="faiss/index_io.h" declline="154" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::initialize_IVFPQ_precomputed_table</definition>

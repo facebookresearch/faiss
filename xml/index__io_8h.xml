@@ -199,9 +199,25 @@
 <codeline lineno="137"><highlight class="normal"></highlight><highlight class="comment">//<sp/>and<sp/>do<sp/>not<sp/>modify<sp/>while<sp/>deserialization<sp/>is<sp/>in<sp/>progress<sp/>on<sp/>other<sp/>threads.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="138"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_deserialization_vector_byte_limit(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>value);</highlight></codeline>
 <codeline lineno="139"><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Returns<sp/>the<sp/>current<sp/>IndexLattice<sp/>r2<sp/>limit<sp/>for<sp/>deserialization.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment">//<sp/>When<sp/>nonzero,<sp/>deserialization<sp/>rejects<sp/>IndexLattice<sp/>payloads<sp/>whose</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="comment">//<sp/>r2<sp/>(squared<sp/>lattice<sp/>radius)<sp/>exceeds<sp/>this<sp/>value.<sp/><sp/>The</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ZnSphereCodecRec<sp/>constructor<sp/>that<sp/>runs<sp/>at<sp/>IndexLattice<sp/>deserialize</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="comment">//<sp/>time<sp/>builds<sp/>a<sp/>decode<sp/>cache<sp/>whose<sp/>population<sp/>cost<sp/>scales</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment">//<sp/>polynomially<sp/>in<sp/>r2<sp/>and<sp/>dim,<sp/>and<sp/>can<sp/>exceed<sp/>real-world<sp/>workload<sp/>time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="comment">//<sp/>budgets<sp/>even<sp/>for<sp/>r2<sp/>values<sp/>that<sp/>do<sp/>not<sp/>trip<sp/>the<sp/>existing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight><highlight class="comment">//<sp/>decode-cache<sp/>memory<sp/>cap.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Default:<sp/>0<sp/>(no<sp/>limit).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>get_deserialization_lattice_r2_limit();</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Sets<sp/>the<sp/>IndexLattice<sp/>r2<sp/>deserialization<sp/>limit.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment">//<sp/>NOT<sp/>thread-safe:<sp/>set<sp/>before<sp/>any<sp/>concurrent<sp/>deserialization<sp/>calls</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">//<sp/>and<sp/>do<sp/>not<sp/>modify<sp/>while<sp/>deserialization<sp/>is<sp/>in<sp/>progress<sp/>on<sp/>other<sp/>threads.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_deserialization_lattice_r2_limit(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>value);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/index_io.h"/>
   </compounddef>
