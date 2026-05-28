@@ -344,18 +344,18 @@ void IndexIVFScalarQuantizer::reconstruct_from_offset(
         quantizer->reconstruct(list_no, recons);
         return;
     }
-    const uint8_t* code = invlists->get_single_code(list_no, offset);
+    InvertedLists::ScopedCodes sc(invlists, list_no, offset);
 
     if (by_residual) {
         std::vector<float> centroid(d);
         quantizer->reconstruct(list_no, centroid.data());
 
-        sq.decode(code, recons, 1);
+        sq.decode(sc.get(), recons, 1);
         for (int i = 0; i < d; ++i) {
             recons[i] += centroid[i];
         }
     } else {
-        sq.decode(code, recons, 1);
+        sq.decode(sc.get(), recons, 1);
     }
 }
 
