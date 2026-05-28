@@ -53,6 +53,37 @@ constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
 
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
+constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
+    switch (level) {
+        case SIMDLevel::AVX512_SPR:
+            return SIMDLevel::AVX512;
+        case SIMDLevel::AVX512:
+            return SIMDLevel::AVX2;
+        case SIMDLevel::ARM_SVE:
+            return SIMDLevel::ARM_NEON;
+        case SIMDLevel::AVX2:
+        case SIMDLevel::ARM_NEON:
+        case SIMDLevel::RISCV_RVV:
+            return SIMDLevel::NONE;
+        default:
+            return SIMDLevel::NONE;
+    }
+}
+
+template <int available_levels, SIMDLevel current_level, typename LambdaType>
+inline auto dispatch_with_fallback(LambdaType&& action) {
+    if constexpr (available_levels & (1 << int(current_level))) {
+        return action.template operator()<current_level>();
+    } else if constexpr (current_level != SIMDLevel::NONE) {
+        return dispatch_with_fallback<
+                available_levels,
+                get_simd_fallback(current_level)>(
+                std::forward<LambdaType>(action));
+    } else {
+        return action.template operator()<SIMDLevel::NONE>();
+    }
+}
+
 /** The complete dispatching function. It takes into account:
  * - the currently selected SIMD level
  * - the compiled in SIMD levels (given by COMPILE_SIMD_XXX)
@@ -120,14 +151,15 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
     }
 #else // static dispatch
     // In static mode, SINGLE_SIMD_LEVEL is a constexpr resolved at compile
-    // time. If the compiled level is not in the available set, fall through
-    // to NONE (mirroring the DD fallthrough behavior). Only SINGLE_SIMD_LEVEL
-    // and NONE have compiled specializations.
-    if constexpr (available_levels & (1 << int(SINGLE_SIMD_LEVEL))) {
-        return action.template operator()<SINGLE_SIMD_LEVEL>();
-    } else {
-        return action.template operator()<SIMDLevel::NONE>();
-    }
+    // time. We mirror the DD fallthrough behavior at compile time via
+    // dispatch_with_fallback, which recursively walks get_simd_fallback:
+    //   x86:   AVX512_SPR -> AVX512 -> AVX2 -> NONE
+    //   ARM:   ARM_SVE -> ARM_NEON -> NONE
+    //   RISCV: RISCV_RVV -> NONE
+    // The first level in the chain that appears in available_levels is
+    // selected; if none match, NONE is used unconditionally.
+    return dispatch_with_fallback<available_levels, SINGLE_SIMD_LEVEL>(
+            std::forward<LambdaType>(action));
 #endif
 }
 
