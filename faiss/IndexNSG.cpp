@@ -81,8 +81,7 @@ void IndexNSG::search(
             std::unique_ptr<DistanceComputer> dis;
             std::unique_ptr<VisitedTable> vt;
             try {
-                vt = std::make_unique<VisitedTable>(
-                        ntotal, nsg.use_visited_hashset);
+                vt = VisitedTable::create(ntotal, nsg.use_visited_hashset);
                 dis.reset(storage_distance_computer(storage));
             } catch (...) {
                 omp_capture_exception(ex, [&] { interrupt = true; });

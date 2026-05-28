@@ -330,7 +330,7 @@ class TestNSG(unittest.TestCase):
         np.testing.assert_array_equal(Insg3, Insg)
 
     def subtest_connectivity(self, index, nb):
-        vt = faiss.VisitedTable(nb)
+        vt = faiss.VisitedTableVector(nb)
         count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
         self.assertEqual(count, nb)
 
