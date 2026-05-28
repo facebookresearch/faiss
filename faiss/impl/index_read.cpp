@@ -2237,6 +2237,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxhnsw->hnsw.levels.size(),
                 idxhnsw->ntotal);
         idxhnsw->hnsw.is_panorama = (h == fourcc("IHfP"));
+        // `HNSW::is_similarity` is intentionally not serialized, so we
+        // re-derive it here from the persisted metric type. Without this,
+        // a saved IP/similarity index would come back configured as a
+        // distance index and silently produce wrong rankings on search.
+        idxhnsw->hnsw.is_similarity =
+                is_similarity_metric(idxhnsw->metric_type);
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
         // Cross-check storage ntotal and d against index
