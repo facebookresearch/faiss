@@ -3,14 +3,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import torch  # usort: skip
+import unittest  # usort: skip
+import numpy as np  # usort: skip
+
 import faiss  # usort: skip
 import faiss.contrib.torch_utils  # usort: skip
 from faiss.contrib import datasets
 from faiss.contrib.torch import clustering, quantization
 
-import torch  # usort: skip
-import unittest  # usort: skip
-import numpy as np  # usort: skip
+
 
 
 class TestTorchUtilsCPU(unittest.TestCase):

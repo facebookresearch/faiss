@@ -133,30 +133,10 @@ runs:
         sudo printf '%s\n' 'Package: *' 'Pin: release o=repo.radeon.com' 'Pin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600 >/dev/null
 
         sudo apt-get -qq update >/dev/null
-        sudo apt-get -qq install -y --no-install-recommends rocm rocm-hip-sdk rocm-dev >/dev/null
+        sudo apt-get -qq install -y rocm rocm-hip-sdk rocm-dev >/dev/null
 
         echo "/opt/rocm/bin" >> "$GITHUB_PATH"
-        echo "/opt/rocm/lib" | sudo tee /etc/ld.so.conf.d/rocm-faiss-ci.conf >/dev/null
-        if [ -d /opt/rocm/lib64 ]; then
-          echo "/opt/rocm/lib64" | sudo tee -a /etc/ld.so.conf.d/rocm-faiss-ci.conf >/dev/null
-        fi
-        sudo ldconfig
 
-        ROCM_LIBS="/opt/rocm/lib"
-        if [ -d /opt/rocm/lib64 ]; then
-          ROCM_LIBS="${ROCM_LIBS}:/opt/rocm/lib64"
-        fi
-        echo "LD_LIBRARY_PATH=${ROCM_LIBS}" >> "$GITHUB_ENV"
-
-        ROCM_HOME="$(readlink -f /opt/rocm)"
-        for libdir in "${ROCM_HOME}/lib" "${ROCM_HOME}/lib64"; do
-          for lib in libhsa-runtime64.so.1 libhsa-runtime64.so; do
-            if [ -f "${libdir}/${lib}" ]; then
-              echo "FAISS_ROCM_PRELOAD_LIBHSA=${libdir}/${lib}" >> "$GITHUB_ENV"
-              break 2
-            fi
-          done
-        done
     - name: Pin BLAS/LAPACK versions
       if: inputs.rocm == 'ON'
       shell: bash
@@ -268,11 +248,6 @@ runs:
       run: |
         conda list --show-channel-urls
         conda install -y -q "pip<26"
-        ROCM_LIBS="/opt/rocm/lib"
-        if [ -d /opt/rocm/lib64 ]; then
-          ROCM_LIBS="${ROCM_LIBS}:/opt/rocm/lib64"
-        fi
-        export LD_LIBRARY_PATH="${ROCM_LIBS}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
         pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.2
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
@@ -285,18 +260,7 @@ runs:
       if: inputs.gpu == 'ON'
       shell: bash
       run: |
-        eval "$(conda shell.bash hook)"
-        conda activate
         conda list --show-channel-urls
-        if [ "${{ inputs.rocm }}" = "ON" ]; then
-          ROCM_LIBS="/opt/rocm/lib"
-          if [ -d /opt/rocm/lib64 ]; then
-            ROCM_LIBS="${ROCM_LIBS}:/opt/rocm/lib64"
-          fi
-          # Keep /opt/rocm ahead of conda so HIP/ROCR match the FAISS build.
-          export LD_LIBRARY_PATH="${ROCM_LIBS}:${CONDA_PREFIX}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
-          unset LD_PRELOAD
-        fi
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test

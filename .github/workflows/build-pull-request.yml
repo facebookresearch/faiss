@@ -102,23 +102,13 @@ jobs:
     runs-on: linux-amd-rocm-mi325-ubuntu-24
     container:
       image: ubuntu:24.04
-      options: --privileged --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN
+      options: --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN
     steps:
       - name: Container setup
         run: |
             if [ -f /.dockerenv ]; then
               apt-get update && apt-get install -y sudo && apt-get install -y git
               git config --global --add safe.directory '*'
-              for node in /dev/dri/renderD* /dev/dri/card*; do
-                if [ -e "$node" ]; then
-                  RENDER_GID="$(stat -c '%g' "$node")"
-                  if ! getent group render >/dev/null 2>&1; then
-                    groupadd -g "$RENDER_GID" render 2>/dev/null || groupadd render
-                  fi
-                  usermod -aG render root 2>/dev/null || true
-                  break
-                fi
-              done
             else
               echo 'Skipping. Current job is not running inside a container.'
             fi
