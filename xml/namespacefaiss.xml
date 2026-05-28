@@ -6902,6 +6902,57 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="772" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="772" bodyend="799"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a959d72ca7b23268325bad5696725b683" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::get_simd_fallback</definition>
+        <argsstring>(SIMDLevel level)</argsstring>
+        <name>get_simd_fallback</name>
+        <qualifiedname>faiss::get_simd_fallback</qualifiedname>
+        <param>
+          <type>SIMDLevel</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="56" column="21" bodyfile="faiss/impl/simd_dispatch.h" bodystart="56" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ac312cf29fbd655341d6464550c4bee72" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>available_levels</declname>
+            <defname>available_levels</defname>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>current_level</declname>
+            <defname>current_level</defname>
+          </param>
+          <param>
+            <type>typename LambdaType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::dispatch_with_fallback</definition>
+        <argsstring>(LambdaType &amp;&amp;action)</argsstring>
+        <name>dispatch_with_fallback</name>
+        <qualifiedname>faiss::dispatch_with_fallback</qualifiedname>
+        <param>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="74" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="74" bodyend="85"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af531ac2f72724e9abcc311a12a71b1db" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -6934,7 +6985,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="64" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="64" bodyend="132"/>
+        <location file="faiss/impl/simd_dispatch.h" line="95" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="95" bodyend="164"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6975,7 +7026,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="164" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="164" bodyend="167"/>
+        <location file="faiss/impl/simd_dispatch.h" line="196" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="196" bodyend="199"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6999,7 +7050,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="174" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="174" bodyend="177"/>
+        <location file="faiss/impl/simd_dispatch.h" line="206" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="206" bodyend="209"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SIMDLevel::AVX2 &gt;</type>
