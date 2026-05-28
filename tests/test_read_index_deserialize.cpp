@@ -4366,6 +4366,58 @@ TEST(ReadIndexDeserialize, IndexBinaryIDMap2InnerNtotalMismatchRejected) {
     expect_binary_read_throws_with(buf, "inner index ntotal");
 }
 
+// -----------------------------------------------------------------------
+// IndexIDMap with a "null" sub-index fourcc.  read_index returns
+// nullptr for that fourcc, so the inner-ntotal cross-check on the
+// IxMp/IxM2 path would dereference idxmap->index without protection.
+// Verify both float variants reject the payload at the new "inner
+// index is null" guard rather than crashing inside the validator.
+// The binary IBMp/IBM2 path is reached indirectly (an embedded float
+// IxMp/IxM2 inside a binary wrapper such as IndexBinaryFromFloat); it
+// is covered by the same float-side guard exercised here.
+// -----------------------------------------------------------------------
+
+namespace {
+
+std::vector<uint8_t> make_idmap_null_inner_payload(const char fourcc[4]) {
+    constexpr int d = 4;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, fourcc);
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_fourcc(buf, "null");
+    push_vector<int64_t>(buf, std::vector<int64_t>{});
+    return buf;
+}
+
+} // namespace
+
+TEST(ReadIndexDeserialize, IndexIDMapNullInnerRejected) {
+    auto buf = make_idmap_null_inner_payload("IxMp");
+    expect_read_throws_with(buf, "inner index is null");
+}
+
+TEST(ReadIndexDeserialize, IndexIDMap2NullInnerRejected) {
+    auto buf = make_idmap_null_inner_payload("IxM2");
+    expect_read_throws_with(buf, "inner index is null");
+}
+
+// -----------------------------------------------------------------------
+// IndexBinaryFromFloat ("IBFf") wraps an inner float index.  read_index
+// returns nullptr for the "null" sub-index fourcc, and the IBFf
+// deserialize site previously accepted it without validation -- the
+// resulting IndexBinaryFromFloat would null-deref on the first
+// search/add operation rather than at the deserialization boundary.
+// Verify the new guard rejects the payload up front.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexBinaryFromFloatNullInnerRejected) {
+    constexpr int d = 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBFf");
+    push_binary_index_header(buf, d, /*ntotal=*/0);
+    push_fourcc(buf, "null");
+    expect_binary_read_throws_with(buf, "inner index is null");
+}
+
 // A well-formed IxMp payload with matching ntotals deserializes cleanly.
 TEST(ReadIndexDeserialize, IndexIDMapMatchingNtotalsAccepted) {
     auto buf = make_idmap_payload(
