@@ -22,7 +22,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/simd_dispatch.h>
