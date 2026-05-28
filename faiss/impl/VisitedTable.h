@@ -52,7 +52,7 @@ struct VisitedTable {
 
 /// Set-based implementation using unordered_set.
 /// O(1) to construct and O(visits) to advance.
-struct VisitedTableSet final : VisitedTable {
+struct VisitedTableSet FAISS_FINAL : VisitedTable {
     std::unordered_set<size_t> visited_set;
 
     VisitedTableSet() = default;
@@ -81,7 +81,7 @@ struct VisitedTableSet final : VisitedTable {
 /// Vector-based implementation using a versioned byte array.
 /// Faster for get()/set(), but O(size) to initialize.
 /// advance() is O(1) except every 250 calls, which are O(size).
-struct VisitedTableVector final : VisitedTable {
+struct VisitedTableVector FAISS_FINAL : VisitedTable {
     std::vector<uint8_t> visited;
     uint8_t visno{1}; // Version number, 1..254
 
