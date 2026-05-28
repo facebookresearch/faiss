@@ -234,32 +234,34 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
  * neighbor only if there is no previous neighbor that is closer to
  * that vertex than the query.
  */
-template <class C>
+// Template parameter must not be named `C`: HNSW has a member `using C =
+// C_distance` that would shadow it during parameter-list lookup here.
+template <class Comp>
 void HNSW::shrink_neighbor_list(
         DistanceComputer& qdis,
-        std::priority_queue<NodeDistFartherT<C>>& input,
-        std::vector<NodeDistFartherT<C>>& output,
+        std::priority_queue<NodeDistFartherT<Comp>>& input,
+        std::vector<NodeDistFartherT<Comp>>& output,
         size_t max_size,
         bool keep_max_size_level0) {
     // This prevents number of neighbors at
     // level 0 from being shrunk to less than 2 * M.
     // This is essential in making sure
     // `faiss::gpu::GpuIndexCagra::copyFrom(IndexHNSWCagra*)` is functional
-    std::vector<NodeDistFartherT<C>> outsiders;
+    std::vector<NodeDistFartherT<Comp>> outsiders;
 
     while (input.size() > 0) {
-        NodeDistFartherT<C> v1 = input.top();
+        NodeDistFartherT<Comp> v1 = input.top();
         input.pop();
         float dist_v1_q = v1.d;
 
         bool good = true;
-        for (NodeDistFartherT<C> v2 : output) {
+        for (NodeDistFartherT<Comp> v2 : output) {
             float dist_v1_v2 = qdis.symmetric_dis(v2.id, v1.id);
 
             // "v1 is bad" if some previously-kept neighbor v2 is closer
             // (more similar, under CMin) to v1 than the query is. Encoded
-            // generically as: v1v2 is "better than" v1q under C.
-            if (C::cmp(dist_v1_q, dist_v1_v2)) {
+            // generically as: v1v2 is "better than" v1q under Comp.
+            if (Comp::cmp(dist_v1_q, dist_v1_v2)) {
                 good = false;
                 break;
             }
