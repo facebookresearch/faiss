@@ -1541,7 +1541,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="729" column="22" bodyfile="faiss/utils/distances.h" bodystart="381" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="729" declcolumn="22"/>
+        <location file="faiss/impl/ResultHandler.h" line="730" column="22" bodyfile="faiss/utils/distances.h" bodystart="381" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="730" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a12459a18353dd0cbfcc26e1090da53a5" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -6852,7 +6852,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="732" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="732" bodyend="769"/>
+        <location file="faiss/impl/ResultHandler.h" line="733" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="733" bodyend="770"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -6900,7 +6900,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="772" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="772" bodyend="799"/>
+        <location file="faiss/impl/ResultHandler.h" line="773" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="773" bodyend="800"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a959d72ca7b23268325bad5696725b683" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>constexpr SIMDLevel</type>
