@@ -36,7 +36,6 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h>
-#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
 #undef THE_SIMD_LEVEL
 
 namespace faiss {
