@@ -145,7 +145,8 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
-                VisitedTable vt(ntotal, hnsw.use_visited_hashset);
+                std::unique_ptr<VisitedTable> vt =
+                        VisitedTable::create(ntotal, hnsw.use_visited_hashset);
 
                 std::unique_ptr<DistanceComputer> dis(
                         storage_distance_computer(index_hnsw.storage));
@@ -171,7 +172,7 @@ void hnsw_add_vertices(
                             pt_level,
                             pt_id,
                             locks,
-                            vt,
+                            *vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (do_display && i - i0 > prev_display + 10000) {
@@ -276,7 +277,7 @@ void hnsw_search(
                     res;
             std::unique_ptr<DistanceComputer> dis;
             try {
-                vt = std::make_unique<VisitedTable>(
+                vt = VisitedTable::create(
                         index->ntotal, hnsw.use_visited_hashset);
                 res = std::make_unique<
                         typename BlockResultHandler::SingleResultHandler>(bres);
@@ -472,8 +473,7 @@ void IndexHNSW::search_level_0(
         std::unique_ptr<RH::SingleResultHandler> res;
         try {
             qdis.reset(storage_distance_computer(storage));
-            vt = std::make_unique<VisitedTable>(
-                    hnsw_ntotal, hnsw.use_visited_hashset);
+            vt = VisitedTable::create(hnsw_ntotal, hnsw.use_visited_hashset);
             res = std::make_unique<RH::SingleResultHandler>(bres);
         } catch (...) {
             omp_capture_exception(ex, [&] { interrupt = true; });
@@ -569,7 +569,8 @@ void IndexHNSW::init_level_0_from_entry_points(
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
+        std::unique_ptr<VisitedTable> vt =
+                VisitedTable::create(ntotal, hnsw.use_visited_hashset);
 
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
@@ -583,7 +584,7 @@ void IndexHNSW::init_level_0_from_entry_points(
             dis->set_query(vec.data());
 
             hnsw.add_links_starting_from(
-                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks, vt);
+                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks, *vt);
 
             if (verbose && i % 10000 == 0) {
                 printf("  %d / %d\r", i, n);
@@ -824,7 +825,7 @@ int search_from_candidates_2(
         idx_t* I,
         float* D,
         MinimaxHeap& candidates,
-        VisitedTable& vt,
+        VisitedTableVector& vt,
         HNSWStats& stats,
         int level,
         int nres_in = 0) {
@@ -934,8 +935,7 @@ void IndexHNSW2Level::search(
             constexpr int candidates_size = 1;
             std::unique_ptr<MinimaxHeap> candidates;
             try {
-                vt = std::make_unique<VisitedTable>(
-                        ntotal, /*use_hashset=*/false);
+                vt = VisitedTable::create(ntotal, /*use_hashset=*/false);
                 dis.reset(storage_distance_computer(storage));
                 candidates = std::make_unique<MinimaxHeap>(candidates_size);
             } catch (...) {
@@ -987,7 +987,7 @@ void IndexHNSW2Level::search(
                             idxi,
                             simi,
                             *candidates,
-                            *vt,
+                            static_cast<VisitedTableVector&>(*vt),
                             search_stats,
                             0,
                             k);
@@ -1180,10 +1180,11 @@ void IndexHNSWCagra::range_search(
 
         RangeQueryResult& qres = pres.new_result(i);
         RangeResultHandler<HNSW::C> res(&qres, threshold);
-        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
+        std::unique_ptr<VisitedTable> vt =
+                VisitedTable::create(ntotal, hnsw.use_visited_hashset);
         HNSWStats stats;
         hnsw.search_level_0(
-                *dis, res, 1, &nearest, &nearest_d, 1, stats, vt, params);
+                *dis, res, 1, &nearest, &nearest_d, 1, stats, *vt, params);
         n1 += stats.n1;
         n2 += stats.n2;
         ndis += stats.ndis;
