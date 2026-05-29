@@ -248,7 +248,37 @@ runs:
       run: |
         conda list --show-channel-urls
         conda install -y -q "pip<26"
-        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.2
+
+        # Install AMD's torch wheels built against the exact system ROCm (7.2.0,
+        # from apt/7.2). The PyTorch Foundation whl/rocm7.2 wheels float and bundle
+        # an older ROCr that lacks hsa_amd_memory_get_preferred_copy_engine (ROCr
+        # 1.18.0, added in ROCm 7.0.0), which collides with the system 7.2.0
+        # libamdhip64. Matching both sides to 7.2.0 avoids the dual-runtime
+        # undefined-symbol/segfault failures.
+        BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2"
+        HTML="$(curl -fsSL "${BASE}/")"
+        pick() {
+          printf '%s\n' "$HTML" \
+            | grep -oE "$1-[0-9][^\"]*rocm7\.2\.0[^\"]*cp312-cp312-linux_x86_64\.whl" \
+            | sort -V | tail -1
+        }
+        TORCH_WHL="$(pick torch)"
+        TVISION_WHL="$(pick torchvision)"
+        TAUDIO_WHL="$(pick torchaudio)"
+        echo "Selected: ${TORCH_WHL} ${TVISION_WHL} ${TAUDIO_WHL}"
+        if [ -z "${TORCH_WHL}" ] || [ -z "${TVISION_WHL}" ] || [ -z "${TAUDIO_WHL}" ]; then
+          echo "Could not locate +rocm7.2.0 cp312 wheels at ${BASE}" >&2
+          exit 1
+        fi
+
+        # --no-deps avoids pulling triton/pytorch-triton-rocm (only on AMD's index,
+        # not PyPI); install torch's import-time deps explicitly instead.
+        pip3 install --no-deps \
+          "${BASE}/${TORCH_WHL}" "${BASE}/${TVISION_WHL}" "${BASE}/${TAUDIO_WHL}"
+        pip3 install numpy pillow filelock typing-extensions sympy networkx jinja2 fsspec
+
+        # Confirm torch links against ROCm 7.2 (matches the system /opt/rocm-7.2.0).
+        python -c "import torch; print('torch', torch.__version__, 'hip', torch.version.hip)"
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
