@@ -13,6 +13,84 @@ import logging
 import sys
 import inspect
 
+
+def _preload_gpu_libs():
+    """Pre-load CUDA shared libraries from nvidia-*-cu12 pip packages.
+
+    The libcudart.so / libcublas.so / libcurand.so files live in
+    site-packages/nvidia/{cuda_runtime,cublas,curand}/lib/ — not on the
+    default ld.so search path. Pre-load them with RTLD_GLOBAL before the
+    SWIG extension dlopen()s libfaiss.so (which has CUDA undefined symbols).
+
+    Gating: keyed on the `faiss._gpu_build` module, which CMake writes only
+    when FAISS_ENABLE_GPU=ON. We can't gate on `nvidia.cuda_runtime`
+    importability — PyTorch and cupy CUDA wheels pull that in transitively,
+    so a faiss-cpu user with PyTorch+CUDA would otherwise hit this path and
+    see a misleading error if any nvidia-* package were missing.
+
+    Behavior:
+    - faiss-cpu install (no `_gpu_build` marker): silent no-op.
+    - faiss-gpu install with missing nvidia-cuda-runtime / cublas / curand:
+      raises RuntimeError with fix-it message.
+    """
+    try:
+        from . import _gpu_build  # noqa: F401
+    except ImportError:
+        return  # faiss-cpu install: marker absent, nothing to preload
+
+    import ctypes
+    import os
+
+    try:
+        import nvidia.cuda_runtime
+    except ImportError as e:
+        raise RuntimeError(
+            "faiss-gpu installed but nvidia-cuda-runtime-cu12 is missing — "
+            "pip install 'nvidia-cuda-runtime-cu12>=12.6,<13'"
+        ) from e
+
+    try:
+        import nvidia.cublas
+    except ImportError as e:
+        raise RuntimeError(
+            "faiss-gpu installed but nvidia-cublas-cu12 is missing — "
+            "pip install 'nvidia-cublas-cu12>=12.6,<13'"
+        ) from e
+
+    try:
+        import nvidia.curand
+    except ImportError as e:
+        raise RuntimeError(
+            "faiss-gpu installed but nvidia-curand-cu12 is missing — "
+            "pip install 'nvidia-curand-cu12>=10.3.7,<11'"
+        ) from e
+
+    # Order matters: libcudart provides symbols that libcublas* / libcurand depend on.
+    _LIBS = [
+        (nvidia.cuda_runtime, "libcudart.so.12"),
+        (nvidia.cublas,       "libcublas.so.12"),
+        (nvidia.cublas,       "libcublasLt.so.12"),
+        (nvidia.curand,       "libcurand.so.10"),
+    ]
+    for pkg, soname in _LIBS:
+        # Use __path__[0] not __file__ — the nvidia-*-cu12 wheels are PEP 420
+        # implicit namespace packages, so pkg.__file__ is None.
+        so_path = os.path.join(pkg.__path__[0], "lib", soname)
+        try:
+            ctypes.CDLL(so_path, mode=ctypes.RTLD_GLOBAL)
+        except OSError as e:
+            raise RuntimeError(
+                f"faiss-gpu: failed to load {soname} from {so_path} — "
+                f"corrupt nvidia-*-cu12 wheel? Try: pip install --force-reinstall "
+                f"'nvidia-cuda-runtime-cu12>=12.6,<13' "
+                f"'nvidia-cublas-cu12>=12.6,<13' "
+                f"'nvidia-curand-cu12>=10.3.7,<11'"
+            ) from e
+
+
+_preload_gpu_libs()
+del _preload_gpu_libs
+
 # We import * so that the symbol foo can be accessed as faiss.foo.
 from .loader import *
 
@@ -22,8 +100,8 @@ from faiss.gpu_wrappers import *
 from faiss.array_conversions import *
 from faiss.extra_wrappers import kmin, kmax, pairwise_distances, rand, randint, \
     lrand, randn, rand_smooth_vectors, eval_intersection, normalize_L2, \
-    ResultHeap, knn, Kmeans, checksum, matrix_bucket_sort_inplace, bucket_sort, \
-    merge_knn_results, MapInt64ToInt64, knn_hamming, \
+    ResultHeap, knn, Kmeans, SuperKmeans, checksum, matrix_bucket_sort_inplace, \
+    bucket_sort, merge_knn_results, MapInt64ToInt64, knn_hamming, \
     pack_bitstrings, unpack_bitstrings
 
 
@@ -34,6 +112,7 @@ __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
 logger = logging.getLogger(__name__)
 
 class_wrappers.handle_Clustering(Clustering)
+class_wrappers.handle_SuperKMeans(SuperKMeans)
 class_wrappers.handle_Clustering1D(Clustering1D)
 class_wrappers.handle_MatrixStats(MatrixStats)
 class_wrappers.handle_IOWriter(IOWriter)

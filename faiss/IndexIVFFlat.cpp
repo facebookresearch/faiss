@@ -66,7 +66,7 @@ void IndexIVFFlat::add_core(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
     FAISS_THROW_IF_NOT(!by_residual);
-    assert(invlists);
+    FAISS_THROW_IF_NOT_MSG(invlists, "invlists not initialized");
     direct_map.check_can_add(xids);
 
     int64_t n_add = 0;
@@ -164,7 +164,9 @@ void IndexIVFFlat::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
-    memcpy(recons, invlists->get_single_code(list_no, offset), code_size);
+    memcpy(recons,
+           InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
+           code_size);
 }
 
 /*****************************************
@@ -215,7 +217,7 @@ void IndexIVFFlatDedup::add_with_ids(
         const float* x,
         const idx_t* xids) {
     FAISS_THROW_IF_NOT(is_trained);
-    assert(invlists);
+    FAISS_THROW_IF_NOT_MSG(invlists, "invlists not initialized");
     FAISS_THROW_IF_NOT_MSG(
             direct_map.no(), "IVFFlatDedup not implemented with direct_map");
     std::unique_ptr<int64_t[]> idx(new int64_t[na]);

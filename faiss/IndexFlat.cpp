@@ -65,6 +65,7 @@ void IndexFlat::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(result, "RangeSearchResult object must not be null");
     IDSelector* sel = params ? params->sel : nullptr;
 
     switch (metric_type) {
@@ -86,6 +87,7 @@ void IndexFlat::compute_distance_subset(
         idx_t k,
         float* distances,
         const idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             fvec_inner_products_by_idx(distances, x, get_xb(), labels, d, n, k);
@@ -625,9 +627,11 @@ inline void flat_pano_search_core(
     {
         SingleResultHandler res(handler);
 
-        std::vector<float> query_cum_norms(index.n_levels + 1);
-        std::vector<float> exact_distances(index.batch_size);
+        std::vector<float> query_cum_norms(index.pano.n_levels + 1);
         std::vector<uint32_t> active_indices(index.batch_size);
+        std::vector<uint8_t> active_byteset(index.batch_size);
+        std::vector<float> exact_distances(index.batch_size);
+        std::vector<float> dot_buffer(index.batch_size);
 
 #pragma omp for
         for (int64_t i = 0; i < n; i++) {
@@ -662,7 +666,9 @@ inline void flat_pano_search_core(
                                     nullptr,
                                     use_sel,
                                     active_indices,
+                                    active_byteset,
                                     exact_distances,
+                                    dot_buffer,
                                     threshold,
                                     local_stats);
                         });
@@ -692,7 +698,7 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     size_t num_batches = (ntotal + batch_size - 1) / batch_size;
 
     codes.resize(num_batches * batch_size * code_size);
-    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+    cum_sums.resize(num_batches * batch_size * (pano.n_levels + 1));
 
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
@@ -765,7 +771,7 @@ size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
         ntotal = j;
         size_t num_batches = (ntotal + batch_size - 1) / batch_size;
         codes.resize(num_batches * batch_size * code_size);
-        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+        cum_sums.resize(num_batches * batch_size * (pano.n_levels + 1));
     }
     return nremove;
 }
@@ -837,7 +843,7 @@ void IndexFlatPanorama::search_subset(
             {
                 SingleResultHandler res(handler);
 
-                std::vector<float> query_cum_norms(n_levels + 1);
+                std::vector<float> query_cum_norms(pano.n_levels + 1);
 
                 // Panorama's optimized point-wise refinement (Algorithm 2):
                 // Batch-wise Panorama, as implemented in Panorama.h, incurs
@@ -875,7 +881,7 @@ void IndexFlatPanorama::search_subset(
                             continue;
                         }
 
-                        size_t cum_sum_offset = (n_levels + 1) * idx;
+                        size_t cum_sum_offset = (pano.n_levels + 1) * idx;
                         float cum_sum = cum_sums[cum_sum_offset];
                         float exact_distance = 0.0f;
                         if constexpr (!is_sim) {
@@ -891,7 +897,7 @@ void IndexFlatPanorama::search_subset(
                         local_stats.total_dims += d;
 
                         bool pruned = false;
-                        for (size_t level = 0; level < n_levels; level++) {
+                        for (size_t level = 0; level < pano.n_levels; level++) {
                             local_stats.total_dims_scanned +=
                                     pano.level_width_floats;
 

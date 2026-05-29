@@ -56,7 +56,7 @@ IndexSVSVamanaLeanVec::~IndexSVSVamanaLeanVec() {
         FAISS_ASSERT(status.ok());
         training_data = nullptr;
     }
-    IndexSVSVamana::~IndexSVSVamana();
+    // Base class destructor handles impl cleanup
 }
 
 void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
@@ -89,6 +89,15 @@ void IndexSVSVamanaLeanVec::train_with_queries(
     FAISS_THROW_IF_NOT_MSG(
             training_data, "Failed to build leanvec training info.");
     is_trained = true;
+}
+
+void IndexSVSVamanaLeanVec::reset() {
+    if (training_data) {
+        auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
+        FAISS_ASSERT(status.ok());
+        training_data = nullptr;
+    }
+    IndexSVSVamana::reset();
 }
 
 void IndexSVSVamanaLeanVec::serialize_training_data(std::ostream& out) const {

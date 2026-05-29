@@ -105,9 +105,9 @@ IDSelectorBatch::IDSelectorBatch(size_t n, const idx_t* indices) {
 }
 
 bool IDSelectorBatch::is_member(idx_t i) const {
-    long im = i & mask;
+    idx_t im = i & mask;
     if (!(bloom[im >> 3] & (1 << (im & 7)))) {
-        return 0;
+        return false;
     }
     return set.count(i);
 }

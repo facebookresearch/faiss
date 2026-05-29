@@ -8,6 +8,7 @@
 #include <faiss/impl/NSG.h>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <stack>
@@ -113,7 +114,6 @@ using namespace nsg;
 NSG::NSG(int R_in) : R(R_in), rng(0x0903) {
     L = R + 32;
     C = R + 100;
-    srand(0x1998);
 }
 
 void NSG::search(
@@ -179,7 +179,7 @@ void NSG::build(
     is_built = true;
 
     if (verbose) {
-        int max = 0, min = 1e6;
+        int max = 0, min = std::numeric_limits<int>::max();
         double avg = 0;
 
         for (int i = 0; i < n; i++) {
@@ -256,6 +256,8 @@ void NSG::search_on_graph(
     retset.resize(pool_size + 1);
     std::vector<int> init_ids(pool_size);
 
+    vt.reserve(pool_size);
+
     int num_ids = 0;
     std::vector<index_t> neighbors(graph.K);
     size_t nneigh = graph.get_neighbors(ep, neighbors.data());
@@ -265,7 +267,7 @@ void NSG::search_on_graph(
             continue;
         }
 
-        init_ids[i] = id;
+        init_ids[num_ids] = id;
         vt.set(id);
         num_ids += 1;
     }
@@ -397,9 +399,22 @@ void NSG::sync_prune(
 
     std::vector<Node> result;
 
+    if (pool.empty()) {
+        for (int i = 0; i < R; i++) {
+            graph.at(q, i).id = EMPTY_ID;
+        }
+        return;
+    }
+
     int start = 0;
     if (pool[start].id == q) {
         start++;
+    }
+    if (start >= static_cast<int>(pool.size())) {
+        for (int i = 0; i < R; i++) {
+            graph.at(q, i).id = EMPTY_ID;
+        }
+        return;
     }
     result.push_back(pool[start]);
 

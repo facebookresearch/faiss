@@ -12,14 +12,21 @@ import faiss
 
 from faiss.contrib import datasets
 
+from common_faiss_tests import (
+    compare_binary_result_lists,
+    for_all_simd_levels,
+    NoneSIMDLevel,
+)
+
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
 
+@for_all_simd_levels
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
-        ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
+        ds = datasets.SyntheticDataset(32, 2000, 5000, 1000)
 
         index_gt = faiss.IndexFlatL2(32)
         index_gt.add(ds.get_database())
@@ -34,50 +41,120 @@ class TestSearch(unittest.TestCase):
         recall_at_1 = (Iref[:, 0] == Ia[:, 0]).sum() / nq
         assert recall_at_1 > 0.6
 
+    def test_PQ4_search_matches_none(self):
+        """Fast-scan PQ search dispatches via the 256/512-bit QBS path.
 
-    # This is an experiment to see if we can catch performance
-    # regressions. It runs 2 codes, one should be faster than the
-    # other by a factor ~10 in opt mode. We check for a factor 5.
-    # hopefully the jitter in executtion time will not produce
-    # too many spurious test failures. Unoptimized timings are
-    # not exploitable, hence the flag test on that as well.
-    # DD mode uses virtual dispatch which, combined with ASAN overhead,
-    # makes the 4x speed threshold unreliable on dev machines.
-    @unittest.skipUnless(
-        ('AVX2' in faiss.get_compile_options() or
-        'AVX512' in faiss.get_compile_options() or
-        'NEON' in faiss.get_compile_options()) and
-        "OPTIMIZE" in faiss.get_compile_options() and
-        "DD" not in faiss.get_compile_options(),
-        "only test in static optimized mode with avx2/avx512/neon")
-    def test_PQ4_speed(self):
-        ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
-        xt = ds.get_train()
-        xb = ds.get_database()
+        The integer QBS kernel is deterministic across SIMD levels *only if*
+        the upstream float PQ distance table is bit-identical AND the
+        handler's end() method (int-to-float conversion) compiles to
+        identical FP code.  Two cases break this:
+
+          1. aarch64 NEON/SVE: float distance-table computation reduces
+             in a different order, producing non-bit-identical LUT.
+          2. DD mode: per-SIMD TUs compile with different flags (-mfma
+             vs no -mfma), so handler end() may contract mul+add into
+             fma, producing 1-ULP float distance differences.
+
+        In both cases, fall back to a recall@1 check.
+        """
+        ds = datasets.SyntheticDataset(32, 2000, 5000, 200)
+        index = faiss.index_factory(32, 'PQ16x4fs')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
         xq = ds.get_queries()
+        nq = xq.shape[0]
+        M, ksub = index.pq.M, index.pq.ksub
 
-        index = faiss.index_factory(32, 'PQ16x4')
-        index.train(xt)
+        tab = np.zeros((nq, M, ksub), dtype='float32')
+        index.pq.compute_distance_tables(
+            nq, faiss.swig_ptr(xq), faiss.swig_ptr(tab))
+        D, I = index.search(xq, 10)
+
+        with NoneSIMDLevel():
+            tab_none = np.zeros((nq, M, ksub), dtype='float32')
+            index.pq.compute_distance_tables(
+                nq, faiss.swig_ptr(xq), faiss.swig_ptr(tab_none))
+            D_none, I_none = index.search(xq, 10)
+
+        lut_diffs = int((tab != tab_none).sum())
+        dd_mode = "DD" in faiss.get_compile_options()
+        if lut_diffs == 0 and not dd_mode:
+            compare_binary_result_lists(D, I, D_none, I_none)
+        else:
+            recall_at_1 = (I[:, 0] == I_none[:, 0]).mean()
+            self.assertGreater(
+                recall_at_1, 0.95,
+                f"LUT diverges ({lut_diffs} entries differ, DD={dd_mode}); "
+                f"recall@1 vs NONE = {recall_at_1:.3f}")
+
+
+class TestFastScanDDSpeed(unittest.TestCase):
+    """Verify DD-mode FastScan kernels use real SIMD."""
+
+    def _build_index(self):
+        d, n, nq, k = 128, 100_000, 1000, 10
+        np.random.seed(123)
+        xb = np.random.randn(n, d).astype("float32")
+        xq = np.random.randn(nq, d).astype("float32")
+        index = faiss.index_factory(d, "PQ16x4fs")
+        index.train(xb)
         index.add(xb)
+        index.search(xq, k)
+        return index, xq, k
 
+    def _bench(self, index, xq, k, level, iters=50):
+        faiss.SIMDConfig.set_level(level)
         t0 = time.time()
-        D1, I1 = index.search(xq, 10)
-        t1 = time.time()
-        pq_t = t1 - t0
-        print('PQ16x4 search time:', pq_t)
+        for _ in range(iters):
+            index.search(xq, k)
+        return time.time() - t0
 
-        index2 = faiss.index_factory(32, 'PQ16x4fs')
-        index2.train(xt)
-        index2.add(xb)
+    def _check_speedup(self, none_time, simd_time, label):
+        speedup = none_time / simd_time
+        print(
+            f"FastScan DD: NONE={none_time:.3f}s, "
+            f"{label}={simd_time:.3f}s, {speedup:.1f}x"
+        )
+        # 2x is conservative: scalar-to-AVX2 theoretical max is ~32x,
+        # observed 5-27x in isolation. 2x leaves margin for CI noise.
+        self.assertGreater(
+            speedup, 2.0,
+            f"{label} should be >2x faster than NONE, "
+            f"got {speedup:.1f}x",
+        )
 
-        t0 = time.time()
-        D2, I2 = index2.search(xq, 10)
-        t1 = time.time()
-        pqfs_t = t1 - t0
-        print('PQ16x4fs search time:', pqfs_t)
-        self.assertLess(pqfs_t * 4, pq_t)
+    @unittest.skipUnless(
+        "DD" in faiss.get_compile_options()
+        and "OPTIMIZE" in faiss.get_compile_options()
+        and faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_AVX2),
+        "DD-only, needs opt mode and AVX2",
+    )
+    def test_dd_fastscan_avx2_faster_than_none(self):
+        index, xq, k = self._build_index()
+        none_t = self._bench(index, xq, k, faiss.SIMDLevel_NONE)
+        avx2_t = self._bench(index, xq, k, faiss.SIMDLevel_AVX2)
+        faiss.SIMDConfig.set_level(
+            faiss.SIMDConfig.get_dispatched_level())
+        self._check_speedup(none_t, avx2_t, "AVX2")
+
+    @unittest.skipUnless(
+        "DD" in faiss.get_compile_options()
+        and "OPTIMIZE" in faiss.get_compile_options()
+        and faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_AVX512),
+        "DD-only, needs opt mode and AVX512",
+    )
+    def test_dd_fastscan_avx512_faster_than_none(self):
+        index, xq, k = self._build_index()
+        none_t = self._bench(index, xq, k, faiss.SIMDLevel_NONE)
+        avx512_t = self._bench(
+            index, xq, k, faiss.SIMDLevel_AVX512)
+        faiss.SIMDConfig.set_level(
+            faiss.SIMDConfig.get_dispatched_level())
+        self._check_speedup(none_t, avx512_t, "AVX512")
 
 
+@for_all_simd_levels
 class TestRounding(unittest.TestCase):
 
     def do_test_rounding(self, implem=4, metric=faiss.METRIC_L2):
@@ -133,6 +210,7 @@ class TestRounding(unittest.TestCase):
         self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestReconstruct(unittest.TestCase):
 
     def test_pqfastscan(self):
@@ -178,7 +256,7 @@ def reference_accu(codes, LUT):
             a = np.uint16(0)
             for sp in range(0, nsp, 2):
                 c = codes[j, sp // 2]
-                a += LUT[i, sp    , c & 15].astype('uint16')
+                a += LUT[i, sp, c & 15].astype('uint16')
                 a += LUT[i, sp + 1, c >> 4].astype('uint16')
             accu[i, j] = a
     return accu
@@ -243,12 +321,12 @@ class ThisIsNotATestLoop5:    # (unittest.TestCase):
 ##########################################################
 
 def verify_with_draws(testcase, Dref, Iref, Dnew, Inew):
-    """ verify a list of results where there are draws in the distances (because
-    they are integer). """
+    """Verify a list of results where there are draws in the distances
+    (because they are integer)."""
     np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
     # here we have to be careful because of draws
     for i in range(len(Iref)):
-        if np.all(Iref[i] == Inew[i]): # easy case
+        if np.all(Iref[i] == Inew[i]):
             continue
         # we can deduce nothing about the latest line
         skip_dis = Dref[i, -1]
@@ -312,6 +390,7 @@ class TestImplems(unittest.TestCase):
         return index2
 
 
+@for_all_simd_levels
 class TestImplem12(TestImplems):
 
     def build_fast_scan_index(self, index, qbs):
@@ -340,6 +419,7 @@ class TestImplem12(TestImplems):
         self.do_with_params(30, 0x33)
 
 
+@for_all_simd_levels
 class TestImplem13(TestImplems):
 
     def build_fast_scan_index(self, index, qbs):
@@ -356,6 +436,7 @@ class TestImplem13(TestImplems):
         self.do_with_params(32, 0x223)
 
 
+@for_all_simd_levels
 class TestImplem14(TestImplems):
 
     def build_fast_scan_index(self, index, params):
@@ -392,6 +473,7 @@ class TestImplem14(TestImplems):
         self.do_with_params(30, (1, 64))
 
 
+@for_all_simd_levels
 class TestImplem15(TestImplems):
 
     def build_fast_scan_index(self, index, params):
@@ -408,13 +490,14 @@ class TestImplem15(TestImplems):
         self.do_with_params(32, (2, 64))
 
 
+@for_all_simd_levels
 class TestAdd(unittest.TestCase):
 
     def do_test_add(self, d, bbs):
 
         ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
 
-        index = faiss.index_factory(d, f'PQ{d//2}x4np')
+        index = faiss.index_factory(d, f'PQ{d // 2}x4np')
         index.train(ds.get_train())
 
         xb = ds.get_database()
@@ -444,7 +527,7 @@ class TestAdd(unittest.TestCase):
         d = 32
         ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
 
-        index = faiss.index_factory(d, f'PQ{d//2}x4np')
+        index = faiss.index_factory(d, f'PQ{d // 2}x4np')
         index.train(ds.get_train())
         index.add(ds.get_database())
         Dref, Iref = index.search(ds.get_queries(), 10)
@@ -627,7 +710,11 @@ for implem in 2, 3, 4:
     add_TestAQFastScan_subtest_from_idxaq(implem, 'L2')
     add_TestAQFastScan_subtest_from_idxaq(implem, 'IP')
 
+# Apply decorator after dynamic method generation.
+TestAQFastScan = for_all_simd_levels(TestAQFastScan)
 
+
+@for_all_simd_levels
 class TestPAQFastScan(unittest.TestCase):
 
     def subtest_accuracy(self, paq):
@@ -688,6 +775,7 @@ class TestPAQFastScan(unittest.TestCase):
         self.subtest_io('PRQ2x3x4fs_Nrq2x4')
 
 
+@for_all_simd_levels
 class TestBlockDecode(unittest.TestCase):
 
     def test_issue_2739(self):
@@ -697,7 +785,7 @@ class TestBlockDecode(unittest.TestCase):
         index.train(ds.get_train())
         index.add(ds.get_database())
 
-        np.testing.assert_array_equal(
-            index.pq.decode(index.pq.compute_codes(ds.get_database()))[0, ::100],
-            index.reconstruct(0)[::100]
-        )
+        decoded = index.pq.decode(
+            index.pq.compute_codes(ds.get_database())
+        )[0, ::100]
+        np.testing.assert_array_equal(decoded, index.reconstruct(0)[::100])

@@ -19,7 +19,7 @@ IndexLattice::IndexLattice(idx_t d_in, int nsq_in, int scale_nbit_in, int r2)
         : IndexFlatCodes(0, d_in, METRIC_L2),
           nsq(nsq_in),
           dsq(d_in / nsq_in),
-          zn_sphere_codec(dsq, r2),
+          zn_sphere_codec(static_cast<int>(dsq), r2),
           scale_nbit(scale_nbit_in) {
     FAISS_THROW_IF_NOT(d_in % nsq_in == 0);
 

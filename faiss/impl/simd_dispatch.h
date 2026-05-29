@@ -32,9 +32,15 @@ constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
 
-// A0: same + AVX512
-constexpr int AVAILABLE_SIMD_LEVELS_A0 =
-        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::AVX512));
+// A0: same + AVX512 + RISCV_RVV
+constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+        (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
+
+// A0_SPR: same as A0 + AVX512_SPR (for functions with a dedicated SPR
+// specialization on top of an AVX512 fallback). Currently used by the
+// RaBitQ popcount kernels, which use VPOPCNTDQ on SPR+.
+constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
+        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_SPR));
 
 // A1: same + ARM_SVE (for functions with dedicated SVE implementations)
 constexpr int AVAILABLE_SIMD_LEVELS_A1 =
@@ -46,6 +52,37 @@ constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_SVE));
 
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
+
+constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
+    switch (level) {
+        case SIMDLevel::AVX512_SPR:
+            return SIMDLevel::AVX512;
+        case SIMDLevel::AVX512:
+            return SIMDLevel::AVX2;
+        case SIMDLevel::ARM_SVE:
+            return SIMDLevel::ARM_NEON;
+        case SIMDLevel::AVX2:
+        case SIMDLevel::ARM_NEON:
+        case SIMDLevel::RISCV_RVV:
+            return SIMDLevel::NONE;
+        default:
+            return SIMDLevel::NONE;
+    }
+}
+
+template <int available_levels, SIMDLevel current_level, typename LambdaType>
+inline auto dispatch_with_fallback(LambdaType&& action) {
+    if constexpr (available_levels & (1 << int(current_level))) {
+        return action.template operator()<current_level>();
+    } else if constexpr (current_level != SIMDLevel::NONE) {
+        return dispatch_with_fallback<
+                available_levels,
+                get_simd_fallback(current_level)>(
+                std::forward<LambdaType>(action));
+    } else {
+        return action.template operator()<SIMDLevel::NONE>();
+    }
+}
 
 /** The complete dispatching function. It takes into account:
  * - the currently selected SIMD level
@@ -101,19 +138,28 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
             }
             [[fallthrough]];
 #endif
+
+#ifdef COMPILE_SIMD_RISCV_RVV
+        case SIMDLevel::RISCV_RVV:
+            if constexpr (available_levels & (1 << int(SIMDLevel::RISCV_RVV))) {
+                return action.template operator()<SIMDLevel::RISCV_RVV>();
+            }
+            [[fallthrough]];
+#endif
         default:
             return action.template operator()<SIMDLevel::NONE>();
     }
 #else // static dispatch
     // In static mode, SINGLE_SIMD_LEVEL is a constexpr resolved at compile
-    // time. If the compiled level is not in the available set, fall through
-    // to NONE (mirroring the DD fallthrough behavior). Only SINGLE_SIMD_LEVEL
-    // and NONE have compiled specializations.
-    if constexpr (available_levels & (1 << int(SINGLE_SIMD_LEVEL))) {
-        return action.template operator()<SINGLE_SIMD_LEVEL>();
-    } else {
-        return action.template operator()<SIMDLevel::NONE>();
-    }
+    // time. We mirror the DD fallthrough behavior at compile time via
+    // dispatch_with_fallback, which recursively walks get_simd_fallback:
+    //   x86:   AVX512_SPR -> AVX512 -> AVX2 -> NONE
+    //   ARM:   ARM_SVE -> ARM_NEON -> NONE
+    //   RISCV: RISCV_RVV -> NONE
+    // The first level in the chain that appears in available_levels is
+    // selected; if none match, NONE is used unconditionally.
+    return dispatch_with_fallback<available_levels, SINGLE_SIMD_LEVEL>(
+            std::forward<LambdaType>(action));
 #endif
 }
 
@@ -139,8 +185,8 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
  *   });
  *
  * The lambda must be a generic lambda with a SIMDLevel template parameter.
- * By default, the lambda uses levels AVX2 + AVX512 + NEON, since these are the
- * most common cases.
+ * By default, the lambda uses levels AVX2 + AVX512 + NEON + RVV, since these
+ * are the most common cases.
  *
  * @param action A generic lambda with signature `template<SIMDLevel> T
  * operator()()`

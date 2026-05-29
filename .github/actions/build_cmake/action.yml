@@ -20,6 +20,10 @@ inputs:
     description: 'Enable SVS support.'
     required: false
     default: OFF
+  metal:
+    description: 'Enable Metal GPU backend (macOS Apple Silicon).'
+    required: false
+    default: OFF
   setup_conda:
     description: 'Setup miniconda environment.'
     required: false
@@ -32,31 +36,29 @@ runs:
   using: composite
   steps:
     - name: Setup miniconda
-      if: inputs.setup_conda == 'true'
+      if: inputs.setup_conda == 'true' && inputs.metal != 'ON'
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest # ensures conda-forge channel is used.
+        miniforge-version: latest
         channels: conda-forge
         conda-remove-defaults: 'true'
         # Set to aarch64 if we're on arm64 because there's no miniforge ARM64 package, just aarch64.
         # They are the same thing, just named differently.
         architecture: ${{ runner.arch  == 'ARM64' && 'aarch64' || runner.arch }}
     - name: Configure build environment
+      if: inputs.metal != 'ON'
       shell: bash
       run: |
-        # initialize Conda
-        conda config --set solver libmamba
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
-        conda install -y -q "conda<=25.07"
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2 setuptools
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q -c conda-forge openblas=0.3.29 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
+          conda install -y -q -c conda-forge openblas=0.3.33 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
         fi
 
         # install base packages for X86_64
@@ -71,10 +73,14 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-libraries-dev=12.6 cuda-nvcc=12.6 cuda-nvtx=12.6 cuda-cupti=12.6 cuda-cudart-dev=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
+          conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=12.9' cuda-toolkit=12.9 sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=26.02 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+          # Clean index cache to prevent sqlite3 "database is locked" errors
+          # from conda-libmamba-solver's shards cache between consecutive installs.
+          # See: https://github.com/conda/conda-libmamba-solver/issues/667
+          conda clean --index-cache 2>/dev/null || true
         fi
 
         # install SVS runtime for SVS builds
@@ -87,7 +93,10 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.9"
+          # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
+          # so we install via pip for CUDA builds. --break-system-packages is needed
+          # because the CI runner's Python is PEP 668 externally-managed.
+          pip install "torch>=2.7" --break-system-packages --index-url https://download.pytorch.org/whl/cu132
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
@@ -100,27 +109,43 @@ runs:
         sudo apt-get -qq update >/dev/null
         sudo apt-get -qq install -y kmod wget gpg >/dev/null
 
+        # Download, prepare, and install the package signing key
+        mkdir --parents --mode=0755 /etc/apt/keyrings
+        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+
+    - name: Add rocm repository
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
         # Get UBUNTU version name
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
         ROCM_VERSION="6.2"
 
-        # Download, prepare, and install the package signing key
-        mkdir --parents --mode=0755 /etc/apt/keyrings
-        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+        rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
+        echo "2de99e2354646a90d9903e2a669fc4e36b02c1bbff7075c481e12d7edab2c88b  /tmp/rocm.gpg.key" | sha256sum --check
 
-        # Add rocm repository
-        wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-        rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
-        echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
-        sudo apt-get -qq update --allow-insecure-repositories >/dev/null
-        sudo apt-get -qq install -y --allow-unauthenticated \
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" \
-            "rocm-libs${ROCM_VERSION}" >/dev/null
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y \
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" >/dev/null
+
+
+    - name: Pin BLAS/LAPACK versions
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        conda install -y \
+          "libblas=3.9.0=35_*" \
+          "libcblas=3.9.0=35_*" \
+          "liblapack=3.9.0=35_*"
 
         # Fake presence of MI200-class accelerators
-        echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
+        echo "gfx942" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
         sudo apt-get -qq autoclean >/dev/null
@@ -135,11 +160,26 @@ runs:
         sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
         sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
         sudo ln -s $HOME/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
-    - name: Print GPU info
-      if: inputs.gpu == 'ON'
+    - name: Print NVIDIA GPU info
+      if: inputs.gpu == 'ON' && inputs.rocm != 'ON'
       shell: bash
       run: nvidia-smi
+    - name: Print AMD GPU info
+      if: inputs.gpu == 'ON' && inputs.rocm == 'ON'
+      shell: bash
+      run: rocm-smi
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ inputs.opt_level }}-gpu${{ inputs.gpu }}-cuvs${{ inputs.cuvs }}-rocm${{ inputs.rocm }}-svs${{ inputs.svs }}
+        max-size: 2G
+        update-package-index: true
+    - name: Setup macOS Metal environment
+      if: inputs.metal == 'ON'
+      shell: bash
+      run: brew install cmake libomp gflags
     - name: Build all targets
+      if: inputs.metal != 'ON'
       shell: bash
       run: |
         eval "$(conda shell.bash hook)"
@@ -156,23 +196,45 @@ runs:
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
         make -k -C build -j$(nproc)
+    - name: Build Metal targets
+      if: inputs.metal == 'ON'
+      shell: bash
+      run: |
+        cmake -B build \
+              -DFAISS_ENABLE_METAL=ON \
+              -DFAISS_ENABLE_GPU=OFF \
+              -DFAISS_ENABLE_PYTHON=OFF \
+              -DBUILD_TESTING=ON \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_PREFIX_PATH="$(brew --prefix libomp)" \
+              .
+        cmake --build build --target faiss_metal TestMetalIndexFlat -j$(sysctl -n hw.logicalcpu)
     - name: C++ tests
+      if: inputs.metal != 'ON'
       shell: bash
       run: |
         conda list --show-channel-urls
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
-    - name: C++ perf benchmarks
+    - name: C++ tests (Metal)
+      if: inputs.metal == 'ON'
       shell: bash
-      if: inputs.rocm == 'OFF'
+      run: cd build && ctest -R TestMetalIndexFlat --output-on-failure
+    - name: C++ perf benchmarks
+      if: inputs.rocm == 'OFF' && inputs.metal != 'ON'
+      shell: bash
       run: |
         conda list --show-channel-urls
         find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
+      if: inputs.metal != 'ON'
       shell: bash
       working-directory: build/faiss/python
       run: |
@@ -183,9 +245,10 @@ runs:
       shell: bash
       run: |
         conda list --show-channel-urls
+        conda install -y -q "pip<26"
         pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
     - name: Python tests (CPU only)
-      if: inputs.gpu == 'OFF'
+      if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
       run: |
         conda list --show-channel-urls
@@ -215,6 +278,7 @@ runs:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}-svs=${{ inputs.svs }}
         path: test-results
     - name: Check installed packages channel
+      if: inputs.metal != 'ON'
       shell: bash
       run: |
         # Shows that all installed packages are from conda-forge.

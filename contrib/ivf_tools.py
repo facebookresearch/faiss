@@ -72,7 +72,7 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     # the coarse distances are used in IVFPQ with L2 distance and
     # by_residual=True otherwise we provide dummy coarse_dis
     if coarse_dis is None:
-        coarse_dis = np.empty((n, index_ivf.nprobe), dtype=dis_type)
+        coarse_dis = np.zeros((n, index_ivf.nprobe), dtype=dis_type)
     else:
         assert coarse_dis.shape == (n, index_ivf.nprobe)
 

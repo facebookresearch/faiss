@@ -17,7 +17,6 @@
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/maybe_owned_vector.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
 
@@ -26,6 +25,8 @@ namespace faiss {
 // Forward declarations to avoid circular dependency.
 struct IndexHNSW;
 struct IndexHNSWFlatPanorama;
+struct MinimaxHeap;
+class LockVector;
 
 /** Implementation of the Hierarchical Navigable Small World
  * datastructure.
@@ -63,33 +64,6 @@ struct HNSW {
     using C = CMax<float, int64_t>;
 
     typedef std::pair<float, storage_idx_t> Node;
-
-    /** Heap structure that allows fast access and updates.
-     */
-    struct MinimaxHeap {
-        int n;
-        int k;
-        int nvalid;
-
-        std::vector<storage_idx_t> ids;
-        std::vector<float> dis;
-        typedef faiss::CMax<float, storage_idx_t> HC;
-
-        explicit MinimaxHeap(int n_in)
-                : n(n_in), k(0), nvalid(0), ids(n_in), dis(n_in) {}
-
-        void push(storage_idx_t i, float v);
-
-        float max() const;
-
-        int size() const;
-
-        void clear();
-
-        int pop_min(float* vmin_out = nullptr);
-
-        int count_below(float thresh);
-    };
 
     /// to sort pairs of (id, distance) from nearest to farthest or the reverse
     struct NodeDistCloser {
@@ -196,7 +170,7 @@ struct HNSW {
             storage_idx_t nearest,
             float d_nearest,
             int level,
-            omp_lock_t* locks,
+            LockVector& locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
@@ -206,7 +180,7 @@ struct HNSW {
             DistanceComputer& ptdis,
             int pt_level,
             int pt_id,
-            std::vector<omp_lock_t>& locks,
+            LockVector& locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
@@ -280,7 +254,7 @@ int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
         ResultHandler& res,
-        HNSW::MinimaxHeap& candidates,
+        MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
         int level,
@@ -296,7 +270,7 @@ int search_from_candidates_panorama(
         const IndexHNSW* index,
         DistanceComputer& qdis,
         ResultHandler& res,
-        HNSW::MinimaxHeap& candidates,
+        MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
         int level,

@@ -554,13 +554,27 @@ ZnSphereCodecRec::ZnSphereCodecRec(int dim_in, int r2_in)
     int cache_level = std::min(3, log2_dim - 1);
     decode_cache_ld = 0;
     assert(cache_level <= log2_dim);
+
     decode_cache.resize((r2 + 1));
+
+    // The decode cache stores total_cache_entries * dimsub floats.
+    // Cap at 2^27 total floats (~512 MB), aligned with the nv_cum
+    // memory cap above which also uses 2^27 entries.  The entry count
+    // grows as the number of lattice points in dimension
+    // 2^cache_level, which is O(r2^(dim/2)) -- much faster than the
+    // O(r2^2) growth of nv_cum.
+    size_t total_cache_entries = 0;
+    int dimsub = (1 << cache_level);
 
     for (int r2sub = 0; r2sub <= r2; r2sub++) {
         int ld = cache_level;
         uint64_t nvi = get_nv(ld, r2sub);
+        total_cache_entries += nvi;
+        FAISS_THROW_IF_NOT_MSG(
+                total_cache_entries <= (size_t(1) << 27) / dimsub,
+                "ZnSphereCodecRec: r2 too large, decode cache "
+                "would require excessive memory");
         std::vector<float>& cache = decode_cache[r2sub];
-        int dimsub = (1 << cache_level);
         cache.resize(nvi * dimsub);
         std::vector<float> c(dim);
         uint64_t code0 = get_nv_cum(cache_level + 1, r2, r2 - r2sub);

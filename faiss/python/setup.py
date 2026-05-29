@@ -152,8 +152,8 @@ else:
 long_description = _base_description.rstrip() + _gpu_details
 
 setup(
-    name=_package_name,
-    version="1.14.1",
+    name="faiss",
+    version="1.14.2",
     description="A library for efficient similarity search and clustering of dense vectors",
     long_description=long_description,
     long_description_content_type="text/plain",

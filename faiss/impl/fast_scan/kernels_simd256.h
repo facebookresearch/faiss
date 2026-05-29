@@ -14,14 +14,28 @@ namespace faiss {
 /*
  * Multi-BB variant: accumulates NQ queries x BB*32 database elements.
  * Used by the search_1 path (bbs > 32).
+ *
+ * KernelSL selects the SIMD type width used for the inner accumulation
+ * loop.  In DD mode the caller passes THE_LEVEL_TO_DISPATCH so the
+ * kernel uses real AVX2/AVX512 types rather than the emulated-scalar
+ * fallback that SINGLE_SIMD_LEVEL_256 would give.
  */
-template <int NQ, int BB, class ResultHandler, class Scaler>
+template <
+        int NQ,
+        int BB,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void kernel_accumulate_block(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
+    constexpr SIMDLevel SL256 = simd256_level_selector<KernelSL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
+    using simd32uint8 = simd32uint8_tpl<SL256>;
+
     // distance accumulators
     simd16uint16 accu[NQ][BB][4];
 
@@ -108,13 +122,21 @@ void kernel_accumulate_block(
  * Single-BB QBS variant: accumulates NQ queries x 32 db elements (BB=1).
  * Used by the decompose_qbs layer for non-AVX512 paths.
  */
-template <int NQ, class ResultHandler, class Scaler>
+template <
+        int NQ,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void pq4_kernel_qbs_256(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
+    constexpr SIMDLevel SL256 = simd256_level_selector<KernelSL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
+    using simd32uint8 = simd32uint8_tpl<SL256>;
+
     // dummy alloc to keep the windows compiler happy
     constexpr int NQA = NQ > 0 ? NQ : 1;
     // distance accumulators

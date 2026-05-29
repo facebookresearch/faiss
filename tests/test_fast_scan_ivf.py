@@ -12,10 +12,13 @@ import faiss
 from faiss.contrib import datasets
 from faiss.contrib.inspect_tools import get_invlist
 
+from common_faiss_tests import for_all_simd_levels
+
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
 
+@for_all_simd_levels
 class TestLUTQuantization(unittest.TestCase):
 
     def compute_dis_float(self, codes, LUT, bias):
@@ -166,6 +169,7 @@ def three_metrics(Dref, Iref, Dnew, Inew):
 ##########################################################
 
 
+@for_all_simd_levels
 class TestIVFImplem1(unittest.TestCase):
     """ Verify implem 1 (search from original invlists)
     against IndexIVFPQ """
@@ -206,6 +210,7 @@ class TestIVFImplem1(unittest.TestCase):
         self.do_test(True, faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestIVFImplem2(unittest.TestCase):
     """ Verify implem 2 (search with original invlists with uint8 LUTs)
     against IndexIVFPQ. Entails some loss in accuracy. """
@@ -254,6 +259,7 @@ class TestIVFImplem2(unittest.TestCase):
         self.eval_quant_loss(True, faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestEquivPQ(unittest.TestCase):
 
     def test_equiv_pq(self):
@@ -411,26 +417,32 @@ class TestIVFImplem12(unittest.TestCase):
         self.do_test(True, d=30, nq=1)
 
 
+@for_all_simd_levels
 class TestIVFImplem10(TestIVFImplem12):
     IMPLEM = 10
 
 
+@for_all_simd_levels
 class TestIVFImplem11(TestIVFImplem12):
     IMPLEM = 11
 
 
+@for_all_simd_levels
 class TestIVFImplem13(TestIVFImplem12):
     IMPLEM = 13
 
 
+@for_all_simd_levels
 class TestIVFImplem14(TestIVFImplem12):
     IMPLEM = 14
 
 
+@for_all_simd_levels
 class TestIVFImplem15(TestIVFImplem12):
     IMPLEM = 15
 
 
+@for_all_simd_levels
 class TestAdd(unittest.TestCase):
 
     def do_test(self, by_residual=False, metric=faiss.METRIC_L2, d=32, bbs=32):
@@ -482,6 +494,7 @@ class TestAdd(unittest.TestCase):
         self.do_test(bbs=64)
 
 
+@for_all_simd_levels
 class TestTraining(unittest.TestCase):
 
     def do_test(self, by_residual=False, metric=faiss.METRIC_L2, d=32, bbs=32):
@@ -545,6 +558,7 @@ class TestTraining(unittest.TestCase):
         self.do_test(by_residual=True, d=30)
 
 
+@for_all_simd_levels
 class TestReconstruct(unittest.TestCase):
     """ test reconstruct and sa_encode / sa_decode
     (also for a few additive quantizer variants) """
@@ -640,6 +654,7 @@ class TestReconstruct(unittest.TestCase):
         self.do_test_generic("PRQ8x2x4fs", metric=faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestIsTrained(unittest.TestCase):
 
     def test_issue_2019(self):
@@ -861,7 +876,11 @@ for byr in True, False:
         add_TestIVFAQFastScan_subtest_rescale_accuracy('LSQ', 'lsq', byr, implem)
         add_TestIVFAQFastScan_subtest_rescale_accuracy('RQ', 'rq', byr, implem)
 
+# Apply decorator after dynamic method generation.
+TestIVFAQFastScan = for_all_simd_levels(TestIVFAQFastScan)
 
+
+@for_all_simd_levels
 class TestIVFPAQFastScan(unittest.TestCase):
 
     def subtest_accuracy(self, paq):
@@ -929,6 +948,7 @@ class TestIVFPAQFastScan(unittest.TestCase):
         self.subtest_io('IVF16,PRQ2x3x4fs_Nrq2x4')
 
 
+@for_all_simd_levels
 class TestSearchParams(unittest.TestCase):
 
     def test_search_params(self):
@@ -991,9 +1011,170 @@ class TestRangeSearchImplem12(unittest.TestCase):
         self.do_test(metric=faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestRangeSearchImplem10(TestRangeSearchImplem12):
     IMPLEM = 10
 
 
+@for_all_simd_levels
 class TestRangeSearchImplem110(TestRangeSearchImplem12):
     IMPLEM = 110
+
+
+class TestFastScanEarlyTerminationKnobs(unittest.TestCase):
+    """
+    FastScan early-stop options use per-query implementations.
+    Incompatible explicit implementations throw on opt-in.
+    """
+
+    def _build_index(self):
+        ds = datasets.SyntheticDataset(32, 2000, 500, 30)
+        index = faiss.index_factory(32, "IVF32,PQ4x4fs", faiss.METRIC_L2)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        return ds, index
+
+    def test_fastscan_defaults_roundtrip(self):
+        ds, index = self._build_index()
+        k = 10
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        # defaults should not raise
+        D_p, I_p = index.search(ds.get_queries(), k, params=params)
+        # and should match a no-params search with the same nprobe.
+        index.nprobe = 4
+        D_ref, I_ref = index.search(ds.get_queries(), k)
+        np.testing.assert_array_equal(I_p, I_ref)
+
+    def test_fastscan_max_lists_num_caps_probes(self):
+        ds, index = self._build_index()
+        # implem auto-selection should pick 10 when max_lists_num is set
+        index.implem = 0
+        params_full = faiss.SearchParametersIVF()
+        params_full.nprobe = 16
+        D_full, I_full = index.search(ds.get_queries(), 10, params=params_full)
+
+        params_cap = faiss.SearchParametersIVF()
+        params_cap.nprobe = 16
+        params_cap.max_lists_num = 2
+        D_cap, I_cap = index.search(ds.get_queries(), 10, params=params_cap)
+
+        # Tight cap should produce no more valid hits than full nprobe and
+        # at least one query should differ (unless data is unusually small).
+        miss_full = np.sum(I_full == -1)
+        miss_cap = np.sum(I_cap == -1)
+        self.assertLessEqual(miss_full, miss_cap)
+
+    def test_fastscan_ensure_topk_full_fills_heap(self):
+        ds, index = self._build_index()
+        index.implem = 0
+        # Use one query so the missing-result count is easy to compare.
+        q = ds.get_queries()[:1]
+        k = 10
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 16
+        # k // 2 max_codes forces truncation without ensure_topk_full
+        params.max_codes = k // 2
+        params.ensure_topk_full = False
+        _, I_tight = index.search(q, k, params=params)
+        params.ensure_topk_full = True
+        _, I_full = index.search(q, k, params=params)
+        self.assertGreaterEqual(
+            int(np.sum(I_tight == -1)), int(np.sum(I_full == -1))
+        )
+
+    def test_fastscan_ensure_topk_full_with_restrictive_selector(self):
+        ds, index = self._build_index()
+        index.implem = 0
+        q = ds.get_queries()[:1]
+        k = 10
+
+        # Keep one third of the ids: restrictive enough to catch raw
+        # pre-filter max_codes accounting, while still leaving enough
+        # approximate FastScan candidates to fill the heap.
+        keep = np.arange(0, ds.nb, 3).astype("int64")
+        sel = faiss.IDSelectorBatch(keep)
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 32
+        params.max_codes = 2
+        params.ensure_topk_full = True
+        params.sel = sel
+
+        _, I = index.search(q, k, params=params)
+        self.assertEqual(int(np.sum(I == -1)), 0)
+
+    def test_fastscan_ensure_topk_full_multi_query_works(self):
+        # Each query has its own per-query early-termination counters in
+        # search_implem_10, so multi-query batches are supported.
+        ds, index = self._build_index()
+        index.implem = 0
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        params.ensure_topk_full = True
+        # No throw expected:
+        index.search(ds.get_queries()[:2], 10, params=params)
+
+    def test_fastscan_explicit_implem_12_rejects_knobs(self):
+        ds, index = self._build_index()
+        index.implem = 12
+        for knob, val in [
+            ("max_lists_num", 2),
+            ("ensure_topk_full", True),
+            ("max_codes", 5),
+        ]:
+            params = faiss.SearchParametersIVF()
+            params.nprobe = 4
+            setattr(params, knob, val)
+            with self.assertRaises(RuntimeError, msg=f"knob {knob}"):
+                index.search(ds.get_queries()[:1], 10, params=params)
+
+    def test_fastscan_range_honors_max_empty_result_buckets(self):
+        ds, index = self._build_index()
+        q = ds.get_queries()[:1]
+        empty_sel = faiss.IDSelectorBatch(np.array([], dtype="int64"))
+        stats = faiss.cvar.indexIVF_stats
+
+        params_full = faiss.SearchParametersIVF()
+        params_full.nprobe = 4
+        params_full.sel = empty_sel
+
+        stats.reset()
+        lims_full, _, _ = index.range_search(q, 1.0, params=params_full)
+        full_nlist = stats.nlist
+
+        params_early = faiss.SearchParametersIVF()
+        params_early.nprobe = 4
+        params_early.max_empty_result_buckets = 2
+        params_early.sel = empty_sel
+
+        stats.reset()
+        lims_early, _, _ = index.range_search(q, 1.0, params=params_early)
+        early_nlist = stats.nlist
+
+        np.testing.assert_array_equal(lims_full, lims_early)
+        self.assertEqual(lims_early[-1], 0)
+        self.assertLess(early_nlist, full_nlist)
+
+    def test_fastscan_range_explicit_implem_12_rejects_max_empty(self):
+        ds, index = self._build_index()
+        index.implem = 12
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        params.max_empty_result_buckets = 2
+        with self.assertRaises(RuntimeError):
+            index.range_search(ds.get_queries()[:1], 1.0, params=params)
+
+    def test_fastscan_fields_exposed(self):
+        p = faiss.SearchParametersIVF()
+        self.assertEqual(p.max_lists_num, 0)
+        self.assertIs(p.ensure_topk_full, False)
+        self.assertEqual(p.max_empty_result_buckets, 0)
+        p.max_lists_num = 7
+        p.ensure_topk_full = True
+        p.max_empty_result_buckets = 3
+        self.assertEqual(p.max_lists_num, 7)
+        self.assertIs(p.ensure_topk_full, True)
+        self.assertEqual(p.max_empty_result_buckets, 3)
+        self.assertIs(faiss.SearchParametersIVF, faiss.IVFSearchParameters)

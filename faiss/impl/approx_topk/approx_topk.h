@@ -212,4 +212,65 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
     }
 };
 
+// -----------------------------------------------------------------------
+// approx_topk_by_mode: consolidates the mode switch + dispatch pattern
+// used by residual_quantizer_encode_steps.cpp and other callers.
+// -----------------------------------------------------------------------
+
+// SL-parameterized version for callers that have already resolved the
+// SIMD level (e.g., inside a with_simd_level_256bit lambda).
+template <SIMDLevel SL>
+inline void approx_topk_by_mode(
+        ApproxTopK_mode_t mode,
+        uint32_t beam_size,
+        uint32_t n_per_beam,
+        const float* distances,
+        uint32_t k,
+        float* bh_val,
+        int32_t* bh_ids) {
+    using C = CMax<float, int>;
+    auto approx = [&]<uint32_t NB, uint32_t ND>() {
+        HeapWithBucketsCMaxFloat<NB, ND, SL>::bs_addn(
+                beam_size, n_per_beam, distances, k, bh_val, bh_ids);
+    };
+    switch (mode) {
+        case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
+            approx.template operator()<8, 3>();
+            break;
+        case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
+            approx.template operator()<8, 2>();
+            break;
+        case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
+            approx.template operator()<16, 2>();
+            break;
+        case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
+            approx.template operator()<32, 2>();
+            break;
+        default:
+            heap_addn<C>(
+                    k,
+                    bh_val,
+                    bh_ids,
+                    distances,
+                    nullptr,
+                    beam_size * n_per_beam);
+            break;
+    }
+}
+
+// Non-SL wrapper that dispatches via with_simd_level_256bit.
+inline void approx_topk_by_mode(
+        ApproxTopK_mode_t mode,
+        uint32_t beam_size,
+        uint32_t n_per_beam,
+        const float* distances,
+        uint32_t k,
+        float* bh_val,
+        int32_t* bh_ids) {
+    with_simd_level_256bit([&]<SIMDLevel SL>() {
+        approx_topk_by_mode<SL>(
+                mode, beam_size, n_per_beam, distances, k, bh_val, bh_ids);
+    });
+}
+
 } // namespace faiss

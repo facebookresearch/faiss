@@ -159,6 +159,32 @@ InvertedListScanner* sq_select_InvertedListScanner(
         const IDSelector* sel,
         bool by_residual);
 
+/// Scanner for QT_0bit / centroid-only distance: always returns the
+/// coarse distance that was set via set_list().
+struct IVFCoarseDistanceScanner : InvertedListScanner {
+    float coarse_dis = 0;
+
+    IVFCoarseDistanceScanner(
+            bool is_similarity,
+            bool store_pairs,
+            const IDSelector* sel)
+            : InvertedListScanner(store_pairs, sel) {
+        code_size = 0;
+        keep_max = is_similarity;
+    }
+
+    void set_query(const float* /*query_vector*/) override {}
+
+    void set_list(idx_t list_no_in, float coarse_dis_in) override {
+        this->list_no = list_no_in;
+        this->coarse_dis = coarse_dis_in;
+    }
+
+    float distance_to_code(const uint8_t* /*code*/) const override {
+        return coarse_dis;
+    }
+};
+
 } // namespace scalar_quantizer
 
 } // namespace faiss

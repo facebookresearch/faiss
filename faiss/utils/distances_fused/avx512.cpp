@@ -7,9 +7,9 @@
 
 // -*- c++ -*-
 
-#include <faiss/utils/distances_fused/avx512.h>
+#include <faiss/utils/distances_fused/distances_fused.h>
 
-#ifdef __AVX512F__
+#ifdef COMPILE_SIMD_AVX512
 
 #include <immintrin.h>
 
@@ -78,7 +78,7 @@ void kernel(
     const float* const __restrict xd_0 = x + i * DIM;
 
     // prefetch the next point
-    _mm_prefetch(xd_0 + DIM * sizeof(float), _MM_HINT_NTA);
+    _mm_prefetch((char*)(xd_0 + DIM * sizeof(float)), _MM_HINT_NTA);
 
     // load a single point from x
     // load -2 * value
@@ -262,10 +262,10 @@ void exhaustive_L2sqr_fused_cmax(
         }
     }
 
-    const size_t nx_p = (nx / NX_POINTS_PER_LOOP) * NX_POINTS_PER_LOOP;
+    const idx_t nx_p = (nx / NX_POINTS_PER_LOOP) * NX_POINTS_PER_LOOP;
     // the main loop.
 #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < nx_p; i += NX_POINTS_PER_LOOP) {
+    for (idx_t i = 0; i < nx_p; i += NX_POINTS_PER_LOOP) {
         kernel<DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP>(
                 x, y, y_transposed.data(), ny, res, y_norms, i);
     }
@@ -283,7 +283,8 @@ void exhaustive_L2sqr_fused_cmax(
 
 } // namespace
 
-bool exhaustive_L2sqr_fused_cmax_AVX512(
+template <>
+bool exhaustive_L2sqr_fused_cmax<SIMDLevel::AVX512>(
         const float* x,
         const float* y,
         size_t d,
@@ -343,4 +344,4 @@ bool exhaustive_L2sqr_fused_cmax_AVX512(
 
 } // namespace faiss
 
-#endif
+#endif // COMPILE_SIMD_AVX512

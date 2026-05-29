@@ -79,7 +79,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
+  target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16>)
 else()
   target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
 endif()
@@ -163,6 +163,10 @@ endif()
 
 add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
+
+add_executable(example_search_params_ivf_c EXCLUDE_FROM_ALL
+  example_search_params_ivf_c.c)
+target_link_libraries(example_search_params_ivf_c PRIVATE faiss_c)
 
 if(FAISS_ENABLE_GPU)
   add_subdirectory(gpu)

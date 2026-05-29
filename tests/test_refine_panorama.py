@@ -20,9 +20,11 @@ identical distances.
 import unittest
 import faiss
 import numpy as np
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexRefinePanorama(unittest.TestCase):
 
     # Metrics to test
@@ -165,7 +167,7 @@ class TestIndexRefinePanorama(unittest.TestCase):
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
-        test_cases = [(65, 4), (63, 8), (100, 7)]
+        test_cases = [(65, 4), (63, 8), (100, 7), (960, 128), (964, 128)]
 
         for metric in self.METRICS:
             for d, nlevels in test_cases:

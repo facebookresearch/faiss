@@ -168,6 +168,16 @@ void accumulate_to_mem(
         const uint8_t* LUT,
         uint16_t* accu);
 
+/// Per-SIMD specialization of accumulate_to_mem (defined in per-SIMD TUs)
+template <SIMDLevel SL>
+void accumulate_to_mem_impl(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu);
+
 /***************************************************************
  * FastScanCodeScanner: virtual base that bundles handler + kernel
  * behind the SIMD dispatch boundary. Per-SIMD TUs instantiate this
@@ -312,6 +322,7 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl(
         size_t k,
         float* distances,
         int64_t* ids,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit);
 
@@ -323,6 +334,7 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
         size_t k,
         float* distances,
         int64_t* ids,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit);
 

@@ -231,12 +231,6 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         // Multi-bit: Two-stage search with adaptive filtering
         size_t nup = 0;
 
-        // Stats tracking for multi-bit two-stage search
-        // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
-        // n_multibit_evaluations: candidates requiring full multi-bit distance
-        size_t local_1bit_evaluations = 0;
-        size_t local_multibit_evaluations = 0;
-
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
@@ -246,16 +240,8 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                 }
             }
 
-            local_1bit_evaluations++;
-
-            // Stage 1: Compute distance bound using 1-bit codes
-            // For L2 (min-heap): use lower_bound to safely skip if it's
-            //                    already worse than heap worst
-            // For IP (max-heap): use upper_bound because with a lower bound,
-            //                    we can't safely skip any candidate
             float est_distance = rabitq_dc->distance_to_code_1bit(codes);
 
-            // Extract f_error and g_error for filtering
             size_t code_size_base = (ivf_rabitq.d + 7) / 8;
             const rabitq_utils::SignBitFactorsWithError* base_fac =
                     reinterpret_cast<
@@ -269,23 +255,19 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                     handler.threshold,
                     keep_max);
             if (should_refine) {
-                local_multibit_evaluations++;
-                // Lower bound is promising, compute full distance
+                // Refining computes the full distance — counts as a
+                // post-filter "distance computed" for stats purposes.
+                handler.stats.scan_cnt++;
                 float dis = distance_to_code(codes);
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
                 if (handler.add_result(dis, id)) {
+                    handler.stats.nheap_updates++;
                     nup++;
                 }
             }
             codes += code_size;
         }
-
-        // Update global stats atomically
-#pragma omp atomic
-        rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-        rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
 
         return nup;
     }
@@ -327,12 +309,12 @@ void IndexIVFRaBitQ::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
-    const uint8_t* code = invlists->get_single_code(list_no, offset);
+    InvertedLists::ScopedCodes sc(invlists, list_no, offset);
 
     std::vector<float> centroid(d);
     quantizer->reconstruct(list_no, centroid.data());
 
-    rabitq.decode_core(code, recons, 1, centroid.data());
+    rabitq.decode_core(sc.get(), recons, 1, centroid.data());
 }
 
 void IndexIVFRaBitQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
@@ -375,26 +357,17 @@ float IVFRaBitDistanceComputer::operator()(idx_t i) {
     uint64_t list_no = lo_listno(lo);
     uint64_t offset = lo_offset(lo);
 
-    const uint8_t* code = parent->invlists->get_single_code(list_no, offset);
+    InvertedLists::ScopedCodes sc(parent->invlists, list_no, offset);
 
     // ok, we know the appropriate cluster that we need
     std::vector<float> centroid(parent->d);
     parent->quantizer->reconstruct(list_no, centroid.data());
 
-    // compute the distance
-    float distance = 0;
-
     std::unique_ptr<FlatCodesDistanceComputer> dc(
             parent->rabitq.get_distance_computer(
                     parent->qb, centroid.data(), /*centered=*/false));
     dc->set_query(q);
-    distance = dc->distance_to_code(code);
-
-    // deallocate
-    parent->invlists->release_codes(list_no, code);
-
-    // done
-    return distance;
+    return dc->distance_to_code(sc.get());
 }
 
 float IVFRaBitDistanceComputer::symmetric_dis(idx_t /*i*/, idx_t /*j*/) {

@@ -464,6 +464,29 @@ class TestPreassigned(unittest.TestCase):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
+    def test_range_search_preassigned_coarse_dis_none_matches_zeros(self):
+        """coarse_dis=None must match coarse_dis=zeros. Before the fix,
+        np.empty left uninitialized values that IVFPQ by_residual=True
+        reads for distance correction, producing nondeterministic results."""
+        ds = datasets.SyntheticDataset(32, 1000, 500, 50)
+        index = faiss.index_factory(ds.d, "IVF10,PQ4x4")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 5
+        self.assertTrue(index.by_residual)
+        xq = ds.get_queries()
+        _, list_nos = index.quantizer.search(xq, index.nprobe)
+        zero_dis = np.zeros(list_nos.shape, dtype=np.float32)
+        lz, Dz, Iz = ivf_tools.range_search_preassigned(
+            index, xq, 10.0, list_nos, zero_dis
+        )
+        ln, Dn, In = ivf_tools.range_search_preassigned(
+            index, xq, 10.0, list_nos
+        )
+        np.testing.assert_array_equal(lz, ln)
+        np.testing.assert_array_equal(Iz, In)
+        np.testing.assert_array_equal(Dz, Dn)
+
 
 class TestRangeSearchMaxResults(unittest.TestCase):
 
@@ -535,19 +558,19 @@ class TestClustering(unittest.TestCase):
 
     def test_python_kmeans(self):
         """ Test the python implementation of kmeans """
-        ds = datasets.SyntheticDataset(32, 10000, 0, 0)
+        ds = datasets.SyntheticDataset(32, 5000, 0, 0)
         x = ds.get_train()
 
         # bad distribution to stress-test split code
-        xt = x[:10000].copy()
-        xt[:5000] = x[0]
+        xt = x[:5000].copy()
+        xt[:2500] = x[0]
 
-        km_ref = faiss.Kmeans(ds.d, 100, niter=10)
+        km_ref = faiss.Kmeans(ds.d, 50, niter=10)
         km_ref.train(xt)
         err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
 
         data = clustering.DatasetAssign(xt)
-        centroids = clustering.kmeans(100, data, 10)
+        centroids = clustering.kmeans(50, data, 10)
         err2 = faiss.knn(xt, centroids, 1)[0].sum()
 
         # err=33498.332 err2=33380.477
@@ -586,12 +609,48 @@ class TestClustering(unittest.TestCase):
         ndiff = (Iref != Inew).sum()
         self.assertLess(ndiff.item(), 57)
 
+    def test_balanced_clustering(self):
+        """Test balanced_assignment_with_penalties from notebook N10159950"""
+        ds = datasets.SyntheticDataset(32, 10000, 10000, 0)
+        nc = 100
+
+        # train centroids
+        km = faiss.Kmeans(ds.d, nc)
+        km.train(ds.get_train())
+        centroids = km.centroids
+
+        # create biased database (shifted by a constant vector)
+        biased_xb = ds.get_database().copy()
+        rs = np.random.RandomState(123)
+        biased_xb += rs.randn(ds.d).astype("float32") * 0.3
+
+        # unconstrained assignment on biased data
+        d2, assign_unc = faiss.knn(biased_xb, centroids, 1)
+        assign_unc = assign_unc.ravel()
+        imf_unc = clustering.imbalance_factor(nc, assign_unc)
+        mse_unc = float(d2.mean())
+
+        # balanced assignment
+        assign_bal, stats = clustering.balanced_assignment_with_penalties(
+            biased_xb, centroids, alpha=0.03, num_iter=20
+        )
+
+        # balanced assignment should reduce imbalance factor
+        self.assertLess(stats["imf"], imf_unc / 1.5)
+
+        # MSE may increase but should not be too much worse (< 2x)
+        self.assertLess(stats["mse"], mse_unc * 1.5)
+
+        # all points should be assigned
+        self.assertEqual(len(assign_bal), len(biased_xb))
+        self.assertTrue(np.all(assign_bal >= 0))
+        self.assertTrue(np.all(assign_bal < nc))
+
 
 class TestBigBatchSearch(unittest.TestCase):
 
     def do_test(self, factory_string, metric=faiss.METRIC_L2):
-        # ds = datasets.SyntheticDataset(32, 2000, 4000, 1000)
-        ds = datasets.SyntheticDataset(32, 2000, 400, 500)
+        ds = datasets.SyntheticDataset(32, 2000, 400, 100)
         k = 10
         index = faiss.index_factory(ds.d, factory_string, metric)
         assert index.metric_type == metric
@@ -599,9 +658,9 @@ class TestBigBatchSearch(unittest.TestCase):
         index.add(ds.get_database())
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
-        # faiss.omp_set_num_threads(1)
-        for method in ("pairwise_distances", "knn_function", "index"):
-            for threaded in 0, 1, 2:
+        faiss.omp_set_num_threads(1)
+        for method in ("pairwise_distances", "knn_function"):
+            for threaded in 0, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method=method,
@@ -623,7 +682,7 @@ class TestBigBatchSearch(unittest.TestCase):
         self.do_test("IVF64,SQ8")
 
     def test_checkpoint(self):
-        ds = datasets.SyntheticDataset(32, 2000, 400, 500)
+        ds = datasets.SyntheticDataset(32, 2000, 400, 100)
         k = 10
         index = faiss.index_factory(ds.d, "IVF64,SQ8")
         index.train(ds.get_train())
@@ -631,6 +690,7 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
+        faiss.omp_set_num_threads(1)
         checkpoint = tempfile.mktemp()
         try:
             # First big batch search

@@ -173,27 +173,29 @@ void IndexIVFPQR::search_preassigned(
                     continue;
                 }
 
-                int list_no = lo_listno(sl);
-                int ofs = lo_offset(sl);
+                int list_no = static_cast<int>(lo_listno(sl));
+                int ofs = static_cast<int>(lo_offset(sl));
 
-                assert(list_no >= 0 && static_cast<size_t>(list_no) < nlist);
-                assert(ofs >= 0 &&
-                       static_cast<size_t>(ofs) < invlists->list_size(list_no));
+                FAISS_THROW_IF_NOT(
+                        list_no >= 0 && static_cast<size_t>(list_no) < nlist);
+                FAISS_THROW_IF_NOT(
+                        ofs >= 0 &&
+                        static_cast<size_t>(ofs) <
+                                invlists->list_size(list_no));
 
                 // 1st level residual
                 quantizer->compute_residual(xq, residual_1.get(), list_no);
 
                 // 2nd level residual
-                const uint8_t* l2code = invlists->get_single_code(list_no, ofs);
-
-                pq.decode(l2code, residual_2);
+                InvertedLists::ScopedCodes l2sc(invlists, list_no, ofs);
+                pq.decode(l2sc.get(), residual_2);
                 for (int l = 0; l < d; l++) {
                     residual_2[l] = residual_1[l] - residual_2[l];
                 }
 
                 // 3rd level residual's approximation
                 idx_t id = invlists->get_single_id(list_no, ofs);
-                assert(0 <= id && id < ntotal);
+                FAISS_THROW_IF_NOT(0 <= id && id < ntotal);
                 refine_pq.decode(
                         &refine_codes[id * refine_pq.code_size],
                         residual_1.get());
@@ -220,7 +222,7 @@ void IndexIVFPQR::reconstruct_from_offset(
     IndexIVFPQ::reconstruct_from_offset(list_no, offset, recons);
 
     idx_t id = invlists->get_single_id(list_no, offset);
-    assert(0 <= id && id < ntotal);
+    FAISS_THROW_IF_NOT(0 <= id && id < ntotal);
 
     std::vector<float> r3(d);
     refine_pq.decode(&refine_codes[id * refine_pq.code_size], r3.data());

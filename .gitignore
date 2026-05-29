@@ -8,6 +8,7 @@
 *.pyc
 *~
 /build/
+/build_metal/
 /config.*
 /aclocal.m4
 /autom4te.cache/
@@ -23,20 +24,11 @@ faiss/python/swigfaiss_avx512_spr.swig
 faiss/python/swigfaiss_sve.swig
 
 # Local intermediate build artifacts (CUDA 13.2 scripts)
+/_build/
+/_build_python_*/
+/_libfaiss_stage/
 /build_output/
-/build*.log
 
 # Python package build outputs
 /dist/
 /*.egg-info/
-
-# Local scratch/analysis files
-/semantic_changed_files.txt
-
-# CUDA 13.2 local repository package
-cuda-repo*.deb
-_build*/**
-_libfaiss*/**
-
-# vscode settings
-.vscode/
