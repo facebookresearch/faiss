@@ -422,7 +422,7 @@
 <codeline lineno="313"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX2__</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="314"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="315"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="316"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__ARM_NEON)<sp/>||<sp/>defined(__aarch64__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="316"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__ARM_NEON)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="317"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-neon-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="318"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-neon-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="319"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>

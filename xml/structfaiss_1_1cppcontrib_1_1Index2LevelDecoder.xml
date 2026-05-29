@@ -728,7 +728,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2871" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2871" bodyend="2884"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="1981" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="1981" bodyend="1994"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -762,7 +762,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2888" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2888" bodyend="2906"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="1998" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="1998" bodyend="2016"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -812,7 +812,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2914" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2914" bodyend="2940"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2024" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2024" bodyend="2050"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5b6fdcdbacf5264a1404d1c19cb615e4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -854,7 +854,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2948" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2948" bodyend="2970"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2058" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2058" bodyend="2080"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1afdde05380d694a2cad899861501bffa8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -920,7 +920,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2978" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2978" bodyend="3012"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2088" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2088" bodyend="2122"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ad632bafbb0c924d0e193cf5bab73ab3e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -970,7 +970,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="3020" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="3020" bodyend="3046"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" line="2130" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-neon-inl.h" bodystart="2130" bodyend="2156"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
