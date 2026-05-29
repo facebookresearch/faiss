@@ -4,12 +4,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-# Unified build script for FAISS-GPU wheel with CUDA 13.2
+# Unified build script for FAISS-GPU wheel — x86_64 (Intel MKL)
+# Output: faiss-gpu-${FAISS_CUDA_TAG} wheel (manylinux x86_64 platform tag)
+#         + libfaiss-x86_64-${FAISS_CUDA_TAG}.so / libfaiss_c-x86_64-${FAISS_CUDA_TAG}.so
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAISS_ROOT="${FAISS_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+# CUDA version (single source of truth — bump in cuda_env.sh for cu133)
+source "$SCRIPT_DIR/cuda_env.sh"
 BUILD_OUTPUT_DIR="${FAISS_ROOT}/build_output"
 
 # Color codes for terminal output
@@ -36,7 +40,7 @@ check_prerequisites() {
     
     # Check CUDA
     if ! command -v nvcc &> /dev/null; then
-        log_error "CUDA not found. Please install CUDA 13.2 or set CUDA_HOME."
+        log_error "CUDA not found. Please install CUDA $FAISS_CUDA_VER or set CUDA_HOME."
         exit 1
     fi
     
@@ -75,17 +79,17 @@ show_config() {
 # Build steps
 build_lib() {
     log_info "Building C++ library (libfaiss)..."
-    bash "${SCRIPT_DIR}/build_lib_cuda132.sh"
+    bash "${SCRIPT_DIR}/build_lib_x86_64.sh"
 }
 
 build_pkg() {
     log_info "Building Python package and wheel..."
-    bash "${SCRIPT_DIR}/build_pkg_cuda132.sh"
+    bash "${SCRIPT_DIR}/build_pkg_x86_64.sh"
 }
 
 package_wheel() {
     log_info "Packaging wheel..."
-    bash "${SCRIPT_DIR}/package_wheel.sh"
+    bash "${SCRIPT_DIR}/package_wheel_x86_64.sh"
 }
 
 # Cleanup
@@ -98,7 +102,7 @@ cleanup() {
 
 # Main build process
 main() {
-    log_info "Starting FAISS-GPU wheel build for CUDA 13.2..."
+    log_info "Starting FAISS-GPU wheel build for CUDA $FAISS_CUDA_VER..."
     
     check_prerequisites
     show_config

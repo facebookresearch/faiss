@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-Verify FAISS wheel build environment for CUDA 13.2
+Verify FAISS wheel build environment for the targeted CUDA version.
 """
 
 import subprocess
 import sys
 import os
 from pathlib import Path
+
+# CUDA version single source of truth (mirror of gpu-cu/scripts/cuda_env.sh).
+CUDA_VER = os.environ.get("FAISS_CUDA_VER", "13.2")
 
 def run_command(cmd):
     """Run a command and return stdout or None if failed."""
@@ -30,7 +33,7 @@ def check_cuda():
         return True
     else:
         print(f"  ✗ CUDA not found")
-        print(f"    Set CUDA_HOME or install CUDA 13.2")
+        print(f"    Set CUDA_HOME or install CUDA {CUDA_VER}")
         return False
 
 def check_python():
@@ -123,7 +126,7 @@ def main():
     """Run all checks."""
     print("=" * 60)
     print("FAISS GPU Wheel Build Environment Verification")
-    print("CUDA 13.2 + Python 3.14")
+    print(f"CUDA {CUDA_VER} + Python 3.14")
     print("=" * 60)
     
     checks = [
@@ -163,8 +166,8 @@ def main():
     else:
         print("✗ Some checks failed. Please resolve issues before building.")
         print("\nCommon fixes:")
-        print("  - Set CUDA_HOME=/usr/local/cuda-13.2")
-        print("  - Install conda: conda env create -f gpu-cu132/environment_cuda132_py314.yml")
+        print(f"  - Set CUDA_HOME=/usr/local/cuda-{CUDA_VER}")
+        print("  - Install conda: conda env create -f gpu-cu/environment.yml")
         print("  - Install system deps: sudo apt install cmake make swig")
         return 1
 

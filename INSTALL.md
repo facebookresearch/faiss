@@ -74,19 +74,21 @@ conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch=*=*cuda* pytorch-cuda
 
 Faiss can be built from source using CMake.
 
-Faiss is supported on x86-64 machines on Linux, OSX, and Windows. It has been
+Faiss is supported on x86-64 and aarch64 (ARM) machines on Linux, OSX, and Windows. It has been
 found to run on other platforms as well, see
 [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms).
 
 The basic requirements are:
 - a C++20 compiler (with OpenMP support version 2 or higher),
-- a BLAS implementation (on Intel machines we strongly recommend using Intel MKL for best
-performance).
+- a BLAS implementation:
+  - **x86-64**: Intel MKL is strongly recommended for best performance; OpenBLAS is also supported.
+  - **aarch64 (ARM)**: Intel MKL is not available; use OpenBLAS (`libopenblas-dev`).
 
 The optional requirements are:
 - for GPU indices:
   - nvcc,
   - the CUDA toolkit,
+  - **aarch64 (ARM) with NVIDIA GPU**: cuVS is strongly recommended; without it, GPU indices will fall back to OpenBLAS.
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
@@ -149,10 +151,12 @@ Several options can be passed to CMake, among which:
     - On aarch64, `generic` and `sve`, by increasing order of optimization,
   - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
-  - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
+  - **x86-64**: `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
   (more information about the values for the `BLA_VENDOR` option can be found in
-  the [CMake docs](https://cmake.org/cmake/help/latest/module/FindBLAS.html)),
+  the [CMake docs](https://cmake.org/cmake/help/latest/module/FindBLAS.html)).
+  - **aarch64 (ARM)**: Intel MKL is unavailable; use OpenBLAS instead:
+  `-DBLAS_LIBRARIES=/usr/lib/aarch64-linux-gnu/libopenblas.so -DLAPACK_LIBRARIES=/usr/lib/aarch64-linux-gnu/libopenblas.so`
 - GPU-related options:
   - `-DCUDAToolkit_ROOT=/path/to/cuda-10.1` in order to hint to the path of
   the CUDA toolkit (for more information, see
@@ -182,6 +186,8 @@ it is recommended to set the `-j` option to a fixed value (such as `-j4`).
 
 If making use of optimization options, build the correct target before swigfaiss.
 
+**x86-64 targets:**
+
 For AVX2:
 
 ``` shell
@@ -194,10 +200,18 @@ For AVX512:
 $ make -C build -j faiss_avx512
 ```
 
-For AVX512 features available since Intel(R) Sapphire Rapids.
+For AVX512 features available since Intel(R) Sapphire Rapids:
 
 ``` shell
 $ make -C build -j faiss_avx512_spr
+```
+
+**aarch64 (ARM) targets:**
+
+For SVE (Scalable Vector Extension):
+
+``` shell
+$ make -C build -j faiss_sve
 ```
 
 This will ensure the creation of necessary files when building and installing the python package.
@@ -248,7 +262,7 @@ A basic usage example is available in
 [`demos/demo_ivfpq_indexing.cpp`](https://github.com/facebookresearch/faiss/blob/main/demos/demo_ivfpq_indexing.cpp).
 
 It creates a small index, stores it and performs some searches. A normal runtime
-is around 20s. With a fast machine and Intel MKL's BLAS it runs in 2.5s.
+is around 20s. With a fast machine and Intel MKL's BLAS (x86-64) it runs in 2.5s.
 
 It can be built with
 ``` shell

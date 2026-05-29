@@ -4,7 +4,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-# Build C++ library (libfaiss) for DGX Spark (SM 121 — GB10 Grace Blackwell, aarch64)
+# Build C++ library (libfaiss) for aarch64 / DGX Spark (SM 121 — GB10 Grace Blackwell)
+# Produces libfaiss-aarch64-${FAISS_CUDA_TAG}.so / libfaiss_c-aarch64-${FAISS_CUDA_TAG}.so
 # Uses libcuvs-spark from github.com/zbrad/cuvs
 
 set -e
@@ -13,16 +14,19 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAISS_ROOT="${FAISS_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 cd "$FAISS_ROOT"
 
+# CUDA version (single source of truth — bump in cuda_env.sh for cu133)
+source "$SCRIPT_DIR/cuda_env.sh"
+
 # Environment setup
 CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
 CUDA_ARCHS="121-real"
 PYTHON="${PYTHON:-python3}"
 FAISS_ENABLE_CUVS="${FAISS_ENABLE_CUVS:-ON}"
-BUILD_DIR="_build_spark"
+BUILD_DIR="_build_aarch64"
 
 # Redirect all output to log file inside build dir
 mkdir -p "$BUILD_DIR"
-exec > >(tee "$BUILD_DIR/build_spark.log") 2>&1
+exec > >(tee "$BUILD_DIR/build.log") 2>&1
 
 # cuVS-spark: built from github.com/zbrad/cuvs
 CUVS_REPO="${CUVS_REPO:-/home/zbrad/gh/cuvs}"
@@ -90,8 +94,8 @@ cmake -B "$BUILD_DIR" \
     -DLAPACK_LIBRARIES="$OPENBLAS_LIB" \
     -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DFAISS_OUTPUT_NAME=faiss-spark-cu132 \
-    -DFAISS_C_OUTPUT_NAME=faiss_c-spark-cu132 \
+    -DFAISS_OUTPUT_NAME=faiss-aarch64-${FAISS_CUDA_TAG} \
+    -DFAISS_C_OUTPUT_NAME=faiss_c-aarch64-${FAISS_CUDA_TAG} \
     -DFAISS_CUVS_SPARK_LIBRARY="${CUVS_DIR}/libcuvs-spark.so" \
     -Dcuvs_DIR="$CUVS_DIR" \
     -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
@@ -106,8 +110,8 @@ echo "Using $num_jobs parallel jobs"
 make -C "$BUILD_DIR" -j"$num_jobs" faiss faiss_c
 
 # Stage libraries for next build step
-mkdir -p _libfaiss_stage_spark/
-cmake --install "$BUILD_DIR" --prefix _libfaiss_stage_spark/ --config Release
+mkdir -p _libfaiss_stage_aarch64/
+cmake --install "$BUILD_DIR" --prefix _libfaiss_stage_aarch64/ --config Release
 
 echo ""
 echo "========================================="
@@ -116,6 +120,6 @@ echo "========================================="
 echo "Architecture: SM 121 (GB10 Grace Blackwell)"
 echo "cuVS library: libcuvs-spark.so"
 echo "Libraries built in: $BUILD_DIR/faiss/"
-echo "  libfaiss-spark-cu132.so  (main C++ library)"
-echo "  libfaiss_c-spark-cu132.so  (C API wrapper)"
-echo "Staged in: _libfaiss_stage_spark/"
+echo "  libfaiss-aarch64-${FAISS_CUDA_TAG}.so  (main C++ library)"
+echo "  libfaiss_c-aarch64-${FAISS_CUDA_TAG}.so  (C API wrapper)"
+echo "Staged in: _libfaiss_stage_aarch64/"
