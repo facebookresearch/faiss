@@ -20,6 +20,10 @@ PYTHON="${PYTHON:-python3}"
 FAISS_ENABLE_CUVS="${FAISS_ENABLE_CUVS:-ON}"
 BUILD_DIR="_build_spark"
 
+# Redirect all output to log file inside build dir
+mkdir -p "$BUILD_DIR"
+exec > >(tee "$BUILD_DIR/build_spark.log") 2>&1
+
 # cuVS-spark: built from github.com/zbrad/cuvs
 CUVS_REPO="${CUVS_REPO:-/home/zbrad/gh/cuvs}"
 CUVS_DIR="${CUVS_DIR:-${CUVS_REPO}/cpp/build}"
