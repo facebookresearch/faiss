@@ -947,6 +947,7 @@ typedef int cudaDataType_t;
 }
 
 %typemap(out) faiss::InvertedLists * {
+    DOWNCAST (ArrayInvertedListsPanorama)  // subclass before parent
     DOWNCAST (ArrayInvertedLists)
     DOWNCAST (BlockInvertedLists)
 #ifndef SWIGWIN
@@ -954,6 +955,7 @@ typedef int cudaDataType_t;
 #endif // !SWIGWIN
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
+    DOWNCAST (SliceInvertedLists)
     DOWNCAST (MaskedInvertedLists)
     DOWNCAST (StopWordsInvertedLists)
     DOWNCAST (CappedInvertedLists)
