@@ -12,28 +12,29 @@ Your FAISS-GPU CUDA 13.2 wheel build workspace is ready!
 ### Setup Contents
 
 #### 📜 Documentation
-- **[QUICKSTART.md](QUICKSTART.md)** - Quick start guide (5 mins)
-- **[BUILD_WHEEL_CUDA132.md](BUILD_WHEEL_CUDA132.md)** - Comprehensive build documentation  
-- **[RELEASE_NOTES.md](../../../gpu-cu132/RELEASE_NOTES.md)** - Binary release description with GPU table
-- **[TEST_RESULTS.md](../../../gpu-cu132/TEST_RESULTS.md)** - Test results and validation report
+- **[BUILD_arch_x86_64.md](BUILD_arch_x86_64.md)** - x86_64 build guide incl. WSL quick start  
+- **[BUILD_arch_aarch64.md](BUILD_arch_aarch64.md)** - aarch64 / DGX Spark build guide  
+- **[WHEEL_NAMING.md](WHEEL_NAMING.md)** - Wheel/library naming + CUDA version selection  
+- **[RELEASE_NOTES.md](../RELEASE_NOTES.md)** - Binary release description with GPU table
+- **[TEST_RESULTS.md](../TEST_RESULTS.md)** - Test results and validation report
 - **[BRANCH_CHANGES_SUMMARY.md](BRANCH_CHANGES_SUMMARY.md)** - Semantic branch change summary
 - **SETUP_COMPLETE.md** - This file
 
 #### 🔨 Build Scripts
 | Script | Purpose |
 |--------|---------|
-| `gpu-cu132/build_wheel.sh` | Main unified builder |
-| `gpu-cu132/build_lib_cuda132.sh` | Build C++ library |
-| `gpu-cu132/build_pkg_cuda132.sh` | Build Python package |
-| `gpu-cu132/package_wheel.sh` | Create wheel package |
-| `gpu-cu132/clean_build.sh` | Clean build artifacts |
+| `gpu-cu/scripts/build_wheel_x86_64.sh` | Main unified builder |
+| `gpu-cu/scripts/build_lib_x86_64.sh` | Build C++ library |
+| `gpu-cu/scripts/build_pkg_x86_64.sh` | Build Python package |
+| `gpu-cu/scripts/package_wheel_x86_64.sh` | Create wheel package |
+| `gpu-cu/scripts/clean_build.sh` | Clean build artifacts |
 
 #### ⚙️ Configuration Files
 | File | Purpose |
 |------|---------|
-| `gpu-cu132/environment_cuda132_py314.yml` | Conda environment spec |
+| `gpu-cu/environment.yml` | Conda environment spec |
 | `Makefile` | Make targets for easy building |
-| `gpu-cu132/verify_environment.py` | Check build prerequisites |
+| `gpu-cu/verify_environment.py` | Check build prerequisites |
 
 ---
 
@@ -62,22 +63,22 @@ make install-wheel
 chmod +x *.sh
 
 # Verify prerequisites
-./gpu-cu132/verify_environment.py
+./gpu-cu/verify_environment.py
 
 # Full build
-./gpu-cu132/build_wheel.sh all
+./gpu-cu/scripts/build_wheel_x86_64.sh all
 
 # Or step by step
-./gpu-cu132/build_lib_cuda132.sh
-./gpu-cu132/build_pkg_cuda132.sh
-./gpu-cu132/package_wheel.sh
+./gpu-cu/scripts/build_lib_x86_64.sh
+./gpu-cu/scripts/build_pkg_x86_64.sh
+./gpu-cu/scripts/package_wheel_x86_64.sh
 ```
 
 ### Option 3: Manual with Conda
 
 ```bash
 # Create environment
-conda env create -f gpu-cu132/environment_cuda132_py314.yml
+conda env create -f gpu-cu/environment.yml
 conda activate faiss-gpu-cu132-py314
 
 # Build
@@ -93,7 +94,7 @@ make install-wheel
 
 1. **Verify Environment**
    ```bash
-   python gpu-cu132/verify_environment.py
+   python gpu-cu/verify_environment.py
    # or
    make check
    ```
@@ -122,7 +123,7 @@ make install-wheel
 ### Default Settings
 - **CUDA Version**: 13.2
 - **Python Version**: 3.14
-- **GPU Architectures**: 80, 86, 89, 90, 92 (A100, RTX, RTX40xx, H100, RTX5090)
+- **GPU Architectures**: 75, 80, 86, 89, 90, 120 (Turing→Blackwell); 121 for DGX Spark (aarch64)
 - **Optimization**: AVX2 (plus AVX512 variants)
 - **Build Type**: Release (optimized)
 
@@ -149,16 +150,16 @@ CUDA_ARCHS="89;90" FAISS_BUILD_JOBS=8 make build
 ```
 faiss/
 ├── README.md                          # Original FAISS README
-├── docs/branches/faiss-gpu-cu132/     # Branch docs
-├── gpu-cu132/                         # Branch-specific scripts/docs
+├── gpu-cu/docs/     # Branch docs
+├── gpu-cu/                         # Branch-specific scripts/docs
 ├── Makefile                           # Build targets
-├── gpu-cu132/environment_cuda132_py314.yml     # Conda environment
-├── gpu-cu132/verify_environment.py              # Check prerequisites
-├── gpu-cu132/build_wheel.sh                     # Main build orchestrator
-├── gpu-cu132/build_lib_cuda132.sh              # C++ library build
-├── gpu-cu132/build_pkg_cuda132.sh              # Python package build
-├── gpu-cu132/package_wheel.sh                   # Wheel packaging
-├── gpu-cu132/clean_build.sh                     # Clean artifacts
+├── gpu-cu/environment.yml     # Conda environment
+├── gpu-cu/verify_environment.py              # Check prerequisites
+├── gpu-cu/scripts/build_wheel_x86_64.sh                     # Main build orchestrator
+├── gpu-cu/scripts/build_lib_x86_64.sh              # C++ library build
+├── gpu-cu/scripts/build_pkg_x86_64.sh              # Python package build
+├── gpu-cu/scripts/package_wheel_x86_64.sh                   # Wheel packaging
+├── gpu-cu/scripts/clean_build.sh                     # Clean artifacts
 │
 ├── faiss/                             # FAISS source code
 ├── tests/                             # Test suite
@@ -180,7 +181,7 @@ faiss/
 ### CUDA not found
 ```bash
 export CUDA_HOME=/usr/local/cuda-13.2
-python gpu-cu132/verify_environment.py
+python gpu-cu/verify_environment.py
 ```
 
 ### Python development headers missing
@@ -204,7 +205,7 @@ conda install swig=4.0
 sudo apt install swig
 ```
 
-See [BUILD_WHEEL_CUDA132.md](BUILD_WHEEL_CUDA132.md) for more troubleshooting.
+See [BUILD_arch_x86_64.md](BUILD_arch_x86_64.md) for more troubleshooting.
 
 ---
 
@@ -212,11 +213,12 @@ See [BUILD_WHEEL_CUDA132.md](BUILD_WHEEL_CUDA132.md) for more troubleshooting.
 
 | File | Content |
 |------|---------|
-| `QUICKSTART.md` | Start here - 5 minute quick start |
-| `BUILD_WHEEL_CUDA132.md` | Complete build documentation |
+| `BUILD_arch_x86_64.md` | x86_64 build guide incl. WSL quick start |
+| `BUILD_arch_aarch64.md` | aarch64 / DGX Spark build guide |
+| `WHEEL_NAMING.md` | Wheel/library naming + CUDA version selection |
 | `Makefile` | All available build targets |
-| `gpu-cu132/environment_cuda132_py314.yml` | Conda dependencies |
-| `gpu-cu132/verify_environment.py` | Environment checker |
+| `gpu-cu/environment.yml` | Conda dependencies |
+| `gpu-cu/verify_environment.py` | Environment checker |
 
 ---
 
@@ -248,16 +250,16 @@ See [BUILD_WHEEL_CUDA132.md](BUILD_WHEEL_CUDA132.md) for more troubleshooting.
 
 After successful build, your wheel will be in:
 ```
-./build_output/faiss_gpu-*.whl
+./build_output/faiss_gpu_cu132-*.whl
 ```
 
 Install with:
 ```bash
-pip install ./build_output/faiss_gpu-*.whl
+pip install ./build_output/faiss_gpu_cu132-*.whl
 ```
 
 ---
 
 **Ready to build!** 🚀
 
-Next: `python gpu-cu132/verify_environment.py` or `make check`
+Next: `python gpu-cu/verify_environment.py` or `make check`

@@ -12,11 +12,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAISS_ROOT="${FAISS_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 cd "$FAISS_ROOT"
 
+# CUDA version (single source of truth — bump in cuda_env.sh for cu133)
+source "$SCRIPT_DIR/cuda_env.sh"
+
 PYTHON="${PYTHON:-python3}"
 BUILD_OUTPUT_DIR="build_output"
-# Optional variant suffix (e.g. gpu-cu132, cpu, gpu-cu128).
-# Passed through to setup.py via FAISS_VARIANT env var.
-FAISS_VARIANT="${FAISS_VARIANT:-}"
+# Package name: gpu-${FAISS_CUDA_TAG}, plus -sm<arch> when this build targets a
+# single GPU arch (e.g. CUDA_ARCHS=89 → faiss-gpu-cu132-sm89). Multi-arch builds
+# stay arch-generic; the wheel's manylinux_*_x86_64 platform tag selects x86 at
+# install time.
+FAISS_VARIANT="${FAISS_VARIANT:-gpu-${FAISS_CUDA_TAG}$(faiss_sm_suffix)}"
 PY_VER=$(${PYTHON} -c "import sys; print(f'{sys.version_info.major}{sys.version_info.minor}')")
 BUILD_DIR="_build_python_${PY_VER}"
 
@@ -30,7 +35,7 @@ echo ""
 
 # Verify build exists
 if [ ! -d "$BUILD_DIR" ]; then
-    echo "ERROR: Build directory not found. Run build_pkg_cuda132.sh first."
+    echo "ERROR: Build directory not found. Run build_pkg_x86_64.sh first."
     exit 1
 fi
 

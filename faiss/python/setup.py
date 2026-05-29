@@ -125,11 +125,15 @@ _package_name = f"faiss-{_variant}" if _variant else "faiss"
 _cuda_archs = os.environ.get("CUDA_ARCHS", "").strip()
 import re as _re
 if _variant and "gpu" in _variant and _cuda_archs:
-    # Normalise "75;80;86;89;90;100;120" or "103-real" → "sm_75, sm_80, ..."
-    _arch_list = ", ".join(
-        f"sm_{a.strip().replace('-real', '').replace('-virtual', '')}"
+    # Normalise "75;80;86;89;90;100;120" or "103-real" → ["sm_75", "sm_80", ...]
+    _arch_codes = sorted({
+        a.strip().replace("-real", "").replace("-virtual", "")
         for a in _cuda_archs.replace(",", ";").split(";") if a.strip()
-    )
+    })
+    _arch_names = [f"sm_{c}" for c in _arch_codes]
+    _arch_list = ", ".join(_arch_names)
+    # A build targeting exactly one arch is GPU-generation-specific.
+    _single_arch = _arch_names[0] if len(_arch_names) == 1 else ""
     # Extract CUDA version suffix, e.g. "gpu-cu132" → "13.2"
     _cu_match = _re.search(r"cu(\d+)", _variant)
     if _cu_match:
@@ -137,15 +141,23 @@ if _variant and "gpu" in _variant and _cuda_archs:
         _cuda_ver = f"{_cu_str[:-1]}.{_cu_str[-1]}"  # "13.2"
     else:
         _cuda_ver = ""
-    # Detect DGX Spark variant
-    if "spark" in _variant:
+    # The package name is arch-independent (the wheel's platform tag selects the
+    # right build); detect the build arch from the host instead of the variant.
+    import platform as _platform
+    _machine = _platform.machine().lower()
+    if _machine in ("aarch64", "arm64"):
         _gpu_details = (
-            f"\nThis wheel targets the NVIDIA DGX Spark (GB10 Grace Blackwell, "
-            f"SM 103, aarch64). Built with CUDA {_cuda_ver}. "
+            f"\nThis wheel targets aarch64 / NVIDIA DGX Spark (GB10 Grace Blackwell, "
+            f"SM 121, aarch64). Built with CUDA {_cuda_ver}. "
             f"Requires libcuvs-spark.so from github.com/zbrad/cuvs.\n"
         )
     else:
-        _gpu_details = f"\nThis wheel was built with CUDA {_cuda_ver} and targets: {_arch_list}.\n"
+        _gpu_details = f"\nThis wheel was built with CUDA {_cuda_ver} (x86_64) and targets: {_arch_list}.\n"
+    if _single_arch:
+        _gpu_details += (
+            f"Single-architecture build: runs only on {_single_arch} GPUs "
+            f"(package tagged -{_single_arch.replace('_', '')}).\n"
+        )
 else:
     _gpu_details = ""
 

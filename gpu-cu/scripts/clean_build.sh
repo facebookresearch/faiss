@@ -7,10 +7,12 @@ cd "$FAISS_ROOT"
 
 echo "Cleaning build artifacts..."
 
-# Remove build directories
+# Remove build directories (both x86_64 and aarch64 variants)
 rm -rf _build
+rm -rf _build_aarch64
 rm -rf _build_python*
 rm -rf _libfaiss_stage
+rm -rf _libfaiss_stage_aarch64
 rm -rf build
 rm -rf faiss/python/build
 rm -rf faiss/python/dist

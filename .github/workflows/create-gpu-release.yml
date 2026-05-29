@@ -25,15 +25,15 @@ jobs:
       - name: Extract Release Notes
         id: extract_notes
         run: |
-          # Read gpu-cu132/RELEASE_NOTES.md content
-          if [ -f "gpu-cu132/RELEASE_NOTES.md" ]; then
-            NOTES=$(cat gpu-cu132/RELEASE_NOTES.md)
+          # Read gpu-cu/RELEASE_NOTES.md content
+          if [ -f "gpu-cu/RELEASE_NOTES.md" ]; then
+            NOTES=$(cat gpu-cu/RELEASE_NOTES.md)
             # Escape newlines for GitHub Actions
             NOTES="${NOTES//'%'/'%25'}"
             NOTES="${NOTES//$'\n'/'%0A'}"
             NOTES="${NOTES//$'\r'/'%0D'}"
             echo "release_notes<<EOF" >> $GITHUB_OUTPUT
-            cat gpu-cu132/RELEASE_NOTES.md >> $GITHUB_OUTPUT
+            cat gpu-cu/RELEASE_NOTES.md >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "release_notes=Release notes not found" >> $GITHUB_OUTPUT

@@ -51,6 +51,9 @@ The wheel includes GPU kernels for all modern NVIDIA architectures supported by 
 
 ### PyPI (Recommended)
 ```bash
+# One package name for both architectures; pip selects the wheel matching
+# your platform tag (manylinux x86_64 → Intel MKL build,
+# manylinux aarch64 → DGX Spark OpenBLAS + cuVS build).
 pip install faiss-gpu-cu132
 ```
 
@@ -130,18 +133,22 @@ print(f"Search complete: found {I.shape[0]} results")
 - **Disk**: 500MB (wheel size ~300-500MB)
 - **Compiler**: GCC 13.3+ or MSVC 2022+
 
-### Build Artifacts
-- **Wheel**: `faiss_gpu_cu132-*.whl` (~400MB)
+### x86_64 Build Artifacts (Intel MKL, AVX2/AVX512)
+- **Main library**: `libfaiss-x86_64-cu132.so` (+ `libfaiss_avx2.so` / `libfaiss_avx512.so` SIMD variants)
+- **C API**: `libfaiss_c-x86_64-cu132.so`
+- **Python wheel**: `faiss_gpu_cu132-*.whl` (~400MB) — variant `gpu-cu132`
 - **Python**: 3.14.3
-- **Architecture**: x86_64 (Linux), ARM64 (macOS)
+- **Architecture**: x86_64 (Linux)
+- **Build scripts**: `gpu-cu/scripts/build_lib_x86_64.sh`, `build_pkg_x86_64.sh`, `package_wheel_x86_64.sh`, `build_wheel_x86_64.sh`
+- **Stage dir**: `_libfaiss_stage/lib/`
 
 ### DGX Spark Build Artifacts (SM 121, aarch64)
-- **Main library**: `libfaiss-spark-cu132.so` — FAISS GPU + cuVS, SM 121 only
-- **C API**: `libfaiss_c-spark-cu132.so` — C shim over `libfaiss-spark-cu132`
-- **Python wheel**: `faiss-gpu-cu132-spark` — variant name in `setup.py`
+- **Main library**: `libfaiss-aarch64-cu132.so` — FAISS GPU + cuVS, SM 121 only
+- **C API**: `libfaiss_c-aarch64-cu132.so` — C shim over `libfaiss-aarch64-cu132`
+- **Python wheel**: `faiss-gpu-cu132-sm121` — single-arch (SM 121) build, so the package name carries the `-sm121` suffix
 - **cuVS**: `libcuvs-spark.so` — from `zbrad/cuvs`, SM 121 native
-- **Build scripts**: `gpu-cu132/scripts/build_lib_spark.sh`, `build_pkg_spark.sh`, `package_wheel_spark.sh`, `build_wheel_spark.sh`
-- **Stage dir**: `_libfaiss_stage_spark/lib/`
+- **Build scripts**: `gpu-cu/scripts/build_lib_aarch64.sh`, `build_pkg_aarch64.sh`, `package_wheel_aarch64.sh`, `build_wheel_aarch64.sh`
+- **Stage dir**: `_libfaiss_stage_aarch64/lib/`
 
 ---
 
@@ -219,8 +226,9 @@ gpu_index = faiss.index_cpu_to_gpu(res, 0, index, co)
 
 ## Documentation
 
-- **[QUICKSTART.md](QUICKSTART.md)** - 5-minute quick start
-- **[BUILD_WHEEL_CUDA132.md](docs/BUILD_WHEEL_CUDA132.md)** - Complete build guide
+- **[BUILD_arch_x86_64.md](docs/BUILD_arch_x86_64.md)** - x86_64 build guide (incl. WSL quick start)
+- **[BUILD_arch_aarch64.md](docs/BUILD_arch_aarch64.md)** - aarch64 / DGX Spark build guide
+- **[WHEEL_NAMING.md](docs/WHEEL_NAMING.md)** - Wheel/library naming + CUDA version selection
 - **[TEST_RESULTS.md](TEST_RESULTS.md)** - Detailed test report
 - **[Official FAISS Wiki](https://github.com/facebookresearch/faiss/wiki)** - FAISS documentation
 
@@ -239,7 +247,7 @@ index.search(queries[:1000], k=4)  # Smaller batches
 # Verify installation
 pip list | grep faiss
 
-# Reinstall if needed
+# Reinstall if needed (use the variant matching your arch)
 pip uninstall faiss-gpu-cu132 -y
 pip install faiss-gpu-cu132
 ```
@@ -252,7 +260,7 @@ print(f"GPU count: {faiss.get_num_gpus()}")
 ```
 
 ### Build from source (if needed)
-See [BUILD_WHEEL_CUDA132.md](docs/BUILD_WHEEL_CUDA132.md)
+See [BUILD_arch_x86_64.md](docs/BUILD_arch_x86_64.md)
 
 ---
 
@@ -319,6 +327,6 @@ If you use FAISS in published work, please cite:
 
 **Ready to use!** 🚀
 
-Install with `pip install faiss-gpu-cu132` and start building powerful search applications.
+Install with `pip install faiss-gpu-cu132` (pip auto-selects the x86_64 or aarch64 wheel via its platform tag) and start building powerful search applications.
 
 For detailed information, see the included documentation files.

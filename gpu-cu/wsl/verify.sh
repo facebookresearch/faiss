@@ -1,16 +1,16 @@
 #!/bin/bash
-# Verify the installed faiss-gpu-cu132 wheel works (CPU + GPU).
+# Verify the installed faiss-gpu-${FAISS_CUDA_TAG} wheel works (CPU + GPU).
 # Usage (from PowerShell):
-#   wsl -e bash gpu-cu132/wsl/verify.sh
+#   wsl -e bash gpu-cu/wsl/verify.sh
 # To install first, pass --install:
-#   wsl -e bash gpu-cu132/wsl/verify.sh --install
+#   wsl -e bash gpu-cu/wsl/verify.sh --install
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/env.sh"
 
-VARIANT="${FAISS_VARIANT:-gpu-cu132}"
+VARIANT="${FAISS_VARIANT:-gpu-${FAISS_CUDA_TAG}$(faiss_sm_suffix)}"
 # pip normalises hyphens to underscores in wheel filenames
 WHEEL_PREFIX="faiss_${VARIANT//-/_}"
 WHEEL=$(ls "$FAISS_ROOT"/build_output/${WHEEL_PREFIX}-*.whl 2>/dev/null | head -1)

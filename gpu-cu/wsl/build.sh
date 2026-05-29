@@ -1,9 +1,9 @@
 #!/bin/bash
 # Full WSL build: C++ library + Python SWIG bindings + wheel
 # Usage (from PowerShell):
-#   wsl -e bash scripts/wsl/build.sh
+#   wsl -e bash gpu-cu/wsl/build.sh
 # Optional env overrides:
-#   CUDA_ARCHS="75;80;86"  wsl -e bash scripts/wsl/build.sh
+#   CUDA_ARCHS="75;80;86"  wsl -e bash gpu-cu/wsl/build.sh
 
 set -euo pipefail
 
@@ -13,11 +13,11 @@ source "$SCRIPT_DIR/env.sh"
 cd "$FAISS_ROOT"
 
 # Strip any Windows CRLF from build scripts (safe to run each time)
-sed -i 's/\r//' gpu-cu132/build_lib_cuda132.sh gpu-cu132/build_pkg_cuda132.sh gpu-cu132/package_wheel.sh Makefile gpu-cu132/wsl_build.sh 2>/dev/null || true
+sed -i 's/\r//' gpu-cu/scripts/build_lib_x86_64.sh gpu-cu/scripts/build_pkg_x86_64.sh gpu-cu/scripts/package_wheel_x86_64.sh Makefile gpu-cu/scripts/wsl_build.sh 2>/dev/null || true
 
 echo ""
 echo "========================================="
-echo " FAISS GPU CUDA 13.2 — Full Build"
+echo " FAISS GPU CUDA $FAISS_CUDA_VER — Full Build"
 echo "========================================="
 echo " Architectures : $CUDA_ARCHS"
 echo " Jobs          : $(nproc)"

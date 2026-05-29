@@ -4,13 +4,17 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-# Build C++ library (libfaiss) for CUDA 13.2
+# Build C++ library (libfaiss) — x86_64 (Intel MKL, AVX2/AVX512)
+# Produces libfaiss-x86_64-${FAISS_CUDA_TAG}.so / libfaiss_c-x86_64-${FAISS_CUDA_TAG}.so
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAISS_ROOT="${FAISS_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 cd "$FAISS_ROOT"
+
+# CUDA version (single source of truth — bump in cuda_env.sh for cu133)
+source "$SCRIPT_DIR/cuda_env.sh"
 
 # Environment setup
 CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
@@ -126,6 +130,8 @@ cmake -B "$BUILD_DIR" \
     -DLAPACK_LIBRARIES="$MKL_LIB" \
     -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_BUILD_TYPE=Release \
+    -DFAISS_OUTPUT_NAME=faiss-x86_64-${FAISS_CUDA_TAG} \
+    -DFAISS_C_OUTPUT_NAME=faiss_c-x86_64-${FAISS_CUDA_TAG} \
     -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
     .
 
@@ -140,13 +146,18 @@ make -C "$BUILD_DIR" -j"$num_jobs" faiss faiss_avx2 faiss_avx512 faiss_c faiss_c
 mkdir -p _libfaiss_stage/
 cmake --install "$BUILD_DIR" --prefix _libfaiss_stage/ --config Release
 
-# cmake --install omits avx512 variants; copy them manually
+# cmake --install omits avx512 variants; copy them manually.
+# Note: FAISS_OUTPUT_NAME only renames the base lib; SIMD variants keep their
+# conventional names (libfaiss_avx2.so / libfaiss_avx512.so).
 cp -f "$BUILD_DIR/faiss/libfaiss_avx512.so" _libfaiss_stage/lib/ 2>/dev/null || true
 cp -f "$BUILD_DIR/c_api/libfaiss_c_avx512.so" _libfaiss_stage/lib/ 2>/dev/null || true
 
 echo ""
 echo "========================================="
-echo "✓ C++ library build complete"
+echo "✓ C++ library build complete (x86_64, CUDA $FAISS_CUDA_VER)"
 echo "========================================="
 echo "Libraries built in: $BUILD_DIR/faiss/"
+echo "  libfaiss-x86_64-${FAISS_CUDA_TAG}.so    (main C++ library)"
+echo "  libfaiss_c-x86_64-${FAISS_CUDA_TAG}.so  (C API wrapper)"
+echo "  libfaiss_avx2.so / libfaiss_avx512.so  (SIMD variants)"
 echo "Staged in: _libfaiss_stage/"
