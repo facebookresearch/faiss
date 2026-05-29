@@ -3,6 +3,27 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Note on recall for IVFPQ
+# ------------------------
+# IVFPQ is a lossy index: the inverted-file step prunes the search to a few
+# Voronoi cells, and the product quantizer replaces each residual with its
+# nearest codebook entry. Both steps assume the database has exploitable
+# cluster structure, so that (a) most true neighbours of a query fall in
+# the few cells visited, and (b) residuals concentrate around a small set
+# of prototypes. Real-world embedding datasets (image features such as
+# SIFT1M, sentence embeddings, learned representations) carry that
+# structure and give the recall numbers reported in the Faiss benchmarks.
+#
+# Uniform random vectors do not. With no clusters to exploit, nprobe=10
+# out of nlist=100 cells visits roughly 10% of the database and per-cell
+# quantization noise is large, so top-k recall is typically an order of
+# magnitude below what is seen on clustered data. The synthetic data
+# below uses a single coordinate ramp (xb[:, 0] += arange / 1000.) to
+# inject light structure for a runnable demo; if you swap it for purely
+# uniform vectors, expect recall to drop sharply. This is a property of
+# the data, not a bug in the index. See Jegou, Douze, Schmid, "Product
+# Quantization for Nearest Neighbor Search," IEEE TPAMI 2011.
+
 import numpy as np
 
 d = 64                           # dimension
