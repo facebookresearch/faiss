@@ -256,7 +256,7 @@ runs:
         # libamdhip64. Matching both sides to 7.2.0 avoids the dual-runtime
         # undefined-symbol/segfault failures.
         BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2"
-        HTML="$(curl -fsSL "${BASE}/")"
+        HTML="$(wget -qO- "${BASE}/")"
         pick() {
           printf '%s\n' "$HTML" \
             | grep -oE "$1-[0-9][^\"]*rocm7\.2\.0[^\"]*cp312-cp312-linux_x86_64\.whl" \
