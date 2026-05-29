@@ -580,7 +580,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1345" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1345" bodyend="1351"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="2037" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="2037" bodyend="2043"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -610,7 +610,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1355" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1355" bodyend="1362"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="2047" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="2047" bodyend="2054"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -652,7 +652,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1369" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1369" bodyend="1385"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="2061" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="2061" bodyend="2077"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -690,7 +690,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1392" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1392" bodyend="1401"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="2084" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="2084" bodyend="2093"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -744,7 +744,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1408" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1408" bodyend="1430"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="2100" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="2100" bodyend="2122"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -790,7 +790,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1437" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1437" bodyend="1455"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="2129" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="2129" bodyend="2147"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
