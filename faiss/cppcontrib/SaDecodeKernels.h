@@ -313,7 +313,7 @@
 #ifdef __AVX2__
 #include <faiss/cppcontrib/sa_decode/Level2-avx2-inl.h>
 #include <faiss/cppcontrib/sa_decode/PQ-avx2-inl.h>
-#elif defined(__ARM_NEON)
+#elif defined(__ARM_NEON) || defined(__aarch64__)
 #include <faiss/cppcontrib/sa_decode/Level2-neon-inl.h>
 #include <faiss/cppcontrib/sa_decode/PQ-neon-inl.h>
 #else
