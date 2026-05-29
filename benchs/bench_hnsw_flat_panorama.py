@@ -135,21 +135,21 @@ def benchmark_dataset(ds, dataset_name, k=10, nlevels=8, M=32):
 
 if __name__ == "__main__":
     k = 10
-    nlevels = 8
     M = 32
 
     # Test on 3 datasets with varying dimensionality:
     # SIFT1M (128d), GIST1M (960d), and Synthetic high-dim (2048d)
+    faiss.cvar.visited_table_hashset_threshold = 10**12
+
     datasets = [
-        (DatasetSIFT1M(), "SIFT1M"),
-        (DatasetGIST1M(), "GIST1M"),
-        # Synthetic high-dimensional dataset: 2048d, 100k train, 1M database, 10k queries
-        (SyntheticDataset(2048, 100000, 1000000, 10000), "Synthetic2048D"),
+        (DatasetSIFT1M(), "SIFT1M", 2),
+        (DatasetGIST1M(), "GIST1M", 8),
+        (SyntheticDataset(d=2048), "Synthetic2048D", 8),
     ]
 
-    for ds, name in datasets:
+    for ds, name, nlevels in datasets:
         print(f"\n{'='*60}")
-        print(f"Benchmarking on {name}")
+        print(f"Benchmarking on {name} (nlevels={nlevels})")
         print(f"{'='*60}")
         benchmark_dataset(ds, name, k=k, nlevels=nlevels, M=M)
 

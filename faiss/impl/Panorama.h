@@ -49,18 +49,20 @@ static inline void compute_level_dot_kernel(
         const uint32_t* active_indices,
         const size_t num_active,
         const size_t level_width_dims,
-        float* FAISS_RESTRICT dot_products) {
+        float* FAISS_RESTRICT dot_products,
+        size_t stride = 0) {
     const size_t width = LevelWidth > 0 ? LevelWidth : level_width_dims;
+    const size_t row_stride = stride == 0 ? width : stride;
     size_t i = 0;
     for (; i + 4 <= num_active; i += 4) {
         const float* y0 = level_storage +
-                (AllActive ? (i + 0) : active_indices[i + 0]) * width;
+                (AllActive ? (i + 0) : active_indices[i + 0]) * row_stride;
         const float* y1 = level_storage +
-                (AllActive ? (i + 1) : active_indices[i + 1]) * width;
+                (AllActive ? (i + 1) : active_indices[i + 1]) * row_stride;
         const float* y2 = level_storage +
-                (AllActive ? (i + 2) : active_indices[i + 2]) * width;
+                (AllActive ? (i + 2) : active_indices[i + 2]) * row_stride;
         const float* y3 = level_storage +
-                (AllActive ? (i + 3) : active_indices[i + 3]) * width;
+                (AllActive ? (i + 3) : active_indices[i + 3]) * row_stride;
 
         float dp0 = 0, dp1 = 0, dp2 = 0, dp3 = 0;
         FAISS_PRAGMA_IMPRECISE_LOOP
@@ -78,8 +80,8 @@ static inline void compute_level_dot_kernel(
         dot_products[i + 3] = dp3;
     }
     for (; i < num_active; i++) {
-        const float* yj =
-                level_storage + (AllActive ? i : active_indices[i]) * width;
+        const float* yj = level_storage +
+                (AllActive ? i : active_indices[i]) * row_stride;
         float dp = 0;
         FAISS_PRAGMA_IMPRECISE_LOOP
         for (size_t j = 0; j < width; j++) {
