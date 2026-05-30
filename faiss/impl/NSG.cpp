@@ -234,10 +234,11 @@ void NSG::init_graph(Index* storage, const nsg::Graph<idx_t>& knn_graph) {
     std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
 
     dis->set_query(center.get());
-    VisitedTable vt(ntotal, use_visited_hashset);
+    std::unique_ptr<VisitedTable> vt =
+            VisitedTable::create(ntotal, use_visited_hashset);
 
     // Do not collect the visited nodes
-    search_on_graph<false>(knn_graph, *dis, vt, ep, L, retset, tmpset);
+    search_on_graph<false>(knn_graph, *dis, *vt, ep, L, retset, tmpset);
 
     // set enterpoint
     enterpoint = retset[0].id;
@@ -344,7 +345,8 @@ void NSG::link(
         std::vector<Node> pool;
         std::vector<Neighbor> tmp;
 
-        VisitedTable vt(ntotal, use_visited_hashset);
+        std::unique_ptr<VisitedTable> vt =
+                VisitedTable::create(ntotal, use_visited_hashset);
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
 
@@ -355,13 +357,13 @@ void NSG::link(
 
             // Collect the visited nodes into pool
             search_on_graph<true>(
-                    knn_graph, *dis, vt, enterpoint, L, tmp, pool);
+                    knn_graph, *dis, *vt, enterpoint, L, tmp, pool);
 
-            sync_prune(i, pool, *dis, vt, knn_graph, graph);
+            sync_prune(i, pool, *dis, *vt, knn_graph, graph);
 
             pool.clear();
             tmp.clear();
-            vt.advance();
+            vt->advance();
         }
     } // omp parallel
 
@@ -531,19 +533,21 @@ void NSG::add_reverse_links(
 
 int NSG::tree_grow(Index* storage, std::vector<int>& degrees) {
     int root = enterpoint;
-    VisitedTable vt(ntotal, use_visited_hashset);
-    VisitedTable vt2(ntotal, use_visited_hashset);
+    std::unique_ptr<VisitedTable> vt =
+            VisitedTable::create(ntotal, use_visited_hashset);
+    std::unique_ptr<VisitedTable> vt2 =
+            VisitedTable::create(ntotal, use_visited_hashset);
 
     int num_attached = 0;
     int cnt = 0;
     while (true) {
-        cnt = dfs(vt, root, cnt);
+        cnt = dfs(*vt, root, cnt);
         if (cnt >= ntotal) {
             break;
         }
 
-        root = attach_unlinked(storage, vt, vt2, degrees);
-        vt2.advance();
+        root = attach_unlinked(storage, *vt, *vt2, degrees);
+        vt2->advance();
         num_attached += 1;
     }
 

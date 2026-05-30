@@ -694,6 +694,8 @@ void gpu_sync_all_devices()
 %ignore faiss::InterruptCallback::lock;
 
 %include <faiss/impl/AuxIndexStructures.h>
+
+%ignore faiss::VisitedTable::create; // causes errors on OSS compile (?)
 %include <faiss/impl/VisitedTable.h>
 %include <faiss/impl/IDSelector.h>
 
