@@ -250,6 +250,11 @@ struct HNSWStats {
 // global var that collects them all
 FAISS_API extern HNSWStats hnsw_stats;
 
+/// Internal HNSW algorithm helpers. These are not part of the public API; they
+/// are exposed here only so that unit tests (and a few cross-TU callers such as
+/// the Panorama search variant) can reach them.
+namespace hnsw_detail {
+
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
@@ -301,5 +306,7 @@ void search_neighbors_to_add(
         int level,
         VisitedTable& vt,
         bool reference_version = false);
+
+} // namespace hnsw_detail
 
 } // namespace faiss
