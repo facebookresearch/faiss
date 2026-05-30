@@ -1835,9 +1835,35 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivfl->code_size = ivfl->d * sizeof(float);
         ArrayInvertedLists* ail = set_array_invlist(ivfl.get(), ids);
 
+        // The legacy IvFl/IvFL on-disk formats serialize per-list ids and
+        // codes as two independent vectors. Without a cross-check between
+        // them, a malformed file can produce a list where codes.size() does
+        // not equal ids.size() * code_size; downstream consumers (notably
+        // the GPU clone path faiss::gpu::IVFBase::addEncodedVectorsToList_)
+        // size their memcpy from ids.size() * code_size and would read past
+        // the end of codes. Validate parity with the checked-multiplication
+        // pattern already used by the current `ilar`/IwFl InvertedLists
+        // reader (see read_InvertedLists_up above).
+        auto validate_legacy_codes_size = [&](size_t i) {
+            const size_t expected_codes_bytes = mul_no_overflow(
+                    ail->ids[i].size(),
+                    ivfl->code_size,
+                    "legacy IVFFlat inverted list codes");
+            FAISS_THROW_IF_NOT_FMT(
+                    ail->codes[i].size() == expected_codes_bytes,
+                    "Legacy IVFFlat inverted list %zu: codes size %zu bytes "
+                    "does not match ids size %zu * code_size %zu = %zu bytes",
+                    i,
+                    ail->codes[i].size(),
+                    ail->ids[i].size(),
+                    (size_t)ivfl->code_size,
+                    expected_codes_bytes);
+        };
+
         if (h == fourcc("IvFL")) {
             for (size_t i = 0; i < ivfl->nlist; i++) {
                 READVECTOR(ail->codes[i]);
+                validate_legacy_codes_size(i);
             }
         } else { // old format
             for (size_t i = 0; i < ivfl->nlist; i++) {
@@ -1845,6 +1871,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 READVECTOR(vec);
                 ail->codes[i].resize(vec.size() * sizeof(float));
                 memcpy(ail->codes[i].data(), vec.data(), ail->codes[i].size());
+                validate_legacy_codes_size(i);
             }
         }
         idx = std::move(ivfl);
