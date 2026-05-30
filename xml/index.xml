@@ -890,6 +890,23 @@
     <member refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a91cea21a92ab442abcb050f4391a8638" kind="variable"><name>f_add_ex</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a1c18eede2ca5d6c31d729aa2f191d35e" kind="variable"><name>f_rescale_ex</name></member>
   </compound>
+  <compound refid="structfaiss_1_1FAISS__FINAL" kind="struct"><name>faiss::FAISS_FINAL</name>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a7866b8c0fb1ae3cfac5d3b5661ed3088" kind="variable"><name>visited_set</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a27dadab3fa96499ad6c0527455b6f546" kind="variable"><name>visited</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1ae1fdfc67e5469017ba607daab1ecd160" kind="variable"><name>visno</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a2eb121b52f1449546505f0e258ccf324" kind="function"><name>VisitedTableSet</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" kind="function"><name>get</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a56fbff56b3bc1ab15feb068b6f44962c" kind="function"><name>prefetch</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1adf297c1e5bdb411b6d8911bb1d76840f" kind="function"><name>reserve</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" kind="function"><name>advance</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a1e3850e2905a3e8c4c7f068ab663739e" kind="function"><name>VisitedTableVector</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" kind="function"><name>get</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a784a78872664a21e6973edffeb61923e" kind="function"><name>prefetch</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" kind="function"><name>advance</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" kind="function"><name>create</name></member>
+  </compound>
   <compound refid="classfaiss_1_1FaissException" kind="class"><name>faiss::FaissException</name>
     <member refid="classfaiss_1_1FaissException_1a1b84d206c53a24cd8126dbfa30f5523e" kind="variable"><name>msg</name></member>
     <member refid="classfaiss_1_1FaissException_1a666519cae8a1ab155907e91e80e2ea59" kind="function"><name>FaissException</name></member>
@@ -2349,8 +2366,12 @@
   </compound>
   <compound refid="structfaiss_1_1HNSW" kind="struct"><name>faiss::HNSW</name>
     <member refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kind="typedef"><name>storage_idx_t</name></member>
-    <member refid="structfaiss_1_1HNSW_1a86e1f4c2250e11ae9966a16eb0b8d4f4" kind="typedef"><name>C</name></member>
+    <member refid="structfaiss_1_1HNSW_1a0bdce1fbc4445b52fc5b48cb1aaa0e76" kind="typedef"><name>C_distance</name></member>
+    <member refid="structfaiss_1_1HNSW_1ad6604d3c8e526205dd8b7a9cd9160088" kind="typedef"><name>C_similarity</name></member>
+    <member refid="structfaiss_1_1HNSW_1aa30cd1bc43d4bceff7119f0bc4d17e37" kind="typedef"><name>C</name></member>
     <member refid="structfaiss_1_1HNSW_1a7354bfe0fedc510d73071ebefd37dcb2" kind="typedef"><name>Node</name></member>
+    <member refid="structfaiss_1_1HNSW_1a7d8d1b7a0f6158f70a4aff5289c5f246" kind="typedef"><name>NodeDistCloser</name></member>
+    <member refid="structfaiss_1_1HNSW_1a30f48260adce160b36765213c37c298d" kind="typedef"><name>NodeDistFarther</name></member>
     <member refid="structfaiss_1_1HNSW_1a907c94e0eca5200af1dc8d0aea482665" kind="variable"><name>assign_probas</name></member>
     <member refid="structfaiss_1_1HNSW_1a1c258bb88aae9b1a754ab4690d85ed41" kind="variable"><name>cum_nneighbor_per_level</name></member>
     <member refid="structfaiss_1_1HNSW_1a44847954c98957404829182c7db1b8af" kind="variable"><name>levels</name></member>
@@ -2365,6 +2386,7 @@
     <member refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" kind="variable"><name>check_relative_distance</name></member>
     <member refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" kind="variable"><name>search_bounded_queue</name></member>
     <member refid="structfaiss_1_1HNSW_1a44007ce4b5c2f38bd4733f6ed101792c" kind="variable"><name>is_panorama</name></member>
+    <member refid="structfaiss_1_1HNSW_1a10bb7d05fdd8504fe4a0cc288ebd590b" kind="variable"><name>is_similarity</name></member>
     <member refid="structfaiss_1_1HNSW_1a7b482fea55ce6c7f20a47655b2a8305f" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" kind="function"><name>set_default_probas</name></member>
     <member refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" kind="function"><name>set_nb_neighbors</name></member>
@@ -2383,7 +2405,7 @@
     <member refid="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" kind="function"><name>print_neighbor_stats</name></member>
     <member refid="structfaiss_1_1HNSW_1a805fdc261eb2d1fa66e6a457d7cde2a0" kind="function"><name>prepare_level_tab</name></member>
     <member refid="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" kind="function"><name>permute_entries</name></member>
-    <member refid="structfaiss_1_1HNSW_1aac9c40b5205bc148002f1f95dd9d55c8" kind="function"><name>shrink_neighbor_list</name></member>
+    <member refid="structfaiss_1_1HNSW_1a7352de34016a15677b1cfd103e0fc546" kind="function"><name>shrink_neighbor_list</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSWStats" kind="struct"><name>faiss::HNSWStats</name>
     <member refid="structfaiss_1_1HNSWStats_1a28e67551d5cf31ab374fc8df2bab7cee" kind="variable"><name>n1</name></member>
@@ -9287,22 +9309,21 @@
     <member refid="classfaiss_1_1gpu__metal_1_1MetalResources_1abe62b78ac41ae98a0df715ddd63dda75" kind="function"><name>synchronize</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalResources_1a8c94523b6521b5186721a8175d46aef3" kind="function"><name>isAvailable</name></member>
   </compound>
-  <compound refid="structfaiss_1_1MinimaxHeap" kind="struct"><name>faiss::MinimaxHeap</name>
-    <member refid="structfaiss_1_1MinimaxHeap_1a6a71097d9dd122094ee73c79a24e46ae" kind="typedef"><name>storage_idx_t</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1abcecad87a16aaab351f3b46a74a86b4c" kind="typedef"><name>HC</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a00d5019e63b684cdcc65f41b32dc642c" kind="variable"><name>n</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a05bb60438e0953542bd9e8737c7a7b85" kind="variable"><name>k</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a84865dd794d86e9818d876cc81fa859e" kind="variable"><name>nvalid</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1aa8dd195680d294c86cea21c58edd9e81" kind="variable"><name>ids</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a2f7bce65d03230ca10fe43ab910c902d" kind="variable"><name>dis</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1ae8e3d9f8970096a65b48c9782c98d380" kind="function"><name>MinimaxHeap</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1aaefdf7927df4a0cb2e19015bd479c27d" kind="function"><name>push</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a0bc640722505bb3f290641ea4c7ef73f" kind="function"><name>max</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a13d189c5a1638e80827f67281c58c8e9" kind="function"><name>size</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a120cc4e9389863f6f88bf3fceadcf304" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1aefb82e90f66f59544d3556dbb7df95b2" kind="function"><name>pop_min_tpl</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1a0f7d193f506330c5c34d5bc1fb6cea2f" kind="function"><name>pop_min</name></member>
-    <member refid="structfaiss_1_1MinimaxHeap_1af4bc7e4a6f5a118bf1f1f3213434d8ac" kind="function"><name>count_below</name></member>
+  <compound refid="structfaiss_1_1MinimaxHeapT" kind="struct"><name>faiss::MinimaxHeapT</name>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a805ab93f78406f52ec4694047f86bc4e" kind="typedef"><name>HC</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a8a8942e02667898d5f256663f2bc7472" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1aa0810e1f5e3073fb4b87d64fb69a651b" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1ab596b9b5b065cf35504ff1feff38ab12" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1afdad6c0e293a1efc2b2e370813b8d01e" kind="variable"><name>nvalid</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a3c182e42b83a44e204097fcbac2ff502" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1aeaf8291adf9edde67d710b3fa99b4cef" kind="variable"><name>dis</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a9566e803cdeef74d135f6f7e8a14d1bb" kind="function"><name>MinimaxHeapT</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a7e4a952b70232af62be91c31b9d4e9fd" kind="function"><name>push</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a25b34f552c5f63f68ade88520fb41dcc" kind="function"><name>max</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a0287f3c8baef903c7d34e49ce2acfd31" kind="function"><name>size</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a03df95954e7c647b758dc1d03c260a36" kind="function"><name>clear</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1a9361461d9b50cae9a476d1482d86e4be" kind="function"><name>pop_min</name></member>
+    <member refid="structfaiss_1_1MinimaxHeapT_1aa37c92184ed020b361f2e1687f51a971" kind="function"><name>count_below</name></member>
   </compound>
   <compound refid="structfaiss_1_1MmappedFileMappingOwner" kind="struct"><name>faiss::MmappedFileMappingOwner</name>
     <member refid="structfaiss_1_1MmappedFileMappingOwner_1ab61273289ae971747418a7a328a1219b" kind="variable"><name>p_impl</name></member>
@@ -9465,17 +9486,17 @@
     <member refid="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" kind="function"><name>generate_eval_set</name></member>
     <member refid="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" kind="function"><name>eval_recall</name></member>
   </compound>
-  <compound refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kind="struct"><name>faiss::HNSW::NodeDistCloser</name>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1aab7d9f3f9986d9a7cad80f9662ce35d8" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a020d36b86bf6ba24b5defe228e4d1431" kind="variable"><name>id</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a650ace895e47e5b8c33447c1761c93e1" kind="function"><name>NodeDistCloser</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a138d38cec71e97c3d8cc2a6c0d842a3d" kind="function"><name>operator&lt;</name></member>
+  <compound refid="structfaiss_1_1HNSW_1_1NodeDistCloserT" kind="struct"><name>faiss::HNSW::NodeDistCloserT</name>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloserT_1af9b7e1447901bbc942ccb14d38d4b134" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloserT_1a0e30a0877de085919979576d8374812a" kind="variable"><name>id</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloserT_1a7cd48b24d4581e27c2e5213bafc5d70a" kind="function"><name>NodeDistCloserT</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloserT_1a9d1df291e676101c81dc030119291be8" kind="function"><name>operator&lt;</name></member>
   </compound>
-  <compound refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kind="struct"><name>faiss::HNSW::NodeDistFarther</name>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1ab495bcf43675a11fa049560294b8ef94" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1ae3dd53c1bafddffadba74013719467f1" kind="variable"><name>id</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6bf4ca8df81f43a28378224c43da14f5" kind="function"><name>NodeDistFarther</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a1958eba677d7dc865a269c64b8fb21b4" kind="function"><name>operator&lt;</name></member>
+  <compound refid="structfaiss_1_1HNSW_1_1NodeDistFartherT" kind="struct"><name>faiss::HNSW::NodeDistFartherT</name>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a77443f322c70ba62f12f69eb6dcf4b0a" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a864741fb872b2a206ca7a7a9dac629a0" kind="variable"><name>id</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a3bdd77868718ae66241384c1be89b941" kind="function"><name>NodeDistFartherT</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a142f5ec90bc1df8e5a891790cdef01d8" kind="function"><name>operator&lt;</name></member>
   </compound>
   <compound refid="structfaiss_1_1NormalizationTransform" kind="struct"><name>faiss::NormalizationTransform</name>
     <member refid="structfaiss_1_1NormalizationTransform_1ab79b9cb8dc4cf3a597cab563043568b9" kind="variable"><name>norm</name></member>
@@ -12538,15 +12559,13 @@
     <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" kind="function"><name>~VectorTransform</name></member>
   </compound>
   <compound refid="structfaiss_1_1VisitedTable" kind="struct"><name>faiss::VisitedTable</name>
-    <member refid="structfaiss_1_1VisitedTable_1ac2343f3d7f81c2cf046c3ee20ce2c5ec" kind="variable"><name>visited</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1ab7a924acc250b843afa1bc27d3f19f48" kind="variable"><name>visited_set</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" kind="variable"><name>visno</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a6765ef117312689df98edce81c52e93b" kind="function"><name>VisitedTable</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1ab974710f3530d1ecbde01b2a4ce55fc4" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a0fde83ed4a92e4470072d48aae24126b" kind="function"><name>reserve</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a3bf601159737dfbdcfbc8be1262b2034" kind="function"><name>get</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1ad3d2376dfcd6a8204ec5abf96248006c" kind="function"><name>prefetch</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" kind="function"><name>advance</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a5e90e68438c6bf2deb548a00bb1789cd" kind="function"><name>~VisitedTable</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a57cd14352e07c7aecf027131dc321896" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a485a45c53af2254a2c971e54460eb4e1" kind="function"><name>get</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a1bdadd9c5d57e9cd57c4756244d8db8a" kind="function"><name>prefetch</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a593fdd665f96ed35c70eee8735cef5f1" kind="function"><name>reserve</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a2ed7c3421829bf16a2127f6353f38ded" kind="function"><name>advance</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" kind="function"><name>create</name></member>
   </compound>
   <compound refid="structfaiss_1_1VStackInvertedLists" kind="struct"><name>faiss::VStackInvertedLists</name>
     <member refid="structfaiss_1_1VStackInvertedLists_1a656f22a259d1aa602b6efde620cb4300" kind="variable"><name>ils</name></member>
@@ -12759,6 +12778,7 @@
     <member refid="namespacefaiss_1a867d4baa0cd4e14a398a457892a034d8" kind="typedef"><name>GpuIndexFlat</name></member>
     <member refid="namespacefaiss_1aa720d0a3336270110940fce7e0f423b5" kind="typedef"><name>IVFSearchParameters</name></member>
     <member refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kind="typedef"><name>idx_t</name></member>
+    <member refid="namespacefaiss_1a14d25fb8346f9ea48c8ec247e162ef2b" kind="typedef"><name>MinimaxHeap</name></member>
     <member refid="namespacefaiss_1a33b1dcce3a5a4c296a1f4553c3299ddd" kind="typedef"><name>ResultHandler</name></member>
     <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
     <member refid="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" kind="typedef"><name>IndexBinaryIDMap</name></member>
@@ -12889,11 +12909,7 @@
     <member refid="namespacefaiss_1a974e303dbe99e9d08b4380cdb421097c" kind="function"><name>pq4_kernel_qbs_256</name></member>
     <member refid="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" kind="function"><name>rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="namespacefaiss_1a2296c34f3219451c88e96e7a951e64c0" kind="function"><name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
-    <member refid="namespacefaiss_1a5be80d29ca0583f942d3ccf479c30610" kind="function"><name>search_from_candidates</name></member>
-    <member refid="namespacefaiss_1a03dfdaba71e91b32059e59ccf4e722a7" kind="function"><name>search_from_candidates_panorama</name></member>
-    <member refid="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" kind="function"><name>greedy_update_nearest</name></member>
-    <member refid="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" kind="function"><name>search_from_candidate_unbounded</name></member>
-    <member refid="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" kind="function"><name>search_neighbors_to_add</name></member>
+    <member refid="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" kind="function"><name>pop_min_tpl</name></member>
     <member refid="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" kind="function"><name>read_direct_map</name></member>
     <member refid="namespacefaiss_1ae748c5ec07a45d0f8d861e231ef67986" kind="function"><name>read_ivf_header</name></member>
     <member refid="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" kind="function"><name>read_InvertedLists</name></member>
@@ -13542,6 +13558,13 @@
     <member refid="MetalFlatKernels_8h_1abb3e4f072ec9c764ed2a1fa807d44b56" kind="function"><name>runFlatSearchGPU</name></member>
     <member refid="MetalKernels_8h_1af8ab30db0a71d9b6001b88ecc531e061" kind="function"><name>getMetalKernels</name></member>
   </compound>
+  <compound refid="namespacefaiss_1_1hnsw__detail" kind="namespace"><name>faiss::hnsw_detail</name>
+    <member refid="namespacefaiss_1_1hnsw__detail_1af3eff51c5417666b33dba5af2175b3eb" kind="function"><name>search_from_candidates</name></member>
+    <member refid="namespacefaiss_1_1hnsw__detail_1aea80280a8c656ea616f7a1bd61be1396" kind="function"><name>search_from_candidates_panorama</name></member>
+    <member refid="namespacefaiss_1_1hnsw__detail_1ac7840c1a6339b842d31ee31bb1e053b1" kind="function"><name>greedy_update_nearest</name></member>
+    <member refid="namespacefaiss_1_1hnsw__detail_1a4c5c6a8cf8fc9a87dd39507ed298ef7d" kind="function"><name>search_from_candidate_unbounded</name></member>
+    <member refid="namespacefaiss_1_1hnsw__detail_1aaab8243020afb6d49d351f6151a33ec7" kind="function"><name>search_neighbors_to_add</name></member>
+  </compound>
   <compound refid="namespacefaiss_1_1ivflib" kind="namespace"><name>faiss::ivflib</name>
     <member refid="IVFlib_8h_1aeb9efc826d09730a24d5f3b179222033" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="IVFlib_8h_1a73c11c3c801b554a6fe55545b5a68aff" kind="function"><name>extract_index_ivf</name></member>
@@ -14095,7 +14118,6 @@
     <member refid="platform__macros_8h_1a8e7a3bf6003d72a62606f343c2db6245" kind="define"><name>ALIGNED</name></member>
     <member refid="platform__macros_8h_1aec1bc9078e503a72e556dbaba7bd87df" kind="define"><name>FAISS_PACKED</name></member>
     <member refid="platform__macros_8h_1a5e2365b4bdcdfaa1b60d9c44cd226733" kind="define"><name>FAISS_RESTRICT</name></member>
-    <member refid="platform__macros_8h_1a25d067997fc3e57a6b1fa866376d336b" kind="define"><name>FAISS_MAYBE_UNUSED</name></member>
     <member refid="platform__macros_8h_1a5db2a02c2a94ef34720cb33a8fa41e79" kind="define"><name>FAISS_PACK_STRUCTS_BEGIN</name></member>
     <member refid="platform__macros_8h_1af21bb2324a630f7e1e7ec34eecfd564c" kind="define"><name>FAISS_PACK_STRUCTS_END</name></member>
     <member refid="platform__macros_8h_1ad7d30d301b7cb834b0671c66350fdb57" kind="define"><name>FAISS_ALWAYS_INLINE</name></member>
@@ -14105,6 +14127,8 @@
     <member refid="platform__macros_8h_1a67c757ea9f8ddbedbacd421c993b5582" kind="define"><name>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</name></member>
     <member refid="platform__macros_8h_1a1cecf34df3997353b021628410b9ef3e" kind="define"><name>Swap2Bytes</name></member>
     <member refid="platform__macros_8h_1a09e79c0144214aac268e716674e71474" kind="define"><name>Swap4Bytes</name></member>
+    <member refid="platform__macros_8h_1a25d067997fc3e57a6b1fa866376d336b" kind="define"><name>FAISS_MAYBE_UNUSED</name></member>
+    <member refid="platform__macros_8h_1a4799c16a1dbf5e7750da9ba3efb15928" kind="define"><name>FAISS_FINAL</name></member>
   </compound>
   <compound refid="PolysemousTraining_8h" kind="file"><name>PolysemousTraining.h</name>
   </compound>

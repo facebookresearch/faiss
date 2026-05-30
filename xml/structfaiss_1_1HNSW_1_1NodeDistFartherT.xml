@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HNSW_1_1NodeDistFartherT" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HNSW::NodeDistFartherT</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class CT</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a77443f322c70ba62f12f69eb6dcf4b0a" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::HNSW::NodeDistFartherT&lt; CT &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::HNSW::NodeDistFartherT::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="94" column="15" bodyfile="faiss/impl/HNSW.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a864741fb872b2a206ca7a7a9dac629a0" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSW::NodeDistFartherT&lt; CT &gt;::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>faiss::HNSW::NodeDistFartherT::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="95" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a3bdd77868718ae66241384c1be89b941" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HNSW::NodeDistFartherT&lt; CT &gt;::NodeDistFartherT</definition>
+        <argsstring>(float d_in, int id_in)</argsstring>
+        <name>NodeDistFartherT</name>
+        <qualifiedname>faiss::HNSW::NodeDistFartherT::NodeDistFartherT</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>d_in</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>id_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="96" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="96" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a142f5ec90bc1df8e5a891790cdef01d8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::HNSW::NodeDistFartherT&lt; CT &gt;::operator&lt;</definition>
+        <argsstring>(const NodeDistFartherT &amp;obj1) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>faiss::HNSW::NodeDistFartherT::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW_1_1NodeDistFartherT" kindref="compound">NodeDistFartherT</ref> &amp;</type>
+          <declname>obj1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="97" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="97" bodyend="103"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/HNSW.h" line="93" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="93" bodyend="104"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a77443f322c70ba62f12f69eb6dcf4b0a" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFartherT</scope><name>d</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a864741fb872b2a206ca7a7a9dac629a0" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFartherT</scope><name>id</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a3bdd77868718ae66241384c1be89b941" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFartherT</scope><name>NodeDistFartherT</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistFartherT_1a142f5ec90bc1df8e5a891790cdef01d8" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFartherT</scope><name>operator&lt;</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

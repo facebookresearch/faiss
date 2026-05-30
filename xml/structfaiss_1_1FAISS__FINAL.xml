@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1FAISS__FINAL" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::FAISS_FINAL</compoundname>
+    <basecompoundref refid="structfaiss_1_1VisitedTable" prot="public" virt="non-virtual">faiss::VisitedTable</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1VisitedTable" prot="public" virt="non-virtual">faiss::VisitedTable</basecompoundref>
+    <includes refid="VisitedTable_8h" local="no">VisitedTable.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1FAISS__FINAL_1a7866b8c0fb1ae3cfac5d3b5661ed3088" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; size_t &gt;</type>
+        <definition>std::unordered_set&lt;size_t&gt; faiss::FAISS_FINAL::visited_set</definition>
+        <argsstring></argsstring>
+        <name>visited_set</name>
+        <qualifiedname>faiss::FAISS_FINAL::visited_set</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="56" column="24" bodyfile="faiss/impl/VisitedTable.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FAISS__FINAL_1a27dadab3fa96499ad6c0527455b6f546" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::FAISS_FINAL::visited</definition>
+        <argsstring></argsstring>
+        <name>visited</name>
+        <qualifiedname>faiss::FAISS_FINAL::visited</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="85" column="17" bodyfile="faiss/impl/VisitedTable.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FAISS__FINAL_1ae1fdfc67e5469017ba607daab1ecd160" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::FAISS_FINAL::visno</definition>
+        <argsstring></argsstring>
+        <name>visno</name>
+        <qualifiedname>faiss::FAISS_FINAL::visno</qualifiedname>
+        <initializer>{1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="86" column="13" bodyfile="faiss/impl/VisitedTable.h" bodystart="86" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a2eb121b52f1449546505f0e258ccf324" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_FINAL::VisitedTableSet</definition>
+        <argsstring>()=default</argsstring>
+        <name>VisitedTableSet</name>
+        <qualifiedname>faiss::FAISS_FINAL::VisitedTableSet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="58" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::FAISS_FINAL::set</definition>
+        <argsstring>(size_t no) final</argsstring>
+        <name>set</name>
+        <qualifiedname>faiss::FAISS_FINAL::set</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a57cd14352e07c7aecf027131dc321896">set</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>no</declname>
+        </param>
+        <briefdescription>
+<para>set flag #no to true, return whether this changed it. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="60" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="60" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::FAISS_FINAL::get</definition>
+        <argsstring>(size_t no) const final</argsstring>
+        <name>get</name>
+        <qualifiedname>faiss::FAISS_FINAL::get</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a485a45c53af2254a2c971e54460eb4e1">get</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>no</declname>
+        </param>
+        <briefdescription>
+<para>get flag #no </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="64" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="64" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a56fbff56b3bc1ab15feb068b6f44962c" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::FAISS_FINAL::prefetch</definition>
+        <argsstring>(size_t) const final</argsstring>
+        <name>prefetch</name>
+        <qualifiedname>faiss::FAISS_FINAL::prefetch</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a1bdadd9c5d57e9cd57c4756244d8db8a">prefetch</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>no</declname>
+        </param>
+        <briefdescription>
+<para>prefetch flag #no </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="68" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="68" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1adf297c1e5bdb411b6d8911bb1d76840f" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::FAISS_FINAL::reserve</definition>
+        <argsstring>(size_t n) final</argsstring>
+        <name>reserve</name>
+        <qualifiedname>faiss::FAISS_FINAL::reserve</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a593fdd665f96ed35c70eee8735cef5f1">reserve</reimplements>
+        <param>
+          <type>size_t</type>
+        </param>
+        <briefdescription>
+<para>pre-allocate bucket space to avoid rehashing during repeated <ref refid="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" kindref="member">set()</ref> calls </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="72" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="72" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::FAISS_FINAL::advance</definition>
+        <argsstring>() final</argsstring>
+        <name>advance</name>
+        <qualifiedname>faiss::FAISS_FINAL::advance</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a2ed7c3421829bf16a2127f6353f38ded">advance</reimplements>
+        <briefdescription>
+<para>reset all flags to false </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="76" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="76" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a1e3850e2905a3e8c4c7f068ab663739e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_FINAL::VisitedTableVector</definition>
+        <argsstring>(size_t size)</argsstring>
+        <name>VisitedTableVector</name>
+        <qualifiedname>faiss::FAISS_FINAL::VisitedTableVector</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="88" column="14" bodyfile="faiss/impl/VisitedTable.h" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::FAISS_FINAL::set</definition>
+        <argsstring>(size_t no) final</argsstring>
+        <name>set</name>
+        <qualifiedname>faiss::FAISS_FINAL::set</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a57cd14352e07c7aecf027131dc321896">set</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>no</declname>
+        </param>
+        <briefdescription>
+<para>set flag #no to true, return whether this changed it. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="90" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="90" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::FAISS_FINAL::get</definition>
+        <argsstring>(size_t no) const final</argsstring>
+        <name>get</name>
+        <qualifiedname>faiss::FAISS_FINAL::get</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a485a45c53af2254a2c971e54460eb4e1">get</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>no</declname>
+        </param>
+        <briefdescription>
+<para>get flag #no </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="98" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="98" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a784a78872664a21e6973edffeb61923e" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::FAISS_FINAL::prefetch</definition>
+        <argsstring>(size_t no) const final</argsstring>
+        <name>prefetch</name>
+        <qualifiedname>faiss::FAISS_FINAL::prefetch</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a1bdadd9c5d57e9cd57c4756244d8db8a">prefetch</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>no</declname>
+        </param>
+        <briefdescription>
+<para>prefetch flag #no </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="102" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="102" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::FAISS_FINAL::advance</definition>
+        <argsstring>() final</argsstring>
+        <name>advance</name>
+        <qualifiedname>faiss::FAISS_FINAL::advance</qualifiedname>
+        <reimplements refid="structfaiss_1_1VisitedTable_1a2ed7c3421829bf16a2127f6353f38ded">advance</reimplements>
+        <briefdescription>
+<para>reset all flags to false </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="106" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &gt;</type>
+        <definition>static std::unique_ptr&lt; VisitedTable &gt; faiss::VisitedTable::create</definition>
+        <argsstring>(size_t size, std::optional&lt; bool &gt; use_hashset=std::nullopt)</argsstring>
+        <name>create</name>
+        <qualifiedname>faiss::VisitedTable::create</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; bool &gt;</type>
+          <declname>use_hashset</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Factory method to create appropriate implementation. If use_hashset is nullopt, the use of a hashset will be determined by size &gt;= visited_table_hashset_threshold. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="48" column="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Set-based implementation using unordered_set. O(1) to construct and O(visits) to advance.</para>
+<para>Vector-based implementation using a versioned byte array. Faster for <ref refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" kindref="member">get()</ref>/set(), but O(size) to initialize. <ref refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" kindref="member">advance()</ref> is O(1) except every 250 calls, which are O(size). </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::FAISS_FINAL</label>
+        <link refid="structfaiss_1_1FAISS__FINAL"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::VisitedTable</label>
+        <link refid="structfaiss_1_1VisitedTable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::FAISS_FINAL</label>
+        <link refid="structfaiss_1_1FAISS__FINAL"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::VisitedTable</label>
+        <link refid="structfaiss_1_1VisitedTable"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/VisitedTable.h" line="55" column="1" bodyfile="faiss/impl/VisitedTable.h" bodystart="55" bodyend="79"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>advance</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>advance</name></member>
+      <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>create</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>get</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>get</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a56fbff56b3bc1ab15feb068b6f44962c" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>prefetch</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a784a78872664a21e6973edffeb61923e" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>prefetch</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1adf297c1e5bdb411b6d8911bb1d76840f" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>reserve</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>set</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>set</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a27dadab3fa96499ad6c0527455b6f546" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>visited</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a7866b8c0fb1ae3cfac5d3b5661ed3088" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>visited_set</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a2eb121b52f1449546505f0e258ccf324" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>VisitedTableSet</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a1e3850e2905a3e8c4c7f068ab663739e" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>VisitedTableVector</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1ae1fdfc67e5469017ba607daab1ecd160" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>visno</name></member>
+      <member refid="structfaiss_1_1VisitedTable_1a5e90e68438c6bf2deb548a00bb1789cd" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>~VisitedTable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

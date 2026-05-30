@@ -41,6 +41,7 @@
     <innerclass refid="structfaiss_1_1ElementOpIP" prot="public">faiss::ElementOpIP</innerclass>
     <innerclass refid="structfaiss_1_1ElementOpL2" prot="public">faiss::ElementOpL2</innerclass>
     <innerclass refid="structfaiss_1_1EnumeratedVectors" prot="public">faiss::EnumeratedVectors</innerclass>
+    <innerclass refid="structfaiss_1_1FAISS__FINAL" prot="public">faiss::FAISS_FINAL</innerclass>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
     <innerclass refid="structfaiss_1_1FaissIDFilter" prot="public">faiss::FaissIDFilter</innerclass>
     <innerclass refid="structfaiss_1_1FaissResultsAllocator" prot="public">faiss::FaissResultsAllocator</innerclass>
@@ -238,7 +239,7 @@
     <innerclass refid="structfaiss_1_1MatrixStats" prot="public">faiss::MatrixStats</innerclass>
     <innerclass refid="structfaiss_1_1MaybeOwnedVector" prot="public">faiss::MaybeOwnedVector</innerclass>
     <innerclass refid="structfaiss_1_1MaybeOwnedVectorOwner" prot="public">faiss::MaybeOwnedVectorOwner</innerclass>
-    <innerclass refid="structfaiss_1_1MinimaxHeap" prot="public">faiss::MinimaxHeap</innerclass>
+    <innerclass refid="structfaiss_1_1MinimaxHeapT" prot="public">faiss::MinimaxHeapT</innerclass>
     <innerclass refid="structfaiss_1_1MmappedFileMappingOwner" prot="public">faiss::MmappedFileMappingOwner</innerclass>
     <innerclass refid="structfaiss_1_1MultiIndexQuantizer" prot="public">faiss::MultiIndexQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1MultiIndexQuantizer2" prot="public">faiss::MultiIndexQuantizer2</innerclass>
@@ -374,6 +375,7 @@
     <innernamespace refid="namespacefaiss_1_1detail">faiss::detail</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu__metal">faiss::gpu_metal</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1hnsw__detail">faiss::hnsw_detail</innernamespace>
     <innernamespace refid="namespacefaiss_1_1ivflib">faiss::ivflib</innernamespace>
     <innernamespace refid="namespacefaiss_1_1lsq">faiss::lsq</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nn">faiss::nn</innernamespace>
@@ -1261,6 +1263,20 @@
         </inbodydescription>
         <location file="faiss/impl/binary_hamming/dispatch.h" line="30" column="1" bodyfile="faiss/impl/binary_hamming/dispatch.h" bodystart="30" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="typedef" id="namespacefaiss_1a14d25fb8346f9ea48c8ec247e162ef2b" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeapT</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int32_t &gt; &gt;</type>
+        <definition>using faiss::MinimaxHeap = typedef MinimaxHeapT&lt;CMax&lt;float, int32_t&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>MinimaxHeap</name>
+        <qualifiedname>faiss::MinimaxHeap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="30" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a33b1dcce3a5a4c296a1f4553c3299ddd" prot="public" static="no">
         <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandlerUnordered</ref>&lt; float, <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> &gt;</type>
         <definition>typedef ResultHandlerUnordered&lt; float, idx_t &gt; faiss::ResultHandler</definition>
@@ -1499,7 +1515,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="251" column="28" declfile="faiss/impl/HNSW.h" declline="251" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="282" column="28" declfile="faiss/impl/HNSW.h" declline="282" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -1666,7 +1682,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="22" column="25" declfile="faiss/impl/VisitedTable.h" declline="22" declcolumn="25"/>
+        <location file="faiss/impl/VisitedTable.h" line="23" column="25" declfile="faiss/impl/VisitedTable.h" declline="23" declcolumn="25"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
@@ -5606,49 +5622,29 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="65" bodyend="88"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a5be80d29ca0583f942d3ccf479c30610" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class HC_</type>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
         <type>int</type>
-        <definition>int faiss::search_from_candidates</definition>
-        <argsstring>(const HNSW &amp;hnsw, DistanceComputer &amp;qdis, ResultHandler &amp;res, MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
-        <name>search_from_candidates</name>
-        <qualifiedname>faiss::search_from_candidates</qualifiedname>
+        <definition>int faiss::pop_min_tpl</definition>
+        <argsstring>(MinimaxHeapT&lt; HC_ &gt; *heap, float *vmin_out)</argsstring>
+        <name>pop_min_tpl</name>
+        <qualifiedname>faiss::pop_min_tpl</qualifiedname>
         <param>
-          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
-          <declname>hnsw</declname>
+          <type><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeapT</ref>&lt; HC_ &gt; *</type>
+          <declname>heap</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
-          <declname>qdis</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>res</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref> &amp;</type>
-          <declname>candidates</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
-          <declname>vt</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
-          <declname>stats</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>level</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>nres_in</declname>
-          <defval>0</defval>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
+          <type>float *</type>
+          <declname>vmin_out</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -5656,183 +5652,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="253" column="5" declfile="faiss/impl/HNSW.h" declline="253" declcolumn="5"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a03dfdaba71e91b32059e59ccf4e722a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int</type>
-        <definition>int faiss::search_from_candidates_panorama</definition>
-        <argsstring>(const HNSW &amp;hnsw, const IndexHNSW *index, DistanceComputer &amp;qdis, ResultHandler &amp;res, MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
-        <name>search_from_candidates_panorama</name>
-        <qualifiedname>faiss::search_from_candidates_panorama</qualifiedname>
-        <param>
-          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
-          <declname>hnsw</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> *</type>
-          <declname>index</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
-          <declname>qdis</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>res</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref> &amp;</type>
-          <declname>candidates</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
-          <declname>vt</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
-          <declname>stats</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>level</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>nres_in</declname>
-          <defval>0</defval>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Equivalent to <computeroutput>search_from_candidates</computeroutput>, but applies pruning with progressive refinement bounds. This is used in <computeroutput><ref refid="structfaiss_1_1IndexHNSWFlatPanorama" kindref="compound">IndexHNSWFlatPanorama</ref></computeroutput> to improve the search performance for higher dimensional vectors. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="268" column="5" declfile="faiss/impl/HNSW.h" declline="268" declcolumn="5"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
-        <definition>HNSWStats faiss::greedy_update_nearest</definition>
-        <argsstring>(const HNSW &amp;hnsw, DistanceComputer &amp;qdis, int level, HNSW::storage_idx_t &amp;nearest, float &amp;d_nearest)</argsstring>
-        <name>greedy_update_nearest</name>
-        <qualifiedname>faiss::greedy_update_nearest</qualifiedname>
-        <param>
-          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
-          <declname>hnsw</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
-          <declname>qdis</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>level</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref> &amp;</type>
-          <declname>nearest</declname>
-        </param>
-        <param>
-          <type>float &amp;</type>
-          <declname>d_nearest</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="280" column="11" declfile="faiss/impl/HNSW.h" declline="280" declcolumn="11"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>std::priority_queue&lt; HNSW::Node &gt;</type>
-        <definition>std::priority_queue&lt; HNSW::Node &gt; faiss::search_from_candidate_unbounded</definition>
-        <argsstring>(const HNSW &amp;hnsw, const HNSW::Node &amp;node, DistanceComputer &amp;qdis, int ef, VisitedTable *vt, HNSWStats &amp;stats)</argsstring>
-        <name>search_from_candidate_unbounded</name>
-        <qualifiedname>faiss::search_from_candidate_unbounded</qualifiedname>
-        <param>
-          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
-          <declname>hnsw</declname>
-        </param>
-        <param>
-          <type>const HNSW::Node &amp;</type>
-          <declname>node</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
-          <declname>qdis</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>ef</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> *</type>
-          <declname>vt</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
-          <declname>stats</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="287" column="21" declfile="faiss/impl/HNSW.h" declline="287" declcolumn="21"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::search_neighbors_to_add</definition>
-        <argsstring>(HNSW &amp;hnsw, DistanceComputer &amp;qdis, std::priority_queue&lt; HNSW::NodeDistCloser &gt; &amp;results, int entry_point, float d_entry_point, int level, VisitedTable &amp;vt, bool reference_version=false)</argsstring>
-        <name>search_neighbors_to_add</name>
-        <qualifiedname>faiss::search_neighbors_to_add</qualifiedname>
-        <param>
-          <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
-          <declname>hnsw</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
-          <declname>qdis</declname>
-        </param>
-        <param>
-          <type>std::priority_queue&lt; <ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">HNSW::NodeDistCloser</ref> &gt; &amp;</type>
-          <declname>results</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>entry_point</declname>
-        </param>
-        <param>
-          <type>float</type>
-          <declname>d_entry_point</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>level</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
-          <declname>vt</declname>
-        </param>
-        <param>
-          <type>bool</type>
-          <declname>reference_version</declname>
-          <defval>false</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="295" column="6" declfile="faiss/impl/HNSW.h" declline="295" declcolumn="6"/>
+        <location file="faiss/impl/hnsw/MinimaxHeap.h" line="111" column="5" declfile="faiss/impl/hnsw/MinimaxHeap.h" declline="111" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

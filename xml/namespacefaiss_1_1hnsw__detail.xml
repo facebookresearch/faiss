@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1hnsw__detail" kind="namespace" language="C++">
+    <compoundname>faiss::hnsw_detail</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespacefaiss_1_1hnsw__detail_1af3eff51c5417666b33dba5af2175b3eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::hnsw_detail::search_from_candidates</definition>
+        <argsstring>(const HNSW &amp;hnsw, DistanceComputer &amp;qdis, ResultHandler &amp;res, MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
+        <name>search_from_candidates</name>
+        <qualifiedname>faiss::hnsw_detail::search_from_candidates</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeap</ref> &amp;</type>
+          <declname>candidates</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
+          <declname>stats</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nres_in</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="289" column="5" declfile="faiss/impl/HNSW.h" declline="289" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1hnsw__detail_1aea80280a8c656ea616f7a1bd61be1396" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::hnsw_detail::search_from_candidates_panorama</definition>
+        <argsstring>(const HNSW &amp;hnsw, const IndexHNSW *index, DistanceComputer &amp;qdis, ResultHandler &amp;res, MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
+        <name>search_from_candidates_panorama</name>
+        <qualifiedname>faiss::hnsw_detail::search_from_candidates_panorama</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeap</ref> &amp;</type>
+          <declname>candidates</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
+          <declname>stats</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nres_in</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Equivalent to <computeroutput>search_from_candidates</computeroutput>, but applies pruning with progressive refinement bounds. This is used in <computeroutput><ref refid="structfaiss_1_1IndexHNSWFlatPanorama" kindref="compound">IndexHNSWFlatPanorama</ref></computeroutput> to improve the search performance for higher dimensional vectors. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="304" column="5" declfile="faiss/impl/HNSW.h" declline="304" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1hnsw__detail_1ac7840c1a6339b842d31ee31bb1e053b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
+        <definition>HNSWStats faiss::hnsw_detail::greedy_update_nearest</definition>
+        <argsstring>(const HNSW &amp;hnsw, DistanceComputer &amp;qdis, int level, HNSW::storage_idx_t &amp;nearest, float &amp;d_nearest)</argsstring>
+        <name>greedy_update_nearest</name>
+        <qualifiedname>faiss::hnsw_detail::greedy_update_nearest</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref> &amp;</type>
+          <declname>nearest</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>d_nearest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="316" column="11" declfile="faiss/impl/HNSW.h" declline="316" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1hnsw__detail_1a4c5c6a8cf8fc9a87dd39507ed298ef7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::priority_queue&lt; HNSW::Node &gt;</type>
+        <definition>std::priority_queue&lt; HNSW::Node &gt; faiss::hnsw_detail::search_from_candidate_unbounded</definition>
+        <argsstring>(const HNSW &amp;hnsw, const HNSW::Node &amp;node, DistanceComputer &amp;qdis, int ef, VisitedTable *vt, HNSWStats &amp;stats)</argsstring>
+        <name>search_from_candidate_unbounded</name>
+        <qualifiedname>faiss::hnsw_detail::search_from_candidate_unbounded</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type>const HNSW::Node &amp;</type>
+          <declname>node</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>ef</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> *</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
+          <declname>stats</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="323" column="21" declfile="faiss/impl/HNSW.h" declline="323" declcolumn="21"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1hnsw__detail_1aaab8243020afb6d49d351f6151a33ec7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::hnsw_detail::search_neighbors_to_add</definition>
+        <argsstring>(HNSW &amp;hnsw, DistanceComputer &amp;qdis, std::priority_queue&lt; HNSW::NodeDistCloser &gt; &amp;results, int entry_point, float d_entry_point, int level, VisitedTable &amp;vt, bool reference_version=false)</argsstring>
+        <name>search_neighbors_to_add</name>
+        <qualifiedname>faiss::hnsw_detail::search_neighbors_to_add</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type>std::priority_queue&lt; <ref refid="structfaiss_1_1HNSW_1_1NodeDistCloserT" kindref="compound">HNSW::NodeDistCloser</ref> &gt; &amp;</type>
+          <declname>results</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>entry_point</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>d_entry_point</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>reference_version</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="331" column="6" declfile="faiss/impl/HNSW.h" declline="331" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Internal <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> algorithm helpers. These are not part of the public API; they are exposed here only so that unit tests (and a few cross-TU callers such as the <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> search variant) can reach them. </para>
+    </detaileddescription>
+    <location file="faiss/impl/HNSW.h" line="287" column="1"/>
+  </compounddef>
+</doxygen>
