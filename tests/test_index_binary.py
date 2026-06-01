@@ -384,7 +384,9 @@ class TestReplicasAndShards(unittest.TestCase):
         Dref, Iref = index_ref.search(xq, 10)
 
         nrep = 5
-        index = faiss.IndexBinaryReplicas()
+        # threaded=False: avoid one WorkerThread per replica. The threaded
+        # path has hung in CI on aarch64 RE workers (see T272565319).
+        index = faiss.IndexBinaryReplicas(False)
         for _i in range(nrep):
             sub_idx = faiss.IndexBinaryFlat(d)
             sub_idx.add(xb)
@@ -396,7 +398,7 @@ class TestReplicasAndShards(unittest.TestCase):
         self.assertTrue((Dref == D).all())
         self.assertTrue((Iref == I).all())
 
-        index2 = faiss.IndexBinaryReplicas()
+        index2 = faiss.IndexBinaryReplicas(False)
         for _i in range(nrep):
             sub_idx = faiss.IndexBinaryFlat(d)
             index2.addIndex(sub_idx)

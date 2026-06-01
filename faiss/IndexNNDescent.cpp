@@ -126,7 +126,7 @@ void IndexNNDescent::search(
             std::unique_ptr<DistanceComputer> dis;
             std::unique_ptr<VisitedTable> vt;
             try {
-                vt = std::make_unique<VisitedTable>(ntotal);
+                vt = VisitedTable::create(ntotal);
                 dis.reset(storage_distance_computer(storage));
             } catch (...) {
                 omp_capture_exception(ex, [&] { interrupt = true; });
