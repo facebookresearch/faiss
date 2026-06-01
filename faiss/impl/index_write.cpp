@@ -1044,6 +1044,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs->prune_to);
         WRITE1(svs->use_full_search_history);
         WRITE1(svs->storage_kind);
+        WRITE1(svs->is_static);
 
         if (lean != nullptr) {
             WRITE1(lean->leanvec_d);
