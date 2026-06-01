@@ -34,7 +34,8 @@ struct IndexSVSVamanaLVQ : IndexSVSVamana {
             idx_t d,
             size_t degree,
             MetricType metric = METRIC_L2,
-            SVSStorageKind storage = SVSStorageKind::SVS_LVQ4x0);
+            SVSStorageKind storage = SVSStorageKind::SVS_LVQ4x0,
+            bool is_static = false);
 
     ~IndexSVSVamanaLVQ() override = default;
 };

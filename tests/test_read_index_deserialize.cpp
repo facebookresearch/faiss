@@ -4076,6 +4076,7 @@ TEST(ReadIndexDeserialize, SVSVamanaInvalidStreamThrows) {
     push_val<size_t>(buf, 28);  // prune_to
     push_val<bool>(buf, false); // use_full_search_history
     push_val<int>(buf, 0);      // storage_kind (SVS_Float16)
+    push_val<bool>(buf, false); // is_static
     push_val<bool>(buf, true); // initialized = true → triggers deserialize_impl
     // Provide garbage SVS stream data — load should fail gracefully.
     for (int i = 0; i < 256; i++) {
