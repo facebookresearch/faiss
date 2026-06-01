@@ -2645,10 +2645,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool initialized;
         READ1_BOOL(initialized);
         if (initialized) {
-            faiss::svs_io::ReaderStreambuf rbuf(
-                    f, get_deserialization_vector_byte_limit());
-            std::istream is(&rbuf);
-            svs->deserialize_impl(is);
+            if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC &&
+                svs->is_static) {
+                // Use memory-mapped I/O for static indices
+                auto* mf = dynamic_cast<MappedFileIOReader*>(f);
+                FAISS_THROW_IF_NOT_MSG(
+                        mf,
+                        "IO_FLAG_MMAP_IFC flag set but IOReader is not "
+                        "MappedFileIOReader");
+                svs->map_to(mf);
+            } else {
+                // Use standard deserialization
+                faiss::svs_io::ReaderStreambuf rbuf(
+                        f, get_deserialization_vector_byte_limit());
+                std::istream is(&rbuf);
+                svs->deserialize_impl(is);
+            }
         }
         if (h == fourcc("ISVL")) {
             bool trained;
@@ -2677,10 +2689,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool initialized;
         READ1_BOOL(initialized);
         if (initialized) {
-            faiss::svs_io::ReaderStreambuf rbuf(
-                    f, get_deserialization_vector_byte_limit());
-            std::istream is(&rbuf);
-            svs->deserialize_impl(is);
+            if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+                // Use memory-mapped I/O for static indices
+                auto* mf = dynamic_cast<MappedFileIOReader*>(f);
+                FAISS_THROW_IF_NOT_MSG(
+                        mf,
+                        "IO_FLAG_MMAP_IFC flag set but IOReader is not "
+                        "MappedFileIOReader");
+                svs->map_to(mf);
+            } else {
+                // Use standard deserialization
+                faiss::svs_io::ReaderStreambuf rbuf(
+                        f, get_deserialization_vector_byte_limit());
+                std::istream is(&rbuf);
+                svs->deserialize_impl(is);
+            }
         }
         idx = std::move(svs);
     } else if (

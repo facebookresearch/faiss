@@ -25,6 +25,7 @@
 #include <faiss/svs/IndexSVSVamana.h>
 
 #include <faiss/Index.h>
+#include <faiss/impl/mapped_io.h>
 
 #include <svs/runtime/api_defs.h>
 #include <svs/runtime/dynamic_vamana_index.h>
@@ -187,6 +188,7 @@ void IndexSVSVamana::reset() {
     }
     stored_vectors.clear();
     stored_vectors_valid = true;
+    mmap_owner.reset();  // Release the memory mapping
     is_trained = false;
     ntotal = 0;
 }
@@ -361,6 +363,61 @@ svs_runtime::DynamicVamanaIndex* IndexSVSVamana::dynamic_impl() const {
             is_static, "Operation not supported on a static Vamana index.");
     FAISS_THROW_IF_NOT(impl);
     return static_cast<svs_runtime::DynamicVamanaIndex*>(impl);
+}
+
+void IndexSVSVamana::map_to(MappedFileIOReader* mf) {
+    FAISS_THROW_IF_MSG(
+            !is_static,
+            "map_to() is only supported for static Vamana indices.");
+    FAISS_THROW_IF_MSG(impl, "Cannot map_to: SVS index already loaded.");
+    FAISS_THROW_IF_NOT(mf);
+
+    // Get current position and remaining size
+    size_t pos = mf->pos;
+    size_t size_to_end = mf->mmap_owner->size() - pos;
+
+    // Get memory-mapped pointer
+    void* data = nullptr;
+    size_t actual_size = mf->mmap(&data, 1, size_to_end);
+    FAISS_THROW_IF_NOT_FMT(
+            actual_size == size_to_end,
+            "mmap() returned unexpected size: %zu (expected %zu)",
+            actual_size,
+            size_to_end);
+
+    auto svs_metric = to_svs_metric(metric_type);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+
+    size_t read_bytes = 0;
+    auto status = svs_runtime::VamanaIndex::map_to_memory(
+            &impl,
+            data,
+            actual_size,
+            svs_metric,
+            svs_storage_kind,
+            &read_bytes);
+
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+
+    FAISS_THROW_IF_NOT_FMT(
+            read_bytes > 0 && read_bytes <= size_to_end,
+            "VamanaIndex::map_to_memory returned invalid read_bytes: %zu",
+            read_bytes);
+
+    // Store the mmap_owner to keep the memory mapping alive for the lifetime
+    // of this index. This ensures the memory buffer remains mapped while SVS
+    // is using the pointers we obtained from it.
+    mmap_owner = mf->mmap_owner;
+
+    // Adjust the position to account for the actual bytes read by SVS.
+    // The mmap() call advanced the position by size_to_end, but SVS may have
+    // consumed less data. We need to set it to the correct position for
+    // subsequent read operations.
+    mf->pos = pos + read_bytes;
+
+    is_trained = true;
 }
 
 } // namespace faiss
