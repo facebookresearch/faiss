@@ -47,12 +47,17 @@ HNSWStats hnsw_stats;
 
 namespace {
 
+// Returns the storage's native distance computer. For similarity metrics
+// (e.g. METRIC_INNER_PRODUCT), distance values are real similarity scores
+// (larger = better); HNSW handles the ordering via `hnsw.is_similarity`.
+//
+// NOTE: callers that drive the legacy max-heap-only code paths (notably
+// `search_from_candidates_2` in the IndexHNSW2Level mixed search) cannot
+// consume similarity scores directly; they assume smaller-is-better.
+// Those paths only fire for the (default) L2 IndexHNSW2Level + Index2Layer
+// configuration today, so passing the native DC is safe in practice.
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (is_similarity_metric(storage->metric_type)) {
-        return new NegativeDistanceComputer(storage->get_distance_computer());
-    } else {
-        return storage->get_distance_computer();
-    }
+    return storage->get_distance_computer();
 }
 
 void hnsw_add_vertices(
@@ -145,7 +150,8 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
-                VisitedTable vt(ntotal, hnsw.use_visited_hashset);
+                std::unique_ptr<VisitedTable> vt =
+                        VisitedTable::create(ntotal, hnsw.use_visited_hashset);
 
                 std::unique_ptr<DistanceComputer> dis(
                         storage_distance_computer(index_hnsw.storage));
@@ -171,7 +177,7 @@ void hnsw_add_vertices(
                             pt_level,
                             pt_id,
                             locks,
-                            vt,
+                            *vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (do_display && i - i0 > prev_display + 10000) {
@@ -213,13 +219,16 @@ void hnsw_add_vertices(
  **************************************************************/
 
 IndexHNSW::IndexHNSW(int d_in, int M, MetricType metric)
-        : Index(d_in, metric), hnsw(M) {}
+        : Index(d_in, metric), hnsw(M) {
+    hnsw.is_similarity = is_similarity_metric(metric);
+}
 
 IndexHNSW::IndexHNSW(Index* storage_in, int M)
         : Index(storage_in->d, storage_in->metric_type),
           hnsw(M),
           storage(storage_in) {
     metric_arg = storage->metric_arg;
+    hnsw.is_similarity = is_similarity_metric(metric_type);
 }
 
 IndexHNSW::~IndexHNSW() {
@@ -276,7 +285,7 @@ void hnsw_search(
                     res;
             std::unique_ptr<DistanceComputer> dis;
             try {
-                vt = std::make_unique<VisitedTable>(
+                vt = VisitedTable::create(
                         index->ntotal, hnsw.use_visited_hashset);
                 res = std::make_unique<
                         typename BlockResultHandler::SingleResultHandler>(bres);
@@ -325,16 +334,14 @@ void IndexHNSW::search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
-    using RH = HeapBlockResultHandler<HNSW::C>;
-    RH bres(n, distances, labels, k);
-
-    hnsw_search(this, n, x, bres, params);
-
     if (is_similarity_metric(this->metric_type)) {
-        // we need to revert the negated distances
-        for (idx_t i = 0; i < k * n; i++) {
-            distances[i] = -distances[i];
-        }
+        using RH = HeapBlockResultHandler<HNSW::C_similarity>;
+        RH bres(n, distances, labels, k);
+        hnsw_search(this, n, x, bres, params);
+    } else {
+        using RH = HeapBlockResultHandler<HNSW::C_distance>;
+        RH bres(n, distances, labels, k);
+        hnsw_search(this, n, x, bres, params);
     }
 }
 
@@ -344,16 +351,14 @@ void IndexHNSW::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    using RH = RangeSearchBlockResultHandler<HNSW::C>;
-    RH bres(result, is_similarity_metric(metric_type) ? -radius : radius);
-
-    hnsw_search(this, n, x, bres, params);
-
-    if (is_similarity_metric(this->metric_type)) {
-        // we need to revert the negated distances
-        for (size_t i = 0; i < result->lims[result->nq]; i++) {
-            result->distances[i] = -result->distances[i];
-        }
+    if (is_similarity_metric(metric_type)) {
+        using RH = RangeSearchBlockResultHandler<HNSW::C_similarity>;
+        RH bres(result, radius);
+        hnsw_search(this, n, x, bres, params);
+    } else {
+        using RH = RangeSearchBlockResultHandler<HNSW::C_distance>;
+        RH bres(result, radius);
+        hnsw_search(this, n, x, bres, params);
     }
 }
 
@@ -361,8 +366,13 @@ void IndexHNSW::search1(
         const float* x,
         ResultHandler& handler,
         SearchParameters* params) const {
-    SingleQueryBlockResultHandler<HNSW::C, false> bres(handler);
-    hnsw_search(this, 1, x, bres, params);
+    if (is_similarity_metric(metric_type)) {
+        SingleQueryBlockResultHandler<HNSW::C_similarity, false> bres(handler);
+        hnsw_search(this, 1, x, bres, params);
+    } else {
+        SingleQueryBlockResultHandler<HNSW::C_distance, false> bres(handler);
+        hnsw_search(this, 1, x, bres, params);
+    }
 }
 
 void IndexHNSW::add(idx_t n, const float* x) {
@@ -459,63 +469,64 @@ void IndexHNSW::search_level_0(
 
     size_t hnsw_ntotal = hnsw.levels.size();
 
-    using RH = HeapBlockResultHandler<HNSW::C>;
-    RH bres(n, distances, labels, k);
+    auto run = [&]<class C>() {
+        using RH = HeapBlockResultHandler<C>;
+        RH bres(n, distances, labels, k);
 
-    std::exception_ptr ex;
-    std::atomic<bool> interrupt{false};
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 #pragma omp parallel
-    {
-        std::unique_ptr<DistanceComputer> qdis;
-        HNSWStats search_stats;
-        std::unique_ptr<VisitedTable> vt;
-        std::unique_ptr<RH::SingleResultHandler> res;
-        try {
-            qdis.reset(storage_distance_computer(storage));
-            vt = std::make_unique<VisitedTable>(
-                    hnsw_ntotal, hnsw.use_visited_hashset);
-            res = std::make_unique<RH::SingleResultHandler>(bres);
-        } catch (...) {
-            omp_capture_exception(ex, [&] { interrupt = true; });
-        }
-
-#pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            if (interrupt.load(std::memory_order_relaxed)) {
-                continue;
-            }
+        {
+            std::unique_ptr<DistanceComputer> qdis;
+            HNSWStats search_stats;
+            std::unique_ptr<VisitedTable> vt;
+            std::unique_ptr<typename RH::SingleResultHandler> res;
             try {
-                res->begin(i);
-                qdis->set_query(x + i * d);
-
-                hnsw.search_level_0(
-                        *qdis.get(),
-                        *res,
-                        nprobe,
-                        nearest + i * nprobe,
-                        nearest_d + i * nprobe,
-                        search_type,
-                        search_stats,
-                        *vt,
-                        params);
-                res->end();
-                vt->advance();
+                qdis.reset(storage_distance_computer(storage));
+                vt = VisitedTable::create(
+                        hnsw_ntotal, hnsw.use_visited_hashset);
+                res = std::make_unique<typename RH::SingleResultHandler>(bres);
             } catch (...) {
                 omp_capture_exception(ex, [&] { interrupt = true; });
             }
-        }
+
+#pragma omp for
+            for (idx_t i = 0; i < n; i++) {
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
+                }
+                try {
+                    res->begin(i);
+                    qdis->set_query(x + i * d);
+
+                    hnsw.search_level_0(
+                            *qdis.get(),
+                            *res,
+                            nprobe,
+                            nearest + i * nprobe,
+                            nearest_d + i * nprobe,
+                            search_type,
+                            search_stats,
+                            *vt,
+                            params);
+                    res->end();
+                    vt->advance();
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
+            }
 #pragma omp critical
-        {
-            hnsw_stats.combine(search_stats);
+            {
+                hnsw_stats.combine(search_stats);
+            }
         }
-    }
-    omp_rethrow_if_exception(ex);
+        omp_rethrow_if_exception(ex);
+    };
+
     if (is_similarity_metric(this->metric_type)) {
-// we need to revert the negated distances
-#pragma omp parallel for
-        for (int64_t i = 0; i < k * n; i++) {
-            distances[i] = -distances[i];
-        }
+        run.template operator()<HNSW::C_similarity>();
+    } else {
+        run.template operator()<HNSW::C_distance>();
     }
 }
 
@@ -569,7 +580,8 @@ void IndexHNSW::init_level_0_from_entry_points(
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
+        std::unique_ptr<VisitedTable> vt =
+                VisitedTable::create(ntotal, hnsw.use_visited_hashset);
 
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
@@ -583,7 +595,7 @@ void IndexHNSW::init_level_0_from_entry_points(
             dis->set_query(vec.data());
 
             hnsw.add_links_starting_from(
-                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks, vt);
+                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks, *vt);
 
             if (verbose && i % 10000 == 0) {
                 printf("  %d / %d\r", i, n);
@@ -824,7 +836,7 @@ int search_from_candidates_2(
         idx_t* I,
         float* D,
         MinimaxHeap& candidates,
-        VisitedTable& vt,
+        VisitedTableVector& vt,
         HNSWStats& stats,
         int level,
         int nres_in = 0) {
@@ -934,8 +946,7 @@ void IndexHNSW2Level::search(
             constexpr int candidates_size = 1;
             std::unique_ptr<MinimaxHeap> candidates;
             try {
-                vt = std::make_unique<VisitedTable>(
-                        ntotal, /*use_hashset=*/false);
+                vt = VisitedTable::create(ntotal, /*use_hashset=*/false);
                 dis.reset(storage_distance_computer(storage));
                 candidates = std::make_unique<MinimaxHeap>(candidates_size);
             } catch (...) {
@@ -987,7 +998,7 @@ void IndexHNSW2Level::search(
                             idxi,
                             simi,
                             *candidates,
-                            *vt,
+                            static_cast<VisitedTableVector&>(*vt),
                             search_stats,
                             0,
                             k);
@@ -1101,28 +1112,40 @@ void IndexHNSWCagra::search(
         std::vector<storage_idx_t> nearest(n);
         std::vector<float> nearest_d(n);
 
+        auto pick_entrypoints = [&]<class C>() {
 #pragma omp parallel for
-        for (idx_t i = 0; i < n; i++) {
-            std::unique_ptr<DistanceComputer> dis(
-                    storage_distance_computer(this->storage));
-            dis->set_query(x + i * d);
-            nearest[i] = -1;
-            nearest_d[i] = std::numeric_limits<float>::max();
+            for (idx_t i = 0; i < n; i++) {
+                std::unique_ptr<DistanceComputer> dis(
+                        storage_distance_computer(this->storage));
+                dis->set_query(x + i * d);
+                nearest[i] = -1;
+                // C::neutral() is the "worst possible" value: +inf for
+                // CMax (distance) and -inf for CMin (similarity). The
+                // first real candidate will always be strictly better.
+                nearest_d[i] = C::neutral();
 
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal - 1);
+                std::random_device rd;
+                std::mt19937 gen(rd());
+                std::uniform_int_distribution<idx_t> distrib(
+                        0, this->ntotal - 1);
 
-            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                auto idx = distrib(gen);
-                auto distance = (*dis)(idx);
-                if (distance < nearest_d[i]) {
-                    nearest[i] = static_cast<storage_idx_t>(idx);
-                    nearest_d[i] = distance;
+                for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                    auto idx = distrib(gen);
+                    auto distance = (*dis)(idx);
+                    if (C::cmp(nearest_d[i], distance)) {
+                        nearest[i] = static_cast<storage_idx_t>(idx);
+                        nearest_d[i] = distance;
+                    }
                 }
+                FAISS_THROW_IF_NOT_MSG(
+                        nearest[i] >= 0, "Could not find a valid entrypoint.");
             }
-            FAISS_THROW_IF_NOT_MSG(
-                    nearest[i] >= 0, "Could not find a valid entrypoint.");
+        };
+
+        if (is_similarity_metric(metric_type)) {
+            pick_entrypoints.template operator()<HNSW::C_similarity>();
+        } else {
+            pick_entrypoints.template operator()<HNSW::C_distance>();
         }
 
         search_level_0(
@@ -1150,56 +1173,63 @@ void IndexHNSWCagra::range_search(
         return;
     }
 
-    const HNSW& hnsw = this->hnsw;
-    size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
-    float threshold = is_similarity_metric(metric_type) ? -radius : radius;
-    RangeSearchPartialResult pres(result);
+    auto run = [&]<class C>() {
+        const HNSW& hnsw = this->hnsw;
+        size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+        RangeSearchPartialResult pres(result);
 
-    for (idx_t i = 0; i < n; i++) {
-        std::unique_ptr<DistanceComputer> dis(
-                storage_distance_computer(storage));
-        dis->set_query(x + i * d);
+        for (idx_t i = 0; i < n; i++) {
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(storage));
+            dis->set_query(x + i * d);
 
-        storage_idx_t nearest = -1;
-        float nearest_d = std::numeric_limits<float>::max();
+            storage_idx_t nearest = -1;
+            // C::neutral() is the "worst possible" value under C: +inf for
+            // CMax (distance) and -inf for CMin (similarity). The first
+            // real candidate will always be strictly better.
+            float nearest_d = C::neutral();
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
 
-        for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-            auto idx = distrib(gen);
-            auto distance = (*dis)(idx);
-            if (distance < nearest_d) {
-                nearest = idx;
-                nearest_d = distance;
+            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                auto idx = distrib(gen);
+                auto distance = (*dis)(idx);
+                // C::cmp(nearest_d, distance) is true iff distance is
+                // strictly better than the current nearest_d.
+                if (C::cmp(nearest_d, distance)) {
+                    nearest = idx;
+                    nearest_d = distance;
+                }
             }
+            FAISS_THROW_IF_NOT_MSG(
+                    nearest >= 0, "Could not find a valid entrypoint.");
+
+            RangeQueryResult& qres = pres.new_result(i);
+            RangeResultHandler<C> res(&qres, radius);
+            std::unique_ptr<VisitedTable> vt =
+                    VisitedTable::create(ntotal, hnsw.use_visited_hashset);
+            HNSWStats stats;
+            hnsw.search_level_0(
+                    *dis, res, 1, &nearest, &nearest_d, 1, stats, *vt, params);
+            n1 += stats.n1;
+            n2 += stats.n2;
+            ndis += stats.ndis;
+            nhops += stats.nhops;
         }
-        FAISS_THROW_IF_NOT_MSG(
-                nearest >= 0, "Could not find a valid entrypoint.");
 
-        RangeQueryResult& qres = pres.new_result(i);
-        RangeResultHandler<HNSW::C> res(&qres, threshold);
-        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
-        HNSWStats stats;
-        hnsw.search_level_0(
-                *dis, res, 1, &nearest, &nearest_d, 1, stats, vt, params);
-        n1 += stats.n1;
-        n2 += stats.n2;
-        ndis += stats.ndis;
-        nhops += stats.nhops;
-    }
+        pres.set_lims();
+        result->do_allocation();
+        pres.copy_result();
 
-    pres.set_lims();
-    result->do_allocation();
-    pres.copy_result();
-
-    hnsw_stats.combine({n1, n2, ndis, nhops});
+        hnsw_stats.combine({n1, n2, ndis, nhops});
+    };
 
     if (is_similarity_metric(metric_type)) {
-        for (size_t i = 0; i < result->lims[result->nq]; i++) {
-            result->distances[i] = -result->distances[i];
-        }
+        run.template operator()<HNSW::C_similarity>();
+    } else {
+        run.template operator()<HNSW::C_distance>();
     }
 }
 

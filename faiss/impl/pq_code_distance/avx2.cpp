@@ -13,6 +13,8 @@
 #include <faiss/impl/pq_code_distance/pq_code_distance-avx2.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/hamming_distance/hamming_computer-avx2.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
+#include <faiss/impl/pq_code_distance/pq_scan_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/PQDistanceComputer_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)

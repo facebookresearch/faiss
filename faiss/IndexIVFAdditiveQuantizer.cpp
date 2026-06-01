@@ -145,8 +145,8 @@ void IndexIVFAdditiveQuantizer::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
-    const uint8_t* code = invlists->get_single_code(list_no, offset);
-    aq->decode(code, recons, 1);
+    InvertedLists::ScopedCodes sc(invlists, list_no, offset);
+    aq->decode(sc.get(), recons, 1);
     if (by_residual) {
         std::vector<float> centroid(d);
         quantizer->reconstruct(list_no, centroid.data());

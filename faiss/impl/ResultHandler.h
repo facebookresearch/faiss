@@ -229,6 +229,7 @@ struct Top1BlockResultHandler : TopkBlockResultHandler<C, use_sel> {
 
         for (size_t i = i0; i < i1; i++) {
             this->dis_tab[i] = C::neutral();
+            this->ids_tab[i] = -1;
         }
     }
 
