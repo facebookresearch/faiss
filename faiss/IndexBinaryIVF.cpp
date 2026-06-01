@@ -22,7 +22,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/simd_dispatch.h>
@@ -257,7 +256,9 @@ void IndexBinaryIVF::reconstruct_from_offset(
         idx_t list_no,
         idx_t offset,
         uint8_t* recons) const {
-    memcpy(recons, invlists->get_single_code(list_no, offset), code_size);
+    memcpy(recons,
+           InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
+           code_size);
 }
 
 void IndexBinaryIVF::reset() {

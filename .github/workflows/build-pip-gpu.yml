@@ -3,83 +3,92 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-name: Build pip wheels
+name: Build GPU pip wheel
 
 on:
   workflow_call:
   workflow_dispatch:
 
+concurrency:
+  # One run per ref. Tag pushes are not cancelable — a half-canceled release
+  # build leaves PyPI in an inconsistent state. Branch/PR runs supersede.
+  group: gpu-pip-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+
 jobs:
-  build-wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-14, macos-15-intel, windows-2022, 2-core-ubuntu-arm]
+  build-faiss-gpu:
+    name: Build & test faiss-gpu
+    runs-on: 4-core-ubuntu-gpu-t4
+    timeout-minutes: 90
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-        with:
-          fetch-depth: 0
-          fetch-tags: true
 
-      - name: Build wheels
+      - name: Activate GPU pyproject.toml
+        # cibuildwheel + scikit-build-core both require literal pyproject.toml.
+        # Workspace is fresh per job (actions/checkout creates new tree).
+        run: cp pyproject-gpu.toml pyproject.toml
+
+      - name: Set up Python
+        # Pin host Python explicitly: the 4-core-ubuntu-gpu-t4 runner image
+        # ships a broken Python 3.14.4 in its tool cache (libpython3.14.so.1.0
+        # missing), and pypa/cibuildwheel picks that up by default.
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: '3.12'
+
+      - name: Build wheel (cibuildwheel)
         uses: pypa/cibuildwheel@ee02a1537ce3071a004a6b08c41e72f0fdc42d9a  # v3.4.0
         env:
           CIBW_BUILD_VERBOSITY: 1
 
-      - name: Upload wheels
+      - name: Upload wheel
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
-          name: wheels-${{ matrix.os }}
+          name: wheels-gpu
           path: wheelhouse/*.whl
 
-  publish:
-    name: Publish to PyPI
-    needs: [build-wheels]
+  publish-gpu:
+    name: Publish faiss-gpu to PyPI
+    needs: [build-faiss-gpu]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     environment:
       name: pypi
-      url: https://pypi.org/p/faiss-cpu
+      url: https://pypi.org/p/faiss-gpu
     permissions:
       id-token: write
       contents: read
     steps:
-      - name: Download wheel artifacts
+      - name: Download wheel
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e  # v4.1.7
         with:
+          name: wheels-gpu
           path: dist
-          pattern: wheels-*
-          merge-multiple: true
-
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc  # release/v1
         with:
           verbose: true
           attestations: false
 
-  publish-testpypi:
-    name: Publish to TestPyPI
-    needs: [build-wheels]
+  publish-testpypi-gpu:
+    name: Publish faiss-gpu to TestPyPI
+    needs: [build-faiss-gpu]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/faiss-cpu
+      url: https://test.pypi.org/p/faiss-gpu
     permissions:
       id-token: write
       contents: read
     steps:
-      - name: Download wheel artifacts
+      - name: Download wheel
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e  # v4.1.7
         with:
+          name: wheels-gpu
           path: dist
-          pattern: wheels-*
-          merge-multiple: true
-
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc  # release/v1
         with:

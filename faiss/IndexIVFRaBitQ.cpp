@@ -309,12 +309,12 @@ void IndexIVFRaBitQ::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
-    const uint8_t* code = invlists->get_single_code(list_no, offset);
+    InvertedLists::ScopedCodes sc(invlists, list_no, offset);
 
     std::vector<float> centroid(d);
     quantizer->reconstruct(list_no, centroid.data());
 
-    rabitq.decode_core(code, recons, 1, centroid.data());
+    rabitq.decode_core(sc.get(), recons, 1, centroid.data());
 }
 
 void IndexIVFRaBitQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
@@ -357,26 +357,17 @@ float IVFRaBitDistanceComputer::operator()(idx_t i) {
     uint64_t list_no = lo_listno(lo);
     uint64_t offset = lo_offset(lo);
 
-    const uint8_t* code = parent->invlists->get_single_code(list_no, offset);
+    InvertedLists::ScopedCodes sc(parent->invlists, list_no, offset);
 
     // ok, we know the appropriate cluster that we need
     std::vector<float> centroid(parent->d);
     parent->quantizer->reconstruct(list_no, centroid.data());
 
-    // compute the distance
-    float distance = 0;
-
     std::unique_ptr<FlatCodesDistanceComputer> dc(
             parent->rabitq.get_distance_computer(
                     parent->qb, centroid.data(), /*centered=*/false));
     dc->set_query(q);
-    distance = dc->distance_to_code(code);
-
-    // deallocate
-    parent->invlists->release_codes(list_no, code);
-
-    // done
-    return distance;
+    return dc->distance_to_code(sc.get());
 }
 
 float IVFRaBitDistanceComputer::symmetric_dis(idx_t /*i*/, idx_t /*j*/) {

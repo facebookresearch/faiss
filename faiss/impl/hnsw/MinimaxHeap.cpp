@@ -5,39 +5,32 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <cmath>
-
 #include <faiss/impl/hnsw/MinimaxHeap.h>
-
-#include <cassert>
 
 #include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
 
-void MinimaxHeap::push(storage_idx_t i, float v) {
-    // Treat NaN distances as infinitely far away so heap ordering is preserved.
-    if (std::isnan(v)) {
-        v = HC::neutral();
-    }
-    if (k == n) {
-        if (v >= dis[0]) {
-            return;
-        }
-        if (ids[0] != -1) {
-            --nvalid;
-        }
-        faiss::heap_pop<HC>(k--, dis.data(), ids.data());
-    }
-    faiss::heap_push<HC>(++k, dis.data(), ids.data(), v, i);
-    ++nvalid;
+// Runtime-dispatched pop_min (NONE + AVX2 + AVX512 only).
+constexpr int MINIMAX_HEAP_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
+
+template <class HC_>
+int MinimaxHeapT<HC_>::pop_min(float* vmin_out) {
+    return with_selected_simd_levels<MINIMAX_HEAP_SIMD_LEVELS>(
+            [&]<SIMDLevel SL>() {
+                return pop_min_tpl<HC_, SL>(this, vmin_out);
+            });
 }
 
-// Scalar (NONE) specialization of pop_min_tpl
-template <>
-int MinimaxHeap::pop_min_tpl<SIMDLevel::NONE>(float* vmin_out) {
+// Primary-template scalar implementation. Used directly when SL==NONE
+template <class HC>
+int pop_min_simd_none(MinimaxHeapT<HC>* heap, float* vmin_out) {
+    int k = heap->k;
+    int* ids = heap->ids.data();
+    float* dis = heap->dis.data();
     assert(k > 0);
-    // returns min. This is an O(n) operation
+    // Returns the "best" entry. This is an O(n) operation.
     int i = k - 1;
     while (i >= 0) {
         if (ids[i] != -1) {
@@ -52,7 +45,8 @@ int MinimaxHeap::pop_min_tpl<SIMDLevel::NONE>(float* vmin_out) {
     float vmin = dis[i];
     i--;
     while (i >= 0) {
-        if (ids[i] != -1 && dis[i] < vmin) {
+        // HC::cmp(vmin, dis[i]) → "dis[i] is better than vmin".
+        if (ids[i] != -1 && HC::cmp(vmin, dis[i])) {
             vmin = dis[i];
             imin = i;
         }
@@ -63,29 +57,27 @@ int MinimaxHeap::pop_min_tpl<SIMDLevel::NONE>(float* vmin_out) {
     }
     int ret = ids[imin];
     ids[imin] = -1;
-    --nvalid;
-
+    --heap->nvalid;
     return ret;
 }
 
-// Runtime-dispatched pop_min (NONE + AVX2 + AVX512 only)
-constexpr int MINIMAX_HEAP_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
-
-int MinimaxHeap::pop_min(float* vmin_out) {
-    return with_selected_simd_levels<MINIMAX_HEAP_SIMD_LEVELS>(
-            [&]<SIMDLevel SL>() { return pop_min_tpl<SL>(vmin_out); });
+// declare for min and max heap at simd level NONE
+template <>
+int pop_min_tpl<CMin<float, int32_t>, SIMDLevel::NONE>(
+        MinimaxHeapT<CMin<float, int32_t>>* heap,
+        float* vmin_out) {
+    return pop_min_simd_none(heap, vmin_out);
 }
 
-int MinimaxHeap::count_below(float thresh) {
-    int n_below = 0;
-    for (int i = 0; i < k; i++) {
-        if (dis[i] < thresh) {
-            n_below++;
-        }
-    }
-
-    return n_below;
+template <>
+int pop_min_tpl<CMax<float, int32_t>, SIMDLevel::NONE>(
+        MinimaxHeapT<CMax<float, int32_t>>* heap,
+        float* vmin_out) {
+    return pop_min_simd_none(heap, vmin_out);
 }
+
+// Explicit instantiations of pop_min for the two HC variants
+template int MinimaxHeapT<CMax<float, int32_t>>::pop_min(float*);
+template int MinimaxHeapT<CMin<float, int32_t>>::pop_min(float*);
 
 } // namespace faiss

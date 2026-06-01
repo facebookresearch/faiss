@@ -164,7 +164,9 @@ void IndexIVFFlat::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
-    memcpy(recons, invlists->get_single_code(list_no, offset), code_size);
+    memcpy(recons,
+           InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
+           code_size);
 }
 
 /*****************************************

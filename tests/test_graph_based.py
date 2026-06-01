@@ -223,6 +223,121 @@ class TestHNSW(unittest.TestCase):
         self.assertEqual(index_hnsw.ntotal, 0)
 
 
+class TestHNSWSimilarity(unittest.TestCase):
+    """Coverage for HNSW variants built with a similarity metric
+    (METRIC_INNER_PRODUCT). These tests exercise the
+    HNSW::is_similarity dispatch in IndexHNSW{Flat,PQ,SQ,Cagra}: build,
+    search, and (for IndexHNSWFlat) save/load round trips that have to
+    re-derive `hnsw.is_similarity` from the persisted metric type.
+    """
+
+    def setUp(self):
+        d = 32
+        nt = 1500
+        nb = 1500
+        nq = 200
+        (self.xt, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
+        # Reference IP search results.
+        ref = faiss.IndexFlatIP(d)
+        ref.add(self.xb)
+        self.Dref_ip, self.Iref_ip = ref.search(self.xq, 1)
+
+    def test_hnsw_flat_IP_is_similarity_set(self):
+        d = self.xb.shape[1]
+        index = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
+        self.assertTrue(index.hnsw.is_similarity)
+
+        index_l2 = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_L2)
+        self.assertFalse(index_l2.hnsw.is_similarity)
+
+    def _check_quantized_IP(self, index, min_agreement):
+        """Build (train if needed), search, then save / load and assert
+        that the round trip preserves ordering and `hnsw.is_similarity`.
+        The agreement floors are calibrated against the observed values
+        on the test dataset with a small (~5%) headroom for RNG noise;
+        they catch ordering regressions (which collapse agreement to
+        ~0) and quantizer-quality regressions (which would shift
+        agreement by tens of points)."""
+        self.assertTrue(index.hnsw.is_similarity)
+        if not index.is_trained:
+            index.train(self.xt)
+        index.add(self.xb)
+
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+        agreement = (self.Iref_ip[:, 0] == Ihnsw[:, 0]).sum()
+        self.assertGreaterEqual(
+            agreement,
+            min_agreement,
+            f"{type(index).__name__} agreement={agreement} < {min_agreement}",
+        )
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        # `hnsw.is_similarity` is not serialized; index_read must
+        # re-derive it from the persisted metric_type.
+        self.assertTrue(index2.hnsw.is_similarity)
+        self.assertEqual(index2.metric_type, faiss.METRIC_INNER_PRODUCT)
+        D2, I2 = index2.search(self.xq, 1)
+        np.testing.assert_array_equal(I2, Ihnsw)
+        np.testing.assert_array_equal(D2, Dhnsw)
+
+    # Agreement floors below are calibrated against measured values
+    # (Flat: 199, PQ: 26-30, SQ: 195, Cagra: 200 over nq=200) with a
+    # small headroom for RNG noise.
+
+    def test_hnsw_flat_IP(self):
+        d = self.xb.shape[1]
+        self._check_quantized_IP(
+            faiss.IndexHNSWFlat(d, 16, faiss.METRIC_INNER_PRODUCT),
+            min_agreement=195,
+        )
+
+    def test_hnsw_pq_IP(self):
+        d = self.xb.shape[1]
+        self._check_quantized_IP(
+            faiss.IndexHNSWPQ(d, 8, 16, 8, faiss.METRIC_INNER_PRODUCT),
+            min_agreement=20,
+        )
+
+    def test_hnsw_sq_IP(self):
+        d = self.xb.shape[1]
+        self._check_quantized_IP(
+            faiss.IndexHNSWSQ(
+                d,
+                faiss.ScalarQuantizer.QT_8bit,
+                16,
+                faiss.METRIC_INNER_PRODUCT,
+            ),
+            min_agreement=190,
+        )
+
+    def test_hnsw_cagra_IP(self):
+        d = self.xb.shape[1]
+        self._check_quantized_IP(
+            faiss.IndexHNSWCagra(d, 16, faiss.METRIC_INNER_PRODUCT),
+            min_agreement=195,
+        )
+
+    def test_hnsw_cagra_IP_base_level_only(self):
+        """IndexHNSWCagra.base_level_only takes a separate code path
+        (random entry-point selection + search_level_0) that also
+        needs to dispatch on is_similarity."""
+        d = self.xb.shape[1]
+        index = faiss.IndexHNSWCagra(d, 16, faiss.METRIC_INNER_PRODUCT)
+        index.add(self.xb)
+        index.base_level_only = True
+        index.num_base_level_search_entrypoints = 64
+
+        _, Ihnsw = index.search(self.xq, 1)
+        agreement = (self.Iref_ip[:, 0] == Ihnsw[:, 0]).sum()
+        # Measured value on this dataset is 200/200; leave headroom for
+        # the RNG-driven entry-point selection (this path is unseeded).
+        self.assertGreaterEqual(
+            agreement,
+            190,
+            f"Cagra base_only agreement={agreement}",
+        )
+
+
 class TestHNSWNaN(unittest.TestCase):
     """Adding a vector with NaN to an IVF+HNSW index used to crash because
     NaN distances corrupt the MinimaxHeap ordering in HNSW search. The fix
@@ -330,7 +445,7 @@ class TestNSG(unittest.TestCase):
         np.testing.assert_array_equal(Insg3, Insg)
 
     def subtest_connectivity(self, index, nb):
-        vt = faiss.VisitedTable(nb)
+        vt = faiss.VisitedTableVector(nb)
         count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
         self.assertEqual(count, nb)
 
