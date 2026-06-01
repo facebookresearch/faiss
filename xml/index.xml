@@ -8238,8 +8238,9 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1acee8bc45fc2eb1af1c44e28966046015" kind="variable"><name>construction_window_size</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a4e97bcb1196c74bf479f79b8aa2bb59d" kind="variable"><name>max_candidate_pool_size</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" kind="variable"><name>use_full_search_history</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" kind="variable"><name>is_static</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" kind="variable"><name>impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -8249,7 +8250,7 @@
     <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a6de99d99ca3f28f0854274f53e1a32e6" kind="function"><name>IndexSVSVamana</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamana_1a2706df16183bfdf4598694b16904f7c2" kind="function"><name>IndexSVSVamana</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a77c00a8119215bbdbce0dc7d7079286c" kind="function"><name>IndexSVSVamana</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1afd7ae8529a4e6c8c3214e6375bb78543" kind="function"><name>~IndexSVSVamana</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a47c20187774a20a2b280c5da652ca736" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a26fb705776df212640d3ed8a1202f80e" kind="function"><name>reconstruct</name></member>
@@ -8282,7 +8283,8 @@
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a84ff47f9cd019211c4180ccc8d3a475b" kind="function"><name>is_lvq_leanvec_enabled</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamana_1acbba5df70fe0aaed6886ef25cd3553a9" kind="function"><name>create_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a2f18895ace7682edf3ea544fa0cf87f5" kind="function"><name>create_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a9d73616e83bdf602f1eae0e0fe4fdbb7" kind="function"><name>dynamic_impl</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
@@ -8297,8 +8299,9 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1acee8bc45fc2eb1af1c44e28966046015" kind="variable"><name>construction_window_size</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a4e97bcb1196c74bf479f79b8aa2bb59d" kind="variable"><name>max_candidate_pool_size</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" kind="variable"><name>use_full_search_history</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" kind="variable"><name>is_static</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" kind="variable"><name>impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -8308,7 +8311,7 @@
     <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a87f4a2a1725365b765a2d2644867dae3" kind="function"><name>IndexSVSVamanaLeanVec</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a86f5b7d206c1681962063583673c7340" kind="function"><name>IndexSVSVamanaLeanVec</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a0829e7928a2acd0178ab461d43500a1c" kind="function"><name>IndexSVSVamanaLeanVec</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1ac8cfaf02ccedb4c32b52a2bb92a95c04" kind="function"><name>~IndexSVSVamanaLeanVec</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a7844fc7562f4fc827a9fa1a0b04f2ad9" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1ae70030c46fe5bae48b84596069e670b0" kind="function"><name>train</name></member>
@@ -8342,14 +8345,15 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a688740c8240aaaec8e9cdcacde4e1962" kind="function"><name>create_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a746f64379d0b12af4fd896b943c6e751" kind="function"><name>create_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a9d73616e83bdf602f1eae0e0fe4fdbb7" kind="function"><name>dynamic_impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a84ff47f9cd019211c4180ccc8d3a475b" kind="function"><name>is_lvq_leanvec_enabled</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexSVSVamanaLVQ" kind="struct"><name>faiss::IndexSVSVamanaLVQ</name>
     <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1afdd5b291c2bf51551a567b9f8169998e" kind="function"><name>IndexSVSVamanaLVQ</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1ab2dd7097af5b8d3c3304a3ad0f0c3ceb" kind="function"><name>IndexSVSVamanaLVQ</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1a8eaa2b5e5c1054075df02262afc14515" kind="function"><name>IndexSVSVamanaLVQ</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1abc49ed5f7e89f73d1d9f71b530850f5f" kind="function"><name>~IndexSVSVamanaLVQ</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a47c20187774a20a2b280c5da652ca736" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a26fb705776df212640d3ed8a1202f80e" kind="function"><name>reconstruct</name></member>
@@ -8389,8 +8393,9 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1acee8bc45fc2eb1af1c44e28966046015" kind="variable"><name>construction_window_size</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a4e97bcb1196c74bf479f79b8aa2bb59d" kind="variable"><name>max_candidate_pool_size</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" kind="variable"><name>use_full_search_history</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" kind="variable"><name>is_static</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" kind="variable"><name>impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -8400,7 +8405,8 @@
     <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a84ff47f9cd019211c4180ccc8d3a475b" kind="function"><name>is_lvq_leanvec_enabled</name></member>
-    <member refid="structfaiss_1_1IndexSVSVamana_1acbba5df70fe0aaed6886ef25cd3553a9" kind="function"><name>create_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a2f18895ace7682edf3ea544fa0cf87f5" kind="function"><name>create_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a9d73616e83bdf602f1eae0e0fe4fdbb7" kind="function"><name>dynamic_impl</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
