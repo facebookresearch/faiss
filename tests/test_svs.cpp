@@ -846,3 +846,152 @@ TEST_F(SVS, IVFIntraQueryThreadsSetBeforeTrain) {
     ASSERT_NO_THROW(index.search(
             nq, test_data.data(), k, distances.data(), labels.data()));
 }
+
+/****************************************************************
+ * SVS Static Vamana Tests
+ ****************************************************************/
+
+template <typename T>
+void write_and_read_static_vamana_index(
+        T& index,
+        const std::vector<float>& xb,
+        size_t n) {
+    ASSERT_TRUE(index.is_static);
+
+    // For LeanVec the training step seeds training_data; for plain Vamana
+    // it is a no-op. The static build itself happens inside add().
+    index.train(n, xb.data());
+    index.add(n, xb.data());
+    ASSERT_NE(index.impl, nullptr);
+    ASSERT_TRUE(index.is_trained);
+
+    // Verify search works after the static build
+    const int nq = 4;
+    const int k = 5;
+    std::vector<float> distances(nq * k);
+    std::vector<faiss::idx_t> labels(nq * k);
+    ASSERT_NO_THROW(
+            index.search(nq, xb.data(), k, distances.data(), labels.data()));
+
+    std::string temp_filename_template =
+            "/tmp/faiss_svs_static_vamana_test_XXXXXX";
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
+
+    // Serialize
+    ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
+
+    // Deserialize
+    T* loaded = nullptr;
+    ASSERT_NO_THROW({
+        loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
+    });
+
+    // Basic checks
+    ASSERT_NE(loaded, nullptr);
+    ASSERT_NE(loaded->impl, nullptr);
+    EXPECT_TRUE(loaded->is_static);
+    EXPECT_EQ(loaded->d, index.d);
+    EXPECT_EQ(loaded->metric_type, index.metric_type);
+    EXPECT_EQ(loaded->graph_max_degree, index.graph_max_degree);
+    EXPECT_EQ(loaded->storage_kind, index.storage_kind);
+    if constexpr (std::is_same_v<
+                          std::decay_t<T>,
+                          faiss::IndexSVSVamanaLeanVec>) {
+        auto* leanvec_loaded =
+                dynamic_cast<faiss::IndexSVSVamanaLeanVec*>(loaded);
+        ASSERT_NE(leanvec_loaded, nullptr);
+        EXPECT_EQ(leanvec_loaded->leanvec_d, index.leanvec_d);
+        EXPECT_NE(leanvec_loaded->training_data, nullptr);
+    }
+
+    // Verify search works on the loaded index
+    ASSERT_NO_THROW(
+            loaded->search(nq, xb.data(), k, distances.data(), labels.data()));
+
+    delete loaded;
+}
+
+TEST_F(SVS, WriteAndReadStaticVamana) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
+    write_and_read_static_vamana_index(index, test_data, n);
+}
+
+TEST_F(SVS, WriteAndReadStaticVamanaFP16) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16, true};
+    write_and_read_static_vamana_index(index, test_data, n);
+}
+
+TEST_F(SVS, WriteAndReadStaticVamanaSQI8) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8, true};
+    write_and_read_static_vamana_index(index, test_data, n);
+}
+
+TEST_F(SVSLL, WriteAndReadStaticVamanaLVQ4x4) {
+    faiss::IndexSVSVamanaLVQ index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4, true};
+    write_and_read_static_vamana_index(index, test_data, n);
+}
+
+TEST_F(SVSLL, WriteAndReadStaticVamanaLeanVec4x4) {
+    faiss::IndexSVSVamanaLeanVec index{
+            d,
+            64ul,
+            faiss::METRIC_L2,
+            0,
+            faiss::SVSStorageKind::SVS_LeanVec4x4,
+            true};
+    write_and_read_static_vamana_index(index, test_data, n);
+}
+
+TEST_F(SVS, StaticVamanaAddThrowsOnSecondCall) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
+    index.add(n, test_data.data());
+    ASSERT_THROW(index.add(n, test_data.data()), faiss::FaissException);
+}
+
+TEST_F(SVS, StaticVamanaRemoveThrows) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
+    index.add(n, test_data.data());
+    faiss::IDSelectorRange selector(0, 10);
+    ASSERT_THROW(index.remove_ids(selector), faiss::FaissException);
+}
+
+TEST_F(SVS, StaticVamanaResetAndRebuild) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
+    index.add(n, test_data.data());
+    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
+
+    index.reset();
+    EXPECT_EQ(index.ntotal, 0);
+    EXPECT_FALSE(index.is_trained);
+
+    // After reset, a fresh add() must rebuild the static index.
+    ASSERT_NO_THROW(index.add(n, test_data.data()));
+    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
+    EXPECT_TRUE(index.is_trained);
+
+    const int nq = 4;
+    const int k = 5;
+    std::vector<float> distances(nq * k);
+    std::vector<faiss::idx_t> labels(nq * k);
+    ASSERT_NO_THROW(index.search(
+            nq, test_data.data(), k, distances.data(), labels.data()));
+}
+
+TEST_F(SVS, StaticVamanaReconstruct) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
+    index.add(n, test_data.data());
+
+    std::vector<float> recons(d);
+    ASSERT_NO_THROW(index.reconstruct(0, recons.data()));
+    for (size_t i = 0; i < d; ++i) {
+        EXPECT_EQ(recons[i], test_data[i]);
+    }
+}

@@ -694,6 +694,8 @@ void gpu_sync_all_devices()
 %ignore faiss::InterruptCallback::lock;
 
 %include <faiss/impl/AuxIndexStructures.h>
+
+%ignore faiss::VisitedTable::create; // causes errors on OSS compile (?)
 %include <faiss/impl/VisitedTable.h>
 %include <faiss/impl/IDSelector.h>
 
@@ -947,6 +949,7 @@ typedef int cudaDataType_t;
 }
 
 %typemap(out) faiss::InvertedLists * {
+    DOWNCAST (ArrayInvertedListsPanorama)  // subclass before parent
     DOWNCAST (ArrayInvertedLists)
     DOWNCAST (BlockInvertedLists)
 #ifndef SWIGWIN
@@ -954,6 +957,7 @@ typedef int cudaDataType_t;
 #endif // !SWIGWIN
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
+    DOWNCAST (SliceInvertedLists)
     DOWNCAST (MaskedInvertedLists)
     DOWNCAST (StopWordsInvertedLists)
     DOWNCAST (CappedInvertedLists)
