@@ -40,6 +40,7 @@ set(FAISS_SIMD_AVX512_SRC
 # flag. Not compiled into faiss_avx512 — that target stops at the
 # baseline AVX-512F/CD/VL/DQ/BW feature set.
 set(FAISS_SIMD_AVX512_SPR_SRC
+  impl/scalar_quantizer/sq-avx512-spr.cpp
   utils/simd_impl/rabitq_avx512_spr.cpp
   utils/hamming_distance/hamming_avx512_spr.cpp
 )
@@ -541,7 +542,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
       )
     else()
       # Per-file SIMD flags (MSVC)
