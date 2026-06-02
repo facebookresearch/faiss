@@ -268,6 +268,7 @@ set(FAISS_HEADERS
   impl/AdSampling.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/InvertedListScannerStats.h
   impl/VisitedTable.h
   impl/ClusteringInitialization.h
   impl/ClusteringHelpers.h
