@@ -22,7 +22,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/simd_dispatch.h>
@@ -32,7 +31,6 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryIVF_impl.h>
-#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
 #undef THE_SIMD_LEVEL
 
 namespace faiss {
@@ -257,7 +255,9 @@ void IndexBinaryIVF::reconstruct_from_offset(
         idx_t list_no,
         idx_t offset,
         uint8_t* recons) const {
-    memcpy(recons, invlists->get_single_code(list_no, offset), code_size);
+    memcpy(recons,
+           InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
+           code_size);
 }
 
 void IndexBinaryIVF::reset() {

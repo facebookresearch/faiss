@@ -71,16 +71,16 @@ runs:
         # no CUDA needed for ROCm so skip this
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           :
-        # regular CUDA for GPU builds
-        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
+        # CUDA install for GPU builds
+        elif [ "${{ inputs.gpu }}" = "ON" ]; then
           conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
-        # and CUDA from cuVS channel for cuVS builds
-        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
-          # Clean index cache to prevent sqlite3 "database is locked" errors
-          # from conda-libmamba-solver's shards cache between consecutive installs.
-          # See: https://github.com/conda/conda-libmamba-solver/issues/667
-          conda clean --index-cache 2>/dev/null || true
+          if [ "${{ inputs.cuvs }}" = "ON" ]; then
+            conda install -y -q libcuvs=26.06 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+            # Clean index cache to prevent sqlite3 "database is locked" errors
+            # from conda-libmamba-solver's shards cache between consecutive installs.
+            # See: https://github.com/conda/conda-libmamba-solver/issues/667
+            conda clean --index-cache 2>/dev/null || true
+          fi
         fi
 
         # install SVS runtime for SVS builds
@@ -121,19 +121,21 @@ runs:
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="6.2"
+        ROCM_VERSION="7.2"
 
-        rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         sudo mkdir -p /etc/apt/keyrings
         wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
         echo "2de99e2354646a90d9903e2a669fc4e36b02c1bbff7075c481e12d7edab2c88b  /tmp/rocm.gpg.key" | sha256sum --check
 
-        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${ROCM_VERSION} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+
+        # Pin ROCm packages to avoid conflicts with other packages
+        sudo printf '%s\n' 'Package: *' 'Pin: release o=repo.radeon.com' 'Pin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600 >/dev/null
 
         sudo apt-get -qq update >/dev/null
-        sudo apt-get -qq install -y \
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" >/dev/null
+        sudo apt-get -qq install -y rocm rocm-hip-sdk rocm-dev >/dev/null
 
+        echo "/opt/rocm/bin" >> "$GITHUB_PATH"
 
     - name: Pin BLAS/LAPACK versions
       if: inputs.rocm == 'ON'
@@ -144,7 +146,7 @@ runs:
           "libcblas=3.9.0=35_*" \
           "liblapack=3.9.0=35_*"
 
-        # Fake presence of MI200-class accelerators
+        # Fake presence of MI325X-class accelerators
         echo "gfx942" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
@@ -246,7 +248,37 @@ runs:
       run: |
         conda list --show-channel-urls
         conda install -y -q "pip<26"
-        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
+
+        # Install AMD's torch wheels built against the exact system ROCm (7.2.0,
+        # from apt/7.2). The PyTorch Foundation whl/rocm7.2 wheels float and bundle
+        # an older ROCr that lacks hsa_amd_memory_get_preferred_copy_engine (ROCr
+        # 1.18.0, added in ROCm 7.0.0), which collides with the system 7.2.0
+        # libamdhip64. Matching both sides to 7.2.0 avoids the dual-runtime
+        # undefined-symbol/segfault failures.
+        BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2"
+        HTML="$(wget -qO- "${BASE}/")"
+        pick() {
+          printf '%s\n' "$HTML" \
+            | grep -oE "$1-[0-9][^\"]*rocm7\.2\.0[^\"]*cp312-cp312-linux_x86_64\.whl" \
+            | sort -V | tail -1
+        }
+        TORCH_WHL="$(pick torch)"
+        TVISION_WHL="$(pick torchvision)"
+        TAUDIO_WHL="$(pick torchaudio)"
+        echo "Selected: ${TORCH_WHL} ${TVISION_WHL} ${TAUDIO_WHL}"
+        if [ -z "${TORCH_WHL}" ] || [ -z "${TVISION_WHL}" ] || [ -z "${TAUDIO_WHL}" ]; then
+          echo "Could not locate +rocm7.2.0 cp312 wheels at ${BASE}" >&2
+          exit 1
+        fi
+
+        # --no-deps avoids pulling triton/pytorch-triton-rocm (only on AMD's index,
+        # not PyPI); install torch's import-time deps explicitly instead.
+        pip3 install --no-deps \
+          "${BASE}/${TORCH_WHL}" "${BASE}/${TVISION_WHL}" "${BASE}/${TAUDIO_WHL}"
+        pip3 install numpy pillow filelock typing-extensions sympy networkx jinja2 fsspec
+
+        # Confirm torch links against ROCm 7.2 (matches the system /opt/rocm-7.2.0).
+        python -c "import torch; print('torch', torch.__version__, 'hip', torch.version.hip)"
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash

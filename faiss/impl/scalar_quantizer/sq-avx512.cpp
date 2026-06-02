@@ -214,6 +214,12 @@ struct QuantizerTemplate<
         return simd16float32(_mm512_fmadd_ps(
                 xi, _mm512_set1_ps(this->vdiff), _mm512_set1_ps(this->vmin)));
     }
+
+    /// Raw codec decode without denormalization
+    FAISS_ALWAYS_INLINE simd16float32
+    decode_16_raw(const uint8_t* code, int i) const {
+        return Codec::decode_16_components(code, i);
+    }
 };
 
 template <class Codec>
@@ -411,6 +417,22 @@ struct SimilarityL2<SIMDLevel::AVX512> {
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float inv_vdiff = (vdiff != 0) ? 1.0f / vdiff : 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = (x[i] - vmin) * inv_vdiff;
+        }
+        scale_factor = vdiff * vdiff;
+        bias = 0;
+    }
 };
 
 template <>
@@ -445,6 +467,23 @@ struct SimilarityIP<SIMDLevel::AVX512> {
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float sum_q = 0;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = x[i];
+            sum_q += x[i];
+        }
+        scale_factor = vdiff;
+        bias = vmin * sum_q;
+    }
 };
 
 /**********************************************************
@@ -458,8 +497,23 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
 
     Quantizer quant;
 
+    // Pre-adjusted query buffer for uniform quantizers
+    std::vector<float> q_adj;
+    float scale_factor = 0;
+    float bias = 0;
+
+    static constexpr bool has_decode_raw() {
+        return requires(const Quantizer& q, const uint8_t* c, int i) {
+            { q.decode_16_raw(c, i) };
+        };
+    }
+
     DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
+            : quant(d, trained) {
+        if constexpr (has_decode_raw()) {
+            q_adj.resize(d);
+        }
+    }
 
     float compute_distance(const float* x, const uint8_t* code) const {
         Similarity sim(x);
@@ -485,6 +539,26 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
 
     void set_query(const float* x) final {
         q = x;
+        if constexpr (has_decode_raw()) {
+            Sim::adjust_query_for_raw_decode(
+                    x,
+                    q_adj.data(),
+                    quant.d,
+                    quant.vmin,
+                    quant.vdiff,
+                    scale_factor,
+                    bias);
+        }
+    }
+
+    float query_to_code_predecoded(const uint8_t* code) const {
+        Similarity sim(q_adj.data());
+        sim.begin_16();
+        for (size_t i = 0; i < quant.d; i += 16) {
+            simd16float32 xi = quant.decode_16_raw(code, i);
+            sim.add_16_components(xi);
+        }
+        return bias + scale_factor * sim.result_16();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -493,7 +567,11 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
+        if constexpr (has_decode_raw()) {
+            return query_to_code_predecoded(code);
+        } else {
+            return compute_distance(q, code);
+        }
     }
 
     void query_to_codes_batch_4(

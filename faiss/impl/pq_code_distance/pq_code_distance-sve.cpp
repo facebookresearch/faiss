@@ -347,4 +347,9 @@ void pq_code_distance_8bit_four_impl<SIMDLevel::ARM_SVE>(
 } // namespace pq_code_distance
 } // namespace faiss
 
+#define THE_SIMD_LEVEL SIMDLevel::ARM_SVE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/pq_code_distance/pq_scan_impl.h>
+#undef THE_SIMD_LEVEL
+
 #endif // COMPILE_SIMD_ARM_SVE
