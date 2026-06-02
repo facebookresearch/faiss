@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="308" column="21" bodyfile="faiss/gpu/GpuResources.h" bodystart="308" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="309" column="21" bodyfile="faiss/gpu/GpuResources.h" bodystart="309" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="302" column="14"/>
+        <location file="faiss/gpu/GpuResources.h" line="303" column="14"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1af373a789c7ea950da0a11ac1f7bae137" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="303" column="5"/>
+        <location file="faiss/gpu/GpuResources.h" line="304" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a22b7e0134d3b0f7f3c6f7eae0d5ccd26" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="305" column="21"/>
+        <location file="faiss/gpu/GpuResources.h" line="306" column="21"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -99,7 +99,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuResources.h" line="300" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="300" bodyend="309"/>
+    <location file="faiss/gpu/GpuResources.h" line="301" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="301" bodyend="310"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a22b7e0134d3b0f7f3c6f7eae0d5ccd26" prot="public" virt="virtual"><scope>faiss::gpu::GpuResourcesProviderFromInstance</scope><name>getResources</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a33a982aa4ee51e9c91350bb577a7f3dd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuResourcesProviderFromInstance</scope><name>GpuResourcesProviderFromInstance</name></member>

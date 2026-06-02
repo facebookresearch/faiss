@@ -211,7 +211,7 @@
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;raft/core/device_resources.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rmm/mr/device_memory_resource.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rmm/mr/managed_memory_resource.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rmm/mr/pinned_host_memory_resource.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
@@ -357,10 +357,10 @@
 <codeline lineno="171"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="172"><highlight class="normal"></highlight></codeline>
 <codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>managed_memory_resource</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;rmm::mr::device_memory_resource&gt;<sp/>mmr_;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>rmm::mr::managed_memory_resource<sp/>mmr_;</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"></highlight></codeline>
 <codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>pinned_host_memory_resource</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;rmm::mr::pinned_host_memory_resource&gt;<sp/>pmr_;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>rmm::mr::pinned_host_memory_resource<sp/>pmr_;</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="179"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="180"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Pinned<sp/>memory<sp/>allocation<sp/>for<sp/>use<sp/>with<sp/>this<sp/>GPU</highlight></codeline>
