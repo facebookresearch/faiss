@@ -187,6 +187,12 @@ SQDistanceComputer* select_distance_computer_body(
                     d, trained);
 
         case ScalarQuantizer::QT_8bit_direct_signed:
+            if constexpr (SL2 == SIMDLevel::AVX512_SPR) {
+                if (d % 64 == 0) {
+                    return new DistanceComputerByteSigned<Sim, SL2>(
+                            static_cast<int>(d), trained);
+                }
+            }
             return new DCTemplate<Quantizer8bitDirectSigned<SL2>, Sim, SL2>(
                     d, trained);
         case ScalarQuantizer::QT_0bit:
@@ -339,6 +345,12 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         Similarity,
                         SL2>>();
             case ScalarQuantizer::QT_8bit_direct_signed:
+                if constexpr (SL2 == SIMDLevel::AVX512_SPR) {
+                    if (d % 64 == 0) {
+                        return scan.template operator()<
+                                DistanceComputerByteSigned<Similarity, SL2>>();
+                    }
+                }
                 return scan.template operator()<DCTemplate<
                         Quantizer8bitDirectSigned<SL2>,
                         Similarity,
