@@ -128,6 +128,12 @@
       <node id="12">
         <label>faiss/utils/hamming_distance/hamming_computer-avx512.h</label>
         <link refid="hamming__computer-avx512_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/utils/hamming_distance/hamming_computer-avx512_spr.h</label>
+        <link refid="hamming__computer-avx512__spr_8h_source"/>
       </node>
       <node id="1">
         <label>faiss/utils/hamming_distance/hamming_computer-generic.h</label>
@@ -138,10 +144,10 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/utils/hamming_distance/hamming_computer-rvv.h</label>
         <link refid="hamming__computer-rvv_8h_source"/>
       </node>

@@ -5,6 +5,7 @@
     <innerfile refid="common_8h">common.h</innerfile>
     <innerfile refid="hamming__computer-avx2_8h">hamming_computer-avx2.h</innerfile>
     <innerfile refid="hamming__computer-avx512_8h">hamming_computer-avx512.h</innerfile>
+    <innerfile refid="hamming__computer-avx512__spr_8h">hamming_computer-avx512_spr.h</innerfile>
     <innerfile refid="hamming__computer-generic_8h">hamming_computer-generic.h</innerfile>
     <innerfile refid="hamming__computer-neon_8h">hamming_computer-neon.h</innerfile>
     <innerfile refid="hamming__computer-rvv_8h">hamming_computer-rvv.h</innerfile>

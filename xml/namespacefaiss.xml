@@ -71,14 +71,17 @@
     <innerclass refid="structfaiss_1_1HammingComputer20__tpl" prot="public">faiss::HammingComputer20_tpl</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::HammingComputer20_tpl&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer32__tpl" prot="public">faiss::HammingComputer32_tpl</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4" prot="public">faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::HammingComputer32_tpl&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer4" prot="public">faiss::HammingComputer4</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer64__tpl" prot="public">faiss::HammingComputer64_tpl</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::HammingComputer64_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4" prot="public">faiss::HammingComputer64_tpl&lt; SIMDLevel::AVX512_SPR &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::HammingComputer64_tpl&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer8" prot="public">faiss::HammingComputer8</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputerDefault__tpl" prot="public">faiss::HammingComputerDefault_tpl</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::HammingComputerDefault_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4" prot="public">faiss::HammingComputerDefault_tpl&lt; SIMDLevel::AVX512_SPR &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::HammingComputerDefault_tpl&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HCounterState" prot="public">faiss::HCounterState</innerclass>
     <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
@@ -6871,6 +6874,30 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/simd_dispatch.h" line="206" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="206" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename LambdaType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::with_simd_level_a0_spr</definition>
+        <argsstring>(LambdaType &amp;&amp;action)</argsstring>
+        <name>with_simd_level_a0_spr</name>
+        <qualifiedname>faiss::with_simd_level_a0_spr</qualifiedname>
+        <param>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Use for functions that have A0-level implementations plus an AVX512_SPR specialization (e.g. using VPOPCNTDQ). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="216" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="216" bodyend="219"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SIMDLevel::AVX2 &gt;</type>
@@ -15041,6 +15068,108 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/hamming_computer-avx2.h" line="43" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx2.h" declline="43" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a78b75cb0c75a4a82f42249e110daf261" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_SPR</definition>
+        <argsstring>(HammingComputer16)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_SPR</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_SPR</qualifiedname>
+        <param>
+          <type>HammingComputer16</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="38" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" declline="38" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8fcba2e5f056b4142a6498e10a29985b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_SPR</definition>
+        <argsstring>(HammingComputer20)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_SPR</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_SPR</qualifiedname>
+        <param>
+          <type>HammingComputer20</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="39" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" declline="39" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a154c67693304bdca7280180d9f5d6490" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_SPR</definition>
+        <argsstring>(GenHammingComputer8)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_SPR</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_SPR</qualifiedname>
+        <param>
+          <type>GenHammingComputer8</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="40" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" declline="40" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a43c955b434892461acad14a2192450d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_SPR</definition>
+        <argsstring>(GenHammingComputer16)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_SPR</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_SPR</qualifiedname>
+        <param>
+          <type>GenHammingComputer16</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="41" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" declline="41" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a74799bba4696ddc9fac4fd5094f0904f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_SPR</definition>
+        <argsstring>(GenHammingComputer32)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_SPR</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_SPR</qualifiedname>
+        <param>
+          <type>GenHammingComputer32</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="42" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" declline="42" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a552343e94cddf764a4e433739fac68ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_SPR</definition>
+        <argsstring>(GenHammingComputerM8)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_SPR</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_SPR</qualifiedname>
+        <param>
+          <type>GenHammingComputerM8</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="43" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" declline="43" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a74d57ebe67a55441fa7b7c2a13563d43" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>

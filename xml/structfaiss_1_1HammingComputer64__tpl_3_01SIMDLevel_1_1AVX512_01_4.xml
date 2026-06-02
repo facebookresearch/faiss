@@ -207,7 +207,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamming_computer-avx512.h" line="75" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512.h" bodystart="75" bodyend="89"/>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512.h" line="75" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512.h" bodystart="75" bodyend="81"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -223,14 +223,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamming_computer-avx512.h" line="91" column="33" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512.h" bodystart="91" bodyend="93"/>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512.h" line="83" column="33" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512.h" bodystart="83" bodyend="85"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming_distance/hamming_computer-avx512.h" line="52" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512.h" bodystart="52" bodyend="94"/>
+    <location file="faiss/utils/hamming_distance/hamming_computer-avx512.h" line="52" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512.h" bodystart="52" bodyend="86"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ad80a3703f7e3571b673804c89bced93e" prot="public" virt="non-virtual"><scope>faiss::HammingComputer64_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>a</name></member>
       <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a0f6930e059d8ae4dea6a1a1dc571ea72" prot="public" virt="non-virtual"><scope>faiss::HammingComputer64_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>a0</name></member>

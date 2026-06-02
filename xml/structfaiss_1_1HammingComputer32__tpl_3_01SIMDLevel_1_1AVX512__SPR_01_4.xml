@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a91abcd921c4b7a3bb4802c8204b1669e" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::a8</definition>
+        <argsstring></argsstring>
+        <name>a8</name>
+        <qualifiedname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::a8</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="53" column="19" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a28f2dcc6b421ec8dd54418d3b5a2471a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::HammingComputer32_tpl</definition>
+        <argsstring>()</argsstring>
+        <name>HammingComputer32_tpl</name>
+        <qualifiedname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::HammingComputer32_tpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="55" column="5" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a9fbd527822b8defbf018694757dac3c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::HammingComputer32_tpl</definition>
+        <argsstring>(const uint8_t *a8_in, int code_size)</argsstring>
+        <name>HammingComputer32_tpl</name>
+        <qualifiedname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::HammingComputer32_tpl</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8_in</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="57" column="5" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="57" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1ac81f1e3eeaccb00a8c0ea09de792a0de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::set</definition>
+        <argsstring>(const uint8_t *a8_in, FAISS_MAYBE_UNUSED int code_size)</argsstring>
+        <name>set</name>
+        <qualifiedname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::set</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8_in</declname>
+        </param>
+        <param>
+          <type>FAISS_MAYBE_UNUSED int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="61" column="10" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="61" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a35c81ac9cc41bfc55beb064fa7aaa25c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::hamming</definition>
+        <argsstring>(const uint8_t *b8) const</argsstring>
+        <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::hamming</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b8</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="66" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="66" bodyend="76"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a10de3d448e2497423f15395aaef33663" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int</type>
+        <definition>static constexpr int faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::get_code_size</definition>
+        <argsstring>()</argsstring>
+        <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;::get_code_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="78" column="33" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="78" bodyend="80"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" line="52" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_spr.h" bodystart="52" bodyend="81"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a91abcd921c4b7a3bb4802c8204b1669e" prot="public" virt="non-virtual"><scope>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</scope><name>a8</name></member>
+      <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a10de3d448e2497423f15395aaef33663" prot="public" virt="non-virtual"><scope>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a35c81ac9cc41bfc55beb064fa7aaa25c" prot="public" virt="non-virtual"><scope>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</scope><name>hamming</name></member>
+      <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a28f2dcc6b421ec8dd54418d3b5a2471a" prot="public" virt="non-virtual"><scope>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</scope><name>HammingComputer32_tpl</name></member>
+      <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1a9fbd527822b8defbf018694757dac3c8" prot="public" virt="non-virtual"><scope>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</scope><name>HammingComputer32_tpl</name></member>
+      <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__SPR_01_4_1ac81f1e3eeaccb00a8c0ea09de792a0de" prot="public" virt="non-virtual"><scope>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_SPR &gt;</scope><name>set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
