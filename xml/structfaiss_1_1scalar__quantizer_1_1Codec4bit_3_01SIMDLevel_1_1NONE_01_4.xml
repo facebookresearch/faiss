@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::NONE &gt;</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1AVX512_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::AVX512 &gt;</derivedcompoundref>
     <templateparamlist>
     </templateparamlist>
     <sectiondef kind="public-static-func">
@@ -58,6 +59,18 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1NONE_01_4"/>
+      </node>
+    </inheritancegraph>
     <location file="faiss/impl/scalar_quantizer/codecs.h" line="47" column="1" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="47" bodyend="60"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1NONE_01_4_1a7ac28332946ba80adf21fceb2e438d58" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::NONE &gt;</scope><name>decode_component</name></member>

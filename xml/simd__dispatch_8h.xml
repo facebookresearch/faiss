@@ -529,26 +529,35 @@
 <codeline lineno="199"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="200"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="201"><highlight class="comment">/**</highlight></codeline>
-<codeline lineno="202"><highlight class="comment"><sp/>*<sp/>Use<sp/>for<sp/>functions<sp/>implemented<sp/>with<sp/>simdXintY<sp/>(256-bit)<sp/>operations</highlight></codeline>
-<codeline lineno="203"><highlight class="comment"><sp/>*<sp/>that<sp/>don&apos;t<sp/>have<sp/>dedicated<sp/>AVX512<sp/>or<sp/>SVE<sp/>implementations.</highlight></codeline>
-<codeline lineno="204"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="205"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
-<codeline lineno="206" refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" kindref="member">with_simd_level_256bit</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>with_selected_simd_levels&lt;AVAILABLE_SIMD_LEVELS_AVX2_NEON&gt;(</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::forward&lt;LambdaType&gt;(action));</highlight></codeline>
-<codeline lineno="209"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="210"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="211"><highlight class="comment">/**</highlight></codeline>
-<codeline lineno="212"><highlight class="comment"><sp/>*<sp/>Use<sp/>for<sp/>functions<sp/>that<sp/>have<sp/>A0-level<sp/>implementations<sp/>plus<sp/>an<sp/>AVX512_SPR</highlight></codeline>
-<codeline lineno="213"><highlight class="comment"><sp/>*<sp/>specialization<sp/>(e.g.<sp/>using<sp/>VPOPCNTDQ).</highlight></codeline>
-<codeline lineno="214"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="215"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
-<codeline lineno="216" refid="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" kindref="member">with_simd_level_a0_spr</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>with_selected_simd_levels&lt;AVAILABLE_SIMD_LEVELS_A0_SPR&gt;(</highlight></codeline>
-<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::forward&lt;LambdaType&gt;(action));</highlight></codeline>
-<codeline lineno="219"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="220"><highlight class="normal"></highlight></codeline>
-<codeline lineno="221"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/>*<sp/>Use<sp/>for<sp/>functions<sp/>with<sp/>AVX512_SPR-specific<sp/>implementations.</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
+<codeline lineno="205" refid="namespacefaiss_1a71e666142d6f1a153968a8f99545acba" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a71e666142d6f1a153968a8f99545acba" kindref="member">with_simd_level_spr</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>with_selected_simd_levels&lt;AVAILABLE_SIMD_LEVELS_A0_SPR&gt;(</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::forward&lt;LambdaType&gt;(action));</highlight></codeline>
+<codeline lineno="208"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="210"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="211"><highlight class="comment"><sp/>*<sp/>Use<sp/>for<sp/>functions<sp/>implemented<sp/>with<sp/>simdXintY<sp/>(256-bit)<sp/>operations</highlight></codeline>
+<codeline lineno="212"><highlight class="comment"><sp/>*<sp/>that<sp/>don&apos;t<sp/>have<sp/>dedicated<sp/>AVX512<sp/>or<sp/>SVE<sp/>implementations.</highlight></codeline>
+<codeline lineno="213"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
+<codeline lineno="215" refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" kindref="member">with_simd_level_256bit</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>with_selected_simd_levels&lt;AVAILABLE_SIMD_LEVELS_AVX2_NEON&gt;(</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::forward&lt;LambdaType&gt;(action));</highlight></codeline>
+<codeline lineno="218"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="220"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="221"><highlight class="comment"><sp/>*<sp/>Use<sp/>for<sp/>functions<sp/>that<sp/>have<sp/>A0-level<sp/>implementations<sp/>plus<sp/>an<sp/>AVX512_SPR</highlight></codeline>
+<codeline lineno="222"><highlight class="comment"><sp/>*<sp/>specialization<sp/>(e.g.<sp/>using<sp/>VPOPCNTDQ).</highlight></codeline>
+<codeline lineno="223"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
+<codeline lineno="225" refid="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" kindref="member">with_simd_level_a0_spr</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>with_selected_simd_levels&lt;AVAILABLE_SIMD_LEVELS_A0_SPR&gt;(</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::forward&lt;LambdaType&gt;(action));</highlight></codeline>
+<codeline lineno="228"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/simd_dispatch.h"/>
   </compounddef>

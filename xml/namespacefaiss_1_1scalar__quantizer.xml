@@ -3,34 +3,49 @@
   <compounddef id="namespacefaiss_1_1scalar__quantizer" kind="namespace" language="C++">
     <compoundname>faiss::scalar_quantizer</compoundname>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit" prot="public">faiss::scalar_quantizer::Codec4bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit" prot="public">faiss::scalar_quantizer::Codec6bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Codec6bit&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Codec6bit&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit" prot="public">faiss::scalar_quantizer::Codec8bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" prot="public">faiss::scalar_quantizer::DCTemplate</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte" prot="public">faiss::scalar_quantizer::DistanceComputerByte</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByteSigned" prot="public">faiss::scalar_quantizer::DistanceComputerByteSigned</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" prot="public">faiss::scalar_quantizer::IVFCoarseDistanceScanner</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP" prot="public">faiss::scalar_quantizer::IVFSQScannerIP</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2" prot="public">faiss::scalar_quantizer::IVFSQScannerL2</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" prot="public">faiss::scalar_quantizer::QuantizerBF16</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16" prot="public">faiss::scalar_quantizer::QuantizerFP16</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate" prot="public">faiss::scalar_quantizer::QuantizerTemplate</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quantidb8ac2797b6e0d2b4ae7da8d4729263a" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::AVX512 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" prot="public">faiss::scalar_quantizer::QuantizerTurboQuantMSE</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_01NBits_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; NBits, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP" prot="public">faiss::scalar_quantizer::SimilarityIP</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2" prot="public">faiss::scalar_quantizer::SimilarityL2</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</innerclass>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="quantizers_8h_1a6e9b2ef1b045f70ed7889944c7e114e9" prot="public" static="no" strong="yes">
@@ -90,6 +105,34 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/quantizers.h" line="23" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="sq-avx512-impl_8h_1a048aafabaf393116e10f61b51bd0d907" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">faiss::simd16float32_tpl</ref>&lt; SIMDLevel::AVX512 &gt;</type>
+        <definition>using faiss::scalar_quantizer::simd16float32 = typedef faiss::simd16float32_tpl&lt;SIMDLevel::AVX512&gt;</definition>
+        <argsstring></argsstring>
+        <name>simd16float32</name>
+        <qualifiedname>faiss::scalar_quantizer::simd16float32</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="16" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="sq-avx512-impl_8h_1aa28a3623bc7558774f71dc9e31142c69" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd512bit__tpl" kindref="compound">faiss::simd512bit_tpl</ref>&lt; SIMDLevel::AVX512 &gt;</type>
+        <definition>using faiss::scalar_quantizer::simd512bit = typedef faiss::simd512bit_tpl&lt;SIMDLevel::AVX512&gt;</definition>
+        <argsstring></argsstring>
+        <name>simd512bit</name>
+        <qualifiedname>faiss::scalar_quantizer::simd512bit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="17" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="17" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="training_8h_1af10cb6aadb4adfe0e2c4272449500ec7" prot="public" static="no">
         <type><ref refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kindref="member">ScalarQuantizer::RangeStat</ref></type>
@@ -159,7 +202,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="130" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="130" declcolumn="20"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="136" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="136" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="quantizers_8h_1a58372b4312405a8863e41082b9bd9c92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -192,7 +235,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="364" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="364" declcolumn="29"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="365" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="365" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="scanners_8h_1a93720e4ec0d8f806eb62c46db3e0ab04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -250,6 +293,86 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/scanners.h" line="151" column="21" declfile="faiss/impl/scalar_quantizer/scanners.h" declline="151" declcolumn="21"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-avx512-impl_8h_1aab3536360d2f41bc04524437a5de4fad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</definition>
+        <argsstring>(1, unpack_16x1bit_to_u32(code, i))</argsstring>
+        <name>DEFINE_TQMSE_AVX512_SPECIALIZATION</name>
+        <qualifiedname>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</qualifiedname>
+        <param>
+          <type>1</type>
+        </param>
+        <param>
+          <type>unpack_16x1bit_to_u32(code, i)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="266" column="1" declfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" declline="266" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-avx512-impl_8h_1ae14d8331e0503636f5db52fad6ef38a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</definition>
+        <argsstring>(2, unpack_16x2bit_to_u32(code, i))</argsstring>
+        <name>DEFINE_TQMSE_AVX512_SPECIALIZATION</name>
+        <qualifiedname>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</qualifiedname>
+        <param>
+          <type>2</type>
+        </param>
+        <param>
+          <type>unpack_16x2bit_to_u32(code, i)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="267" column="1" declfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" declline="267" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-avx512-impl_8h_1a5c1ca13b07602d0bcf7c62a9a6be7fcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</definition>
+        <argsstring>(3, unpack_16x3bit_to_u32(code, i))</argsstring>
+        <name>DEFINE_TQMSE_AVX512_SPECIALIZATION</name>
+        <qualifiedname>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</qualifiedname>
+        <param>
+          <type>3</type>
+        </param>
+        <param>
+          <type>unpack_16x3bit_to_u32(code, i)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="268" column="1" declfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" declline="268" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-avx512-impl_8h_1adc527444b04b57121aed5ad3ba57b4d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</definition>
+        <argsstring>(4, unpack_16x4bit_to_u32(code, i))</argsstring>
+        <name>DEFINE_TQMSE_AVX512_SPECIALIZATION</name>
+        <qualifiedname>faiss::scalar_quantizer::DEFINE_TQMSE_AVX512_SPECIALIZATION</qualifiedname>
+        <param>
+          <type>4</type>
+        </param>
+        <param>
+          <type>unpack_16x4bit_to_u32(code, i)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="269" column="1" declfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" declline="269" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a9aafc3129d3bd359d2a36d1684100b28" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -338,7 +461,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="111" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="111" bodyend="212"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="111" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="111" bodyend="219"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a633a0625bc3ff5fb2e8a0f9813990208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -370,7 +493,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="219" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="219" bodyend="231"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="226" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="226" bodyend="238"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a18cda87f7f14bce99d80b0b2cf695df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -422,7 +545,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="238" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="238" bodyend="384"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="245" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="245" bodyend="399"/>
       </memberdef>
       <memberdef kind="function" id="training_8h_1a7832c78df26bd9df1561e07d4da31891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

@@ -13,6 +13,8 @@
         <qualifiedname>faiss::DistanceComputer::set_query</qualifiedname>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a26623e7801c7f8d3c5c557f05e29c609">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a9f1c66330ffa63e711fcb6e9f61b9ac3">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4_1a00591f377a6d27856665758cddf4c32c">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4_1a8c5eb3708b3e4a181f8b52ab70d706f7">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acd7effc0f77263d0383197e8856f1527">set_query</reimplementedby>
         <param>
@@ -107,6 +109,8 @@
         <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1adce69b0f0c6dbf0fa295cd76ae711af4">symmetric_dis</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a4bbe35806c4b44e2ee4067ddcf97fa94">symmetric_dis</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a0df411d47b43611b17c311685fbc09e3">symmetric_dis</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4_1a159cc938e320e52d6fe59206af4c0ef8">symmetric_dis</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4_1af4f4e78811625abaa0f518f275a64317">symmetric_dis</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RaBitQDistanceComputer_1a5520cfc82e08d38240f1b0096ff57ee9">symmetric_dis</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -155,7 +159,7 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="13">
         <label>faiss::NegativeDistanceComputer</label>
         <link refid="structfaiss_1_1NegativeDistanceComputer"/>
         <childnode refid="1" relation="public-inheritance">
@@ -173,7 +177,7 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="12">
         <label>faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;</label>
         <link refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer"/>
         <childnode refid="2" relation="public-inheritance">
@@ -186,20 +190,38 @@
         </childnode>
       </node>
       <node id="6">
+        <label>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
         <label>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SL &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
+        <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
         <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::scalar_quantizer::DistanceComputerByteSigned&lt; Similarity, SL &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByteSigned"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>

@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</compoundname>
     <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::SQuantizer</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::AVX512 &gt;</derivedcompoundref>
     <templateparamlist>
     </templateparamlist>
     <sectiondef kind="public-attrib">
@@ -120,6 +121,12 @@
       <node id="2">
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="3">
+        <label>faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</label>

@@ -317,6 +317,8 @@
         <qualifiedname>faiss::DistanceComputer::set_query</qualifiedname>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a26623e7801c7f8d3c5c557f05e29c609">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a9f1c66330ffa63e711fcb6e9f61b9ac3">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4_1a00591f377a6d27856665758cddf4c32c">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4_1a8c5eb3708b3e4a181f8b52ab70d706f7">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acd7effc0f77263d0383197e8856f1527">set_query</reimplementedby>
         <param>

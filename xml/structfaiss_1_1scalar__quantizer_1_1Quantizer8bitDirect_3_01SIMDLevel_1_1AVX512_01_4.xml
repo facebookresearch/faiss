@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</basecompoundref>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4_1a7e495ec4f206d44b1f1668f275d8a26f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;::Quantizer8bitDirect</definition>
+        <argsstring>(size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>Quantizer8bitDirect</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;::Quantizer8bitDirect</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="338" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="338" bodyend="341"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4_1aee7991adcfa3da7f050d4e645ed5a423" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE <ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+        <definition>FAISS_ALWAYS_INLINE simd16float32 faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;::reconstruct_16_components</definition>
+        <argsstring>(const uint8_t *code, int i) const</argsstring>
+        <name>reconstruct_16_components</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;::reconstruct_16_components</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="344" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="344" bodyend="348"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1aff1e88517249ddb7c4fda1ad740fe07a" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::encode_vector</definition>
+        <argsstring>(const float *x, uint8_t *code) const final</argsstring>
+        <name>encode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::encode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="294" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="294" bodyend="298"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::decode_vector</definition>
+        <argsstring>(const uint8_t *code, float *x) const final</argsstring>
+        <name>decode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::decode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="300" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="300" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1ae4a27d92cb82b88aa756dbafb2834384" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE float</type>
+        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::reconstruct_component</definition>
+        <argsstring>(const uint8_t *code, size_t i) const</argsstring>
+        <name>reconstruct_component</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::reconstruct_component</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="306" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="306" bodyend="310"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1abcf0fe405618d5078f3608e75dfc9154" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="289" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="289" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="336" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="337" bodyend="349"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1abcf0fe405618d5078f3608e75dfc9154" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1aff1e88517249ddb7c4fda1ad740fe07a" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4_1a7e495ec4f206d44b1f1668f275d8a26f" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>Quantizer8bitDirect</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4_1aee7991adcfa3da7f050d4e645ed5a423" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>reconstruct_16_components</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1ae4a27d92cb82b88aa756dbafb2834384" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</scope><name>~SQuantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

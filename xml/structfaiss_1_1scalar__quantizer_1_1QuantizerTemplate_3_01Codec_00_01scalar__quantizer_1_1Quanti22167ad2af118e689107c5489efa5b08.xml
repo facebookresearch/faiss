@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>class Codec</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08_1a89b931cbac01e1c71e6e3662fce4da50" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;::QuantizerTemplate</definition>
+        <argsstring>(size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>QuantizerTemplate</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;::QuantizerTemplate</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="200" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="200" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08_1a7ae2d916b8836252f863c94c7da7494c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE <ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+        <definition>FAISS_ALWAYS_INLINE simd16float32 faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;::reconstruct_16_components</definition>
+        <argsstring>(const uint8_t *code, int i) const</argsstring>
+        <name>reconstruct_16_components</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;::reconstruct_16_components</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="209" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="209" bodyend="213"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="192" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="199" bodyend="214"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08_1a89b931cbac01e1c71e6e3662fce4da50" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</scope><name>QuantizerTemplate</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08_1a7ae2d916b8836252f863c94c7da7494c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</scope><name>reconstruct_16_components</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

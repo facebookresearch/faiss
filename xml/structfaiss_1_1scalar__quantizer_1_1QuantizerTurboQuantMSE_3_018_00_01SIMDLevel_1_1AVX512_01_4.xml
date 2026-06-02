@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::NONE &gt;</basecompoundref>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4_1a4a30fec8af9943c16d96f9ba33920660" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">QuantizerTurboQuantMSE</ref>&lt; 8, SIMDLevel::NONE &gt;</type>
+        <definition>using faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;::Base =  QuantizerTurboQuantMSE&lt;8, SIMDLevel::NONE&gt;</definition>
+        <argsstring></argsstring>
+        <name>Base</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;::Base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="276" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="276" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4_1a641fb68d6c947faddc8a8f46199aa620" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;::QuantizerTurboQuantMSE</definition>
+        <argsstring>(size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>QuantizerTurboQuantMSE</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;::QuantizerTurboQuantMSE</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="278" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="278" bodyend="281"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4_1a9221f929f03ecc613f475389337079f4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE <ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+        <definition>FAISS_ALWAYS_INLINE simd16float32 faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;::reconstruct_16_components</definition>
+        <argsstring>(const uint8_t *code, int i) const</argsstring>
+        <name>reconstruct_16_components</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;::reconstruct_16_components</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="284" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="284" bodyend="290"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="274" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="275" bodyend="291"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4_1a4a30fec8af9943c16d96f9ba33920660" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</scope><name>Base</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4_1a641fb68d6c947faddc8a8f46199aa620" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</scope><name>QuantizerTurboQuantMSE</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4_1a9221f929f03ecc613f475389337079f4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</scope><name>reconstruct_16_components</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

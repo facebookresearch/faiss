@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a45be8070075d8aea3619db232e8e734a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::simdwidth</definition>
+        <argsstring></argsstring>
+        <name>simdwidth</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::simdwidth</qualifiedname>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="379" column="26" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="379" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1ad35fa3531e3ffb7f0c63b783d4dda059" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::simd_level</definition>
+        <argsstring></argsstring>
+        <name>simd_level</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::simd_level</qualifiedname>
+        <initializer>= SIMDLevel::AVX512</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="380" column="32" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="380" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a6be3782fb2bce37463e612373608a66a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>constexpr MetricType faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::metric_type</definition>
+        <argsstring></argsstring>
+        <name>metric_type</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::metric_type</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="381" column="33" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="381" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1ab8b3f5861b6ef9763b86a2a5fd5b24c2" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="383" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="383" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1abf4fb0ba8fba171cff15ff17e1755f44" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float * faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::yi</definition>
+        <argsstring></argsstring>
+        <name>yi</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::yi</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="383" column="19" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="383" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a1b4e284c7c9ec8823bd346170dbbd5e4" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+        <definition>simd16float32 faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::accu16</definition>
+        <argsstring></argsstring>
+        <name>accu16</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::accu16</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="387" column="19" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="387" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1af86c3c6c87b217509a87a9b42cbec294" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::SimilarityL2</definition>
+        <argsstring>(const float *y)</argsstring>
+        <name>SimilarityL2</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::SimilarityL2</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="385" column="14" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="385" bodyend="385"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a7b94d7026c952c455dd579d4b2c693ea" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::begin_16</definition>
+        <argsstring>()</argsstring>
+        <name>begin_16</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::begin_16</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="389" column="30" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="389" bodyend="392"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1aced07647f630fa8ec9dde90550c4a222" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::add_16_components</definition>
+        <argsstring>(simd16float32 x)</argsstring>
+        <name>add_16_components</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::add_16_components</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="394" column="30" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="394" bodyend="399"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a9c9f10b2738ab5f4a01d9654f1848565" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::add_16_components_2</definition>
+        <argsstring>(simd16float32 x, simd16float32 y_2)</argsstring>
+        <name>add_16_components_2</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::add_16_components_2</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
+          <declname>y_2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="401" column="30" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="401" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a77fa462d2ae79450073a7dc9e2e45af8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE float</type>
+        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::result_16</definition>
+        <argsstring>()</argsstring>
+        <name>result_16</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;::result_16</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="408" column="31" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="408" bodyend="410"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>accu16</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>@3</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="378" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="378" bodyend="411"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a1b4e284c7c9ec8823bd346170dbbd5e4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>accu16</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1aced07647f630fa8ec9dde90550c4a222" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>add_16_components</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a9c9f10b2738ab5f4a01d9654f1848565" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>add_16_components_2</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a7b94d7026c952c455dd579d4b2c693ea" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>begin_16</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a6be3782fb2bce37463e612373608a66a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a77fa462d2ae79450073a7dc9e2e45af8" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>result_16</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1ad35fa3531e3ffb7f0c63b783d4dda059" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>simd_level</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1a45be8070075d8aea3619db232e8e734a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>simdwidth</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1af86c3c6c87b217509a87a9b42cbec294" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>SimilarityL2</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1ab8b3f5861b6ef9763b86a2a5fd5b24c2" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>y</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1AVX512_01_4_1abf4fb0ba8fba171cff15ff17e1755f44" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::AVX512 &gt;</scope><name>yi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

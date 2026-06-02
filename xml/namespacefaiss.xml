@@ -6851,6 +6851,30 @@
         </inbodydescription>
         <location file="faiss/impl/simd_dispatch.h" line="196" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="196" bodyend="199"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a71e666142d6f1a153968a8f99545acba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename LambdaType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::with_simd_level_spr</definition>
+        <argsstring>(LambdaType &amp;&amp;action)</argsstring>
+        <name>with_simd_level_spr</name>
+        <qualifiedname>faiss::with_simd_level_spr</qualifiedname>
+        <param>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Use for functions with AVX512_SPR-specific implementations. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="205" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="205" bodyend="208"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -6873,7 +6897,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="206" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="206" bodyend="209"/>
+        <location file="faiss/impl/simd_dispatch.h" line="215" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="215" bodyend="218"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6897,7 +6921,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="216" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="216" bodyend="219"/>
+        <location file="faiss/impl/simd_dispatch.h" line="225" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="225" bodyend="228"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SIMDLevel::AVX2 &gt;</type>
@@ -9553,7 +9577,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/bf16.h" line="23" column="17" bodyfile="faiss/utils/bf16.h" bodystart="23" bodyend="28"/>
+        <location file="faiss/utils/bf16.h" line="28" column="17" bodyfile="faiss/utils/bf16.h" bodystart="28" bodyend="33"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a824108d159d2fb71164979e93363c6dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -9571,7 +9595,59 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/bf16.h" line="30" column="14" bodyfile="faiss/utils/bf16.h" bodystart="30" bodyend="34"/>
+        <location file="faiss/utils/bf16.h" line="35" column="14" bodyfile="faiss/utils/bf16.h" bodystart="35" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a847b6348d658e453dda287ec2b386908" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::encode_bf16_simd</definition>
+        <argsstring>(const float *src, uint16_t *dst, size_t n)</argsstring>
+        <name>encode_bf16_simd</name>
+        <qualifiedname>faiss::encode_bf16_simd</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>uint16_t *</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/bf16.h" line="41" column="13" bodyfile="faiss/utils/bf16.h" bodystart="41" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a77ffd2b44e569009056a71eec8633317" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::decode_bf16_simd</definition>
+        <argsstring>(const uint16_t *src, float *dst, size_t n)</argsstring>
+        <name>decode_bf16_simd</name>
+        <qualifiedname>faiss::decode_bf16_simd</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/bf16.h" line="55" column="13" bodyfile="faiss/utils/bf16.h" bodystart="55" bodyend="68"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7466bd32de31640860393a701eaac5ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>

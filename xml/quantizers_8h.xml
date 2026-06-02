@@ -169,6 +169,8 @@
       <node id="31">
         <label>faiss/utils/bf16.h</label>
         <link refid="bf16_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
       </node>
@@ -540,123 +542,124 @@
 <codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/></highlight><highlight class="comment">/*<sp/>unused<sp/>*/</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>d(d_in)<sp/>{}</highlight></codeline>
 <codeline lineno="254"><highlight class="normal"></highlight></codeline>
-<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>encode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>((uint16_t*)code)[i]<sp/>=<sp/>encode_bf16(x[i]);</highlight></codeline>
-<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="260"><highlight class="normal"></highlight></codeline>
-<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x[i]<sp/>=<sp/>decode_bf16(((uint16_t*)code)[i]);</highlight></codeline>
-<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="266"><highlight class="normal"></highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstruct_component(</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>decode_bf16(((uint16_t*)code)[i]);</highlight></codeline>
-<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="272"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"></highlight></codeline>
-<codeline lineno="274"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="275" refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>&lt;SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>&lt;SIMDLevel::NONE&gt;::QuantizerBF16;</highlight></codeline>
-<codeline lineno="277"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="278"><highlight class="normal"></highlight></codeline>
-<codeline lineno="279"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="280"><highlight class="comment"><sp/>*<sp/>8bit_direct<sp/>quantizer</highlight></codeline>
-<codeline lineno="281"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="282"><highlight class="normal"></highlight></codeline>
-<codeline lineno="283"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="284"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>;</highlight></codeline>
-<codeline lineno="285"><highlight class="normal"></highlight></codeline>
-<codeline lineno="286"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
-<codeline lineno="287" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>&lt;SIMDLevel::NONE&gt;<sp/>:<sp/><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref><sp/>{</highlight></codeline>
-<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"></highlight></codeline>
-<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/></highlight><highlight class="comment">/*<sp/>unused<sp/>*/</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>d(d_in)<sp/>{}</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"></highlight></codeline>
-<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>encode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code[i]<sp/>=<sp/>(uint8_t)x[i];</highlight></codeline>
-<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="298"><highlight class="normal"></highlight></codeline>
-<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x[i]<sp/>=<sp/>code[i];</highlight></codeline>
-<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="304"><highlight class="normal"></highlight></codeline>
-<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstruct_component(</highlight></codeline>
-<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
-<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>code[i];</highlight></codeline>
-<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="310"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="311"><highlight class="normal"></highlight></codeline>
-<codeline lineno="312"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="313" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>&lt;SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
-<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>&lt;SIMDLevel::NONE&gt;::Quantizer8bitDirect;</highlight></codeline>
-<codeline lineno="315"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="316"><highlight class="normal"></highlight></codeline>
-<codeline lineno="317"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="318"><highlight class="comment"><sp/>*<sp/>8bit_direct_signed<sp/>quantizer</highlight></codeline>
-<codeline lineno="319"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="320"><highlight class="normal"></highlight></codeline>
-<codeline lineno="321"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="322"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>;</highlight></codeline>
-<codeline lineno="323"><highlight class="normal"></highlight></codeline>
-<codeline lineno="324"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
-<codeline lineno="325" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>&lt;SIMDLevel::NONE&gt;</highlight></codeline>
-<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref><sp/>{</highlight></codeline>
-<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
-<codeline lineno="328"><highlight class="normal"></highlight></codeline>
-<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>(</highlight></codeline>
-<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d_in,</highlight></codeline>
-<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/></highlight><highlight class="comment">/*<sp/>unused<sp/>*/</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>d(d_in)<sp/>{}</highlight></codeline>
-<codeline lineno="333"><highlight class="normal"></highlight></codeline>
-<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>encode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code[i]<sp/>=<sp/>(uint8_t)(x[i]<sp/>+<sp/>128);</highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="339"><highlight class="normal"></highlight></codeline>
-<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x[i]<sp/>=<sp/>code[i]<sp/>-<sp/>128;</highlight></codeline>
-<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="345"><highlight class="normal"></highlight></codeline>
-<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstruct_component(</highlight></codeline>
-<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
-<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>code[i]<sp/>-<sp/>128;</highlight></codeline>
-<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="351"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="352"><highlight class="normal"></highlight></codeline>
-<codeline lineno="353"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="354" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>&lt;SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
-<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>&lt;SIMDLevel::NONE&gt;::Quantizer8bitDirectSigned;</highlight></codeline>
-<codeline lineno="356"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="357"><highlight class="normal"></highlight></codeline>
-<codeline lineno="358"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="359"><highlight class="comment"><sp/>*<sp/>Selection<sp/>function</highlight></codeline>
-<codeline lineno="360"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="361"><highlight class="normal"></highlight></codeline>
-<codeline lineno="362"><highlight class="normal"></highlight><highlight class="comment">//<sp/>declare<sp/>for<sp/>all<sp/>levels</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="363"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="364"><highlight class="normal"><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref>*<sp/>sq_select_quantizer(</highlight></codeline>
-<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref><sp/>qtype,</highlight></codeline>
-<codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/>trained);</highlight></codeline>
-<codeline lineno="368"><highlight class="normal"></highlight></codeline>
-<codeline lineno="369"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>scalar_quantizer</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="370"><highlight class="normal"></highlight></codeline>
-<codeline lineno="371"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>encode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>code)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>encode_bf16_simd(x,<sp/>(uint16_t*)code,<sp/>d);</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>decode_bf16_simd((</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*)code,<sp/>x,<sp/>d);</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstruct_component(</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>decode_bf16(((uint16_t*)code)[i]);</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="268"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="271" refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>&lt;SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>&lt;SIMDLevel::NONE&gt;::QuantizerBF16;</highlight></codeline>
+<codeline lineno="273"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"></highlight></codeline>
+<codeline lineno="275"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>&lt;SIMDLevel::AVX512&gt;;</highlight></codeline>
+<codeline lineno="277"><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
+<codeline lineno="278"><highlight class="normal">struct<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kindref="compound">QuantizerBF16</ref>&lt;SIMDLevel::AVX512_SPR&gt;;</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"></highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="281"><highlight class="comment"><sp/>*<sp/>8bit_direct<sp/>quantizer</highlight></codeline>
+<codeline lineno="282"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal"></highlight></codeline>
+<codeline lineno="284"><highlight class="normal">template<sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="285"><highlight class="normal">struct<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>;</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
+<codeline lineno="288" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" refkind="compound"><highlight class="normal">struct<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>&lt;SIMDLevel::NONE&gt;<sp/>:<sp/><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref><sp/>{</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/></highlight><highlight class="comment">/*<sp/>unused<sp/>*/</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>d(d_in)<sp/>{}</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>encode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code[i]<sp/>=<sp/>(uint8_t)x[i];</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x[i]<sp/>=<sp/>code[i];</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstruct_component(</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>code[i];</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="311"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"></highlight></codeline>
+<codeline lineno="313"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="314" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>&lt;SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" kindref="compound">Quantizer8bitDirect</ref>&lt;SIMDLevel::NONE&gt;::Quantizer8bitDirect;</highlight></codeline>
+<codeline lineno="316"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight></codeline>
+<codeline lineno="318"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="319"><highlight class="comment"><sp/>*<sp/>8bit_direct_signed<sp/>quantizer</highlight></codeline>
+<codeline lineno="320"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>;</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"></highlight></codeline>
+<codeline lineno="325"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
+<codeline lineno="326" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>&lt;SIMDLevel::NONE&gt;</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref><sp/>{</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>(</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d_in,</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/></highlight><highlight class="comment">/*<sp/>unused<sp/>*/</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>d(d_in)<sp/>{}</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"></highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>encode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code[i]<sp/>=<sp/>(uint8_t)(x[i]<sp/>+<sp/>128);</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"></highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode_vector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x[i]<sp/>=<sp/>code[i]<sp/>-<sp/>128;</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"></highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstruct_component(</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>code[i]<sp/>-<sp/>128;</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="352"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"></highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="355" refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>&lt;SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kindref="compound">Quantizer8bitDirectSigned</ref>&lt;SIMDLevel::NONE&gt;::Quantizer8bitDirectSigned;</highlight></codeline>
+<codeline lineno="357"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"></highlight></codeline>
+<codeline lineno="359"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="360"><highlight class="comment"><sp/>*<sp/>Selection<sp/>function</highlight></codeline>
+<codeline lineno="361"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="362"><highlight class="normal"></highlight></codeline>
+<codeline lineno="363"><highlight class="normal"></highlight><highlight class="comment">//<sp/>declare<sp/>for<sp/>all<sp/>levels</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="364"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref>*<sp/>sq_select_quantizer(</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref><sp/>qtype,</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/>trained);</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"></highlight></codeline>
+<codeline lineno="370"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>scalar_quantizer</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="371"><highlight class="normal"></highlight></codeline>
+<codeline lineno="372"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/scalar_quantizer/quantizers.h"/>
   </compounddef>
