@@ -86,6 +86,7 @@ namespace faiss {
 namespace {
 size_t deserialization_loop_limit_ = 0;
 size_t deserialization_vector_byte_limit_ = uint64_t{1} << 40; // 1 TB
+size_t deserialization_lattice_r2_limit_ = 0;
 
 #ifdef FAISS_ENABLE_SVS
 // Read and validate an SVSStorageKind from the stream. Centralizes the
@@ -120,6 +121,14 @@ size_t get_deserialization_vector_byte_limit() {
 
 void set_deserialization_vector_byte_limit(size_t value) {
     deserialization_vector_byte_limit_ = value;
+}
+
+size_t get_deserialization_lattice_r2_limit() {
+    return deserialization_lattice_r2_limit_;
+}
+
+void set_deserialization_lattice_r2_limit(size_t value) {
+    deserialization_lattice_r2_limit_ = value;
 }
 
 #define FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(val, field_name) \
@@ -1902,6 +1911,24 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 nsq);
         FAISS_THROW_IF_NOT_FMT(
                 r2 > 0, "invalid IndexLattice r2 %d (must be > 0)", r2);
+        {
+            // ZnSphereCodecRec constructor populates a decode cache
+            // whose build cost grows polynomially in r2.  The
+            // in-codec memory cap (lattice_Zn.cpp) bounds the cache
+            // size but not the CPU cost of building it, so for small
+            // dsq the cap permits enough decode() iterations to far
+            // exceed reasonable load-time budgets.  Callers that
+            // operate on untrusted index payloads can opt in to a
+            // tighter bound via set_deserialization_lattice_r2_limit;
+            // the default of 0 preserves existing behavior.
+            auto limit_ = get_deserialization_lattice_r2_limit();
+            FAISS_THROW_IF_NOT_FMT(
+                    limit_ == 0 || static_cast<size_t>(r2) <= limit_,
+                    "IndexLattice r2=%d exceeds "
+                    "deserialization_lattice_r2_limit of %zd",
+                    r2,
+                    limit_);
+        }
         int dsq = d / nsq;
         FAISS_THROW_IF_NOT_FMT(
                 dsq >= 2 && (dsq & (dsq - 1)) == 0,
@@ -2137,6 +2164,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 : std::make_unique<IndexIDMap>();
         read_index_header(*idxmap, f);
         idxmap->index = read_index(f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(idxmap->index, "IndexIDMap inner index is null");
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
         FAISS_THROW_IF_NOT_FMT(
@@ -2237,6 +2265,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxhnsw->hnsw.levels.size(),
                 idxhnsw->ntotal);
         idxhnsw->hnsw.is_panorama = (h == fourcc("IHfP"));
+        // `HNSW::is_similarity` is intentionally not serialized, so we
+        // re-derive it here from the persisted metric type. Without this,
+        // a saved IP/similarity index would come back configured as a
+        // distance index and silently produce wrong rankings on search.
+        idxhnsw->hnsw.is_similarity =
+                is_similarity_metric(idxhnsw->metric_type);
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
         // Cross-check storage ntotal and d against index
@@ -2575,6 +2609,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->use_full_search_history);
 
         svs->storage_kind = read_svs_storage_kind(f);
+        READ1(svs->is_static);
 
         if (h == fourcc("ISVL")) {
             auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
@@ -2984,6 +3019,8 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         read_index_binary_header(*idxff, f);
         idxff->own_fields = true;
         idxff->index = read_index(f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(
+                idxff->index, "IndexBinaryFromFloat inner index is null");
         idx = std::move(idxff);
     } else if (h == fourcc("IBHf")) {
         auto idxhnsw = std::make_unique<IndexBinaryHNSW>();

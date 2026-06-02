@@ -35,7 +35,8 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             size_t degree,
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
-            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4);
+            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4,
+            bool is_static = false);
 
     ~IndexSVSVamanaLeanVec() override;
 
@@ -66,7 +67,7 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     svs_runtime::LeanVecTrainingData* training_data{nullptr};
 
    protected:
-    void create_impl() override;
+    void create_impl(idx_t n, const float* x) override;
 };
 
 } // namespace faiss

@@ -17,8 +17,28 @@
 
 #include <faiss/impl/pq_code_distance/pq_code_distance-generic.h>
 
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/pq_code_distance/pq_scan_impl.h>
+#undef THE_SIMD_LEVEL
+
 namespace faiss {
 namespace pq_code_distance {
+
+void pq_scan_8bit(
+        size_t M,
+        const float* dis_table,
+        const uint8_t* codes,
+        size_t ncodes,
+        size_t k,
+        float* heap_dis,
+        int64_t* heap_ids,
+        bool max_heap) {
+    with_simd_level([&]<SIMDLevel SL>() {
+        pq_scan_8bit_impl<SL>(
+                M, dis_table, codes, ncodes, k, heap_dis, heap_ids, max_heap);
+    });
+}
 
 float pq_code_distance_8bit_single(
         size_t M,
