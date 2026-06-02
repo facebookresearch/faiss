@@ -208,4 +208,14 @@ inline auto with_simd_level_256bit(LambdaType&& action) {
             std::forward<LambdaType>(action));
 }
 
+/**
+ * Use for functions that have A0-level implementations plus an AVX512_SPR
+ * specialization (e.g. using VPOPCNTDQ).
+ */
+template <typename LambdaType>
+inline auto with_simd_level_a0_spr(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            std::forward<LambdaType>(action));
+}
+
 } // namespace faiss
