@@ -40,7 +40,9 @@ set(FAISS_SIMD_AVX512_SRC
 # flag. Not compiled into faiss_avx512 — that target stops at the
 # baseline AVX-512F/CD/VL/DQ/BW feature set.
 set(FAISS_SIMD_AVX512_SPR_SRC
+  impl/scalar_quantizer/sq-avx512-spr.cpp
   utils/simd_impl/rabitq_avx512_spr.cpp
+  utils/hamming_distance/hamming_avx512_spr.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
@@ -69,7 +71,10 @@ set(FAISS_SIMD_RVV_SRC
 )
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
-  set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
+  set(FAISS_SIMD_SRC
+    ${FAISS_SIMD_AVX2_SRC}
+    ${FAISS_SIMD_AVX512_SRC}
+    ${FAISS_SIMD_AVX512_SPR_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
@@ -384,6 +389,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/hamming_computer.h
   utils/hamming_distance/hamming_computer-avx2.h
   utils/hamming_distance/hamming_computer-avx512.h
+  utils/hamming_distance/hamming_computer-avx512_spr.h
   utils/hamming_distance/hamming_computer-generic.h
   utils/hamming_distance/hamming_computer-neon.h
   utils/hamming_distance/hamming_computer-rvv.h
@@ -469,14 +475,14 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 ${FAISS_BMI2_FLAGS}>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
 target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
-target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR )
+target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -539,7 +545,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mfma;-mf16c;-mpopcnt"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
       )
     else()
       # Per-file SIMD flags (MSVC)
@@ -699,21 +705,26 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${MKL_LIBRARIES})
 else()
-  # Prefer threaded OpenBLAS (OpenMP or pthreads) over the serial default.
-  # On RHEL/Fedora, the default libopenblas.so is the serial variant;
-  # libopenblaso is OpenMP-threaded and libopenblasp is pthreads-threaded.
-  find_library(BLAS_PREFER_THREADED NAMES openblaso openblasp)
-  if(BLAS_PREFER_THREADED)
-    message(STATUS "Using threaded OpenBLAS: ${BLAS_PREFER_THREADED}")
-    set(BLAS_LIBRARIES "${BLAS_PREFER_THREADED}")
-    # OpenBLAS bundles LAPACK routines, so no separate find_package(LAPACK)
-    # is needed. Calling it would trigger FindBLAS internally, which
-    # unconditionally resets BLAS_LIBRARIES to the serial libopenblas,
-    # causing auditwheel to bundle both serial and threaded variants.
-    set(LAPACK_LIBRARIES "${BLAS_PREFER_THREADED}")
+  if(BLAS_LIBRARIES AND LAPACK_LIBRARIES)
+    message(STATUS "Using user-provided BLAS libraries: ${BLAS_LIBRARIES}")
+    message(STATUS "Using user-provided LAPACK libraries: ${LAPACK_LIBRARIES}")
   else()
-    find_package(BLAS REQUIRED)
-    find_package(LAPACK REQUIRED)
+    # Prefer threaded OpenBLAS (OpenMP or pthreads) over the serial default.
+    # On RHEL/Fedora, the default libopenblas.so is the serial variant;
+    # libopenblaso is OpenMP-threaded and libopenblasp is pthreads-threaded.
+    find_library(BLAS_PREFER_THREADED NAMES openblaso openblasp)
+    if(BLAS_PREFER_THREADED)
+      message(STATUS "Using threaded OpenBLAS: ${BLAS_PREFER_THREADED}")
+      set(BLAS_LIBRARIES "${BLAS_PREFER_THREADED}")
+      # OpenBLAS bundles LAPACK routines, so no separate find_package(LAPACK)
+      # is needed. Calling it would trigger FindBLAS internally, which
+      # unconditionally resets BLAS_LIBRARIES to the serial libopenblas,
+      # causing auditwheel to bundle both serial and threaded variants.
+      set(LAPACK_LIBRARIES "${BLAS_PREFER_THREADED}")
+    else()
+      find_package(BLAS REQUIRED)
+      find_package(LAPACK REQUIRED)
+    endif()
   endif()
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})

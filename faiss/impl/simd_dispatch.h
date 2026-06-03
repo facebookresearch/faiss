@@ -199,12 +199,31 @@ inline auto with_simd_level(LambdaType&& action) {
 }
 
 /**
+ * Use for functions with AVX512_SPR-specific implementations.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_spr(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            std::forward<LambdaType>(action));
+}
+
+/**
  * Use for functions implemented with simdXintY (256-bit) operations
  * that don't have dedicated AVX512 or SVE implementations.
  */
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
     return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for functions that have A0-level implementations plus an AVX512_SPR
+ * specialization (e.g. using VPOPCNTDQ).
+ */
+template <typename LambdaType>
+inline auto with_simd_level_a0_spr(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
             std::forward<LambdaType>(action));
 }
 
