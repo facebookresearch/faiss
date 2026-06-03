@@ -884,7 +884,8 @@ void write_and_read_static_vamana_index(
     // Deserialize
     T* loaded = nullptr;
     ASSERT_NO_THROW({
-        loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str(), read_io_flags));
+        loaded = dynamic_cast<T*>(
+                faiss::read_index(filename.c_str(), read_io_flags));
     });
 
     // Basic checks
@@ -1000,25 +1001,29 @@ TEST_F(SVS, StaticVamanaReconstruct) {
 TEST_F(SVS, WriteAndMapStaticVamana) {
     faiss::IndexSVSVamana index{
             d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    write_and_read_static_vamana_index(index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
 
 TEST_F(SVS, WriteAndMapStaticVamanaFP16) {
     faiss::IndexSVSVamana index{
             d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16, true};
-    write_and_read_static_vamana_index(index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
 
 TEST_F(SVS, WriteAndMapStaticVamanaSQI8) {
     faiss::IndexSVSVamana index{
             d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8, true};
-    write_and_read_static_vamana_index(index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
 
 TEST_F(SVSLL, WriteAndMapStaticVamanaLVQ4x4) {
     faiss::IndexSVSVamanaLVQ index{
             d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4, true};
-    write_and_read_static_vamana_index(index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
 
 TEST_F(SVSLL, WriteAndMapStaticVamanaLeanVec4x4) {
@@ -1029,5 +1034,6 @@ TEST_F(SVSLL, WriteAndMapStaticVamanaLeanVec4x4) {
             0,
             faiss::SVSStorageKind::SVS_LeanVec4x4,
             true};
-    write_and_read_static_vamana_index(index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }

@@ -188,7 +188,7 @@ void IndexSVSVamana::reset() {
     }
     stored_vectors.clear();
     stored_vectors_valid = true;
-    mmap_owner.reset();  // Release the memory mapping
+    mmap_owner.reset(); // Release the memory mapping
     is_trained = false;
     ntotal = 0;
 }

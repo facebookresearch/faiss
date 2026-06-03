@@ -61,7 +61,7 @@ void IndexSVSFlat::reset() {
             FAISS_THROW_MSG(status.message());
         }
     }
-    mmap_owner.reset();  // Release the memory mapping
+    mmap_owner.reset(); // Release the memory mapping
     ntotal = 0;
 }
 
@@ -137,11 +137,7 @@ void IndexSVSFlat::map_to(MappedFileIOReader* mf) {
 
     size_t read_bytes = 0;
     auto status = svs_runtime::FlatIndex::map_to_memory(
-            &impl,
-            data,
-            actual_size,
-            svs_metric,
-            &read_bytes);
+            &impl, data, actual_size, svs_metric, &read_bytes);
 
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
