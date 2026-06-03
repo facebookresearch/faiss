@@ -1351,13 +1351,13 @@ void reservePriorityQueue(
 /// Templated body of `search_from_candidate_unbounded`. The choice of
 /// max-heap vs min-heap for both `top_candidates` and `candidates` is
 /// derived from C via `TopCandidatesQueue` / `CandidatesQueue`.
-template <class C>
-TopCandidatesQueue<C> search_from_candidate_unbounded_impl(
+template <typename VTType, class C>
+TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         const HNSW& hnsw,
         const HNSW::Node& node,
         DistanceComputer& qdis,
         int ef,
-        VisitedTable* vt,
+        VTType& vt,
         HNSWStats& stats) {
     int ndis = 0;
     TopCandidatesQueue<C> top_candidates;
@@ -1369,7 +1369,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_impl(
     top_candidates.push(node);
     candidates.push(node);
 
-    vt->set(node.second);
+    vt.set(node.second);
 
     while (!candidates.empty()) {
         float d0;
@@ -1394,7 +1394,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_impl(
                 break;
             }
 
-            vt->prefetch(v1);
+            vt.prefetch(v1);
             jmax += 1;
         }
 
@@ -1417,7 +1417,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_impl(
             int v1 = hnsw.neighbors[j];
 
             saved_j[counter] = v1;
-            counter += vt->set(v1) ? 1 : 0;
+            counter += vt.set(v1) ? 1 : 0;
 
             if (counter == 4) {
                 float dis[4];
@@ -1464,8 +1464,8 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_impl(
 
 /// Public dispatcher: only the distance (CMax) flavor is exposed because
 /// its return type — `std::priority_queue<HNSW::Node>` — is the CMax
-/// max-heap. Internal callers that need similarity mode use
-/// `search_from_candidate_unbounded_impl<C_similarity>` directly.
+/// max-heap. Internal callers that need similarity mode use the same
+/// dispatch pattern inline.
 std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
         const HNSW& hnsw,
         const HNSW::Node& node,
@@ -1473,8 +1473,16 @@ std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
         int ef,
         VisitedTable* vt,
         HNSWStats& stats) {
-    return search_from_candidate_unbounded_impl<HNSW::C_distance>(
-            hnsw, node, qdis, ef, vt, stats);
+    using C = HNSW::C_distance;
+    auto call = [&]<typename VTType>(VTType& vt_concrete) {
+        return search_from_candidate_unbounded_fixVT<VTType, C>(
+                hnsw, node, qdis, ef, vt_concrete, stats);
+    };
+    if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(vt)) {
+        return call(*vtv);
+    }
+    VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(*vt);
+    return call(vts);
 }
 
 namespace {
@@ -1555,8 +1563,22 @@ HNSWStats search_impl(
             }
         }
     } else {
-        auto top_candidates = search_from_candidate_unbounded_impl<C>(
-                hnsw, HNSW::Node(d_nearest, nearest), qdis, ef, &vt, stats);
+        auto call = [&]<typename VTType>(VTType& vt_concrete) {
+            return search_from_candidate_unbounded_fixVT<VTType, C>(
+                    hnsw,
+                    HNSW::Node(d_nearest, nearest),
+                    qdis,
+                    ef,
+                    vt_concrete,
+                    stats);
+        };
+        TopCandidatesQueue<C> top_candidates;
+        if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
+            top_candidates = call(*vtv);
+        } else {
+            VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
+            top_candidates = call(vts);
+        }
 
         while (top_candidates.size() > static_cast<size_t>(k)) {
             top_candidates.pop();
