@@ -14,6 +14,9 @@
 
 #include <omp.h>
 
+#include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/expanded_scanners.h>
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -136,6 +139,9 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
     if (qtype == ScalarQuantizer::QT_0bit) {
         by_residual = false;
         is_trained = true; // no training needed
+    }
+    if (ScalarQuantizer::TurboQuantRefine::is_turboq_full(qtype)) {
+        by_residual = false;
     }
 }
 
@@ -330,9 +336,65 @@ void IndexIVFScalarQuantizer::add_core(
 InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
-        const IVFSearchParameters*) const {
-    return sq.select_InvertedListScanner(
-            metric_type, quantizer, store_pairs, sel, by_residual);
+        const IVFSearchParameters* search_params) const {
+    if (!ScalarQuantizer::TurboQuantRefine::is_turboq_full(sq.qtype)) {
+        return sq.select_InvertedListScanner(
+                metric_type, quantizer, store_pairs, sel, by_residual);
+    }
+
+    // TurboQ full types: create a TQ-specific scanner that supports
+    // search params (qb, int_qjl) and pre-screening.
+    uint8_t tq_qb = 0;
+    bool tq_int_qjl = false;
+    if (auto* tp = dynamic_cast<const IVFSQTurboQSearchParameters*>(
+                search_params)) {
+        tq_qb = tp->qb;
+        tq_int_qjl = tp->int_qjl;
+    }
+    using TurboQDC = ScalarQuantizer::TurboQuantRefine::DistanceComputer;
+    auto* dc = static_cast<TurboQDC*>(sq.get_distance_computer(metric_type));
+    dc->configure(tq_qb, tq_int_qjl);
+
+    struct TQScanner : InvertedListScanner {
+        std::unique_ptr<TurboQDC> dc;
+
+        explicit TQScanner(
+                TurboQDC* dc_in,
+                bool store_pairs_in,
+                const IDSelector* sel_in,
+                bool keep_max_in)
+                : InvertedListScanner(store_pairs_in, sel_in), dc(dc_in) {
+            this->keep_max = keep_max_in;
+        }
+
+        void set_query(const float* query) override {
+            dc->set_query(query);
+        }
+
+        void set_list(idx_t list_no_in, float) override {
+            this->list_no = list_no_in;
+        }
+
+        float distance_to_code(const uint8_t* code) const final {
+            return dc->distance_to_code(code);
+        }
+
+        size_t scan_codes(
+                size_t list_size,
+                const uint8_t* codes,
+                const idx_t* ids,
+                ResultHandler& handler) const override {
+            dc->set_prescreen_threshold(&handler.threshold, !keep_max);
+            size_t nup = run_scan_codes(*this, list_size, codes, ids, handler);
+            dc->clear_prescreen_threshold();
+            return nup;
+        }
+    };
+
+    auto* scanner = new TQScanner(
+            dc, store_pairs, sel, is_similarity_metric(metric_type));
+    scanner->code_size = code_size;
+    return scanner;
 }
 
 void IndexIVFScalarQuantizer::reconstruct_from_offset(
