@@ -152,6 +152,32 @@ TEST(ReadIndexDeserialize, PQWithMZeroDivideByZero) {
 }
 
 // -----------------------------------------------------------------------
+// Test: a non-{0,1} byte at a bool field position must be rejected as
+// FaissException rather than silently producing an invalid bool value.
+// Reading a non-canonical byte directly into a bool is UB and trips
+// UBSan's invalid-bool-load check; the READ1_BOOL helper routes every
+// bool READ1 through a value check and throws on anything outside {0,1}.
+// is_trained, read inside read_index_header, exercises the helper from
+// the most common deserialization path.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexHeaderInvalidBoolEncodingIsTrained) {
+    // Minimal IndexFlatL2 ("IxF2") with ntotal=0 - read_index_header is
+    // the first thing the deserializer consumes for this fourcc.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+
+    // is_trained sits at offset 4 (fourcc) + 4 (d) + 8 (ntotal) +
+    // 8 (dummy) + 8 (dummy) = 32. push_index_header writes 0x01 there;
+    // overwrite with a non-canonical bool byte.
+    constexpr size_t is_trained_offset = 32;
+    ASSERT_EQ(buf[is_trained_offset], uint8_t{1});
+    buf[is_trained_offset] = 0x02;
+
+    expect_read_throws_with(buf, "invalid bool encoding");
+}
+
+// -----------------------------------------------------------------------
 // Test: AdditiveQuantizer with nbits.size() != M causes out-of-bounds
 // access on the nbits vector in set_derived_values().  The fix validates
 // nbits.size() == M in read_AdditiveQuantizer.
