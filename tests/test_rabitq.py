@@ -423,13 +423,11 @@ class TestIVFRaBitQ(unittest.TestCase):
         self.do_comparison_vs_pq_test(faiss.METRIC_INNER_PRODUCT)
 
     def test_comparison_vs_ref_L2(self):
+        # SIMD path must return identical results to NONE on the same index.
         ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 100)
 
         k = 10
         nlist = 200
-        ref_rbq = ReferenceIVFRabitQ(ds.d, nlist, Bq=4)
-        ref_rbq.train(ds.get_train(), np.identity(ds.d))
-        ref_rbq.add(ds.get_database())
 
         index_flat = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
         index_rbq = faiss.IndexIVFRaBitQ(
@@ -440,25 +438,19 @@ class TestIVFRaBitQ(unittest.TestCase):
         index_rbq.add(ds.get_database())
 
         for nprobe in 1, 4, 16:
-            ref_rbq.nprobe = nprobe
-            _, Iref = ref_rbq.search(ds.get_queries(), k)
-            r_ref_k = faiss.eval_intersection(
-                Iref[:, :k], ds.get_groundtruth()[:, :k]
-            ) / (ds.nq * k)
-            print(f"{nprobe=} k-recall@10={r_ref_k}")
-
             params = faiss.IVFRaBitQSearchParameters()
             params.qb = index_rbq.qb
             params.nprobe = nprobe
-            _, Inew, _ = faiss.search_with_parameters(
+            _, I_simd, _ = faiss.search_with_parameters(
                 index_rbq, ds.get_queries(), k, params, output_stats=True
             )
-            r_new_k = faiss.eval_intersection(
-                Inew[:, :k], ds.get_groundtruth()[:, :k]
-            ) / (ds.nq * k)
-            print(f"{nprobe=} k-recall@10={r_new_k}")
 
-            np.testing.assert_almost_equal(r_ref_k, r_new_k, 3)
+            with NoneSIMDLevel():
+                _, I_none, _ = faiss.search_with_parameters(
+                    index_rbq, ds.get_queries(), k, params, output_stats=True
+                )
+
+            np.testing.assert_array_equal(I_simd, I_none)
 
     def test_comparison_vs_ref_L2_rrot(self):
         ds = datasets.SyntheticDataset(128, 4096, 4096, 100)
