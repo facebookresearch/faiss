@@ -575,20 +575,17 @@ void MetalIndexIVFFlat::add(idx_t n, const float* x) {
     if (n == 0) {
         return;
     }
-    // Compute list assignments for this batch (mirrors IndexIVF::add path).
     std::vector<idx_t> list_nos(n);
     cpuIndex_->quantizer->assign(n, x, list_nos.data());
 
     idx_t oldNt = cpuIndex_->ntotal;
     const idx_t autoReserveMinBatch = getIvfAutoReserveMinBatch();
     if (gpuIvf_ && autoReserveMinBatch > 0 && n >= autoReserveMinBatch) {
-        // Pre-reserve before append to reduce relayout spikes on large batches.
         gpuIvf_->reserveMemory(oldNt + n);
     }
-    cpuIndex_->add(n, x);
+    cpuIndex_->add_core(n, x, nullptr, list_nos.data());
     ntotal = cpuIndex_->ntotal;
 
-    // Mirror IVF data into Metal IVF storage.
     if (gpuIvf_) {
         std::vector<idx_t> ids(n);
         for (idx_t i = 0; i < n; ++i) {
@@ -612,11 +609,10 @@ void MetalIndexIVFFlat::add_with_ids(idx_t n, const float* x, const idx_t* xids)
         gpuIvf_->reserveMemory(oldNt + n);
     }
 
-    // Compute list assignments for this batch.
     std::vector<idx_t> list_nos(n);
     cpuIndex_->quantizer->assign(n, x, list_nos.data());
 
-    cpuIndex_->add_with_ids(n, x, xids);
+    cpuIndex_->add_core(n, x, xids, list_nos.data());
     ntotal = cpuIndex_->ntotal;
 
     if (gpuIvf_) {
