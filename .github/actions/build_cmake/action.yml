@@ -179,7 +179,9 @@ runs:
     - name: Setup macOS Metal environment
       if: inputs.metal == 'ON'
       shell: bash
-      run: brew install cmake libomp gflags
+      run: |
+        brew install cmake libomp gflags swig
+        pip3 install --break-system-packages numpy pytest
     - name: Build all targets
       if: inputs.metal != 'ON'
       shell: bash
@@ -212,12 +214,12 @@ runs:
         cmake -B build \
               -DFAISS_ENABLE_METAL=ON \
               -DFAISS_ENABLE_GPU=OFF \
-              -DFAISS_ENABLE_PYTHON=OFF \
+              -DFAISS_ENABLE_PYTHON=ON \
               -DBUILD_TESTING=ON \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_PREFIX_PATH="$(brew --prefix libomp)" \
               .
-        cmake --build build --target faiss_metal TestMetalIndexFlat -j$(sysctl -n hw.logicalcpu)
+        cmake --build build --target faiss faiss_metal swigfaiss TestMetalIndexFlat TestMetalIndexIVFFlat -j$(sysctl -n hw.logicalcpu)
     - name: C++ tests
       if: inputs.metal != 'ON'
       shell: bash
@@ -228,7 +230,16 @@ runs:
     - name: C++ tests (Metal)
       if: inputs.metal == 'ON'
       shell: bash
-      run: cd build && ctest -R TestMetalIndexFlat --output-on-failure
+      run: cd build && ctest -R TestMetalIndex --output-on-failure
+    - name: Install Python extension (Metal)
+      if: inputs.metal == 'ON'
+      shell: bash
+      working-directory: build/faiss/python
+      run: pip3 install --break-system-packages .
+    - name: Python tests (Metal)
+      if: inputs.metal == 'ON'
+      shell: bash
+      run: python3 -m pytest faiss/gpu_metal/test/test_metal_python.py -v
     - name: C++ perf benchmarks
       if: inputs.rocm == 'OFF' && inputs.metal != 'ON'
       shell: bash
