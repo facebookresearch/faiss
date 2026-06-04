@@ -9,14 +9,14 @@
         <argsstring></argsstring>
         <name>kMaxK</name>
         <qualifiedname>faiss::gpu_metal::MetalKernels::kMaxK</qualifiedname>
-        <initializer>= 256</initializer>
+        <initializer>= 2048</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="28" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="30" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="30" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-attrib">
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="55" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="99" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1afe03814888d1625b311a7b35adabd937" prot="private" static="no" mutable="no">
         <type>id&lt; MTLLibrary &gt;</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="56" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="56" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="100" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="100" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d4223225f89427bb6b4932f65fd62ba" prot="private" static="no" mutable="no">
         <type>std::unordered_map&lt; std::string, id&lt; MTLComputePipelineState &gt; &gt;</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="57" column="24" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="57" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="101" column="24" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="101" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-static-attrib">
@@ -70,14 +70,15 @@
         <argsstring>[]</argsstring>
         <name>kTopKVariantSizes</name>
         <qualifiedname>faiss::gpu_metal::MetalKernels::kTopKVariantSizes</qualifiedname>
-        <initializer>= {32, 64, 128, 256}</initializer>
+        <initializer>=
+            {32, 64, 128, 256, 512, 1024, 2048}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="59" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="59" bodyend="59"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="103" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="103" bodyend="104"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1ae1c610902f2da67a4ff97da3931752f1" prot="private" static="yes" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -85,14 +86,14 @@
         <argsstring></argsstring>
         <name>kNumTopKVariants</name>
         <qualifiedname>faiss::gpu_metal::MetalKernels::kNumTopKVariants</qualifiedname>
-        <initializer>= 4</initializer>
+        <initializer>= 7</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="60" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="60" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="105" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="105" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -112,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="24" column="14"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="26" column="14"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a47018f861b9fb131ec2323e0e50242f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -126,7 +127,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="25" column="5"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="27" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1ae7cdf4d0a6cae442661d93eb276e199f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -140,7 +141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="27" column="10"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="29" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d3f6787e5803af03698271880abba9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -186,7 +187,87 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="30" column="10"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="32" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1aa75ab4b9994bf3a10608d5af0d39c888" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalKernels::encodeL2WithNorms</definition>
+        <argsstring>(id&lt; MTLComputeCommandEncoder &gt; enc, id&lt; MTLBuffer &gt; queries, id&lt; MTLBuffer &gt; vectors, id&lt; MTLBuffer &gt; distances, id&lt; MTLBuffer &gt; vecNorms, int nq, int nb, int d)</argsstring>
+        <name>encodeL2WithNorms</name>
+        <qualifiedname>faiss::gpu_metal::MetalKernels::encodeL2WithNorms</qualifiedname>
+        <param>
+          <type>id&lt; MTLComputeCommandEncoder &gt;</type>
+          <declname>enc</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>vectors</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>vecNorms</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="42" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1abfec97ecc8723370f86f1ffa86074c22" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalKernels::encodeComputeNorms</definition>
+        <argsstring>(id&lt; MTLComputeCommandEncoder &gt; enc, id&lt; MTLBuffer &gt; vectors, id&lt; MTLBuffer &gt; norms, int nb, int d)</argsstring>
+        <name>encodeComputeNorms</name>
+        <qualifiedname>faiss::gpu_metal::MetalKernels::encodeComputeNorms</qualifiedname>
+        <param>
+          <type>id&lt; MTLComputeCommandEncoder &gt;</type>
+          <declname>enc</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>vectors</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>norms</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="52" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a0a99dad2ce9c1b27d87e60a189aeef24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -232,7 +313,120 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="40" column="10"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="59" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a6e543fcf47bae25dc29348e08a1cb19c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalKernels::encodeIVFScanList</definition>
+        <argsstring>(id&lt; MTLComputeCommandEncoder &gt; enc, IVFScanVariant variant, id&lt; MTLBuffer &gt; queries, id&lt; MTLBuffer &gt; codes, id&lt; MTLBuffer &gt; ids, id&lt; MTLBuffer &gt; listOffset, id&lt; MTLBuffer &gt; listLength, id&lt; MTLBuffer &gt; coarseAssign, id&lt; MTLBuffer &gt; perListDist, id&lt; MTLBuffer &gt; perListIdx, id&lt; MTLBuffer &gt; paramsBuf, int nq, int nprobe, id&lt; MTLBuffer &gt; ilCodesOffset=nil)</argsstring>
+        <name>encodeIVFScanList</name>
+        <qualifiedname>faiss::gpu_metal::MetalKernels::encodeIVFScanList</qualifiedname>
+        <param>
+          <type>id&lt; MTLComputeCommandEncoder &gt;</type>
+          <declname>enc</declname>
+        </param>
+        <param>
+          <type>IVFScanVariant</type>
+          <declname>variant</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listOffset</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listLength</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseAssign</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListDist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListIdx</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>paramsBuf</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nprobe</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>ilCodesOffset</declname>
+          <defval>nil</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="69" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a795419baef42c0a13c330199c7d713b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalKernels::encodeIVFMergeLists</definition>
+        <argsstring>(id&lt; MTLComputeCommandEncoder &gt; enc, id&lt; MTLBuffer &gt; perListDist, id&lt; MTLBuffer &gt; perListIdx, id&lt; MTLBuffer &gt; outDist, id&lt; MTLBuffer &gt; outIdx, id&lt; MTLBuffer &gt; paramsBuf, int nq)</argsstring>
+        <name>encodeIVFMergeLists</name>
+        <qualifiedname>faiss::gpu_metal::MetalKernels::encodeIVFMergeLists</qualifiedname>
+        <param>
+          <type>id&lt; MTLComputeCommandEncoder &gt;</type>
+          <declname>enc</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListDist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListIdx</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outDist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outIdx</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>paramsBuf</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="85" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -252,7 +446,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="50" column="16"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="94" column="16"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -272,18 +466,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="53" column="8"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="97" column="8"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu_metal/MetalKernels.h" line="22" column="1" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="22" bodyend="61"/>
+    <location file="faiss/gpu_metal/MetalKernels.h" line="24" column="1" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="24" bodyend="106"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d4223225f89427bb6b4932f65fd62ba" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>cache_</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a1ef58ac57d802c7b382846f66a72504a" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>device_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1abfec97ecc8723370f86f1ffa86074c22" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeComputeNorms</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d3f6787e5803af03698271880abba9c" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeDistanceMatrix</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a795419baef42c0a13c330199c7d713b5" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeIVFMergeLists</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a6e543fcf47bae25dc29348e08a1cb19c" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeIVFScanList</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1aa75ab4b9994bf3a10608d5af0d39c888" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeL2WithNorms</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a0a99dad2ce9c1b27d87e60a189aeef24" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeTopKThreadgroup</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1ae7cdf4d0a6cae442661d93eb276e199f" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>isValid</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1ac44330fbd8f40115da0e98889f25d060" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>kMaxK</name></member>

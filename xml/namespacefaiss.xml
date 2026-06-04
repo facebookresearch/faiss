@@ -20267,7 +20267,13 @@
 <para>Unified name for flat GPU index when Metal backend is built. Include this when using the Metal backend for API parity with <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">faiss::gpu::GpuIndexFlat</ref>.</para>
 <para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>Metal IVF Flat implementation: GPU-resident IVF list storage and helpers. Mirrors the roles of <ref refid="IVFFlat_8cuh_source" kindref="compound">faiss/gpu/impl/IVFFlat.cuh</ref> (storage side only).</para>
+<para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
 <para>Clone CPU &lt;-&gt; Metal GPU. Mirrors GpuCloner roles for Metal backend.</para>
+<para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>IVF distance computation and scan dispatch for Metal backend.</para>
 <para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
 <para>Objective-C++ header. Runs L2/IP distance + top-k via Metal compute.</para>
@@ -20279,7 +20285,13 @@
 <para>Objective-C++ header (uses Metal types).</para>
 <para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>Minimal Metal IVFFlat wrapper.</para>
+<para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
 <para>MetalKernels: typed wrapper around Metal compute kernels. Owns library compilation, pipeline caching, and dispatch encoding.</para>
+<para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>C++-only API for Python/SWIG. No Objective-C types so SWIG can parse it. Implemented in MetalPythonBridge.mm.</para>
 <para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
 <para>This header uses Objective-C types (Metal framework: id, nil, MTLDevice, etc.). For correct IDE/linter behavior, associate this file with &quot;Objective-C++&quot;:</para>

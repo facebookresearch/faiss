@@ -5,6 +5,9 @@
     <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
     <includedby refid="GpuClonerOptions_8h" local="no">faiss/gpu/GpuClonerOptions.h</includedby>
     <includedby refid="GpuIndexIVF_8h" local="no">faiss/gpu/GpuIndexIVF.h</includedby>
+    <includedby refid="MetalIndex_8h" local="no">faiss/gpu_metal/MetalIndex.h</includedby>
+    <includedby refid="MetalIndexIVFFlat_8h" local="no">faiss/gpu_metal/MetalIndexIVFFlat.h</includedby>
+    <includedby refid="MetalIVFFlat_8h" local="no">faiss/gpu_metal/impl/MetalIVFFlat.h</includedby>
     <invincdepgraph>
       <node id="2">
         <label>faiss/gpu/GpuCloner.h</label>
@@ -59,6 +62,38 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/gpu_metal/GpuIndexFlat.h</label>
+        <link refid="gpu__metal_2GpuIndexFlat_8h_source"/>
+      </node>
+      <node id="10">
+        <label>faiss/gpu_metal/MetalIndex.h</label>
+        <link refid="MetalIndex_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/gpu_metal/MetalIndexFlat.h</label>
+        <link refid="MetalIndexFlat_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/gpu_metal/MetalIndexIVFFlat.h</label>
+        <link refid="MetalIndexIVFFlat_8h_source"/>
+      </node>
+      <node id="14">
+        <label>faiss/gpu_metal/impl/MetalIVFFlat.h</label>
+        <link refid="MetalIVFFlat_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

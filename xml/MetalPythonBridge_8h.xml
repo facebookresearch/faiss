@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MetalPythonBridge_8h" kind="file" language="C++">
+    <compoundname>MetalPythonBridge.h</compoundname>
+    <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/gpu_metal/MetalPythonBridge.h</label>
+        <link refid="MetalPythonBridge_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>cinttypes</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
+        <label>cstdio</label>
+      </node>
+      <node id="6">
+        <label>cstdlib</label>
+      </node>
+      <node id="9">
+        <label>exception</label>
+      </node>
+      <node id="15">
+        <label>limits</label>
+      </node>
+      <node id="10">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+      <node id="12">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" prot="public">faiss::gpu_metal::StandardMetalResourcesHolder</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1gpu__metal">faiss::gpu_metal</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>@lint-ignore-every<sp/>LICENSELINT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="2"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>C++-only<sp/>API<sp/>for<sp/>Python/SWIG.<sp/>No<sp/>Objective-C<sp/>types<sp/>so<sp/>SWIG<sp/>can</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>parse<sp/>it.<sp/>Implemented<sp/>in<sp/>MetalPythonBridge.mm.</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="19"><highlight class="comment">///<sp/>Opaque<sp/>holder<sp/>for<sp/>Metal<sp/>resources.</highlight></codeline>
+<codeline lineno="20" refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref><sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>impl<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref>();</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">~StandardMetalResourcesHolder</ref>();</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref>&amp;<sp/>operator=(</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment">///<sp/>Same<sp/>names<sp/>as<sp/>GPU<sp/>API<sp/>for<sp/>unified<sp/>Python<sp/>binding.</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>get_num_gpus();</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>gpu_profiler_start();</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>gpu_profiler_stop();</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>gpu_sync_all_devices();</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment">///<sp/>Clone<sp/>CPU<sp/>index<sp/>to<sp/>Metal<sp/>GPU.<sp/>Caller<sp/>owns<sp/>returned<sp/>index.</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_cpu_to_gpu(</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref>*<sp/>res,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="41"><highlight class="comment">///<sp/>Copy<sp/>Metal<sp/>index<sp/>back<sp/>to<sp/>CPU.<sp/>Caller<sp/>owns<sp/>returned<sp/>index.</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_gpu_to_cpu(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu_metal/MetalPythonBridge.h"/>
+  </compounddef>
+</doxygen>

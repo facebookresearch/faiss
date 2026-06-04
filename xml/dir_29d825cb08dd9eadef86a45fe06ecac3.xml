@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_29d825cb08dd9eadef86a45fe06ecac3" kind="dir">
+    <compoundname>faiss/gpu_metal/impl</compoundname>
+    <innerfile refid="MetalIVFFlat_8h">MetalIVFFlat.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu_metal/impl/"/>
+  </compounddef>
+</doxygen>

@@ -1277,6 +1277,7 @@
         <qualifiedname>faiss::Index::add_with_ids</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191">add_with_ids</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu__metal_1_1MetalIndexFlat_1a7685d5790aaf5c4468fa9aabcde200f3">add_with_ids</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ab7e4e10d58122944ce80c9878b2ee605">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a14e75169bddcd0251134821416b060a1">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a8699e7d828750f02bfc86014269e4a6c">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a4e27cfca56590371e0984d8f16b2b68d">add_with_ids</reimplementedby>

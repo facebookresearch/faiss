@@ -6,6 +6,7 @@
     <includes local="no">unordered_map</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includedby refid="IndexIVFFlatPanorama_8h" local="yes">faiss/IndexIVFFlatPanorama.h</includedby>
+    <includedby refid="MetalIndexIVFFlat_8h" local="no">faiss/gpu_metal/MetalIndexIVFFlat.h</includedby>
     <includedby refid="IVFFlatScanner-inl_8h" local="no">faiss/utils/simd_impl/IVFFlatScanner-inl.h</includedby>
     <incdepgraph>
       <node id="5">
@@ -310,12 +311,18 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexIVFFlatPanorama.h</label>
         <link refid="IndexIVFFlatPanorama_8h_source"/>
       </node>
       <node id="3">
+        <label>faiss/gpu_metal/MetalIndexIVFFlat.h</label>
+        <link refid="MetalIndexIVFFlat_8h_source"/>
+      </node>
+      <node id="4">
         <label>faiss/utils/simd_impl/IVFFlatScanner-inl.h</label>
         <link refid="IVFFlatScanner-inl_8h_source"/>
       </node>

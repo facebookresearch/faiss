@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu_metal::StandardMetalResourcesHolder</compoundname>
+    <includes refid="MetalPythonBridge_8h" local="no">MetalPythonBridge.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1ac4ed70f20e434dbd40b2455bbfc7ab6a" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* faiss::gpu_metal::StandardMetalResourcesHolder::impl</definition>
+        <argsstring></argsstring>
+        <name>impl</name>
+        <qualifiedname>faiss::gpu_metal::StandardMetalResourcesHolder::impl</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="21" column="10" bodyfile="faiss/gpu_metal/MetalPythonBridge.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1a4d31e64da54f221a8fca940c5540cf71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu_metal::StandardMetalResourcesHolder::StandardMetalResourcesHolder</definition>
+        <argsstring>()</argsstring>
+        <name>StandardMetalResourcesHolder</name>
+        <qualifiedname>faiss::gpu_metal::StandardMetalResourcesHolder::StandardMetalResourcesHolder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="22" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1ab6ac6d7f45d02e51ba35874f15c6f295" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu_metal::StandardMetalResourcesHolder::~StandardMetalResourcesHolder</definition>
+        <argsstring>()</argsstring>
+        <name>~StandardMetalResourcesHolder</name>
+        <qualifiedname>faiss::gpu_metal::StandardMetalResourcesHolder::~StandardMetalResourcesHolder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="23" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1aa961edc9c52702a72f27ae236aba646a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu_metal::StandardMetalResourcesHolder::StandardMetalResourcesHolder</definition>
+        <argsstring>(const StandardMetalResourcesHolder &amp;)=delete</argsstring>
+        <name>StandardMetalResourcesHolder</name>
+        <qualifiedname>faiss::gpu_metal::StandardMetalResourcesHolder::StandardMetalResourcesHolder</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="24" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1a4c4bfa2701ac23b36a299e2b26f609a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref> &amp;</type>
+        <definition>StandardMetalResourcesHolder &amp; faiss::gpu_metal::StandardMetalResourcesHolder::operator=</definition>
+        <argsstring>(const StandardMetalResourcesHolder &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::gpu_metal::StandardMetalResourcesHolder::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="25" column="34"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Opaque holder for Metal resources. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu_metal/MetalPythonBridge.h" line="20" column="1" bodyfile="faiss/gpu_metal/MetalPythonBridge.h" bodystart="20" bodyend="27"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1ac4ed70f20e434dbd40b2455bbfc7ab6a" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::StandardMetalResourcesHolder</scope><name>impl</name></member>
+      <member refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1a4c4bfa2701ac23b36a299e2b26f609a9" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::StandardMetalResourcesHolder</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1a4d31e64da54f221a8fca940c5540cf71" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::StandardMetalResourcesHolder</scope><name>StandardMetalResourcesHolder</name></member>
+      <member refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1aa961edc9c52702a72f27ae236aba646a" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::StandardMetalResourcesHolder</scope><name>StandardMetalResourcesHolder</name></member>
+      <member refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder_1ab6ac6d7f45d02e51ba35874f15c6f295" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::StandardMetalResourcesHolder</scope><name>~StandardMetalResourcesHolder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -3,9 +3,11 @@
   <compounddef id="MetalIndex_8h" kind="file" language="C++">
     <compoundname>MetalIndex.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
     <includes refid="MetalResources_8h" local="no">faiss/gpu_metal/MetalResources.h</includes>
     <includes local="no">memory</includes>
     <includedby refid="MetalIndexFlat_8h" local="no">faiss/gpu_metal/MetalIndexFlat.h</includedby>
+    <includedby refid="MetalIndexIVFFlat_8h" local="no">faiss/gpu_metal/MetalIndexIVFFlat.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/Index.h</label>
@@ -29,6 +31,10 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
+      <node id="16">
+        <label>faiss/gpu/GpuIndicesOptions.h</label>
+        <link refid="GpuIndicesOptions_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/gpu_metal/MetalIndex.h</label>
         <link refid="MetalIndex_8h"/>
@@ -36,17 +42,19 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>faiss/gpu_metal/MetalResources.h</label>
-        <link refid="MetalResources_8h_source"/>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/gpu_metal/MetalResources.h</label>
+        <link refid="MetalResources_8h_source"/>
         <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="7">
@@ -87,16 +95,16 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>Foundation/Foundation.h</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>Metal/Metal.h</label>
       </node>
       <node id="14">
         <label>cinttypes</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>cstddef</label>
       </node>
       <node id="4">
@@ -114,7 +122,7 @@
       <node id="15">
         <label>limits</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>memory</label>
       </node>
       <node id="10">
@@ -137,12 +145,18 @@
         <link refid="MetalIndex_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/gpu_metal/MetalIndexFlat.h</label>
         <link refid="MetalIndexFlat_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/gpu_metal/MetalIndexIVFFlat.h</label>
+        <link refid="MetalIndexIVFFlat_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" prot="public">faiss::gpu_metal::MetalIndexConfig</innerclass>
@@ -167,44 +181,51 @@
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu_metal/MetalResources.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="20"><highlight class="comment">///<sp/>Configuration<sp/>for<sp/>Metal<sp/>index<sp/>(mirrors<sp/>GpuIndexConfig<sp/>roles).</highlight></codeline>
-<codeline lineno="21" refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>{</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="25"><highlight class="comment">///<sp/>Base<sp/>class<sp/>for<sp/>Metal-backed<sp/>indexes.<sp/>Mirrors<sp/>faiss::gpu::GpuIndex.</highlight></codeline>
-<codeline lineno="26" refid="classfaiss_1_1gpu__metal_1_1MetalIndex" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndex" kindref="compound">MetalIndex</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>{</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndex" kindref="compound">MetalIndex</ref>(</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources,</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dims,</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref><sp/>metric,</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metricArg,</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config<sp/>=<sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref>());</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDevice()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>config_.device;</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>getResources()<sp/>{</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>resources_;</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>MetalResources&gt;<sp/>getResources()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>resources_;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources_;</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config_;</highlight></codeline>
-<codeline lineno="48"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu_metal/MetalResources.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment">///<sp/>Configuration<sp/>for<sp/>Metal<sp/>index<sp/>(mirrors<sp/>GpuIndexConfig<sp/>roles).</highlight></codeline>
+<codeline lineno="22" refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>useFloat16CoarseQuantizer<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">faiss::gpu::IndicesOptions</ref><sp/>indicesOptions<sp/>=<sp/><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac" kindref="member">faiss::gpu::INDICES_64_BIT</ref>;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>interleavedLayout<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>Base<sp/>class<sp/>for<sp/>Metal-backed<sp/>indexes.<sp/>Mirrors<sp/>faiss::gpu::GpuIndex.</highlight></codeline>
+<codeline lineno="33" refid="classfaiss_1_1gpu__metal_1_1MetalIndex" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndex" kindref="compound">MetalIndex</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndex" kindref="compound">MetalIndex</ref>(</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources,</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dims,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metricArg,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config<sp/>=<sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref>());</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDevice()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>config_.device;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>getResources()<sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>resources_;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>MetalResources&gt;<sp/>getResources()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>resources_;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources_;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config_;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu_metal/MetalIndex.h"/>
   </compounddef>

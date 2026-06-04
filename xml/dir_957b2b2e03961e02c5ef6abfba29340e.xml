@@ -2,12 +2,16 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_957b2b2e03961e02c5ef6abfba29340e" kind="dir">
     <compoundname>faiss/gpu_metal</compoundname>
+    <innerdir refid="dir_29d825cb08dd9eadef86a45fe06ecac3">faiss/gpu_metal/impl</innerdir>
     <innerfile refid="gpu__metal_2GpuIndexFlat_8h">GpuIndexFlat.h</innerfile>
     <innerfile refid="MetalCloner_8h">MetalCloner.h</innerfile>
+    <innerfile refid="MetalDistance_8h">MetalDistance.h</innerfile>
     <innerfile refid="MetalFlatKernels_8h">MetalFlatKernels.h</innerfile>
     <innerfile refid="MetalIndex_8h">MetalIndex.h</innerfile>
     <innerfile refid="MetalIndexFlat_8h">MetalIndexFlat.h</innerfile>
+    <innerfile refid="MetalIndexIVFFlat_8h">MetalIndexIVFFlat.h</innerfile>
     <innerfile refid="MetalKernels_8h">MetalKernels.h</innerfile>
+    <innerfile refid="MetalPythonBridge_8h">MetalPythonBridge.h</innerfile>
     <innerfile refid="MetalResources_8h">MetalResources.h</innerfile>
     <innerfile refid="StandardMetalResources_8h">StandardMetalResources.h</innerfile>
     <briefdescription>

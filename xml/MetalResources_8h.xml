@@ -7,6 +7,7 @@
     <includes local="no">cstddef</includes>
     <includedby refid="MetalIndex_8h" local="no">faiss/gpu_metal/MetalIndex.h</includedby>
     <includedby refid="StandardMetalResources_8h" local="no">faiss/gpu_metal/StandardMetalResources.h</includedby>
+    <includedby refid="MetalIVFFlat_8h" local="no">faiss/gpu_metal/impl/MetalIVFFlat.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/gpu_metal/MetalResources.h</label>
@@ -38,6 +39,8 @@
         <link refid="MetalIndex_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss/gpu_metal/MetalIndexFlat.h</label>
@@ -45,17 +48,27 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
+      <node id="5">
+        <label>faiss/gpu_metal/MetalIndexIVFFlat.h</label>
+        <link refid="MetalIndexIVFFlat_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/gpu_metal/MetalResources.h</label>
         <link refid="MetalResources_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/gpu_metal/StandardMetalResources.h</label>
         <link refid="StandardMetalResources_8h_source"/>
+      </node>
+      <node id="7">
+        <label>faiss/gpu_metal/impl/MetalIVFFlat.h</label>
+        <link refid="MetalIVFFlat_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalResources" prot="public">faiss::gpu_metal::MetalResources</innerclass>

@@ -26,6 +26,10 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
+      <node id="19">
+        <label>faiss/gpu/GpuIndicesOptions.h</label>
+        <link refid="GpuIndicesOptions_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/gpu_metal/GpuIndexFlat.h</label>
         <link refid="gpu__metal_2GpuIndexFlat_8h"/>
@@ -39,7 +43,9 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -51,17 +57,17 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/gpu_metal/MetalResources.h</label>
         <link refid="MetalResources_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -102,7 +108,7 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>Foundation/Foundation.h</label>
       </node>
       <node id="3">
@@ -111,7 +117,7 @@
       <node id="16">
         <label>cinttypes</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>cstddef</label>
       </node>
       <node id="6">
@@ -129,7 +135,7 @@
       <node id="17">
         <label>limits</label>
       </node>
-      <node id="22">
+      <node id="23">
         <label>memory</label>
       </node>
       <node id="12">

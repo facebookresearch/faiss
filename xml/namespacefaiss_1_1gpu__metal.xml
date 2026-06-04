@@ -5,10 +5,46 @@
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndex" prot="public">faiss::gpu_metal::MetalIndex</innerclass>
     <innerclass refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" prot="public">faiss::gpu_metal::MetalIndexConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexFlat" prot="public">faiss::gpu_metal::MetalIndexFlat</innerclass>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" prot="public">faiss::gpu_metal::MetalIndexIVFFlat</innerclass>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl" prot="public">faiss::gpu_metal::MetalIVFFlatImpl</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalKernels" prot="public">faiss::gpu_metal::MetalKernels</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalResources" prot="public">faiss::gpu_metal::MetalResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1StandardMetalResources" prot="public">faiss::gpu_metal::StandardMetalResources</innerclass>
+    <innerclass refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" prot="public">faiss::gpu_metal::StandardMetalResourcesHolder</innerclass>
     <sectiondef kind="enum">
+      <memberdef kind="enum" id="MetalKernels_8h_1a7d70101f8eb0d7fdeef7bffc5ac24ad5" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>IVFScanVariant</name>
+        <qualifiedname>faiss::gpu_metal::IVFScanVariant</qualifiedname>
+        <enumvalue id="MetalKernels_8h_1a7d70101f8eb0d7fdeef7bffc5ac24ad5aeb6d8ae6f20283755b339c0dc273988b" prot="public">
+          <name>Standard</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="MetalKernels_8h_1a7d70101f8eb0d7fdeef7bffc5ac24ad5a2660064e68655415da2628c2ae2f7592" prot="public">
+          <name>Small</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="MetalKernels_8h_1a7d70101f8eb0d7fdeef7bffc5ac24ad5a07b7759dc5a12afc0c49d26bc6a401dd" prot="public">
+          <name>Interleaved</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="22" column="1" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="22" bodyend="22"/>
+      </memberdef>
       <memberdef kind="enum" id="MetalResources_8h_1a6075f367dc10b639676e17d21eeda6be" prot="public" static="no" strong="no">
         <type></type>
         <name>MetalAllocType</name>
@@ -90,6 +126,7 @@
 <para>Returns the number of Metal &quot;devices&quot; (1 if Metal is available, else 0). </para>
         </briefdescription>
         <detaileddescription>
+<para>Same names as GPU API for unified Python binding. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -140,6 +177,288 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu_metal/MetalCloner.h" line="32" column="14" declfile="faiss/gpu_metal/MetalCloner.h" declline="32" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1a62800263a493c3059746bb291a995e6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::getMetalDistanceMaxK</definition>
+        <argsstring>()</argsstring>
+        <name>getMetalDistanceMaxK</name>
+        <qualifiedname>faiss::gpu_metal::getMetalDistanceMaxK</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="24" column="5" declfile="faiss/gpu_metal/MetalDistance.h" declline="24" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1a4143b1d2902cb814cf5bc18a4660bcd5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::runMetalComputeNorms</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device, id&lt; MTLCommandQueue &gt; queue, id&lt; MTLBuffer &gt; vectors, int nb, int d, id&lt; MTLBuffer &gt; normsBuf, bool waitForCompletion=true)</argsstring>
+        <name>runMetalComputeNorms</name>
+        <qualifiedname>faiss::gpu_metal::runMetalComputeNorms</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLCommandQueue &gt;</type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>vectors</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>normsBuf</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>waitForCompletion</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="26" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="26" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1a6659980c3bfad77c957e5b203e6d5c48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::runMetalIVFFlatScan</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device, id&lt; MTLCommandQueue &gt; queue, id&lt; MTLBuffer &gt; queries, id&lt; MTLBuffer &gt; codes, id&lt; MTLBuffer &gt; ids, id&lt; MTLBuffer &gt; listOffset, id&lt; MTLBuffer &gt; listLength, id&lt; MTLBuffer &gt; coarseAssign, int nq, int d, int k, int nprobe, bool isL2, id&lt; MTLBuffer &gt; outDistances, id&lt; MTLBuffer &gt; outIndices, id&lt; MTLBuffer &gt; perListDistBuf, id&lt; MTLBuffer &gt; perListIdxBuf, id&lt; MTLBuffer &gt; interleavedCodes=nil, id&lt; MTLBuffer &gt; interleavedCodesOffset=nil, bool waitForCompletion=true)</argsstring>
+        <name>runMetalIVFFlatScan</name>
+        <qualifiedname>faiss::gpu_metal::runMetalIVFFlatScan</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLCommandQueue &gt;</type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listOffset</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listLength</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseAssign</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nprobe</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>isL2</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outDistances</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outIndices</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListDistBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListIdxBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>interleavedCodes</declname>
+          <defval>nil</defval>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>interleavedCodesOffset</declname>
+          <defval>nil</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>waitForCompletion</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="35" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="35" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1afd9b8e293ee8d0417f4d9ccb293e317a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::runMetalIVFFlatFullSearch</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device, id&lt; MTLCommandQueue &gt; queue, id&lt; MTLBuffer &gt; queries, int nq, int d, int k, int nprobe, bool isL2, id&lt; MTLBuffer &gt; centroids, int nlist, id&lt; MTLBuffer &gt; codes, id&lt; MTLBuffer &gt; ids, id&lt; MTLBuffer &gt; listOffset, id&lt; MTLBuffer &gt; listLength, id&lt; MTLBuffer &gt; outDistances, id&lt; MTLBuffer &gt; outIndices, id&lt; MTLBuffer &gt; perListDistBuf, id&lt; MTLBuffer &gt; perListIdxBuf, id&lt; MTLBuffer &gt; coarseDistBuf, id&lt; MTLBuffer &gt; coarseIdxBuf, id&lt; MTLBuffer &gt; distMatrixBuf, id&lt; MTLBuffer &gt; centroidNormsBuf=nil, int avgListLen=256, id&lt; MTLBuffer &gt; interleavedCodes=nil, id&lt; MTLBuffer &gt; interleavedCodesOffset=nil, bool centroidsAreFP16=false, bool waitForCompletion=true)</argsstring>
+        <name>runMetalIVFFlatFullSearch</name>
+        <qualifiedname>faiss::gpu_metal::runMetalIVFFlatFullSearch</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLCommandQueue &gt;</type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nprobe</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>isL2</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listOffset</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listLength</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outDistances</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outIndices</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListDistBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListIdxBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseDistBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseIdxBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>distMatrixBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>centroidNormsBuf</declname>
+          <defval>nil</defval>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>avgListLen</declname>
+          <defval>256</defval>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>interleavedCodes</declname>
+          <defval>nil</defval>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>interleavedCodesOffset</declname>
+          <defval>nil</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>centroidsAreFP16</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>waitForCompletion</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="57" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="57" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="MetalFlatKernels_8h_1ac556d7942814f613e43348013ab3cf8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -231,13 +550,101 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="63" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="63" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="108" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="108" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1a0dcb213f19d10870207c1f259ebb5c04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::gpu_profiler_start</definition>
+        <argsstring>()</argsstring>
+        <name>gpu_profiler_start</name>
+        <qualifiedname>faiss::gpu_metal::gpu_profiler_start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="31" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="31" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1addd75c1cf92de4bfefb77ede9137511a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::gpu_profiler_stop</definition>
+        <argsstring>()</argsstring>
+        <name>gpu_profiler_stop</name>
+        <qualifiedname>faiss::gpu_metal::gpu_profiler_stop</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="32" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="32" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1a030a7dcbba3215ee1edea6f00f58355e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::gpu_sync_all_devices</definition>
+        <argsstring>()</argsstring>
+        <name>gpu_sync_all_devices</name>
+        <qualifiedname>faiss::gpu_metal::gpu_sync_all_devices</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="33" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="33" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1a1232682240f2c4321066d3486be3c36a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+        <definition>faiss::Index * faiss::gpu_metal::index_cpu_to_gpu</definition>
+        <argsstring>(StandardMetalResourcesHolder *res, int device, const faiss::Index *index)</argsstring>
+        <name>index_cpu_to_gpu</name>
+        <qualifiedname>faiss::gpu_metal::index_cpu_to_gpu</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Clone CPU index to Metal GPU. Caller owns returned index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="36" column="14" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="36" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1a02c8f2b9abab340872fe77061da05a44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+        <definition>faiss::Index * faiss::gpu_metal::index_gpu_to_cpu</definition>
+        <argsstring>(const faiss::Index *index)</argsstring>
+        <name>index_gpu_to_cpu</name>
+        <qualifiedname>faiss::gpu_metal::index_gpu_to_cpu</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Copy Metal index back to CPU. Caller owns returned index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="42" column="14" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="42" declcolumn="14"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu_metal/MetalCloner.h" line="16" column="1"/>
+    <location file="faiss/gpu_metal/impl/MetalIVFFlat.h" line="27" column="1"/>
   </compounddef>
 </doxygen>

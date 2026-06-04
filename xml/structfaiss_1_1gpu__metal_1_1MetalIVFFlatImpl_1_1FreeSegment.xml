@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl_1_1FreeSegment" kind="struct" language="C++" prot="private">
+    <compoundname>faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl_1_1FreeSegment_1ae35e39c5e8e12eb0cbd58a5aa52a311a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment::offset</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFFlat.h" line="135" column="16" bodyfile="faiss/gpu_metal/impl/MetalIVFFlat.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl_1_1FreeSegment_1ae2a895512b2e1355bd6564fcde784c9d" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment::length</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFFlat.h" line="136" column="16" bodyfile="faiss/gpu_metal/impl/MetalIVFFlat.h" bodystart="136" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu_metal/impl/MetalIVFFlat.h" line="134" column="5" bodyfile="faiss/gpu_metal/impl/MetalIVFFlat.h" bodystart="134" bodyend="137"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl_1_1FreeSegment_1ae2a895512b2e1355bd6564fcde784c9d" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment</scope><name>length</name></member>
+      <member refid="structfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl_1_1FreeSegment_1ae35e39c5e8e12eb0cbd58a5aa52a311a" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFFlatImpl::FreeSegment</scope><name>offset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

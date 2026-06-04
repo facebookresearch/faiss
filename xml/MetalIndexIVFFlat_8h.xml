@@ -1,0 +1,544 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MetalIndexIVFFlat_8h" kind="file" language="C++">
+    <compoundname>MetalIndexIVFFlat.h</compoundname>
+    <includes local="no">Metal/Metal.h</includes>
+    <includes refid="IndexIVFFlat_8h" local="no">faiss/IndexIVFFlat.h</includes>
+    <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
+    <includes refid="MetalIndex_8h" local="no">faiss/gpu_metal/MetalIndex.h</includes>
+    <includes local="no">memory</includes>
+    <incdepgraph>
+      <node id="7">
+        <label>faiss/Clustering.h</label>
+        <link refid="Clustering_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/IndexIVFFlat.h</label>
+        <link refid="IndexIVFFlat_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>faiss/gpu/GpuIndicesOptions.h</label>
+        <link refid="GpuIndicesOptions_8h_source"/>
+      </node>
+      <node id="42">
+        <label>faiss/gpu_metal/MetalIndex.h</label>
+        <link refid="MetalIndex_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/gpu_metal/MetalIndexIVFFlat.h</label>
+        <link refid="MetalIndexIVFFlat_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>faiss/gpu_metal/MetalResources.h</label>
+        <link refid="MetalResources_8h_source"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>faiss/impl/ClusteringInitialization.h</label>
+        <link refid="ClusteringInitialization_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>faiss/impl/Panorama.h</label>
+        <link refid="Panorama_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>faiss/impl/PanoramaStats.h</label>
+        <link refid="PanoramaStats_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>faiss/impl/maybe_owned_vector.h</label>
+        <link refid="maybe__owned__vector_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>faiss/utils/distances.h</label>
+        <link refid="distances_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>Foundation/Foundation.h</label>
+      </node>
+      <node id="2">
+        <label>Metal/Metal.h</label>
+      </node>
+      <node id="38">
+        <label>algorithm</label>
+      </node>
+      <node id="35">
+        <label>cassert</label>
+      </node>
+      <node id="20">
+        <label>cinttypes</label>
+      </node>
+      <node id="32">
+        <label>climits</label>
+      </node>
+      <node id="33">
+        <label>cmath</label>
+      </node>
+      <node id="23">
+        <label>cstddef</label>
+      </node>
+      <node id="10">
+        <label>cstdint</label>
+      </node>
+      <node id="11">
+        <label>cstdio</label>
+      </node>
+      <node id="12">
+        <label>cstdlib</label>
+      </node>
+      <node id="34">
+        <label>cstring</label>
+      </node>
+      <node id="15">
+        <label>exception</label>
+      </node>
+      <node id="21">
+        <label>limits</label>
+      </node>
+      <node id="40">
+        <label>memory</label>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="16">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>unordered_map</label>
+      </node>
+      <node id="25">
+        <label>unordered_set</label>
+      </node>
+      <node id="17">
+        <label>utility</label>
+      </node>
+      <node id="18">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" prot="public">faiss::gpu_metal::MetalIndexIVFFlat</innerclass>
+    <innerclass refid="structfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1_1AppendDebugStats" prot="public">faiss::gpu_metal::MetalIndexIVFFlat::AppendDebugStats</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1gpu__metal">faiss::gpu_metal</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>@lint-ignore-every<sp/>LICENSELINT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="2"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>Minimal<sp/>Metal<sp/>IVFFlat<sp/>wrapper.</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#import<sp/>&lt;Metal/Metal.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVFFlat.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu_metal/MetalIndex.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">MetalIVFFlatImpl;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment">///<sp/>IVFFlat<sp/>index<sp/>wrapper<sp/>for<sp/>Metal<sp/>backend.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>Currently<sp/>delegates<sp/>to<sp/>an<sp/>internal<sp/>CPU<sp/>IndexIVFFlat;<sp/>later<sp/>phases</highlight></codeline>
+<codeline lineno="33"><highlight class="comment">///<sp/>may<sp/>move<sp/>list<sp/>scanning<sp/>to<sp/>GPU.</highlight></codeline>
+<codeline lineno="34" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" kindref="compound">MetalIndexIVFFlat</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndex" kindref="compound">MetalIndex</ref><sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="36" refid="structfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1_1AppendDebugStats" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1_1AppendDebugStats" kindref="compound">AppendDebugStats</ref><sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>relayoutEvents<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>movedLists<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>movedVectors<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>reusedSegmentAllocs<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>tailSegmentAllocs<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>reusedCapacityVecs<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>tailCapacityVecs<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>tailShrinkEvents<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>tailShrunkVecs<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Construct<sp/>empty<sp/>IVFFlat<sp/>index<sp/>with<sp/>its<sp/>own<sp/>CPU<sp/>quantizer.</highlight></codeline>
+<codeline lineno="49" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ad57f9a366c777e51bcad601234ec072f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ad57f9a366c777e51bcad601234ec072f" kindref="member">MetalIndexIVFFlat</ref>(</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dims,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a6e5ca06d82c887ff89bd017fc8c16d63" kindref="member">nlist</ref>,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metricArg<sp/>=<sp/>0.0f,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config<sp/>=<sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref>());</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Construct<sp/>empty<sp/>IVFFlat<sp/>index<sp/>with<sp/>caller-provided<sp/>coarse<sp/>quantizer.</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>If<sp/>ownFields<sp/>is<sp/>true,<sp/>this<sp/>index<sp/>takes<sp/>ownership<sp/>of<sp/>`coarseQuantizer`.</highlight></codeline>
+<codeline lineno="59" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a1b15526f22dfc3d37a2799110d59fff1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a1b15526f22dfc3d37a2799110d59fff1" kindref="member">MetalIndexIVFFlat</ref>(</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources,</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>coarseQuantizer,</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dims,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a6e5ca06d82c887ff89bd017fc8c16d63" kindref="member">nlist</ref>,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metricArg<sp/>=<sp/>0.0f,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config<sp/>=<sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref>(),</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ownFields<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Construct<sp/>from<sp/>an<sp/>existing<sp/>CPU<sp/>IndexIVFFlat<sp/>(used<sp/>by<sp/>cloners<sp/>later).</highlight></codeline>
+<codeline lineno="70" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a8f7a4bde2d83cdacb36ff92a2e44d491" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a8f7a4bde2d83cdacb36ff92a2e44d491" kindref="member">MetalIndexIVFFlat</ref>(</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;MetalResources&gt;<sp/>resources,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFFlat" kindref="compound">faiss::IndexIVFFlat</ref>*<sp/>cpuIndex,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref><sp/>config<sp/>=<sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref>());</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" kindref="compound">~MetalIndexIVFFlat</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a853d377eb4752612b80dced3d2fb9822" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a853d377eb4752612b80dced3d2fb9822" kindref="member">train</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="78" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a86c62e543b47c4e7321e7f2e9cdd9a15" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a86c62e543b47c4e7321e7f2e9cdd9a15" kindref="member">add</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="79" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ab7e4e10d58122944ce80c9878b2ee605" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ab7e4e10d58122944ce80c9878b2ee605" kindref="member">add_with_ids</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>xids)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="80" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a3726a334201ca4b113c32822a176523b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a3726a334201ca4b113c32822a176523b" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a7142a8636f96b0cd4bb0e3c7d26be70f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a7142a8636f96b0cd4bb0e3c7d26be70f" kindref="member">search</ref>(</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Search<sp/>with<sp/>caller-provided<sp/>coarse<sp/>assignments<sp/>(skips<sp/>coarse<sp/>quantizer).</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>@param<sp/>assign<sp/><sp/><sp/><sp/><sp/><sp/>Coarse<sp/>list<sp/>assignments<sp/>(n<sp/>x<sp/>nprobe),<sp/>row-major<sp/>idx_t</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>@param<sp/>centroid_dis<sp/>Distances<sp/>to<sp/>assigned<sp/>centroids<sp/>(n<sp/>x<sp/>nprobe);<sp/>unused</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>by<sp/>GPU<sp/>scan<sp/>but<sp/>accepted<sp/>for<sp/>API<sp/>compatibility</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>@param<sp/>store_pairs<sp/><sp/>Ignored<sp/>(always<sp/>false<sp/>for<sp/>GPU<sp/>path)</highlight></codeline>
+<codeline lineno="95" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1af160e8a8c3fbcd5bba9d06e9a58e52f2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1af160e8a8c3fbcd5bba9d06e9a58e52f2" kindref="member">search_preassigned</ref>(</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/><ref refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kindref="member">assign</ref>,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid_dis,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>store_pairs,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref>*<sp/>stats<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Copy<sp/>from<sp/>a<sp/>CPU<sp/>IndexIVFFlat<sp/>(helper<sp/>for<sp/>future<sp/>cloner<sp/>support).</highlight></codeline>
+<codeline lineno="108" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a12d423b62dcfbde81ee41c2745f5f63f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a12d423b62dcfbde81ee41c2745f5f63f" kindref="member">copyFrom</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFFlat" kindref="compound">faiss::IndexIVFFlat</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Copy<sp/>to<sp/>a<sp/>CPU<sp/>IndexIVFFlat.</highlight></codeline>
+<codeline lineno="111" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1acc6fc0513a840126283a6eabcbc364f1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1acc6fc0513a840126283a6eabcbc364f1" kindref="member">copyTo</ref>(<ref refid="structfaiss_1_1IndexIVFFlat" kindref="compound">faiss::IndexIVFFlat</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Reconstruct<sp/>a<sp/>single<sp/>stored<sp/>vector<sp/>by<sp/>internal<sp/>key.</highlight></codeline>
+<codeline lineno="114" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a723c86d3cd66b3b3e47ea0324f8751dc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a723c86d3cd66b3b3e47ea0324f8751dc" kindref="member">reconstruct</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>key,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>recons)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Reconstruct<sp/>n<sp/>contiguous<sp/>stored<sp/>vectors<sp/>starting<sp/>at<sp/>i0.</highlight></codeline>
+<codeline lineno="117" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a05d437f53c2d761c6c860ef961ba8126" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a05d437f53c2d761c6c860ef961ba8126" kindref="member">reconstruct_n</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>i0,<sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>ni,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>recons)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Re-upload<sp/>coarse<sp/>quantizer<sp/>centroids<sp/>to<sp/>GPU<sp/>after<sp/>external<sp/>changes.</highlight></codeline>
+<codeline lineno="120" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a09bcc7de783cd354b94cf4e397941e5e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a09bcc7de783cd354b94cf4e397941e5e" kindref="member">updateQuantizer</ref>();</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="122"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>vector<sp/>indices<sp/>in<sp/>inverted<sp/>list<sp/>`listId`.</highlight></codeline>
+<codeline lineno="123" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ade7be07888e5510f2d8c8f25994fcdb7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ade7be07888e5510f2d8c8f25994fcdb7" kindref="member">getListIndices</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>listId)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>raw<sp/>vector<sp/>data<sp/>from<sp/>inverted<sp/>list<sp/>`listId`.</highlight></codeline>
+<codeline lineno="126" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a39af12175e6d963df0ed75b958c564b3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a39af12175e6d963df0ed75b958c564b3" kindref="member">getListVectorData</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>listId)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Release<sp/>unused<sp/>GPU<sp/>memory.</highlight></codeline>
+<codeline lineno="129" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a0be517adc4f32dee0a0400f95bd62616" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a0be517adc4f32dee0a0400f95bd62616" kindref="member">reclaimMemory</ref>();</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Pre-allocate<sp/>GPU<sp/>storage<sp/>for<sp/>the<sp/>given<sp/>total<sp/>number<sp/>of<sp/>vectors.</highlight></codeline>
+<codeline lineno="132" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ae20ed168b74b8610f93c44ea161d4ff1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ae20ed168b74b8610f93c44ea161d4ff1" kindref="member">reserveMemory</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>numVecs);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="134"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Accessors<sp/>(needed<sp/>by<sp/>cloner<sp/>and<sp/>tests).</highlight></codeline>
+<codeline lineno="135" refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a6e5ca06d82c887ff89bd017fc8c16d63" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/><ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a6e5ca06d82c887ff89bd017fc8c16d63" kindref="member">nlist</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nprobe()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>interleavedLayout()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">faiss::gpu::IndicesOptions</ref><sp/>indicesOptions()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1_1AppendDebugStats" kindref="compound">AppendDebugStats</ref><sp/>appendDebugStats()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>resetAppendDebugStats();</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;faiss::IndexIVFFlat&gt;<sp/>cpuIndex_;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;MetalIVFFlatImpl&gt;<sp/>gpuIvf_;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">faiss::gpu::IndicesOptions</ref><sp/>indicesOptions_;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>interleavedLayout_;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Persistent<sp/>search<sp/>buffers<sp/>—<sp/>allocated<sp/>once,<sp/>grown<sp/>lazily.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Declared<sp/>mutable<sp/>so<sp/>search()<sp/>(const)<sp/>can<sp/>resize<sp/>them.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>searchQueriesBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>searchCoarseBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>searchOutDistBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>searchOutIdxBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>searchQueriesCap_<sp/>=<sp/>0;<sp/></highlight><highlight class="comment">//<sp/>bytes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>searchCoarseCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>searchOutDistCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>searchOutIdxCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>searchPerListDistBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>searchPerListIdxBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>searchPerListDistCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>searchPerListIdxCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>GPU<sp/>coarse<sp/>quantizer<sp/>buffers<sp/>(cached,<sp/>rebuilt<sp/>on<sp/>train)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>centroidBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>centroidNormsBuf_<sp/>=<sp/>nil;<sp/></highlight><highlight class="comment">//<sp/>pre-computed<sp/>||c||²</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>coarseOutDistBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>coarseOutIdxBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>coarseOutDistCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>coarseOutIdxCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>id&lt;MTLBuffer&gt;<sp/>distMatrixBuf_<sp/>=<sp/>nil;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>distMatrixCap_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="173"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Ensures<sp/>buf<sp/>is<sp/>at<sp/>least<sp/>`needed`<sp/>bytes,<sp/>reallocating<sp/>if<sp/>necessary.</highlight></codeline>
+<codeline lineno="174"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ensureSearchBuf_(id&lt;MTLBuffer&gt;&amp;<sp/>buf,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">&amp;<sp/>cap,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>needed)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="176"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>(Re)uploads<sp/>quantizer<sp/>centroids<sp/>to<sp/>centroidBuf_.</highlight></codeline>
+<codeline lineno="177"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>uploadCentroids_()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu_metal/MetalIndexIVFFlat.h"/>
+  </compounddef>
+</doxygen>

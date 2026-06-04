@@ -67,15 +67,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1a882d2fde7902129f3ee2473efc4442da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1ad69964172ea964b32e18cce127c837f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::HStackInvertedLists::HStackInvertedLists</definition>
-        <argsstring>(int nil, const InvertedLists **ils)</argsstring>
+        <argsstring>(int n_il, const InvertedLists **ils)</argsstring>
         <name>HStackInvertedLists</name>
         <qualifiedname>faiss::HStackInvertedLists::HStackInvertedLists</qualifiedname>
         <param>
           <type>int</type>
-          <declname>nil</declname>
+          <declname>n_il</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> **</type>
@@ -724,7 +724,7 @@
       <member refid="structfaiss_1_1InvertedLists_1a033771088288195d5098b3760a2e7c3a" prot="public" virt="virtual"><scope>faiss::HStackInvertedLists</scope><name>get_iterator</name></member>
       <member refid="structfaiss_1_1HStackInvertedLists_1aeef6bd41622796f5d142e60fe78a5da8" prot="public" virt="virtual"><scope>faiss::HStackInvertedLists</scope><name>get_single_code</name></member>
       <member refid="structfaiss_1_1HStackInvertedLists_1a87091687f5fcc023f1db4c0f8c2c36da" prot="public" virt="virtual"><scope>faiss::HStackInvertedLists</scope><name>get_single_id</name></member>
-      <member refid="structfaiss_1_1HStackInvertedLists_1a882d2fde7902129f3ee2473efc4442da" prot="public" virt="non-virtual"><scope>faiss::HStackInvertedLists</scope><name>HStackInvertedLists</name></member>
+      <member refid="structfaiss_1_1HStackInvertedLists_1ad69964172ea964b32e18cce127c837f5" prot="public" virt="non-virtual"><scope>faiss::HStackInvertedLists</scope><name>HStackInvertedLists</name></member>
       <member refid="structfaiss_1_1HStackInvertedLists_1a1e13f4a3dd344dbaf679d5f40fd328d6" prot="public" virt="non-virtual"><scope>faiss::HStackInvertedLists</scope><name>ils</name></member>
       <member refid="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8" prot="public" virt="non-virtual"><scope>faiss::HStackInvertedLists</scope><name>imbalance_factor</name></member>
       <member refid="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7" prot="public" virt="non-virtual"><scope>faiss::HStackInvertedLists</scope><name>INVALID_CODE_SIZE</name></member>

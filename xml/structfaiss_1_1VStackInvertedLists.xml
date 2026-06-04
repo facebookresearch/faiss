@@ -80,15 +80,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1VStackInvertedLists_1a8f6ba4b3d64b74409742edad6c6c0f37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1VStackInvertedLists_1a22c6f6a482f8c72bedc14daf4657bd8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::VStackInvertedLists::VStackInvertedLists</definition>
-        <argsstring>(int nil, const InvertedLists **ils)</argsstring>
+        <argsstring>(int n_il, const InvertedLists **ils)</argsstring>
         <name>VStackInvertedLists</name>
         <qualifiedname>faiss::VStackInvertedLists::VStackInvertedLists</qualifiedname>
         <param>
           <type>int</type>
-          <declname>nil</declname>
+          <declname>n_il</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> **</type>
@@ -761,7 +761,7 @@
       <member refid="structfaiss_1_1ReadOnlyInvertedLists_1a33c3a5174bcf6709dcefec8bdc4b9a52" prot="public" virt="virtual"><scope>faiss::VStackInvertedLists</scope><name>update_entries</name></member>
       <member refid="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705" prot="public" virt="virtual"><scope>faiss::VStackInvertedLists</scope><name>update_entry</name></member>
       <member refid="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d" prot="public" virt="non-virtual"><scope>faiss::VStackInvertedLists</scope><name>use_iterator</name></member>
-      <member refid="structfaiss_1_1VStackInvertedLists_1a8f6ba4b3d64b74409742edad6c6c0f37" prot="public" virt="non-virtual"><scope>faiss::VStackInvertedLists</scope><name>VStackInvertedLists</name></member>
+      <member refid="structfaiss_1_1VStackInvertedLists_1a22c6f6a482f8c72bedc14daf4657bd8a" prot="public" virt="non-virtual"><scope>faiss::VStackInvertedLists</scope><name>VStackInvertedLists</name></member>
       <member refid="structfaiss_1_1InvertedLists_1a74508f4759d1b37c5a9e016c495d0dc1" prot="public" virt="virtual"><scope>faiss::VStackInvertedLists</scope><name>~InvertedLists</name></member>
     </listofallmembers>
   </compounddef>
