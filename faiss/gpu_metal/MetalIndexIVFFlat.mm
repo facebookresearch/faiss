@@ -1570,8 +1570,12 @@ void MetalIndexIVFFlat::search_preassigned(
                 }
             }
 
+            std::vector<int32_t> fullCoarseVec(
+                    reinterpret_cast<const int32_t*>([searchCoarseBuf_ contents]),
+                    reinterpret_cast<const int32_t*>([searchCoarseBuf_ contents])
+                            + (size_t)qCount * nprobe);
             std::vector<int32_t> coarseChunk;
-            const int32_t* fullCoarse = reinterpret_cast<const int32_t*>([searchCoarseBuf_ contents]);
+            const int32_t* fullCoarse = fullCoarseVec.data();
 
             for (size_t p0 = 0; ok && p0 < nprobe; p0 += maxProbePerChunk) {
                 size_t chunkProbe = std::min(maxProbePerChunk, nprobe - p0);
