@@ -7,6 +7,7 @@
     <includedby refid="HNSW_8h" local="no">faiss/impl/HNSW.h</includedby>
     <includedby refid="NNDescent_8h" local="no">faiss/impl/NNDescent.h</includedby>
     <includedby refid="NSG_8h" local="no">faiss/impl/NSG.h</includedby>
+    <includedby refid="quantizers_8h" local="no">faiss/impl/scalar_quantizer/quantizers.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/utils/random.h</label>
@@ -68,6 +69,24 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
+      <node id="10">
+        <label>faiss/impl/scalar_quantizer/quantizers.h</label>
+        <link refid="quantizers_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/impl/scalar_quantizer/scanners.h</label>
+        <link refid="scanners_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
+        <link refid="sq-dispatch_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/utils/random.h</label>
         <link refid="random_8h"/>
@@ -76,6 +95,8 @@
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

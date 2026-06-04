@@ -1,0 +1,1012 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::DCTurboQuantFull</compoundname>
+    <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>int</type>
+        <declname>NBits</declname>
+        <defname>NBits</defname>
+      </param>
+      <param>
+        <type>class Similarity</type>
+      </param>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL2</declname>
+        <defname>SL2</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a73e7f8e5e107f5741390e3a6a525b94e" prot="public" static="no">
+        <type>Similarity</type>
+        <definition>using faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::Sim =  Similarity</definition>
+        <argsstring></argsstring>
+        <name>Sim</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::Sim</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="68" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a4fc91ec9a032f6300a3b355c53044cf9" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull" kindref="compound">QuantizerTurboQuantFull</ref>&lt; NBits, SIMDLevel::NONE &gt;</type>
+        <definition>QuantizerTurboQuantFull&lt;NBits, SIMDLevel::NONE&gt; faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::quant</definition>
+        <argsstring></argsstring>
+        <name>quant</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::quant</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="69" column="29" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab20d78f8f6b880e8127ce98bf80f2e06" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::query</definition>
+        <argsstring></argsstring>
+        <name>query</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::query</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="70" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab9fd78bbce160a51a0dc46d87b71cce7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::query_proj</definition>
+        <argsstring></argsstring>
+        <name>query_proj</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::query_proj</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="71" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a9efcc01d62d12d48668f8cc9bf0e9dff" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::q_norm_sq</definition>
+        <argsstring></argsstring>
+        <name>q_norm_sq</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::q_norm_sq</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="72" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8a92e38e85f6be296666f12f8fffe865" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::qjl_coeff</definition>
+        <argsstring></argsstring>
+        <name>qjl_coeff</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::qjl_coeff</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="73" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a733fce1836bcbf401aa32a9564d9cdc2" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::total_qproj_sum</definition>
+        <argsstring></argsstring>
+        <name>total_qproj_sum</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::total_qproj_sum</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="74" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a74e737f507b3bfd19b07f70ef8f7f8d0" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::threshold_ptr</definition>
+        <argsstring></argsstring>
+        <name>threshold_ptr</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::threshold_ptr</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="77" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a26fe9592993959220f2d3a452cafffc4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::prescreen_l2</definition>
+        <argsstring></argsstring>
+        <name>prescreen_l2</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::prescreen_l2</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="78" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a7647fa339437ee5201309b42496e843f" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::qjl_error_coeff</definition>
+        <argsstring></argsstring>
+        <name>qjl_error_coeff</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::qjl_error_coeff</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="79" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ade586d7d5f64b5a38b84281286c8abec" prot="public" static="no" mutable="yes">
+        <type>size_t</type>
+        <definition>size_t faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::n_total</definition>
+        <argsstring></argsstring>
+        <name>n_total</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::n_total</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="80" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a7c957ffff85535c9df680f22c7c9dc6f" prot="public" static="no" mutable="yes">
+        <type>size_t</type>
+        <definition>size_t faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::n_skipped</definition>
+        <argsstring></argsstring>
+        <name>n_skipped</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::n_skipped</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="81" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2c03ffe0069ca1c90753885440b104af" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::qb</definition>
+        <argsstring></argsstring>
+        <name>qb</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::qb</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="84" column="13" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a44cc7f43d3762b2fc361497c30108e7a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::int_qjl</definition>
+        <argsstring></argsstring>
+        <name>int_qjl</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::int_qjl</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="85" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8bc226849324d7b7244ba72e8bf5d3ac" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::rearranged_q</definition>
+        <argsstring></argsstring>
+        <name>rearranged_q</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::rearranged_q</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="86" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a0bce466722ca0c7b73bc108091e1a2a0" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_base</definition>
+        <argsstring></argsstring>
+        <name>mse_base</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_base</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="87" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ad04ec98fc601af34459df8bf42514336" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_int_scale</definition>
+        <argsstring></argsstring>
+        <name>mse_int_scale</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_int_scale</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="88" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a5e0163145794958c29a1c911c8e597d4" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_popcnt_scale</definition>
+        <argsstring></argsstring>
+        <name>mse_popcnt_scale</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_popcnt_scale</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="89" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a78d47e70e3b4cb302310bad69055a546" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::rearranged_qproj</definition>
+        <argsstring></argsstring>
+        <name>rearranged_qproj</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::rearranged_qproj</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="92" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a59575d69e345b0a20a6a2f57fdfc4cb7" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::qjl_int_scale</definition>
+        <argsstring></argsstring>
+        <name>qjl_int_scale</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::qjl_int_scale</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="93" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a14efd5bde2591d68a6d20a1c2d55d265" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::qjl_popcnt_scale</definition>
+        <argsstring></argsstring>
+        <name>qjl_popcnt_scale</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::qjl_popcnt_scale</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="94" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a19744e62f5a9fc130eff78127706446e" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::scaled_c0</definition>
+        <argsstring></argsstring>
+        <name>scaled_c0</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::scaled_c0</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="97" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aec496e168ef7b85f47df535f645ec167" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::scaled_c1</definition>
+        <argsstring></argsstring>
+        <name>scaled_c1</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::scaled_c1</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="98" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8bf0c481f0543ba85af9f01e3b347e80" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::delta_centroid</definition>
+        <argsstring></argsstring>
+        <name>delta_centroid</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::delta_centroid</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="99" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a63b8549e31f5398d804968b473c45546" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::total_q_sum</definition>
+        <argsstring></argsstring>
+        <name>total_q_sum</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::total_q_sum</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="100" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aed21d760b448c67be631b521c41b9a82" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_multi_base</definition>
+        <argsstring></argsstring>
+        <name>mse_multi_base</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_multi_base</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="103" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a93b526d3a664f104bcebd76ca2e4c33c" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_coeff_s0</definition>
+        <argsstring></argsstring>
+        <name>mse_coeff_s0</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_coeff_s0</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="104" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aa87ba26704918ef2ae226ffc1a5f5c09" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_coeff_s1</definition>
+        <argsstring></argsstring>
+        <name>mse_coeff_s1</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_coeff_s1</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="105" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8a61f9ba7a7f2be0eb4c0f818775eb1c" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::mse_coeff_s01</definition>
+        <argsstring></argsstring>
+        <name>mse_coeff_s01</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::mse_coeff_s01</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="106" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ae0e90e4d14bab6d563953a8e34dc6f74" prot="public" static="no" mutable="yes">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::scratch_and</definition>
+        <argsstring></argsstring>
+        <name>scratch_and</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::scratch_and</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="107" column="25" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::FlatCodesDistanceComputer::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::codes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="113" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::FlatCodesDistanceComputer::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::code_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::FlatCodesDistanceComputer::q</definition>
+        <argsstring></argsstring>
+        <name>q</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::q</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="116" column="17" bodyfile="faiss/impl/DistanceComputer.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1accb14dab6dae3fa66e97c860cca97053" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::DCTurboQuantFull</definition>
+        <argsstring>(size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>DCTurboQuantFull</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::DCTurboQuantFull</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="109" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="109" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a005e321a9696c5006670a127dc494af5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::configure</definition>
+        <argsstring>(uint8_t qb_in, bool int_qjl_in) override</argsstring>
+        <name>configure</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::configure</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a366566b2d1b00066a6b3dfadad0e4dec">configure</reimplements>
+        <param>
+          <type>uint8_t</type>
+          <declname>qb_in</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>int_qjl_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="114" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="114" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a3e5b072c5705e762f4d2f4116e43748d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::set_prescreen_threshold</definition>
+        <argsstring>(const float *ptr, bool l2) override</argsstring>
+        <name>set_prescreen_threshold</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::set_prescreen_threshold</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1aa051991ccb1bd9d6e59e988cf7c1942e">set_prescreen_threshold</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>l2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="119" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="119" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a06b26a2a6b77115fce22d756b49ea6f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::clear_prescreen_threshold</definition>
+        <argsstring>() override</argsstring>
+        <name>clear_prescreen_threshold</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::clear_prescreen_threshold</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a8d160bd6912a62d7d1526f4f7480977e">clear_prescreen_threshold</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="124" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="124" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a863b58ae95fe9f0d1191819e982b7715" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::set_query</definition>
+        <argsstring>(const float *x) final</argsstring>
+        <name>set_query</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::set_query</qualifiedname>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec">set_query</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>called before computing distances. Pointer x should remain valid while operator () is called </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="128" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="128" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a0344349ccda2289d15fd18976a8f7782" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::query_to_code</definition>
+        <argsstring>(const uint8_t *code) const final</argsstring>
+        <name>query_to_code</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::query_to_code</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e">query_to_code</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="248" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="248" bodyend="338"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2e3b35dc7d1c02493ce7e5f127376058" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;::symmetric_dis</definition>
+        <argsstring>(idx_t, idx_t) override</argsstring>
+        <name>symmetric_dis</name>
+        <qualifiedname>faiss::scalar_quantizer::DCTurboQuantFull::symmetric_dis</qualifiedname>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7">symmetric_dis</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>compute distance between two stored vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="340" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="340" bodyend="342"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4</definition>
+        <argsstring>(const uint8_t *code_0, const uint8_t *code_1, const uint8_t *code_2, const uint8_t *code_3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3) const</argsstring>
+        <name>query_to_codes_batch_4</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code_0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code_1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code_2</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code_3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute four query-to-code distances in one call. Default loops query_to_code four times; per-SIMD specializations may batch the inner dim loop across the four codes to amortize query state and expose ILP across independent accumulators. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="120" column="22" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="120" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::ScalarQuantizer::SQDistanceComputer::distance_to_code</definition>
+        <argsstring>(const uint8_t *code) final</argsstring>
+        <name>distance_to_code</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::distance_to_code</qualifiedname>
+        <reimplements refid="structfaiss_1_1FlatCodesDistanceComputer_1a25f3f5c0fabb20d56e29ac7ecef3eb11">distance_to_code</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+<para>compute distance of current query to an encoded vector </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="135" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="135" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::FlatCodesDistanceComputer::operator()</definition>
+        <argsstring>(idx_t i) override</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::operator()</qualifiedname>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1a4d71be87bbd904043f6bc2fae03d037f">operator()</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+<para>compute distance of vector i to current query </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="129" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="129" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>virtual float faiss::FlatCodesDistanceComputer::partial_dot_product</definition>
+        <argsstring>(const idx_t, const uint32_t, const uint32_t)</argsstring>
+        <name>partial_dot_product</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::partial_dot_product</qualifiedname>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Computes a partial dot product over a slice of the query vector. The slice is defined by the following parameters: — <computeroutput>offset</computeroutput>: the starting index of the first component to include — <computeroutput>num_components</computeroutput>: the number of consecutive components to include</para>
+<para>Components refer to raw dimensions of the flat (uncompressed) query vector.</para>
+<para>By default, this method throws an error, as it is only implemented in specific subclasses such as <computeroutput>FlatL2Dis</computeroutput>. Other flat distance computers may override this when partial dot product support is needed.</para>
+<para>Over time, this method might be changed to a pure virtual function (<computeroutput>= 0</computeroutput>) to enforce implementation in subclasses that require this functionality.</para>
+<para>This method is not part of the generic <computeroutput><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref></computeroutput> interface because for compressed representations (e.g., product quantization), calling <computeroutput>partial_dot_product</computeroutput> repeatedly is often less efficient than computing the full distance at once.</para>
+<para>Supporting efficient partial scans generally requires a different memory layout, such as interleaved blocks that keep SIMD lanes full. This is a non-trivial change and not supported in the current flat layout.</para>
+<para>For more details on partial (or chunked) dot product computations and the performance trade-offs involved, refer to the <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> paper: <ulink url="https://arxiv.org/pdf/2510.00566">https://arxiv.org/pdf/2510.00566</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="161" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="161" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</definition>
+        <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dp0, float &amp;dp1, float &amp;dp2, float &amp;dp3, const uint32_t offset, const uint32_t num_components)</argsstring>
+        <name>partial_dot_product_batch_4</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</qualifiedname>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp3</declname>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+          <declname>num_components</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute partial dot products of current query to 4 stored vectors. See <computeroutput>partial_dot_product</computeroutput> for more details. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="173" column="18" bodyfile="faiss/impl/DistanceComputer.h" bodystart="173" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::DistanceComputer::distances_batch_4</definition>
+        <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3)</argsstring>
+        <name>distances_batch_4</name>
+        <qualifiedname>faiss::DistanceComputer::distances_batch_4</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c">distances_batch_4</reimplementedby>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute distances of current query to 4 stored vectors. certain <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> implementations may benefit heavily from this. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="36" column="18" bodyfile="faiss/impl/DistanceComputer.h" bodystart="36" bodyend="54"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="5">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
+      <node id="4">
+        <label>faiss::FlatCodesDistanceComputer</label>
+        <link refid="structfaiss_1_1FlatCodesDistanceComputer"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
+      <node id="4">
+        <label>faiss::FlatCodesDistanceComputer</label>
+        <link refid="structfaiss_1_1FlatCodesDistanceComputer"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>quant</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="67" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="67" bodyend="343"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a06b26a2a6b77115fce22d756b49ea6f4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>clear_prescreen_threshold</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a005e321a9696c5006670a127dc494af5" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>configure</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1accb14dab6dae3fa66e97c860cca97053" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>DCTurboQuantFull</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8bf0c481f0543ba85af9f01e3b347e80" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>delta_centroid</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>distance_to_code</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>distances_batch_4</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a44cc7f43d3762b2fc361497c30108e7a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>int_qjl</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a0bce466722ca0c7b73bc108091e1a2a0" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_base</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a93b526d3a664f104bcebd76ca2e4c33c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_coeff_s0</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8a61f9ba7a7f2be0eb4c0f818775eb1c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_coeff_s01</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aa87ba26704918ef2ae226ffc1a5f5c09" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_coeff_s1</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ad04ec98fc601af34459df8bf42514336" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_int_scale</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aed21d760b448c67be631b521c41b9a82" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_multi_base</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a5e0163145794958c29a1c911c8e597d4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>mse_popcnt_scale</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a7c957ffff85535c9df680f22c7c9dc6f" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>n_skipped</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ade586d7d5f64b5a38b84281286c8abec" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>n_total</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>partial_dot_product</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>partial_dot_product_batch_4</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a26fe9592993959220f2d3a452cafffc4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>prescreen_l2</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>q</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a9efcc01d62d12d48668f8cc9bf0e9dff" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>q_norm_sq</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2c03ffe0069ca1c90753885440b104af" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>qb</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8a92e38e85f6be296666f12f8fffe865" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>qjl_coeff</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a7647fa339437ee5201309b42496e843f" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>qjl_error_coeff</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a59575d69e345b0a20a6a2f57fdfc4cb7" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>qjl_int_scale</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a14efd5bde2591d68a6d20a1c2d55d265" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>qjl_popcnt_scale</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a4fc91ec9a032f6300a3b355c53044cf9" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>quant</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab20d78f8f6b880e8127ce98bf80f2e06" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>query</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab9fd78bbce160a51a0dc46d87b71cce7" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>query_proj</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a0344349ccda2289d15fd18976a8f7782" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>query_to_code</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>query_to_codes_batch_4</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8bc226849324d7b7244ba72e8bf5d3ac" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>rearranged_q</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a78d47e70e3b4cb302310bad69055a546" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>rearranged_qproj</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a19744e62f5a9fc130eff78127706446e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>scaled_c0</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aec496e168ef7b85f47df535f645ec167" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>scaled_c1</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ae0e90e4d14bab6d563953a8e34dc6f74" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>scratch_and</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a3e5b072c5705e762f4d2f4116e43748d" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>set_prescreen_threshold</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a863b58ae95fe9f0d1191819e982b7715" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>set_query</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a73e7f8e5e107f5741390e3a6a525b94e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>Sim</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>SQDistanceComputer</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2e3b35dc7d1c02493ce7e5f127376058" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>symmetric_dis</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a74e737f507b3bfd19b07f70ef8f7f8d0" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>threshold_ptr</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a63b8549e31f5398d804968b473c45546" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>total_q_sum</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a733fce1836bcbf401aa32a9564d9cdc2" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>total_qproj_sum</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>~DistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>~FlatCodesDistanceComputer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

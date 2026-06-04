@@ -1,12 +1,42 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1SearchParametersIVF" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::SearchParametersIVF</compoundname>
-    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
-    <derivedcompoundref refid="structfaiss_1_1IVFPQSearchParameters" prot="public" virt="non-virtual">faiss::IVFPQSearchParameters</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1IVFRaBitQSearchParameters" prot="public" virt="non-virtual">faiss::IVFRaBitQSearchParameters</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1IVFSQTurboQSearchParameters" prot="public" virt="non-virtual">faiss::IVFSQTurboQSearchParameters</derivedcompoundref>
+  <compounddef id="structfaiss_1_1IVFSQTurboQSearchParameters" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IVFSQTurboQSearchParameters</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</basecompoundref>
+    <includes refid="IndexScalarQuantizer_8h" local="no">IndexScalarQuantizer.h</includes>
     <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IVFSQTurboQSearchParameters_1af1acbd32f7eb81887a899f36f592ee03" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::IVFSQTurboQSearchParameters::qb</definition>
+        <argsstring></argsstring>
+        <name>qb</name>
+        <qualifiedname>faiss::IVFSQTurboQSearchParameters::qb</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Query quantization bits for integer MSE pre-screening. 0 = float path (default), 1-8 = integer popcount path. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexScalarQuantizer.h" line="70" column="13" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IVFSQTurboQSearchParameters_1ae99e5f8c1d214c618af7f79cabb9f087" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IVFSQTurboQSearchParameters::int_qjl</definition>
+        <argsstring></argsstring>
+        <name>int_qjl</name>
+        <qualifiedname>faiss::IVFSQTurboQSearchParameters::int_qjl</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>Also use integer popcount for QJL stage (requires qb &gt; 0). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexScalarQuantizer.h" line="73" column="10" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::SearchParametersIVF::nprobe</definition>
@@ -135,90 +165,72 @@
         <location file="faiss/Index.h" line="90" column="16" bodyfile="faiss/Index.h" bodystart="90" bodyend="-1"/>
       </memberdef>
     </sectiondef>
-    <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type></type>
-        <definition>virtual faiss::SearchParametersIVF::~SearchParametersIVF</definition>
-        <argsstring>()</argsstring>
-        <name>~SearchParametersIVF</name>
-        <qualifiedname>faiss::SearchParametersIVF::~SearchParametersIVF</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="94" column="13" bodyfile="faiss/IndexIVF.h" bodystart="94" bodyend="94"/>
-      </memberdef>
-    </sectiondef>
     <briefdescription>
+<para>Search parameters for TurboQuant full types (QT_*_tq). </para>
     </briefdescription>
     <detaileddescription>
+<para>An IVF implementation where the components of the residuals are encoded with a scalar quantizer. All distance computations are asymmetric, so the encoded vectors are decoded and approximate distances are computed. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::IVFPQSearchParameters</label>
-        <link refid="structfaiss_1_1IVFPQSearchParameters"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss::IVFRaBitQSearchParameters</label>
-        <link refid="structfaiss_1_1IVFRaBitQSearchParameters"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss::IVFSQTurboQSearchParameters</label>
-        <link refid="structfaiss_1_1IVFSQTurboQSearchParameters"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="2">
-        <label>faiss::SearchParameters</label>
-        <link refid="structfaiss_1_1SearchParameters"/>
+        <label>IVFSearchParameters</label>
+        <link refid="structfaiss_1_1SearchParametersIVF"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="1">
-        <label>faiss::SearchParametersIVF</label>
-        <link refid="structfaiss_1_1SearchParametersIVF"/>
+        <label>faiss::IVFSQTurboQSearchParameters</label>
+        <link refid="structfaiss_1_1IVFSQTurboQSearchParameters"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="3">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
-      </node>
       <node id="2">
-        <label>faiss::SearchParameters</label>
-        <link refid="structfaiss_1_1SearchParameters"/>
-        <childnode refid="3" relation="usage">
-          <edgelabel>sel</edgelabel>
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss::SearchParametersIVF</label>
+        <label>IVFSearchParameters</label>
         <link refid="structfaiss_1_1SearchParametersIVF"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="2" relation="usage">
+        <childnode refid="3" relation="usage">
           <edgelabel>quantizer_params</edgelabel>
         </childnode>
       </node>
+      <node id="4">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::IVFSQTurboQSearchParameters</label>
+        <link refid="structfaiss_1_1IVFSQTurboQSearchParameters"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVF.h" line="68" column="1" bodyfile="faiss/IndexIVF.h" bodystart="68" bodyend="95"/>
+    <location file="faiss/IndexScalarQuantizer.h" line="67" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="67" bodyend="74"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1SearchParametersIVF_1a04fdb1d7439e158e3ae1696a6e38e355" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>ensure_topk_full</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>inverted_list_context</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>max_codes</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1a893b527d1d6a4cee0159684e1d6a7aa7" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>max_empty_result_buckets</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1a9792e2394117a6602cf576cbbfc889e0" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>max_lists_num</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>nprobe</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>quantizer_params</name></member>
-      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersIVF</scope><name>sel</name></member>
-      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParametersIVF</scope><name>~SearchParameters</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df" prot="public" virt="virtual"><scope>faiss::SearchParametersIVF</scope><name>~SearchParametersIVF</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1a04fdb1d7439e158e3ae1696a6e38e355" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>ensure_topk_full</name></member>
+      <member refid="structfaiss_1_1IVFSQTurboQSearchParameters_1ae99e5f8c1d214c618af7f79cabb9f087" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>int_qjl</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>inverted_list_context</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>max_codes</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1a893b527d1d6a4cee0159684e1d6a7aa7" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>max_empty_result_buckets</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1a9792e2394117a6602cf576cbbfc889e0" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>max_lists_num</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>nprobe</name></member>
+      <member refid="structfaiss_1_1IVFSQTurboQSearchParameters_1af1acbd32f7eb81887a899f36f592ee03" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>qb</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>quantizer_params</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>~SearchParameters</name></member>
+      <member refid="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df" prot="public" virt="virtual"><scope>faiss::IVFSQTurboQSearchParameters</scope><name>~SearchParametersIVF</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

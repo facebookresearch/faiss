@@ -67,6 +67,12 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="8">
+        <label>faiss::IVFSQTurboQSearchParameters</label>
+        <link refid="structfaiss_1_1IVFSQTurboQSearchParameters"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>faiss::IndexRefineSearchParameters</label>
         <link refid="structfaiss_1_1IndexRefineSearchParameters"/>
@@ -95,37 +101,37 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss::SearchParametersPQ</label>
         <link refid="structfaiss_1_1SearchParametersPQ"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss::SearchParametersPreTransform</label>
         <link refid="structfaiss_1_1SearchParametersPreTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss::SearchParametersResidualCoarseQuantizer</label>
         <link refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss::SearchParametersSVSIVF</label>
         <link refid="structfaiss_1_1SearchParametersSVSIVF"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss::SearchParametersSVSVamana</label>
         <link refid="structfaiss_1_1SearchParametersSVSVamana"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss::gpu::SearchParametersCagra</label>
         <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
         <childnode refid="1" relation="public-inheritance">

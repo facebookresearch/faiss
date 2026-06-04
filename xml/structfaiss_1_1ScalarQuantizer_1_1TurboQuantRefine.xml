@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ScalarQuantizer::TurboQuantRefine</compoundname>
+    <includes refid="ScalarQuantizer_8h" local="no">ScalarQuantizer.h</includes>
+    <innerclass refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer" prot="public">faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</innerclass>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a6334a0ab17378ae014b03206342a6066" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::ScalarQuantizer::TurboQuantRefine::qjl_type</definition>
+        <argsstring></argsstring>
+        <name>qjl_type</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::qjl_type</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="160" column="17" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a27232d8c0b935fab8148b8e2d080ce86" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ScalarQuantizer::TurboQuantRefine::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::seed</qualifiedname>
+        <initializer>= 42</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="161" column="18" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a71c32c2013f95a58eac9fd77eca42413" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ScalarQuantizer::TurboQuantRefine::padded_d</definition>
+        <argsstring></argsstring>
+        <name>padded_d</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::padded_d</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="162" column="16" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a2582186108115b5fc38e2e6e1e5e57db" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::ScalarQuantizer::TurboQuantRefine::fwht_signs</definition>
+        <argsstring></argsstring>
+        <name>fwht_signs</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::fwht_signs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="163" column="21" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ae3591c6d2defd86c787f5a80daa77e80" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::ScalarQuantizer::TurboQuantRefine::rr_matrix</definition>
+        <argsstring></argsstring>
+        <name>rr_matrix</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::rr_matrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="164" column="21" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ae508f8d2441dc0f9b64a21c896f69692" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ScalarQuantizer::TurboQuantRefine::nb_bits_lo</definition>
+        <argsstring></argsstring>
+        <name>nb_bits_lo</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::nb_bits_lo</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="165" column="16" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1af99b78373348afc4d36e5d0ff4a56178" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ScalarQuantizer::TurboQuantRefine::n_hi_dims</definition>
+        <argsstring></argsstring>
+        <name>n_hi_dims</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::n_hi_dims</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="166" column="16" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="166" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1aab2faa8b2d97307717aac5497c30498a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool faiss::ScalarQuantizer::TurboQuantRefine::is_turboq_full</definition>
+        <argsstring>(QuantizerType qt)</argsstring>
+        <name>is_turboq_full</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::is_turboq_full</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref></type>
+          <declname>qt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="143" column="21" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="143" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a33edf169434b195b2889c4f811c8559e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::ScalarQuantizer::TurboQuantRefine::pack_seed</definition>
+        <argsstring>(uint64_t seed, float out[2])</argsstring>
+        <name>pack_seed</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::pack_seed</qualifiedname>
+        <param>
+          <type>uint64_t</type>
+          <declname>seed</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>out</declname>
+          <array>[2]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="147" column="21" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="147" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ace8779a2ca48efbc0c332a679cbfd684" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>static uint64_t faiss::ScalarQuantizer::TurboQuantRefine::unpack_seed</definition>
+        <argsstring>(float lo, float hi)</argsstring>
+        <name>unpack_seed</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::unpack_seed</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>lo</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>hi</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="152" column="25" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="152" bodyend="158"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ab6f9505e350f631735723e292314ab5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ScalarQuantizer::TurboQuantRefine::init_projection</definition>
+        <argsstring>(size_t d)</argsstring>
+        <name>init_projection</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::init_projection</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="168" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a7531e67601b08d65f15ccb8abb33116c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::ScalarQuantizer::TurboQuantRefine::use_fwht</definition>
+        <argsstring>() const</argsstring>
+        <name>use_fwht</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::use_fwht</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="169" column="14" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="169" bodyend="171"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>TurboQuant full (QT_*_tq) refinement state, isolated from the main <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> to avoid polluting it with TQ-specific data. </para>
+    </detaileddescription>
+    <location file="faiss/impl/ScalarQuantizer.h" line="142" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="142" bodyend="180"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a2582186108115b5fc38e2e6e1e5e57db" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>fwht_signs</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ab6f9505e350f631735723e292314ab5e" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>init_projection</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1aab2faa8b2d97307717aac5497c30498a" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>is_turboq_full</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1af99b78373348afc4d36e5d0ff4a56178" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>n_hi_dims</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ae508f8d2441dc0f9b64a21c896f69692" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>nb_bits_lo</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a33edf169434b195b2889c4f811c8559e" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>pack_seed</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a71c32c2013f95a58eac9fd77eca42413" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>padded_d</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a6334a0ab17378ae014b03206342a6066" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>qjl_type</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ae3591c6d2defd86c787f5a80daa77e80" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>rr_matrix</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a27232d8c0b935fab8148b8e2d080ce86" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>seed</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ace8779a2ca48efbc0c332a679cbfd684" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>unpack_seed</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a7531e67601b08d65f15ccb8abb33116c" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine</scope><name>use_fwht</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

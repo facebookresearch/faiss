@@ -994,6 +994,10 @@
         </childnode>
         <childnode refid="135" relation="include">
         </childnode>
+        <childnode refid="111" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
       </node>
       <node id="107">
         <label>faiss/impl/RaBitQuantizer.h</label>

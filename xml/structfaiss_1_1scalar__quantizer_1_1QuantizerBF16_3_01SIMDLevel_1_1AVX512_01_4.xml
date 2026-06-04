@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="255" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="255" bodyend="257"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="281" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="281" bodyend="283"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab669f4006a87989fc6ca8b68b435e4b3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="259" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="259" bodyend="261"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="285" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="285" bodyend="287"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab0e067b24664dc0570f2c93280049424" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
@@ -116,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="263" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="263" bodyend="267"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="289" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="289" bodyend="293"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -132,7 +132,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="250" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="250" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="276" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="276" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

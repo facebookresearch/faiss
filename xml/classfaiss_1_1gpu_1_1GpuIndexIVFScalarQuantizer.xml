@@ -2737,6 +2737,13 @@
         <link refid="structfaiss_1_1ScalarQuantizer"/>
         <childnode refid="12" relation="public-inheritance">
         </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>turboq_refine</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss::ScalarQuantizer::TurboQuantRefine</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine"/>
       </node>
       <node id="3">
         <label>faiss::gpu::GpuIndex</label>
@@ -2785,11 +2792,11 @@
         <childnode refid="11" relation="usage">
           <edgelabel>sq</edgelabel>
         </childnode>
-        <childnode refid="13" relation="usage">
+        <childnode refid="14" relation="usage">
           <edgelabel>ivfSQConfig_</edgelabel>
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig"/>
         <childnode refid="9" relation="public-inheritance">

@@ -1,30 +1,70 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kind="struct" language="C++" prot="public" abstract="yes">
-    <compoundname>faiss::ScalarQuantizer::SQDistanceComputer</compoundname>
-    <basecompoundref refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public" virt="non-virtual">faiss::FlatCodesDistanceComputer</basecompoundref>
-    <derivedcompoundref refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" prot="public" virt="non-virtual">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SL &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::AVX512 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte" prot="public" virt="non-virtual">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SL &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::AVX512 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByteSigned" prot="public" virt="non-virtual">faiss::scalar_quantizer::DistanceComputerByteSigned&lt; Similarity, SL &gt;</derivedcompoundref>
+  <compounddef id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</compoundname>
+    <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::SQDistanceComputer</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull" prot="public" virt="non-virtual">faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;</derivedcompoundref>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type></type>
-        <definition>faiss::ScalarQuantizer::SQDistanceComputer::SQDistanceComputer</definition>
-        <argsstring>()</argsstring>
-        <name>SQDistanceComputer</name>
-        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::SQDistanceComputer</qualifiedname>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a366566b2d1b00066a6b3dfadad0e4dec" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer::configure</definition>
+        <argsstring>(uint8_t qb, bool int_qjl)=0</argsstring>
+        <name>configure</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer::configure</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a005e321a9696c5006670a127dc494af5">configure</reimplementedby>
+        <param>
+          <type>uint8_t</type>
+          <declname>qb</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>int_qjl</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="112" column="9" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="112" bodyend="112"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="174" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1aa051991ccb1bd9d6e59e988cf7c1942e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer::set_prescreen_threshold</definition>
+        <argsstring>(const float *t, bool minimize)=0</argsstring>
+        <name>set_prescreen_threshold</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer::set_prescreen_threshold</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a3e5b072c5705e762f4d2f4116e43748d">set_prescreen_threshold</reimplementedby>
+        <param>
+          <type>const float *</type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>minimize</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="175" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a8d160bd6912a62d7d1526f4f7480977e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer::clear_prescreen_threshold</definition>
+        <argsstring>()=0</argsstring>
+        <name>clear_prescreen_threshold</name>
+        <qualifiedname>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer::clear_prescreen_threshold</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a06b26a2a6b77115fce22d756b49ea6f4">clear_prescreen_threshold</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="178" column="26"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
@@ -377,115 +417,82 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
+      <node id="4">
         <label>faiss::DistanceComputer</label>
         <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss::FlatCodesDistanceComputer</label>
         <link refid="structfaiss_1_1FlatCodesDistanceComputer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
-        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
         <label>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SL &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="5">
         <label>faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull"/>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SL &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>faiss::scalar_quantizer::DistanceComputerByteSigned&lt; Similarity, SL &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByteSigned"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="3">
+      <node id="4">
         <label>faiss::DistanceComputer</label>
         <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss::FlatCodesDistanceComputer</label>
         <link refid="structfaiss_1_1FlatCodesDistanceComputer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
-        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
+        <label>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ScalarQuantizer.h" line="111" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="111" bodyend="138"/>
+    <location file="faiss/impl/ScalarQuantizer.h" line="173" column="9" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="173" bodyend="179"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>code_size</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>codes</name></member>
-      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>distance_to_code</name></member>
-      <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>distances_batch_4</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>operator()</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>partial_dot_product</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>partial_dot_product_batch_4</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>q</name></member>
-      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>query_to_code</name></member>
-      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>query_to_codes_batch_4</name></member>
-      <member refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>set_query</name></member>
-      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>SQDistanceComputer</name></member>
-      <member refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>symmetric_dis</name></member>
-      <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>~DistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>~FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a8d160bd6912a62d7d1526f4f7480977e" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>clear_prescreen_threshold</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a366566b2d1b00066a6b3dfadad0e4dec" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>configure</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>distance_to_code</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>distances_batch_4</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>partial_dot_product</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>partial_dot_product_batch_4</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>q</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>query_to_code</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>query_to_codes_batch_4</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1aa051991ccb1bd9d6e59e988cf7c1942e" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>set_prescreen_threshold</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>set_query</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>SQDistanceComputer</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>symmetric_dis</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>~DistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>~FlatCodesDistanceComputer</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

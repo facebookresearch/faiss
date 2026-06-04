@@ -3,7 +3,6 @@
   <compounddef id="structfaiss_1_1IndexIVFScalarQuantizer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexIVFScalarQuantizer</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexIVF" prot="public" virt="non-virtual">faiss::IndexIVF</basecompoundref>
-    <includes refid="IndexScalarQuantizer_8h" local="no">IndexScalarQuantizer.h</includes>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFScalarQuantizer_1a9270ceca43cc0972a653993f1f7042d7" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref></type>
@@ -17,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="67" column="21" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="77" column="21" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="77" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -392,7 +391,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="69" column="5"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="79" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1ae94354a4979cb783cedc135529b46b03" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -406,7 +405,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="78" column="5"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="88" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1a56c938787de392dc1c7729c51cc3aa02" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -435,7 +434,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="80" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="90" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1a3fc44cbde0c9cbed9c4d6798ec90544d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -451,7 +450,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="82" column="11"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="92" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1a53cc3b76de05e373198e0169cbe11a91" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -514,7 +513,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="84" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="94" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1a76c6b58f2d1983c2639750f9c353004d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -572,7 +571,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="91" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="101" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1a1ef04e3d79e067e885edcb69a7a9b3cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -619,7 +618,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="97" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="107" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1a288b6b1be641ea412553e6ccf6ebc182" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
@@ -648,7 +647,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="104" column="25"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="114" column="25"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1abc33d7d6a5f67719f3ee76b3b12d1f77" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -677,7 +676,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="109" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="119" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFScalarQuantizer_1ae10ad1a5c025337984277a68f4da4338" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -731,7 +730,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="113" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="123" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -2513,7 +2512,6 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>An IVF implementation where the components of the residuals are encoded with a scalar quantizer. All distance computations are asymmetric, so the encoded vectors are decoded and approximate distances are computed. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">
@@ -2611,9 +2609,16 @@
         <link refid="structfaiss_1_1ScalarQuantizer"/>
         <childnode refid="10" relation="public-inheritance">
         </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>turboq_refine</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::ScalarQuantizer::TurboQuantRefine</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexScalarQuantizer.h" line="66" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="66" bodyend="114"/>
+    <location file="faiss/IndexScalarQuantizer.h" line="76" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="76" bodyend="124"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVFScalarQuantizer_1a1ef04e3d79e067e885edcb69a7a9b3cf" prot="public" virt="virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>add_core</name></member>

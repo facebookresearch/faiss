@@ -310,6 +310,8 @@
       <node id="49">
         <label>faiss/impl/ScalarQuantizer.h</label>
         <link refid="ScalarQuantizer_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="50" relation="include">
         </childnode>
         <childnode refid="19" relation="include">

@@ -1635,6 +1635,13 @@
         <link refid="structfaiss_1_1ScalarQuantizer"/>
         <childnode refid="6" relation="public-inheritance">
         </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>turboq_refine</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::ScalarQuantizer::TurboQuantRefine</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine"/>
       </node>
     </collaborationgraph>
     <location file="faiss/IndexScalarQuantizer.h" line="25" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="25" bodyend="58"/>
