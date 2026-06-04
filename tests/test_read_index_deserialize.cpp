@@ -35,6 +35,7 @@
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/io.h>
+#include <faiss/impl/zerocopy_io.h>
 #include <faiss/index_io.h>
 #include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/hamming.h>
@@ -273,6 +274,39 @@ TEST(ReadIndexDeserialize, READVECTORByteLimit) {
         VectorIOReader reader;
         reader.data = buf;
         EXPECT_NO_THROW(read_VectorTransform_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: Zero-copy IndexFlat reads apply the same byte limit as READXBVECTOR.
+// The fast path returns a view over serialized data instead of resizing a
+// vector, so it must validate before mapping the payload.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ZeroCopyReadXBVectorByteLimit) {
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    const int d = 1;
+    const int64_t ntotal = 8;
+    const size_t xb_elements = ntotal * d;
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, d, ntotal);
+    push_val<size_t>(buf, xb_elements);
+    buf.insert(buf.end(), xb_elements * sizeof(float), 0);
+
+    set_deserialization_vector_byte_limit(xb_elements * sizeof(float));
+    {
+        ZeroCopyIOReader reader(buf.data(), buf.size());
+        EXPECT_THROW(read_index_up(&reader), FaissException);
+    }
+
+    set_deserialization_vector_byte_limit((xb_elements + 1) * sizeof(float));
+    {
+        ZeroCopyIOReader reader(buf.data(), buf.size());
+        EXPECT_NO_THROW(read_index_up(&reader));
     }
 
     set_deserialization_vector_byte_limit(old_limit);

@@ -155,6 +155,29 @@ void set_deserialization_lattice_r2_limit(size_t value) {
 // * if `size_multiplier` is defined, then a size will be multiplied by it.
 // * returns true is the case was handled; otherwise, false
 template <typename VectorT>
+size_t checked_deserialization_vector_size(
+        size_t size,
+        size_t size_multiplier) {
+    FAISS_THROW_IF_NOT_FMT(
+            size_multiplier == 0 || size <= SIZE_MAX / size_multiplier,
+            "deserialization vector size %zu would overflow with multiplier %zu",
+            size,
+            size_multiplier);
+
+    size *= size_multiplier;
+    FAISS_THROW_IF_NOT_FMT(
+            size < get_deserialization_vector_byte_limit() /
+                            sizeof(typename VectorT::value_type),
+            "deserialization vector size %zu exceeds byte limit %zu for "
+            "element size %zu",
+            size,
+            get_deserialization_vector_byte_limit(),
+            sizeof(typename VectorT::value_type));
+
+    return size;
+}
+
+template <typename VectorT>
 bool read_vector_base(
         VectorT& target,
         IOReader* f,
@@ -173,8 +196,8 @@ bool read_vector_base(
                 READANDCHECK(&size, 1);
             }
 
-            // perform the size multiplication
-            size *= size_multiplier.value_or(1);
+            size = checked_deserialization_vector_size<VectorT>(
+                    size, size_multiplier.value_or(1));
 
             // ok, mmap and check
             char* address = nullptr;
@@ -209,8 +232,8 @@ bool read_vector_base(
                 READANDCHECK(&size, 1);
             }
 
-            // perform the size multiplication
-            size *= size_multiplier.value_or(1);
+            size = checked_deserialization_vector_size<VectorT>(
+                    size, size_multiplier.value_or(1));
 
             // create a view
             char* address = nullptr;
