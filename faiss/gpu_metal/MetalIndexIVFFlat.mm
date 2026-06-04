@@ -9,15 +9,15 @@
 #import "MetalIndexIVFFlat.h"
 
 #include <faiss/IndexFlat.h>
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu_metal/MetalDistance.h>
 #include <faiss/gpu_metal/impl/MetalIVFFlat.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/invlists/InvertedLists.h>
 
-#include <cstring>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <limits>
 #include <string>
 #include <vector>
@@ -314,8 +314,7 @@ std::string explainIvfScanFailureEnvelope(
     }
     if (nprobe > 0 && (size_t)k > (exactCandidateBudget / nprobe)) {
         return std::string("scan envelope: nprobe*k exceeds ") +
-                std::to_string(exactCandidateBudget) +
-                " exact-candidate bound";
+                std::to_string(exactCandidateBudget) + " exact-candidate bound";
     }
     faiss::idx_t badListId = -1;
     size_t badListSize = 0;
@@ -328,8 +327,8 @@ std::string explainIvfScanFailureEnvelope(
                 badListSize)) {
         if (badListSize > 0) {
             return std::string("scan envelope: selected list size exceeds ") +
-                    std::to_string(exactCandidateBudget) + " (list=" +
-                    std::to_string((long long)badListId) +
+                    std::to_string(exactCandidateBudget) +
+                    " (list=" + std::to_string((long long)badListId) +
                     ", size=" + std::to_string(badListSize) + ")";
         }
         return "scan envelope: invalid coarse assignment list id";
@@ -365,6 +364,35 @@ bool selectedListStats(
     return true;
 }
 
+inline void heapSiftDown(
+        float* dist,
+        int64_t* idx,
+        int root,
+        int n,
+        bool isL2) {
+    while (true) {
+        int worst = root;
+        int left = 2 * root + 1;
+        int right = 2 * root + 2;
+        if (isL2) {
+            if (left < n && dist[left] > dist[worst])
+                worst = left;
+            if (right < n && dist[right] > dist[worst])
+                worst = right;
+        } else {
+            if (left < n && dist[left] < dist[worst])
+                worst = left;
+            if (right < n && dist[right] < dist[worst])
+                worst = right;
+        }
+        if (worst == root)
+            break;
+        std::swap(dist[root], dist[worst]);
+        std::swap(idx[root], idx[worst]);
+        root = worst;
+    }
+}
+
 inline void insertTopKCandidate(
         float candDist,
         int64_t candIdx,
@@ -372,34 +400,23 @@ inline void insertTopKCandidate(
         float* bestDist,
         int64_t* bestIdx,
         int k) {
-    if (candIdx < 0 || k <= 0) {
+    if (candIdx < 0 || k <= 0)
         return;
-    }
-    int pos = -1;
-    if (isL2) {
-        for (int j = 0; j < k; ++j) {
-            if (candDist < bestDist[j]) {
-                pos = j;
-                break;
-            }
-        }
-    } else {
-        for (int j = 0; j < k; ++j) {
-            if (candDist > bestDist[j]) {
-                pos = j;
-                break;
-            }
-        }
-    }
-    if (pos < 0) {
+    bool dominated =
+            isL2 ? (candDist >= bestDist[0]) : (candDist <= bestDist[0]);
+    if (dominated)
         return;
+    bestDist[0] = candDist;
+    bestIdx[0] = candIdx;
+    heapSiftDown(bestDist, bestIdx, 0, k, isL2);
+}
+
+inline void heapSort(float* dist, int64_t* idx, int k, bool isL2) {
+    for (int i = k - 1; i > 0; --i) {
+        std::swap(dist[0], dist[i]);
+        std::swap(idx[0], idx[i]);
+        heapSiftDown(dist, idx, 0, i, isL2);
     }
-    for (int j = k - 1; j > pos; --j) {
-        bestDist[j] = bestDist[j - 1];
-        bestIdx[j] = bestIdx[j - 1];
-    }
-    bestDist[pos] = candDist;
-    bestIdx[pos] = candIdx;
 }
 } // namespace
 
@@ -473,7 +490,8 @@ MetalIndexIVFFlat::MetalIndexIVFFlat(
                   config),
           indicesOptions_(config.indicesOptions),
           interleavedLayout_(config.interleavedLayout) {
-    faiss::IndexFlat* quantizer = (cpuIndex->metric_type == METRIC_INNER_PRODUCT)
+    faiss::IndexFlat* quantizer =
+            (cpuIndex->metric_type == METRIC_INNER_PRODUCT)
             ? (faiss::IndexFlat*)new faiss::IndexFlatIP((int)cpuIndex->d)
             : (faiss::IndexFlat*)new faiss::IndexFlatL2((int)cpuIndex->d);
     cpuIndex_ = std::make_unique<faiss::IndexIVFFlat>(
@@ -518,9 +536,10 @@ void MetalIndexIVFFlat::uploadCentroids_() const {
     if (centroidBuf_) {
         const float* src = centroids.data();
         if (fp16) {
-            floatToHalf(src,
-                        reinterpret_cast<uint16_t*>([centroidBuf_ contents]),
-                        nCentroids * (size_t)d);
+            floatToHalf(
+                    src,
+                    reinterpret_cast<uint16_t*>([centroidBuf_ contents]),
+                    nCentroids * (size_t)d);
         } else {
             std::memcpy([centroidBuf_ contents], src, bytes);
         }
@@ -529,15 +548,22 @@ void MetalIndexIVFFlat::uploadCentroids_() const {
     // Pre-compute centroid L2 norms on GPU (float32 centroids only).
     if (centroidBuf_ && metric_type == METRIC_L2 && !fp16) {
         size_t normBytes = nCentroids * sizeof(float);
-        centroidNormsBuf_ = [device newBufferWithLength:normBytes
-                                               options:MTLResourceStorageModeShared];
+        centroidNormsBuf_ =
+                [device newBufferWithLength:normBytes
+                                    options:MTLResourceStorageModeShared];
         if (centroidNormsBuf_) {
             id<MTLCommandQueue> queue = resources_->getCommandQueue();
             const int nCentroidsI = checkedSizeToInt(
                     nCentroids,
                     "MetalIndexIVFFlat: centroid count exceeds int range");
-            if (!runMetalComputeNorms(device, queue, centroidBuf_,
-                                      nCentroidsI, d, centroidNormsBuf_, false)) {
+            if (!runMetalComputeNorms(
+                        device,
+                        queue,
+                        centroidBuf_,
+                        nCentroidsI,
+                        d,
+                        centroidNormsBuf_,
+                        false)) {
                 centroidNormsBuf_ = nil;
             }
         }
@@ -595,7 +621,10 @@ void MetalIndexIVFFlat::add(idx_t n, const float* x) {
     }
 }
 
-void MetalIndexIVFFlat::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
+void MetalIndexIVFFlat::add_with_ids(
+        idx_t n,
+        const float* x,
+        const idx_t* xids) {
     FAISS_THROW_IF_NOT(cpuIndex_);
     if (n == 0) {
         return;
@@ -642,13 +671,13 @@ void MetalIndexIVFFlat::search(
             k <= kIVFFlatSupportedMaxK,
             "MetalIndexIVFFlat supports k <= 1024; larger k is not yet supported");
 
-    const float inf    = std::numeric_limits<float>::infinity();
+    const float inf = std::numeric_limits<float>::infinity();
     const float negInf = -std::numeric_limits<float>::infinity();
 
     // Empty index: mirror CPU IndexIVF behavior (labels = -1).
     if (cpuIndex_->ntotal == 0 || n == 0) {
         for (idx_t i = 0; i < n * k; ++i) {
-            labels[i]    = -1;
+            labels[i] = -1;
             distances[i] = (metric_type == METRIC_L2) ? inf : negInf;
         }
         return;
@@ -669,7 +698,7 @@ void MetalIndexIVFFlat::search(
     nprobe = std::min(nprobe, cpuIndex_->nlist);
     if (nprobe == 0) {
         for (idx_t i = 0; i < n * k; ++i) {
-            labels[i]    = -1;
+            labels[i] = -1;
             distances[i] = isL2 ? inf : negInf;
         }
         return;
@@ -731,21 +760,22 @@ void MetalIndexIVFFlat::search(
         cpuFallbackSearch(qBase, qCount);
     };
 
-    id<MTLDevice>      device = resources_->getDevice();
+    id<MTLDevice> device = resources_->getDevice();
     id<MTLCommandQueue> queue = resources_->getCommandQueue();
     if (gpuIvf_) {
         gpuIvf_->ensureInterleavedLayoutUpToDate();
     }
 
     const bool hasFlatCodes = gpuIvf_ && gpuIvf_->codesBuffer();
-    const bool hasInterleavedCodes =
-            gpuIvf_ && gpuIvf_->interleavedCodesBuffer() &&
+    const bool hasInterleavedCodes = gpuIvf_ &&
+            gpuIvf_->interleavedCodesBuffer() &&
             gpuIvf_->interleavedCodesOffsetBuffer();
     const bool hasScanCodes = hasFlatCodes || hasInterleavedCodes;
 
     // Fall back to CPU if Metal is not available or GPU IVF storage not ready.
-    if (!device || !queue || !gpuIvf_ || !hasScanCodes || !gpuIvf_->idsBuffer() ||
-        !gpuIvf_->listOffsetGpuBuffer() || !gpuIvf_->listLengthGpuBuffer()) {
+    if (!device || !queue || !gpuIvf_ || !hasScanCodes ||
+        !gpuIvf_->idsBuffer() || !gpuIvf_->listOffsetGpuBuffer() ||
+        !gpuIvf_->listLengthGpuBuffer()) {
         fallbackOrThrow(0, n, "missing Metal device/queue or IVF buffers");
         return;
     }
@@ -757,8 +787,10 @@ void MetalIndexIVFFlat::search(
 
     int nlist = (int)cpuIndex_->nlist;
 
-    const size_t tileRows = chooseIvfSearchTileRows((size_t)n, d, k, nprobe, nlist);
-    const int avgListLen = (ntotal > 0 && nlist > 0) ? (int)(ntotal / nlist) : 256;
+    const size_t tileRows =
+            chooseIvfSearchTileRows((size_t)n, d, k, nprobe, nlist);
+    const int avgListLen =
+            (ntotal > 0 && nlist > 0) ? (int)(ntotal / nlist) : 256;
 
     for (idx_t qBase = 0; qBase < n; qBase += (idx_t)tileRows) {
         idx_t qCount = std::min<idx_t>((idx_t)tileRows, n - qBase);
@@ -767,8 +799,10 @@ void MetalIndexIVFFlat::search(
         size_t queriesBytes = (size_t)qCount * (size_t)d * sizeof(float);
         size_t outDistBytes = (size_t)qCount * (size_t)k * sizeof(float);
         size_t outIdxBytes = (size_t)qCount * (size_t)k * sizeof(int64_t);
-        size_t perListBytes = (size_t)qCount * nprobe * (size_t)k * sizeof(float);
-        size_t perListIdxB = (size_t)qCount * nprobe * (size_t)k * sizeof(int64_t);
+        size_t perListBytes =
+                (size_t)qCount * nprobe * (size_t)k * sizeof(float);
+        size_t perListIdxB =
+                (size_t)qCount * nprobe * (size_t)k * sizeof(int64_t);
         size_t coarseDistBytes = (size_t)qCount * nprobe * sizeof(float);
         size_t coarseIdxBytes = (size_t)qCount * nprobe * sizeof(int32_t);
         size_t distMatBytes = (size_t)qCount * (size_t)nlist * sizeof(float);
@@ -787,11 +821,15 @@ void MetalIndexIVFFlat::search(
             tryFullCoarse = false;
         }
 
-        ensureSearchBuf_(searchPerListDistBuf_, searchPerListDistCap_, perListBytes);
-        ensureSearchBuf_(searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxB);
+        ensureSearchBuf_(
+                searchPerListDistBuf_, searchPerListDistCap_, perListBytes);
+        ensureSearchBuf_(
+                searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxB);
         if (tryFullCoarse) {
-            ensureSearchBuf_(coarseOutDistBuf_, coarseOutDistCap_, coarseDistBytes);
-            ensureSearchBuf_(coarseOutIdxBuf_, coarseOutIdxCap_, coarseIdxBytes);
+            ensureSearchBuf_(
+                    coarseOutDistBuf_, coarseOutDistCap_, coarseDistBytes);
+            ensureSearchBuf_(
+                    coarseOutIdxBuf_, coarseOutIdxCap_, coarseIdxBytes);
             ensureSearchBuf_(distMatrixBuf_, distMatrixCap_, distMatBytes);
             if (!coarseOutDistBuf_ || !coarseOutIdxBuf_ || !distMatrixBuf_) {
                 // Fall back to CPU coarse assignment path if matrix scratch
@@ -802,14 +840,16 @@ void MetalIndexIVFFlat::search(
 
         if (!searchQueriesBuf_ || !searchOutDistBuf_ || !searchOutIdxBuf_ ||
             !searchPerListDistBuf_ || !searchPerListIdxBuf_) {
-            fallbackOrThrow(qBase, qCount, "failed to allocate tiled search buffers");
+            fallbackOrThrow(
+                    qBase, qCount, "failed to allocate tiled search buffers");
             continue;
         }
 
         std::memcpy([searchQueriesBuf_ contents], xTile, queriesBytes);
         const int qCountI = checkedIdxToInt(
                 qCount, "MetalIndexIVFFlat: qCount exceeds int range");
-        const int kI = checkedIdxToInt(k, "MetalIndexIVFFlat: k exceeds int range");
+        const int kI =
+                checkedIdxToInt(k, "MetalIndexIVFFlat: k exceeds int range");
         const int nprobeI = checkedSizeToInt(
                 nprobe, "MetalIndexIVFFlat: nprobe exceeds int range");
 
@@ -817,10 +857,16 @@ void MetalIndexIVFFlat::search(
         if (tryFullCoarse) {
             ++fullSearchCalls;
             ok = runMetalIVFFlatFullSearch(
-                    device, queue,
+                    device,
+                    queue,
                     searchQueriesBuf_,
-                    qCountI, d, kI, nprobeI, isL2,
-                    centroidBuf_, nlist,
+                    qCountI,
+                    d,
+                    kI,
+                    nprobeI,
+                    isL2,
+                    centroidBuf_,
+                    nlist,
                     gpuIvf_->codesBuffer(),
                     gpuIvf_->idsBuffer(),
                     gpuIvf_->listOffsetGpuBuffer(),
@@ -851,16 +897,20 @@ void MetalIndexIVFFlat::search(
             size_t coarseBytes = (size_t)qCount * nprobe * sizeof(int32_t);
             ensureSearchBuf_(searchCoarseBuf_, searchCoarseCap_, coarseBytes);
             if (!searchCoarseBuf_) {
-                fallbackOrThrow(qBase, qCount, "failed to allocate coarse assign buffer");
+                fallbackOrThrow(
+                        qBase,
+                        qCount,
+                        "failed to allocate coarse assign buffer");
                 continue;
             }
             auto* dst = reinterpret_cast<int32_t*>([searchCoarseBuf_ contents]);
             for (size_t i = 0; i < (size_t)qCount * nprobe; ++i) {
                 FAISS_THROW_IF_NOT_MSG(
-                        coarseAssignVec[i] >=
-                                        (idx_t)std::numeric_limits<int32_t>::min() &&
+                        coarseAssignVec[i] >= (idx_t)std::numeric_limits<
+                                                      int32_t>::min() &&
                                 coarseAssignVec[i] <=
-                                        (idx_t)std::numeric_limits<int32_t>::max(),
+                                        (idx_t)std::numeric_limits<
+                                                int32_t>::max(),
                         "MetalIndexIVFFlat: coarse assignment exceeds int32 range");
                 dst[i] = (int32_t)coarseAssignVec[i];
             }
@@ -890,14 +940,15 @@ void MetalIndexIVFFlat::search(
                     usedLists,
                     maxSelectedListSize,
                     badListId);
-                const bool needProbeChunk =
+            const bool needProbeChunk =
                     nprobe > 0 && (size_t)k > (exactCandidateBudget / nprobe);
-                const bool needListChunk =
+            const bool needListChunk =
                     haveListStats && maxSelectedListSize > exactCandidateBudget;
 
             if (needProbeChunk || needListChunk) {
                 usedChunkedScan = true;
-                chunkMergedDist.resize((size_t)qCount * (size_t)k, isL2 ? inf : negInf);
+                chunkMergedDist.resize(
+                        (size_t)qCount * (size_t)k, isL2 ? inf : negInf);
                 chunkMergedIdx.resize((size_t)qCount * (size_t)k, -1);
                 ok = true;
 
@@ -908,30 +959,34 @@ void MetalIndexIVFFlat::search(
                 const size_t numListPass = needListChunk
                         ? ((maxSelectedListSize + listChunk - 1) / listChunk)
                         : 1;
-                // List-chunk remapping only updates list offset/length metadata.
-                // Interleaved offset metadata is list-base-relative, so force flat
-                // code path for list-chunked passes to keep ids/codes aligned.
-                id<MTLBuffer> chunkInterleavedCodes = needListChunk
-                        ? nil
-                        : gpuIvf_->interleavedCodesBuffer();
+                // List-chunk remapping only updates list offset/length
+                // metadata. Interleaved offset metadata is list-base-relative,
+                // so force flat code path for list-chunked passes to keep
+                // ids/codes aligned.
+                id<MTLBuffer> chunkInterleavedCodes =
+                        needListChunk ? nil : gpuIvf_->interleavedCodesBuffer();
                 id<MTLBuffer> chunkInterleavedOffsets = needListChunk
                         ? nil
                         : gpuIvf_->interleavedCodesOffsetBuffer();
 
-                const uint32_t* baseListOffset = reinterpret_cast<const uint32_t*>(
-                        [gpuIvf_->listOffsetGpuBuffer() contents]);
-                const uint32_t* baseListLength = reinterpret_cast<const uint32_t*>(
-                        [gpuIvf_->listLengthGpuBuffer() contents]);
+                const uint32_t* baseListOffset =
+                        reinterpret_cast<const uint32_t*>(
+                                [gpuIvf_->listOffsetGpuBuffer() contents]);
+                const uint32_t* baseListLength =
+                        reinterpret_cast<const uint32_t*>(
+                                [gpuIvf_->listLengthGpuBuffer() contents]);
                 id<MTLBuffer> listOffsetPassBuf = nil;
                 id<MTLBuffer> listLengthPassBuf = nil;
                 std::vector<uint32_t> passOffset;
                 std::vector<uint32_t> passLength;
                 if (needListChunk) {
                     size_t metaBytes = (size_t)nlist * sizeof(uint32_t);
-                    listOffsetPassBuf = [device newBufferWithLength:metaBytes
-                                                             options:MTLResourceStorageModeShared];
-                    listLengthPassBuf = [device newBufferWithLength:metaBytes
-                                                             options:MTLResourceStorageModeShared];
+                    listOffsetPassBuf = [device
+                            newBufferWithLength:metaBytes
+                                        options:MTLResourceStorageModeShared];
+                    listLengthPassBuf = [device
+                            newBufferWithLength:metaBytes
+                                        options:MTLResourceStorageModeShared];
                     if (!listOffsetPassBuf || !listLengthPassBuf) {
                         ok = false;
                     } else {
@@ -963,32 +1018,45 @@ void MetalIndexIVFFlat::search(
                                 chunkProbe * sizeof(int32_t));
                     }
 
-                    size_t coarseChunkBytes = coarseChunk.size() * sizeof(int32_t);
+                    size_t coarseChunkBytes =
+                            coarseChunk.size() * sizeof(int32_t);
                     id<MTLBuffer> coarseChunkBuf = searchCoarseBuf_;
                     if (canAsyncProbeBatch) {
-                        coarseChunkBuf =
-                                [device newBufferWithLength:coarseChunkBytes
-                                                    options:MTLResourceStorageModeShared];
+                        coarseChunkBuf = [device
+                                newBufferWithLength:coarseChunkBytes
+                                            options:MTLResourceStorageModeShared];
                         if (!coarseChunkBuf) {
                             ok = false;
                             break;
                         }
                     } else {
-                        ensureSearchBuf_(searchCoarseBuf_, searchCoarseCap_, coarseChunkBytes);
+                        ensureSearchBuf_(
+                                searchCoarseBuf_,
+                                searchCoarseCap_,
+                                coarseChunkBytes);
                         coarseChunkBuf = searchCoarseBuf_;
                         if (!coarseChunkBuf) {
                             ok = false;
                             break;
                         }
                     }
-                    std::memcpy([coarseChunkBuf contents], coarseChunk.data(), coarseChunkBytes);
+                    std::memcpy(
+                            [coarseChunkBuf contents],
+                            coarseChunk.data(),
+                            coarseChunkBytes);
 
-                    size_t perListBytesChunk =
-                            (size_t)qCount * chunkProbe * (size_t)k * sizeof(float);
-                    size_t perListIdxBytesChunk =
-                            (size_t)qCount * chunkProbe * (size_t)k * sizeof(int64_t);
-                    ensureSearchBuf_(searchPerListDistBuf_, searchPerListDistCap_, perListBytesChunk);
-                    ensureSearchBuf_(searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxBytesChunk);
+                    size_t perListBytesChunk = (size_t)qCount * chunkProbe *
+                            (size_t)k * sizeof(float);
+                    size_t perListIdxBytesChunk = (size_t)qCount * chunkProbe *
+                            (size_t)k * sizeof(int64_t);
+                    ensureSearchBuf_(
+                            searchPerListDistBuf_,
+                            searchPerListDistCap_,
+                            perListBytesChunk);
+                    ensureSearchBuf_(
+                            searchPerListIdxBuf_,
+                            searchPerListIdxCap_,
+                            perListIdxBytesChunk);
                     if (!searchPerListDistBuf_ || !searchPerListIdxBuf_) {
                         ok = false;
                         break;
@@ -998,28 +1066,35 @@ void MetalIndexIVFFlat::search(
                             chunkProbe,
                             "MetalIndexIVFFlat: chunk nprobe exceeds int range");
                     if (canAsyncProbeBatch) {
-                        id<MTLBuffer> passOutDistBuf =
-                                [device newBufferWithLength:outDistBytes
-                                                    options:MTLResourceStorageModeShared];
-                        id<MTLBuffer> passOutIdxBuf =
-                                [device newBufferWithLength:outIdxBytes
-                                                    options:MTLResourceStorageModeShared];
+                        id<MTLBuffer> passOutDistBuf = [device
+                                newBufferWithLength:outDistBytes
+                                            options:MTLResourceStorageModeShared];
+                        id<MTLBuffer> passOutIdxBuf = [device
+                                newBufferWithLength:outIdxBytes
+                                            options:MTLResourceStorageModeShared];
                         if (!passOutDistBuf || !passOutIdxBuf) {
                             ok = false;
                             break;
                         }
 
                         bool chunkOk = runMetalIVFFlatScan(
-                                device, queue,
+                                device,
+                                queue,
                                 searchQueriesBuf_,
                                 gpuIvf_->codesBuffer(),
                                 gpuIvf_->idsBuffer(),
                                 gpuIvf_->listOffsetGpuBuffer(),
                                 gpuIvf_->listLengthGpuBuffer(),
                                 coarseChunkBuf,
-                                qCountI, d, kI, chunkProbeI, isL2,
-                                passOutDistBuf, passOutIdxBuf,
-                                searchPerListDistBuf_, searchPerListIdxBuf_,
+                                qCountI,
+                                d,
+                                kI,
+                                chunkProbeI,
+                                isL2,
+                                passOutDistBuf,
+                                passOutIdxBuf,
+                                searchPerListDistBuf_,
+                                searchPerListIdxBuf_,
                                 chunkInterleavedCodes,
                                 chunkInterleavedOffsets,
                                 false /* waitForCompletion */);
@@ -1030,18 +1105,28 @@ void MetalIndexIVFFlat::search(
                             break;
                         }
                         probePasses.push_back(
-                                ProbePass{p0, chunkProbe, coarseChunkBuf, passOutDistBuf, passOutIdxBuf});
+                                ProbePass{
+                                        p0,
+                                        chunkProbe,
+                                        coarseChunkBuf,
+                                        passOutDistBuf,
+                                        passOutIdxBuf});
                         continue;
                     }
 
                     if (needListChunk && numListPass > 1) {
-                        std::vector<id<MTLBuffer>> passOutDistBufs(numListPass, nil);
-                        std::vector<id<MTLBuffer>> passOutIdxBufs(numListPass, nil);
-                        std::vector<id<MTLBuffer>> passListOffsetBufs(numListPass, nil);
-                        std::vector<id<MTLBuffer>> passListLengthBufs(numListPass, nil);
+                        std::vector<id<MTLBuffer>> passOutDistBufs(
+                                numListPass, nil);
+                        std::vector<id<MTLBuffer>> passOutIdxBufs(
+                                numListPass, nil);
+                        std::vector<id<MTLBuffer>> passListOffsetBufs(
+                                numListPass, nil);
+                        std::vector<id<MTLBuffer>> passListLengthBufs(
+                                numListPass, nil);
 
                         for (size_t lp = 0; ok && lp < numListPass; ++lp) {
-                            const uint64_t shift = (uint64_t)lp * (uint64_t)listChunk;
+                            const uint64_t shift =
+                                    (uint64_t)lp * (uint64_t)listChunk;
                             for (int li = 0; li < nlist; ++li) {
                                 uint32_t off = baseListOffset[li];
                                 uint32_t len = baseListLength[li];
@@ -1058,45 +1143,57 @@ void MetalIndexIVFFlat::search(
                                 const uint32_t delta = (uint32_t)shift;
                                 const uint32_t rem = len - delta;
                                 passOffset[(size_t)li] = off + delta;
-                                passLength[(size_t)li] =
-                                        std::min<uint32_t>((uint32_t)listChunk, rem);
+                                passLength[(size_t)li] = std::min<uint32_t>(
+                                        (uint32_t)listChunk, rem);
                             }
 
-                            passListOffsetBufs[lp] =
-                                    [device newBufferWithLength:(size_t)nlist * sizeof(uint32_t)
-                                                        options:MTLResourceStorageModeShared];
-                            passListLengthBufs[lp] =
-                                    [device newBufferWithLength:(size_t)nlist * sizeof(uint32_t)
-                                                        options:MTLResourceStorageModeShared];
-                            passOutDistBufs[lp] =
-                                    [device newBufferWithLength:outDistBytes
-                                                        options:MTLResourceStorageModeShared];
-                            passOutIdxBufs[lp] =
-                                    [device newBufferWithLength:outIdxBytes
-                                                        options:MTLResourceStorageModeShared];
-                            if (!passListOffsetBufs[lp] || !passListLengthBufs[lp] ||
+                            passListOffsetBufs[lp] = [device
+                                    newBufferWithLength:(size_t)nlist *
+                                    sizeof(uint32_t)
+                                                options:MTLResourceStorageModeShared];
+                            passListLengthBufs[lp] = [device
+                                    newBufferWithLength:(size_t)nlist *
+                                    sizeof(uint32_t)
+                                                options:MTLResourceStorageModeShared];
+                            passOutDistBufs[lp] = [device
+                                    newBufferWithLength:outDistBytes
+                                                options:MTLResourceStorageModeShared];
+                            passOutIdxBufs[lp] = [device
+                                    newBufferWithLength:outIdxBytes
+                                                options:MTLResourceStorageModeShared];
+                            if (!passListOffsetBufs[lp] ||
+                                !passListLengthBufs[lp] ||
                                 !passOutDistBufs[lp] || !passOutIdxBufs[lp]) {
                                 ok = false;
                                 break;
                             }
-                            std::memcpy([passListOffsetBufs[lp] contents],
-                                        passOffset.data(),
-                                        passOffset.size() * sizeof(uint32_t));
-                            std::memcpy([passListLengthBufs[lp] contents],
-                                        passLength.data(),
-                                        passLength.size() * sizeof(uint32_t));
+                            std::memcpy(
+                                    [passListOffsetBufs[lp] contents],
+                                    passOffset.data(),
+                                    passOffset.size() * sizeof(uint32_t));
+                            std::memcpy(
+                                    [passListLengthBufs[lp] contents],
+                                    passLength.data(),
+                                    passLength.size() * sizeof(uint32_t));
 
                             bool chunkOk = runMetalIVFFlatScan(
-                                    device, queue,
+                                    device,
+                                    queue,
                                     searchQueriesBuf_,
                                     gpuIvf_->codesBuffer(),
                                     gpuIvf_->idsBuffer(),
                                     passListOffsetBufs[lp],
                                     passListLengthBufs[lp],
                                     searchCoarseBuf_,
-                                    qCountI, d, kI, chunkProbeI, isL2,
-                                    passOutDistBufs[lp], passOutIdxBufs[lp],
-                                    searchPerListDistBuf_, searchPerListIdxBuf_,
+                                    qCountI,
+                                    d,
+                                    kI,
+                                    chunkProbeI,
+                                    isL2,
+                                    passOutDistBufs[lp],
+                                    passOutIdxBufs[lp],
+                                    searchPerListDistBuf_,
+                                    searchPerListIdxBuf_,
                                     chunkInterleavedCodes,
                                     chunkInterleavedOffsets,
                                     false /* waitForCompletion */);
@@ -1112,18 +1209,21 @@ void MetalIndexIVFFlat::search(
                             resources_->synchronize();
                             ++asyncBatchSyncs;
                             for (size_t lp = 0; lp < numListPass; ++lp) {
-                                const float* chunkDist = reinterpret_cast<const float*>(
-                                        [passOutDistBufs[lp] contents]);
-                                const int64_t* chunkIdx = reinterpret_cast<const int64_t*>(
-                                        [passOutIdxBufs[lp] contents]);
+                                const float* chunkDist =
+                                        reinterpret_cast<const float*>(
+                                                [passOutDistBufs[lp] contents]);
+                                const int64_t* chunkIdx =
+                                        reinterpret_cast<const int64_t*>(
+                                                [passOutIdxBufs[lp] contents]);
                                 for (idx_t qi = 0; qi < qCount; ++qi) {
-                                    float* bestDist =
-                                            chunkMergedDist.data() + (size_t)qi * (size_t)k;
-                                    int64_t* bestIdx =
-                                            chunkMergedIdx.data() + (size_t)qi * (size_t)k;
+                                    float* bestDist = chunkMergedDist.data() +
+                                            (size_t)qi * (size_t)k;
+                                    int64_t* bestIdx = chunkMergedIdx.data() +
+                                            (size_t)qi * (size_t)k;
                                     for (idx_t j = 0; j < k; ++j) {
                                         const size_t pos =
-                                                (size_t)qi * (size_t)k + (size_t)j;
+                                                (size_t)qi * (size_t)k +
+                                                (size_t)j;
                                         insertTopKCandidate(
                                                 chunkDist[pos],
                                                 chunkIdx[pos],
@@ -1137,10 +1237,13 @@ void MetalIndexIVFFlat::search(
                         }
                     } else {
                         for (size_t lp = 0; ok && lp < numListPass; ++lp) {
-                            id<MTLBuffer> passListOffsetBuf = gpuIvf_->listOffsetGpuBuffer();
-                            id<MTLBuffer> passListLengthBuf = gpuIvf_->listLengthGpuBuffer();
+                            id<MTLBuffer> passListOffsetBuf =
+                                    gpuIvf_->listOffsetGpuBuffer();
+                            id<MTLBuffer> passListLengthBuf =
+                                    gpuIvf_->listLengthGpuBuffer();
                             if (needListChunk) {
-                                const uint64_t shift = (uint64_t)lp * (uint64_t)listChunk;
+                                const uint64_t shift =
+                                        (uint64_t)lp * (uint64_t)listChunk;
                                 for (int li = 0; li < nlist; ++li) {
                                     uint32_t off = baseListOffset[li];
                                     uint32_t len = baseListLength[li];
@@ -1157,30 +1260,39 @@ void MetalIndexIVFFlat::search(
                                     const uint32_t delta = (uint32_t)shift;
                                     const uint32_t rem = len - delta;
                                     passOffset[(size_t)li] = off + delta;
-                                    passLength[(size_t)li] =
-                                            std::min<uint32_t>((uint32_t)listChunk, rem);
+                                    passLength[(size_t)li] = std::min<uint32_t>(
+                                            (uint32_t)listChunk, rem);
                                 }
-                                std::memcpy([listOffsetPassBuf contents],
-                                            passOffset.data(),
-                                            passOffset.size() * sizeof(uint32_t));
-                                std::memcpy([listLengthPassBuf contents],
-                                            passLength.data(),
-                                            passLength.size() * sizeof(uint32_t));
+                                std::memcpy(
+                                        [listOffsetPassBuf contents],
+                                        passOffset.data(),
+                                        passOffset.size() * sizeof(uint32_t));
+                                std::memcpy(
+                                        [listLengthPassBuf contents],
+                                        passLength.data(),
+                                        passLength.size() * sizeof(uint32_t));
                                 passListOffsetBuf = listOffsetPassBuf;
                                 passListLengthBuf = listLengthPassBuf;
                             }
 
                             bool chunkOk = runMetalIVFFlatScan(
-                                    device, queue,
+                                    device,
+                                    queue,
                                     searchQueriesBuf_,
                                     gpuIvf_->codesBuffer(),
                                     gpuIvf_->idsBuffer(),
                                     passListOffsetBuf,
                                     passListLengthBuf,
                                     searchCoarseBuf_,
-                                    qCountI, d, kI, chunkProbeI, isL2,
-                                    searchOutDistBuf_, searchOutIdxBuf_,
-                                    searchPerListDistBuf_, searchPerListIdxBuf_,
+                                    qCountI,
+                                    d,
+                                    kI,
+                                    chunkProbeI,
+                                    isL2,
+                                    searchOutDistBuf_,
+                                    searchOutIdxBuf_,
+                                    searchPerListDistBuf_,
+                                    searchPerListIdxBuf_,
                                     chunkInterleavedCodes,
                                     chunkInterleavedOffsets);
                             ++scanCalls;
@@ -1190,15 +1302,17 @@ void MetalIndexIVFFlat::search(
                                 break;
                             }
 
-                            const float* chunkDist = reinterpret_cast<const float*>(
-                                    [searchOutDistBuf_ contents]);
-                            const int64_t* chunkIdx = reinterpret_cast<const int64_t*>(
-                                    [searchOutIdxBuf_ contents]);
+                            const float* chunkDist =
+                                    reinterpret_cast<const float*>(
+                                            [searchOutDistBuf_ contents]);
+                            const int64_t* chunkIdx =
+                                    reinterpret_cast<const int64_t*>(
+                                            [searchOutIdxBuf_ contents]);
                             for (idx_t qi = 0; qi < qCount; ++qi) {
-                                float* bestDist =
-                                        chunkMergedDist.data() + (size_t)qi * (size_t)k;
-                                int64_t* bestIdx =
-                                        chunkMergedIdx.data() + (size_t)qi * (size_t)k;
+                                float* bestDist = chunkMergedDist.data() +
+                                        (size_t)qi * (size_t)k;
+                                int64_t* bestIdx = chunkMergedIdx.data() +
+                                        (size_t)qi * (size_t)k;
                                 for (idx_t j = 0; j < k; ++j) {
                                     const size_t pos =
                                             (size_t)qi * (size_t)k + (size_t)j;
@@ -1223,13 +1337,14 @@ void MetalIndexIVFFlat::search(
                         (void)pass.coarseBuf;
                         const float* chunkDist = reinterpret_cast<const float*>(
                                 [pass.outDistBuf contents]);
-                        const int64_t* chunkIdx = reinterpret_cast<const int64_t*>(
-                                [pass.outIdxBuf contents]);
+                        const int64_t* chunkIdx =
+                                reinterpret_cast<const int64_t*>(
+                                        [pass.outIdxBuf contents]);
                         for (idx_t qi = 0; qi < qCount; ++qi) {
-                            float* bestDist =
-                                    chunkMergedDist.data() + (size_t)qi * (size_t)k;
-                            int64_t* bestIdx =
-                                    chunkMergedIdx.data() + (size_t)qi * (size_t)k;
+                            float* bestDist = chunkMergedDist.data() +
+                                    (size_t)qi * (size_t)k;
+                            int64_t* bestIdx = chunkMergedIdx.data() +
+                                    (size_t)qi * (size_t)k;
                             for (idx_t j = 0; j < k; ++j) {
                                 const size_t pos =
                                         (size_t)qi * (size_t)k + (size_t)j;
@@ -1246,16 +1361,23 @@ void MetalIndexIVFFlat::search(
                 }
             } else {
                 ok = runMetalIVFFlatScan(
-                        device, queue,
+                        device,
+                        queue,
                         searchQueriesBuf_,
                         gpuIvf_->codesBuffer(),
                         gpuIvf_->idsBuffer(),
                         gpuIvf_->listOffsetGpuBuffer(),
                         gpuIvf_->listLengthGpuBuffer(),
                         searchCoarseBuf_,
-                        qCountI, d, kI, nprobeI, isL2,
-                        searchOutDistBuf_, searchOutIdxBuf_,
-                        searchPerListDistBuf_, searchPerListIdxBuf_,
+                        qCountI,
+                        d,
+                        kI,
+                        nprobeI,
+                        isL2,
+                        searchOutDistBuf_,
+                        searchOutIdxBuf_,
+                        searchPerListDistBuf_,
+                        searchPerListIdxBuf_,
                         gpuIvf_->interleavedCodesBuffer(),
                         gpuIvf_->interleavedCodesOffsetBuffer());
                 ++scanCalls;
@@ -1267,15 +1389,25 @@ void MetalIndexIVFFlat::search(
             }
             if (ok && usedChunkedScan) {
                 for (idx_t qi = 0; qi < qCount; ++qi) {
+                    heapSort(
+                            chunkMergedDist.data() + (size_t)qi * (size_t)k,
+                            chunkMergedIdx.data() + (size_t)qi * (size_t)k,
+                            kI,
+                            isL2);
+                }
+                for (idx_t qi = 0; qi < qCount; ++qi) {
                     for (idx_t j = 0; j < k; ++j) {
                         const size_t pos = (size_t)qi * (size_t)k + (size_t)j;
-                        const size_t globalPos = (size_t)(qBase + qi) * (size_t)k + (size_t)j;
+                        const size_t globalPos =
+                                (size_t)(qBase + qi) * (size_t)k + (size_t)j;
                         const int64_t globalId = chunkMergedIdx[pos];
                         if (globalId < 0) {
                             labels[globalPos] = -1;
                         } else if (indicesOptions_ == faiss::gpu::INDICES_CPU) {
-                            labels[globalPos] = decodeCpuLabelFromPair(cpuIndex_.get(), globalId);
-                        } else if (indicesOptions_ == faiss::gpu::INDICES_32_BIT) {
+                            labels[globalPos] = decodeCpuLabelFromPair(
+                                    cpuIndex_.get(), globalId);
+                        } else if (
+                                indicesOptions_ == faiss::gpu::INDICES_32_BIT) {
                             labels[globalPos] = (idx_t)(int32_t)globalId;
                         } else {
                             labels[globalPos] = (idx_t)globalId;
@@ -1288,14 +1420,15 @@ void MetalIndexIVFFlat::search(
         }
 
         if (!ok) {
-            fallbackOrThrow(qBase, qCount, "GPU IVF scan failed (runtime/kernel)");
+            fallbackOrThrow(
+                    qBase, qCount, "GPU IVF scan failed (runtime/kernel)");
             continue;
         }
 
-        const float* outDistPtr = reinterpret_cast<const float*>(
-                [searchOutDistBuf_ contents]);
-        const int64_t* outIdxPtr = reinterpret_cast<const int64_t*>(
-                [searchOutIdxBuf_ contents]);
+        const float* outDistPtr =
+                reinterpret_cast<const float*>([searchOutDistBuf_ contents]);
+        const int64_t* outIdxPtr =
+                reinterpret_cast<const int64_t*>([searchOutIdxBuf_ contents]);
 
         for (idx_t qi = 0; qi < qCount; ++qi) {
             for (idx_t j = 0; j < k; ++j) {
@@ -1325,7 +1458,8 @@ void MetalIndexIVFFlat::search(
                 firstFallbackReason.c_str());
     }
     if (logSyncProfile) {
-        const idx_t estimatedWaits = fullSearchCalls + syncScanCalls + asyncBatchSyncs;
+        const idx_t estimatedWaits =
+                fullSearchCalls + syncScanCalls + asyncBatchSyncs;
         std::fprintf(
                 stderr,
                 "IVF_SYNC_PROFILE,api=search,full_calls=%lld,scan_calls=%lld,sync_scan_calls=%lld,async_scan_calls=%lld,async_batch_syncs=%lld,estimated_waits=%lld\n",
@@ -1367,13 +1501,13 @@ void MetalIndexIVFFlat::search_preassigned(
             k <= kIVFFlatSupportedMaxK,
             "MetalIndexIVFFlat supports k <= 1024; larger k is not yet supported");
 
-    const float inf    = std::numeric_limits<float>::infinity();
+    const float inf = std::numeric_limits<float>::infinity();
     const float negInf = -std::numeric_limits<float>::infinity();
     const bool isL2 = (metric_type == METRIC_L2);
 
     if (cpuIndex_->ntotal == 0 || n == 0) {
         for (idx_t i = 0; i < n * k; ++i) {
-            labels[i]    = -1;
+            labels[i] = -1;
             distances[i] = isL2 ? inf : negInf;
         }
         return;
@@ -1385,23 +1519,24 @@ void MetalIndexIVFFlat::search_preassigned(
     }
     nprobe = std::min(nprobe, cpuIndex_->nlist);
 
-    id<MTLDevice>       device = resources_->getDevice();
-    id<MTLCommandQueue> queue  = resources_->getCommandQueue();
+    id<MTLDevice> device = resources_->getDevice();
+    id<MTLCommandQueue> queue = resources_->getCommandQueue();
     if (gpuIvf_) {
         gpuIvf_->ensureInterleavedLayoutUpToDate();
     }
 
     const bool hasFlatCodes = gpuIvf_ && gpuIvf_->codesBuffer();
-    const bool hasInterleavedCodes =
-            gpuIvf_ && gpuIvf_->interleavedCodesBuffer() &&
+    const bool hasInterleavedCodes = gpuIvf_ &&
+            gpuIvf_->interleavedCodesBuffer() &&
             gpuIvf_->interleavedCodesOffsetBuffer();
     const bool hasScanCodes = hasFlatCodes || hasInterleavedCodes;
 
     auto cpuFallbackSearch = [&](idx_t qBase, idx_t qCount) {
         const float* xTile = x + (size_t)qBase * (size_t)d;
         const idx_t* assignTile = assign + (size_t)qBase * nprobe;
-        const float* centroidTile =
-                centroid_dis ? (centroid_dis + (size_t)qBase * nprobe) : nullptr;
+        const float* centroidTile = centroid_dis
+                ? (centroid_dis + (size_t)qBase * nprobe)
+                : nullptr;
         float* distTile = distances + (size_t)qBase * (size_t)k;
         idx_t* labelsTile = labels + (size_t)qBase * (size_t)k;
         cpuIndex_->search_preassigned(
@@ -1442,14 +1577,16 @@ void MetalIndexIVFFlat::search_preassigned(
         cpuFallbackSearch(qBase, qCount);
     };
 
-    if (!device || !queue || !gpuIvf_ || !hasScanCodes || !gpuIvf_->idsBuffer() ||
-        !gpuIvf_->listOffsetGpuBuffer() || !gpuIvf_->listLengthGpuBuffer()) {
+    if (!device || !queue || !gpuIvf_ || !hasScanCodes ||
+        !gpuIvf_->idsBuffer() || !gpuIvf_->listOffsetGpuBuffer() ||
+        !gpuIvf_->listLengthGpuBuffer()) {
         fallbackOrThrow(0, n, "missing Metal device/queue or IVF buffers");
         return;
     }
 
     const int nlist = (int)cpuIndex_->nlist;
-    const size_t tileRows = chooseIvfPreassignedTileRows((size_t)n, d, k, nprobe);
+    const size_t tileRows =
+            chooseIvfPreassignedTileRows((size_t)n, d, k, nprobe);
     for (idx_t qBase = 0; qBase < n; qBase += (idx_t)tileRows) {
         idx_t qCount = std::min<idx_t>((idx_t)tileRows, n - qBase);
         const float* xTile = x + (size_t)qBase * (size_t)d;
@@ -1458,20 +1595,28 @@ void MetalIndexIVFFlat::search_preassigned(
         size_t queriesBytes = (size_t)qCount * (size_t)d * sizeof(float);
         size_t outDistBytes = (size_t)qCount * (size_t)k * sizeof(float);
         size_t outIdxBytes = (size_t)qCount * (size_t)k * sizeof(int64_t);
-        size_t perListBytes = (size_t)qCount * nprobe * (size_t)k * sizeof(float);
-        size_t perListIdxB = (size_t)qCount * nprobe * (size_t)k * sizeof(int64_t);
+        size_t perListBytes =
+                (size_t)qCount * nprobe * (size_t)k * sizeof(float);
+        size_t perListIdxB =
+                (size_t)qCount * nprobe * (size_t)k * sizeof(int64_t);
         size_t coarseBytes = (size_t)qCount * nprobe * sizeof(int32_t);
 
         ensureSearchBuf_(searchQueriesBuf_, searchQueriesCap_, queriesBytes);
         ensureSearchBuf_(searchOutDistBuf_, searchOutDistCap_, outDistBytes);
         ensureSearchBuf_(searchOutIdxBuf_, searchOutIdxCap_, outIdxBytes);
-        ensureSearchBuf_(searchPerListDistBuf_, searchPerListDistCap_, perListBytes);
-        ensureSearchBuf_(searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxB);
+        ensureSearchBuf_(
+                searchPerListDistBuf_, searchPerListDistCap_, perListBytes);
+        ensureSearchBuf_(
+                searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxB);
         ensureSearchBuf_(searchCoarseBuf_, searchCoarseCap_, coarseBytes);
 
         if (!searchQueriesBuf_ || !searchOutDistBuf_ || !searchOutIdxBuf_ ||
-            !searchPerListDistBuf_ || !searchPerListIdxBuf_ || !searchCoarseBuf_) {
-            fallbackOrThrow(qBase, qCount, "failed to allocate tiled preassigned buffers");
+            !searchPerListDistBuf_ || !searchPerListIdxBuf_ ||
+            !searchCoarseBuf_) {
+            fallbackOrThrow(
+                    qBase,
+                    qCount,
+                    "failed to allocate tiled preassigned buffers");
             continue;
         }
 
@@ -1480,23 +1625,25 @@ void MetalIndexIVFFlat::search_preassigned(
                 qCount,
                 "MetalIndexIVFFlat::search_preassigned: qCount exceeds int range");
         const int kI = checkedIdxToInt(
-                k, "MetalIndexIVFFlat::search_preassigned: k exceeds int range");
+                k,
+                "MetalIndexIVFFlat::search_preassigned: k exceeds int range");
         const int nprobeI = checkedSizeToInt(
                 nprobe,
                 "MetalIndexIVFFlat::search_preassigned: nprobe exceeds int range");
 
-        auto* coarseDst = reinterpret_cast<int32_t*>([searchCoarseBuf_ contents]);
+        auto* coarseDst =
+                reinterpret_cast<int32_t*>([searchCoarseBuf_ contents]);
         for (size_t i = 0; i < (size_t)qCount * nprobe; ++i) {
             FAISS_THROW_IF_NOT_MSG(
-                    assignTile[i] >= (idx_t)std::numeric_limits<int32_t>::min() &&
+                    assignTile[i] >= (idx_t)std::numeric_limits<
+                                             int32_t>::min() &&
                             assignTile[i] <=
                                     (idx_t)std::numeric_limits<int32_t>::max(),
                     "MetalIndexIVFFlat: preassigned list id exceeds int32 range");
             coarseDst[i] = (int32_t)assignTile[i];
         }
 
-        const bool useInterleaved =
-                gpuIvf_->interleavedCodesBuffer() != nil &&
+        const bool useInterleaved = gpuIvf_->interleavedCodesBuffer() != nil &&
                 gpuIvf_->interleavedCodesOffsetBuffer() != nil;
         const std::string envelopeReason = explainIvfScanFailureEnvelope(
                 d,
@@ -1521,9 +1668,9 @@ void MetalIndexIVFFlat::search_preassigned(
                 usedLists,
                 maxSelectedListSize,
                 badListId);
-            const bool needProbeChunk =
+        const bool needProbeChunk =
                 nprobe > 0 && (size_t)k > (exactCandidateBudget / nprobe);
-            const bool needListChunk =
+        const bool needListChunk =
                 haveListStats && maxSelectedListSize > exactCandidateBudget;
 
         if (needProbeChunk || needListChunk) {
@@ -1531,7 +1678,8 @@ void MetalIndexIVFFlat::search_preassigned(
                     ? std::max<size_t>(1, exactCandidateBudget / (size_t)k)
                     : nprobe;
             usedChunkedScan = true;
-            chunkMergedDist.resize((size_t)qCount * (size_t)k, isL2 ? inf : negInf);
+            chunkMergedDist.resize(
+                    (size_t)qCount * (size_t)k, isL2 ? inf : negInf);
             chunkMergedIdx.resize((size_t)qCount * (size_t)k, -1);
             ok = true;
 
@@ -1542,9 +1690,8 @@ void MetalIndexIVFFlat::search_preassigned(
             // List-chunk remapping only updates list offset/length metadata.
             // Interleaved offset metadata is list-base-relative, so force flat
             // code path for list-chunked passes to keep ids/codes aligned.
-            id<MTLBuffer> chunkInterleavedCodes = needListChunk
-                    ? nil
-                    : gpuIvf_->interleavedCodesBuffer();
+            id<MTLBuffer> chunkInterleavedCodes =
+                    needListChunk ? nil : gpuIvf_->interleavedCodesBuffer();
             id<MTLBuffer> chunkInterleavedOffsets = needListChunk
                     ? nil
                     : gpuIvf_->interleavedCodesOffsetBuffer();
@@ -1558,10 +1705,12 @@ void MetalIndexIVFFlat::search_preassigned(
             std::vector<uint32_t> passLength;
             if (needListChunk) {
                 size_t metaBytes = (size_t)nlist * sizeof(uint32_t);
-                listOffsetPassBuf = [device newBufferWithLength:metaBytes
-                                                         options:MTLResourceStorageModeShared];
-                listLengthPassBuf = [device newBufferWithLength:metaBytes
-                                                         options:MTLResourceStorageModeShared];
+                listOffsetPassBuf = [device
+                        newBufferWithLength:metaBytes
+                                    options:MTLResourceStorageModeShared];
+                listLengthPassBuf = [device
+                        newBufferWithLength:metaBytes
+                                    options:MTLResourceStorageModeShared];
                 if (!listOffsetPassBuf || !listLengthPassBuf) {
                     ok = false;
                 } else {
@@ -1571,9 +1720,11 @@ void MetalIndexIVFFlat::search_preassigned(
             }
 
             std::vector<int32_t> fullCoarseVec(
-                    reinterpret_cast<const int32_t*>([searchCoarseBuf_ contents]),
-                    reinterpret_cast<const int32_t*>([searchCoarseBuf_ contents])
-                            + (size_t)qCount * nprobe);
+                    reinterpret_cast<const int32_t*>(
+                            [searchCoarseBuf_ contents]),
+                    reinterpret_cast<const int32_t*>(
+                            [searchCoarseBuf_ contents]) +
+                            (size_t)qCount * nprobe);
             std::vector<int32_t> coarseChunk;
             const int32_t* fullCoarse = fullCoarseVec.data();
 
@@ -1590,19 +1741,29 @@ void MetalIndexIVFFlat::search_preassigned(
                 }
 
                 size_t coarseChunkBytes = coarseChunk.size() * sizeof(int32_t);
-                ensureSearchBuf_(searchCoarseBuf_, searchCoarseCap_, coarseChunkBytes);
+                ensureSearchBuf_(
+                        searchCoarseBuf_, searchCoarseCap_, coarseChunkBytes);
                 if (!searchCoarseBuf_) {
                     ok = false;
                     break;
                 }
-                std::memcpy([searchCoarseBuf_ contents], coarseChunk.data(), coarseChunkBytes);
+                std::memcpy(
+                        [searchCoarseBuf_ contents],
+                        coarseChunk.data(),
+                        coarseChunkBytes);
 
                 size_t perListBytesChunk =
                         (size_t)qCount * chunkProbe * (size_t)k * sizeof(float);
-                size_t perListIdxBytesChunk =
-                        (size_t)qCount * chunkProbe * (size_t)k * sizeof(int64_t);
-                ensureSearchBuf_(searchPerListDistBuf_, searchPerListDistCap_, perListBytesChunk);
-                ensureSearchBuf_(searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxBytesChunk);
+                size_t perListIdxBytesChunk = (size_t)qCount * chunkProbe *
+                        (size_t)k * sizeof(int64_t);
+                ensureSearchBuf_(
+                        searchPerListDistBuf_,
+                        searchPerListDistCap_,
+                        perListBytesChunk);
+                ensureSearchBuf_(
+                        searchPerListIdxBuf_,
+                        searchPerListIdxCap_,
+                        perListIdxBytesChunk);
                 if (!searchPerListDistBuf_ || !searchPerListIdxBuf_) {
                     ok = false;
                     break;
@@ -1612,13 +1773,17 @@ void MetalIndexIVFFlat::search_preassigned(
                         chunkProbe,
                         "MetalIndexIVFFlat::search_preassigned: chunk nprobe exceeds int range");
                 if (needListChunk && numListPass > 1) {
-                    std::vector<id<MTLBuffer>> passOutDistBufs(numListPass, nil);
+                    std::vector<id<MTLBuffer>> passOutDistBufs(
+                            numListPass, nil);
                     std::vector<id<MTLBuffer>> passOutIdxBufs(numListPass, nil);
-                    std::vector<id<MTLBuffer>> passListOffsetBufs(numListPass, nil);
-                    std::vector<id<MTLBuffer>> passListLengthBufs(numListPass, nil);
+                    std::vector<id<MTLBuffer>> passListOffsetBufs(
+                            numListPass, nil);
+                    std::vector<id<MTLBuffer>> passListLengthBufs(
+                            numListPass, nil);
 
                     for (size_t lp = 0; ok && lp < numListPass; ++lp) {
-                        const uint64_t shift = (uint64_t)lp * (uint64_t)listChunk;
+                        const uint64_t shift =
+                                (uint64_t)lp * (uint64_t)listChunk;
                         for (int li = 0; li < nlist; ++li) {
                             uint32_t off = baseListOffset[li];
                             uint32_t len = baseListLength[li];
@@ -1635,45 +1800,57 @@ void MetalIndexIVFFlat::search_preassigned(
                             const uint32_t delta = (uint32_t)shift;
                             const uint32_t rem = len - delta;
                             passOffset[(size_t)li] = off + delta;
-                            passLength[(size_t)li] =
-                                    std::min<uint32_t>((uint32_t)listChunk, rem);
+                            passLength[(size_t)li] = std::min<uint32_t>(
+                                    (uint32_t)listChunk, rem);
                         }
 
-                        passListOffsetBufs[lp] =
-                                [device newBufferWithLength:(size_t)nlist * sizeof(uint32_t)
-                                                    options:MTLResourceStorageModeShared];
-                        passListLengthBufs[lp] =
-                                [device newBufferWithLength:(size_t)nlist * sizeof(uint32_t)
-                                                    options:MTLResourceStorageModeShared];
-                        passOutDistBufs[lp] =
-                                [device newBufferWithLength:outDistBytes
-                                                    options:MTLResourceStorageModeShared];
-                        passOutIdxBufs[lp] =
-                                [device newBufferWithLength:outIdxBytes
-                                                    options:MTLResourceStorageModeShared];
-                        if (!passListOffsetBufs[lp] || !passListLengthBufs[lp] ||
-                            !passOutDistBufs[lp] || !passOutIdxBufs[lp]) {
+                        passListOffsetBufs[lp] = [device
+                                newBufferWithLength:(size_t)nlist *
+                                sizeof(uint32_t)
+                                            options:MTLResourceStorageModeShared];
+                        passListLengthBufs[lp] = [device
+                                newBufferWithLength:(size_t)nlist *
+                                sizeof(uint32_t)
+                                            options:MTLResourceStorageModeShared];
+                        passOutDistBufs[lp] = [device
+                                newBufferWithLength:outDistBytes
+                                            options:MTLResourceStorageModeShared];
+                        passOutIdxBufs[lp] = [device
+                                newBufferWithLength:outIdxBytes
+                                            options:MTLResourceStorageModeShared];
+                        if (!passListOffsetBufs[lp] ||
+                            !passListLengthBufs[lp] || !passOutDistBufs[lp] ||
+                            !passOutIdxBufs[lp]) {
                             ok = false;
                             break;
                         }
-                        std::memcpy([passListOffsetBufs[lp] contents],
-                                    passOffset.data(),
-                                    passOffset.size() * sizeof(uint32_t));
-                        std::memcpy([passListLengthBufs[lp] contents],
-                                    passLength.data(),
-                                    passLength.size() * sizeof(uint32_t));
+                        std::memcpy(
+                                [passListOffsetBufs[lp] contents],
+                                passOffset.data(),
+                                passOffset.size() * sizeof(uint32_t));
+                        std::memcpy(
+                                [passListLengthBufs[lp] contents],
+                                passLength.data(),
+                                passLength.size() * sizeof(uint32_t));
 
                         bool chunkOk = runMetalIVFFlatScan(
-                                device, queue,
+                                device,
+                                queue,
                                 searchQueriesBuf_,
                                 gpuIvf_->codesBuffer(),
                                 gpuIvf_->idsBuffer(),
                                 passListOffsetBufs[lp],
                                 passListLengthBufs[lp],
                                 searchCoarseBuf_,
-                                qCountI, d, kI, chunkProbeI, isL2,
-                                passOutDistBufs[lp], passOutIdxBufs[lp],
-                                searchPerListDistBuf_, searchPerListIdxBuf_,
+                                qCountI,
+                                d,
+                                kI,
+                                chunkProbeI,
+                                isL2,
+                                passOutDistBufs[lp],
+                                passOutIdxBufs[lp],
+                                searchPerListDistBuf_,
+                                searchPerListIdxBuf_,
                                 chunkInterleavedCodes,
                                 chunkInterleavedOffsets,
                                 false /* waitForCompletion */);
@@ -1689,17 +1866,20 @@ void MetalIndexIVFFlat::search_preassigned(
                         resources_->synchronize();
                         ++asyncBatchSyncs;
                         for (size_t lp = 0; lp < numListPass; ++lp) {
-                            const float* chunkDist = reinterpret_cast<const float*>(
-                                    [passOutDistBufs[lp] contents]);
-                            const int64_t* chunkIdx = reinterpret_cast<const int64_t*>(
-                                    [passOutIdxBufs[lp] contents]);
+                            const float* chunkDist =
+                                    reinterpret_cast<const float*>(
+                                            [passOutDistBufs[lp] contents]);
+                            const int64_t* chunkIdx =
+                                    reinterpret_cast<const int64_t*>(
+                                            [passOutIdxBufs[lp] contents]);
                             for (idx_t qi = 0; qi < qCount; ++qi) {
-                                float* bestDist =
-                                        chunkMergedDist.data() + (size_t)qi * (size_t)k;
-                                int64_t* bestIdx =
-                                        chunkMergedIdx.data() + (size_t)qi * (size_t)k;
+                                float* bestDist = chunkMergedDist.data() +
+                                        (size_t)qi * (size_t)k;
+                                int64_t* bestIdx = chunkMergedIdx.data() +
+                                        (size_t)qi * (size_t)k;
                                 for (idx_t j = 0; j < k; ++j) {
-                                    const size_t pos = (size_t)qi * (size_t)k + (size_t)j;
+                                    const size_t pos =
+                                            (size_t)qi * (size_t)k + (size_t)j;
                                     insertTopKCandidate(
                                             chunkDist[pos],
                                             chunkIdx[pos],
@@ -1713,10 +1893,13 @@ void MetalIndexIVFFlat::search_preassigned(
                     }
                 } else {
                     for (size_t lp = 0; ok && lp < numListPass; ++lp) {
-                        id<MTLBuffer> passListOffsetBuf = gpuIvf_->listOffsetGpuBuffer();
-                        id<MTLBuffer> passListLengthBuf = gpuIvf_->listLengthGpuBuffer();
+                        id<MTLBuffer> passListOffsetBuf =
+                                gpuIvf_->listOffsetGpuBuffer();
+                        id<MTLBuffer> passListLengthBuf =
+                                gpuIvf_->listLengthGpuBuffer();
                         if (needListChunk) {
-                            const uint64_t shift = (uint64_t)lp * (uint64_t)listChunk;
+                            const uint64_t shift =
+                                    (uint64_t)lp * (uint64_t)listChunk;
                             for (int li = 0; li < nlist; ++li) {
                                 uint32_t off = baseListOffset[li];
                                 uint32_t len = baseListLength[li];
@@ -1733,30 +1916,39 @@ void MetalIndexIVFFlat::search_preassigned(
                                 const uint32_t delta = (uint32_t)shift;
                                 const uint32_t rem = len - delta;
                                 passOffset[(size_t)li] = off + delta;
-                                passLength[(size_t)li] =
-                                        std::min<uint32_t>((uint32_t)listChunk, rem);
+                                passLength[(size_t)li] = std::min<uint32_t>(
+                                        (uint32_t)listChunk, rem);
                             }
-                            std::memcpy([listOffsetPassBuf contents],
-                                        passOffset.data(),
-                                        passOffset.size() * sizeof(uint32_t));
-                            std::memcpy([listLengthPassBuf contents],
-                                        passLength.data(),
-                                        passLength.size() * sizeof(uint32_t));
+                            std::memcpy(
+                                    [listOffsetPassBuf contents],
+                                    passOffset.data(),
+                                    passOffset.size() * sizeof(uint32_t));
+                            std::memcpy(
+                                    [listLengthPassBuf contents],
+                                    passLength.data(),
+                                    passLength.size() * sizeof(uint32_t));
                             passListOffsetBuf = listOffsetPassBuf;
                             passListLengthBuf = listLengthPassBuf;
                         }
 
                         bool chunkOk = runMetalIVFFlatScan(
-                                device, queue,
+                                device,
+                                queue,
                                 searchQueriesBuf_,
                                 gpuIvf_->codesBuffer(),
                                 gpuIvf_->idsBuffer(),
                                 passListOffsetBuf,
                                 passListLengthBuf,
                                 searchCoarseBuf_,
-                                qCountI, d, kI, chunkProbeI, isL2,
-                                searchOutDistBuf_, searchOutIdxBuf_,
-                                searchPerListDistBuf_, searchPerListIdxBuf_,
+                                qCountI,
+                                d,
+                                kI,
+                                chunkProbeI,
+                                isL2,
+                                searchOutDistBuf_,
+                                searchOutIdxBuf_,
+                                searchPerListDistBuf_,
+                                searchPerListIdxBuf_,
                                 chunkInterleavedCodes,
                                 chunkInterleavedOffsets);
                         ++scanCalls;
@@ -1768,13 +1960,17 @@ void MetalIndexIVFFlat::search_preassigned(
 
                         const float* chunkDist = reinterpret_cast<const float*>(
                                 [searchOutDistBuf_ contents]);
-                        const int64_t* chunkIdx = reinterpret_cast<const int64_t*>(
-                                [searchOutIdxBuf_ contents]);
+                        const int64_t* chunkIdx =
+                                reinterpret_cast<const int64_t*>(
+                                        [searchOutIdxBuf_ contents]);
                         for (idx_t qi = 0; qi < qCount; ++qi) {
-                            float* bestDist = chunkMergedDist.data() + (size_t)qi * (size_t)k;
-                            int64_t* bestIdx = chunkMergedIdx.data() + (size_t)qi * (size_t)k;
+                            float* bestDist = chunkMergedDist.data() +
+                                    (size_t)qi * (size_t)k;
+                            int64_t* bestIdx = chunkMergedIdx.data() +
+                                    (size_t)qi * (size_t)k;
                             for (idx_t j = 0; j < k; ++j) {
-                                const size_t pos = (size_t)qi * (size_t)k + (size_t)j;
+                                const size_t pos =
+                                        (size_t)qi * (size_t)k + (size_t)j;
                                 insertTopKCandidate(
                                         chunkDist[pos],
                                         chunkIdx[pos],
@@ -1789,16 +1985,23 @@ void MetalIndexIVFFlat::search_preassigned(
             }
         } else {
             ok = runMetalIVFFlatScan(
-                    device, queue,
+                    device,
+                    queue,
                     searchQueriesBuf_,
                     gpuIvf_->codesBuffer(),
                     gpuIvf_->idsBuffer(),
                     gpuIvf_->listOffsetGpuBuffer(),
                     gpuIvf_->listLengthGpuBuffer(),
                     searchCoarseBuf_,
-                    qCountI, d, kI, nprobeI, isL2,
-                    searchOutDistBuf_, searchOutIdxBuf_,
-                    searchPerListDistBuf_, searchPerListIdxBuf_,
+                    qCountI,
+                    d,
+                    kI,
+                    nprobeI,
+                    isL2,
+                    searchOutDistBuf_,
+                    searchOutIdxBuf_,
+                    searchPerListDistBuf_,
+                    searchPerListIdxBuf_,
                     gpuIvf_->interleavedCodesBuffer(),
                     gpuIvf_->interleavedCodesOffsetBuffer());
             ++scanCalls;
@@ -1810,20 +2013,30 @@ void MetalIndexIVFFlat::search_preassigned(
         }
 
         if (!ok) {
-            fallbackOrThrow(qBase, qCount, "GPU IVF scan failed (runtime/kernel)");
+            fallbackOrThrow(
+                    qBase, qCount, "GPU IVF scan failed (runtime/kernel)");
             continue;
         }
 
         if (usedChunkedScan) {
             for (idx_t qi = 0; qi < qCount; ++qi) {
+                heapSort(
+                        chunkMergedDist.data() + (size_t)qi * (size_t)k,
+                        chunkMergedIdx.data() + (size_t)qi * (size_t)k,
+                        kI,
+                        isL2);
+            }
+            for (idx_t qi = 0; qi < qCount; ++qi) {
                 for (idx_t j = 0; j < k; ++j) {
                     const size_t pos = (size_t)qi * (size_t)k + (size_t)j;
-                    const size_t globalPos = (size_t)(qBase + qi) * (size_t)k + (size_t)j;
+                    const size_t globalPos =
+                            (size_t)(qBase + qi) * (size_t)k + (size_t)j;
                     const int64_t globalId = chunkMergedIdx[pos];
                     if (globalId < 0) {
                         labels[globalPos] = -1;
                     } else if (indicesOptions_ == faiss::gpu::INDICES_CPU) {
-                        labels[globalPos] = decodeCpuLabelFromPair(cpuIndex_.get(), globalId);
+                        labels[globalPos] = decodeCpuLabelFromPair(
+                                cpuIndex_.get(), globalId);
                     } else if (indicesOptions_ == faiss::gpu::INDICES_32_BIT) {
                         labels[globalPos] = (idx_t)(int32_t)globalId;
                     } else {
@@ -1835,10 +2048,10 @@ void MetalIndexIVFFlat::search_preassigned(
             continue;
         }
 
-        const float* outDistPtr = reinterpret_cast<const float*>(
-                [searchOutDistBuf_ contents]);
-        const int64_t* outIdxPtr = reinterpret_cast<const int64_t*>(
-                [searchOutIdxBuf_ contents]);
+        const float* outDistPtr =
+                reinterpret_cast<const float*>([searchOutDistBuf_ contents]);
+        const int64_t* outIdxPtr =
+                reinterpret_cast<const int64_t*>([searchOutIdxBuf_ contents]);
         for (idx_t qi = 0; qi < qCount; ++qi) {
             for (idx_t j = 0; j < k; ++j) {
                 size_t localPos = (size_t)qi * (size_t)k + (size_t)j;
@@ -1897,16 +2110,19 @@ std::vector<idx_t> MetalIndexIVFFlat::getListIndices(idx_t listId) const {
     FAISS_THROW_IF_NOT(cpuIndex_);
     FAISS_THROW_IF_NOT(listId >= 0 && listId < cpuIndex_->nlist);
     size_t ls = cpuIndex_->invlists->list_size(listId);
-    if (ls == 0) return {};
+    if (ls == 0)
+        return {};
     ScopedIds ids(cpuIndex_->invlists, (size_t)listId);
-    return ids.ptr ? std::vector<idx_t>(ids.ptr, ids.ptr + ls) : std::vector<idx_t>{};
+    return ids.ptr ? std::vector<idx_t>(ids.ptr, ids.ptr + ls)
+                   : std::vector<idx_t>{};
 }
 
 std::vector<float> MetalIndexIVFFlat::getListVectorData(idx_t listId) const {
     FAISS_THROW_IF_NOT(cpuIndex_);
     FAISS_THROW_IF_NOT(listId >= 0 && listId < cpuIndex_->nlist);
     size_t ls = cpuIndex_->invlists->list_size(listId);
-    if (ls == 0) return {};
+    if (ls == 0)
+        return {};
     ScopedCodes codes(cpuIndex_->invlists, (size_t)listId);
     if (!codes.ptr) {
         return {};
@@ -1943,7 +2159,8 @@ faiss::gpu::IndicesOptions MetalIndexIVFFlat::indicesOptions() const {
     return indicesOptions_;
 }
 
-MetalIndexIVFFlat::AppendDebugStats MetalIndexIVFFlat::appendDebugStats() const {
+MetalIndexIVFFlat::AppendDebugStats MetalIndexIVFFlat::appendDebugStats()
+        const {
     AppendDebugStats out{};
     if (!gpuIvf_) {
         return out;
@@ -1984,7 +2201,8 @@ void MetalIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* src) {
 
     // Copy quantizer centroids (allow non-IndexFlat CPU coarse quantizers by
     // reconstructing centroid vectors).
-    FAISS_THROW_IF_NOT_MSG(src->quantizer, "copyFrom: source quantizer is null");
+    FAISS_THROW_IF_NOT_MSG(
+            src->quantizer, "copyFrom: source quantizer is null");
     auto* ourQ = cpuIndex_->quantizer;
     FAISS_THROW_IF_NOT_MSG(ourQ, "copyFrom: internal quantizer is null");
     ourQ->reset();
