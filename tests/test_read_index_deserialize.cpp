@@ -7,8 +7,10 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdio>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <numeric>
 #include <random>
 #include <vector>
@@ -35,6 +37,7 @@
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/io.h>
+#include <faiss/impl/mapped_io.h>
 #include <faiss/impl/zerocopy_io.h>
 #include <faiss/index_io.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -80,6 +83,19 @@ static void push_index_header(
     push_val<int64_t>(buf, dummy);
     push_val<bool>(buf, is_trained);
     push_val<int>(buf, metric_type);
+}
+
+/// Helper: build a minimal IndexFlatL2 payload whose xb data is read through
+/// READXBVECTOR.
+static std::vector<uint8_t> make_flat_l2_xb_payload(int d, int64_t ntotal) {
+    const size_t xb_elements = size_t(ntotal) * size_t(d);
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, d, ntotal);
+    push_val<size_t>(buf, xb_elements);
+    buf.insert(buf.end(), xb_elements * sizeof(float), 0);
+    return buf;
 }
 
 /// Helper: append write_ProductQuantizer fields (d, M, nbits, centroids vec).
@@ -289,13 +305,8 @@ TEST(ReadIndexDeserialize, ZeroCopyReadXBVectorByteLimit) {
 
     const int d = 1;
     const int64_t ntotal = 8;
-    const size_t xb_elements = ntotal * d;
-
-    std::vector<uint8_t> buf;
-    push_fourcc(buf, "IxF2");
-    push_index_header(buf, d, ntotal);
-    push_val<size_t>(buf, xb_elements);
-    buf.insert(buf.end(), xb_elements * sizeof(float), 0);
+    const size_t xb_elements = size_t(ntotal) * size_t(d);
+    const std::vector<uint8_t> buf = make_flat_l2_xb_payload(d, ntotal);
 
     set_deserialization_vector_byte_limit(xb_elements * sizeof(float));
     {
@@ -308,6 +319,42 @@ TEST(ReadIndexDeserialize, ZeroCopyReadXBVectorByteLimit) {
         ZeroCopyIOReader reader(buf.data(), buf.size());
         EXPECT_NO_THROW(read_index_up(&reader));
     }
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: MappedFileIOReader uses the same read_vector_base() fast path as
+// ZeroCopyIOReader. It must also validate the READXBVECTOR byte limit before
+// returning a view into the mapped file.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, MappedFileReadXBVectorByteLimit) {
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    const int d = 1;
+    const int64_t ntotal = 8;
+    const size_t xb_elements = size_t(ntotal) * size_t(d);
+    const std::vector<uint8_t> buf = make_flat_l2_xb_payload(d, ntotal);
+
+    auto read_with_mmap = [&buf]() {
+        std::unique_ptr<FILE, decltype(&std::fclose)> file(
+                std::tmpfile(), &std::fclose);
+        ASSERT_NE(file.get(), nullptr);
+        ASSERT_EQ(
+                std::fwrite(buf.data(), 1, buf.size(), file.get()),
+                buf.size());
+        ASSERT_EQ(std::fflush(file.get()), 0);
+
+        auto owner = std::make_shared<MmappedFileMappingOwner>(file.get());
+        MappedFileIOReader reader(owner);
+        read_index_up(&reader);
+    };
+
+    set_deserialization_vector_byte_limit(xb_elements * sizeof(float));
+    EXPECT_THROW(read_with_mmap(), FaissException);
+
+    set_deserialization_vector_byte_limit((xb_elements + 1) * sizeof(float));
+    EXPECT_NO_THROW(read_with_mmap());
 
     set_deserialization_vector_byte_limit(old_limit);
 }

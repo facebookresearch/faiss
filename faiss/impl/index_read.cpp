@@ -158,8 +158,11 @@ template <typename VectorT>
 size_t checked_deserialization_vector_size(
         size_t size,
         size_t size_multiplier) {
+    FAISS_THROW_IF_NOT_MSG(
+            size_multiplier > 0,
+            "deserialization vector size multiplier must be positive");
     FAISS_THROW_IF_NOT_FMT(
-            size_multiplier == 0 || size <= SIZE_MAX / size_multiplier,
+            size <= SIZE_MAX / size_multiplier,
             "deserialization vector size %zu would overflow with multiplier %zu",
             size,
             size_multiplier);
