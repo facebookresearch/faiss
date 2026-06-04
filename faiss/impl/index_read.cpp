@@ -1044,6 +1044,8 @@ void read_ScalarQuantizer(
             ivsc->d,
             idx.d);
     READVECTOR(ivsc->trained);
+    // Populate bits/code_size before the validation block uses ivsc->bits.
+    ivsc->set_derived_sizes();
     // Validate trained vector size matches the quantizer type and dimension.
     // UNIFORM/NON_UNIFORM qtypes require training data; other qtypes
     // (fp16, bf16, 8bit_direct*) need none.
@@ -1084,6 +1086,16 @@ void read_ScalarQuantizer(
             case ScalarQuantizer::QT_8bit_tqmse:
                 expected = 256 + 255;
                 break;
+            case ScalarQuantizer::QT_2bit_tq:
+            case ScalarQuantizer::QT_3bit_tq:
+            case ScalarQuantizer::QT_4bit_tq:
+            case ScalarQuantizer::QT_5bit_tq: {
+                // k centroids + (k-1) boundaries + 3 extra (seed + qjl_type)
+                size_t mse_bits = ivsc->bits - 1;
+                size_t k = size_t(1) << mse_bits;
+                expected = k + (k - 1) + 3;
+                break;
+            }
         }
         if (ivsc->trained.empty() && expected > 0) {
             // Empty trained is only valid for untrained indices.
@@ -1111,7 +1123,19 @@ void read_ScalarQuantizer(
             }
         }
     }
-    ivsc->set_derived_sizes();
+
+    // TurboQ full types: extract seed and qjl_type from trained,
+    // regenerate projection matrix.
+    if (ScalarQuantizer::TurboQuantRefine::is_turboq_full(ivsc->qtype) &&
+        ivsc->trained.size() >= 3) {
+        size_t n = ivsc->trained.size();
+        ivsc->turboq_refine.qjl_type =
+                static_cast<uint8_t>(ivsc->trained[n - 1]);
+        ivsc->turboq_refine.seed =
+                ScalarQuantizer::TurboQuantRefine::unpack_seed(
+                        ivsc->trained[n - 3], ivsc->trained[n - 2]);
+        ivsc->turboq_refine.init_projection(ivsc->d);
+    }
 }
 
 static void validate_HNSW(const HNSW& hnsw) {

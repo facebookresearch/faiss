@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cstring>
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/Quantizer.h>
@@ -39,6 +41,10 @@ struct ScalarQuantizer : Quantizer {
         QT_3bit_tqmse, ///< TurboQuant MSE-optimized, 3 bits per component
         QT_4bit_tqmse, ///< TurboQuant MSE-optimized, 4 bits per component
         QT_8bit_tqmse, ///< TurboQuant MSE-optimized, 8 bits per component
+        QT_2bit_tq,    ///< Full TurboQuant (1-bit MSE + 1-bit QJL + factors)
+        QT_3bit_tq,    ///< Full TurboQuant (2-bit MSE + 1-bit QJL + factors)
+        QT_4bit_tq,    ///< Full TurboQuant (3-bit MSE + 1-bit QJL + factors)
+        QT_5bit_tq,    ///< Full TurboQuant (4-bit MSE + 1-bit QJL + factors)
         QT_count
     };
 
@@ -130,6 +136,50 @@ struct ScalarQuantizer : Quantizer {
             return query_to_code(code);
         }
     };
+
+    /// TurboQuant full (QT_*_tq) refinement state, isolated from the
+    /// main ScalarQuantizer to avoid polluting it with TQ-specific data.
+    struct TurboQuantRefine {
+        static bool is_turboq_full(QuantizerType qt) {
+            return qt >= QT_2bit_tq && qt <= QT_5bit_tq;
+        }
+
+        static void pack_seed(uint64_t seed, float out[2]) {
+            static_assert(sizeof(uint64_t) == 2 * sizeof(float));
+            std::memcpy(out, &seed, sizeof(uint64_t));
+        }
+
+        static uint64_t unpack_seed(float lo, float hi) {
+            float tmp[2] = {lo, hi};
+            uint64_t s;
+            static_assert(sizeof(uint64_t) == 2 * sizeof(float));
+            std::memcpy(&s, tmp, sizeof(uint64_t));
+            return s;
+        }
+
+        uint8_t qjl_type = 0;
+        uint64_t seed = 42;
+        size_t padded_d = 0;
+        std::vector<float> fwht_signs;
+        std::vector<float> rr_matrix;
+        size_t nb_bits_lo = 0;
+        size_t n_hi_dims = 0;
+
+        void init_projection(size_t d);
+        bool use_fwht() const {
+            return qjl_type == 0;
+        }
+
+        struct DistanceComputer : SQDistanceComputer {
+            virtual void configure(uint8_t qb, bool int_qjl) = 0;
+            virtual void set_prescreen_threshold(
+                    const float* t,
+                    bool minimize) = 0;
+            virtual void clear_prescreen_threshold() = 0;
+        };
+    };
+
+    TurboQuantRefine turboq_refine;
 
     SQDistanceComputer* get_distance_computer(
             MetricType metric = METRIC_L2) const;
