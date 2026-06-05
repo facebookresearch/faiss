@@ -944,7 +944,7 @@ int search_from_candidates_fixVT(
         hnsw.neighbor_range(v0, level, &begin, &end);
 
         // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
+        // the following version processes 16 neighbors at a time
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
@@ -957,7 +957,7 @@ int search_from_candidates_fixVT(
         }
 
         int counter = 0;
-        size_t saved_j[4];
+        idx_t saved_j[16];
 
         threshold = res.threshold;
 
@@ -979,23 +979,15 @@ int search_from_candidates_fixVT(
             saved_j[counter] = v1;
             counter += vt.set(v1) ? 1 : 0;
 
-            if (counter == 4) {
-                float dis[4];
-                qdis.distances_batch_4(
-                        saved_j[0],
-                        saved_j[1],
-                        saved_j[2],
-                        saved_j[3],
-                        dis[0],
-                        dis[1],
-                        dis[2],
-                        dis[3]);
+            if (counter == 16) {
+                float dis[16];
+                qdis.distances_batch_16(saved_j, dis);
 
-                for (size_t id4 = 0; id4 < 4; id4++) {
-                    add_to_heap(saved_j[id4], dis[id4]);
+                for (size_t id16 = 0; id16 < 16; id16++) {
+                    add_to_heap(saved_j[id16], dis[id16]);
                 }
 
-                ndis += 4;
+                ndis += 16;
 
                 counter = 0;
             }
