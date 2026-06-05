@@ -53,6 +53,24 @@ static bool has_sve() {
 }
 #endif
 
+// AMX tile state permission (Linux): the kernel requires a one-time
+// arch_prctl(ARCH_REQ_XCOMP_PERM, XFEATURE_XTILEDATA) before AMX tile
+// instructions may be used. Returns true if permission is granted.
+#if defined(__x86_64__) && defined(__linux__)
+#include <sys/syscall.h>
+#include <unistd.h>
+[[maybe_unused]] static bool request_amx_tile_permission() {
+    constexpr unsigned long ARCH_REQ_XCOMP_PERM = 0x1023;
+    constexpr unsigned long XFEATURE_XTILEDATA = 18;
+    return syscall(SYS_arch_prctl, ARCH_REQ_XCOMP_PERM, XFEATURE_XTILEDATA) ==
+            0;
+}
+#else
+[[maybe_unused]] static bool request_amx_tile_permission() {
+    return false;
+}
+#endif
+
 #ifdef FAISS_ENABLE_DD
 
 // =============================================================================
@@ -170,6 +188,28 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                             (1 << static_cast<int>(SIMDLevel::AVX512_SPR));
                 }
 #endif // defined(COMPILE_SIMD_AVX512_SPR)
+
+#if defined(COMPILE_SIMD_AMX)
+                // Check for AMX-BF16 (Sapphire Rapids / Granite Rapids+).
+                // CPUID EAX=7, ECX=0: EDX bit 22 = AMX-BF16, bit 24 = AMX-TILE
+                unsigned int eax0, ebx0, ecx0, edx0;
+                eax0 = 7;
+                ecx0 = 0;
+                asm volatile("cpuid"
+                             : "=a"(eax0), "=b"(ebx0), "=c"(ecx0), "=d"(edx0)
+                             : "a"(eax0), "c"(ecx0));
+                bool has_amx_bf16 = (edx0 & (1 << 22)) != 0;
+                bool has_amx_tile = (edx0 & (1 << 24)) != 0;
+                // OS must enable AMX tile state in XCR0
+                // (bit 17 = XTILECFG, bit 18 = XTILEDATA)
+                bool os_supports_amx = (xcr0 & 0x60000) == 0x60000;
+                if (has_amx_bf16 && has_amx_tile && os_supports_amx &&
+                    request_amx_tile_permission()) {
+                    detected_level = SIMDLevel::AMX;
+                    supported_simd_levels |=
+                            (1 << static_cast<int>(SIMDLevel::AMX));
+                }
+#endif // defined(COMPILE_SIMD_AMX)
             }
         }
 #endif // defined(COMPILE_SIMD_AVX512)
@@ -255,7 +295,11 @@ bool SIMDConfig::is_simd_level_available(SIMDLevel l) {
 
 SIMDLevel SIMDConfig::auto_detect_simd_level() {
     // In static mode, return the compiled-in level
-#if defined(COMPILE_SIMD_AVX512_SPR)
+#if defined(COMPILE_SIMD_AMX)
+    // AMX tile instructions require a one-time kernel permission request.
+    request_amx_tile_permission();
+    return SIMDLevel::AMX;
+#elif defined(COMPILE_SIMD_AVX512_SPR)
     return SIMDLevel::AVX512_SPR;
 #elif defined(COMPILE_SIMD_AVX512)
     return SIMDLevel::AVX512;
@@ -293,6 +337,8 @@ std::string to_string(SIMDLevel level) {
             return "AVX512";
         case SIMDLevel::AVX512_SPR:
             return "AVX512_SPR";
+        case SIMDLevel::AMX:
+            return "AMX";
         case SIMDLevel::ARM_NEON:
             return "ARM_NEON";
         case SIMDLevel::ARM_SVE:
@@ -317,6 +363,9 @@ SIMDLevel to_simd_level(const std::string& level_str) {
     }
     if (level_str == "AVX512_SPR") {
         return SIMDLevel::AVX512_SPR;
+    }
+    if (level_str == "AMX") {
+        return SIMDLevel::AMX;
     }
     if (level_str == "ARM_NEON") {
         return SIMDLevel::ARM_NEON;

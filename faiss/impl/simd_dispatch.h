@@ -42,6 +42,12 @@ constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
 constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
         AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_SPR));
 
+// A0_AMX: same as A0_SPR + AMX (for functions with a dedicated AMX-BF16 tile
+// specialization on top of the AVX512_SPR/AVX512 fallback chain). Used by the
+// BF16 ScalarQuantizer batch-16 distance kernels.
+constexpr int AVAILABLE_SIMD_LEVELS_A0_AMX =
+        AVAILABLE_SIMD_LEVELS_A0_SPR | (1 << int(SIMDLevel::AMX));
+
 // A1: same + ARM_SVE (for functions with dedicated SVE implementations)
 constexpr int AVAILABLE_SIMD_LEVELS_A1 =
         AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::ARM_SVE));
@@ -55,6 +61,8 @@ constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
 constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
     switch (level) {
+        case SIMDLevel::AMX:
+            return SIMDLevel::AVX512_SPR;
         case SIMDLevel::AVX512_SPR:
             return SIMDLevel::AVX512;
         case SIMDLevel::AVX512:
@@ -96,6 +104,14 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
 #ifdef FAISS_ENABLE_DD
     switch (SIMDConfig::level) {
         // For x86 -- try from highest to lowest level
+
+#ifdef COMPILE_SIMD_AMX
+        case SIMDLevel::AMX:
+            if constexpr (available_levels & (1 << int(SIMDLevel::AMX))) {
+                return action.template operator()<SIMDLevel::AMX>();
+            }
+            [[fallthrough]];
+#endif
 
 #ifdef COMPILE_SIMD_AVX512_SPR
         case SIMDLevel::AVX512_SPR:
@@ -224,6 +240,17 @@ inline auto with_simd_level_256bit(LambdaType&& action) {
 template <typename LambdaType>
 inline auto with_simd_level_a0_spr(LambdaType&& action) {
     return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for functions that have A0-level implementations plus an AMX-BF16 tile
+ * specialization (e.g. the BF16 ScalarQuantizer batch-16 distance kernels).
+ * Fallback chain: AMX -> AVX512_SPR -> AVX512 -> AVX2 -> NONE.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_amx(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_AMX>(
             std::forward<LambdaType>(action));
 }
 
