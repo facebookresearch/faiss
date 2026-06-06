@@ -9,7 +9,7 @@ import numpy as np
 import faiss
 from faiss.contrib import datasets
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 
 
 def compute_expected_code_size(d, nb_bits):
@@ -804,43 +804,43 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                         np.testing.assert_(abs(eval_rbq - eval_fs) < 0.05)
 
     def test_ivf_vs_ivfrabitq_equivalence(self):
-        """Test that multi-bit IVF FastScan matches IndexIVFRaBitQ."""
+        """SIMD path must return identical results to NONE on the same index."""
         d, nlist, nprobe, k = 128, 16, 4, 10
         ds = datasets.SyntheticDataset(d, 1000, 1000, 50)
+
+        if not faiss.SIMDConfig.is_simd_level_available(
+                faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
 
         for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
             for nb_bits in [2, 4, 8]:
                 with self.subTest(metric=metric, nb_bits=nb_bits):
                     quantizer1 = faiss.IndexFlat(d, metric)
-                    index_ref = faiss.IndexIVFRaBitQ(
+                    index_rbq = faiss.IndexIVFRaBitQ(
                         quantizer1, d, nlist, metric, True, nb_bits
                     )
-                    index_ref.nprobe = nprobe
-                    index_ref.train(ds.get_train())
-                    index_ref.add(ds.get_database())
-                    _, I_ref = index_ref.search(ds.get_queries(), k)
+                    index_rbq.nprobe = nprobe
+                    index_rbq.train(ds.get_train())
+                    index_rbq.add(ds.get_database())
+                    _, I_rbq_simd = index_rbq.search(ds.get_queries(), k)
 
                     quantizer2 = faiss.IndexFlat(d, metric)
-                    index_test = faiss.IndexIVFRaBitQFastScan(
+                    index_fs = faiss.IndexIVFRaBitQFastScan(
                         quantizer2, d, nlist, metric, 32, True, nb_bits
                     )
-                    index_test.nprobe = nprobe
-                    index_test.train(ds.get_train())
-                    index_test.add(ds.get_database())
-                    _, I_test = index_test.search(ds.get_queries(), k)
+                    index_fs.nprobe = nprobe
+                    index_fs.train(ds.get_train())
+                    index_fs.add(ds.get_database())
+                    _, I_fs_simd = index_fs.search(ds.get_queries(), k)
 
-                    index_flat = faiss.IndexFlat(d, metric)
-                    index_flat.add(ds.get_database())
-                    _, I_gt = index_flat.search(ds.get_queries(), k)
+                    with NoneSIMDLevel():
+                        _, I_rbq_none = index_rbq.search(
+                            ds.get_queries(), k)
+                        _, I_fs_none = index_fs.search(
+                            ds.get_queries(), k)
 
-                    recall_ref = faiss.eval_intersection(
-                        I_ref[:, :k], I_gt[:, :k]
-                    ) / (ds.nq * k)
-                    recall_test = faiss.eval_intersection(
-                        I_test[:, :k], I_gt[:, :k]
-                    ) / (ds.nq * k)
-
-                    self.assertLess(abs(recall_ref - recall_test), 0.05)
+                    np.testing.assert_array_equal(I_rbq_simd, I_rbq_none)
+                    np.testing.assert_array_equal(I_fs_simd, I_fs_none)
 
     # ==================== Serialization Tests ====================
 
