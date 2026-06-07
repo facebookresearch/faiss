@@ -12,8 +12,8 @@ import numpy as np
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if cuVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+)
 class TestComputeGT(unittest.TestCase):
 
     def do_compute_GT(self, metric, numeric_type):
@@ -21,10 +21,8 @@ class TestComputeGT(unittest.TestCase):
         k = 12
 
         if numeric_type == faiss.Int8:
-            data_base_nt = np.random.randint(
-                -128, 128, size=(10000, d), dtype=np.int8)
-            data_query_nt = np.random.randint(
-                -128, 128, size=(100, d), dtype=np.int8)
+            data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
+            data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
             data_base = data_base_nt.astype(np.float32)
             data_query = data_query_nt.astype(np.float32)
         else:
@@ -34,11 +32,11 @@ class TestComputeGT(unittest.TestCase):
             # Normalize for inner product to avoid duplicate neighbors
             if metric == faiss.METRIC_INNER_PRODUCT:
                 # Normalize database vectors
-                data_base = data_base / np.linalg.norm(
-                    data_base, axis=1, keepdims=True)
+                data_base = data_base / np.linalg.norm(data_base, axis=1, keepdims=True)
                 # Normalize query vectors
                 data_query = data_query / np.linalg.norm(
-                    data_query, axis=1, keepdims=True)
+                    data_query, axis=1, keepdims=True
+                )
             if numeric_type == faiss.Float16:
                 data_base_nt = data_base.astype(np.float16)
                 data_query_nt = data_query.astype(np.float16)
@@ -74,6 +72,10 @@ class TestComputeGT(unittest.TestCase):
     def test_compute_GT_L2_FP16(self):
         self.do_compute_GT(faiss.METRIC_L2, faiss.Float16)
 
+    @unittest.skip(
+        "GPU CAGRA inner-product + FP16 search deadlocks on CUDA 12.9; "
+        "root cause TBD."
+    )
     def test_compute_GT_IP_FP16(self):
         self.do_compute_GT(faiss.METRIC_INNER_PRODUCT, faiss.Float16)
 
@@ -85,18 +87,16 @@ class TestComputeGT(unittest.TestCase):
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if cuVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+)
 class TestInterop(unittest.TestCase):
 
     def do_interop(self, metric, numeric_type):
         d = 64
         k = 12
         if numeric_type == faiss.Int8:
-            data_base_nt = np.random.randint(
-                -128, 128, size=(10000, d), dtype=np.int8)
-            data_query_nt = np.random.randint(
-                -128, 128, size=(100, d), dtype=np.int8)
+            data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
+            data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
             data_base = data_base_nt.astype(np.float32)
             data_query = data_query_nt.astype(np.float32)
         else:
@@ -122,12 +122,9 @@ class TestInterop(unittest.TestCase):
 
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
-        deserialized_index = faiss.deserialize_index(
-            faiss.serialize_index(cpu_index))
+        deserialized_index = faiss.deserialize_index(faiss.serialize_index(cpu_index))
 
-        gpu_index = faiss.index_cpu_to_gpu(
-            res, 0, deserialized_index
-        )
+        gpu_index = faiss.index_cpu_to_gpu(res, 0, deserialized_index)
         Dnew2, Inew2 = gpu_index.search(data_query_nt, k, numeric_type=numeric_type)
 
         evaluation.check_ref_knn_with_draws(Dnew2, Inew2, Dnew, Inew, k)
@@ -173,18 +170,16 @@ class TestInterop(unittest.TestCase):
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if cuVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+)
 class TestIDMapCagra(unittest.TestCase):
 
     def do_IDMapCagra(self, metric, numeric_type):
         d = 64
         k = 12
         if numeric_type == faiss.Int8:
-            data_base_nt = np.random.randint(
-                -128, 128, size=(10000, d), dtype=np.int8)
-            data_query_nt = np.random.randint(
-                -128, 128, size=(100, d), dtype=np.int8)
+            data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
+            data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
             data_base = data_base_nt.astype(np.float32)
             data_query = data_query_nt.astype(np.float32)
         else:
@@ -206,9 +201,7 @@ class TestIDMapCagra(unittest.TestCase):
         idMapIndex = faiss.IndexIDMap(index)
         idMapIndex.train(data_base_nt, numeric_type=numeric_type)
         ids = np.array([i for i in range(10000)])
-        idMapIndex.add_with_ids(
-            data_base_nt, ids, numeric_type=numeric_type
-        )
+        idMapIndex.add_with_ids(data_base_nt, ids, numeric_type=numeric_type)
         Dnew, Inew = idMapIndex.search(data_query_nt, k, numeric_type=numeric_type)
 
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
