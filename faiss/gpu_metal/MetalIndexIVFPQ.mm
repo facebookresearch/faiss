@@ -232,7 +232,15 @@ void MetalIndexIVFPQ::search(
 void MetalIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* src) {
     FAISS_THROW_IF_NOT(cpuIndex_);
     FAISS_THROW_IF_NOT(src);
-    FAISS_THROW_IF_NOT(src->pq.nbits == 8);
+    FAISS_THROW_IF_NOT_FMT(
+            src->pq.nbits == 8,
+            "copyFrom: only 8-bit PQ codes are supported (got %d)",
+            (int)src->pq.nbits);
+    FAISS_THROW_IF_NOT_MSG(
+            src->by_residual, "copyFrom: only by_residual = true is supported");
+    FAISS_THROW_IF_NOT_MSG(
+            src->polysemous_ht == 0,
+            "copyFrom: polysemous codes are not supported");
     FAISS_THROW_IF_NOT_FMT(
             src->nlist == cpuIndex_->nlist,
             "copyFrom: nlist mismatch (%zd vs %zd)",
