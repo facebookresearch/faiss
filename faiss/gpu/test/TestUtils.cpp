@@ -9,7 +9,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
-#include <time.h>
+#include <chrono>
 #include <cmath>
 #include <set>
 #include <sstream>
@@ -100,10 +100,9 @@ std::mt19937 rng(1);
 std::uniform_int_distribution<> distrib;
 
 void newTestSeed() {
-    struct timespec t;
-    clock_gettime(CLOCK_REALTIME, &t);
-
-    setTestSeed(t.tv_nsec);
+    auto ns = std::chrono::high_resolution_clock::now().time_since_epoch();
+    setTestSeed(static_cast<long>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(ns).count()));
 }
 
 void setTestSeed(long seed) {
