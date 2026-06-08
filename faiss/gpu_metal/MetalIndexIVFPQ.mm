@@ -102,6 +102,41 @@ void MetalIndexIVFPQ::train(idx_t n, const float* x) {
     is_trained = cpuIndex_->is_trained;
 }
 
+void MetalIndexIVFPQ::encodeResidualAndAppend_(
+        idx_t n,
+        const float* x,
+        const idx_t* list_nos,
+        const idx_t* xids) {
+    if (!gpuIvf_)
+        return;
+    auto* flatQ = dynamic_cast<faiss::IndexFlat*>(cpuIndex_->quantizer);
+    size_t code_size = cpuIndex_->pq.code_size;
+    std::vector<uint8_t> encoded(n * code_size);
+
+    if (cpuIndex_->by_residual && flatQ) {
+        std::vector<float> residuals((size_t)n * d);
+        for (idx_t i = 0; i < n; ++i) {
+            idx_t li = list_nos[i];
+            if (li < 0) {
+                std::memcpy(
+                        residuals.data() + i * d,
+                        x + i * d,
+                        (size_t)d * sizeof(float));
+                continue;
+            }
+            const float* centroid = flatQ->get_xb() + li * d;
+            for (int j = 0; j < d; ++j) {
+                residuals[i * d + j] = x[i * d + j] - centroid[j];
+            }
+        }
+        cpuIndex_->pq.compute_codes(residuals.data(), encoded.data(), n);
+    } else {
+        cpuIndex_->pq.compute_codes(x, encoded.data(), n);
+    }
+
+    gpuIvf_->appendCodes(n, encoded.data(), list_nos, xids);
+}
+
 void MetalIndexIVFPQ::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(cpuIndex_);
     if (n == 0)
@@ -114,16 +149,10 @@ void MetalIndexIVFPQ::add(idx_t n, const float* x) {
     cpuIndex_->add_core(n, x, nullptr, list_nos.data());
     ntotal = cpuIndex_->ntotal;
 
-    if (gpuIvf_) {
-        size_t code_size = cpuIndex_->pq.code_size;
-        std::vector<uint8_t> encoded(n * code_size);
-        cpuIndex_->pq.compute_codes(x, encoded.data(), n);
-
-        std::vector<idx_t> ids(n);
-        for (idx_t i = 0; i < n; ++i)
-            ids[i] = oldNt + i;
-        gpuIvf_->appendCodes(n, encoded.data(), list_nos.data(), ids.data());
-    }
+    std::vector<idx_t> ids(n);
+    for (idx_t i = 0; i < n; ++i)
+        ids[i] = oldNt + i;
+    encodeResidualAndAppend_(n, x, list_nos.data(), ids.data());
 }
 
 void MetalIndexIVFPQ::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
@@ -138,12 +167,7 @@ void MetalIndexIVFPQ::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
     cpuIndex_->add_core(n, x, xids, list_nos.data());
     ntotal = cpuIndex_->ntotal;
 
-    if (gpuIvf_) {
-        size_t code_size = cpuIndex_->pq.code_size;
-        std::vector<uint8_t> encoded(n * code_size);
-        cpuIndex_->pq.compute_codes(x, encoded.data(), n);
-        gpuIvf_->appendCodes(n, encoded.data(), list_nos.data(), xids);
-    }
+    encodeResidualAndAppend_(n, x, list_nos.data(), xids);
 }
 
 void MetalIndexIVFPQ::reset() {
