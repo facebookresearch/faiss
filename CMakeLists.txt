@@ -37,6 +37,29 @@ if(FAISS_ENABLE_METAL)
   list(APPEND FAISS_LANGUAGES OBJCXX)
 endif()
 
+# FAISS_ENABLE_METAL may not yet be in the cache on the first cmake run
+# (the option() call is after project()). If the user didn't pass
+# -DFAISS_ENABLE_METAL=... on the command line we pre-seed the cache
+# now so that OBJCXX is added to the project languages.
+# Only default to ON on Apple Silicon (arm64); Intel Macs are not
+# supported by the Metal backend.
+# Prefer CMAKE_SYSTEM_* (target platform, set by toolchain files for
+# cross-compiles) and fall back to CMAKE_HOST_* (build machine).
+if(NOT DEFINED FAISS_ENABLE_METAL)
+  if(DEFINED CMAKE_SYSTEM_NAME)
+    set(_faiss_metal_sys "${CMAKE_SYSTEM_NAME}")
+    set(_faiss_metal_proc "${CMAKE_SYSTEM_PROCESSOR}")
+  else()
+    set(_faiss_metal_sys "${CMAKE_HOST_SYSTEM_NAME}")
+    set(_faiss_metal_proc "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+  endif()
+  if(_faiss_metal_sys STREQUAL "Darwin" AND _faiss_metal_proc STREQUAL "arm64")
+    set(FAISS_ENABLE_METAL ON CACHE BOOL
+      "Enable Metal GPU backend for Apple Silicon.")
+    list(APPEND FAISS_LANGUAGES OBJCXX)
+  endif()
+endif()
+
 if(FAISS_ENABLE_CUVS)
   include(cmake/thirdparty/fetch_rapids.cmake)
   include(rapids-cmake)
@@ -72,7 +95,13 @@ option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
-option(FAISS_ENABLE_METAL "Enable Metal GPU backend for Apple Silicon." OFF)
+if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+  set(_FAISS_METAL_DEFAULT ON)
+else()
+  set(_FAISS_METAL_DEFAULT OFF)
+endif()
+option(FAISS_ENABLE_METAL "Enable Metal GPU backend for Apple Silicon."
+  ${_FAISS_METAL_DEFAULT})
 option(FAISS_ENABLE_SVS "Enable SVS (Intel(R) Scalable Vector Search) integration." OFF)
 set(FAISS_SVS_RUNTIME_VERSION "v0" CACHE STRING "Version of the SVS runtime API to use")
 set_property(CACHE FAISS_SVS_RUNTIME_VERSION PROPERTY STRINGS "v0")
