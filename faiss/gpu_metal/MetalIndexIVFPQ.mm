@@ -25,6 +25,28 @@ namespace gpu_metal {
 //  Constructors
 // ============================================================
 
+void MetalIndexIVFPQ::verifyPQSettings_() const {
+    int M = cpuIndex_ ? (int)cpuIndex_->pq.M : 0;
+    int nbits = cpuIndex_ ? (int)cpuIndex_->pq.nbits : 0;
+    idx_t nl = cpuIndex_ ? cpuIndex_->nlist : 0;
+
+    FAISS_THROW_IF_NOT_MSG(nl > 0, "MetalIndexIVFPQ: nlist must be > 0");
+    FAISS_THROW_IF_NOT_FMT(
+            nbits == 8,
+            "MetalIndexIVFPQ: only 8-bit PQ codes are supported (got %d)",
+            nbits);
+    FAISS_THROW_IF_NOT_FMT(
+            d % M == 0,
+            "MetalIndexIVFPQ: sub-quantizers (%d) must evenly divide "
+            "dimensions (%d)",
+            M,
+            d);
+    FAISS_THROW_IF_NOT_FMT(
+            M > 0 && M <= 64,
+            "MetalIndexIVFPQ: sub-quantizers must be in [1, 64] (got %d)",
+            M);
+}
+
 MetalIndexIVFPQ::MetalIndexIVFPQ(
         std::shared_ptr<MetalResources> resources,
         int dims,
@@ -48,6 +70,7 @@ MetalIndexIVFPQ::MetalIndexIVFPQ(
             (size_t)M,
             (size_t)nbitsPerIdx);
     cpuIndex_->own_fields = true;
+    verifyPQSettings_();
     gpuIvf_ = std::make_unique<MetalIVFPQImpl>(
             resources, dims, nlist, M, nbitsPerIdx, metric, metricArg);
 }
@@ -76,6 +99,7 @@ MetalIndexIVFPQ::MetalIndexIVFPQ(
             (size_t)M,
             cpuIndex->pq.nbits);
     cpuIndex_->own_fields = true;
+    verifyPQSettings_();
     gpuIvf_ = std::make_unique<MetalIVFPQImpl>(
             resources,
             (int)cpuIndex->d,
@@ -95,6 +119,7 @@ MetalIndexIVFPQ::~MetalIndexIVFPQ() = default;
 
 void MetalIndexIVFPQ::train(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(cpuIndex_);
+    verifyPQSettings_();
     cpuIndex_->train(n, x);
     if (cpuIndex_->metric_type == METRIC_L2 && cpuIndex_->by_residual) {
         cpuIndex_->precompute_table();
