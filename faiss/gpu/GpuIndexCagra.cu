@@ -416,6 +416,7 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     // Index information
     //
     GpuIndex::copyTo(index);
+    index->hnsw.is_similarity = is_similarity_metric(this->metric_type);
     // This needs to be zeroed out as this implementation adds vectors to the
     // cpuIndex instead of copying fields
     index->ntotal = 0;

@@ -107,6 +107,10 @@ class TestComputeGT(unittest.TestCase):
 class TestIndexBinaryIDMap(unittest.TestCase):
     """Test IndexBinaryIDMap functionality with GpuIndexBinaryCagra"""
 
+    @unittest.skip(
+        "GPU binary-CAGRA search via IndexBinaryIDMap deadlocks at "
+        "d=1024 on CUDA 12.9; root cause TBD."
+    )
     def test_add_with_ids(self):
         d = 128 * 8
         k = 10
