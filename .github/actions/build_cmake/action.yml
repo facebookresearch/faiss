@@ -54,7 +54,7 @@ runs:
         conda list --show-channel-urls
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2 setuptools
+        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 pytest-timeout gflags=2.2 setuptools
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -73,13 +73,21 @@ runs:
           :
         # CUDA install for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
           if [ "${{ inputs.cuvs }}" = "ON" ]; then
-            conda install -y -q libcuvs=26.06 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
-            # Clean index cache to prevent sqlite3 "database is locked" errors
-            # from conda-libmamba-solver's shards cache between consecutive installs.
-            # See: https://github.com/conda/conda-libmamba-solver/issues/667
+            # Use CUDA 12.9 for cuVS cmake builds: pytorch-gpu on
+            # conda-forge only has CUDA 12 builds, 12.8+ supports GCC 14,
+            # and libcuvs needs libnvjitlink >=12.9.86. Skip the
+            # cuda-libraries-dev metapackage to avoid pinning libnvjitlink.
+            conda install -y -q \
+              cuda-nvcc=12.9 cuda-nvtx=12.9 cuda-cupti=12.9 cuda-cudart-dev=12.9 \
+              libcublas-dev libcusolver-dev libcusparse-dev \
+              gxx_linux-64=14.2 \
+              libcuvs=26.06 'cuda-version>=12,<13' sysroot_linux-64=2.34 \
+              'pytorch-gpu>=2.7' \
+              -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
             conda clean --index-cache 2>/dev/null || true
+          else
+            conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
           fi
         fi
 
@@ -93,10 +101,13 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
-          # so we install via pip for CUDA builds. --break-system-packages is needed
-          # because the CI runner's Python is PEP 668 externally-managed.
-          pip install "torch>=2.7" --break-system-packages --index-url https://download.pytorch.org/whl/cu132
+          if [ "${{ inputs.cuvs }}" != "ON" ]; then
+            # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
+            # so we install via pip for CUDA builds. --break-system-packages is needed
+            # because the CI runner's Python is PEP 668 externally-managed.
+            pip install "torch>=2.7" --break-system-packages --index-url https://download.pytorch.org/whl/cu132
+          fi
+          # cuVS builds get pytorch-gpu from conda (installed above).
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
@@ -305,7 +316,10 @@ runs:
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test
-        pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+        # --timeout guards against a hung GPU test burning the full 6h CI
+        # budget (see the binary-CAGRA IDMap deadlock skipped in
+        # test_binary_cagra.py) instead of failing fast.
+        pytest --timeout=600 --timeout-method=thread --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
     - name: Test avx2 loading
       if: inputs.opt_level == 'avx2'

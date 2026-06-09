@@ -8,9 +8,16 @@ set -e
 
 
 # Build swigfaiss.so
+# Metal bindings are enabled on macOS where faiss_metal was built.
+METAL_FLAG=""
+if [ "$(uname -s)" = "Darwin" ]; then
+  METAL_FLAG="-DFAISS_ENABLE_METAL=ON"
+fi
+
 cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
       -DFAISS_ENABLE_GPU=OFF \
+      $METAL_FLAG \
       -DCMAKE_BUILD_TYPE=Release \
       -DPython_EXECUTABLE=$PYTHON \
       faiss/python

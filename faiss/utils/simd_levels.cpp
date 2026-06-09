@@ -147,6 +147,9 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
         asm volatile("cpuid"
                      : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
                      : "a"(eax), "c"(ecx));
+        // Save EDX before xgetbv clobbers it — needed for
+        // AVX512_FP16 check (bit 23) in the SPR detection below.
+        unsigned int cpuid7_edx = edx;
 
         unsigned int xcr0;
         asm volatile("xgetbv" : "=a"(xcr0), "=d"(edx) : "c"(0));
@@ -173,8 +176,15 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                         (1 << static_cast<int>(SIMDLevel::AVX512));
 
 #if defined(COMPILE_SIMD_AVX512_SPR)
-                // Check for Sapphire Rapids features (AVX512_BF16)
+                // Check for Sapphire Rapids features.
+                // The SPR code path is compiled with -mavx512fp16, so we
+                // must verify both AVX512_BF16 and AVX512_FP16 before
+                // dispatching to it. AMD Zen 4 (bergamo) has BF16 but
+                // not FP16 — using SPR code there causes SIGILL.
                 // CPUID EAX=7, ECX=1: EAX bit 5 = AVX512_BF16
+                // CPUID EAX=7, ECX=0: EDX bit 23 = AVX512_FP16
+                // (Linux: X86_FEATURE_AVX512_FP16 = 18*32+23)
+                bool has_avx512_fp16 = (cpuid7_edx & (1 << 23)) != 0;
                 unsigned int eax1, ebx1, ecx1, edx1;
                 eax1 = 7;
                 ecx1 = 1;
@@ -182,7 +192,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                              : "=a"(eax1), "=b"(ebx1), "=c"(ecx1), "=d"(edx1)
                              : "a"(eax1), "c"(ecx1));
                 bool has_avx512_bf16 = (eax1 & (1 << 5)) != 0;
-                if (has_avx512_bf16) {
+                if (has_avx512_bf16 && has_avx512_fp16) {
                     detected_level = SIMDLevel::AVX512_SPR;
                     supported_simd_levels |=
                             (1 << static_cast<int>(SIMDLevel::AVX512_SPR));
