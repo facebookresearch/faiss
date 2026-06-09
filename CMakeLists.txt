@@ -122,8 +122,23 @@ if(FAISS_ENABLE_GPU)
 endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
-   find_package(cuvs)
- endif()
+  find_package(cuvs)
+  # If an explicit spark library is requested, override the imported target to
+  # use it (libcuvs-spark.so) instead of whatever find_package resolved to.
+  if(FAISS_CUVS_SPARK_LIBRARY AND TARGET cuvs::cuvs)
+    if(NOT EXISTS "${FAISS_CUVS_SPARK_LIBRARY}")
+      message(FATAL_ERROR "FAISS_CUVS_SPARK_LIBRARY not found: ${FAISS_CUVS_SPARK_LIBRARY}")
+    endif()
+    get_filename_component(_cuvs_spark_soname "${FAISS_CUVS_SPARK_LIBRARY}" NAME)
+    set_target_properties(cuvs::cuvs PROPERTIES
+      IMPORTED_LOCATION "${FAISS_CUVS_SPARK_LIBRARY}"
+      IMPORTED_LOCATION_RELEASE "${FAISS_CUVS_SPARK_LIBRARY}"
+      IMPORTED_SONAME "${_cuvs_spark_soname}"
+      IMPORTED_SONAME_RELEASE "${_cuvs_spark_soname}"
+    )
+    message(STATUS "cuVS spark override: cuvs::cuvs -> ${FAISS_CUVS_SPARK_LIBRARY}")
+  endif()
+endif()
 
 add_subdirectory(faiss)
 

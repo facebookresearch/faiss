@@ -104,7 +104,7 @@ if found_faiss_example_external_module_lib:
         f"faiss/_faiss_example_external_module{ext}",
     )
 
-long_description = """
+_base_description = """
 Faiss is a library for efficient similarity search and clustering of dense
 vectors. It contains algorithms that search in sets of vectors of any size,
 up to ones that possibly do not fit in RAM. It also contains supporting
@@ -112,6 +112,57 @@ code for evaluation and parameter tuning. Faiss is written in C++ with
 complete wrappers for Python/numpy. Some of the most useful algorithms
 are implemented on the GPU. It is developed by Facebook AI Research.
 """
+
+# Allow the wheel to be published under a variant name, e.g.:
+#   FAISS_VARIANT=gpu-cu132   → faiss-gpu-cu132
+#   FAISS_VARIANT=cpu          → faiss-cpu
+#   FAISS_VARIANT=gpu-cu128   → faiss-gpu-cu128
+# Omit / leave empty for the canonical upstream name "faiss".
+_variant = os.environ.get("FAISS_VARIANT", "").strip()
+_package_name = f"faiss-{_variant}" if _variant else "faiss"
+
+# Append GPU/arch details when building a GPU variant.
+_cuda_archs = os.environ.get("CUDA_ARCHS", "").strip()
+import re as _re
+if _variant and "gpu" in _variant and _cuda_archs:
+    # Normalise "75;80;86;89;90;100;120" or "103-real" → ["sm_75", "sm_80", ...]
+    _arch_codes = sorted({
+        a.strip().replace("-real", "").replace("-virtual", "")
+        for a in _cuda_archs.replace(",", ";").split(";") if a.strip()
+    })
+    _arch_names = [f"sm_{c}" for c in _arch_codes]
+    _arch_list = ", ".join(_arch_names)
+    # A build targeting exactly one arch is GPU-generation-specific.
+    _single_arch = _arch_names[0] if len(_arch_names) == 1 else ""
+    # Extract CUDA version suffix, e.g. "gpu-cu132" → "13.2"
+    _cu_match = _re.search(r"cu(\d+)", _variant)
+    if _cu_match:
+        _cu_str = _cu_match.group(1)           # "132"
+        _cuda_ver = f"{_cu_str[:-1]}.{_cu_str[-1]}"  # "13.2"
+    else:
+        _cuda_ver = ""
+    # The package name is arch-independent (the wheel's platform tag selects the
+    # right build); detect the build arch from the host instead of the variant.
+    import platform as _platform
+    _machine = _platform.machine().lower()
+    if _machine in ("aarch64", "arm64"):
+        _gpu_details = (
+            f"\nThis wheel targets aarch64 / NVIDIA DGX Spark (GB10 Grace Blackwell, "
+            f"SM 121, aarch64). Built with CUDA {_cuda_ver}. "
+            f"Requires libcuvs-spark.so from github.com/zbrad/cuvs.\n"
+        )
+    else:
+        _gpu_details = f"\nThis wheel was built with CUDA {_cuda_ver} (x86_64) and targets: {_arch_list}.\n"
+    if _single_arch:
+        _gpu_details += (
+            f"Single-architecture build: runs only on {_single_arch} GPUs "
+            f"(package tagged -{_single_arch.replace('_', '')}).\n"
+        )
+else:
+    _gpu_details = ""
+
+long_description = _base_description.rstrip() + _gpu_details
+
 setup(
     name="faiss",
     version="1.14.2",

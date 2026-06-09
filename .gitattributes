@@ -1,0 +1,50 @@
+# Normalize all text files to LF
+*           text=auto eol=lf
+
+# Explicitly LF for source and script files
+*.c         text eol=lf
+*.cpp       text eol=lf
+*.cu        text eol=lf
+*.cuh       text eol=lf
+*.h         text eol=lf
+*.hpp       text eol=lf
+*.py        text eol=lf
+*.pyx       text eol=lf
+*.pxd       text eol=lf
+*.i         text eol=lf
+*.sh        text eol=lf
+*.bash      text eol=lf
+*.ps1       text eol=lf
+Makefile    text eol=lf
+*.mk        text eol=lf
+CMakeLists.txt text eol=lf
+*.cmake     text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+*.toml      text eol=lf
+*.cfg       text eol=lf
+*.ini       text eol=lf
+*.md        text eol=lf
+*.rst       text eol=lf
+*.txt       text eol=lf
+*.ipynb     text eol=lf
+
+# Binary files — no line-ending conversion
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.pdf       binary
+*.zip       binary
+*.tar       binary
+*.gz        binary
+*.so        binary
+*.a         binary
+*.lib       binary
+*.dll       binary
+*.pyd       binary
+*.whl       binary
+*.pt        binary
+*.bin       binary

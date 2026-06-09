@@ -1,0 +1,57 @@
+name: Create GPU Release Notes
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.14.1-gpu-cu132)'
+        required: true
+        default: 'v1.14.1-gpu-cu132'
+  push:
+    tags:
+      - 'v*-gpu-cu*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract Release Notes
+        id: extract_notes
+        run: |
+          # Read gpu-cu/RELEASE_NOTES.md content
+          if [ -f "gpu-cu/RELEASE_NOTES.md" ]; then
+            NOTES=$(cat gpu-cu/RELEASE_NOTES.md)
+            # Escape newlines for GitHub Actions
+            NOTES="${NOTES//'%'/'%25'}"
+            NOTES="${NOTES//$'\n'/'%0A'}"
+            NOTES="${NOTES//$'\r'/'%0D'}"
+            echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+            cat gpu-cu/RELEASE_NOTES.md >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "release_notes=Release notes not found" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get Tag Name
+        id: tag_name
+        run: |
+          TAG_NAME="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "Release tag: ${TAG_NAME}"
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag_name.outputs.tag }}
+          body: ${{ steps.extract_notes.outputs.release_notes }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

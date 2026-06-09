@@ -32,3 +32,12 @@ faiss/python/swigfaiss_sve.swig
 # Python package build outputs
 /dist/
 /*.egg-info/
+
+# Local scratch/analysis files
+/semantic_changed_files.txt
+
+_build*/**
+_libfaiss*/**
+
+# vscode settings
+.vscode/

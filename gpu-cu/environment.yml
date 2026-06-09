@@ -1,0 +1,25 @@
+name: faiss-gpu-cu132-py314
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.14
+  - cmake>=3.24.0
+  - swig=4.0
+  - make=4.2
+  - cuda-toolkit=13.2
+  - cuda-cudart=13.2
+  - cuda-version=13.2
+  - mkl-devel>=2024.2.2
+  - mkl>=2024.2.2
+  - gcc=12.4
+  - gxx=12.4
+  - numpy>=2.0,<3.0
+  - setuptools
+  - wheel
+  - packaging
+  - llvm-openmp
+variables:
+  CUDA_ARCHS: "75;80;86;89;90;120"
+  FAISS_FLATTEN_CONDA_INCLUDES: "1"
