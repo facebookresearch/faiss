@@ -46,6 +46,17 @@ runs:
         conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0,<25.7"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
+    # Download temp libsvs-runtime 0.4.0 to local channel for validation while waiting for conda-forge availability
+    - name: Stage libsvs-runtime 0.4.0 nightly channel
+      if: runner.os == 'Linux' && runner.arch == 'X64'
+      shell: bash
+      run: |
+        conda install -y -q conda-index
+        mkdir -p "$HOME/svs-local/linux-64"
+        curl -fL -o "$HOME/svs-local/linux-64/libsvs-runtime-0.4.0-g7f7c639_0.conda" \
+          https://github.com/intel/ScalableVectorSearch/releases/download/nightly/libsvs-runtime-0.4.0-g7f7c639_0.conda
+        conda index "$HOME/svs-local"
+        conda config --prepend channels "file://$HOME/svs-local"
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
