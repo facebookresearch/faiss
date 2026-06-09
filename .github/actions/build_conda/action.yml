@@ -46,17 +46,6 @@ runs:
         conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0,<25.7"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
-    # Download temp libsvs-runtime 0.4.0 to local channel for validation while waiting for conda-forge availability
-    - name: Stage libsvs-runtime 0.4.0 nightly channel
-      if: runner.os == 'Linux' && runner.arch == 'X64'
-      shell: bash
-      run: |
-        conda install -y -q conda-index
-        mkdir -p "$HOME/svs-local/linux-64"
-        curl -fL -o "$HOME/svs-local/linux-64/libsvs-runtime-0.4.0-g7f7c639_0.conda" \
-          https://github.com/intel/ScalableVectorSearch/releases/download/nightly/libsvs-runtime-0.4.0-g7f7c639_0.conda
-        conda index "$HOME/svs-local"
-        conda config --prepend channels "file://$HOME/svs-local"
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -76,7 +65,7 @@ runs:
       working-directory: conda
       run: |
         conda list --show-channel-urls
-        conda build faiss --python 3.12 -c pytorch
+        conda build faiss --python 3.12 -c pytorch -c https://software.repos.intel.com/python/conda
     - name: Conda build (CPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -85,7 +74,7 @@ runs:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda list --show-channel-urls
-        conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c pytorch
+        conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c pytorch -c https://software.repos.intel.com/python/conda
     - name: Conda build (GPU)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -93,7 +82,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
+            -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c https://software.repos.intel.com/python/conda
     - name: Conda build (GPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -103,7 +92,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c https://software.repos.intel.com/python/conda
     - name: Conda build (GPU w/ cuVS)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -111,7 +100,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia -c https://software.repos.intel.com/python/conda
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -121,7 +110,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia -c https://software.repos.intel.com/python/conda
     - name: Check installed packages channel
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
