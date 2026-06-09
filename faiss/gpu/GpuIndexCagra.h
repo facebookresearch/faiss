@@ -284,6 +284,46 @@ struct GpuIndexCagra : public GpuIndex {
     /// in the index instance
     void copyTo(faiss::IndexHNSWCagra* index) const;
 
+    /// Train CAGRA using multiple GPUs by sharding the dataset.
+    /// Uses cuVS native SNMG (single-node multi-GPU) CAGRA build.
+    /// Each device builds one shard in parallel via OpenMP.
+    /// Float32 only. After training, call copyTo() to produce a CPU
+    /// IndexHNSWCagra with full HNSW upper levels.
+    /// The training data pointer must remain valid until copyTo() completes.
+    /// stitch_mode: 0=CPU HNSW (Approach C), 1=GPU brute-force (Approach B)
+    void trainMultiGpu(
+            idx_t n,
+            const float* x,
+            std::vector<GpuResourcesProvider*>& providers,
+            std::vector<int>& devices,
+            idx_t stitch_per_shard = 0,
+            int stitch_k = 2,
+            int stitch_mode = 0);
+
+    /// Build a unified CAGRA graph using cuVS all_neighbors
+    /// (multi-GPU kNN graph construction with overlapping clusters) followed
+    /// by cagra::optimize (graph pruning). Produces a single unified graph
+    /// without stitching. The training data pointer must remain valid until
+    /// copyTo() completes.
+    /// build_algo: 0=NN-descent (default), 1=brute-force, 2=IVF-PQ
+    /// refinement_rate: IVF-PQ refinement multiplier (only used when
+    /// build_algo==2). Higher values trade build time for recall; the cuVS
+    /// default is 2.0.
+    /// ivfpq_search_batch: cap the IVF-PQ search `max_internal_batch_size` used
+    /// during the all_neighbors kNN build (build_algo==2). 0 = cuVS default
+    /// (128*1024), which can OOM at 100M; a smaller value (e.g. 8192) bounds
+    /// the GPU search workspace with no effect on results (recall-neutral).
+    void trainAllNeighbors(
+            idx_t n,
+            const float* x,
+            std::vector<int>& devices,
+            int n_clusters = 0,
+            int overlap_factor = 0,
+            bool multi_gpu_optimize = false,
+            int build_algo = 0,
+            float refinement_rate = 2.0f,
+            int ivfpq_search_batch = 0);
+
     void reset() override;
 
     std::vector<idx_t> get_knngraph() const;
@@ -317,6 +357,8 @@ struct GpuIndexCagra : public GpuIndex {
             idx_t* labels,
             const SearchParameters* search_params) const override;
 
+    void copyToMultiGpu_(faiss::IndexHNSWCagra* index) const;
+
     /// Our configuration options
     const GpuIndexCagraConfig cagraConfig_;
 
@@ -329,6 +371,11 @@ struct GpuIndexCagra : public GpuIndex {
             std::shared_ptr<CuvsCagra<half>>,
             std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
+
+    /// Multi-GPU state: populated by trainMultiGpu(), used by copyTo()
+    std::vector<idx_t> merged_knngraph_;
+    idx_t merged_knngraph_degree_ = 0;
+    const float* multi_gpu_dataset_ = nullptr;
 };
 
 } // namespace gpu
