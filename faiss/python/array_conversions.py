@@ -154,7 +154,13 @@ def copy_array_to_vector(a, v):
 
 def copy_array_to_AlignedTable(a, v):
     n, = a.shape
-    # TODO check class name
+    classname = v.__class__.__name__
+    if not classname.startswith('AlignedTable'):
+        raise TypeError(f"Expected AlignedTable, got {classname}")
+    dtype = classname[12:].lower()
+    expected_dtype = np.dtype(dtype)
+    if a.dtype != expected_dtype:
+        raise TypeError(f"Expected dtype {expected_dtype}, got {a.dtype}")
     assert v.itemsize() == a.itemsize
     v.resize(n)
     if n > 0:
