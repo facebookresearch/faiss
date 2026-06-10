@@ -15,23 +15,12 @@ import inspect
 
 
 def _preload_gpu_libs():
-    """Pre-load CUDA shared libraries from nvidia-*-cu12 pip packages.
+    """Pre-load CUDA / RAPIDS shared libs from pip wheels with RTLD_GLOBAL.
 
-    The libcudart.so / libcublas.so / libcurand.so files live in
-    site-packages/nvidia/{cuda_runtime,cublas,curand}/lib/ — not on the
-    default ld.so search path. Pre-load them with RTLD_GLOBAL before the
-    SWIG extension dlopen()s libfaiss.so (which has CUDA undefined symbols).
-
-    Gating: keyed on the `faiss._gpu_build` module, which CMake writes only
-    when FAISS_ENABLE_GPU=ON. We can't gate on `nvidia.cuda_runtime`
-    importability — PyTorch and cupy CUDA wheels pull that in transitively,
-    so a faiss-cpu user with PyTorch+CUDA would otherwise hit this path and
-    see a misleading error if any nvidia-* package were missing.
-
-    Behavior:
-    - faiss-cpu install (no `_gpu_build` marker): silent no-op.
-    - faiss-gpu install with missing nvidia-cuda-runtime / cublas / curand:
-      raises RuntimeError with fix-it message.
+    These libs ship in nvidia-*-cu12 / libcuvs-cu12 wheels, off ld.so's search
+    path, so we dlopen them before the SWIG extension loads libfaiss.so. Gated
+    on the `faiss._gpu_build` marker (CMake writes it only for GPU builds); the
+    `_cuvs_build` marker adds the cuVS stack. Missing wheels raise a fix-it.
     """
     try:
         from . import _gpu_build  # noqa: F401
@@ -41,51 +30,63 @@ def _preload_gpu_libs():
     import ctypes
     import os
 
-    try:
-        import nvidia.cuda_runtime
-    except ImportError as e:
-        raise RuntimeError(
-            "faiss-gpu installed but nvidia-cuda-runtime-cu12 is missing — "
-            "pip install 'nvidia-cuda-runtime-cu12>=12.6,<13'"
-        ) from e
-
-    try:
-        import nvidia.cublas
-    except ImportError as e:
-        raise RuntimeError(
-            "faiss-gpu installed but nvidia-cublas-cu12 is missing — "
-            "pip install 'nvidia-cublas-cu12>=12.6,<13'"
-        ) from e
-
-    try:
-        import nvidia.curand
-    except ImportError as e:
-        raise RuntimeError(
-            "faiss-gpu installed but nvidia-curand-cu12 is missing — "
-            "pip install 'nvidia-curand-cu12>=10.3.7,<11'"
-        ) from e
-
-    # Order matters: libcudart provides symbols that libcublas* / libcurand depend on.
-    _LIBS = [
-        (nvidia.cuda_runtime, "libcudart.so.12"),
-        (nvidia.cublas,       "libcublas.so.12"),
-        (nvidia.cublas,       "libcublasLt.so.12"),
-        (nvidia.curand,       "libcurand.so.10"),
-    ]
-    for pkg, soname in _LIBS:
-        # Use __path__[0] not __file__ — the nvidia-*-cu12 wheels are PEP 420
-        # implicit namespace packages, so pkg.__file__ is None.
-        so_path = os.path.join(pkg.__path__[0], "lib", soname)
+    def _nvidia_lib_dir(import_name, pip_spec):
+        """Return the lib/ dir of an nvidia-*-cu12 wheel, or raise a fix-it."""
         try:
-            ctypes.CDLL(so_path, mode=ctypes.RTLD_GLOBAL)
+            mod = __import__("nvidia." + import_name, fromlist=[import_name])
+        except ImportError as e:
+            pip_name = pip_spec.split(">")[0].split("<")[0].split("=")[0]
+            raise RuntimeError(
+                f"faiss-gpu installed but {pip_name} is missing — "
+                f"pip install '{pip_spec}'"
+            ) from e
+        # __path__[0] not __file__: PEP 420 namespace pkgs have __file__ = None.
+        return os.path.join(mod.__path__[0], "lib")
+
+    def _load(path):
+        """dlopen one .so with global visibility, or raise a fix-it."""
+        try:
+            ctypes.CDLL(path, mode=ctypes.RTLD_GLOBAL)
         except OSError as e:
             raise RuntimeError(
-                f"faiss-gpu: failed to load {soname} from {so_path} — "
-                f"corrupt nvidia-*-cu12 wheel? Try: pip install --force-reinstall "
-                f"'nvidia-cuda-runtime-cu12>=12.6,<13' "
-                f"'nvidia-cublas-cu12>=12.6,<13' "
-                f"'nvidia-curand-cu12>=10.3.7,<11'"
+                f"faiss-gpu: failed to load {os.path.basename(path)} from {path} — "
+                f"corrupt or incomplete nvidia-*-cu12 wheel? Try: pip install "
+                f"--force-reinstall 'nvidia-cuda-runtime-cu12>=12.6,<13' "
+                f"'nvidia-cublas-cu12>=12.6,<13' 'nvidia-curand-cu12>=10.3.7,<11'"
             ) from e
+
+    # Base CUDA libs the faiss extension links directly, in dependency order
+    # (libcudart first — it provides symbols the others resolve against). Loaded
+    # RTLD_GLOBAL so the SWIG extension's later dlopen of libfaiss.so resolves them.
+    _cudart = _nvidia_lib_dir("cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13")
+    _cublas = _nvidia_lib_dir("cublas", "nvidia-cublas-cu12>=12.6,<13")
+    _curand = _nvidia_lib_dir("curand", "nvidia-curand-cu12>=10.3.7,<11")
+    _load(os.path.join(_cudart, "libcudart.so.12"))
+    _load(os.path.join(_cublas, "libcublas.so.12"))
+    _load(os.path.join(_cublas, "libcublasLt.so.12"))
+    _load(os.path.join(_curand, "libcurand.so.10"))
+
+    # faiss-gpu-cuvs wheels (the _cuvs_build marker) also need the cuVS stack.
+    # Delegate to RAPIDS' load_library() (loads each .so RTLD_GLOBAL + its CUDA deps);
+    # order rmm -> raft -> cuvs makes every symbol global before the SWIG extension loads.
+    try:
+        from . import _cuvs_build  # noqa: F401
+    except ImportError:
+        return  # faiss-gpu (non-cuVS) build: base CUDA preload is sufficient.
+
+    try:
+        import libcuvs
+        import libraft
+        import librmm
+    except ImportError as e:
+        raise RuntimeError(
+            "faiss-gpu-cuvs installed but the cuVS runtime wheels are missing — "
+            "pip install 'libcuvs-cu12>=26.06,<27' "
+            "--extra-index-url https://pypi.nvidia.com"
+        ) from e
+
+    for _mod in (librmm, libraft, libcuvs):
+        _mod.load_library()
 
 
 _preload_gpu_libs()
@@ -98,16 +99,37 @@ from .loader import *
 from faiss import class_wrappers
 from faiss.gpu_wrappers import *
 from faiss.array_conversions import *
-from faiss.extra_wrappers import kmin, kmax, pairwise_distances, rand, randint, \
-    lrand, randn, rand_smooth_vectors, eval_intersection, normalize_L2, \
-    ResultHeap, knn, Kmeans, SuperKmeans, checksum, matrix_bucket_sort_inplace, \
-    bucket_sort, merge_knn_results, MapInt64ToInt64, knn_hamming, \
-    pack_bitstrings, unpack_bitstrings
+from faiss.extra_wrappers import (
+    kmin,
+    kmax,
+    pairwise_distances,
+    rand,
+    randint,
+    lrand,
+    randn,
+    rand_smooth_vectors,
+    eval_intersection,
+    normalize_L2,
+    ResultHeap,
+    knn,
+    Kmeans,
+    SuperKmeans,
+    checksum,
+    matrix_bucket_sort_inplace,
+    bucket_sort,
+    merge_knn_results,
+    MapInt64ToInt64,
+    knn_hamming,
+    pack_bitstrings,
+    unpack_bitstrings,
+)
 
 
-__version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
-                            FAISS_VERSION_MINOR,
-                            FAISS_VERSION_PATCH)
+__version__ = "%d.%d.%d" % (
+    FAISS_VERSION_MAJOR,
+    FAISS_VERSION_MINOR,
+    FAISS_VERSION_PATCH,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +145,9 @@ class_wrappers.handle_NSG(IndexNSG)
 class_wrappers.handle_MapLong2Long(MapLong2Long)
 class_wrappers.handle_IDSelectorSubset(IDSelectorBatch, class_owns=True)
 class_wrappers.handle_IDSelectorSubset(IDSelectorArray, class_owns=False)
-class_wrappers.handle_IDSelectorSubset(IDSelectorBitmap, class_owns=False, force_int64=False)
+class_wrappers.handle_IDSelectorSubset(
+    IDSelectorBitmap, class_owns=False, force_int64=False
+)
 class_wrappers.handle_CodeSet(CodeSet)
 
 class_wrappers.handle_Tensor2D(Tensor2D)
@@ -132,7 +156,9 @@ class_wrappers.handle_Embedding(Embedding)
 class_wrappers.handle_Linear(Linear)
 class_wrappers.handle_QINCo(QINCo)
 class_wrappers.handle_QINCoStep(QINCoStep)
-shard_ivf_index_centroids = class_wrappers.handle_shard_ivf_index_centroids(shard_ivf_index_centroids)
+shard_ivf_index_centroids = class_wrappers.handle_shard_ivf_index_centroids(
+    shard_ivf_index_centroids
+)
 
 
 this_module = sys.modules[__name__]
@@ -155,8 +181,9 @@ for symbol in dir(this_module):
         if issubclass(the_class, Quantizer):
             class_wrappers.handle_Quantizer(the_class)
 
-        if issubclass(the_class, IndexRowwiseMinMax) or \
-                issubclass(the_class, IndexRowwiseMinMaxFP16):
+        if issubclass(the_class, IndexRowwiseMinMax) or issubclass(
+            the_class, IndexRowwiseMinMaxFP16
+        ):
             class_wrappers.handle_IndexRowwiseMinMax(the_class)
 
         if issubclass(the_class, SearchParameters):
@@ -197,8 +224,9 @@ def add_ref_in_constructor(the_class, parameter_no):
     else:
         the_class.__init__ = replacement_init
 
+
 def add_to_referenced_objects(self, ref):
-    if not hasattr(self, 'referenced_objects'):
+    if not hasattr(self, "referenced_objects"):
         self.referenced_objects = [ref]
     else:
         self.referenced_objects.append(ref)
@@ -211,6 +239,7 @@ def add_ref_in_method(the_class, method_name, parameter_no):
         ref = args[parameter_no]
         add_to_referenced_objects(self, ref)
         return original_method(self, *args)
+
     setattr(the_class, method_name, replacement_method)
 
 
@@ -220,7 +249,7 @@ def add_ref_in_method_explicit_own(the_class, method_name):
 
     def replacement_method(self, ref, own=False):
         if not own:
-            if not hasattr(self, 'referenced_objects'):
+            if not hasattr(self, "referenced_objects"):
                 self.referenced_objects = [ref]
             else:
                 self.referenced_objects.append(ref)
@@ -228,6 +257,7 @@ def add_ref_in_method_explicit_own(the_class, method_name):
             # transfer ownership to C++ class
             ref.this.disown()
         return original_method(self, ref, own)
+
     setattr(the_class, method_name, replacement_method)
 
 
@@ -240,6 +270,7 @@ def add_ref_in_function(function_name, parameter_no):
         ref = args[parameter_no]
         result.referenced_objects = [ref]
         return result
+
     setattr(this_module, function_name, replacement_function)
 
 
@@ -254,7 +285,7 @@ add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)
 add_ref_in_constructor(IndexIVFFlatPanorama, 0)
 add_ref_in_constructor(IndexPreTransform, {2: [0, 1], 1: [0]})
-add_ref_in_method(IndexPreTransform, 'prepend_transform', 0)
+add_ref_in_method(IndexPreTransform, "prepend_transform", 0)
 add_ref_in_constructor(IndexIVFPQ, 0)
 add_ref_in_constructor(IndexIVFPQR, 0)
 add_ref_in_constructor(IndexIVFPQFastScan, 0)
@@ -273,8 +304,8 @@ add_ref_in_constructor(IndexRowwiseMinMaxFP16, 0)
 add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)
-add_ref_in_method(IndexShards, 'add_shard', 0)
-add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
+add_ref_in_method(IndexShards, "add_shard", 0)
+add_ref_in_method(IndexBinaryShards, "add_shard", 0)
 add_ref_in_constructor(IndexRefineFlat, {2: [0], 1: [0]})
 add_ref_in_constructor(IndexRefinePanorama, {2: [0, 1]})
 add_ref_in_constructor(IndexRefine, {2: [0, 1]})
@@ -284,8 +315,8 @@ add_ref_in_constructor(IndexBinaryFromFloat, 0)
 add_ref_in_constructor(IndexBinaryIDMap, 0)
 add_ref_in_constructor(IndexBinaryIDMap2, 0)
 
-add_ref_in_method(IndexReplicas, 'addIndex', 0)
-add_ref_in_method(IndexBinaryReplicas, 'addIndex', 0)
+add_ref_in_method(IndexReplicas, "addIndex", 0)
+add_ref_in_method(IndexBinaryReplicas, "addIndex", 0)
 
 add_ref_in_constructor(BufferedIOWriter, 0)
 add_ref_in_constructor(BufferedIOReader, 0)
@@ -320,7 +351,7 @@ search_with_parameters_c = search_with_parameters
 
 
 def search_with_parameters(index, x, k, params=None, output_stats=False):
-    x = np.ascontiguousarray(x, dtype='float32')
+    x = np.ascontiguousarray(x, dtype="float32")
     n, d = x.shape
     assert d == index.d
     if not params:
@@ -329,24 +360,29 @@ def search_with_parameters(index, x, k, params=None, output_stats=False):
         index_ivf = extract_index_ivf(index)
         params.nprobe = index_ivf.nprobe
         params.max_codes = index_ivf.max_codes
-    nb_dis = np.empty(1, 'uint64')
-    ms_per_stage = np.empty(3, 'float64')
+    nb_dis = np.empty(1, "uint64")
+    ms_per_stage = np.empty(3, "float64")
     distances = np.empty((n, k), dtype=np.float32)
     labels = np.empty((n, k), dtype=np.int64)
     search_with_parameters_c(
-        index, n, swig_ptr(x),
-        k, swig_ptr(distances),
+        index,
+        n,
+        swig_ptr(x),
+        k,
+        swig_ptr(distances),
         swig_ptr(labels),
-        params, swig_ptr(nb_dis), swig_ptr(ms_per_stage)
+        params,
+        swig_ptr(nb_dis),
+        swig_ptr(ms_per_stage),
     )
     if not output_stats:
         return distances, labels
     else:
         stats = {
-            'ndis': nb_dis[0],
-            'pre_transform_ms': ms_per_stage[0],
-            'coarse_quantizer_ms': ms_per_stage[1],
-            'invlist_scan_ms': ms_per_stage[2],
+            "ndis": nb_dis[0],
+            "pre_transform_ms": ms_per_stage[0],
+            "coarse_quantizer_ms": ms_per_stage[1],
+            "invlist_scan_ms": ms_per_stage[2],
         }
         return distances, labels, stats
 
@@ -355,7 +391,7 @@ range_search_with_parameters_c = range_search_with_parameters
 
 
 def range_search_with_parameters(index, x, radius, params=None, output_stats=False):
-    x = np.ascontiguousarray(x, dtype='float32')
+    x = np.ascontiguousarray(x, dtype="float32")
     n, d = x.shape
     assert d == index.d
     if not params:
@@ -364,13 +400,18 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
         index_ivf = extract_index_ivf(index)
         params.nprobe = index_ivf.nprobe
         params.max_codes = index_ivf.max_codes
-    nb_dis = np.empty(1, 'uint64')
-    ms_per_stage = np.empty(3, 'float64')
+    nb_dis = np.empty(1, "uint64")
+    ms_per_stage = np.empty(3, "float64")
     res = RangeSearchResult(n)
     range_search_with_parameters_c(
-        index, n, swig_ptr(x),
-        radius, res,
-        params, swig_ptr(nb_dis), swig_ptr(ms_per_stage)
+        index,
+        n,
+        swig_ptr(x),
+        radius,
+        res,
+        params,
+        swig_ptr(nb_dis),
+        swig_ptr(ms_per_stage),
     )
     lims = rev_swig_ptr(res.lims, n + 1).copy()
     nd = int(lims[-1])
@@ -380,10 +421,10 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
         return lims, Dout, Iout
     else:
         stats = {
-            'ndis': nb_dis[0],
-            'pre_transform_ms': ms_per_stage[0],
-            'coarse_quantizer_ms': ms_per_stage[1],
-            'invlist_scan_ms': ms_per_stage[2],
+            "ndis": nb_dis[0],
+            "pre_transform_ms": ms_per_stage[0],
+            "coarse_quantizer_ms": ms_per_stage[1],
+            "invlist_scan_ms": ms_per_stage[2],
         }
         return lims, Dout, Iout, stats
 
@@ -402,7 +443,7 @@ IVFSearchParameters = SearchParametersIVF
 
 
 def serialize_index(index, io_flags=0):
-    """ convert an index to a numpy uint8 array  """
+    """convert an index to a numpy uint8 array"""
     writer = VectorIOWriter()
     write_index(index, writer, io_flags)
     return vector_to_array(writer.data)
@@ -415,7 +456,7 @@ def deserialize_index(data, io_flags=0):
 
 
 def serialize_index_binary(index):
-    """ convert an index to a numpy uint8 array  """
+    """convert an index to a numpy uint8 array"""
     writer = VectorIOWriter()
     write_index_binary(index, writer)
     return vector_to_array(writer.data)

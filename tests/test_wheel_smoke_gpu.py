@@ -33,6 +33,13 @@ _skip_unless_gpu_build = unittest.skipUnless(
     _GPU_BUILD, "Skipping faiss-gpu smoke tests: built without GPU support"
 )
 
+# cuVS-specific build marker: faiss.GpuIndexCagra exists only when FAISS was
+# built with FAISS_ENABLE_CUVS=ON (i.e., this is a faiss-gpu-cuvs wheel).
+_CUVS_BUILD = _GPU_BUILD and hasattr(faiss, "GpuIndexCagra")
+_skip_unless_cuvs_build = unittest.skipUnless(
+    _CUVS_BUILD, "Skipping cuVS smoke tests: built without cuVS support"
+)
+
 
 def skip_if_no_gpu(test_func):
     """Skip test if no GPU is available."""
@@ -195,3 +202,46 @@ class TestGPUSerialization(unittest.TestCase):
         D2, I2 = gpu_index2.search(xb[:3], 5)
         np.testing.assert_array_equal(I1, I2)
         np.testing.assert_allclose(D1, D2, atol=1e-5)
+
+
+@_skip_unless_cuvs_build
+class TestCuvsKnnGpu(unittest.TestCase):
+    """Catch: libcuvs / libraft / librmm preload; cuVS bfKnn dispatch."""
+
+    @skip_if_no_gpu
+    def test_knn_gpu_use_cuvs(self):
+        # knn_gpu with use_cuvs=True routes through cuVS's brute-force kernel,
+        # exercising libcuvs / libraft / librmm at runtime. Without the wheel's
+        # cuVS preload working, this fails at the first cuVS symbol lookup.
+        d, n, nq = 64, 1000, 5
+        np.random.seed(42)
+        xb = np.random.random((n, d)).astype("float32")
+        xq = xb[:nq]
+
+        res = faiss.StandardGpuResources()
+        D, I = faiss.knn_gpu(res, xq, xb, 10, use_cuvs=True)
+        self.assertEqual(I.shape, (nq, 10))
+        np.testing.assert_array_equal(I[:, 0], np.arange(nq))
+        np.testing.assert_allclose(D[:, 0], 0, atol=1e-5)
+
+
+@_skip_unless_cuvs_build
+class TestCuvsCagra(unittest.TestCase):
+    """Catch: GpuIndexCagra construction + cuVS CAGRA graph build."""
+
+    @skip_if_no_gpu
+    def test_gpu_index_cagra(self):
+        d, n, nq = 32, 2000, 5
+        np.random.seed(42)
+        xb = np.random.random((n, d)).astype("float32")
+
+        res = faiss.StandardGpuResources()
+        index = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2)
+        index.train(xb)
+        # CAGRA is a graph-based index; ntotal reflects the training set.
+        self.assertEqual(index.ntotal, n)
+
+        D, I = index.search(xb[:nq], 10)
+        self.assertEqual(I.shape, (nq, 10))
+        # CAGRA is approximate, so allow itself-as-first-NN as the contract.
+        np.testing.assert_array_equal(I[:, 0], np.arange(nq))
