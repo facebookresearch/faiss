@@ -1171,7 +1171,7 @@ def handle_AutoTuneCriterion(the_class):
             assert I.shape == D.shape
         self.nq, self.gt_nnn = I.shape
         self.set_groundtruth_c(
-            self.gt_nnn, swig_ptr(D) if D else None, swig_ptr(I))
+            self.gt_nnn, swig_ptr(D) if D is not None else None, swig_ptr(I))
 
     def replacement_evaluate(self, D, I):
         assert I.shape == D.shape
@@ -1183,12 +1183,12 @@ def handle_AutoTuneCriterion(the_class):
 
 
 def handle_ParameterSpace(the_class):
-    def replacement_explore(self, index, xq, crit):
+    def replacement_explore(self, index, xq, crit, params=None):
         assert xq.shape == (crit.nq, index.d)
         xq = np.ascontiguousarray(xq, dtype='float32')
         ops = OperatingPoints()
         self.explore_c(index, crit.nq, swig_ptr(xq),
-                       crit, ops)
+                       crit, ops, params)
         return ops
     replace_method(the_class, 'explore', replacement_explore)
 

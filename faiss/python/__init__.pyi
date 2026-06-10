@@ -3705,20 +3705,18 @@ class ParameterSpace:
     def explore(
         self,
         index: Index,
-        nq: int,
         xq: torch.Tensor,
         crit: AutoTuneCriterion,
-        ops: OperatingPoints,
-    ) -> None: ...
+        params: SearchParameters | None = ...,
+    ) -> OperatingPoints: ...
     @overload
     def explore(
         self,
         index: Index,
-        nq: int,
         xq: npt.NDArray[np.float32],
         crit: AutoTuneCriterion,
-        ops: OperatingPoints,
-    ) -> None: ...
+        params: SearchParameters | None = ...,
+    ) -> OperatingPoints: ...
 
 # GPU IVF base classes
 class GpuIndex(Index):

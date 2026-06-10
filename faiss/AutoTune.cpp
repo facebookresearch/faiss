@@ -14,6 +14,7 @@
 #include <faiss/AutoTune.h>
 
 #include <cinttypes>
+#include <memory>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
@@ -705,6 +706,37 @@ void ParameterSpace::set_index_parameter(
 
 #undef DC
 
+void ParameterSpace::update_search_parameters(
+        SearchParameters* params,
+        size_t cno) const {
+    if (!params) {
+        return;
+    }
+    auto* ivf_params = dynamic_cast<SearchParametersIVF*>(params);
+    auto* ivfpq_params = dynamic_cast<IVFPQSearchParameters*>(params);
+    auto* pq_params = dynamic_cast<SearchParametersPQ*>(params);
+    auto* hnsw_params = dynamic_cast<SearchParametersHNSW*>(params);
+
+    for (const auto& pr : parameter_ranges) {
+        size_t j = cno % pr.values.size();
+        cno /= pr.values.size();
+        double v = pr.values[j];
+        if (pr.name == "nprobe" && ivf_params) {
+            ivf_params->nprobe = size_t(v);
+        } else if (pr.name == "max_codes" && ivf_params) {
+            ivf_params->max_codes = std::isfinite(v) ? size_t(v) : 0;
+        } else if (pr.name == "ht") {
+            if (ivfpq_params) {
+                ivfpq_params->polysemous_ht = int(v);
+            } else if (pq_params) {
+                pq_params->polysemous_ht = int(v);
+            }
+        } else if (pr.name == "efSearch" && hnsw_params) {
+            hnsw_params->efSearch = int(v);
+        }
+    }
+}
+
 void ParameterSpace::display() const {
     printf("ParameterSpace, %zd parameters, %zd combinations:\n",
            parameter_ranges.size(),
@@ -743,21 +775,35 @@ void ParameterSpace::explore(
         size_t nq,
         const float* xq,
         const AutoTuneCriterion& crit,
-        OperatingPoints* ops) const {
+        OperatingPoints* ops,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             nq == static_cast<size_t>(crit.nq),
             "criterion does not have the same nb of queries");
 
     size_t n_comb = n_combinations();
 
+    // If the caller supplied SearchParametersIVF (e.g. carrying a selector),
+    // build a fresh clone per iteration so that the sweep can override
+    // nprobe/max_codes without mutating the caller's object.
+    const auto* ivf_params = dynamic_cast<const SearchParametersIVF*>(params);
+
     if (n_experiments == 0) {
         for (size_t cno = 0; cno < n_comb; cno++) {
             set_index_parameters(index, cno);
+            std::unique_ptr<SearchParametersIVF> iter_params;
+            if (ivf_params) {
+                iter_params =
+                        std::make_unique<SearchParametersIVF>(*ivf_params);
+                update_search_parameters(iter_params.get(), cno);
+            }
+            const SearchParameters* sp =
+                    iter_params ? iter_params.get() : params;
             std::vector<idx_t> I(nq * crit.nnn);
             std::vector<float> D(nq * crit.nnn);
 
             double t0 = getmillisecs();
-            index->search(nq, xq, crit.nnn, D.data(), I.data());
+            index->search(nq, xq, crit.nnn, D.data(), I.data(), sp);
             double t_search = (getmillisecs() - t0) / 1e3;
 
             double perf = crit.evaluate(D.data(), I.data());
@@ -828,6 +874,12 @@ void ParameterSpace::explore(
         }
 
         set_index_parameters(index, cno);
+        std::unique_ptr<SearchParametersIVF> iter_params;
+        if (ivf_params) {
+            iter_params = std::make_unique<SearchParametersIVF>(*ivf_params);
+            update_search_parameters(iter_params.get(), cno);
+        }
+        const SearchParameters* sp = iter_params ? iter_params.get() : params;
         std::vector<idx_t> I(nq * crit.nnn);
         std::vector<float> D(nq * crit.nnn);
 
@@ -850,7 +902,8 @@ void ParameterSpace::explore(
                             xq + q0 * index->d,
                             crit.nnn,
                             D.data() + q0 * crit.nnn,
-                            I.data() + q0 * crit.nnn);
+                            I.data() + q0 * crit.nnn,
+                            sp);
                 }
             } else {
                 for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
@@ -863,7 +916,8 @@ void ParameterSpace::explore(
                             xq + q0 * index->d,
                             crit.nnn,
                             D.data() + q0 * crit.nnn,
-                            I.data() + q0 * crit.nnn);
+                            I.data() + q0 * crit.nnn,
+                            sp);
                 }
             }
             nrun++;
