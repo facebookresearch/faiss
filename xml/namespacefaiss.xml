@@ -18890,7 +18890,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1018" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1018" bodyend="1027"/>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="964" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="964" bodyend="973"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a365c7b264fd4da7aa79578276f96813d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -18930,7 +18930,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1030" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1030" bodyend="1039"/>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="976" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="976" bodyend="985"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1affbb8aa8afdebbd4b862b4bb17bc3abe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -18970,7 +18970,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1042" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1042" bodyend="1051"/>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="988" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="988" bodyend="997"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a01cfcf4776dc6fd86604fd28bbebc228" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -19010,7 +19010,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1054" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1054" bodyend="1063"/>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1000" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1000" bodyend="1009"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae1e48fd083ff81b655dcb416f2b15d2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -19046,7 +19046,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1066" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1066" bodyend="1073"/>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1012" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1012" bodyend="1019"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a46042faedc4f69e954b48f7970576f43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -19082,7 +19082,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1076" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1076" bodyend="1083"/>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1022" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1022" bodyend="1029"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
