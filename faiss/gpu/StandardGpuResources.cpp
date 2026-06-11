@@ -561,7 +561,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             // FIXME: as of CUDA 11, a memory allocation error appears to be
             // presented via cudaGetLastError as well, and needs to be
             // cleared. Just call the function to clear it
-            cudaGetLastError();
+            (void)cudaGetLastError();
 
             std::stringstream ss;
             ss << "StandardGpuResources: alloc fail " << adjReq.toString()
@@ -595,7 +595,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             // FIXME: as of CUDA 11, a memory allocation error appears to be
             // presented via cudaGetLastError as well, and needs to be cleared.
             // Just call the function to clear it
-            cudaGetLastError();
+            (void)cudaGetLastError();
 
             std::stringstream ss;
             ss << "StandardGpuResources: alloc fail " << adjReq.toString()
