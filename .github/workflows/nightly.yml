@@ -1,5 +1,10 @@
 name: Nightly
 on:
+  # The Faiss OSS autofix sidecar pushes generated fixes to short-lived
+  # validation branches and then dispatches this workflow on that branch. The
+  # scheduled trigger alone only tests the default branch, so it cannot validate
+  # a candidate fix before the sidecar asks a human to review it.
+  workflow_dispatch:
   schedule:
     - cron:  '10 6 * * *'
 env:
