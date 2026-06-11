@@ -592,39 +592,12 @@ simd16uint16 accu8to16(simd32uint8 a8) {
     return hadd(a8_0, a8_1);
 }
 
-static const simd32uint8 shifts = simd32uint8::create<
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        0,
-        0,
-        0,
-        0,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        0,
-        0,
-        0,
-        0,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64>();
+// Lookup table held as a plain byte array in .rodata. Storing it as a
+// `simd32uint8` global would emit an AVX2 initializer into `.init_array` that
+// runs at dlopen, before runtime SIMD dispatch, and SIGILLs on non-AVX2 CPUs
+alignas(32) static const uint8_t shifts[32] = {
+        1, 16, 0, 0, 4, 64, 0, 0, 0, 0, 1, 16, 0, 0, 4, 64,
+        1, 16, 0, 0, 4, 64, 0, 0, 0, 0, 1, 16, 0, 0, 4, 64};
 
 // 2-bit accumulator: we can add only up to 3 elements
 // on output we return 2*4-bit results
@@ -644,7 +617,8 @@ void compute_accu2(
         v = pp(v);
         // 0x800 -> force second half of table
         simd16uint16 idx = v | (v << 8) | simd16uint16(0x800);
-        a2 += simd16uint16(shifts.lookup_2_lanes(simd32uint8(idx)));
+        a2 += simd16uint16(
+                simd32uint8(shifts).lookup_2_lanes(simd32uint8(idx)));
     }
     a4lo += a2 & mask2;
     a4hi += (a2 >> 2) & mask2;
@@ -694,39 +668,11 @@ simd16uint16 histogram_8(const uint16_t* data, Preproc pp, size_t n_in) {
  * 16 bins
  ************************************************************/
 
-static const simd32uint8 shifts2 = simd32uint8::create<
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128>();
+// See the note on `shifts` above: kept as a .rodata byte array so its
+// initializer does not emit AVX2 into `.init_array`
+alignas(32) static const uint8_t shifts2[32] = {
+        1, 2, 4, 8, 16, 32, 64, 128, 1, 2, 4, 8, 16, 32, 64, 128,
+        1, 2, 4, 8, 16, 32, 64, 128, 1, 2, 4, 8, 16, 32, 64, 128};
 
 simd32uint8 shiftr_16(simd32uint8 x, int n) {
     return simd32uint8(simd16uint16(x) >> n);
@@ -754,7 +700,7 @@ void compute_accu2_16(
         v = pp(v);
 
         simd16uint16 idx = v | (v << 8);
-        simd32uint8 a1 = shifts2.lookup_2_lanes(simd32uint8(idx));
+        simd32uint8 a1 = simd32uint8(shifts2).lookup_2_lanes(simd32uint8(idx));
         // contains 0s for out-of-bounds elements
 
         simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
