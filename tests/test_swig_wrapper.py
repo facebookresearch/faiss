@@ -146,6 +146,14 @@ class TestSWIGWrap(unittest.TestCase):
         with self.assertRaises(AttributeError):
             index.centered2 = False
 
+    def test_ivfsq_turboq_search_parameters(self):
+        params = faiss.IVFSQTurboQSearchParameters()
+        self.assertEqual(params.qb, 0)
+        self.assertFalse(params.int_qjl)
+        params.qb = 4
+        params.int_qjl = True
+        self.assertEqual(params.qb, 4)
+        self.assertTrue(params.int_qjl)
 
 
 class TestRevSwigPtr(unittest.TestCase):
