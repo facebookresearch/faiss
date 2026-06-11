@@ -22,6 +22,7 @@ enum class SIMDLevel {
     AVX2,
     AVX512,
     AVX512_SPR, // Sapphire Rapids: AVX512 + BF16 + FP16 + VNNI
+    AMX,        // Advanced Matrix Extensions: AMX-BF16 tiles (SPR/GNR+)
     // arm & aarch64
     ARM_NEON,
     ARM_SVE, // Scalable Vector Extension (ARMv8.2+)
@@ -50,7 +51,9 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_NEON;
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
 #endif
 #else
-#if defined(COMPILE_SIMD_AVX512_SPR)
+#if defined(COMPILE_SIMD_AMX)
+inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AMX;
+#elif defined(COMPILE_SIMD_AVX512_SPR)
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512_SPR;
 #elif defined(COMPILE_SIMD_AVX512)
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512;
@@ -79,7 +82,8 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
 template <SIMDLevel SL>
 struct simd256_level_selector {
     static constexpr SIMDLevel value =
-            (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
+            (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR ||
+             SL == SIMDLevel::AMX)
             ? SIMDLevel::AVX2
             : (SL == SIMDLevel::ARM_SVE             ? SIMDLevel::ARM_NEON
                        : SL == SIMDLevel::RISCV_RVV ? SIMDLevel::NONE
@@ -102,7 +106,8 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
  ***************************************************************/
 template <SIMDLevel SL>
 struct simd512_level_selector {
-    static constexpr SIMDLevel value = (SL == SIMDLevel::AVX512_SPR)
+    static constexpr SIMDLevel value =
+            (SL == SIMDLevel::AVX512_SPR || SL == SIMDLevel::AMX)
             ? SIMDLevel::AVX512
             : (SL == SIMDLevel::RISCV_RVV) ? SIMDLevel::NONE
                                            : SL;
@@ -124,7 +129,9 @@ constexpr int simd_width() {
     static_assert(
             SL != SIMDLevel::RISCV_RVV,
             "simd_width<RISCV_RVV> is not supported: RVV is variable-width");
-    if constexpr (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
+    if constexpr (
+            SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR ||
+            SL == SIMDLevel::AMX)
         return 16;
     else if constexpr (SL == SIMDLevel::AVX2 || SL == SIMDLevel::ARM_NEON)
         return 8;
