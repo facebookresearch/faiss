@@ -2231,27 +2231,23 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP")) {
+            h == fourcc("IHfP") || h == fourcc("IH00")) {
         std::unique_ptr<IndexHNSW> idxhnsw;
-        if (h == fourcc("IHNf")) {
+        if (h == fourcc("IH00")) {
+            idxhnsw = std::make_unique<IndexHNSW>();
+        } else if (h == fourcc("IHNf")) {
             idxhnsw = std::make_unique<IndexHNSWFlat>();
-        }
-        if (h == fourcc("IHfP")) {
+        } else if (h == fourcc("IHfP")) {
             idxhnsw = std::make_unique<IndexHNSWFlatPanorama>();
-        }
-        if (h == fourcc("IHNp")) {
+        } else if (h == fourcc("IHNp")) {
             idxhnsw = std::make_unique<IndexHNSWPQ>();
-        }
-        if (h == fourcc("IHNs")) {
+        } else if (h == fourcc("IHNs")) {
             idxhnsw = std::make_unique<IndexHNSWSQ>();
-        }
-        if (h == fourcc("IHN2")) {
+        } else if (h == fourcc("IHN2")) {
             idxhnsw = std::make_unique<IndexHNSW2Level>();
-        }
-        if (h == fourcc("IHNc")) {
+        } else if (h == fourcc("IHNc")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
-        }
-        if (h == fourcc("IHc2")) {
+        } else if (h == fourcc("IHc2")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
         }
         read_index_header(*idxhnsw, f);
@@ -2267,8 +2263,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             const_cast<Panorama&>(idx_panorama->pano) =
                     Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
             READVECTOR(idx_panorama->cum_sums);
-        }
-        if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
+        } else if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1_BOOL(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw.get());
             FAISS_THROW_IF_NOT_MSG(
