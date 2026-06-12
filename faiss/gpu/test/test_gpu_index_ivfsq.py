@@ -230,3 +230,74 @@ class TestSQ(unittest.TestCase):
 
     def test_8bit_direct(self):
         do_multi_test(faiss.ScalarQuantizer.QT_8bit_direct)
+
+
+@unittest.skipIf(
+    "CUVS" not in faiss.get_compile_options(),
+    "only if CUVS is compiled in")
+class TestCuvsSQ8(unittest.TestCase):
+
+    def make_gpu_index(self, metric):
+        nlist = 64
+        nprobe = 8
+        d = 37
+        xt = make_t(4000, d)
+        xb = make_t(3000, d)
+
+        res = faiss.StandardGpuResources()
+        res.noTempMemory()
+        config = faiss.GpuIndexIVFScalarQuantizerConfig()
+        config.use_cuvs = True
+        config.indicesOptions = faiss.INDICES_64_BIT
+
+        idx_gpu = faiss.GpuIndexIVFScalarQuantizer(
+            res, d, nlist, faiss.ScalarQuantizer.QT_8bit,
+            metric, True, config)
+        idx_gpu.train(xt)
+        idx_gpu.add(xb)
+        idx_gpu.nprobe = nprobe
+        return res, config, idx_gpu, xb, nlist, nprobe
+
+    def check_metric(self, metric):
+        res, config, idx_gpu, xb, nlist, nprobe = self.make_gpu_index(metric)
+        k = 10
+        xq = make_t(13, idx_gpu.d)
+        D, I = idx_gpu.search(xq, k)
+        self.assertEqual(I.shape, (13, k))
+        self.assertTrue(np.any(I != -1))
+
+        quantizer = faiss.IndexFlat(idx_gpu.d, metric)
+        idx_cpu = faiss.IndexIVFScalarQuantizer(
+            quantizer, idx_gpu.d, nlist,
+            faiss.ScalarQuantizer.QT_8bit, metric, True)
+        idx_gpu.copyTo(idx_cpu)
+        idx_cpu.nprobe = nprobe
+
+        self.assertEqual(idx_cpu.ntotal, idx_gpu.ntotal)
+        self.assertEqual(idx_cpu.sq.qtype, faiss.ScalarQuantizer.QT_8bit)
+        self.assertEqual(idx_cpu.sq.trained.size(), 2 * idx_gpu.d)
+        do_test_with_index(idx_cpu, idx_gpu, nprobe, k, False, 0.8)
+
+        idx_gpu_copy = faiss.GpuIndexIVFScalarQuantizer(
+            res, idx_cpu, config)
+        idx_gpu_copy.nprobe = nprobe
+        self.assertEqual(idx_gpu_copy.ntotal, idx_cpu.ntotal)
+        do_test_with_index(idx_cpu, idx_gpu_copy, nprobe, k, False, 0.8)
+
+        xq_nan = make_t(2, idx_gpu.d)
+        xq_nan[1, 0] = np.nan
+        D_nan, I_nan = idx_gpu.search(xq_nan, k)
+        np.testing.assert_array_equal(I_nan[1], -np.ones(k, dtype='int64'))
+        np.testing.assert_allclose(
+            D_nan[1], np.full(k, np.finfo('float32').max, dtype='float32'))
+
+        idx_gpu.reset()
+        self.assertEqual(idx_gpu.ntotal, 0)
+        idx_gpu.add(xb[:100])
+        self.assertEqual(idx_gpu.ntotal, 100)
+
+    def test_sq8_l2(self):
+        self.check_metric(faiss.METRIC_L2)
+
+    def test_sq8_ip(self):
+        self.check_metric(faiss.METRIC_INNER_PRODUCT)

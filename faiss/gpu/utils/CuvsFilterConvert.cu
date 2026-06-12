@@ -30,6 +30,12 @@
 #include <raft/core/bitset.cuh>
 #include <raft/core/copy.cuh>
 
+#include <algorithm>
+#include <cstddef>
+#include <stdexcept>
+#include <typeinfo>
+#include <vector>
+
 namespace faiss::gpu {
 
 /// CUDA kernel to set a range of bits in a bitset to true
@@ -40,50 +46,42 @@ RAFT_KERNEL set_range_kernel(
         int64_t imax,
         int64_t n_elements_to_set) {
     int64_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= n_elements_to_set) {
+        return;
+    }
+
     const uint32_t nbits = sizeof(bitset_t) * 8;
 
     int64_t current_index = (imin / nbits) + idx;
-    bitset_t mask = 0;
-    if (idx < n_elements_to_set) {
-        if (n_elements_to_set == 1) {
-            // Special case: range is within a single element
-            int bit_offset = imin % nbits;
-            mask = (bitset_t{1} << bit_offset) - 1;
-            bit_offset = imax % nbits;
-            mask = mask ^ ((bitset_t{1} << bit_offset) - 1);
-        } else if (idx == 0) {
-            // First element: set bits from imin to end
-            int bit_offset = imin % nbits;
-            mask = ~((bitset_t{1} << bit_offset) - 1);
-        } else if (idx == n_elements_to_set - 1) {
-            // Last element: set bits from start to imax
-            int bit_offset = imax % nbits;
-            mask = (bitset_t{1} << bit_offset) - 1;
-        } else {
-            // Middle elements: set all bits
-            mask = ~mask;
-        }
-        atomicOr(&bitset_data[current_index], mask);
-    }
+    int start_bit = idx == 0 ? imin % nbits : 0;
+    int end_bit = idx == n_elements_to_set - 1 ? imax % nbits : 0;
+
+    bitset_t lower_mask = start_bit == 0
+            ? bitset_t{0}
+            : (bitset_t{1} << start_bit) - bitset_t{1};
+    bitset_t upper_mask = end_bit == 0 ? ~bitset_t{0}
+                                       : (bitset_t{1} << end_bit) - bitset_t{1};
+    bitset_t mask = upper_mask & ~lower_mask;
+    atomicOr(&bitset_data[current_index], mask);
 }
 
 void convert_to_bitset_range(
         raft::resources const& res,
         const faiss::IDSelectorRange& selector,
         cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
-    RAFT_EXPECTS(
-            bitset.size() >= selector.imax,
-            "IDSelectorRange is out of range for the given bitset");
     const uint32_t nbits = sizeof(uint32_t) * 8;
     auto original_nbits = bitset.get_original_nbits();
     if (original_nbits == 0) {
         original_nbits = nbits;
     }
-    int64_t imin = selector.imin;
-    int64_t imax = selector.imax;
+    int64_t imin = std::max<int64_t>(selector.imin, 0);
+    int64_t imax = std::min<int64_t>(selector.imax, bitset.size());
+    if (imax <= imin) {
+        return;
+    }
 
-    int64_t n_elements_to_set = 1 + (imax + original_nbits) / original_nbits;
-    n_elements_to_set -= (imin + original_nbits) / original_nbits;
+    int64_t n_elements_to_set =
+            (imax - 1) / original_nbits - imin / original_nbits + 1;
     auto stream = raft::resource::get_cuda_stream(res);
 
     const int threads_per_block = 256;
@@ -108,14 +106,27 @@ void convert_to_bitset_array(
         raft::resources const& res,
         const faiss::IDSelectorArray& selector,
         cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
-    int64_t n = selector.n;
+    std::vector<faiss::idx_t> ids_to_set;
+    ids_to_set.reserve(selector.n);
+    for (size_t i = 0; i < selector.n; ++i) {
+        faiss::idx_t id = selector.ids[i];
+        if (id >= 0 && id < bitset.size()) {
+            ids_to_set.push_back(id);
+        }
+    }
+
+    int64_t n = ids_to_set.size();
+    if (n == 0) {
+        return;
+    }
+
     auto d_indexes_to_set =
             raft::make_device_vector<faiss::idx_t, int64_t>(res, n);
     raft::copy(
             res,
             d_indexes_to_set.view(),
             raft::make_host_vector_view<const faiss::idx_t, int64_t>(
-                    selector.ids, n));
+                    ids_to_set.data(), n));
     thrust::for_each_n(
             raft::resource::get_thrust_policy(res),
             d_indexes_to_set.data_handle(),
@@ -131,14 +142,17 @@ RAFT_KERNEL set_bitmap_kernel(
         int64_t n_elements,
         int64_t bitset_original_nbits) {
     int64_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= n_elements) {
+        return;
+    }
+
     int64_t bit_index = 0;
     int64_t bit_offset = 0;
     raft::core::compute_original_nbits_position(
             int64_t{8}, bitset_original_nbits, idx * 8, bit_index, bit_offset);
-    if (idx < n_elements) {
-        uint32_t mask = original_bitmap_data[idx];
-        atomicOr(&new_bitset_data[bit_index], mask << bit_offset);
-    }
+
+    uint32_t mask = original_bitmap_data[idx];
+    atomicOr(&new_bitset_data[bit_index], mask << bit_offset);
 }
 
 void convert_to_bitset_bitmap(
@@ -154,16 +168,14 @@ void convert_to_bitset_bitmap(
     if (bitset_original_nbits == 0) {
         bitset_original_nbits = sizeof(uint32_t) * 8;
     }
-    auto bitset_bytes = (bitset.size() + 7) / 8;
-    RAFT_EXPECTS(
-            static_cast<int64_t>(n) >= bitset_bytes,
-            "IDSelectorBitmap is too small for the given bitset: "
-            "n=%zu bytes, bitset needs %ld bytes (%ld bits)",
-            n,
-            bitset_bytes,
-            bitset.size());
+    int64_t bitset_bytes = (bitset.size() + 7) / 8;
+    int64_t n_elements =
+            std::min<int64_t>(static_cast<int64_t>(n), bitset_bytes);
+    if (n_elements == 0) {
+        return;
+    }
+
     auto stream = raft::resource::get_cuda_stream(res);
-    auto n_elements = bitset_bytes;
     auto d_bitmap = raft::make_device_vector<uint8_t, int64_t>(res, n_elements);
     auto d_bitmap_ptr = d_bitmap.data_handle();
     raft::copy(
