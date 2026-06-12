@@ -21,6 +21,8 @@
 import numpy as np
 import unittest
 import faiss
+import os
+import tempfile
 
 _SKIP_SVS = "SVS" not in faiss.get_compile_options().split()
 _SKIP_REASON = "SVS support not compiled in"
@@ -1391,6 +1393,34 @@ class TestSVSStaticVamana(unittest.TestCase):
         D_after, _ = loaded.search(self.xq, 4)
         np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
 
+    def test_static_memmapping(self):
+        """Serialize/deserialize preserves is_static and search results"""
+        index = self._create_static()
+        index.add(self.xb)
+
+        D_before, I_before = index.search(self.xq, 4)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        loaded = None
+        try:
+            faiss.write_index(index, fname)
+            loaded = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+            self.assertTrue(loaded.is_static)
+            self.assertEqual(loaded.ntotal, self.nb)
+
+            D_after, _ = loaded.search(self.xq, 4)
+            np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+        finally:
+            del loaded
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
+
     def test_static_fp16(self):
         """Static Vamana with FP16 storage"""
         index = self._create_static(faiss.SVS_FP16)
@@ -1478,6 +1508,31 @@ class TestSVSStaticVamanaLVQ(unittest.TestCase):
         D_after, _ = loaded.search(self.xq, 4)
         np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
 
+    def test_static_lvq_memmapping(self):
+        index = self._create_static_lvq()
+        index.add(self.xb)
+
+        D_before, _ = index.search(self.xq, 4)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        loaded = None
+        try:
+            faiss.write_index(index, fname)
+            loaded = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+            self.assertTrue(loaded.is_static)
+
+            D_after, _ = loaded.search(self.xq, 4)
+            np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+        finally:
+            del loaded
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSStaticVamanaLeanVec(unittest.TestCase):
@@ -1539,6 +1594,32 @@ class TestSVSStaticVamanaLeanVec(unittest.TestCase):
         D_after, _ = loaded.search(self.xq, 4)
         np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
 
+    def test_static_leanvec_memmapping(self):
+        index = self._create_static_leanvec()
+        index.train(self.xb)
+        index.add(self.xb)
+
+        D_before, _ = index.search(self.xq, 4)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        loaded = None
+        try:
+            faiss.write_index(index, fname)
+            loaded = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+            self.assertTrue(loaded.is_static)
+
+            D_after, _ = loaded.search(self.xq, 4)
+            np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+        finally:
+            del loaded
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
 
 if __name__ == '__main__':
     unittest.main()
