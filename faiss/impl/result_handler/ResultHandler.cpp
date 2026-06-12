@@ -32,6 +32,8 @@ constexpr int RESERVOIR_SIMD_LEVELS =
 // Scalar (NONE) helper implementations
 // ----------------------------------------------------------------
 
+namespace {
+
 template <class C, bool use_sel>
 void top1_add_results_none(
         Top1BlockResultHandler<C, use_sel>* self,
@@ -98,85 +100,43 @@ void reservoir_add_results_none(
     }
 }
 
+} // namespace
+
 // ----------------------------------------------------------------
 // SIMDLevel::NONE explicit specialisations
 // ----------------------------------------------------------------
 
-template <>
-void top1_add_results_tpl<CMax<float, int64_t>, false, SIMDLevel::NONE>(
-        Top1BlockResultHandler<CMax<float, int64_t>, false>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_tab) {
-    top1_add_results_none<CMax<float, int64_t>, false>(self, j0, j1, dis_tab);
-}
+// Instantiate top1_add_results_tpl<C, use_sel, SIMDLevel::NONE> and
+// reservoir_add_results_tpl<C, use_sel, SIMDLevel::NONE> for all
+// (C, use_sel) combinations that the rest of FAISS uses.
+#define INSTANTIATE_NONE(C, use_sel)                                  \
+    template <>                                                       \
+    void top1_add_results_tpl<C, use_sel, SIMDLevel::NONE>(           \
+            Top1BlockResultHandler<C, use_sel> * self,                \
+            size_t j0,                                                \
+            size_t j1,                                                \
+            const float* dis_tab) {                                   \
+        top1_add_results_none<C, use_sel>(self, j0, j1, dis_tab);     \
+    }                                                                 \
+    template <>                                                       \
+    void reservoir_add_results_tpl<C, use_sel, SIMDLevel::NONE>(      \
+            ReservoirBlockResultHandler<C, use_sel> * self,           \
+            size_t j0,                                                \
+            size_t j1,                                                \
+            const float* dis_in) {                                    \
+        reservoir_add_results_none<C, use_sel>(self, j0, j1, dis_in); \
+    }
 
-template <>
-void top1_add_results_tpl<CMax<float, int64_t>, true, SIMDLevel::NONE>(
-        Top1BlockResultHandler<CMax<float, int64_t>, true>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_tab) {
-    top1_add_results_none<CMax<float, int64_t>, true>(self, j0, j1, dis_tab);
-}
+// Type aliases so the comma in CMax<float, int64_t> doesn't split macro args.
+using CMaxFI = CMax<float, int64_t>;
+using CMinFI = CMin<float, int64_t>;
 
-template <>
-void top1_add_results_tpl<CMin<float, int64_t>, false, SIMDLevel::NONE>(
-        Top1BlockResultHandler<CMin<float, int64_t>, false>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_tab) {
-    top1_add_results_none<CMin<float, int64_t>, false>(self, j0, j1, dis_tab);
-}
+INSTANTIATE_NONE(CMaxFI, false)
+INSTANTIATE_NONE(CMaxFI, true)
+INSTANTIATE_NONE(CMinFI, false)
+INSTANTIATE_NONE(CMinFI, true)
 
-template <>
-void top1_add_results_tpl<CMin<float, int64_t>, true, SIMDLevel::NONE>(
-        Top1BlockResultHandler<CMin<float, int64_t>, true>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_tab) {
-    top1_add_results_none<CMin<float, int64_t>, true>(self, j0, j1, dis_tab);
-}
-
-template <>
-void reservoir_add_results_tpl<CMax<float, int64_t>, false, SIMDLevel::NONE>(
-        ReservoirBlockResultHandler<CMax<float, int64_t>, false>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_in) {
-    reservoir_add_results_none<CMax<float, int64_t>, false>(
-            self, j0, j1, dis_in);
-}
-
-template <>
-void reservoir_add_results_tpl<CMax<float, int64_t>, true, SIMDLevel::NONE>(
-        ReservoirBlockResultHandler<CMax<float, int64_t>, true>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_in) {
-    reservoir_add_results_none<CMax<float, int64_t>, true>(
-            self, j0, j1, dis_in);
-}
-
-template <>
-void reservoir_add_results_tpl<CMin<float, int64_t>, false, SIMDLevel::NONE>(
-        ReservoirBlockResultHandler<CMin<float, int64_t>, false>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_in) {
-    reservoir_add_results_none<CMin<float, int64_t>, false>(
-            self, j0, j1, dis_in);
-}
-
-template <>
-void reservoir_add_results_tpl<CMin<float, int64_t>, true, SIMDLevel::NONE>(
-        ReservoirBlockResultHandler<CMin<float, int64_t>, true>* self,
-        size_t j0,
-        size_t j1,
-        const float* dis_in) {
-    reservoir_add_results_none<CMin<float, int64_t>, true>(
-            self, j0, j1, dis_in);
-}
+#undef INSTANTIATE_NONE
 
 // ----------------------------------------------------------------
 // add_results method definitions — dispatch to the right SL kernel
