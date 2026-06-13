@@ -187,8 +187,8 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        FAISS_THROW_IF_NOT_MSG(
-                !use_cuvs, "this type of index is not implemented for cuVS");
+        config.use_cuvs = use_cuvs;
+        config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
 
         GpuIndexIVFScalarQuantizer* res = new GpuIndexIVFScalarQuantizer(
                 provider,
