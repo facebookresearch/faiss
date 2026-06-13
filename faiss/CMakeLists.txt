@@ -26,6 +26,7 @@ set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
   impl/pq_code_distance/avx512.cpp
+  impl/polysemous_training/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
@@ -296,6 +297,7 @@ set(FAISS_HEADERS
   impl/PanoramaStats.h
   impl/PdxLayout.h
   impl/PolysemousTraining.h
+  impl/polysemous_training/avx512.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
