@@ -358,7 +358,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP) {
 TEST(TestGpuIndexIVFFlat, LargeBatch) {
     // With low-dim vectors, CPU will use non-BLAS. Force the CPU to use
     // the BLAS for consistent comparison.
-    int saved_threshold = faiss::distance_compute_blas_threshold;
+    int64_t saved_threshold = faiss::distance_compute_blas_threshold;
     faiss::distance_compute_blas_threshold = 1;
 
     Options opt;
