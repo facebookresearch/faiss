@@ -40,7 +40,7 @@ def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
                 tab_a.get(), sp(ids), n, q, q, None)
         else:
             q_min, q_max = qin
-            q = np.array([-1], dtype='uint64')
+            q = np.array([np.iinfo(np.uint64).max], dtype='uint64')
             faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n,
                 q_min, q_max, sp(q)
@@ -59,7 +59,7 @@ def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
 
     print(
         f"times {times.mean():.3f} µs (± {times.std():.4f} µs) nerr={nerr} "
-        f"bisect {stats.bissect_cycles / 1e6:.3f} Mcy "
+        f"bisect {stats.bisect_cycles / 1e6:.3f} Mcy "
         f"compress {stats.compress_cycles / 1e6:.3f} Mcy"
     )
 
