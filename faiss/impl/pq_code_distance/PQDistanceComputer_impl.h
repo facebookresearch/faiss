@@ -20,7 +20,7 @@ namespace faiss {
 namespace pq_code_distance {
 
 template <class PQCodeDist>
-struct PQDistanceComputer : FlatCodesDistanceComputer {
+struct PQDistanceComputer final : FlatCodesDistanceComputer {
     using PQDecoder = typename PQCodeDist::PQDecoder;
     size_t d;
     MetricType metric;
@@ -37,6 +37,52 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
         float dis = PQCodeDist::distance_single_code(
                 pq.M, pq.nbits, precomputed_table.data(), code);
         return dis;
+    }
+
+    void distances_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) override {
+        PQCodeDist::distance_four_codes(
+                pq.M,
+                pq.nbits,
+                precomputed_table.data(),
+                codes + idx0 * code_size,
+                codes + idx1 * code_size,
+                codes + idx2 * code_size,
+                codes + idx3 * code_size,
+                dis0,
+                dis1,
+                dis2,
+                dis3);
+    }
+
+    void distance_to_code_batch_4(
+            const uint8_t* c1,
+            const uint8_t* c2,
+            const uint8_t* c3,
+            const uint8_t* c4,
+            float& d1,
+            float& d2,
+            float& d3,
+            float& d4) override {
+        PQCodeDist::distance_four_codes(
+                pq.M,
+                pq.nbits,
+                precomputed_table.data(),
+                c1,
+                c2,
+                c3,
+                c4,
+                d1,
+                d2,
+                d3,
+                d4);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
