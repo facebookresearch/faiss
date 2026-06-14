@@ -799,7 +799,17 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
         OnDiskInvertedLists::List& l = ails->lists[i];
         l.size = l.capacity = sizes[i];
         l.offset = o;
-        o += l.size * (sizeof(idx_t) + ails->code_size);
+        size_t list_bytes = mul_no_overflow(
+                l.size, sizeof(idx_t) + ails->code_size, "OnDisk inverted list");
+        o = add_no_overflow(o, list_bytes, "OnDisk inverted list offset");
+        FAISS_THROW_IF_NOT_FMT(
+                o <= ails->totsize,
+                "inverted list %zu at offset %zu with %zu bytes exceeds "
+                "mapped file size %zu",
+                i,
+                l.offset,
+                list_bytes,
+                ails->totsize);
     }
     // resume normal reading of file
     fseek(fdesc, o, SEEK_SET);
