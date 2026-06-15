@@ -20,6 +20,7 @@ set(FAISS_SIMD_AVX2_SRC
   utils/hamming_distance/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
+  impl/scalar_quantizer/EDENQuantizer-avx2.cpp
   utils/simd_impl/rabitq_avx2.cpp
   utils/simd_impl/super_kmeans_kernels_avx2.cpp
 )
@@ -33,6 +34,7 @@ set(FAISS_SIMD_AVX512_SRC
   utils/simd_impl/distances_avx512.cpp
   utils/distances_fused/avx512.cpp
   utils/hamming_distance/hamming_avx512.cpp
+  impl/scalar_quantizer/EDENQuantizer-avx512.cpp
   utils/simd_impl/rabitq_avx512.cpp
   utils/simd_impl/super_kmeans_kernels_avx512.cpp
 )
@@ -100,6 +102,7 @@ set(FAISS_SRC
   IndexBinaryHNSW.cpp
   IndexBinaryHash.cpp
   IndexBinaryIVF.cpp
+  IndexEDEN.cpp
   IndexFlat.cpp
   IndexFlatCodes.cpp
   IndexHNSW.cpp
@@ -109,6 +112,7 @@ set(FAISS_SRC
   IndexIVFFlat.cpp
   IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
+  IndexIVFEDEN.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
@@ -159,6 +163,7 @@ set(FAISS_SRC
   impl/pq_code_distance/pq_code_distance-generic.cpp
   impl/pq_code_distance/IVFPQ_QueryTables.cpp
   impl/AdditiveQuantizer.cpp
+  impl/scalar_quantizer/EDENQuantizer.cpp
   impl/RaBitQuantizer.cpp
   impl/RaBitQuantizerMultiBit.cpp
   impl/RaBitQUtils.cpp
@@ -229,6 +234,7 @@ set(FAISS_HEADERS
   IndexBinaryHNSW.h
   IndexBinaryHash.h
   IndexBinaryIVF.h
+  IndexEDEN.h
   IndexFlat.h
   IndexFlatCodes.h
   IndexHNSW.h
@@ -239,6 +245,7 @@ set(FAISS_HEADERS
   IndexIVFFlat.h
   IndexIVFFlatPanorama.h
   IndexIVFPQ.h
+  IndexIVFEDEN.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
@@ -283,6 +290,7 @@ set(FAISS_HEADERS
   impl/CodePackerRaBitQ.h
   impl/IDSelector.h
   impl/DistanceComputer.h
+  impl/EDENQuantizer.h
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h

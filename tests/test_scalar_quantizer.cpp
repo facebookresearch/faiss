@@ -44,20 +44,20 @@ float mean_squared_error(
 }
 
 template <int NBits>
-using ScalarTurboQuantQuantizer = faiss::scalar_quantizer::
-        QuantizerTurboQuantMSE<NBits, faiss::SIMDLevel::NONE>;
+using ScalarLloydMaxQuantizer = faiss::scalar_quantizer::
+        QuantizerLloydMax<NBits, faiss::SIMDLevel::NONE>;
 
 template <int NBits>
-using ScalarTurboQuantL2DistanceComputer = faiss::scalar_quantizer::DCTemplate<
-        ScalarTurboQuantQuantizer<NBits>,
+using ScalarLloydMaxL2DistanceComputer = faiss::scalar_quantizer::DCTemplate<
+        ScalarLloydMaxQuantizer<NBits>,
         faiss::scalar_quantizer::SimilarityL2<faiss::SIMDLevel::NONE>,
         faiss::SIMDLevel::NONE>;
 
 template <int NBits>
-using ScalarTurboQuantL2Scanner = faiss::scalar_quantizer::IVFSQScannerL2<
-        ScalarTurboQuantL2DistanceComputer<NBits>>;
+using ScalarLloydMaxL2Scanner = faiss::scalar_quantizer::IVFSQScannerL2<
+        ScalarLloydMaxL2DistanceComputer<NBits>>;
 
-faiss::ScalarQuantizer make_trained_tqmse_sq(
+faiss::ScalarQuantizer make_trained_lloyd_max_sq(
         size_t d,
         faiss::ScalarQuantizer::QuantizerType qtype) {
     const size_t n = 128;
@@ -80,7 +80,7 @@ struct ScopedSIMDLevel {
     }
 };
 
-std::vector<faiss::SIMDLevel> available_tqmse_simd_levels() {
+std::vector<faiss::SIMDLevel> available_lloyd_max_simd_levels() {
     std::vector<faiss::SIMDLevel> levels;
     for (faiss::SIMDLevel level :
          {faiss::SIMDLevel::AVX512,
@@ -94,12 +94,12 @@ std::vector<faiss::SIMDLevel> available_tqmse_simd_levels() {
 }
 
 template <int NBits>
-void expect_tqmse_simd_dispatch_for_compatible_dim(
+void expect_lloyd_max_simd_dispatch_for_compatible_dim(
         faiss::SIMDLevel level,
         faiss::ScalarQuantizer::QuantizerType qtype) {
     ScopedSIMDLevel scoped(level);
     const size_t d = 32;
-    faiss::ScalarQuantizer sq = make_trained_tqmse_sq(d, qtype);
+    faiss::ScalarQuantizer sq = make_trained_lloyd_max_sq(d, qtype);
 
     std::unique_ptr<faiss::ScalarQuantizer::SQuantizer> quantizer(
             sq.select_quantizer());
@@ -118,19 +118,19 @@ void expect_tqmse_simd_dispatch_for_compatible_dim(
     auto* dc_raw = dc.get();
     auto* scanner_raw = scanner.get();
 
-    EXPECT_NE(typeid(*quantizer_raw), typeid(ScalarTurboQuantQuantizer<NBits>));
+    EXPECT_NE(typeid(*quantizer_raw), typeid(ScalarLloydMaxQuantizer<NBits>));
     EXPECT_NE(
-            typeid(*dc_raw), typeid(ScalarTurboQuantL2DistanceComputer<NBits>));
-    EXPECT_NE(typeid(*scanner_raw), typeid(ScalarTurboQuantL2Scanner<NBits>));
+            typeid(*dc_raw), typeid(ScalarLloydMaxL2DistanceComputer<NBits>));
+    EXPECT_NE(typeid(*scanner_raw), typeid(ScalarLloydMaxL2Scanner<NBits>));
 }
 
 template <int NBits>
-void expect_tqmse_simd_dispatch_fallback_for_incompatible_dim(
+void expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim(
         faiss::SIMDLevel level,
         size_t d,
         faiss::ScalarQuantizer::QuantizerType qtype) {
     ScopedSIMDLevel scoped(level);
-    faiss::ScalarQuantizer sq = make_trained_tqmse_sq(d, qtype);
+    faiss::ScalarQuantizer sq = make_trained_lloyd_max_sq(d, qtype);
 
     std::unique_ptr<faiss::ScalarQuantizer::SQuantizer> quantizer(
             sq.select_quantizer());
@@ -149,14 +149,14 @@ void expect_tqmse_simd_dispatch_fallback_for_incompatible_dim(
     auto* dc_raw = dc.get();
     auto* scanner_raw = scanner.get();
 
-    EXPECT_EQ(typeid(*quantizer_raw), typeid(ScalarTurboQuantQuantizer<NBits>));
+    EXPECT_EQ(typeid(*quantizer_raw), typeid(ScalarLloydMaxQuantizer<NBits>));
     EXPECT_EQ(
-            typeid(*dc_raw), typeid(ScalarTurboQuantL2DistanceComputer<NBits>));
-    EXPECT_EQ(typeid(*scanner_raw), typeid(ScalarTurboQuantL2Scanner<NBits>));
+            typeid(*dc_raw), typeid(ScalarLloydMaxL2DistanceComputer<NBits>));
+    EXPECT_EQ(typeid(*scanner_raw), typeid(ScalarLloydMaxL2Scanner<NBits>));
 }
 
 template <int NBits>
-void check_tqmse_distance_path_parity(
+void check_lloyd_max_distance_path_parity(
         faiss::SIMDLevel level,
         faiss::ScalarQuantizer::QuantizerType qtype) {
     ScopedSIMDLevel scoped(level);
@@ -277,6 +277,31 @@ void check_tqmse_roundtrip(
         EXPECT_TRUE(std::isfinite(v));
         EXPECT_LE(v, 1.0f);
         EXPECT_GE(v, -1.0f);
+    }
+}
+
+void check_eden_roundtrip(
+        size_t d,
+        size_t nb_bits,
+        faiss::ScalarQuantizer::QuantizerType qtype) {
+    const size_t n = 128;
+    std::vector<float> x = make_normalized_vectors(n, d);
+    faiss::ScalarQuantizer sq(d, qtype);
+
+    sq.train(0, nullptr);
+
+    const size_t k = size_t(1) << nb_bits;
+    EXPECT_EQ(sq.bits, nb_bits);
+    EXPECT_EQ(sq.trained.size(), 2 * k - 1);
+
+    std::vector<uint8_t> codes(sq.code_size * n, 0);
+    sq.compute_codes(x.data(), codes.data(), n);
+
+    std::vector<float> decoded(n * d);
+    sq.decode(codes.data(), decoded.data(), n);
+
+    for (float v : decoded) {
+        EXPECT_TRUE(std::isfinite(v));
     }
 }
 
@@ -511,6 +536,17 @@ TEST(ScalarQuantizer, TQMSEEncodeDecode) {
     check_tqmse_roundtrip(32, faiss::ScalarQuantizer::QT_8bit_tqmse);
 }
 
+TEST(ScalarQuantizer, EDENEncodeDecode) {
+    check_eden_roundtrip(32, 1, faiss::ScalarQuantizer::QT_1bit_eden);
+    check_eden_roundtrip(32, 2, faiss::ScalarQuantizer::QT_2bit_eden);
+    check_eden_roundtrip(32, 3, faiss::ScalarQuantizer::QT_3bit_eden);
+    check_eden_roundtrip(32, 4, faiss::ScalarQuantizer::QT_4bit_eden);
+    check_eden_roundtrip(32, 5, faiss::ScalarQuantizer::QT_5bit_eden);
+    check_eden_roundtrip(32, 6, faiss::ScalarQuantizer::QT_6bit_eden);
+    check_eden_roundtrip(32, 7, faiss::ScalarQuantizer::QT_7bit_eden);
+    check_eden_roundtrip(32, 8, faiss::ScalarQuantizer::QT_8bit_eden);
+}
+
 TEST(ScalarQuantizer, TQMSEAccuracyOrdering) {
     const size_t d = 32;
     const size_t n = 256;
@@ -551,54 +587,111 @@ TEST(ScalarQuantizer, TQMSENonSimdDims) {
 }
 
 TEST(ScalarQuantizer, TQMSESimdDispatchSelection) {
-    const std::vector<faiss::SIMDLevel> levels = available_tqmse_simd_levels();
+    const std::vector<faiss::SIMDLevel> levels =
+            available_lloyd_max_simd_levels();
     if (levels.empty()) {
         GTEST_SKIP() << "No SIMD level available for TurboQuant dispatch tests";
     }
 
     for (faiss::SIMDLevel level : levels) {
         SCOPED_TRACE(faiss::to_string(level));
-        expect_tqmse_simd_dispatch_for_compatible_dim<1>(
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<1>(
                 level, faiss::ScalarQuantizer::QT_1bit_tqmse);
-        expect_tqmse_simd_dispatch_for_compatible_dim<2>(
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<2>(
                 level, faiss::ScalarQuantizer::QT_2bit_tqmse);
-        expect_tqmse_simd_dispatch_for_compatible_dim<3>(
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<3>(
                 level, faiss::ScalarQuantizer::QT_3bit_tqmse);
-        expect_tqmse_simd_dispatch_for_compatible_dim<4>(
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<4>(
                 level, faiss::ScalarQuantizer::QT_4bit_tqmse);
-        expect_tqmse_simd_dispatch_for_compatible_dim<8>(
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<8>(
                 level, faiss::ScalarQuantizer::QT_8bit_tqmse);
 
-        expect_tqmse_simd_dispatch_fallback_for_incompatible_dim<1>(
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<1>(
                 level, 7, faiss::ScalarQuantizer::QT_1bit_tqmse);
-        expect_tqmse_simd_dispatch_fallback_for_incompatible_dim<2>(
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<2>(
                 level, 9, faiss::ScalarQuantizer::QT_2bit_tqmse);
-        expect_tqmse_simd_dispatch_fallback_for_incompatible_dim<3>(
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<3>(
                 level, 11, faiss::ScalarQuantizer::QT_3bit_tqmse);
-        expect_tqmse_simd_dispatch_fallback_for_incompatible_dim<4>(
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<4>(
                 level, 13, faiss::ScalarQuantizer::QT_4bit_tqmse);
-        expect_tqmse_simd_dispatch_fallback_for_incompatible_dim<8>(
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<8>(
                 level, 33, faiss::ScalarQuantizer::QT_8bit_tqmse);
     }
 }
 
+TEST(ScalarQuantizer, EDENSimdDispatchSelection) {
+    const std::vector<faiss::SIMDLevel> levels =
+            available_lloyd_max_simd_levels();
+    if (levels.empty()) {
+        GTEST_SKIP() << "No SIMD level available for EDEN dispatch tests";
+    }
+
+    for (faiss::SIMDLevel level : levels) {
+        SCOPED_TRACE(faiss::to_string(level));
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<1>(
+                level, faiss::ScalarQuantizer::QT_1bit_eden);
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<2>(
+                level, faiss::ScalarQuantizer::QT_2bit_eden);
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<3>(
+                level, faiss::ScalarQuantizer::QT_3bit_eden);
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<4>(
+                level, faiss::ScalarQuantizer::QT_4bit_eden);
+        expect_lloyd_max_simd_dispatch_for_compatible_dim<8>(
+                level, faiss::ScalarQuantizer::QT_8bit_eden);
+
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<1>(
+                level, 7, faiss::ScalarQuantizer::QT_1bit_eden);
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<2>(
+                level, 9, faiss::ScalarQuantizer::QT_2bit_eden);
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<3>(
+                level, 11, faiss::ScalarQuantizer::QT_3bit_eden);
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<4>(
+                level, 13, faiss::ScalarQuantizer::QT_4bit_eden);
+        expect_lloyd_max_simd_dispatch_fallback_for_incompatible_dim<8>(
+                level, 33, faiss::ScalarQuantizer::QT_8bit_eden);
+    }
+}
+
 TEST(ScalarQuantizer, TQMSESimdDistancePathParity) {
-    const std::vector<faiss::SIMDLevel> levels = available_tqmse_simd_levels();
+    const std::vector<faiss::SIMDLevel> levels =
+            available_lloyd_max_simd_levels();
     if (levels.empty()) {
         GTEST_SKIP() << "No SIMD level available for TurboQuant parity tests";
     }
 
     for (faiss::SIMDLevel level : levels) {
         SCOPED_TRACE(faiss::to_string(level));
-        check_tqmse_distance_path_parity<1>(
+        check_lloyd_max_distance_path_parity<1>(
                 level, faiss::ScalarQuantizer::QT_1bit_tqmse);
-        check_tqmse_distance_path_parity<2>(
+        check_lloyd_max_distance_path_parity<2>(
                 level, faiss::ScalarQuantizer::QT_2bit_tqmse);
-        check_tqmse_distance_path_parity<3>(
+        check_lloyd_max_distance_path_parity<3>(
                 level, faiss::ScalarQuantizer::QT_3bit_tqmse);
-        check_tqmse_distance_path_parity<4>(
+        check_lloyd_max_distance_path_parity<4>(
                 level, faiss::ScalarQuantizer::QT_4bit_tqmse);
-        check_tqmse_distance_path_parity<8>(
+        check_lloyd_max_distance_path_parity<8>(
                 level, faiss::ScalarQuantizer::QT_8bit_tqmse);
+    }
+}
+
+TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
+    const std::vector<faiss::SIMDLevel> levels =
+            available_lloyd_max_simd_levels();
+    if (levels.empty()) {
+        GTEST_SKIP() << "No SIMD level available for EDEN parity tests";
+    }
+
+    for (faiss::SIMDLevel level : levels) {
+        SCOPED_TRACE(faiss::to_string(level));
+        check_lloyd_max_distance_path_parity<1>(
+                level, faiss::ScalarQuantizer::QT_1bit_eden);
+        check_lloyd_max_distance_path_parity<2>(
+                level, faiss::ScalarQuantizer::QT_2bit_eden);
+        check_lloyd_max_distance_path_parity<3>(
+                level, faiss::ScalarQuantizer::QT_3bit_eden);
+        check_lloyd_max_distance_path_parity<4>(
+                level, faiss::ScalarQuantizer::QT_4bit_eden);
+        check_lloyd_max_distance_path_parity<8>(
+                level, faiss::ScalarQuantizer::QT_8bit_eden);
     }
 }
