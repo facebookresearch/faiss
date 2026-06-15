@@ -146,4 +146,11 @@ def reverse_index_factory(index):
         }
         return f"SQ{sqtypes[index.sq.qtype]}"
 
+    # IndexIDMap2 is a subclass of IndexIDMap, so it must be checked first.
+    elif isinstance(index, faiss.IndexIDMap2):
+        return f"IDMap2,{reverse_index_factory(index.index)}"
+
+    elif isinstance(index, faiss.IndexIDMap):
+        return f"IDMap,{reverse_index_factory(index.index)}"
+
     raise NotImplementedError()

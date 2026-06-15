@@ -551,7 +551,13 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
     // Dispatch on SIMDLevel once here so the distance computer methods
     // call the SIMD-specialized rabitq functions directly (no per-call
     // with_simd_level overhead).
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+    //
+    // Use A0_SPR (which includes AVX512_SPR) so that on Sapphire Rapids
+    // and later x86 microarchitectures the VPOPCNTDQ-based RaBitQ
+    // specialization in rabitq_avx512_spr.cpp is selected. On AVX-512
+    // CPUs without VPOPCNTDQ, dispatch falls through to the AVX512
+    // specialization in rabitq_avx512.cpp.
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
             [&]<SIMDLevel SL>() -> FlatCodesDistanceComputer* {
                 if (qb == 0) {
                     auto dc =

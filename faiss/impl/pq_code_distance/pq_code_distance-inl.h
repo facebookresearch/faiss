@@ -245,11 +245,47 @@ FAISS_API void pq_code_distance_8bit_four(
         float& result2,
         float& result3);
 
+/*********************************************************************
+ * Standalone PQ scan — SIMD-dispatched full-index scan.
+ *
+ * Scans all ncodes PQ codes against a precomputed distance table,
+ * maintaining a k-nearest-neighbor heap. Uses the SIMD PQ distance
+ * kernels (AVX2 gathers, etc.) for the inner loop, with the SIMD
+ * gathers inlined into the scan loop in each per-SIMD TU.
+ *
+ * Definitions are in pq_scan_impl.h (per-SIMD TUs) and
+ * pq_code_distance-generic.cpp (dispatch wrapper).
+ *********************************************************************/
+
+template <SIMDLevel SL>
+void pq_scan_8bit_impl(
+        size_t M,
+        const float* dis_table,
+        const uint8_t* codes,
+        size_t ncodes,
+        size_t k,
+        float* heap_dis,
+        int64_t* heap_ids,
+        bool max_heap);
+
+/// Scan all ncodes 8-bit PQ codes, dispatching to the best SIMD level.
+/// max_heap=true for L2 (CMax), false for IP (CMin).
+FAISS_API void pq_scan_8bit(
+        size_t M,
+        const float* dis_table,
+        const uint8_t* codes,
+        size_t ncodes,
+        size_t k,
+        float* heap_dis,
+        int64_t* heap_ids,
+        bool max_heap);
+
 } // namespace pq_code_distance
 
 // Re-export public API into namespace faiss for convenience
 using pq_code_distance::pq_code_distance_8bit_four;
 using pq_code_distance::pq_code_distance_8bit_single;
+using pq_code_distance::pq_scan_8bit;
 using pq_code_distance::PQCodeDistance;
 using pq_code_distance::PQCodeDistanceScalar;
 

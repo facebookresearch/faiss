@@ -1223,7 +1223,7 @@ void IndexIVF::search_and_return_codes(
         } else {
             size_t list_no = lo_listno(key);
             size_t offset = lo_offset(key);
-            const uint8_t* cc = invlists->get_single_code(list_no, offset);
+            InvertedLists::ScopedCodes cc(invlists, list_no, offset);
 
             labels[ij] = invlists->get_single_id(list_no, offset);
 
@@ -1231,7 +1231,7 @@ void IndexIVF::search_and_return_codes(
                 encode_listno(list_no, code1);
                 code1 += code_size_1 - code_size;
             }
-            memcpy(code1, cc, code_size);
+            memcpy(code1, cc.get(), code_size);
         }
     }
 }

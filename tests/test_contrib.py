@@ -21,6 +21,7 @@ from faiss.contrib import (
     clustering,
     datasets,
     evaluation,
+    factory_tools,
     inspect_tools,
     ivf_tools,
 )
@@ -834,3 +835,17 @@ class TestMerge(unittest.TestCase):
     def test_ondisk_merge_with_shift_ids(self):
         # verified that recall is same for test_ondisk_merge and
         self.do_test_ondisk_merge(True)
+
+
+class TestFactoryTools(unittest.TestCase):
+
+    def test_idmap(self):
+        index = faiss.IndexIDMap(faiss.IndexFlatL2(32))
+        self.assertEqual(
+            factory_tools.reverse_index_factory(index), "IDMap,Flat"
+        )
+        # IndexIDMap2 subclasses IndexIDMap, so it must be matched first.
+        index2 = faiss.IndexIDMap2(faiss.IndexFlatL2(32))
+        self.assertEqual(
+            factory_tools.reverse_index_factory(index2), "IDMap2,Flat"
+        )

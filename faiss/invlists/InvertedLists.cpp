@@ -498,12 +498,12 @@ void ReadOnlyInvertedLists::resize(size_t, size_t) {
  * HStackInvertedLists implementation
  ******************************************/
 
-HStackInvertedLists::HStackInvertedLists(int nil, const InvertedLists** ils_in)
+HStackInvertedLists::HStackInvertedLists(int n_il, const InvertedLists** ils_in)
         : ReadOnlyInvertedLists(
-                  nil > 0 ? ils_in[0]->nlist : 0,
-                  nil > 0 ? ils_in[0]->code_size : 0) {
-    FAISS_THROW_IF_NOT(nil > 0);
-    for (int i = 0; i < nil; i++) {
+                  n_il > 0 ? ils_in[0]->nlist : 0,
+                  n_il > 0 ? ils_in[0]->code_size : 0) {
+    FAISS_THROW_IF_NOT(n_il > 0);
+    for (int i = 0; i < n_il; i++) {
         ils.push_back(ils_in[i]);
         FAISS_THROW_IF_NOT(
                 ils_in[i]->code_size == code_size && ils_in[i]->nlist == nlist);
@@ -683,9 +683,9 @@ int translate_list_no(const VStackInvertedLists* vil, idx_t list_no) {
     return i0;
 }
 
-idx_t sum_il_sizes(int nil, const InvertedLists** ils_in) {
+idx_t sum_il_sizes(int n_il, const InvertedLists** ils_in) {
     idx_t tot = 0;
-    for (int i = 0; i < nil; i++) {
+    for (int i = 0; i < n_il; i++) {
         tot += ils_in[i]->nlist;
     }
     return tot;
@@ -693,13 +693,13 @@ idx_t sum_il_sizes(int nil, const InvertedLists** ils_in) {
 
 } // namespace
 
-VStackInvertedLists::VStackInvertedLists(int nil, const InvertedLists** ils_in)
+VStackInvertedLists::VStackInvertedLists(int n_il, const InvertedLists** ils_in)
         : ReadOnlyInvertedLists(
-                  sum_il_sizes(nil, ils_in),
-                  nil > 0 ? ils_in[0]->code_size : 0) {
-    FAISS_THROW_IF_NOT(nil > 0);
-    cumsz.resize(nil + 1);
-    for (int i = 0; i < nil; i++) {
+                  sum_il_sizes(n_il, ils_in),
+                  n_il > 0 ? ils_in[0]->code_size : 0) {
+    FAISS_THROW_IF_NOT(n_il > 0);
+    cumsz.resize(n_il + 1);
+    for (int i = 0; i < n_il; i++) {
         ils.push_back(ils_in[i]);
         FAISS_THROW_IF_NOT(ils_in[i]->code_size == code_size);
         cumsz[i + 1] = cumsz[i] + ils_in[i]->nlist;

@@ -54,7 +54,7 @@ runs:
         conda list --show-channel-urls
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2 setuptools
+        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 pytest-timeout gflags=2.2 setuptools
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -71,16 +71,24 @@ runs:
         # no CUDA needed for ROCm so skip this
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           :
-        # regular CUDA for GPU builds
-        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
-        # and CUDA from cuVS channel for cuVS builds
-        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=13.2' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
-          # Clean index cache to prevent sqlite3 "database is locked" errors
-          # from conda-libmamba-solver's shards cache between consecutive installs.
-          # See: https://github.com/conda/conda-libmamba-solver/issues/667
-          conda clean --index-cache 2>/dev/null || true
+        # CUDA install for GPU builds
+        elif [ "${{ inputs.gpu }}" = "ON" ]; then
+          if [ "${{ inputs.cuvs }}" = "ON" ]; then
+            # Use CUDA 12.9 for cuVS cmake builds: pytorch-gpu on
+            # conda-forge only has CUDA 12 builds, 12.8+ supports GCC 14,
+            # and libcuvs needs libnvjitlink >=12.9.86. Skip the
+            # cuda-libraries-dev metapackage to avoid pinning libnvjitlink.
+            conda install -y -q \
+              cuda-nvcc=12.9 cuda-nvtx=12.9 cuda-cupti=12.9 cuda-cudart-dev=12.9 \
+              libcublas-dev libcusolver-dev libcusparse-dev \
+              gxx_linux-64=14.2 \
+              libcuvs=26.06 'cuda-version>=12,<13' sysroot_linux-64=2.34 \
+              'pytorch-gpu>=2.7' \
+              -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            conda clean --index-cache 2>/dev/null || true
+          else
+            conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
+          fi
         fi
 
         # install SVS runtime for SVS builds
@@ -93,10 +101,13 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
-          # so we install via pip for CUDA builds. --break-system-packages is needed
-          # because the CI runner's Python is PEP 668 externally-managed.
-          pip install "torch>=2.7" --break-system-packages --index-url https://download.pytorch.org/whl/cu132
+          if [ "${{ inputs.cuvs }}" != "ON" ]; then
+            # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
+            # so we install via pip for CUDA builds. --break-system-packages is needed
+            # because the CI runner's Python is PEP 668 externally-managed.
+            pip install "torch>=2.7" --break-system-packages --index-url https://download.pytorch.org/whl/cu132
+          fi
+          # cuVS builds get pytorch-gpu from conda (installed above).
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
@@ -121,19 +132,21 @@ runs:
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="6.2"
+        ROCM_VERSION="7.2"
 
-        rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         sudo mkdir -p /etc/apt/keyrings
         wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
         echo "2de99e2354646a90d9903e2a669fc4e36b02c1bbff7075c481e12d7edab2c88b  /tmp/rocm.gpg.key" | sha256sum --check
 
-        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${ROCM_VERSION} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+
+        # Pin ROCm packages to avoid conflicts with other packages
+        sudo printf '%s\n' 'Package: *' 'Pin: release o=repo.radeon.com' 'Pin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600 >/dev/null
 
         sudo apt-get -qq update >/dev/null
-        sudo apt-get -qq install -y \
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" >/dev/null
+        sudo apt-get -qq install -y rocm rocm-hip-sdk rocm-dev >/dev/null
 
+        echo "/opt/rocm/bin" >> "$GITHUB_PATH"
 
     - name: Pin BLAS/LAPACK versions
       if: inputs.rocm == 'ON'
@@ -144,7 +157,7 @@ runs:
           "libcblas=3.9.0=35_*" \
           "liblapack=3.9.0=35_*"
 
-        # Fake presence of MI200-class accelerators
+        # Fake presence of MI325X-class accelerators
         echo "gfx942" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
@@ -177,7 +190,9 @@ runs:
     - name: Setup macOS Metal environment
       if: inputs.metal == 'ON'
       shell: bash
-      run: brew install cmake libomp gflags
+      run: |
+        brew install cmake libomp gflags swig
+        pip3 install --break-system-packages numpy pytest
     - name: Build all targets
       if: inputs.metal != 'ON'
       shell: bash
@@ -210,12 +225,12 @@ runs:
         cmake -B build \
               -DFAISS_ENABLE_METAL=ON \
               -DFAISS_ENABLE_GPU=OFF \
-              -DFAISS_ENABLE_PYTHON=OFF \
+              -DFAISS_ENABLE_PYTHON=ON \
               -DBUILD_TESTING=ON \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_PREFIX_PATH="$(brew --prefix libomp)" \
               .
-        cmake --build build --target faiss_metal TestMetalIndexFlat -j$(sysctl -n hw.logicalcpu)
+        cmake --build build --target faiss faiss_metal swigfaiss TestMetalIndexFlat TestMetalIndexIVFFlat -j$(sysctl -n hw.logicalcpu)
     - name: C++ tests
       if: inputs.metal != 'ON'
       shell: bash
@@ -226,7 +241,16 @@ runs:
     - name: C++ tests (Metal)
       if: inputs.metal == 'ON'
       shell: bash
-      run: cd build && ctest -R TestMetalIndexFlat --output-on-failure
+      run: cd build && ctest -R TestMetalIndex --output-on-failure
+    - name: Install Python extension (Metal)
+      if: inputs.metal == 'ON'
+      shell: bash
+      working-directory: build/faiss/python
+      run: pip3 install --break-system-packages .
+    - name: Python tests (Metal)
+      if: inputs.metal == 'ON'
+      shell: bash
+      run: python3 -m pytest faiss/gpu_metal/test/test_metal_python.py -v
     - name: C++ perf benchmarks
       if: inputs.rocm == 'OFF' && inputs.metal != 'ON'
       shell: bash
@@ -246,7 +270,37 @@ runs:
       run: |
         conda list --show-channel-urls
         conda install -y -q "pip<26"
-        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
+
+        # Install AMD's torch wheels built against the exact system ROCm (7.2.0,
+        # from apt/7.2). The PyTorch Foundation whl/rocm7.2 wheels float and bundle
+        # an older ROCr that lacks hsa_amd_memory_get_preferred_copy_engine (ROCr
+        # 1.18.0, added in ROCm 7.0.0), which collides with the system 7.2.0
+        # libamdhip64. Matching both sides to 7.2.0 avoids the dual-runtime
+        # undefined-symbol/segfault failures.
+        BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2"
+        HTML="$(wget -qO- "${BASE}/")"
+        pick() {
+          printf '%s\n' "$HTML" \
+            | grep -oE "$1-[0-9][^\"]*rocm7\.2\.0[^\"]*cp312-cp312-linux_x86_64\.whl" \
+            | sort -V | tail -1
+        }
+        TORCH_WHL="$(pick torch)"
+        TVISION_WHL="$(pick torchvision)"
+        TAUDIO_WHL="$(pick torchaudio)"
+        echo "Selected: ${TORCH_WHL} ${TVISION_WHL} ${TAUDIO_WHL}"
+        if [ -z "${TORCH_WHL}" ] || [ -z "${TVISION_WHL}" ] || [ -z "${TAUDIO_WHL}" ]; then
+          echo "Could not locate +rocm7.2.0 cp312 wheels at ${BASE}" >&2
+          exit 1
+        fi
+
+        # --no-deps avoids pulling triton/pytorch-triton-rocm (only on AMD's index,
+        # not PyPI); install torch's import-time deps explicitly instead.
+        pip3 install --no-deps \
+          "${BASE}/${TORCH_WHL}" "${BASE}/${TVISION_WHL}" "${BASE}/${TAUDIO_WHL}"
+        pip3 install numpy pillow filelock typing-extensions sympy networkx jinja2 fsspec
+
+        # Confirm torch links against ROCm 7.2 (matches the system /opt/rocm-7.2.0).
+        python -c "import torch; print('torch', torch.__version__, 'hip', torch.version.hip)"
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
@@ -262,7 +316,10 @@ runs:
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test
-        pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+        # --timeout guards against a hung GPU test burning the full 6h CI
+        # budget (see the binary-CAGRA IDMap deadlock skipped in
+        # test_binary_cagra.py) instead of failing fast.
+        pytest --timeout=600 --timeout-method=thread --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
     - name: Test avx2 loading
       if: inputs.opt_level == 'avx2'

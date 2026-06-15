@@ -35,6 +35,31 @@ size_t get_deserialization_vector_byte_limit();
 
 #define READ1(x) READANDCHECK(&(x), 1)
 
+// Reads a single byte into a bool, rejecting any byte that is not the
+// canonical encoding for the platform's bool representation. Reading a
+// non-canonical byte directly into a bool is undefined behavior and
+// trips UBSan's invalid-bool-load check. To stay ABI-portable, we
+// assign via the language-defined conversion (b != 0) and then compare
+// the resulting bool's storage byte back against the byte we read - the
+// roundtrip succeeds iff the input byte was already canonical on this
+// platform. FAISS only ever writes the canonical encoding via
+// WRITE1(bool), so well-formed indices roundtrip cleanly; corrupt or
+// attacker-controlled input that places a non-canonical byte at a bool
+// offset is rejected as a FaissException.
+#define READ1_BOOL(x)                                                      \
+    {                                                                      \
+        static_assert(                                                     \
+                sizeof(x) == 1, "READ1_BOOL: destination must be 1 byte"); \
+        uint8_t b;                                                         \
+        READANDCHECK(&b, 1);                                               \
+        (x) = (b != 0);                                                    \
+        FAISS_THROW_IF_NOT_FMT(                                            \
+                *reinterpret_cast<const uint8_t*>(&(x)) == b,              \
+                "invalid bool encoding 0x%02x for %s",                     \
+                b,                                                         \
+                #x);                                                       \
+    }
+
 #define READ1_DUMMY(x_type) \
     {                       \
         x_type x = {};      \

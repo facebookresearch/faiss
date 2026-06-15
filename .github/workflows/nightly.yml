@@ -1,5 +1,10 @@
 name: Nightly
 on:
+  # The Faiss OSS autofix sidecar pushes generated fixes to short-lived
+  # validation branches and then dispatches this workflow on that branch. The
+  # scheduled trigger alone only tests the default branch, so it cannot validate
+  # a candidate fix before the sidecar asks a human to review it.
+  workflow_dispatch:
   schedule:
     - cron:  '10 6 * * *'
 env:
@@ -41,7 +46,7 @@ jobs:
     name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
-      CUDA_ARCHS: "75-real;80;86-real;90;100;120"
+      CUDA_ARCHS: "75-real;80;90;100;120"
     steps:
       - name: Checkout
         uses: actions/checkout@v4

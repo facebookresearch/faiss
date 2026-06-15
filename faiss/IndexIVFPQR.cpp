@@ -187,9 +187,8 @@ void IndexIVFPQR::search_preassigned(
                 quantizer->compute_residual(xq, residual_1.get(), list_no);
 
                 // 2nd level residual
-                const uint8_t* l2code = invlists->get_single_code(list_no, ofs);
-
-                pq.decode(l2code, residual_2);
+                InvertedLists::ScopedCodes l2sc(invlists, list_no, ofs);
+                pq.decode(l2sc.get(), residual_2);
                 for (int l = 0; l < d; l++) {
                     residual_2[l] = residual_1[l] - residual_2[l];
                 }
