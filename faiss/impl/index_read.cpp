@@ -1339,13 +1339,15 @@ static void read_NNDescent(NNDescent& nnd, IOReader* f) {
     READVECTOR(nnd.final_graph);
     // Validate neighbor IDs in the graph
     if (nnd.has_built && nnd.K > 0 && nnd.ntotal > 0) {
+        const size_t expected_final_graph_size = mul_no_overflow(
+                (size_t)nnd.ntotal, (size_t)nnd.K, "NNDescent final_graph");
         FAISS_THROW_IF_NOT_FMT(
-                nnd.final_graph.size() == (size_t)nnd.ntotal * (size_t)nnd.K,
+                nnd.final_graph.size() == expected_final_graph_size,
                 "NNDescent final_graph size %zu != ntotal * K (%d * %d = %zu)",
                 nnd.final_graph.size(),
                 nnd.ntotal,
                 nnd.K,
-                (size_t)nnd.ntotal * (size_t)nnd.K);
+                expected_final_graph_size);
         for (size_t i = 0; i < nnd.final_graph.size(); i++) {
             int id = nnd.final_graph[i];
             FAISS_THROW_IF_NOT_FMT(
@@ -1558,7 +1560,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxf->code_size = idxf->d * sizeof(float);
         read_xb_vector(idxf->codes, f);
         FAISS_THROW_IF_NOT(
-                idxf->codes.size() == idxf->ntotal * idxf->code_size);
+                idxf->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxf->ntotal,
+                        idxf->code_size,
+                        "IndexFlat codes"));
         idx = std::move(idxf);
     } else if (h == fourcc("IxHE") || h == fourcc("IxHe")) {
         auto idxl = std::make_unique<IndexLSH>();
@@ -1597,7 +1603,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         FAISS_THROW_IF_NOT(
                 idxl->rrot.d_in == idxl->d && idxl->rrot.d_out == idxl->nbits);
         FAISS_THROW_IF_NOT(
-                idxl->codes.size() == idxl->ntotal * idxl->code_size);
+                idxl->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxl->ntotal,
+                        idxl->code_size,
+                        "IndexLSH codes"));
         idx = std::move(idxl);
     } else if (
             h == fourcc("IxPQ") || h == fourcc("IxPo") || h == fourcc("IxPq")) {
@@ -1608,7 +1618,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxp->code_size = idxp->pq.code_size;
         read_vector(idxp->codes, f);
         FAISS_THROW_IF_NOT(
-                idxp->codes.size() == idxp->ntotal * idxp->code_size);
+                idxp->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxp->ntotal,
+                        idxp->code_size,
+                        "IndexPQ codes"));
         if (h == fourcc("IxPo") || h == fourcc("IxPq")) {
             READ1(idxp->search_type);
             READ1_BOOL(idxp->encode_signs);
@@ -1636,7 +1650,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxr->code_size, idxr->rq.code_size, "IndexResidualQuantizer");
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
-                idxr->codes.size() == idxr->ntotal * idxr->code_size);
+                idxr->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxr->ntotal,
+                        idxr->code_size,
+                        "IndexResidualQuantizer codes"));
         idx = std::move(idxr);
     } else if (h == fourcc("IxLS")) {
         auto idxr = std::make_unique<IndexLocalSearchQuantizer>();
@@ -1651,7 +1669,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "IndexLocalSearchQuantizer");
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
-                idxr->codes.size() == idxr->ntotal * idxr->code_size);
+                idxr->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxr->ntotal,
+                        idxr->code_size,
+                        "IndexLocalSearchQuantizer codes"));
         idx = std::move(idxr);
     } else if (h == fourcc("IxPR")) {
         auto idxpr = std::make_unique<IndexProductResidualQuantizer>();
@@ -1666,7 +1688,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "IndexProductResidualQuantizer");
         read_vector(idxpr->codes, f);
         FAISS_THROW_IF_NOT(
-                idxpr->codes.size() == idxpr->ntotal * idxpr->code_size);
+                idxpr->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxpr->ntotal,
+                        idxpr->code_size,
+                        "IndexProductResidualQuantizer codes"));
         idx = std::move(idxpr);
     } else if (h == fourcc("IxPL")) {
         auto idxpl = std::make_unique<IndexProductLocalSearchQuantizer>();
@@ -1681,7 +1707,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "IndexProductLocalSearchQuantizer");
         read_vector(idxpl->codes, f);
         FAISS_THROW_IF_NOT(
-                idxpl->codes.size() == idxpl->ntotal * idxpl->code_size);
+                idxpl->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxpl->ntotal,
+                        idxpl->code_size,
+                        "IndexProductLocalSearchQuantizer codes"));
         idx = std::move(idxpl);
     } else if (h == fourcc("ImRQ")) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
@@ -3031,7 +3061,12 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         auto idxf = std::make_unique<IndexBinaryFlat>();
         read_index_binary_header(*idxf, f);
         read_vector(idxf->xb, f);
-        FAISS_THROW_IF_NOT(idxf->xb.size() == idxf->ntotal * idxf->code_size);
+        FAISS_THROW_IF_NOT(
+                idxf->xb.size() ==
+                mul_no_overflow(
+                        (size_t)idxf->ntotal,
+                        idxf->code_size,
+                        "IndexBinaryFlat xb"));
         idx = std::move(idxf);
     } else if (h == fourcc("IBwF")) {
         auto ivf = std::make_unique<IndexBinaryIVF>();
