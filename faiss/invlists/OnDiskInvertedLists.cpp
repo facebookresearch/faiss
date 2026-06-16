@@ -800,7 +800,9 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
         l.size = l.capacity = sizes[i];
         l.offset = o;
         size_t list_bytes = mul_no_overflow(
-                l.size, sizeof(idx_t) + ails->code_size, "OnDisk inverted list");
+                l.size,
+                sizeof(idx_t) + ails->code_size,
+                "OnDisk inverted list");
         o = add_no_overflow(o, list_bytes, "OnDisk inverted list offset");
         FAISS_THROW_IF_NOT_FMT(
                 o <= ails->totsize,
