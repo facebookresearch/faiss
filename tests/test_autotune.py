@@ -5,9 +5,12 @@
 
 
 import unittest
+
+import numpy as np
 import faiss
 
 from common_faiss_tests import for_all_simd_levels
+from faiss.contrib import datasets
 
 
 @for_all_simd_levels
@@ -48,3 +51,22 @@ class TestParameterSpace(unittest.TestCase):
         ps.set_index_parameter(index, "quantizer_efSearch", 5)
         index2 = faiss.downcast_index(index.quantizer)
         self.assertEqual(index2.hnsw.efSearch, 5)
+
+    def test_update_search_parameters(self):
+        """update_search_parameters sets params.nprobe to the value encoded in cno."""
+        index = faiss.index_factory(32, "IVF32,Flat")
+        ps = faiss.ParameterSpace()
+        ps.initialize(index)
+
+        # find the nprobe ParameterRange and its values
+        nprobe_range = next(
+            ps.parameter_ranges.at(i)
+            for i in range(ps.parameter_ranges.size())
+            if ps.parameter_ranges.at(i).name == "nprobe"
+        )
+
+        params = faiss.SearchParametersIVF()
+        for cno in range(ps.n_combinations()):
+            expected_nprobe = int(nprobe_range.values.at(cno))
+            ps.update_search_parameters(params, cno)
+            self.assertEqual(params.nprobe, expected_nprobe)
