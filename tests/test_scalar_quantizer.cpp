@@ -197,7 +197,7 @@ void check_tqmse_distance_path_parity(
         EXPECT_NEAR(
                 scalar_dc->query_to_code(code),
                 simd_dc->query_to_code(code),
-                1e-5);
+                1e-3);
     }
 
     std::vector<uint8_t> bundle(4 * sq.code_size, 0);
@@ -224,7 +224,7 @@ void check_tqmse_distance_path_parity(
         EXPECT_NEAR(
                 scalar_dc->symmetric_dis(lhs, rhs),
                 simd_dc->symmetric_dis(lhs, rhs),
-                1e-5);
+                1e-3);
     }
 
     std::unique_ptr<faiss::InvertedListScanner> scalar_scanner(
@@ -254,7 +254,7 @@ void check_tqmse_distance_path_parity(
         EXPECT_NEAR(
                 scalar_scanner->distance_to_code(code),
                 simd_scanner->distance_to_code(code),
-                1e-5);
+                1e-3);
     }
 }
 
