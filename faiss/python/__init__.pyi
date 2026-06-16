@@ -2290,6 +2290,12 @@ class IVFSearchParameters(SearchParameters):
     sel: IDSelector | None
     def __init__(self) -> None: ...
 
+class IVFSQTurboQSearchParameters(IVFSearchParameters):
+    qb: int
+    int_qjl: bool
+
+    def __init__(self) -> None: ...
+
 # IVF Statistics tracking
 class IndexIVFStats:
     nq: int  # number of queries run

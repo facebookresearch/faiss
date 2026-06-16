@@ -908,6 +908,8 @@ int search_from_candidates_fixVT(
     const IDSelector* sel;
     extract_search_params(hnsw, params, do_dis_check, efSearch, sel);
 
+    vt.reserve(efSearch);
+
     typename C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
