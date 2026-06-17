@@ -670,7 +670,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="86" column="27" declfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" declline="86" declcolumn="27"/>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="97" column="27" declfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" declline="97" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="PQDistanceComputer__impl_8h_1a3d7d13c460872fe43575f62068e2e263" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -690,7 +690,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="91" column="1" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="91" bodyend="103"/>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="102" column="1" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="102" bodyend="114"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance_8h_1ae54f510e7f28d07e83966797daee014e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

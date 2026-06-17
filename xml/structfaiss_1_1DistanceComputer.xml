@@ -59,6 +59,7 @@
         <name>distances_batch_4</name>
         <qualifiedname>faiss::DistanceComputer::distances_batch_4</qualifiedname>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c">distances_batch_4</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84">distances_batch_4</reimplementedby>
         <param>
           <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
           <declname>idx0</declname>
