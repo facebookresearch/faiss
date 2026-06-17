@@ -130,6 +130,26 @@ struct FlatCodesDistanceComputer : DistanceComputer {
         return distance_to_code(codes + i * code_size);
     }
 
+    void distances_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) override {
+        distance_to_code_batch_4(
+                codes + idx0 * code_size,
+                codes + idx1 * code_size,
+                codes + idx2 * code_size,
+                codes + idx3 * code_size,
+                dis0,
+                dis1,
+                dis2,
+                dis3);
+    }
+
     /// Computes a partial dot product over a slice of the query vector.
     /// The slice is defined by the following parameters:
     ///   — `offset`: the starting index of the first component to include
@@ -167,6 +187,20 @@ struct FlatCodesDistanceComputer : DistanceComputer {
 
     /// compute distance of current query to an encoded vector
     virtual float distance_to_code(const uint8_t* code) = 0;
+    virtual void distance_to_code_batch_4(
+            const uint8_t* c1,
+            const uint8_t* c2,
+            const uint8_t* c3,
+            const uint8_t* c4,
+            float& d1,
+            float& d2,
+            float& d3,
+            float& d4) {
+        d1 = distance_to_code(c1);
+        d2 = distance_to_code(c2);
+        d3 = distance_to_code(c3);
+        d4 = distance_to_code(c4);
+    }
 
     /// Compute partial dot products of current query to 4 stored vectors.
     /// See `partial_dot_product` for more details.
