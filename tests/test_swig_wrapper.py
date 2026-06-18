@@ -155,6 +155,21 @@ class TestSWIGWrap(unittest.TestCase):
         self.assertEqual(params.qb, 4)
         self.assertTrue(params.int_qjl)
 
+    def test_scalar_quantizer_tq_enum_values(self):
+        # QT_2bit_tq..QT_5bit_tq were added in the TurboQuant commit and must
+        # be accessible as ScalarQuantizer class attributes (pyi stub regression
+        # test: they were absent until this fix).
+        sq = faiss.ScalarQuantizer
+        self.assertEqual(sq.QT_2bit_tq, 15)
+        self.assertEqual(sq.QT_3bit_tq, 16)
+        self.assertEqual(sq.QT_4bit_tq, 17)
+        self.assertEqual(sq.QT_5bit_tq, 18)
+
+    def test_scalar_quantizer_0bit_enum_value(self):
+        # QT_0bit (centroid-only SQ, for IVF) was likewise absent from the
+        # pyi stub until this fix.
+        self.assertEqual(faiss.ScalarQuantizer.QT_0bit, 9)
+
 
 class TestRevSwigPtr(unittest.TestCase):
 
