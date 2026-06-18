@@ -367,7 +367,7 @@ void Clustering::train_encoded(
                         ? std::numeric_limits<double>::max()
                         : std::abs(prev_obj - obj) / std::abs(prev_obj);
 
-                if (change >= 0 && change <= early_stop_threshold) {
+                if (change <= early_stop_threshold) {
                     if (verbose) {
                         printf("\n  Converged at iteration %d: "
                                "objective did not change\n",
@@ -439,6 +439,14 @@ float kmeans_clustering(
         size_t k,
         const float* x,
         float* centroids) {
+    FAISS_THROW_IF_NOT_FMT(
+            d <= static_cast<size_t>(std::numeric_limits<int>::max()),
+            "kmeans_clustering: d=%zu exceeds INT_MAX",
+            d);
+    FAISS_THROW_IF_NOT_FMT(
+            k <= static_cast<size_t>(std::numeric_limits<int>::max()),
+            "kmeans_clustering: k=%zu exceeds INT_MAX",
+            k);
     Clustering clus(static_cast<int>(d), static_cast<int>(k));
     clus.verbose = d * n * k > (size_t(1) << 30);
     // display logs if > 1Gflop per iteration
