@@ -871,8 +871,12 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
                 : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
+                : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
                                                             : 0;
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_NOT_FMT(
+                h != 0,
+                "don't know how to serialize this IndexHNSW subtype: %s",
+                typeid(*idx).name());
         WRITE1(h);
         write_index_header(idxhnsw, f);
         if (h == fourcc("IHfP")) {
