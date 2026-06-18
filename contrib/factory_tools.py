@@ -82,6 +82,30 @@ def reverse_index_factory(index):
     """
     attempts to get the factory string the index was built with
     """
+    sq_names = {
+        faiss.ScalarQuantizer.QT_8bit: "SQ8",
+        faiss.ScalarQuantizer.QT_4bit: "SQ4",
+        # QT_8bit_uniform/QT_4bit_uniform have no index_factory string; these
+        # synthetic names are not round-trippable through index_factory.
+        faiss.ScalarQuantizer.QT_8bit_uniform: "SQ8u",
+        faiss.ScalarQuantizer.QT_4bit_uniform: "SQ4u",
+        faiss.ScalarQuantizer.QT_6bit: "SQ6",
+        faiss.ScalarQuantizer.QT_fp16: "SQfp16",
+        faiss.ScalarQuantizer.QT_bf16: "SQbf16",
+        faiss.ScalarQuantizer.QT_8bit_direct: "SQ8_direct",
+        faiss.ScalarQuantizer.QT_8bit_direct_signed: "SQ8_direct_signed",
+        # QT_0bit ("SQ0") is parsed by index_factory; for the IVF path.
+        faiss.ScalarQuantizer.QT_0bit: "SQ0",
+        faiss.ScalarQuantizer.QT_1bit_tqmse: "SQtqmse1",
+        faiss.ScalarQuantizer.QT_2bit_tqmse: "SQtqmse2",
+        faiss.ScalarQuantizer.QT_3bit_tqmse: "SQtqmse3",
+        faiss.ScalarQuantizer.QT_4bit_tqmse: "SQtqmse4",
+        faiss.ScalarQuantizer.QT_8bit_tqmse: "SQtqmse8",
+        faiss.ScalarQuantizer.QT_2bit_tq: "SQtq2",
+        faiss.ScalarQuantizer.QT_3bit_tq: "SQtq3",
+        faiss.ScalarQuantizer.QT_4bit_tq: "SQtq4",
+        faiss.ScalarQuantizer.QT_5bit_tq: "SQtq5",
+    }
     index = faiss.downcast_index(index)
     if isinstance(index, faiss.IndexFlat):
         return "Flat"
@@ -100,7 +124,7 @@ def reverse_index_factory(index):
         if isinstance(index, faiss.IndexIVFFlat):
             return prefix + ",Flat"
         if isinstance(index, faiss.IndexIVFScalarQuantizer):
-            return prefix + ",SQ8"
+            return prefix + "," + sq_names[index.sq.qtype]
         if isinstance(index, faiss.IndexIVFPQ):
             return prefix + f",PQ{index.pq.M}x{index.pq.nbits}"
         if isinstance(index, faiss.IndexIVFPQFastScan):
@@ -137,14 +161,7 @@ def reverse_index_factory(index):
         return "LSH" + ("r" if index.rotate_data else "") + ("t" if index.train_thresholds else "")
 
     elif isinstance(index, faiss.IndexScalarQuantizer):
-        sqtypes = {
-            faiss.ScalarQuantizer.QT_8bit: "8",
-            faiss.ScalarQuantizer.QT_4bit: "4",
-            faiss.ScalarQuantizer.QT_6bit: "6",
-            faiss.ScalarQuantizer.QT_fp16: "fp16",
-            faiss.ScalarQuantizer.QT_bf16: "bf16",
-        }
-        return f"SQ{sqtypes[index.sq.qtype]}"
+        return sq_names[index.sq.qtype]
 
     # IndexIDMap2 is a subclass of IndexIDMap, so it must be checked first.
     elif isinstance(index, faiss.IndexIDMap2):
