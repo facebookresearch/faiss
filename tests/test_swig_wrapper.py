@@ -155,6 +155,14 @@ class TestSWIGWrap(unittest.TestCase):
         self.assertEqual(params.qb, 4)
         self.assertTrue(params.int_qjl)
 
+    def test_clustering_init_method_enum_values(self):
+        self.assertEqual(faiss.ClusteringInitMethod_RANDOM, 0)
+        self.assertEqual(faiss.ClusteringInitMethod_KMEANS_PLUS_PLUS, 1)
+        self.assertEqual(faiss.ClusteringInitMethod_AFK_MC2, 2)
+        cp = faiss.ClusteringParameters()
+        cp.init_method = faiss.ClusteringInitMethod_KMEANS_PLUS_PLUS
+        self.assertEqual(cp.init_method, faiss.ClusteringInitMethod_KMEANS_PLUS_PLUS)
+
 
 class TestRevSwigPtr(unittest.TestCase):
 
