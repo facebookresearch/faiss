@@ -58,8 +58,8 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
     }
 
     float symmetric_dis(idx_t i, idx_t j) final {
-        aq.decode(codes + i * d, tmp.data(), 1);
-        aq.decode(codes + j * d, tmp.data() + d, 1);
+        aq.decode(codes + i * code_size, tmp.data(), 1);
+        aq.decode(codes + j * code_size, tmp.data() + d, 1);
         return vd(tmp.data(), tmp.data() + d);
     }
 
@@ -79,7 +79,8 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
 
     explicit AQDistanceComputerLUT(const IndexAdditiveQuantizer& iaq)
             : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
-              LUT(iaq.aq->total_codebook_size + iaq.d * 2),
+              LUT(iaq.aq->total_codebook_size // Storage for LUT.
+                  + size_t(iaq.d) * 2), // tmp storage for symmetric distance.
               aq(*iaq.aq),
               d(iaq.d) {}
 
@@ -96,9 +97,9 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
     }
 
     float symmetric_dis(idx_t i, idx_t j) final {
-        float* tmp = LUT.data();
-        aq.decode(codes + i * d, tmp, 1);
-        aq.decode(codes + j * d, tmp + d, 1);
+        float* tmp = LUT.data() + aq.total_codebook_size;
+        aq.decode(codes + i * code_size, tmp, 1);
+        aq.decode(codes + j * code_size, tmp + d, 1);
         return fvec_L2sqr(tmp, tmp + d, d);
     }
 
