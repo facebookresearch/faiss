@@ -3,16 +3,17 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import numpy as np
-import unittest
-import faiss
-import tempfile
-import os
 import io
-import sys
+import os
 import pickle
 import platform
+import sys
+import tempfile
+import unittest
 from multiprocessing.pool import ThreadPool
+
+import faiss
+import numpy as np
 from common_faiss_tests import get_dataset_2
 
 
@@ -727,3 +728,62 @@ class TestIORoundTrip(unittest.TestCase):
         index2 = faiss.read_index(reader)
 
         self.assertIsNone(index2)
+
+
+class Test_IO_HNSW(unittest.TestCase):
+    def __init__(self, methodName="runTest"):
+        unittest.TestCase.__init__(self, methodName)
+        self.xt, self.xb, self.xq = get_dataset_2(d, nt, nb, nq)
+
+    def _test_roundtrip(self, index):
+        for _trips in range(3):
+            read_index = faiss.deserialize_index(faiss.serialize_index(index))
+            self.assertEqual(index.hnsw.efSearch, read_index.hnsw.efSearch)
+            self.assertEqual(
+                index.hnsw.efConstruction, read_index.hnsw.efConstruction)
+            D, I = index.search(self.xq, 10)
+            D_read, I_read = read_index.search(self.xq, 10)
+            np.testing.assert_array_equal(D, D_read)
+            np.testing.assert_array_equal(I, I_read)
+            index = read_index  # test re-serialization
+
+    def _test_io_hnsw(self, index):
+        index.train(self.xt)
+        index.add(self.xb)
+        self._test_roundtrip(index)
+
+    def test_hnsw_flat(self):
+        index = faiss.IndexHNSWFlat(d, 16)
+        self._test_io_hnsw(index)
+
+    def test_hnsw_pq(self):
+        index = faiss.IndexHNSWPQ(d, 16, 16, 4)
+        self._test_io_hnsw(index)
+
+    def test_hnsw_prq(self):
+        """Exercise HNSW with aritrary storage"""
+        storage = faiss.IndexProductResidualQuantizer(
+            d, 8, 2, 4, faiss.METRIC_L2, faiss.AdditiveQuantizer.ST_norm_qint8
+        )
+        index = faiss.IndexHNSW(storage, 32)
+        del storage
+        self._test_io_hnsw(index)
+
+    def test_hnsw_noadd(self):
+        """Exercise HNSW with a swapped-out storage"""
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.train(self.xt)
+        index.add(self.xb)
+        # Note: RaBitQ lacks symmetric_distance, so it can be used for
+        # `search()`, but not `add()`.
+        I_flat = index.storage.assign(self.xq, 10)
+        I_hnsw_flat = index.assign(self.xq, 10)
+        index.storage = faiss.IndexRaBitQ(d)
+        index.storage.train(self.xb)
+        index.storage.add(self.xb)
+        I_hnsw_rabitq = index.assign(self.xq, 10)
+        recall_hnsw_flat = faiss.eval_intersection(I_hnsw_flat, I_flat)
+        recall_hnsw_rabitq = faiss.eval_intersection(I_hnsw_rabitq, I_flat)
+        self.assertGreater(recall_hnsw_flat, 0.999)
+        self.assertGreater(recall_hnsw_rabitq, 0.999)
+        self._test_roundtrip(index)
