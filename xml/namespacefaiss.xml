@@ -13233,10 +13233,10 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances.h" line="38" column="6" declfile="faiss/utils/extra_distances.h" declline="38" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a8cfa8ec52353c0d6477e6db5fc703ff7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a71117f0ec1fa9e2007ed0cf50bd1b3ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
         <definition>FlatCodesDistanceComputer * faiss::get_extra_distance_computer</definition>
-        <argsstring>(size_t d, MetricType mt, float metric_arg, size_t nb, const float *xb)</argsstring>
+        <argsstring>(size_t d, MetricType mt, float metric_arg, const float *xb)</argsstring>
         <name>get_extra_distance_computer</name>
         <qualifiedname>faiss::get_extra_distance_computer</qualifiedname>
         <param>
@@ -13252,17 +13252,13 @@
           <declname>metric_arg</declname>
         </param>
         <param>
-          <type>size_t</type>
-          <declname>nb</declname>
-        </param>
-        <param>
           <type>const float *</type>
           <declname>xb</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> that refers to this type of distance and indexes a flat array of size nb </para>
+<para>get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> that refers to this type of distance and indexes a flat array </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -13295,7 +13291,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="72" column="13" bodyfile="faiss/utils/extra_distances.h" bodystart="72" bodyend="101"/>
+        <location file="faiss/utils/extra_distances.h" line="71" column="13" bodyfile="faiss/utils/extra_distances.h" bodystart="71" bodyend="100"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint16_t</type>
