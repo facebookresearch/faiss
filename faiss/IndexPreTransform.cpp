@@ -345,6 +345,19 @@ struct PreTransformDistanceComputer : DistanceComputer {
     float operator()(idx_t i) override {
         return (*sub_dc)(i);
     }
+
+    void distances_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) override {
+        sub_dc->distances_batch_4(
+                idx0, idx1, idx2, idx3, dis0, dis1, dis2, dis3);
+    }
 };
 
 } // anonymous namespace
