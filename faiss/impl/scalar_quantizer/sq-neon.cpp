@@ -9,6 +9,7 @@
 
 #include <faiss/impl/simdlib/simdlib_neon.h>
 
+#include <algorithm>
 #include <cstring>
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
@@ -180,6 +181,12 @@ struct QuantizerTemplate<
                                 xi.data.val[1],
                                 this->vdiff)});
     }
+
+    /// Raw codec decode without denormalization (for pre-decode opt)
+    FAISS_ALWAYS_INLINE simd8float32
+    decode_8_raw(const uint8_t* code, int i) const {
+        return Codec::decode_8_components(code, i);
+    }
 };
 
 template <class Codec>
@@ -219,23 +226,34 @@ struct QuantizerTemplate<
  * TurboQuant MSE quantizer
  **********************************************************/
 
-#define DEFINE_TQMSE_NEON_SPECIALIZATION(NBITS, UNPACK_FN)                  \
-    template <>                                                             \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::ARM_NEON>               \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
-                                                                            \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
-                : Base(d, trained) {                                        \
-            assert(d % 8 == 0);                                             \
-        }                                                                   \
-                                                                            \
-        FAISS_ALWAYS_INLINE simd8float32                                    \
-        reconstruct_8_components(const uint8_t* code, int i) const {        \
-            uint8_t indices[8];                                             \
-            UNPACK_FN(code, i, indices);                                    \
-            return gather_8_components(this->centroids, indices);           \
-        }                                                                   \
+// NEON TurboQuantMSE: decode via gather, encode stays scalar.
+// NEON doesn't have movemask so 1-bit encode is also scalar.
+#define DEFINE_TQMSE_NEON_SPECIALIZATION(NBITS, UNPACK_FN)                   \
+    template <>                                                              \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::ARM_NEON>                \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {               \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;         \
+                                                                             \
+        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)  \
+                : Base(d, trained) {                                         \
+            assert(d % 8 == 0);                                              \
+        }                                                                    \
+                                                                             \
+        FAISS_ALWAYS_INLINE simd8float32                                     \
+        reconstruct_8_components(const uint8_t* code, int i) const {         \
+            uint8_t indices[8];                                              \
+            UNPACK_FN(code, i, indices);                                     \
+            return gather_8_components(this->centroids, indices);            \
+        }                                                                    \
+                                                                             \
+        void decode_vector(const uint8_t* code, float* x) const final {      \
+            for (size_t i = 0; i < this->d; i += 8) {                        \
+                simd8float32 xi =                                            \
+                        reconstruct_8_components(code, static_cast<int>(i)); \
+                vst1q_f32(x + i, xi.data.val[0]);                            \
+                vst1q_f32(x + i + 4, xi.data.val[1]);                        \
+            }                                                                \
+        }                                                                    \
     }
 
 DEFINE_TQMSE_NEON_SPECIALIZATION(1, unpack_8x1bit_to_u8);
@@ -260,6 +278,15 @@ struct QuantizerTurboQuantMSE<8, SIMDLevel::ARM_NEON>
         uint8_t indices[8];
         std::memcpy(indices, code + static_cast<size_t>(i), sizeof(indices));
         return gather_8_components(this->centroids, indices);
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < this->d; i += 8) {
+            simd8float32 xi =
+                    reconstruct_8_components(code, static_cast<int>(i));
+            vst1q_f32(x + i, xi.data.val[0]);
+            vst1q_f32(x + i + 4, xi.data.val[1]);
+        }
     }
 };
 
@@ -397,6 +424,22 @@ struct SimilarityL2<SIMDLevel::ARM_NEON> {
     FAISS_ALWAYS_INLINE float result_8() {
         return horizontal_add(accu8);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float inv_vdiff = (vdiff != 0) ? 1.0f / vdiff : 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = (x[i] - vmin) * inv_vdiff;
+        }
+        scale_factor = vdiff * vdiff;
+        bias = 0;
+    }
 };
 
 template <>
@@ -431,6 +474,23 @@ struct SimilarityIP<SIMDLevel::ARM_NEON> {
     FAISS_ALWAYS_INLINE float result_8() {
         return horizontal_add(accu8);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float sum_q = 0;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = x[i];
+            sum_q += x[i];
+        }
+        scale_factor = vdiff;
+        bias = vmin * sum_q;
+    }
 };
 
 /**********************************************************
@@ -444,8 +504,23 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
 
     Quantizer quant;
 
+    // Pre-adjusted query buffer for uniform quantizers
+    std::vector<float> q_adj;
+    float scale_factor = 0;
+    float bias = 0;
+
+    static constexpr bool has_decode_raw() {
+        return requires(const Quantizer& q, const uint8_t* c, int i) {
+            { q.decode_8_raw(c, i) };
+        };
+    }
+
     DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
+            : quant(d, trained) {
+        if constexpr (has_decode_raw()) {
+            q_adj.resize(d);
+        }
+    }
 
     float compute_distance(const float* x, const uint8_t* code) const {
         Similarity sim(x);
@@ -471,6 +546,26 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
 
     void set_query(const float* x) final {
         q = x;
+        if constexpr (has_decode_raw()) {
+            Sim::adjust_query_for_raw_decode(
+                    x,
+                    q_adj.data(),
+                    quant.d,
+                    quant.vmin,
+                    quant.vdiff,
+                    scale_factor,
+                    bias);
+        }
+    }
+
+    float query_to_code_predecoded(const uint8_t* code) const {
+        Similarity sim(q_adj.data());
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 xi = quant.decode_8_raw(code, i);
+            sim.add_8_components(xi);
+        }
+        return bias + scale_factor * sim.result_8();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -479,7 +574,11 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
+        if constexpr (has_decode_raw()) {
+            return query_to_code_predecoded(code);
+        } else {
+            return compute_distance(q, code);
+        }
     }
 
     void query_to_codes_batch_4(
@@ -563,6 +662,32 @@ struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
         return compute_code_distance(tmp.data(), code);
     }
 };
+
+/**********************************************************
+ * TurboQuant masked_sum NEON specialization (scalar fallback)
+ **********************************************************/
+
+template <SIMDLevel SL0>
+float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
+
+template <>
+float turboq_masked_sum<SIMDLevel::ARM_NEON>(
+        const float* arr,
+        const uint8_t* bits,
+        size_t d) {
+    float result = 0;
+    for (size_t byte_idx = 0; byte_idx < (d + 7) / 8; byte_idx++) {
+        uint8_t b = bits[byte_idx];
+        size_t base = byte_idx * 8;
+        size_t end = std::min(base + 8, d);
+        for (size_t j = base; j < end; j++) {
+            if (b & (1 << (j - base))) {
+                result += arr[j];
+            }
+        }
+    }
+    return result;
+}
 
 } // namespace scalar_quantizer
 } // namespace faiss

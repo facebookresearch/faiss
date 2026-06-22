@@ -145,25 +145,32 @@ void convert_to_bitset_bitmap(
         raft::resources const& res,
         const faiss::IDSelectorBitmap& selector,
         cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
-    auto n = selector.n;
+    // IDSelectorBitmap.n is the byte count of the bitmap array (number of
+    // uint8_t elements). This matches the documented C++ API:
+    //   @param n size of the bitmap array
+    //   is_member(id) requires id / 8 < n
+    auto n = selector.n; // byte count of bitmap array
     auto bitset_original_nbits = bitset.get_original_nbits();
     if (bitset_original_nbits == 0) {
         bitset_original_nbits = sizeof(uint32_t) * 8;
     }
+    auto bitset_bytes = (bitset.size() + 7) / 8;
     RAFT_EXPECTS(
-            bitset.size() == n,
-            "IDSelectorBitmap is out of range for the given bitset: %ld != %zu",
-            bitset.size(),
-            n);
+            static_cast<int64_t>(n) >= bitset_bytes,
+            "IDSelectorBitmap is too small for the given bitset: "
+            "n=%zu bytes, bitset needs %ld bytes (%ld bits)",
+            n,
+            bitset_bytes,
+            bitset.size());
     auto stream = raft::resource::get_cuda_stream(res);
-    auto n_elements = (selector.n + 7) / 8;
+    auto n_elements = bitset_bytes;
     auto d_bitmap = raft::make_device_vector<uint8_t, int64_t>(res, n_elements);
     auto d_bitmap_ptr = d_bitmap.data_handle();
     raft::copy(
-            res,
-            d_bitmap.view(),
-            raft::make_host_vector_view<const uint8_t, int64_t>(
-                    selector.bitmap, n_elements));
+            d_bitmap_ptr,
+            reinterpret_cast<const uint8_t*>(selector.bitmap),
+            n_elements,
+            stream);
 
     const int threads_per_block = 256;
     const int blocks = (n_elements + threads_per_block - 1) / threads_per_block;

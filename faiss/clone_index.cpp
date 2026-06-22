@@ -377,6 +377,7 @@ Index* Cloner::clone_Index(const Index* index) {
         IndexRowwiseMinMaxBase* res = clone_IndexRowwiseMinMax(irmmb);
         res->own_fields = true;
         res->index = clone_Index(irmmb->index);
+        return res;
     } else if (
             dynamic_cast<const IndexAdditiveQuantizerFastScan*>(index) ||
             dynamic_cast<const IndexAdditiveQuantizer*>(index) ||

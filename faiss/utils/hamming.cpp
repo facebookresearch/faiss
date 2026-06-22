@@ -146,7 +146,7 @@ void hammings(
         size_t nb,
         size_t ncodes,
         hamdis_t* __restrict dis) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         hammings_fixSL<SL>(a, b, na, nb, ncodes, dis);
     });
 }
@@ -170,7 +170,7 @@ void hammings_knn_hc(
         int order,
         ApproxTopK_mode_t approx_topk_mode,
         const faiss::IDSelector* sel) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         hammings_knn_hc_fixSL<SL>(
                 ha, a, b, nb, ncodes, order, approx_topk_mode, sel);
     });
@@ -186,7 +186,7 @@ void hammings_knn_mc(
         int32_t* __restrict distances,
         int64_t* __restrict labels,
         const faiss::IDSelector* sel) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         hammings_knn_mc_fixSL<SL>(
                 a, b, na, nb, k, ncodes, distances, labels, sel);
     });
@@ -201,7 +201,7 @@ void hamming_range_search(
         size_t code_size,
         RangeSearchResult* result,
         const faiss::IDSelector* sel) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         hamming_range_search_fixSL<SL>(
                 a, b, na, nb, radius, code_size, result, sel);
     });
@@ -215,7 +215,7 @@ void hamming_count_thres(
         hamdis_t ht,
         size_t ncodes,
         size_t* nptr) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         hamming_count_thres_fixSL<SL>(bs1, bs2, n1, n2, ht, ncodes, nptr);
     });
 }
@@ -226,7 +226,7 @@ void crosshamming_count_thres(
         hamdis_t ht,
         size_t ncodes,
         size_t* nptr) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         crosshamming_count_thres_fixSL<SL>(dbs, n, ht, ncodes, nptr);
     });
 }
@@ -240,7 +240,7 @@ size_t match_hamming_thres(
         size_t ncodes,
         int64_t* idx,
         hamdis_t* dis) {
-    return with_simd_level([&]<SIMDLevel SL>() -> size_t {
+    return with_simd_level_a0_spr([&]<SIMDLevel SL>() -> size_t {
         return match_hamming_thres_fixSL<SL>(
                 bs1, bs2, n1, n2, ht, ncodes, idx, dis);
     });
@@ -253,7 +253,7 @@ void generalized_hammings_knn_hc(
         size_t nb,
         size_t code_size,
         int ordered) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_a0_spr([&]<SIMDLevel SL>() {
         generalized_hammings_knn_hc_fixSL<SL>(ha, a, b, nb, code_size, ordered);
     });
 }

@@ -101,6 +101,7 @@ class TestIndexFactory(unittest.TestCase):
         np.random.seed(42)
         xb = np.random.random((n, d)).astype("float32")
         index = faiss.IndexHNSWFlat(d, 16)
+        index.hnsw.efSearch = 64
         index.add(xb)
         assert index.ntotal == n
         D, I = index.search(xb[:5], 10)

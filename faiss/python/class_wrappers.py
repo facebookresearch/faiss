@@ -788,6 +788,8 @@ def handle_Index(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='float32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='float32')
 
         self.search_preassigned_c(
             n, swig_ptr(x),
@@ -841,6 +843,8 @@ def handle_Index(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='float32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='float32')
 
         thresh = float(thresh)
         res = RangeSearchResult(n)
@@ -1018,6 +1022,8 @@ def handle_IndexBinary(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='int32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='int32')
 
         self.search_preassigned_c(
             n, swig_ptr(x),
@@ -1053,6 +1059,8 @@ def handle_IndexBinary(the_class):
         if Dq is not None:
             Dq = np.ascontiguousarray(Dq, dtype='int32')
             assert Dq.shape == Iq.shape
+        else:
+            Dq = np.zeros(Iq.shape, dtype='int32')
 
         thresh = int(thresh)
         res = RangeSearchResult(n)
@@ -1163,7 +1171,7 @@ def handle_AutoTuneCriterion(the_class):
             assert I.shape == D.shape
         self.nq, self.gt_nnn = I.shape
         self.set_groundtruth_c(
-            self.gt_nnn, swig_ptr(D) if D else None, swig_ptr(I))
+            self.gt_nnn, swig_ptr(D) if D is not None else None, swig_ptr(I))
 
     def replacement_evaluate(self, D, I):
         assert I.shape == D.shape
@@ -1267,10 +1275,13 @@ def handle_MapLong2Long(the_class):
     def replacement_map_add(self, keys, vals):
         n, = keys.shape
         assert (n,) == vals.shape
+        keys = np.ascontiguousarray(keys, dtype='int64')
+        vals = np.ascontiguousarray(vals, dtype='int64')
         self.add_c(n, swig_ptr(keys), swig_ptr(vals))
 
     def replacement_map_search_multiple(self, keys):
         n, = keys.shape
+        keys = np.ascontiguousarray(keys, dtype='int64')
         vals = np.empty(n, dtype='int64')
         self.search_multiple_c(n, swig_ptr(keys), swig_ptr(vals))
         return vals

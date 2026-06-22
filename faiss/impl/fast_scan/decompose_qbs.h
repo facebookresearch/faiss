@@ -21,8 +21,16 @@ using namespace simd_result_handlers;
 /*
  * Unified kernel: selects 256-bit vs 512-bit path based on
  * compile-time __AVX512F__ guard.
+ *
+ * KernelSL selects the SIMD type width used for the inner accumulation
+ * loop.  In DD mode the caller passes the dispatch level so the kernel
+ * uses real AVX2 types rather than the emulated-scalar fallback.
  */
-template <int NQ, class ResultHandler, class Scaler>
+template <
+        int NQ,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void kernel_accumulate_block(
         int nsq,
         const uint8_t* codes,
@@ -30,14 +38,24 @@ void kernel_accumulate_block(
         ResultHandler& res,
         const Scaler& scaler) {
 #ifdef __AVX512F__
-    pq4_kernel_qbs_512<NQ>(nsq, codes, LUT, res, scaler);
+    if constexpr (
+            KernelSL == SIMDLevel::AVX512 ||
+            KernelSL == SIMDLevel::AVX512_SPR) {
+        pq4_kernel_qbs_512<NQ>(nsq, codes, LUT, res, scaler);
+    } else {
+        pq4_kernel_qbs_256<NQ, KernelSL>(nsq, codes, LUT, res, scaler);
+    }
 #else
-    pq4_kernel_qbs_256<NQ>(nsq, codes, LUT, res, scaler);
+    pq4_kernel_qbs_256<NQ, KernelSL>(nsq, codes, LUT, res, scaler);
 #endif
 }
 
 // handle at most 4 blocks of queries
-template <int QBS, class ResultHandler, class Scaler>
+template <
+        int QBS,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void accumulate_q_4step(
         size_t ntotal2,
         int nsq,
@@ -53,29 +71,36 @@ void accumulate_q_4step(
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
     for_each_block<32>(ntotal2, codes, block_stride, res, [&](size_t) {
-        FixedStorageHandler<SQ, 2> res2;
+        FixedStorageHandler<SQ, 2, KernelSL> res2;
         const uint8_t* LUT = LUT0;
-        kernel_accumulate_block<Q1>(nsq, codes, LUT, res2, scaler);
+        kernel_accumulate_block<Q1, KernelSL>(nsq, codes, LUT, res2, scaler);
         LUT += Q1 * nsq * 16;
         if (Q2 > 0) {
             res2.set_block_origin(Q1, 0);
-            kernel_accumulate_block<Q2>(nsq, codes, LUT, res2, scaler);
+            kernel_accumulate_block<Q2, KernelSL>(
+                    nsq, codes, LUT, res2, scaler);
             LUT += Q2 * nsq * 16;
         }
         if (Q3 > 0) {
             res2.set_block_origin(Q1 + Q2, 0);
-            kernel_accumulate_block<Q3>(nsq, codes, LUT, res2, scaler);
+            kernel_accumulate_block<Q3, KernelSL>(
+                    nsq, codes, LUT, res2, scaler);
             LUT += Q3 * nsq * 16;
         }
         if (Q4 > 0) {
             res2.set_block_origin(Q1 + Q2 + Q3, 0);
-            kernel_accumulate_block<Q4>(nsq, codes, LUT, res2, scaler);
+            kernel_accumulate_block<Q4, KernelSL>(
+                    nsq, codes, LUT, res2, scaler);
         }
         res2.to_other_handler(res);
     });
 }
 
-template <int NQ, class ResultHandler, class Scaler>
+template <
+        int NQ,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void kernel_accumulate_block_loop(
         size_t ntotal2,
         int nsq,
@@ -85,13 +110,15 @@ void kernel_accumulate_block_loop(
         const Scaler& scaler,
         size_t block_stride) {
     for_each_block<32>(ntotal2, codes, block_stride, res, [&](size_t) {
-        kernel_accumulate_block<NQ, ResultHandler>(
-                nsq, codes, LUT, res, scaler);
+        kernel_accumulate_block<NQ, KernelSL>(nsq, codes, LUT, res, scaler);
     });
 }
 
 // non-template version of accumulate kernel -- dispatches dynamically
-template <class ResultHandler, class Scaler>
+template <
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void accumulate(
         int nq,
         size_t ntotal2,
@@ -106,7 +133,7 @@ void accumulate(
 
 #define DISPATCH(NQ)                                                  \
     case NQ:                                                          \
-        kernel_accumulate_block_loop<NQ, ResultHandler>(              \
+        kernel_accumulate_block_loop<NQ, KernelSL>(                   \
                 ntotal2, nsq, codes, LUT, res, scaler, block_stride); \
         return
 
@@ -121,7 +148,10 @@ void accumulate(
 #undef DISPATCH
 }
 
-template <class ResultHandler, class Scaler>
+template <
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
 void pq4_accumulate_loop_qbs_fixed_scaler(
         int qbs,
         size_t ntotal2,
@@ -139,7 +169,7 @@ void pq4_accumulate_loop_qbs_fixed_scaler(
     switch (qbs) {
 #define DISPATCH(QBS)                                                  \
     case QBS:                                                          \
-        accumulate_q_4step<QBS>(                                       \
+        accumulate_q_4step<QBS, KernelSL>(                             \
                 ntotal2, nsq, codes, LUT0, res, scaler, block_stride); \
         return;
         DISPATCH(0x3333); // 12
@@ -177,10 +207,9 @@ void pq4_accumulate_loop_qbs_fixed_scaler(
             int nq = qi & 15;
             qi >>= 4;
             res.set_block_origin(i0, j0);
-#define DISPATCH(NQ)                                \
-    case NQ:                                        \
-        kernel_accumulate_block<NQ, ResultHandler>( \
-                nsq, codes, LUT, res, scaler);      \
+#define DISPATCH(NQ)                                                         \
+    case NQ:                                                                 \
+        kernel_accumulate_block<NQ, KernelSL>(nsq, codes, LUT, res, scaler); \
         break
             switch (nq) {
                 DISPATCH(1);

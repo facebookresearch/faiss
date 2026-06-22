@@ -65,13 +65,13 @@ class TestFastScanFiltering(unittest.TestCase):
             ])
             inner_sel = faiss.IDSelectorBatch(excluded)
             sel = faiss.IDSelectorNot(inner_sel)
-            allowed = set(i for i in range(nb) if i not in excluded)
+            allowed = {i for i in range(nb) if i not in excluded}
         elif id_selector_type == "partial_batch":
             # Exclude a few IDs within a single block (not a whole block)
             excluded = np.array([5, 10, 20, 31], dtype="int64")
             inner_sel = faiss.IDSelectorBatch(excluded)
             sel = faiss.IDSelectorNot(inner_sel)
-            allowed = set(i for i in range(nb) if i not in excluded)
+            allowed = {i for i in range(nb) if i not in excluded}
         elif id_selector_type == "empty":
             sel = faiss.IDSelectorBatch(np.array([], dtype="int64"))
             allowed = set()
@@ -213,7 +213,7 @@ class TestBlockSkipConsistency(unittest.TestCase):
         ])
         inner_sel = faiss.IDSelectorBatch(excluded)
         sel = faiss.IDSelectorNot(inner_sel)
-        allowed = set(i for i in range(nb) if i not in excluded)
+        allowed = {i for i in range(nb) if i not in excluded}
 
         # FastScan index
         index_fs = faiss.index_factory(d, "IVF32,PQ4x4fs")

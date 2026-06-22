@@ -254,7 +254,10 @@ void DirectMap::update_codes(
                 int64_t id2 = invlists->get_single_id(il, l - 1);
                 array[id2] = lo_build(il, ofs);
                 invlists->update_entry(
-                        il, ofs, id2, invlists->get_single_code(il, l - 1));
+                        il,
+                        ofs,
+                        id2,
+                        InvertedLists::ScopedCodes(invlists, il, l - 1).get());
             }
             invlists->resize(il, l - 1);
         }

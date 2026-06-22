@@ -13,7 +13,7 @@
 #include <faiss/utils/hamming_distance/hamming_computer-avx2.h>
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h>
+#include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h> // IWYU pragma: keep
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryHash_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)

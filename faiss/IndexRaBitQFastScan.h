@@ -187,7 +187,7 @@ struct RaBitQHeapHandler
         }
     }
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override {
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
         ALIGNED(32) uint16_t d32tab[32];
         d0.store(d32tab);
         d1.store(d32tab + 16);

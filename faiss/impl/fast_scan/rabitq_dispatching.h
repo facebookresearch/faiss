@@ -43,11 +43,17 @@ std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner_impl<
         const FastScanDistancePostProcessing& context,
         bool is_multi_bit) {
     if (is_max) {
-        using H = RaBitQHeapHandler<CMax<uint16_t, int>, false>;
+        using H = RaBitQHeapHandler<
+                CMax<uint16_t, int>,
+                false,
+                THE_LEVEL_TO_DISPATCH>;
         return std::make_unique<ScannerMixIn<H>>(
                 index, nq, k, distances, ids, sel, &context, is_multi_bit);
     } else {
-        using H = RaBitQHeapHandler<CMin<uint16_t, int>, false>;
+        using H = RaBitQHeapHandler<
+                CMin<uint16_t, int>,
+                false,
+                THE_LEVEL_TO_DISPATCH>;
         return std::make_unique<ScannerMixIn<H>>(
                 index, nq, k, distances, ids, sel, &context, is_multi_bit);
     }
@@ -68,12 +74,14 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl<
         bool multi_bit) {
     if (is_max) {
         using C = CMax<uint16_t, int64_t>;
-        using H = simd_result_handlers::IVFRaBitQHeapHandler<C>;
+        using H = simd_result_handlers::
+                IVFRaBitQHeapHandler<C, THE_LEVEL_TO_DISPATCH>;
         return std::make_unique<ScannerMixIn<H>>(
                 index, nq, k, distances, ids, sel, context, multi_bit);
     } else {
         using C = CMin<uint16_t, int64_t>;
-        using H = simd_result_handlers::IVFRaBitQHeapHandler<C>;
+        using H = simd_result_handlers::
+                IVFRaBitQHeapHandler<C, THE_LEVEL_TO_DISPATCH>;
         return std::make_unique<ScannerMixIn<H>>(
                 index, nq, k, distances, ids, sel, context, multi_bit);
     }
