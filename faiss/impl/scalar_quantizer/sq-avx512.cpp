@@ -214,6 +214,12 @@ struct QuantizerTemplate<
         return simd16float32(_mm512_fmadd_ps(
                 xi, _mm512_set1_ps(this->vdiff), _mm512_set1_ps(this->vmin)));
     }
+
+    /// Raw codec decode without denormalization
+    FAISS_ALWAYS_INLINE simd16float32
+    decode_16_raw(const uint8_t* code, int i) const {
+        return Codec::decode_16_components(code, i);
+    }
 };
 
 template <class Codec>
@@ -247,32 +253,78 @@ struct QuantizerTemplate<
  * TurboQuant MSE quantizer
  **********************************************************/
 
-#define DEFINE_TQMSE_AVX512_SPECIALIZATION(NBITS, INDEX_EXPR)               \
-    template <>                                                             \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                 \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
-                                                                            \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
-                : Base(d, trained) {                                        \
-            assert(d % 16 == 0);                                            \
-        }                                                                   \
-                                                                            \
-        FAISS_ALWAYS_INLINE simd16float32                                   \
-        reconstruct_16_components(const uint8_t* code, int i) const {       \
-            const __m512i indices = (INDEX_EXPR);                           \
-            return simd16float32(_mm512_i32gather_ps(                       \
-                    indices, this->centroids, sizeof(float)));              \
-        }                                                                   \
+// 1-bit MSE AVX512: 16 comparisons → 2 bytes via mask compare.
+template <>
+struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX512>
+        : QuantizerTurboQuantMSE<1, SIMDLevel::NONE> {
+    using Base = QuantizerTurboQuantMSE<1, SIMDLevel::NONE>;
+
+    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+            : Base(d, trained) {
+        assert(d % 16 == 0);
     }
 
-DEFINE_TQMSE_AVX512_SPECIALIZATION(1, unpack_16x1bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_SPECIALIZATION(2, unpack_16x2bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_SPECIALIZATION(3, unpack_16x3bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_SPECIALIZATION(4, unpack_16x4bit_to_u32(code, i));
+    FAISS_ALWAYS_INLINE simd16float32
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        return simd16float32(_mm512_i32gather_ps(
+                unpack_16x1bit_to_u32(code, i),
+                this->centroids,
+                sizeof(float)));
+    }
 
-#undef DEFINE_TQMSE_AVX512_SPECIALIZATION
+    void encode_vector(const float* x, uint8_t* code) const final {
+        __m512 boundary = _mm512_set1_ps(this->boundaries[0]);
+        for (size_t i = 0; i < this->d; i += 16) {
+            __m512 vals = _mm512_loadu_ps(x + i);
+            __mmask16 mask = _mm512_cmp_ps_mask(vals, boundary, _CMP_GT_OQ);
+            uint16_t bits = _cvtmask16_u32(mask);
+            memcpy(code + i / 8, &bits, sizeof(uint16_t));
+        }
+    }
 
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < this->d; i += 16) {
+            simd16float32 xi =
+                    reconstruct_16_components(code, static_cast<int>(i));
+            _mm512_storeu_ps(x + i, xi.f);
+        }
+    }
+};
+
+// 2-4 bit MSE AVX512: decode via gather, encode stays scalar.
+#define DEFINE_TQMSE_AVX512_MULTIBIT(NBITS, UNPACK_EXPR)                      \
+    template <>                                                               \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                   \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {                \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;          \
+                                                                              \
+        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)   \
+                : Base(d, trained) {                                          \
+            assert(d % 16 == 0);                                              \
+        }                                                                     \
+                                                                              \
+        FAISS_ALWAYS_INLINE simd16float32                                     \
+        reconstruct_16_components(const uint8_t* code, int i) const {         \
+            return simd16float32(_mm512_i32gather_ps(                         \
+                    (UNPACK_EXPR), this->centroids, sizeof(float)));          \
+        }                                                                     \
+                                                                              \
+        void decode_vector(const uint8_t* code, float* x) const final {       \
+            for (size_t i = 0; i < this->d; i += 16) {                        \
+                simd16float32 xi =                                            \
+                        reconstruct_16_components(code, static_cast<int>(i)); \
+                _mm512_storeu_ps(x + i, xi.f);                                \
+            }                                                                 \
+        }                                                                     \
+    }
+
+DEFINE_TQMSE_AVX512_MULTIBIT(2, unpack_16x2bit_to_u32(code, i));
+DEFINE_TQMSE_AVX512_MULTIBIT(3, unpack_16x3bit_to_u32(code, i));
+DEFINE_TQMSE_AVX512_MULTIBIT(4, unpack_16x4bit_to_u32(code, i));
+
+#undef DEFINE_TQMSE_AVX512_MULTIBIT
+
+// 8-bit MSE AVX512
 template <>
 struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX512>
         : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
@@ -290,6 +342,14 @@ struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX512>
         const __m512i indices = _mm512_cvtepu8_epi32(packed);
         return simd16float32(
                 _mm512_i32gather_ps(indices, this->centroids, sizeof(float)));
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < this->d; i += 16) {
+            simd16float32 xi =
+                    reconstruct_16_components(code, static_cast<int>(i));
+            _mm512_storeu_ps(x + i, xi.f);
+        }
     }
 };
 
@@ -411,6 +471,22 @@ struct SimilarityL2<SIMDLevel::AVX512> {
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float inv_vdiff = (vdiff != 0) ? 1.0f / vdiff : 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = (x[i] - vmin) * inv_vdiff;
+        }
+        scale_factor = vdiff * vdiff;
+        bias = 0;
+    }
 };
 
 template <>
@@ -445,6 +521,23 @@ struct SimilarityIP<SIMDLevel::AVX512> {
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float sum_q = 0;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = x[i];
+            sum_q += x[i];
+        }
+        scale_factor = vdiff;
+        bias = vmin * sum_q;
+    }
 };
 
 /**********************************************************
@@ -458,8 +551,23 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
 
     Quantizer quant;
 
+    // Pre-adjusted query buffer for uniform quantizers
+    std::vector<float> q_adj;
+    float scale_factor = 0;
+    float bias = 0;
+
+    static constexpr bool has_decode_raw() {
+        return requires(const Quantizer& q, const uint8_t* c, int i) {
+            { q.decode_16_raw(c, i) };
+        };
+    }
+
     DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
+            : quant(d, trained) {
+        if constexpr (has_decode_raw()) {
+            q_adj.resize(d);
+        }
+    }
 
     float compute_distance(const float* x, const uint8_t* code) const {
         Similarity sim(x);
@@ -485,6 +593,26 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
 
     void set_query(const float* x) final {
         q = x;
+        if constexpr (has_decode_raw()) {
+            Sim::adjust_query_for_raw_decode(
+                    x,
+                    q_adj.data(),
+                    quant.d,
+                    quant.vmin,
+                    quant.vdiff,
+                    scale_factor,
+                    bias);
+        }
+    }
+
+    float query_to_code_predecoded(const uint8_t* code) const {
+        Similarity sim(q_adj.data());
+        sim.begin_16();
+        for (size_t i = 0; i < quant.d; i += 16) {
+            simd16float32 xi = quant.decode_16_raw(code, i);
+            sim.add_16_components(xi);
+        }
+        return bias + scale_factor * sim.result_16();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -493,7 +621,11 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
+        if constexpr (has_decode_raw()) {
+            return query_to_code_predecoded(code);
+        } else {
+            return compute_distance(q, code);
+        }
     }
 
     void query_to_codes_batch_4(
@@ -588,10 +720,50 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
     }
 };
 
+/**********************************************************
+ * TurboQuant masked_sum AVX512 specialization
+ **********************************************************/
+
+template <SIMDLevel SL0>
+float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
+
+template <>
+float turboq_masked_sum<SIMDLevel::AVX512>(
+        const float* arr,
+        const uint8_t* bits,
+        size_t d) {
+    __m512 acc = _mm512_setzero_ps();
+    size_t i = 0;
+    size_t full_16 = (d / 16) * 16;
+    for (; i < full_16; i += 16) {
+        uint16_t mask16;
+        memcpy(&mask16, bits + i / 8, sizeof(mask16));
+        __mmask16 k = _cvtu32_mask16(mask16);
+        __m512 vals = _mm512_loadu_ps(arr + i);
+        acc = _mm512_mask_add_ps(acc, k, acc, vals);
+    }
+    float result = _mm512_reduce_add_ps(acc);
+    if (i < d) {
+        size_t remaining = d - i;
+        __mmask16 tail_mask = _cvtu32_mask16((1u << remaining) - 1);
+        __m512 tail_vals = _mm512_maskz_loadu_ps(tail_mask, arr + i);
+        uint16_t bits_tail = 0;
+        size_t bytes_remaining = (remaining + 7) / 8;
+        memcpy(&bits_tail, bits + i / 8, bytes_remaining);
+        __mmask16 bits_k = _cvtu32_mask16(bits_tail);
+        __mmask16 combined = _kand_mask16(tail_mask, bits_k);
+        __m512 masked_tail = _mm512_maskz_mov_ps(combined, tail_vals);
+        result += _mm512_reduce_add_ps(masked_tail);
+    }
+    return result;
+}
+
 } // namespace scalar_quantizer
 } // namespace faiss
 
+#ifndef SQ_AVX512_SKIP_DISPATCH
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
+#endif
 
 #endif // COMPILE_SIMD_AVX512

@@ -58,6 +58,11 @@ macro(configure_swigfaiss source)
       )
     endif()
   endif()
+  if(FAISS_ENABLE_METAL)
+    set_property(SOURCE ${source} APPEND PROPERTY
+      COMPILE_DEFINITIONS FAISS_ENABLE_METAL
+    )
+  endif()
 endmacro()
 
 # CMake's SWIG wrappers only allow tweaking certain settings at source level, so
@@ -236,6 +241,16 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(swigfaiss_avx512_spr PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
     target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
   endif()
+endif()
+
+if(FAISS_ENABLE_METAL)
+  target_link_libraries(swigfaiss PRIVATE
+    faiss_metal
+    "-framework Metal"
+    "-framework MetalKit"
+    "-framework MetalPerformanceShaders"
+    "-framework Foundation"
+  )
 endif()
 
 find_package(OpenMP REQUIRED)
@@ -442,6 +457,40 @@ install(FILES
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi")
   install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi" DESTINATION faiss)
 endif()
+
+# GPU build marker: only present in faiss-gpu wheels. Used by __init__.py to
+# decide whether to preload CUDA shared libs from nvidia-*-cu12 pip packages.
+# Gating on this marker (instead of importability of `nvidia.cuda_runtime`)
+# prevents false positives in faiss-cpu environments where PyTorch or cupy
+# have transitively pulled in the nvidia-* packages.
+if(FAISS_ENABLE_GPU)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/_gpu_build.py"
+    "# Auto-generated when FAISS_ENABLE_GPU=ON.\n"
+    "IS_GPU_BUILD = True\n")
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/_gpu_build.py" DESTINATION faiss)
+endif()
+
+if(FAISS_ENABLE_METAL)
+  find_file(FAISS_METALLIB_FILE MetalDistance.metallib
+    HINTS "${faiss_ROOT}/lib" "${CMAKE_INSTALL_PREFIX}/lib"
+          "${CMAKE_BINARY_DIR}/faiss/gpu_metal"
+    NO_DEFAULT_PATH
+  )
+  if(FAISS_METALLIB_FILE)
+    install(FILES "${FAISS_METALLIB_FILE}" DESTINATION faiss)
+  elseif(TARGET faiss_metal)
+    # In-tree build: the metallib is compiled by the metal_shaders custom
+    # target and does not exist at configure time. Install from the known
+    # build output path — it will be present at install time.
+    install(FILES "${CMAKE_BINARY_DIR}/faiss/gpu_metal/MetalDistance.metallib"
+      DESTINATION faiss)
+  else()
+    message(WARNING
+      "FAISS_ENABLE_METAL is ON but MetalDistance.metallib was not found. "
+      "The Python package will not include GPU Metal support at runtime.")
+  endif()
+endif()
+
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/py.typed")
   install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/py.typed" DESTINATION faiss)
 endif()

@@ -146,6 +146,29 @@ class TestSWIGWrap(unittest.TestCase):
         with self.assertRaises(AttributeError):
             index.centered2 = False
 
+    def test_ivfsq_turboq_search_parameters(self):
+        params = faiss.IVFSQTurboQSearchParameters()
+        self.assertEqual(params.qb, 0)
+        self.assertFalse(params.int_qjl)
+        params.qb = 4
+        params.int_qjl = True
+        self.assertEqual(params.qb, 4)
+        self.assertTrue(params.int_qjl)
+
+    def test_scalar_quantizer_tq_enum_values(self):
+        # QT_2bit_tq..QT_5bit_tq were added in the TurboQuant commit and must
+        # be accessible as ScalarQuantizer class attributes (pyi stub regression
+        # test: they were absent until this fix).
+        sq = faiss.ScalarQuantizer
+        self.assertEqual(sq.QT_2bit_tq, 15)
+        self.assertEqual(sq.QT_3bit_tq, 16)
+        self.assertEqual(sq.QT_4bit_tq, 17)
+        self.assertEqual(sq.QT_5bit_tq, 18)
+
+    def test_scalar_quantizer_0bit_enum_value(self):
+        # QT_0bit (centroid-only SQ, for IVF) was likewise absent from the
+        # pyi stub until this fix.
+        self.assertEqual(faiss.ScalarQuantizer.QT_0bit, 9)
 
 
 class TestRevSwigPtr(unittest.TestCase):
@@ -286,3 +309,49 @@ class TestDoxygen(unittest.TestCase):
 
         self.assertTrue("a template structure for a set of [min|max]-heaps"
                         in maxheap_array.__doc__)
+
+
+class TestMapLong2Long(unittest.TestCase):
+    def test_add_coerces_keys_and_vals(self):
+        for dtype in (np.int32, np.int64):
+            with self.subTest(dtype=dtype):
+                m = faiss.MapLong2Long()
+                keys = np.array([0, 1, 2, 3, 4], dtype=dtype)
+                vals = np.array([100, 101, 102, 103, 104], dtype=dtype)
+                m.add(keys, vals)
+                for k, v in zip(range(5), range(100, 105)):
+                    self.assertEqual(m.search(k), v)
+
+    def test_search_multiple_coerces_int32_keys(self):
+        m = faiss.MapLong2Long()
+        m.add(
+            np.arange(5, dtype=np.int64),
+            np.arange(5, dtype=np.int64) + 300,
+        )
+        result = m.search_multiple(np.array([0, 2, 4], dtype=np.int32))
+        np.testing.assert_array_equal(result, [300, 302, 304])
+
+
+class TestInvertedListsDowncast(unittest.TestCase):
+    def test_downcast_ArrayInvertedListsPanorama(self):
+        # downcast_InvertedLists() triggers the typemap; raw .invlists access
+        # does not (typemap applies to function returns, not member getters).
+        d, nlist, n_levels = 32, 8, 2
+        index = faiss.IndexIVFFlatPanorama(
+            faiss.IndexFlatL2(d), d, nlist, n_levels
+        )
+        il = faiss.downcast_InvertedLists(index.invlists)
+        self.assertIsInstance(il, faiss.ArrayInvertedListsPanorama)
+        self.assertEqual(il.n_levels, n_levels)
+
+    def test_downcast_SliceInvertedLists(self):
+        d, nlist = 4, 4
+        # code_size = d * sizeof(float)
+        backing = faiss.ArrayInvertedLists(nlist, d * 4)
+        sil = faiss.SliceInvertedLists(backing, 0, nlist)
+        index = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, nlist)
+        # own=False: index doesn't delete sil; Python locals keep both alive.
+        index.replace_invlists(sil, False)
+        inner = faiss.downcast_InvertedLists(index.invlists)
+        self.assertIsInstance(inner, faiss.SliceInvertedLists)
+        self.assertEqual((inner.i0, inner.i1), (0, nlist))

@@ -110,12 +110,6 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
 #define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
 
-#ifdef SWIG
-#define FAISS_MAYBE_UNUSED
-#else
-#define FAISS_MAYBE_UNUSED [[maybe_unused]]
-#endif
-
 #else
 /*******************************************************
  * Linux and OSX
@@ -130,12 +124,10 @@ inline int __builtin_clzll(uint64_t x) {
 #define ALIGNED(x)
 #define FAISS_PACKED
 #define FAISS_RESTRICT
-#define FAISS_MAYBE_UNUSED
 #else
 #define ALIGNED(x) __attribute__((aligned(x)))
 #define FAISS_PACKED __attribute__((packed))
 #define FAISS_RESTRICT __restrict
-#define FAISS_MAYBE_UNUSED [[maybe_unused]]
 #endif
 
 // On non-Windows, FAISS_PACKED handles packing, so these are no-ops
@@ -220,3 +212,15 @@ inline int __builtin_clzll(uint64_t x) {
 #define Swap4Bytes(val)                                           \
     ((((val) >> 24) & 0x000000FF) | (((val) >> 8) & 0x0000FF00) | \
      (((val) << 8) & 0x00FF0000) | (((val) << 24) & 0xFF000000))
+
+/*******************************************************
+ * A few things that SWIG has trouble parsing
+ *******************************************************/
+
+#ifdef SWIG
+#define FAISS_MAYBE_UNUSED
+#define FAISS_FINAL
+#else
+#define FAISS_MAYBE_UNUSED [[maybe_unused]]
+#define FAISS_FINAL final
+#endif

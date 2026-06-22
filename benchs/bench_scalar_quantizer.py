@@ -17,7 +17,7 @@ ncent = 256
 
 variants = [(name, getattr(faiss.ScalarQuantizer, name))
             for name in dir(faiss.ScalarQuantizer)
-            if name.startswith('QT_')]
+            if name.startswith('QT_') and name != 'QT_count']
 
 quantizer = faiss.IndexFlatL2(d)
 # quantizer.add(np.zeros((1, d), dtype='float32'))
@@ -67,7 +67,7 @@ if True:
                 index.sq.rangestat = getattr(faiss.ScalarQuantizer,
                                           rsname)
 
-                index.rangestat_arg = val
+                index.sq.rangestat_arg = val
 
                 index.train(xt)
                 index.add(xb)

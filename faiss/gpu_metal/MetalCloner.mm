@@ -8,9 +8,11 @@
 
 #import "MetalCloner.h"
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/FaissAssert.h>
 #include <cstring>
 #import "MetalIndexFlat.h"
+#import "MetalIndexIVFFlat.h"
 #import "StandardMetalResources.h"
 
 namespace faiss {
@@ -30,42 +32,66 @@ faiss::Index* index_cpu_to_metal_gpu(
     FAISS_THROW_IF_NOT(res->getResources()->isAvailable());
     FAISS_THROW_IF_NOT_MSG(device == 0, "Metal backend supports only device 0");
 
-    const auto* flat = dynamic_cast<const faiss::IndexFlat*>(index);
-    if (!flat) {
-        FAISS_THROW_MSG(
-                "index_cpu_to_metal_gpu: only IndexFlat (and L2/IP) supported");
-    }
-    FAISS_THROW_IF_NOT(
-            flat->metric_type == METRIC_L2 ||
-            flat->metric_type == METRIC_INNER_PRODUCT);
-
     MetalIndexConfig config;
     config.device = 0;
-    auto* metal = new MetalIndexFlat(
-            res->getResources(),
-            flat->d,
-            flat->metric_type,
-            flat->metric_arg,
-            config);
-    if (flat->ntotal > 0) {
-        const float* xb = flat->get_xb();
-        metal->add(flat->ntotal, xb);
+
+    const auto* ivfFlat = dynamic_cast<const faiss::IndexIVFFlat*>(index);
+    if (ivfFlat) {
+        FAISS_THROW_IF_NOT(
+                ivfFlat->metric_type == METRIC_L2 ||
+                ivfFlat->metric_type == METRIC_INNER_PRODUCT);
+        return new MetalIndexIVFFlat(res->getResources(), ivfFlat, config);
     }
-    return metal;
+
+    const auto* flat = dynamic_cast<const faiss::IndexFlat*>(index);
+    if (flat) {
+        FAISS_THROW_IF_NOT(
+                flat->metric_type == METRIC_L2 ||
+                flat->metric_type == METRIC_INNER_PRODUCT);
+        auto* metal = new MetalIndexFlat(
+                res->getResources(),
+                flat->d,
+                flat->metric_type,
+                flat->metric_arg,
+                config);
+        if (flat->ntotal > 0) {
+            const float* xb = flat->get_xb();
+            metal->add(flat->ntotal, xb);
+        }
+        return metal;
+    }
+
+    FAISS_THROW_MSG(
+            "index_cpu_to_metal_gpu: unsupported index type "
+            "(supported: IndexFlat, IndexIVFFlat)");
 }
 
 faiss::Index* index_metal_gpu_to_cpu(const faiss::Index* index) {
-    const auto* metal = dynamic_cast<const MetalIndexFlat*>(index);
-    if (!metal) {
-        FAISS_THROW_MSG(
-                "index_metal_gpu_to_cpu: only MetalIndexFlat supported");
+    const auto* metalIvf = dynamic_cast<const MetalIndexIVFFlat*>(index);
+    if (metalIvf) {
+        auto* quantizer = (metalIvf->metric_type == METRIC_INNER_PRODUCT)
+                ? (faiss::IndexFlat*)new faiss::IndexFlatIP(metalIvf->d)
+                : (faiss::IndexFlat*)new faiss::IndexFlatL2(metalIvf->d);
+        auto* cpu = new faiss::IndexIVFFlat(
+                quantizer, metalIvf->d, metalIvf->nlist());
+        cpu->own_fields = true;
+        metalIvf->copyTo(cpu);
+        return cpu;
     }
-    faiss::IndexFlat* cpu = (metal->metric_type == METRIC_INNER_PRODUCT)
-            ? (faiss::IndexFlat*)new faiss::IndexFlatIP(metal->d)
-            : (faiss::IndexFlat*)new faiss::IndexFlatL2(metal->d);
-    cpu->metric_arg = metal->metric_arg;
-    metal->copyTo(cpu);
-    return cpu;
+
+    const auto* metal = dynamic_cast<const MetalIndexFlat*>(index);
+    if (metal) {
+        faiss::IndexFlat* cpu = (metal->metric_type == METRIC_INNER_PRODUCT)
+                ? (faiss::IndexFlat*)new faiss::IndexFlatIP(metal->d)
+                : (faiss::IndexFlat*)new faiss::IndexFlatL2(metal->d);
+        cpu->metric_arg = metal->metric_arg;
+        metal->copyTo(cpu);
+        return cpu;
+    }
+
+    FAISS_THROW_MSG(
+            "index_metal_gpu_to_cpu: unsupported index type "
+            "(supported: MetalIndexFlat, MetalIndexIVFFlat)");
 }
 
 } // namespace gpu_metal

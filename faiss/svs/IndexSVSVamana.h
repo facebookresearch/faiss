@@ -94,6 +94,9 @@ struct IndexSVSVamana : Index {
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
 
+    /// Whether this is a static (immutable) Vamana index
+    bool is_static = false;
+
     SVSStorageKind storage_kind = SVS_FP32;
 
     IndexSVSVamana();
@@ -102,7 +105,8 @@ struct IndexSVSVamana : Index {
             idx_t d,
             size_t degree,
             MetricType metric = METRIC_L2,
-            SVSStorageKind storage = SVSStorageKind::SVS_FP32);
+            SVSStorageKind storage = SVSStorageKind::SVS_FP32,
+            bool is_static = false);
 
     ~IndexSVSVamana() override;
 
@@ -137,8 +141,9 @@ struct IndexSVSVamana : Index {
     void serialize_impl(std::ostream& out) const;
     virtual void deserialize_impl(std::istream& in);
 
-    /* The actual SVS implementation */
-    svs_runtime::DynamicVamanaIndex* impl{nullptr};
+    /* The actual SVS implementation (VamanaIndex is the base for both
+       static and dynamic variants) */
+    svs_runtime::VamanaIndex* impl{nullptr};
 
     // The SVS runtime API does not expose vector retrieval, so we keep a copy
     // of added vectors to support reconstruct(). When used as a coarse
@@ -147,8 +152,13 @@ struct IndexSVSVamana : Index {
     bool stored_vectors_valid{true};
 
    protected:
-    /* Initializes the implementation*/
-    virtual void create_impl();
+    /* Initializes the implementation. For static indexes the data is consumed
+       at build time; for dynamic indexes n/x are ignored and add() populates
+       the index afterwards. */
+    virtual void create_impl(idx_t n, const float* x);
+
+    /* Returns the dynamic impl pointer, throwing if static */
+    svs_runtime::DynamicVamanaIndex* dynamic_impl() const;
 };
 
 } // namespace faiss

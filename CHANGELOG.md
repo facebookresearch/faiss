@@ -3,6 +3,69 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.14.3] - 2026-06-12
+
+Added
+- 261d8f25aac03c980f1faf5df775248eff96cb6d Add IVFSQTurboQSearchParameters to __init__.pyi stub (#5304)
+- 684a32d0404758bddd4f7fb9ec76db54252819e0 Add manual Faiss nightly workflow dispatch (#5300)
+- 10b6b2a1e554afc4cbd66fe73d864728ff9e310c Add MetalIndexIVFFlat with IVF scan/merge kernels and expanded top-k support (#5202)
+- 74d36198faac528fce715aa8731bf589727bef6d TurboQuant in ScalarQuantizer: full Algorithm 2 (QJL stage) with SIMD and optimizations (#5170)
+- 506600962f8a58926710edd24715bc9002eb18e9 Add Python HNSW tutorial (#5260)
+- 3cff0f419c459bdc7c4f56ea49effb6d7da1475c Add Sapphire Rapids optimizations for ScalarQuantizer (L2, IP) (#5173)
+- 46ef80db639e4de03720e3c404065636846ed47e Support IndexIDMap/IndexIDMap2 in reverse_index_factory (#5266)
+- 420158b10e0136228ff634d464fa90c4370a1ead Add VPOPCNTDQ-based HammingComputer for Sapphire Rapids+ (#5183)
+- d8f1c2716d9c2c070c0d7e4e0c1017331e9e9e8a Implement NEON-based FINE_SIZE=2 specializations for Index2LevelDecoderImpl and IndexPQDecoder (#5262)
+- 0951b5337b72755ade5c02705396fb7d7cedceac Support user provided blas library (#5189)
+- 215740ecc3add92d7c27e24436b2dffd8fdb157c SVS static vamana support (#5224)
+- d24ad6ef5b3e40c0e4cf8b695923cbcd674d2573 Add is_similarity mode to HNSW (#5246)
+- aa332cd5f0d6984075c849b32c387fffe067a49a Implement NEON-based FINE_SIZE=2 specializations for Index2LevelDecoderImpl and IndexPQDecoder (#5255)
+- 5d9aae6ee81078d33ff3c4e2fc97f7583e2e450d Add faiss-gpu pip wheel packaging (#5131)
+- 6f1cf64531130db04843737d1f538999fc295583 Add VPOPCNTDQ-based RaBitQ kernel for Sapphire Rapids+ (#5149)
+
+Changed
+- 262fc3c7a2ec099cdd0cd21482931702171c60eb Re-enable musllinux wheels for faiss-cpu (#5299)
+- 1cdc3709c656eea41ce3725024070f2516e3b30b Run CI on push to main to refresh ccache cache (#5291)
+- 379ee758b1bb49cd167c6ed86e80be331e94c593 Reserve VisitedTableSet capacity to avoid rehashes during HNSW search (#5290)
+- 6513a2497cbc29f5c0c74c0d17bbe8b9f6ff3230 Enable Metal by default on Apple machines (#5280)
+- fe46c3c804296cc04238c2e17b02c671887791a8 Validate bool fields during deserialization (#5279)
+- 480f91790080c8daa92fcb1941c5e8d0f56de237 Type imbalance_factor and wire the .pyi stub into the buck build (#5269)
+- e60baeb7b61e617a483310fccb239ba204458c7b Templatize search_from_candidate_unbounded for VisitedTable devirtualization (#5270)
+- c000190dc07c161898093a72a16f3918bd9fd621 Accelerate ScalarQuantizer::QT_bf16 with AVX512-BF16. (#4889)
+- 7504fc8ddebdade7fcabd9dacd9861318d475b50 Upgrade CUVS Version to 26.06 (#5240)
+- d12683c3b00247ca6333ac717f3a8af49aa835e3 facebook-unused-include-check in IndexBinaryIVF.cpp (#5263)
+- 99d9013e1fbe232356759d3abedbe20df0e8dba1 facebook-unused-include-check in distances_simd.cpp (#5264)
+- 2f0368b6205c92d910ae772417e71b68dde216aa facebook-unused-include-check in hamming_avx2.cpp (#5265)
+- 0c72755eccff39f903d58ed1f46d6c278a914cae Remove unused include of platform_macros.h in partitioning.cpp
+- e6b8f6de5380aed85c2450abd31ecdb749770bbe IndexHNSW: use HNSW::is_similarity for IP/similarity metrics + tests (#5226)
+- c0575f2c1319a702fa4ca615e2354014c42b3e67 avoid runtime checks in VisitedTable (#5234)
+- 1cb760182917697677fe100f8a1cc2b4d0b9f751 Eliminate per-code denormalization in uniform SQ distance computation (#5166)
+- f29d8621fa4250b381d1bfb1d8362c4867ee3de3 Revert D106693266: Implement NEON-based FINE_SIZE=2 specializations for Index2LevelDecoderImpl and IndexPQDecoder
+- ef96e3d25ecbfaa52894b0f361e9d156ee92254a Updating CI to ROCm 7 (#5196)
+- f5217d74960ead3a1d2c0b69baa63479b6f49ea2 facebook-unused-include-check in IndexBinaryHNSW.cpp (#5251)
+- 3e6ed99bbb6cfb8daf98cadf904da449a4aaea48 facebook-unused-include-check in IndexBinaryIVF.cpp (#5252)
+- 108868bfac5ad7e0ce1b4e46857d4724a62a309e Reject null inner index in IDMap and BinaryFromFloat deserialization (#5239)
+- a64b5496762a93cb7836d013c2283c6da479f717 Add IndexLattice r2 limit to cap decode-cache build cost (#5238)
+- 09937153dc55f64321ed7d96730fc3d673a9092d faiss: Replace remaining get_single_code calls with ScopedCodes (#5248)
+- 910e435bccafedfac5aa69f87863085ce6d90a3c facebook-unused-include-check in hamming_avx2.cpp (#5242)
+- d581f2f8406f8794f58794124b650ab7402ac848 Use per-SIMD TU scan for standalone PQ (AVX2 gather inlining) (#5233)
+
+Fixed
+- 20afed0fa3aefe2d4f5bf6a5f6ab1d1459efec05 make intentional cudaGetLastError() error-clears explicit ((void)) for clang21 -- fixes S674096 (#5302)
+- e420e94ce694213a8338ac975d565f81d7251d96 Move partitioning shifts tables to .rodata to fix non-AVX2 import SIGILL (#5298)
+- 15bd8238375a1650156dc6e4b8ea54def3a3dc23 Fix cuVS nightly (#5273)
+- 17cc967d711c2647495370a09469e3a710b527ae Fix AVX512_SPR dispatch on AMD: require AVX512_FP16 CPUID (#5281)
+- e69bfeed087fd70a4708d4c92c4e0bf5e5b888a6 Stabilize RaBitQ tests on AVX512_SPR by switching to cross-level equivalence (#5277)
+- c4c651453b5a7d73919458c6209573c4c11ddadc Stub fixes: knn torch overload, ResidualCoarseQuantizer ctor, remove duplicate I/O defs (#5283)
+- eb4c1eafe2f2e9d77d0fc152e331f5a0c8d77e13 Fix Windows ARM64 (MSVC) build broken by NEON SIMD templatization (#5274)
+- ab632382d3d0531fc6c744e0948544aa358bc850 Install missing InvertedListScannerStats.h header (#5268)
+- 140541590e9beac7f3d81d3dce79af9c42777906 Fix broken fbcode//faiss/tests:test_index_binary - test_replicas (test_index_binary.TestReplicasAndS (#5258)
+- 34eb98936f5c0079ec4e65c712c0c2f38931c80e fix(python): int64 coercions for MapLong2Long + InvertedLists DOWNCAST chain (#5257)
+- d492af446e847a59bcfa6e35e42f1be1318c40fa faiss: initialize ids_tab to -1 in Top1BlockResultHandler::begin_multiple (#5249)
+- a4e417fed77705e7918458c8b1caad5efbd506ce Fix: static SIMD dispatch falls to scalar for avx512_spr/avx512/arm_sve builds (#5057)
+- 3edc6e164973f619589ef4c7ea0cce5443e34ecf Guard Panorama autovec pragmas against nvcc frontend (#5241)
+- c7689c4d0c4e71eed1e43639e5f9973f89a016b9 Fix ODR violation in ScannerMixIn by adding SIMDLevel template parameter (#5148)
+- ca87f41dfe58336245a013118e38ddaad0f7cab3 Open SIFT demo data in binary mode (#5213)
+
 ## [1.14.2] - 2026-05-21
 
 Added
@@ -1200,7 +1263,8 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.14.2...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.14.3...HEAD
+[1.14.3]: https://github.com/facebookresearch/faiss/compare/v1.14.2...v1.14.3
 [1.14.2]: https://github.com/facebookresearch/faiss/compare/v1.14.1...v1.14.2
 [1.14.1]: https://github.com/facebookresearch/faiss/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/facebookresearch/faiss/compare/v1.13.2...v1.14.0

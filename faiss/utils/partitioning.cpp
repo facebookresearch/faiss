@@ -18,8 +18,6 @@
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/ordered_key_value.h>
 
-#include <faiss/impl/platform_macros.h>
-
 namespace faiss {
 
 /******************************************************************
