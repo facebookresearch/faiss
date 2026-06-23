@@ -470,6 +470,27 @@ if(FAISS_ENABLE_GPU)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/_gpu_build.py" DESTINATION faiss)
 endif()
 
+if(FAISS_ENABLE_METAL)
+  find_file(FAISS_METALLIB_FILE MetalDistance.metallib
+    HINTS "${faiss_ROOT}/lib" "${CMAKE_INSTALL_PREFIX}/lib"
+          "${CMAKE_BINARY_DIR}/faiss/gpu_metal"
+    NO_DEFAULT_PATH
+  )
+  if(FAISS_METALLIB_FILE)
+    install(FILES "${FAISS_METALLIB_FILE}" DESTINATION faiss)
+  elseif(TARGET faiss_metal)
+    # In-tree build: the metallib is compiled by the metal_shaders custom
+    # target and does not exist at configure time. Install from the known
+    # build output path — it will be present at install time.
+    install(FILES "${CMAKE_BINARY_DIR}/faiss/gpu_metal/MetalDistance.metallib"
+      DESTINATION faiss)
+  else()
+    message(WARNING
+      "FAISS_ENABLE_METAL is ON but MetalDistance.metallib was not found. "
+      "The Python package will not include GPU Metal support at runtime.")
+  endif()
+endif()
+
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/py.typed")
   install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/py.typed" DESTINATION faiss)
 endif()

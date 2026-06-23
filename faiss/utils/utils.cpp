@@ -462,7 +462,7 @@ uint64_t ivec_checksum(size_t n, const int32_t* assigned) {
 uint64_t bvec_checksum(size_t n, const uint8_t* a) {
     uint64_t cs = ivec_checksum(n / 4, (const int32_t*)a);
     for (size_t i = n / 4 * 4; i < n; i++) {
-        cs = cs * 65713 + a[n] * 1686049;
+        cs = cs * 65713 + a[i] * 1686049;
     }
     return cs;
 }
