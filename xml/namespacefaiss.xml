@@ -1082,8 +1082,8 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba3552df1dc66226ecd592ac875377b323" prot="public">
-          <name>SVS_SQI8</name>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba53135541468aa599a3ab56d0450e80e2" prot="public">
+          <name>SVS_SQ8</name>
           <briefdescription>
           </briefdescription>
           <detaileddescription>

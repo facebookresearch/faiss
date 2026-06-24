@@ -13246,7 +13246,7 @@
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdb" kind="enum"><name>SVSStorageKind</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba56599f815f2506be7ca14eae7b495d8e" kind="enumvalue"><name>SVS_FP32</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba51944c756d00df8139199280ae22028c" kind="enumvalue"><name>SVS_FP16</name></member>
-    <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba3552df1dc66226ecd592ac875377b323" kind="enumvalue"><name>SVS_SQI8</name></member>
+    <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba53135541468aa599a3ab56d0450e80e2" kind="enumvalue"><name>SVS_SQ8</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba89c7b4b29a9ada1cccf041f64dd60c85" kind="enumvalue"><name>SVS_LVQ4x0</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba20d0fa592c651e39c32a303ed0af677f" kind="enumvalue"><name>SVS_LVQ4x4</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba5a27aef13039ced0a05fcdd16083ca08" kind="enumvalue"><name>SVS_LVQ4x8</name></member>
