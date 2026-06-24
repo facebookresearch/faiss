@@ -55,6 +55,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -2425,6 +2426,35 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxnnd->d);
         }
         idx = std::move(idxnnd);
+    } else if (h == fourcc("ISfs")) {
+        auto idxsqfs = std::make_unique<IndexSQFastScan>();
+        read_index_header(*idxsqfs, f);
+        read_ScalarQuantizer(&idxsqfs->sq, f, *idxsqfs);
+        READ1(idxsqfs->implem);
+        READ1(idxsqfs->bbs);
+        READ1(idxsqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(idxsqfs->qbs >= 0, "qbs must be non-negative");
+        READ1(idxsqfs->ntotal2);
+        READ1(idxsqfs->M2);
+        READ1(idxsqfs->rerank_factor);
+        READVECTOR(idxsqfs->codes);
+        READVECTOR(idxsqfs->codes_8bit);
+
+        // Restore FastScan base-class fields from the SQ
+        idxsqfs->M = idxsqfs->sq.d;
+        idxsqfs->nbits = 4;
+        idxsqfs->ksub = 16;
+        idxsqfs->code_size = idxsqfs->M2 / 2;
+
+        validate_fastscan_fields(
+                idxsqfs->M,
+                idxsqfs->M2,
+                idxsqfs->ksub,
+                idxsqfs->bbs,
+                "IndexSQFastScan");
+
+        idx = std::move(idxsqfs);
+
     } else if (h == fourcc("IPfs")) {
         auto idxpqfs = std::make_unique<IndexPQFastScan>();
         read_index_header(*idxpqfs, f);

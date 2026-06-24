@@ -105,6 +105,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexSQFastScan.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -675,6 +676,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexSQFastScan.h>
 
 // NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
 // class template. SWIG cannot handle this, and the Python API doesn't need
@@ -880,6 +882,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
+    DOWNCAST ( IndexSQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )

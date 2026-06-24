@@ -36,6 +36,7 @@ set(FAISS_TEST_SRC
   test_hamming.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
+  test_sq_fastscan.cpp
   test_factory_tools.cpp
   test_custom_result_handler.cpp
   test_fastscan_filter.cpp

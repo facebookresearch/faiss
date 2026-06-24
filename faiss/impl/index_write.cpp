@@ -50,6 +50,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -926,6 +927,21 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_index_header(idxnnd, f);
         write_NNDescent(&idxnnd->nndescent, f);
         write_index(idxnnd->storage, f);
+    } else if (
+            const IndexSQFastScan* idxsqfs =
+                    dynamic_cast<const IndexSQFastScan*>(idx)) {
+        uint32_t h = fourcc("ISfs");
+        WRITE1(h);
+        write_index_header(idxsqfs, f);
+        write_ScalarQuantizer(&idxsqfs->sq, f);
+        WRITE1(idxsqfs->implem);
+        WRITE1(idxsqfs->bbs);
+        WRITE1(idxsqfs->qbs);
+        WRITE1(idxsqfs->ntotal2);
+        WRITE1(idxsqfs->M2);
+        WRITE1(idxsqfs->rerank_factor);
+        WRITEVECTOR(idxsqfs->codes);
+        WRITEVECTOR(idxsqfs->codes_8bit);
     } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {

@@ -44,6 +44,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/VectorTransform.h>
 
@@ -175,6 +176,9 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
 };
 const std::string sq_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
+// Same SQ types with "fs" suffix for IndexSQFastScan, optional _bbs
+const std::string sq_fs_pattern =
+        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)fs(_[0-9]+)?";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -558,6 +562,13 @@ IndexHNSW* parse_IndexHNSW(
                 sm[3].str() != "np";
         return ipq;
     }
+    if (match(sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        IndexHNSW* idx = new IndexHNSW(
+                new IndexSQFastScan(d, sq_types[sm[1].str()], mt, bbs), hnsw_M);
+        idx->own_fields = true;
+        return idx;
+    }
     if (match(sq_pattern)) {
         return new IndexHNSWSQ(d, sq_types[sm[1].str()], hnsw_M, mt);
     }
@@ -808,6 +819,12 @@ Index* parse_other_indexes(
         int M = std::stoi(sm[1].str()), r2 = std::stoi(sm[2].str());
         int nbit = std::stoi(sm[3].str());
         return new IndexLattice(d, M, nbit, r2);
+    }
+
+    // IndexSQFastScan (must be checked before IndexScalarQuantizer)
+    if (match(sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexSQFastScan(d, sq_types[sm[1].str()], metric, bbs);
     }
 
     // IndexScalarQuantizer
