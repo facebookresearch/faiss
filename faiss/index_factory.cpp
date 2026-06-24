@@ -315,8 +315,8 @@ Index* parse_coarse_quantizer(
         SVSStorageKind storage = SVSStorageKind::SVS_FP32;
         if (sm[3].matched) {
             std::string s = sm[3].str().substr(1);
-            if (s == "SQI8") {
-                storage = SVSStorageKind::SVS_SQI8;
+            if (s == "SQ8") {
+                storage = SVSStorageKind::SVS_SQ8;
             } else if (s == "FP16") {
                 storage = SVSStorageKind::SVS_FP16;
             } else if (s == "FP32") {
@@ -681,16 +681,16 @@ Index* parse_svs_datatype(
         }
         FAISS_ASSERT(false && "Unsupported SVS index type for Float16");
     }
-    if (re_match(datatype_string, "SQI8", sm)) {
+    if (re_match(datatype_string, "SQ8", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
         if (index_type == "IVF") {
             return new IndexSVSIVF(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
-        FAISS_ASSERT(false && "Unsupported SVS index type for SQI8");
+        FAISS_ASSERT(false && "Unsupported SVS index type for SQ8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana") {
