@@ -29,7 +29,6 @@
 #include <svs/runtime/vamana_index.h>
 
 #include <memory>
-#include <span>
 #include "faiss/svs/IndexSVSVamana.h"
 
 namespace faiss {
