@@ -130,6 +130,7 @@ set(FAISS_SRC
   IndexReplicas.cpp
   IndexRowwiseMinMax.cpp
   IndexSQFastScan.cpp
+  IndexIVFSQFastScan.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   IndexShardsIVF.cpp
@@ -260,6 +261,7 @@ set(FAISS_HEADERS
   IndexRaBitQFastScan.h
   IndexRowwiseMinMax.h
   IndexSQFastScan.h
+  IndexIVFSQFastScan.h
   IndexScalarQuantizer.h
   IndexShards.h
   IndexShardsIVF.h

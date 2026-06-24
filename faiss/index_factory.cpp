@@ -33,6 +33,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -390,6 +391,17 @@ IndexIVF* parse_IndexIVF(
         int bs = mres_to_int(sm[3], 128);
         return new IndexIVFFlatPanorama(
                 get_q(), d, nlist, nlevels, mt, own_il, bs);
+    }
+    if (match(sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexIVFSQFastScan(
+                get_q(),
+                d,
+                nlist,
+                sq_types[sm[1].str()],
+                mt,
+                bbs,
+                /*by_residual=*/true);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(

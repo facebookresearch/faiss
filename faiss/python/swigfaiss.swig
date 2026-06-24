@@ -106,6 +106,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexSQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -683,6 +684,7 @@ void gpu_sync_all_devices()
 // the internal SIMD handler types.
 // %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFSQFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
 
@@ -883,6 +885,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
     DOWNCAST ( IndexSQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )

@@ -38,6 +38,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -955,6 +956,26 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxpqfs->ntotal2);
         WRITE1(idxpqfs->M2);
         WRITEVECTOR(idxpqfs->codes);
+    } else if (
+            const IndexIVFSQFastScan* ivfsqfs =
+                    dynamic_cast<const IndexIVFSQFastScan*>(idx)) {
+        uint32_t h = fourcc("IwSf");
+        WRITE1(h);
+        write_ivf_header(ivfsqfs, f);
+        WRITE1(ivfsqfs->by_residual);
+        WRITE1(ivfsqfs->code_size);
+        WRITE1(ivfsqfs->bbs);
+        WRITE1(ivfsqfs->M2);
+        WRITE1(ivfsqfs->implem);
+        WRITE1(ivfsqfs->rerank_factor);
+        write_ScalarQuantizer(&ivfsqfs->sq, f);
+        write_InvertedLists(ivfsqfs->invlists, f);
+        // Write orig_codes_invlists if present
+        bool has_orig = (ivfsqfs->orig_codes_invlists != nullptr);
+        WRITE1(has_orig);
+        if (has_orig) {
+            write_InvertedLists(ivfsqfs->orig_codes_invlists, f);
+        }
     } else if (
             const IndexIVFPQFastScan* ivpq_2 =
                     dynamic_cast<const IndexIVFPQFastScan*>(idx)) {

@@ -43,6 +43,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -2481,6 +2482,31 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "IndexPQFastScan");
 
         idx = std::move(idxpqfs);
+
+    } else if (h == fourcc("IwSf")) {
+        auto ivfsqfs = std::make_unique<IndexIVFSQFastScan>();
+        read_ivf_header(ivfsqfs.get(), f);
+        READ1_BOOL(ivfsqfs->by_residual);
+        READ1(ivfsqfs->code_size);
+        READ1(ivfsqfs->bbs);
+        READ1(ivfsqfs->M2);
+        READ1(ivfsqfs->implem);
+        READ1(ivfsqfs->rerank_factor);
+        read_ScalarQuantizer(&ivfsqfs->sq, f, *ivfsqfs);
+        read_InvertedLists(*ivfsqfs, f, io_flags);
+
+        ivfsqfs->M = ivfsqfs->d;
+        ivfsqfs->nbits = 4;
+        ivfsqfs->ksub = 16;
+        ivfsqfs->init_code_packer();
+
+        bool has_orig;
+        READ1(has_orig);
+        if (has_orig) {
+            ivfsqfs->orig_codes_invlists = read_InvertedLists(f, io_flags);
+        }
+
+        idx = std::move(ivfsqfs);
 
     } else if (h == fourcc("IwPf")) {
         auto ivpq = std::make_unique<IndexIVFPQFastScan>();
