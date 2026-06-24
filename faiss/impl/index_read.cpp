@@ -43,6 +43,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -55,6 +56,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -2425,6 +2427,33 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxnnd->d);
         }
         idx = std::move(idxnnd);
+    } else if (h == fourcc("ISfs")) {
+        auto idxsqfs = std::make_unique<IndexSQFastScan>();
+        read_index_header(*idxsqfs, f);
+        read_ScalarQuantizer(&idxsqfs->sq, f, *idxsqfs);
+        READ1(idxsqfs->implem);
+        READ1(idxsqfs->bbs);
+        READ1(idxsqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(idxsqfs->qbs >= 0, "qbs must be non-negative");
+        READ1(idxsqfs->ntotal2);
+        READ1(idxsqfs->M2);
+        READVECTOR(idxsqfs->codes);
+
+        // Restore FastScan base-class fields from the SQ
+        idxsqfs->M = idxsqfs->sq.d;
+        idxsqfs->nbits = 4;
+        idxsqfs->ksub = 16;
+        idxsqfs->code_size = idxsqfs->M2 / 2;
+
+        validate_fastscan_fields(
+                idxsqfs->M,
+                idxsqfs->M2,
+                idxsqfs->ksub,
+                idxsqfs->bbs,
+                "IndexSQFastScan");
+
+        idx = std::move(idxsqfs);
+
     } else if (h == fourcc("IPfs")) {
         auto idxpqfs = std::make_unique<IndexPQFastScan>();
         read_index_header(*idxpqfs, f);
@@ -2451,6 +2480,46 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "IndexPQFastScan");
 
         idx = std::move(idxpqfs);
+
+    } else if (h == fourcc("IwSf")) {
+        auto ivfsqfs = std::make_unique<IndexIVFSQFastScan>();
+        read_ivf_header(ivfsqfs.get(), f);
+        READ1_BOOL(ivfsqfs->by_residual);
+        READ1(ivfsqfs->code_size);
+        READ1(ivfsqfs->bbs);
+        READ1(ivfsqfs->M2);
+        READ1(ivfsqfs->implem);
+        READ1(ivfsqfs->rerank_factor);
+        read_ScalarQuantizer(&ivfsqfs->sq, f, *ivfsqfs);
+        read_InvertedLists(*ivfsqfs, f, io_flags);
+
+        ivfsqfs->M = ivfsqfs->d;
+        ivfsqfs->nbits = 4;
+        ivfsqfs->ksub = 16;
+        ivfsqfs->init_code_packer();
+
+        bool has_orig;
+        READ1(has_orig);
+        if (has_orig) {
+            ivfsqfs->orig_codes_invlists = read_InvertedLists(f, io_flags);
+            // Rebuild direct_map from orig_codes_invlists for reranking
+            ivfsqfs->direct_map.set_type(
+                    DirectMap::Hashtable, ivfsqfs->invlists, 0);
+            for (size_t list_no = 0; list_no < ivfsqfs->nlist; list_no++) {
+                size_t list_size =
+                        ivfsqfs->orig_codes_invlists->list_size(list_no);
+                if (list_size == 0) {
+                    continue;
+                }
+                InvertedLists::ScopedIds ids(
+                        ivfsqfs->orig_codes_invlists, list_no);
+                for (size_t j = 0; j < list_size; j++) {
+                    ivfsqfs->direct_map.add_single_id(ids[j], list_no, j);
+                }
+            }
+        }
+
+        idx = std::move(ivfsqfs);
 
     } else if (h == fourcc("IwPf")) {
         auto ivpq = std::make_unique<IndexIVFPQFastScan>();

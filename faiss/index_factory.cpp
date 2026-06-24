@@ -33,6 +33,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -44,6 +45,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/VectorTransform.h>
 
@@ -175,6 +177,11 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
 };
 const std::string sq_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
+// Native 4-bit types with "fs" suffix for IndexSQFastScan, optional _bbs
+const std::string sq_fs_pattern = "(SQ4)fs(_[0-9]+)?";
+// All SQ types with "fs" suffix for IndexIVFSQFastScan, optional _bbs
+const std::string ivf_sq_fs_pattern =
+        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)fs(_[0-9]+)?";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -386,6 +393,17 @@ IndexIVF* parse_IndexIVF(
         int bs = mres_to_int(sm[3], 128);
         return new IndexIVFFlatPanorama(
                 get_q(), d, nlist, nlevels, mt, own_il, bs);
+    }
+    if (match(ivf_sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexIVFSQFastScan(
+                get_q(),
+                d,
+                nlist,
+                sq_types[sm[1].str()],
+                mt,
+                bbs,
+                /*by_residual=*/true);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
@@ -808,6 +826,12 @@ Index* parse_other_indexes(
         int M = std::stoi(sm[1].str()), r2 = std::stoi(sm[2].str());
         int nbit = std::stoi(sm[3].str());
         return new IndexLattice(d, M, nbit, r2);
+    }
+
+    // IndexSQFastScan (must be checked before IndexScalarQuantizer)
+    if (match(sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexSQFastScan(d, sq_types[sm[1].str()], metric, bbs);
     }
 
     // IndexScalarQuantizer
