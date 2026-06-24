@@ -664,3 +664,55 @@ class TestMapInt64ToInt64(unittest.TestCase):
     def xx_test_large(self):
         # don't run by default because it's slow
         self.do_test(2 ** 21, 10 ** 6)
+
+
+class TestRanklistIntersectionSize(unittest.TestCase):
+
+    def _intersect(self, v1, v2):
+        a = np.array(v1, dtype='int64')
+        b = np.array(v2, dtype='int64')
+        return faiss.ranklist_intersection_size(
+            len(a), faiss.swig_ptr(a), len(b), faiss.swig_ptr(b)
+        )
+
+    def _expected(self, v1, v2):
+        """Reference: set intersection of valid (non-negative) IDs."""
+        return len(set(x for x in v1 if x >= 0) & set(x for x in v2 if x >= 0))
+
+    def test_basic_intersection(self):
+        v1, v2 = [1, 2, 3], [2, 3, 4]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_no_overlap(self):
+        v1, v2 = [1, 2, 3], [4, 5, 6]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_full_overlap(self):
+        v1, v2 = [1, 2, 3], [1, 2, 3]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_symmetric(self):
+        # result must be the same regardless of which list is larger
+        self.assertEqual(
+            self._intersect([1, 2, 3, 4], [2, 3]),
+            self._intersect([2, 3], [1, 2, 3, 4]),
+        )
+
+    def test_duplicates_in_v2_not_double_counted(self):
+        # 1 appears twice in v2 but should count only once
+        v1, v2 = [1, 2], [1, 1, 2]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_duplicates_in_v1_not_double_counted(self):
+        # 1 appears twice in v1 but the same v2 entry should not count twice
+        v1, v2 = [1, 1, 2], [1, 2]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_empty_lists(self):
+        self.assertEqual(self._intersect([], [1, 2, 3]), self._expected([], [1, 2, 3]))
+        self.assertEqual(self._intersect([1, 2, 3], []), self._expected([1, 2, 3], []))
+
+    def test_negative_values_not_counted(self):
+        # negative values are invalid IDs and must not count as matches
+        v1, v2 = [-1, -2, -5, 1, 2], [-1, -2, -5, 1, 2]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))

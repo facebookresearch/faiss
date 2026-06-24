@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <set>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -362,39 +363,22 @@ size_t ranklist_intersection_size(
         const int64_t* v2_in) {
     if (k2 > k1)
         return ranklist_intersection_size(k2, v2_in, k1, v1);
-    int64_t* v2 = new int64_t[k2];
-    memcpy(v2, v2_in, sizeof(int64_t) * k2);
-    std::sort(v2, v2 + k2);
-    { // de-dup v2
-        int64_t prev = -1;
-        size_t wp = 0;
-        for (size_t i = 0; i < k2; i++) {
-            if (v2[i] != prev) {
-                v2[wp++] = prev = v2[i];
-            }
+    // Build a set from the smaller side; erase on hit so a duplicate in v1
+    // doesn't double-count the same v2 entry. Negative values (-1 padding)
+    // are excluded as they denote missing results, not valid IDs.
+    std::unordered_set<int64_t> remaining;
+    remaining.reserve(k2);
+    for (size_t i = 0; i < k2; i++) {
+        if (v2_in[i] >= 0) {
+            remaining.insert(v2_in[i]);
         }
-        k2 = wp;
     }
-    const int64_t seen_flag = int64_t{1} << 60;
     size_t count = 0;
     for (size_t i = 0; i < k1; i++) {
-        int64_t q = v1[i];
-        size_t i0 = 0, i1 = k2;
-        while (i0 + 1 < i1) {
-            size_t imed = (i1 + i0) / 2;
-            int64_t piv = v2[imed] & ~seen_flag;
-            if (piv <= q)
-                i0 = imed;
-            else
-                i1 = imed;
-        }
-        if (v2[i0] == q) {
+        if (remaining.erase(v1[i]) != 0) {
             count++;
-            v2[i0] |= seen_flag;
         }
     }
-    delete[] v2;
-
     return count;
 }
 
