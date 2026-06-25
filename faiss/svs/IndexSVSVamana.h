@@ -44,7 +44,7 @@ struct SearchParametersSVSVamana : public SearchParameters {
 enum SVSStorageKind {
     SVS_FP32,
     SVS_FP16,
-    SVS_SQI8,
+    SVS_SQ8,
     SVS_LVQ4x0,
     SVS_LVQ4x4,
     SVS_LVQ4x8,
@@ -61,7 +61,7 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
             return svs_runtime::StorageKind::FP32;
         case SVS_FP16:
             return svs_runtime::StorageKind::FP16;
-        case SVS_SQI8:
+        case SVS_SQ8:
             return svs_runtime::StorageKind::SQI8;
         case SVS_LVQ4x0:
             return svs_runtime::StorageKind::LVQ4x0;

@@ -9,7 +9,7 @@
 
 #define THE_SIMD_LEVEL SIMDLevel::AVX2
 
-// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+// NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
 #include <faiss/utils/hamming_distance/hamming_computer-avx2.h>
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
