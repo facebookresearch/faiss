@@ -34,7 +34,7 @@ def main(
     nprobe: int,
     index_factory_str: str,
 ) -> None:
-    oivf = OfflineIVF(cfg, args, nprobe, index_factory_str)
+    oivf = OfflineIVF(cfg, args, nprobe, index_factory_str)  # noqa: F841
     eval(f"oivf.{args.command}()")
 
 

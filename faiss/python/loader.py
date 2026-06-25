@@ -128,7 +128,7 @@ has_AVX512_SPR = any("AVX512_SPR" in x.upper() for x in instruction_sets)
 if has_AVX512_SPR:
     try:
         logger.info("Loading faiss with AVX512-SPR support.")
-        from .swigfaiss_avx512_spr import *
+        from .swigfaiss_avx512_spr import *  # noqa: F401,F403
 
         logger.info("Successfully loaded faiss with AVX512-SPR support.")
         loaded = True
@@ -143,7 +143,7 @@ has_AVX512 = any("AVX512" in x.upper() for x in instruction_sets)
 if has_AVX512 and not loaded:
     try:
         logger.info("Loading faiss with AVX512 support.")
-        from .swigfaiss_avx512 import *
+        from .swigfaiss_avx512 import *  # noqa: F401,F403
 
         logger.info("Successfully loaded faiss with AVX512 support.")
         loaded = True
@@ -158,7 +158,7 @@ has_AVX2 = "AVX2" in instruction_sets
 if has_AVX2 and not loaded:
     try:
         logger.info("Loading faiss with AVX2 support.")
-        from .swigfaiss_avx2 import *
+        from .swigfaiss_avx2 import *  # noqa: F401,F403
 
         logger.info("Successfully loaded faiss with AVX2 support.")
         loaded = True
@@ -171,7 +171,7 @@ has_SVE = "SVE" in instruction_sets
 if has_SVE and not loaded:
     try:
         logger.info("Loading faiss with SVE support.")
-        from .swigfaiss_sve import *
+        from .swigfaiss_sve import *  # noqa: F401,F403
 
         logger.info("Successfully loaded faiss with SVE support.")
         loaded = True
@@ -184,7 +184,7 @@ if not loaded:
     try:
         # we import * so that the symbol X can be accessed as faiss.X
         logger.info("Loading faiss.")
-        from .swigfaiss import *
+        from .swigfaiss import *  # noqa: F401,F403
 
         logger.info("Successfully loaded faiss.")
     except ModuleNotFoundError:

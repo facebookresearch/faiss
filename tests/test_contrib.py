@@ -12,7 +12,6 @@ from contextlib import contextmanager
 
 import faiss
 import numpy as np
-import sys
 
 from common_faiss_tests import get_dataset_2
 

@@ -165,7 +165,7 @@ class TestPQTables(unittest.TestCase):
                 cent3 = centsq.reshape(1, pq.ksub, dsub)
                 ref_tab[:, sq, :] = ((xsub3 - cent3) ** 2).sum(2)
             else:
-                assert False
+                raise AssertionError()
 
         sp = faiss.swig_ptr
 
@@ -175,7 +175,7 @@ class TestPQTables(unittest.TestCase):
         elif metric == faiss.METRIC_L2:
             pq.compute_distance_tables(nx, sp(x), sp(new_tab))
         else:
-            assert False
+            raise AssertionError()
 
         # compute sdc tables in numpy
         cent1 = np.expand_dims(centroids, axis=2)  # [M, ksub, 1, dsub]

@@ -21,7 +21,7 @@ def dbsize_from_name(dbname):
         if dbname.endswith(s):
             return sufs[s]
     else:
-        assert False
+        raise AssertionError()
 
 
 def keep_latest_stdout(fnames):
@@ -90,7 +90,7 @@ def parse_result_file(fname):
                     stats["ranks"] = [rank]
 
                 else:
-                    assert False
+                    raise AssertionError()
                 st = 1
             elif "index size on disk:" in l:
                 stats["index_size"] = int(l.split()[-1])
@@ -251,7 +251,7 @@ def plot_subset(
     elif stats["measure"] == "inter":
         pyplot.xlabel("inter @ %d" % recall_rank)
     else:
-        assert False
+        raise AssertionError()
     pyplot.ylabel("QPS (%d threads)" % stats["n_threads"])
 
 
@@ -273,7 +273,7 @@ def plot_tradeoffs(db, allres, allstats, code_size, recall_rank):
     elif isinstance(code_size, tuple):
         code_size_name = "code_size in [%d, %d]" % code_size
     else:
-        assert False
+        raise AssertionError()
 
     names_maxperf = []
 

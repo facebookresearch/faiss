@@ -95,7 +95,7 @@ def load_dataset(dataset="deep1M", compute_gt=False, download=False):
         elif szsuf[-1] == "k":
             dbsize = 1000 * int(szsuf[:-1])
         else:
-            assert False, "did not recognize suffix " + szsuf
+            raise AssertionError("did not recognize suffix " + szsuf)
         return faiss_datasets.DatasetDeep1B(nb=dbsize)
 
     elif dataset == "music-100":
@@ -105,7 +105,7 @@ def load_dataset(dataset="deep1M", compute_gt=False, download=False):
         return faiss_datasets.DatasetGlove(download=download)
 
     else:
-        assert False
+        raise AssertionError()
 
 
 #################################################################

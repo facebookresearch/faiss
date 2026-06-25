@@ -33,7 +33,7 @@ class TestRemoveFastScan(unittest.TestCase):
                 # should throw RuntimeError as this vector should be removed
                 try:
                     after = index.reconstruct(i)
-                    assert False
+                    raise AssertionError()
                 except RuntimeError:
                     pass
             else:
@@ -137,7 +137,7 @@ class TestRemove(unittest.TestCase):
         except RuntimeError:
             pass
         else:
-            assert False, "should have raised an exception"
+            raise AssertionError("should have raised an exception")
 
     def test_factory_idmap2_suffix(self):
         xb = np.zeros((10, 5), dtype="float32")
@@ -191,7 +191,7 @@ class TestRemove(unittest.TestCase):
         except RuntimeError:
             pass
         else:
-            assert False, "should have raised an exception"
+            raise AssertionError("should have raised an exception")
 
         # while we are there, let's test I/O as well...
         index = faiss.deserialize_index_binary(
@@ -204,7 +204,7 @@ class TestRemove(unittest.TestCase):
         except RuntimeError:
             pass
         else:
-            assert False, "should have raised an exception"
+            raise AssertionError("should have raised an exception")
 
         # Verify deserialized index is serializable again
         index2 = faiss.deserialize_index_binary(
@@ -576,7 +576,7 @@ class TestRenameOndisk(unittest.TestCase):
             except RuntimeError:
                 pass  # normal
             else:
-                assert False
+                raise AssertionError()
 
             # read it with magic flag
             index2 = faiss.read_index(

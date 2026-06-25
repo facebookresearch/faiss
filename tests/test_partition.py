@@ -208,7 +208,7 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
         else:
             q_min, q_max = q
             q = pointer_to_minus1()
-            thresh2 = faiss.CMin_uint16_partition_fuzzy(
+            faiss.CMin_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q_min, q_max, sp(q)
             )
             q = q[0]
