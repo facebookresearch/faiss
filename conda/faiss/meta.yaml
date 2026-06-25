@@ -87,7 +87,7 @@ outputs:
         - libopenblas =0.3.33  # [osx]
     test:
       requires:
-        - conda-build =25.1.2
+        - conda-build =25.3.1
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
