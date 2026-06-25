@@ -10,7 +10,7 @@ import faiss
 if __name__ == "__main__":
     faiss.omp_set_num_threads(1)
 
-    for d in 4, 8, 16, 13:
+    for d in 4, 8, 16, 32, 64, 128, 256, 512, 1024:
         nq = 10000
         nb = 30000
         print('Bits per vector = 8 *', d)

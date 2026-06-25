@@ -66,6 +66,15 @@ def rand_smooth_vectors(
 def merge_knn_results(
     Dall: npt.NDArray[np.float32], Iall: npt.NDArray[np.int64], keep_max: bool = False
 ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
+@overload
+def knn(
+    xq: torch.Tensor,
+    xb: torch.Tensor,
+    k: int,
+    metric: int = METRIC_L2,
+    metric_arg: float = 0.0,
+) -> tuple[torch.Tensor, torch.Tensor]: ...
+@overload
 def knn(
     xq: npt.NDArray[np.float32],
     xb: npt.NDArray[np.float32],
@@ -1337,11 +1346,16 @@ class ScalarQuantizer(Quantizer):
     QT_6bit: int
     QT_bf16: int
     QT_8bit_direct_signed: int
+    QT_0bit: int
     QT_1bit_tqmse: int
     QT_2bit_tqmse: int
     QT_3bit_tqmse: int
     QT_4bit_tqmse: int
     QT_8bit_tqmse: int
+    QT_2bit_tq: int
+    QT_3bit_tq: int
+    QT_4bit_tq: int
+    QT_5bit_tq: int
 
     # RangeStat constants (as class attributes)
     RS_minmax: int
@@ -1408,6 +1422,7 @@ class InvertedLists:
     ) -> None: ...
     def resize(self, list_no: int, new_size: int) -> None: ...
     def merge_from(self, other: InvertedLists, add_id: int = 0) -> None: ...
+    def imbalance_factor(self) -> float: ...
 
 class ArrayInvertedLists(InvertedLists):
     def __init__(self, nlist: int, code_size: int) -> None: ...
@@ -2278,6 +2293,12 @@ class IVFSearchParameters(SearchParameters):
     quantizer_params: SearchParameters | None
     inverted_list_context: Any
     sel: IDSelector | None
+    def __init__(self) -> None: ...
+
+class IVFSQTurboQSearchParameters(IVFSearchParameters):
+    qb: int
+    int_qjl: bool
+
     def __init__(self) -> None: ...
 
 # IVF Statistics tracking
@@ -3469,6 +3490,10 @@ class ResidualCoarseQuantizer(AdditiveCoarseQuantizer):
     @overload
     def __init__(self, d: int, M: int, nbits: int) -> None: ...
     @overload
+    def __init__(
+        self, d: int, nbits: UInt64Vector, metric: int = METRIC_L2
+    ) -> None: ...
+    @overload
     def __init__(self) -> None: ...
     def set_beam_factor(self, new_beam_factor: float) -> None: ...
 
@@ -3880,6 +3905,11 @@ def range_search_inner_product(
     sel: IDSelector | None = None,
 ) -> None: ...
 
+@overload
+def imbalance_factor(k: int, hist: int) -> float: ...
+@overload
+def imbalance_factor(n: int, k: int, assign: int) -> float: ...
+
 # Index factory functions
 def index_factory(
     d: int, description: str, metric: MetricType = METRIC_L2, own_invlists: bool = True
@@ -3896,21 +3926,11 @@ class Cloner:
 class GpuResourcesProvider:
     def __init__(self) -> None: ...
 
-# I/O functions
-def read_index(fname: str) -> Index: ...
-def write_index(index: Index, fname: str) -> None: ...
 def clone_index(index: Index) -> Index: ...
 
 # Utility functions
 def omp_set_num_threads(num_threads: int) -> None: ...
 def omp_get_max_threads() -> int: ...
-
-# Pointer conversion utilities
-def swig_ptr(a: np.ndarray) -> Any: ...
-def cast_integer_to_float_ptr(x: int) -> Any: ...
-def cast_integer_to_idx_t_ptr(x: int) -> Any: ...
-def cast_integer_to_int_ptr(x: int) -> Any: ...
-def cast_integer_to_void_ptr(x: int) -> Any: ...
 
 # Version utilities
 def swig_version() -> int: ...

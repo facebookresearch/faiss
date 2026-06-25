@@ -5,6 +5,8 @@ on:
     branches:
       - main
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 jobs:
@@ -17,5 +19,7 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
   build-pip:
     uses: ./.github/workflows/build-pip.yml
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v')
   build-pip-gpu:
     uses: ./.github/workflows/build-pip-gpu.yml
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v')

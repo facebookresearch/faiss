@@ -11,6 +11,7 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu_metal/MetalResources.h>
 #include <memory>
 
@@ -20,6 +21,12 @@ namespace gpu_metal {
 /// Configuration for Metal index (mirrors GpuIndexConfig roles).
 struct MetalIndexConfig {
     int device = 0;
+
+    bool useFloat16CoarseQuantizer = false;
+
+    faiss::gpu::IndicesOptions indicesOptions = faiss::gpu::INDICES_64_BIT;
+
+    bool interleavedLayout = true;
 };
 
 /// Base class for Metal-backed indexes. Mirrors faiss::gpu::GpuIndex.

@@ -21,6 +21,7 @@ from faiss.contrib import (
     clustering,
     datasets,
     evaluation,
+    factory_tools,
     inspect_tools,
     ivf_tools,
 )
@@ -834,3 +835,72 @@ class TestMerge(unittest.TestCase):
     def test_ondisk_merge_with_shift_ids(self):
         # verified that recall is same for test_ondisk_merge and
         self.do_test_ondisk_merge(True)
+
+
+class TestFactoryTools(unittest.TestCase):
+
+    def test_idmap(self):
+        index = faiss.IndexIDMap(faiss.IndexFlatL2(32))
+        self.assertEqual(
+            factory_tools.reverse_index_factory(index), "IDMap,Flat"
+        )
+        # IndexIDMap2 subclasses IndexIDMap, so it must be checked first.
+        index2 = faiss.IndexIDMap2(faiss.IndexFlatL2(32))
+        self.assertEqual(
+            factory_tools.reverse_index_factory(index2), "IDMap2,Flat"
+        )
+
+    def test_ivf_scalar_quantizer_types(self):
+        d = 32
+        sq_types = {
+            faiss.ScalarQuantizer.QT_8bit: "IVF32,SQ8",
+            faiss.ScalarQuantizer.QT_4bit: "IVF32,SQ4",
+            faiss.ScalarQuantizer.QT_8bit_uniform: "IVF32,SQ8u",
+            faiss.ScalarQuantizer.QT_4bit_uniform: "IVF32,SQ4u",
+            faiss.ScalarQuantizer.QT_6bit: "IVF32,SQ6",
+            faiss.ScalarQuantizer.QT_fp16: "IVF32,SQfp16",
+            faiss.ScalarQuantizer.QT_bf16: "IVF32,SQbf16",
+            faiss.ScalarQuantizer.QT_8bit_direct: "IVF32,SQ8_direct",
+            faiss.ScalarQuantizer.QT_8bit_direct_signed: "IVF32,SQ8_direct_signed",
+            faiss.ScalarQuantizer.QT_0bit: "IVF32,SQ0",
+            faiss.ScalarQuantizer.QT_1bit_tqmse: "IVF32,SQtqmse1",
+            faiss.ScalarQuantizer.QT_2bit_tqmse: "IVF32,SQtqmse2",
+            faiss.ScalarQuantizer.QT_3bit_tqmse: "IVF32,SQtqmse3",
+            faiss.ScalarQuantizer.QT_4bit_tqmse: "IVF32,SQtqmse4",
+            faiss.ScalarQuantizer.QT_8bit_tqmse: "IVF32,SQtqmse8",
+            faiss.ScalarQuantizer.QT_2bit_tq: "IVF32,SQtq2",
+            faiss.ScalarQuantizer.QT_3bit_tq: "IVF32,SQtq3",
+            faiss.ScalarQuantizer.QT_4bit_tq: "IVF32,SQtq4",
+            faiss.ScalarQuantizer.QT_5bit_tq: "IVF32,SQtq5",
+        }
+        for qtype, expected in sq_types.items():
+            index = faiss.IndexIVFScalarQuantizer(
+                faiss.IndexFlatL2(d), d, 32, qtype
+            )
+            self.assertEqual(factory_tools.reverse_index_factory(index), expected)
+
+    def test_scalar_quantizer_types(self):
+        d = 32
+        sq_types = {
+            faiss.ScalarQuantizer.QT_8bit: "SQ8",
+            faiss.ScalarQuantizer.QT_4bit: "SQ4",
+            faiss.ScalarQuantizer.QT_8bit_uniform: "SQ8u",
+            faiss.ScalarQuantizer.QT_4bit_uniform: "SQ4u",
+            faiss.ScalarQuantizer.QT_6bit: "SQ6",
+            faiss.ScalarQuantizer.QT_fp16: "SQfp16",
+            faiss.ScalarQuantizer.QT_bf16: "SQbf16",
+            faiss.ScalarQuantizer.QT_8bit_direct: "SQ8_direct",
+            faiss.ScalarQuantizer.QT_8bit_direct_signed: "SQ8_direct_signed",
+            faiss.ScalarQuantizer.QT_1bit_tqmse: "SQtqmse1",
+            faiss.ScalarQuantizer.QT_2bit_tqmse: "SQtqmse2",
+            faiss.ScalarQuantizer.QT_3bit_tqmse: "SQtqmse3",
+            faiss.ScalarQuantizer.QT_4bit_tqmse: "SQtqmse4",
+            faiss.ScalarQuantizer.QT_8bit_tqmse: "SQtqmse8",
+            faiss.ScalarQuantizer.QT_2bit_tq: "SQtq2",
+            faiss.ScalarQuantizer.QT_3bit_tq: "SQtq3",
+            faiss.ScalarQuantizer.QT_4bit_tq: "SQtq4",
+            faiss.ScalarQuantizer.QT_5bit_tq: "SQtq5",
+        }
+        for qtype, expected in sq_types.items():
+            index = faiss.IndexScalarQuantizer(d, qtype)
+            self.assertEqual(factory_tools.reverse_index_factory(index), expected)

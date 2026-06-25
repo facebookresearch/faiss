@@ -62,7 +62,7 @@ outputs:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl >=2024.2.2,<2026  # [x86_64]
         - openblas =0.3.33 # [not x86_64]
-        - libcuvs =26.02
+        - libcuvs =26.06
         - cuda-version {{ cuda_constraints }}
         - libsvs-runtime =0.3.0  # [x86_64 and linux]
       run:
@@ -71,7 +71,7 @@ outputs:
         - openblas =0.3.33 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libcuvs =26.02
+        - libcuvs =26.06
         - cuda-version {{ cuda_constraints }}
         - libnvjitlink
         - libsvs-runtime =0.3.0  # [x86_64 and linux]
@@ -119,6 +119,8 @@ outputs:
       requires:
         - numpy >=2.0,<2.3
         - scipy
+        - pytest
+        - pytest-timeout
 # pytorch-gpu on conda-forge requires CUDA >=12.9; skip for older CUDA 12.x.
 # TODO: remove guard when we move to PyPI (pytorch via PyPI works on CUDA 13)
 {% if cuda_major == 12 and cuda_minor >= 9 %}
@@ -130,9 +132,9 @@ outputs:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
 {% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
-        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+        - rc=0; for f in faiss/gpu/test/test_*.py; do echo "=== Running $f ==="; timeout 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
 {% if cuda_major == 12 and cuda_minor >= 9 %}
-        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
+        - rc=0; for f in faiss/gpu/test/torch_*.py; do echo "=== Running $f ==="; timeout 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
 {% endif %}
         - sh test_cpu_dispatch.sh  # [linux64]
       files:

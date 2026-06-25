@@ -6,19 +6,19 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 26.02, is available on Linux (x86-64 only) for CUDA 12.4.
+- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 26.06, is available on Linux (x86-64 only) for CUDA 13.2.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch -c conda-forge faiss-cpu=1.14.2
+$ conda install -c pytorch -c conda-forge faiss-cpu=1.14.3
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.14.2
+$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.14.3
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.14.2
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.14.3
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,15 +34,15 @@ If you prefer [Pixi](https://pixi.sh/latest/), you can use the same channels and
 ``` shell
 # CPU-only version
 $ pixi init -c pytorch -c conda-forge
-$ pixi add faiss-cpu=1.14.2
+$ pixi add faiss-cpu=1.14.3
 
 # GPU(+CPU) version
 $ pixi init -c pytorch -c nvidia -c conda-forge
-$ pixi add faiss-gpu=1.14.2
+$ pixi add faiss-gpu=1.14.3
 
 # GPU(+CPU) version with NVIDIA cuVS
 $ pixi init -c pytorch -c nvidia -c rapidsai -c conda-forge
-$ pixi add libnvjitlink faiss-gpu-cuvs=1.14.2
+$ pixi add libnvjitlink faiss-gpu-cuvs=1.14.3
 ```
 
 Pixi resolves packages from the listed Conda channels, so the same channel requirements described above still apply.
@@ -54,7 +54,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.2
+$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.3
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 13.2)
 conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=13.2'
@@ -90,7 +90,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=26.02
+  - libcuvs=26.06
 - for the python bindings:
   - python 3,
   - numpy,
@@ -105,9 +105,9 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 The libcuvs dependency should be installed via conda:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.02 'cuda-version=13.2'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.06 'cuda-version=13.2'
 ```
-For more ways to install cuVS 26.02, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+For more ways to install cuVS 26.06, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
 ### Building with Intel(R) SVS
 
