@@ -21,8 +21,12 @@ class TestComputeGT(unittest.TestCase):
         k = 12
 
         if numeric_type == faiss.Int8:
-            data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
-            data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
+            data_base_nt = np.random.randint(
+                -128, 128, size=(10000, d), dtype=np.int8
+            )
+            data_query_nt = np.random.randint(
+                -128, 128, size=(100, d), dtype=np.int8
+            )
             data_base = data_base_nt.astype(np.float32)
             data_query = data_query_nt.astype(np.float32)
         else:
@@ -32,7 +36,9 @@ class TestComputeGT(unittest.TestCase):
             # Normalize for inner product to avoid duplicate neighbors
             if metric == faiss.METRIC_INNER_PRODUCT:
                 # Normalize database vectors
-                data_base = data_base / np.linalg.norm(data_base, axis=1, keepdims=True)
+                data_base = data_base / np.linalg.norm(
+                    data_base, axis=1, keepdims=True
+                )
                 # Normalize query vectors
                 data_query = data_query / np.linalg.norm(
                     data_query, axis=1, keepdims=True
@@ -95,8 +101,12 @@ class TestInterop(unittest.TestCase):
         d = 64
         k = 12
         if numeric_type == faiss.Int8:
-            data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
-            data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
+            data_base_nt = np.random.randint(
+                -128, 128, size=(10000, d), dtype=np.int8
+            )
+            data_query_nt = np.random.randint(
+                -128, 128, size=(100, d), dtype=np.int8
+            )
             data_base = data_base_nt.astype(np.float32)
             data_query = data_query_nt.astype(np.float32)
         else:
@@ -122,10 +132,14 @@ class TestInterop(unittest.TestCase):
 
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
-        deserialized_index = faiss.deserialize_index(faiss.serialize_index(cpu_index))
+        deserialized_index = faiss.deserialize_index(
+            faiss.serialize_index(cpu_index)
+        )
 
         gpu_index = faiss.index_cpu_to_gpu(res, 0, deserialized_index)
-        Dnew2, Inew2 = gpu_index.search(data_query_nt, k, numeric_type=numeric_type)
+        Dnew2, Inew2 = gpu_index.search(
+            data_query_nt, k, numeric_type=numeric_type
+        )
 
         evaluation.check_ref_knn_with_draws(Dnew2, Inew2, Dnew, Inew, k)
 
@@ -178,8 +192,12 @@ class TestIDMapCagra(unittest.TestCase):
         d = 64
         k = 12
         if numeric_type == faiss.Int8:
-            data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
-            data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
+            data_base_nt = np.random.randint(
+                -128, 128, size=(10000, d), dtype=np.int8
+            )
+            data_query_nt = np.random.randint(
+                -128, 128, size=(100, d), dtype=np.int8
+            )
             data_base = data_base_nt.astype(np.float32)
             data_query = data_query_nt.astype(np.float32)
         else:
@@ -202,7 +220,9 @@ class TestIDMapCagra(unittest.TestCase):
         idMapIndex.train(data_base_nt, numeric_type=numeric_type)
         ids = np.array([i for i in range(10000)])
         idMapIndex.add_with_ids(data_base_nt, ids, numeric_type=numeric_type)
-        Dnew, Inew = idMapIndex.search(data_query_nt, k, numeric_type=numeric_type)
+        Dnew, Inew = idMapIndex.search(
+            data_query_nt, k, numeric_type=numeric_type
+        )
 
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 

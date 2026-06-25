@@ -37,8 +37,7 @@ class TestDistanceComputer(unittest.TestCase):
                 for j in range(10):
                     ref_dis = Dref[q, j]
                     new_dis = dc(int(Iref[q, j]))
-                    np.testing.assert_almost_equal(
-                        new_dis, ref_dis, decimal=5)
+                    np.testing.assert_almost_equal(new_dis, ref_dis, decimal=5)
 
     def test_distance_computer_PQ(self):
         self.do_test("PQ8np")
@@ -59,10 +58,10 @@ class TestDistanceComputer(unittest.TestCase):
         self.do_test("PCA20,SQ8")
 
     def test_distance_computer_AQ_decompress(self):
-        self.do_test("RQ3x4")    # test decompress path
+        self.do_test("RQ3x4")  # test decompress path
 
     def test_distance_computer_AQ_LUT(self):
-        self.do_test("RQ3x4_Nqint8")    # test LUT path
+        self.do_test("RQ3x4_Nqint8")  # test LUT path
 
     def test_distance_computer_AQ_LUT_IP(self):
         self.do_test("RQ3x4_Nqint8", faiss.METRIC_INNER_PRODUCT)
@@ -80,10 +79,9 @@ class TestIndexRefineSearchParams(unittest.TestCase):
 
         # Set nprobe on the base index (for IndexRefine, nprobe belongs to
         # the IVF base index)
-        if hasattr(index, 'base_index') and hasattr(
-                index.base_index, 'nprobe'):
+        if hasattr(index, "base_index") and hasattr(index.base_index, "nprobe"):
             index.base_index.nprobe = 4
-        elif hasattr(index, 'nprobe'):
+        elif hasattr(index, "nprobe"):
             index.nprobe = 4
 
         xq = ds.get_queries()
@@ -111,12 +109,16 @@ class TestIndexRefineSearchParams(unittest.TestCase):
 
         # try passing params for the baseline index, change nprobe
         base_params = faiss.IVFSearchParameters(nprobe=10)
-        params = faiss.IndexRefineSearchParameters(k_factor=1, base_index_params=base_params)
+        params = faiss.IndexRefineSearchParameters(
+            k_factor=1, base_index_params=base_params
+        )
         D4, I4 = index.search(xq, 10, params=params)
         inter4 = faiss.eval_intersection(I4, ds.get_groundtruth(10))
 
         base_params = faiss.IVFSearchParameters(nprobe=2)
-        params = faiss.IndexRefineSearchParameters(k_factor=1, base_index_params=base_params)
+        params = faiss.IndexRefineSearchParameters(
+            k_factor=1, base_index_params=base_params
+        )
         D5, I5 = index.search(xq, 10, params=params)
         inter5 = faiss.eval_intersection(I5, ds.get_groundtruth(10))
 
@@ -174,10 +176,11 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
             end_lim = lims_2[iq + 1]
             for i_lim in range(start_lim, end_lim):
                 idx = I2[i_lim]
-                l2_dis = np.sum(np.square(xq[iq : iq + 1,] - xb[idx : idx + 1,]))
+                l2_dis = np.sum(
+                    np.square(xq[iq : iq + 1,] - xb[idx : idx + 1,])
+                )
 
                 self.assertAlmostEqual(l2_dis, D2[i_lim], places=4)
-
 
     def test_refine_1(self):
         self.do_test("SQ4")

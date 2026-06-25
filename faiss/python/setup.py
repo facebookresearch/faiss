@@ -83,7 +83,9 @@ if found_swigfaiss_avx512:
 if found_swigfaiss_avx512_spr:
     print(f"Copying {swigfaiss_avx512_spr_lib}")
     shutil.copyfile("swigfaiss_avx512_spr.py", "faiss/swigfaiss_avx512_spr.py")
-    shutil.copyfile(swigfaiss_avx512_spr_lib, f"faiss/_swigfaiss_avx512_spr{ext}")
+    shutil.copyfile(
+        swigfaiss_avx512_spr_lib, f"faiss/_swigfaiss_avx512_spr{ext}"
+    )
 
 if found_callbacks:
     print(f"Copying {callbacks_lib}")
@@ -97,7 +99,8 @@ if found_swigfaiss_sve:
 if found_faiss_example_external_module_lib:
     print(f"Copying {faiss_example_external_module_lib}")
     shutil.copyfile(
-        "faiss_example_external_module.py", "faiss/faiss_example_external_module.py"
+        "faiss_example_external_module.py",
+        "faiss/faiss_example_external_module.py",
     )
     shutil.copyfile(
         faiss_example_external_module_lib,

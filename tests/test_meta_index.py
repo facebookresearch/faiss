@@ -33,7 +33,7 @@ class IDRemap(unittest.TestCase):
         _Dref, Iref = index.search(xq, k)
 
         # try a remapping
-        ids = np.arange(nb)[::-1].copy().astype('int64')
+        ids = np.arange(nb)[::-1].copy().astype("int64")
 
         sub_index = faiss.IndexPQ(d, 8, 8)
         index2 = faiss.IndexIDMap(sub_index)
@@ -52,8 +52,7 @@ class IDRemap(unittest.TestCase):
 
         # reference: index without remapping
 
-        index = faiss.IndexIVFPQ(coarse_quantizer, d,
-                                        ncentroids, 8, 8)
+        index = faiss.IndexIVFPQ(coarse_quantizer, d, ncentroids, 8, 8)
         index.nprobe = 5
         k = 10
         index.train(xt)
@@ -61,10 +60,9 @@ class IDRemap(unittest.TestCase):
         _Dref, Iref = index.search(xq, k)
 
         # try a remapping
-        ids = np.arange(nb)[::-1].copy().astype('int64')
+        ids = np.arange(nb)[::-1].copy().astype("int64")
 
-        index2 = faiss.IndexIVFPQ(coarse_quantizer, d,
-                                        ncentroids, 8, 8)
+        index2 = faiss.IndexIVFPQ(coarse_quantizer, d, ncentroids, 8, 8)
         index2.nprobe = 5
 
         index2.train(xt)
@@ -76,8 +74,10 @@ class IDRemap(unittest.TestCase):
 
 class Shards(unittest.TestCase):
 
-    @unittest.skipIf(os.name == "posix" and os.uname().sysname == "Darwin",
-                     "There is a bug in the OpenMP implementation on OSX.")
+    @unittest.skipIf(
+        os.name == "posix" and os.uname().sysname == "Darwin",
+        "There is a bug in the OpenMP implementation on OSX.",
+    )
     def test_shards(self):
         k = 32
         ref_index = faiss.IndexFlatL2(d)
@@ -87,9 +87,9 @@ class Shards(unittest.TestCase):
 
         # Create both threaded and non-threaded shard indexes
         shard_index_nonthreaded = faiss.IndexShards(
-            d, False)  # explicitly non-threaded
-        shard_index_threaded = faiss.IndexShards(
-            d, True)  # explicitly threaded
+            d, False
+        )  # explicitly non-threaded
+        shard_index_threaded = faiss.IndexShards(d, True)  # explicitly threaded
         shard_index_2 = faiss.IndexShards(d, True, False)
 
         ni = 3
@@ -138,7 +138,7 @@ class Shards(unittest.TestCase):
                 faiss.omp_set_num_threads(remember_nt)
 
             ndiff = (I != Iref).sum()
-            assert (ndiff < nq * k / 1000.)
+            assert ndiff < nq * k / 1000.0
 
     def test_shards_ivf(self):
         ds = SyntheticDataset(32, 1000, 100, 20)
@@ -151,10 +151,11 @@ class Shards(unittest.TestCase):
         ref_index.reset()
 
         sharded_index = faiss.IndexShardsIVF(
-            ref_index.quantizer, ref_index.nlist, False, True)
+            ref_index.quantizer, ref_index.nlist, False, True
+        )
         for shard in range(3):
             index_i = faiss.clone_index(ref_index)
-            index_i.add(xb[shard * nb // 3: (shard + 1)* nb // 3])
+            index_i.add(xb[shard * nb // 3 : (shard + 1) * nb // 3])
             sharded_index.add_shard(index_i)
 
         Dnew, Inew = sharded_index.search(ds.get_database(), 10)

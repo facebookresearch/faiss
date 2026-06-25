@@ -8,14 +8,14 @@ import re
 
 
 def get_code_size(d, indexkey):
-    """ size of one vector in an index in dimension d
+    """size of one vector in an index in dimension d
     constructed with factory string indexkey"""
 
     if indexkey == "Flat":
         return d * 4
 
     if indexkey.endswith(",RFlat"):
-        return d * 4 + get_code_size(d, indexkey[:-len(",RFlat")])
+        return d * 4 + get_code_size(d, indexkey[: -len(",RFlat")])
 
     mo = re.match("IVF\\d+(_HNSW32)?,(.*)$", indexkey)
     if mo:
@@ -33,42 +33,42 @@ def get_code_size(d, indexkey):
     if mo:
         return get_code_size(d, mo.group(1)) + get_code_size(d, mo.group(2))
 
-    mo = re.match('PQ(\\d+)x(\\d+)(fs|fsr)?$', indexkey)
+    mo = re.match("PQ(\\d+)x(\\d+)(fs|fsr)?$", indexkey)
     if mo:
         return (int(mo.group(1)) * int(mo.group(2)) + 7) // 8
 
-    mo = re.match('PQ(\\d+)\\+(\\d+)$', indexkey)
+    mo = re.match("PQ(\\d+)\\+(\\d+)$", indexkey)
     if mo:
-        return (int(mo.group(1)) + int(mo.group(2)))
+        return int(mo.group(1)) + int(mo.group(2))
 
-    mo = re.match('PQ(\\d+)$', indexkey)
+    mo = re.match("PQ(\\d+)$", indexkey)
     if mo:
         return int(mo.group(1))
 
     if indexkey == "HNSW32" or indexkey == "HNSW32,Flat":
-        return d * 4 + 64 * 4 # roughly
+        return d * 4 + 64 * 4  # roughly
 
-    if indexkey == 'SQ8':
+    if indexkey == "SQ8":
         return d
-    elif indexkey == 'SQ4':
+    elif indexkey == "SQ4":
         return (d + 1) // 2
-    elif indexkey == 'SQ6':
+    elif indexkey == "SQ6":
         return (d * 6 + 7) // 8
-    elif indexkey == 'SQfp16':
+    elif indexkey == "SQfp16":
         return d * 2
-    elif indexkey == 'SQbf16':
+    elif indexkey == "SQbf16":
         return d * 2
 
-    mo = re.match('PCAR?(\\d+),(.*)$', indexkey)
+    mo = re.match("PCAR?(\\d+),(.*)$", indexkey)
     if mo:
         return get_code_size(int(mo.group(1)), mo.group(2))
-    mo = re.match('OPQ\\d+_(\\d+),(.*)$', indexkey)
+    mo = re.match("OPQ\\d+_(\\d+),(.*)$", indexkey)
     if mo:
         return get_code_size(int(mo.group(1)), mo.group(2))
-    mo = re.match('OPQ\\d+,(.*)$', indexkey)
+    mo = re.match("OPQ\\d+,(.*)$", indexkey)
     if mo:
         return get_code_size(d, mo.group(1))
-    mo = re.match('RR(\\d+),(.*)$', indexkey)
+    mo = re.match("RR(\\d+),(.*)$", indexkey)
     if mo:
         return get_code_size(int(mo.group(1)), mo.group(2))
     raise RuntimeError("cannot parse " + indexkey)
@@ -158,7 +158,11 @@ def reverse_index_factory(index):
         return f"PQ{index.pq.M}x{index.pq.nbits}"
 
     elif isinstance(index, faiss.IndexLSH):
-        return "LSH" + ("r" if index.rotate_data else "") + ("t" if index.train_thresholds else "")
+        return (
+            "LSH"
+            + ("r" if index.rotate_data else "")
+            + ("t" if index.train_thresholds else "")
+        )
 
     elif isinstance(index, faiss.IndexScalarQuantizer):
         return sq_names[index.sq.qtype]

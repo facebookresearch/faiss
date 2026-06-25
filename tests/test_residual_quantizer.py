@@ -22,13 +22,13 @@ faiss.omp_set_num_threads(4)
 
 
 def pairwise_distances(a, b):
-    anorms = (a ** 2).sum(1)
-    bnorms = (b ** 2).sum(1)
+    anorms = (a**2).sum(1)
+    bnorms = (b**2).sum(1)
     return anorms.reshape(-1, 1) + bnorms - 2 * a @ b.T
 
 
 def beam_search_encode_step_ref(cent, residuals, codes, L):
-    """ Reference beam search implementation
+    """Reference beam search implementation
     encodes a residual table.
     """
     K, d = cent.shape
@@ -38,7 +38,9 @@ def beam_search_encode_step_ref(cent, residuals, codes, L):
     assert n2 == n and beam_size_2 == beam_size
 
     # compute all possible new residuals
-    cent_distances = pairwise_distances(residuals.reshape(n * beam_size, d), cent)
+    cent_distances = pairwise_distances(
+        residuals.reshape(n * beam_size, d), cent
+    )
     cent_distances = cent_distances.reshape(n, beam_size, K)
 
     # TODO write in vector form
@@ -47,7 +49,7 @@ def beam_search_encode_step_ref(cent, residuals, codes, L):
         # then keep all the results
         new_beam_size = beam_size * K
         new_codes = np.zeros((n, beam_size, K, m + 1), dtype=int)
-        new_residuals = np.zeros((n, beam_size, K, d), dtype='float32')
+        new_residuals = np.zeros((n, beam_size, K, d), dtype="float32")
         for i in range(n):
             new_codes[i, :, :, :-1] = codes[i]
             new_codes[i, :, :, -1] = np.arange(K)
@@ -59,13 +61,13 @@ def beam_search_encode_step_ref(cent, residuals, codes, L):
         # keep top-L results
         new_beam_size = L
         new_codes = np.zeros((n, L, m + 1), dtype=int)
-        new_residuals = np.zeros((n, L, d), dtype='float32')
-        new_distances = np.zeros((n, L), dtype='float32')
+        new_residuals = np.zeros((n, L, d), dtype="float32")
+        new_distances = np.zeros((n, L), dtype="float32")
         for i in range(n):
             cd = cent_distances[i].ravel()
-            jl = np.argsort(cd)[:L]    # TODO argpartition
-            js = jl // K     # input beam index
-            ls = jl % K      # centroid index
+            jl = np.argsort(cd)[:L]  # TODO argpartition
+            js = jl // K  # input beam index
+            ls = jl % K  # centroid index
             new_codes[i, :, :-1] = codes[i, js, :]
             new_codes[i, :, -1] = ls
             new_residuals[i, :, :] = residuals[i, js, :] - cent[ls, :]
@@ -75,7 +77,7 @@ def beam_search_encode_step_ref(cent, residuals, codes, L):
 
 
 def beam_search_encode_step(cent, residuals, codes, L, assign_index=None):
-    """ Wrapper of the C++ function with the same interface """
+    """Wrapper of the C++ function with the same interface"""
     K, d = cent.shape
     n, beam_size, d2 = residuals.shape
     assert d == d2
@@ -84,16 +86,26 @@ def beam_search_encode_step(cent, residuals, codes, L, assign_index=None):
 
     assert L <= beam_size * K
 
-    new_codes = np.zeros((n, L, m + 1), dtype='int32')
-    new_residuals = np.zeros((n, L, d), dtype='float32')
-    new_distances = np.zeros((n, L), dtype='float32')
+    new_codes = np.zeros((n, L, m + 1), dtype="int32")
+    new_residuals = np.zeros((n, L, d), dtype="float32")
+    new_distances = np.zeros((n, L), dtype="float32")
 
     sp = faiss.swig_ptr
-    codes = np.ascontiguousarray(codes, dtype='int32')
+    codes = np.ascontiguousarray(codes, dtype="int32")
     faiss.beam_search_encode_step(
-        d, K, sp(cent), n, beam_size, sp(residuals),
-        m, sp(codes), L, sp(new_codes), sp(new_residuals), sp(new_distances),
-        assign_index
+        d,
+        K,
+        sp(cent),
+        n,
+        beam_size,
+        sp(residuals),
+        m,
+        sp(codes),
+        L,
+        sp(new_codes),
+        sp(new_residuals),
+        sp(new_distances),
+        assign_index,
     )
 
     return new_codes, new_residuals, new_distances
@@ -107,11 +119,12 @@ def beam_search_encoding_ref(centroids, x, L):
     beam_size = 1
     codes = np.zeros((n, beam_size, 0), dtype=int)
     residuals = x.reshape((n, beam_size, d))
-    distances = (x ** 2).sum(1).reshape(n, beam_size)
+    distances = (x**2).sum(1).reshape(n, beam_size)
 
     for cent in centroids:
         codes, residuals, distances = beam_search_encode_step_ref(
-            cent, residuals, codes, L)
+            cent, residuals, codes, L
+        )
 
     return (codes, residuals, distances)
 
@@ -124,15 +137,15 @@ def beam_search_encoding_ref(centroids, x, L):
 class TestBeamSearch(unittest.TestCase):
 
     def do_test(self, K=70, L=10, use_assign_index=False):
-        """ compare C++ beam search with reference python implementation """
+        """compare C++ beam search with reference python implementation"""
         d = 32
         n = 500
-        L = 10 # beam size
+        L = 10  # beam size
 
         rs = np.random.RandomState(123)
-        x = rs.rand(n, d).astype('float32')
+        x = rs.rand(n, d).astype("float32")
 
-        cent = rs.rand(K, d).astype('float32')
+        cent = rs.rand(K, d).astype("float32")
 
         # first quant step --> input beam size is 1
         codes = np.zeros((n, 1, 0), dtype=int)
@@ -154,7 +167,7 @@ class TestBeamSearch(unittest.TestCase):
 
         # second quant step:
         K = 50
-        cent = rs.rand(K, d).astype('float32')
+        cent = rs.rand(K, d).astype("float32")
 
         codes, residuals = ref_codes, ref_residuals
 
@@ -193,7 +206,7 @@ def eval_codec(q, xb):
 class TestResidualQuantizer(unittest.TestCase):
 
     def test_training(self):
-        """check that the error is in the same ballpark as PQ """
+        """check that the error is in the same ballpark as PQ"""
         ds = datasets.SyntheticDataset(32, 3000, 1000, 0)
 
         xt = ds.get_train()
@@ -218,7 +231,7 @@ class TestResidualQuantizer(unittest.TestCase):
         self.assertLess(err_rq, err_pq * 1.2)
 
     def test_beam_size(self):
-        """ check that a larger beam gives a lower error """
+        """check that a larger beam gives a lower error"""
         ds = datasets.SyntheticDataset(32, 3000, 1000, 0)
 
         xt = ds.get_train()
@@ -239,7 +252,7 @@ class TestResidualQuantizer(unittest.TestCase):
         self.assertLess(err_rq1, err_rq0)
 
     def test_training_with_limited_mem(self):
-        """ make sure a different batch size gives the same result"""
+        """make sure a different batch size gives the same result"""
         ds = datasets.SyntheticDataset(32, 3000, 1000, 0)
 
         xt = ds.get_train()
@@ -281,8 +294,8 @@ class TestResidualQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(codes, codes_none)
 
     def test_clipping(self):
-        """ verify that a clipped residual quantizer gives the same
-        code prefix + suffix as the full RQ """
+        """verify that a clipped residual quantizer gives the same
+        code prefix + suffix as the full RQ"""
         ds = datasets.SyntheticDataset(32, 1000, 100, 0)
 
         rq = faiss.ResidualQuantizer(ds.d, 5, 4)
@@ -290,7 +303,7 @@ class TestResidualQuantizer(unittest.TestCase):
         rq.max_beam_size = 5
         rq.train(ds.get_train())
 
-        rq.max_beam_size = 1   # is not he same for a large beam size
+        rq.max_beam_size = 1  # is not he same for a large beam size
         codes = rq.compute_codes(ds.get_database())
 
         rq2 = faiss.ResidualQuantizer(ds.d, 2, 4)
@@ -307,15 +320,20 @@ class TestResidualQuantizer(unittest.TestCase):
         # verify that prefixes are the same
         for i in range(ds.nb):
             br = faiss.BitstringReader(faiss.swig_ptr(codes[i]), rq.code_size)
-            br2 = faiss.BitstringReader(faiss.swig_ptr(codes2[i]), rq2.code_size)
+            br2 = faiss.BitstringReader(
+                faiss.swig_ptr(codes2[i]), rq2.code_size
+            )
             self.assertEqual(br.read(rq2.tot_bits), br2.read(rq2.tot_bits))
-            br3 = faiss.BitstringReader(faiss.swig_ptr(codes3[i]), rq3.code_size)
+            br3 = faiss.BitstringReader(
+                faiss.swig_ptr(codes3[i]), rq3.code_size
+            )
             self.assertEqual(br.read(rq3.tot_bits), br3.read(rq3.tot_bits))
 
 
 ###########################################################
 # Test index, index factory sa_encode / sa_decode
 ###########################################################
+
 
 def unpack_codes(rq, packed_codes):
     nbits = faiss.vector_to_array(rq.nbits)
@@ -333,7 +351,7 @@ def unpack_codes(rq, packed_codes):
 
 
 def retrain_AQ_codebook(index, xt):
-    """ reference implementation of codebook retraining """
+    """reference implementation of codebook retraining"""
     rq = index.rq
 
     codes_packed = index.sa_encode(xt)
@@ -358,7 +376,11 @@ def retrain_AQ_codebook(index, xt):
         B, residuals, rank, singvals = np.linalg.lstsq(C, xt, rcond=None)
     else:
         import scipy.linalg
-        B, residuals, rank, singvals = scipy.linalg.lstsq(C, xt, )
+
+        B, residuals, rank, singvals = scipy.linalg.lstsq(
+            C,
+            xt,
+        )
 
     MSE = ((C @ B - xt) ** 2).sum() / n
 
@@ -415,8 +437,7 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         # initialize the codebooks
         rcq = faiss.downcast_index(ivf.quantizer)
         faiss.copy_array_to_vector(
-            np.vstack(codebooks[:rcq.rq.M]).ravel(),
-            rcq.rq.codebooks
+            np.vstack(codebooks[: rcq.rq.M]).ravel(), rcq.rq.codebooks
         )
         rcq.rq.is_trained = True
         # translation of AdditiveCoarseQuantizer::train
@@ -426,8 +447,7 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         rcq.is_trained = True
 
         faiss.copy_array_to_vector(
-            np.vstack(codebooks[rcq.rq.M:]).ravel(),
-            ivf.rq.codebooks
+            np.vstack(codebooks[rcq.rq.M :]).ravel(), ivf.rq.codebooks
         )
         ivf.rq.is_trained = True
         ivf.is_trained = True
@@ -448,14 +468,14 @@ class TestIndexResidualQuantizer(unittest.TestCase):
 
         np.testing.assert_array_equal(
             faiss.vector_to_array(index.rq.nbits),
-            np.array([16, 16, 8, 8, 8, 4, 4, 4, 4, 4, 4])
+            np.array([16, 16, 8, 8, 8, 4, 4, 4, 4, 4, 4]),
         )
 
     def test_factory_norm(self):
         index = faiss.index_factory(5, "RQ8x8_Nqint8")
         self.assertEqual(
-            index.rq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_qint8)
+            index.rq.search_type, faiss.AdditiveQuantizer.ST_norm_qint8
+        )
 
     def test_search_decompress(self):
         ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
@@ -479,9 +499,9 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         self.assertGreater(recalls[10], 0.35)
 
     def do_exact_search_equiv(self, norm_type):
-        """ searching with this normalization should yield
+        """searching with this normalization should yield
         exactly the same results as decompression (because the
-        norms are exact) """
+        norms are exact)"""
         ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
 
         # decompresses by default
@@ -492,7 +512,8 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         Dref, Iref = ir.search(ds.get_queries(), 10)
 
         ir2 = faiss.IndexResidualQuantizer(
-            ds.d, 3, 6, faiss.METRIC_L2, norm_type)
+            ds.d, 3, 6, faiss.METRIC_L2, norm_type
+        )
 
         # assumes training is reproducible
         ir2.rq.train_type = faiss.ResidualQuantizer.Train_default
@@ -553,9 +574,6 @@ class TestIndexResidualQuantizer(unittest.TestCase):
 
         # ref run 7474.98 / 7006.1777
         self.assertGreater(err_before, err_after_refined * 1.06)
-
-
-
 
 
 ###########################################################
@@ -696,7 +714,7 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
         self.assertNotEqual(quantizer.rq.codebook_cross_products.size(), 0)
         quantizer3 = faiss.deserialize_index(
             faiss.serialize_index(quantizer),
-            faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE
+            faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE,
         )
         self.assertEqual(quantizer3.rq.codebook_cross_products.size(), 0)
         CD3, CI3 = quantizer3.search(ds.get_queries(), 10)
@@ -726,7 +744,7 @@ class TestAdditiveQuantizerWithLUT(unittest.TestCase):
 
         # test norms computation
 
-        norms_ref = (cents ** 2).sum(1)
+        norms_ref = (cents**2).sum(1)
         norms = np.zeros(1 << aq.tot_bits, dtype="float32")
         aq.compute_centroid_norms(sp(norms))
 
@@ -734,10 +752,7 @@ class TestAdditiveQuantizerWithLUT(unittest.TestCase):
 
         # test IP search
 
-        Dref, Iref = faiss.knn(
-            xq, cents, 10,
-            metric=faiss.METRIC_INNER_PRODUCT
-        )
+        Dref, Iref = faiss.knn(xq, cents, 10, metric=faiss.METRIC_INNER_PRODUCT)
 
         Dnew = np.zeros_like(Dref)
         Inew = np.zeros_like(Iref)
@@ -771,7 +786,8 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
         xq = ds.get_queries()
 
         ir = faiss.IndexResidualQuantizer(
-            ds.d, 3, 4, faiss.METRIC_INNER_PRODUCT)
+            ds.d, 3, 4, faiss.METRIC_INNER_PRODUCT
+        )
         ir.rq.train_type = faiss.ResidualQuantizer.Train_default
         ir.train(xt)
 
@@ -781,8 +797,9 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
 
         AQ = faiss.AdditiveQuantizer
         ir2 = faiss.IndexResidualQuantizer(
-            ds.d, 3, 4, faiss.METRIC_INNER_PRODUCT, AQ.ST_LUT_nonorm)
-        ir2.rq.codebooks = ir.rq.codebooks    # fake training
+            ds.d, 3, 4, faiss.METRIC_INNER_PRODUCT, AQ.ST_LUT_nonorm
+        )
+        ir2.rq.codebooks = ir.rq.codebooks  # fake training
         ir2.rq.is_trained = True
         ir2.is_trained = True
         ir2.add(xb)
@@ -813,13 +830,18 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
         inter_ref = faiss.eval_intersection(Iref, gt)
 
         AQ = faiss.AdditiveQuantizer
-        for st in AQ.ST_norm_float, AQ.ST_norm_qint8, AQ.ST_norm_qint4, \
-                AQ.ST_norm_cqint8, AQ.ST_norm_cqint4:
+        for st in (
+            AQ.ST_norm_float,
+            AQ.ST_norm_qint8,
+            AQ.ST_norm_qint4,
+            AQ.ST_norm_cqint8,
+            AQ.ST_norm_cqint4,
+        ):
 
             ir2 = faiss.IndexResidualQuantizer(ds.d, 3, 4, faiss.METRIC_L2, st)
             ir2.rq.max_beam_size = 30
-            ir2.train(xt)   # to get the norm bounds
-            ir2.rq.codebooks = ir.rq.codebooks    # fake training
+            ir2.train(xt)  # to get the norm bounds
+            ir2.rq.codebooks = ir.rq.codebooks  # fake training
             ir2.add(xb)
 
             D2, I2 = ir2.search(xq, 10)
@@ -845,8 +867,7 @@ class TestIVFResidualQuantizer(unittest.TestCase):
         quantizer = faiss.IndexFlatL2(ds.d)
 
         index = faiss.IndexIVFResidualQuantizer(
-            quantizer, ds.d, 100, 3, 4,
-            faiss.METRIC_L2, st
+            quantizer, ds.d, 100, 3, 4, faiss.METRIC_L2, st
         )
         index.by_residual = by_residual
 
@@ -880,7 +901,8 @@ class TestIVFResidualQuantizer(unittest.TestCase):
             self.assertTrue(np.all(inters[1:3] >= inters[:2]))
             # check that we have the same result as the flat residual quantizer
             iflat = faiss.IndexResidualQuantizer(
-                ds.d, 3, 4, faiss.METRIC_L2, st)
+                ds.d, 3, 4, faiss.METRIC_L2, st
+            )
             iflat.rq.train_type
             iflat.rq.train_type = faiss.ResidualQuantizer.Train_default
             iflat.rq.max_beam_size = 30
@@ -919,19 +941,16 @@ class TestIVFResidualQuantizer(unittest.TestCase):
         index = faiss.index_factory(12, "IVF1024,RQ8x8_Nfloat")
         self.assertEqual(index.nlist, 1024)
         self.assertEqual(
-            index.rq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_float
+            index.rq.search_type, faiss.AdditiveQuantizer.ST_norm_float
         )
 
         index = faiss.index_factory(12, "IVF1024,RQ8x8_Ncqint8")
         self.assertEqual(
-            index.rq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_cqint8
+            index.rq.search_type, faiss.AdditiveQuantizer.ST_norm_cqint8
         )
         index = faiss.index_factory(12, "IVF1024,RQ8x8_Ncqint4")
         self.assertEqual(
-            index.rq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_cqint4
+            index.rq.search_type, faiss.AdditiveQuantizer.ST_norm_cqint4
         )
 
     def do_test_accuracy_IP(self, by_residual):
@@ -940,8 +959,13 @@ class TestIVFResidualQuantizer(unittest.TestCase):
         quantizer = faiss.IndexFlatIP(ds.d)
 
         index = faiss.IndexIVFResidualQuantizer(
-            quantizer, ds.d, 100, 3, 4,
-            faiss.METRIC_INNER_PRODUCT, faiss.AdditiveQuantizer.ST_decompress
+            quantizer,
+            ds.d,
+            100,
+            3,
+            4,
+            faiss.METRIC_INNER_PRODUCT,
+            faiss.AdditiveQuantizer.ST_decompress,
         )
         index.cp.spherical = True
         index.by_residual = by_residual
@@ -986,10 +1010,7 @@ def precomp_codebooks(codebooks):
     codebook_cross_prods = [
         [codebooks[m1] @ codebooks[m].T for m1 in range(m)] for m in range(M)
     ]
-    cent_norms = [
-        (c ** 2).sum(1)
-        for c in codebooks
-    ]
+    cent_norms = [(c**2).sum(1) for c in codebooks]
     return codebook_cross_prods, cent_norms
 
 
@@ -997,9 +1018,11 @@ def precomp_codebooks(codebooks):
 # Reference implementation of table-based beam search (use_beam_LUT=1)
 ############################################################
 
-def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,
-                                query_cp_i, cent_norms_i):
-    """ Reference beam search implementation
+
+def beam_search_encode_step_tab(
+    codes, L, distances, codebook_cross_prods_i, query_cp_i, cent_norms_i
+):
+    """Reference beam search implementation
     encodes a residual table.
     """
     n, beam_size, m = codes.shape
@@ -1008,7 +1031,7 @@ def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,
     assert n2 == n and beam_size_2 == beam_size
     n2, K = query_cp_i.shape
     assert n2 == n
-    K2, = cent_norms_i.shape
+    (K2,) = cent_norms_i.shape
     assert K == K2
     assert len(codebook_cross_prods_i) == m
 
@@ -1042,12 +1065,12 @@ def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,
         # keep top-L results
         new_beam_size = L
         new_codes = np.zeros((n, L, m + 1), dtype=int)
-        new_distances = np.zeros((n, L), dtype='float32')
+        new_distances = np.zeros((n, L), dtype="float32")
         for i in range(n):
             cd = cent_distances[i].ravel()
-            jl = np.argsort(cd)[:L]    # TODO argpartition
-            js = jl // K     # input beam index
-            ls = jl % K      # centroid index
+            jl = np.argsort(cd)[:L]  # TODO argpartition
+            js = jl // K  # input beam index
+            ls = jl % K  # centroid index
             new_codes[i, :, :-1] = codes[i, js, :]
             new_codes[i, :, -1] = ls
             new_distances[i, :] = cd[jl]
@@ -1061,26 +1084,27 @@ def beam_search_encoding_tab(codebooks, x, L, precomp, implem="ref"):
     """
     compare_implem = "ref" in implem and "cpp" in implem
 
-    query_cross_prods = [
-        x @ c.T for c in codebooks
-    ]
+    query_cross_prods = [x @ c.T for c in codebooks]
 
     M = len(codebooks)
-    codebook_offsets = np.zeros(M + 1, dtype='uint64')
+    codebook_offsets = np.zeros(M + 1, dtype="uint64")
     codebook_offsets[1:] = np.cumsum([len(cb) for cb in codebooks])
     codebook_cross_prods, cent_norms = precomp
     n, d = x.shape
     beam_size = 1
-    codes = np.zeros((n, beam_size, 0), dtype='int32')
-    distances = (x ** 2).sum(1).reshape(n, beam_size)
+    codes = np.zeros((n, beam_size, 0), dtype="int32")
+    distances = (x**2).sum(1).reshape(n, beam_size)
 
     for m, cent in enumerate(codebooks):
 
         if "ref" in implem:
             new_codes, new_distances = beam_search_encode_step_tab(
-                codes, L,
-                distances, codebook_cross_prods[m][:m],
-                query_cross_prods[m], cent_norms[m]
+                codes,
+                L,
+                distances,
+                codebook_cross_prods[m][:m],
+                query_cross_prods[m],
+                cent_norms[m],
             )
             new_beam_size = codes.shape[1]
 
@@ -1091,31 +1115,37 @@ def beam_search_encoding_tab(codebooks, x, L, precomp, implem="ref"):
         if "cpp" in implem:
             K = len(cent)
             new_beam_size = min(beam_size * K, L)
-            new_codes = np.zeros((n, new_beam_size, m + 1), dtype='int32')
+            new_codes = np.zeros((n, new_beam_size, m + 1), dtype="int32")
             new_distances = np.zeros((n, new_beam_size), dtype="float32")
             if m > 0:
                 cp = np.vstack(codebook_cross_prods[m][:m])
             else:
-                cp = np.zeros((0, K), dtype='float32')
+                cp = np.zeros((0, K), dtype="float32")
 
             sp = faiss.swig_ptr
             faiss.beam_search_encode_step_tab(
-                K, n, beam_size,
-                sp(cp), cp.shape[1],
+                K,
+                n,
+                beam_size,
+                sp(cp),
+                cp.shape[1],
                 sp(codebook_offsets),
-                sp(query_cross_prods[m]), query_cross_prods[m].shape[1],
+                sp(query_cross_prods[m]),
+                query_cross_prods[m].shape[1],
                 sp(cent_norms[m]),
                 m,
-                sp(codes), sp(distances),
+                sp(codes),
+                sp(distances),
                 new_beam_size,
-                sp(new_codes), sp(new_distances)
+                sp(new_codes),
+                sp(new_distances),
             )
 
         if compare_implem:
             np.testing.assert_array_almost_equal(
-                new_distances, distances_ref, decimal=5)
-            np.testing.assert_array_equal(
-                new_codes, codes_ref)
+                new_distances, distances_ref, decimal=5
+            )
+            np.testing.assert_array_equal(new_codes, codes_ref)
 
         codes = new_codes
         distances = new_distances
@@ -1151,20 +1181,20 @@ class TestCrossCodebookComputations(unittest.TestCase):
 
         # check C++ precomp tables
         rq.compute_codebook_tables()
-        codebook_cross_prods = faiss.vector_to_array(
-            rq.codebook_cross_products)
+        codebook_cross_prods = faiss.vector_to_array(rq.codebook_cross_products)
         ofs = 0
         for m in range(1, rq.M):
             py_table = np.vstack(codebook_cross_prods_ref[m])
             kk = rq.codebook_offsets.at(m)
             K = 1 << rq.nbits.at(m)
-            cpp_table = codebook_cross_prods[ofs:ofs + K * kk].reshape(kk, K)
+            cpp_table = codebook_cross_prods[ofs : ofs + K * kk].reshape(kk, K)
             ofs += kk * K
             np.testing.assert_allclose(py_table, cpp_table, atol=1e-5)
 
         cent_norms = faiss.vector_to_array(rq.centroid_norms)
         np.testing.assert_array_almost_equal(
-            np.hstack(cent_norms_ref), cent_norms, decimal=5)
+            np.hstack(cent_norms_ref), cent_norms, decimal=5
+        )
 
         # validate the C++ beam_search_encode_step_tab function
         beam_search_encoding_tab(codebooks, xb, 7, precomp, implem="ref cpp")
@@ -1172,11 +1202,13 @@ class TestCrossCodebookComputations(unittest.TestCase):
         # check implem w/ residuals
         n = ref_codes.shape[0]
         sp = faiss.swig_ptr
-        ref_codes_packed = np.zeros((n, rq.code_size), dtype='uint8')
-        ref_codes_int32 = ref_codes.astype('int32')
+        ref_codes_packed = np.zeros((n, rq.code_size), dtype="uint8")
+        ref_codes_int32 = ref_codes.astype("int32")
         rq.pack_codes(
-            n, sp(ref_codes_int32),
-            sp(ref_codes_packed), rq.M * ref_codes.shape[1]
+            n,
+            sp(ref_codes_int32),
+            sp(ref_codes_packed),
+            rq.M * ref_codes.shape[1],
         )
 
         rq.max_beam_size = 7

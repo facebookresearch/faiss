@@ -80,8 +80,8 @@ class TestRefs(unittest.TestCase):
 
     def test_GpuIndexIVFPQ(self):
         index_to_delete = faiss.IndexIVFPQ(
-            faiss.IndexFlatL2(self.d),
-            self.d, self.nlist, 2, 8)
+            faiss.IndexFlatL2(self.d), self.d, self.nlist, 2, 8
+        )
         idx = faiss.GpuIndexIVFPQ(self.res, index_to_delete)
         do_multi_test(idx, index_to_delete, self.db)
 
@@ -92,7 +92,7 @@ class TestRefs(unittest.TestCase):
             self.nlist,
             faiss.ScalarQuantizer.QT_8bit_direct,
             faiss.METRIC_L2,
-            False
+            False,
         )
         idx = faiss.GpuIndexIVFScalarQuantizer(self.res, index_to_delete)
         do_multi_test(idx, index_to_delete, self.db)
