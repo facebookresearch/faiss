@@ -1012,9 +1012,9 @@ TEST_F(SVS, WriteAndMapStaticVamanaFP16) {
             index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
 
-TEST_F(SVS, WriteAndMapStaticVamanaSQI8) {
+TEST_F(SVS, WriteAndMapStaticVamanaSQ8) {
     faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8, true};
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8, true};
     write_and_read_static_vamana_index(
             index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
