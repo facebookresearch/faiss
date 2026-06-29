@@ -15,22 +15,19 @@ from multiprocessing.pool import ThreadPool
 
 
 def knn_intersection_measure(I1, I2):
-    """ computes the intersection measure of two result tables
-    """
+    """computes the intersection measure of two result tables"""
     nq, rank = I1.shape
     assert I2.shape == (nq, rank)
-    ninter = sum(
-        np.intersect1d(I1[i], I2[i]).size
-        for i in range(nq)
-    )
+    ninter = sum(np.intersect1d(I1[i], I2[i]).size for i in range(nq))
     return ninter / I1.size
+
 
 ###############################################################
 # Range search results can be compared with Precision-Recall
 
 
 def filter_range_results(lims, D, I, thresh):
-    """ select a set of results """
+    """select a set of results"""
     nq = lims.size - 1
     mask = D < thresh
     new_lims = np.zeros_like(lims)
@@ -41,13 +38,13 @@ def filter_range_results(lims, D, I, thresh):
 
 def range_PR(lims_ref, Iref, lims_new, Inew, mode="overall"):
     """compute the precision and recall of range search results. The
-    function does not take the distances into account. """
+    function does not take the distances into account."""
 
     def ref_result_for(i):
-        return Iref[lims_ref[i]:lims_ref[i + 1]]
+        return Iref[lims_ref[i] : lims_ref[i + 1]]
 
     def new_result_for(i):
-        return Inew[lims_new[i]:lims_new[i + 1]]
+        return Inew[lims_new[i] : lims_new[i + 1]]
 
     nq = lims_ref.size - 1
     assert lims_new.size - 1 == nq
@@ -75,12 +72,12 @@ def range_PR(lims_ref, Iref, lims_new, Inew, mode="overall"):
         lims_ref[1:] - lims_ref[:-1],
         lims_new[1:] - lims_new[:-1],
         ninter,
-        mode=mode
+        mode=mode,
     )
 
 
 def counts_to_PR(ngt, nres, ninter, mode="overall"):
-    """ computes a  precision-recall for a set of queries.
+    """computes a  precision-recall for a set of queries.
     ngt = nb of GT results per query
     nres = nb of found results per query
     ninter = nb of correct results per query (smaller than nres of course)
@@ -127,7 +124,7 @@ def counts_to_PR(ngt, nres, ninter, mode="overall"):
 
 
 def sort_range_res_2(lims, D, I):
-    """ sort 2 arrays using the first as key """
+    """sort 2 arrays using the first as key"""
     I2 = np.empty_like(I)
     D2 = np.empty_like(D)
     nq = len(lims) - 1
@@ -152,12 +149,16 @@ def sort_range_res_1(lims, I):
 
 
 def range_PR_multiple_thresholds(
-            lims_ref, Iref,
-            lims_new, Dnew, Inew,
-            thresholds,
-            mode="overall", do_sort="ref,new"
-    ):
-    """ compute precision-recall values for range search results
+    lims_ref,
+    Iref,
+    lims_new,
+    Dnew,
+    Inew,
+    thresholds,
+    mode="overall",
+    do_sort="ref,new",
+):
+    """compute precision-recall values for range search results
     for several thresholds on the "new" results.
     This is to plot PR curves
     """
@@ -170,7 +171,7 @@ def range_PR_multiple_thresholds(
         Inew, Dnew = sort_range_res_2(lims_new, Dnew, Inew)
 
     def ref_result_for(i):
-        return Iref[lims_ref[i]:lims_ref[i + 1]]
+        return Iref[lims_ref[i] : lims_ref[i + 1]]
 
     def new_result_for(i):
         l0, l1 = lims_new[i], lims_new[i + 1]
@@ -193,7 +194,7 @@ def range_PR_multiple_thresholds(
             return
 
         # which offsets we are interested in
-        nres= np.searchsorted(res_dis, thresholds)
+        nres = np.searchsorted(res_dis, thresholds)
         counts[q, :, 1] = nres
 
         if gt_ids.size == 0:
@@ -216,8 +217,7 @@ def range_PR_multiple_thresholds(
     recalls = np.zeros(nt)
     for t in range(nt):
         p, r = counts_to_PR(
-                counts[:, t, 0], counts[:, t, 1], counts[:, t, 2],
-                mode=mode
+            counts[:, t, 0], counts[:, t, 1], counts[:, t, 2], mode=mode
         )
         precisions[t] = p
         recalls[t] = r
@@ -229,28 +229,29 @@ def range_PR_multiple_thresholds(
 # Functions that compare search results with a reference result.
 # They are intended for use in tests
 
+
 def _cluster_tables_with_tolerance(tab1, tab2, thr):
-    """ for two tables, cluster them by merging values closer than thr.
-    Returns the cluster ids for each table element """
+    """for two tables, cluster them by merging values closer than thr.
+    Returns the cluster ids for each table element"""
     tab = np.hstack([tab1, tab2])
     tab.sort()
     n = len(tab)
     diffs = np.ones(n)
     diffs[1:] = tab[1:] - tab[:-1]
     unique_vals = tab[diffs > thr]
-    idx1 = np.searchsorted(unique_vals, tab1, side='right') - 1
-    idx2 = np.searchsorted(unique_vals, tab2, side='right') - 1
+    idx1 = np.searchsorted(unique_vals, tab1, side="right") - 1
+    idx2 = np.searchsorted(unique_vals, tab2, side="right") - 1
     return idx1, idx2
 
 
 def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
-    """ test that knn search results are identical, with possible ties.
-    Raise if not. """
+    """test that knn search results are identical, with possible ties.
+    Raise if not."""
     np.testing.assert_allclose(Dref, Dnew, rtol=rtol)
     # here we have to be careful because of draws
-    testcase = unittest.TestCase()   # because it makes nice error messages
+    testcase = unittest.TestCase()  # because it makes nice error messages
     for i in range(len(Iref)):
-        if np.all(Iref[i] == Inew[i]): # easy case
+        if np.all(Iref[i] == Inew[i]):  # easy case
             continue
 
         # otherwise collect elements per distance
@@ -265,10 +266,9 @@ def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
             testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
 
-def check_ref_range_results(Lref, Dref, Iref,
-                            Lnew, Dnew, Inew):
-    """ compare range search results wrt. a reference result,
-    throw if it fails """
+def check_ref_range_results(Lref, Dref, Iref, Lnew, Dnew, Inew):
+    """compare range search results wrt. a reference result,
+    throw if it fails"""
     np.testing.assert_array_equal(Lref, Lnew)
     nq = len(Lref) - 1
     for i in range(nq):
@@ -277,12 +277,14 @@ def check_ref_range_results(Lref, Dref, Iref,
         Ii_new = Inew[l0:l1]
         Di_ref = Dref[l0:l1]
         Di_new = Dnew[l0:l1]
-        if np.all(Ii_ref == Ii_new): # easy
+        if np.all(Ii_ref == Ii_new):  # easy
             pass
         else:
+
             def sort_by_ids(I, D):
                 o = I.argsort()
                 return I[o], D[o]
+
             # sort both
             (Ii_ref, Di_ref) = sort_by_ids(Ii_ref, Di_ref)
             (Ii_new, Di_new) = sort_by_ids(Ii_new, Di_new)
@@ -309,11 +311,11 @@ class OperatingPoints:
         self.suboptimal_points = []
 
     def compare_keys(self, k1, k2):
-        """ return -1 if k1 > k2, 1 if k2 > k1, 0 otherwise """
+        """return -1 if k1 > k2, 1 if k2 > k1, 0 otherwise"""
         raise NotImplemented
 
     def do_nothing_key(self):
-        """ parameters to say we do nothing, takes 0 time and has 0 performance"""
+        """parameters to say we do nothing, takes 0 time and has 0 performance"""
         raise NotImplemented
 
     def is_pareto_optimal(self, perf_new, t_new):
@@ -323,15 +325,15 @@ class OperatingPoints:
         return True
 
     def predict_bounds(self, key):
-        """ predicts the bound on time and performance """
+        """predicts the bound on time and performance"""
         min_time = 0.0
         max_perf = 1.0
         for key2, perf, t in self.operating_points + self.suboptimal_points:
             cmp = self.compare_keys(key, key2)
-            if cmp > 0: # key2 > key
+            if cmp > 0:  # key2 > key
                 if t > min_time:
                     min_time = t
-            if cmp < 0: # key2 < key
+            if cmp < 0:  # key2 < key
                 if perf < max_perf:
                     max_perf = perf
         return max_perf, min_time
@@ -347,8 +349,7 @@ class OperatingPoints:
             while i < len(self.operating_points):
                 op_Ls, perf2, t2 = self.operating_points[i]
                 if perf >= perf2 and t < t2:
-                    self.suboptimal_points.append(
-                        self.operating_points.pop(i))
+                    self.suboptimal_points.append(self.operating_points.pop(i))
                 else:
                     i += 1
             self.operating_points.append((key, perf, t))
@@ -388,7 +389,7 @@ class OperatingPointsWithRanges(OperatingPoints):
         return int(np.prod([len(values) for name, values in self.ranges]))
 
     def sample_experiments(self, n_autotune, rs=np.random):
-        """ sample a set of experiments of max size n_autotune
+        """sample a set of experiments of max size n_autotune
         (run all experiments in random order if n_autotune is 0)
         """
         assert n_autotune == 0 or n_autotune >= 2
@@ -398,7 +399,8 @@ class OperatingPointsWithRanges(OperatingPoints):
             experiments = rs.permutation(totex - 2)
         else:
             experiments = rs.choice(
-                totex - 2, size=n_autotune - 2, replace=False)
+                totex - 2, size=n_autotune - 2, replace=False
+            )
 
         experiments = [0, totex - 1] + [int(cno) + 1 for cno in experiments]
         return experiments
@@ -415,12 +417,11 @@ class OperatingPointsWithRanges(OperatingPoints):
     def get_parameters(self, k):
         """Convert a key to a dictionary with parameter values"""
         return {
-            name: values[k[i]]
-            for i, (name, values) in enumerate(self.ranges)
+            name: values[k[i]] for i, (name, values) in enumerate(self.ranges)
         }
 
     def restrict_range(self, name, max_val):
-        """ remove too large values from a range"""
+        """remove too large values from a range"""
         for name2, values in self.ranges:
             if name == name2:
                 val2 = [v for v in values if v < max_val]
@@ -476,6 +477,7 @@ class RepeatTimer:
     enters a loop. It focuses on ms-scale times because for second scale
     it's usually less relevant to repeat the operation.
     """
+
     def __init__(self, warmup=0, nt=-1, runs=1, max_secs=np.inf):
         assert warmup < runs
         self.warmup = warmup
@@ -494,5 +496,5 @@ class RepeatTimer:
         return np.std(self.times) * 1000 if len(self.times) > 1 else 0.0
 
     def nruns(self):
-        """ effective number of runs (may be lower than runs - warmup due to timeout)"""
+        """effective number of runs (may be lower than runs - warmup due to timeout)"""
         return len(self.times)

@@ -43,11 +43,13 @@ _skip_unless_cuvs_build = unittest.skipUnless(
 
 def skip_if_no_gpu(test_func):
     """Skip test if no GPU is available."""
+
     @functools.wraps(test_func)
     def wrapper(*args, **kwargs):
         if faiss.get_num_gpus() == 0:
             raise unittest.SkipTest("No GPU available")
         return test_func(*args, **kwargs)
+
     return wrapper
 
 

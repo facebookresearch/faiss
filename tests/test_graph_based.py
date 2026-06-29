@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-""" a few tests for graph-based indices (HNSW, nndescent and NSG)"""
+"""a few tests for graph-based indices (HNSW, nndescent and NSG)"""
 
 import numpy as np
 import unittest
@@ -53,8 +53,8 @@ class TestHNSW(unittest.TestCase):
         nmiss = 0
         # check if returned results are a subset of the reference results
         for i in range(len(self.xq)):
-            ref = Iref[lims_ref[i]: lims_ref[i + 1]]
-            new = I[lims[i]: lims[i + 1]]
+            ref = Iref[lims_ref[i] : lims_ref[i + 1]]
+            new = I[lims[i] : lims[i + 1]]
             self.assertLessEqual(set(new), set(ref))
             nmiss += len(ref) - len(new)
         # currently we miss 405 / 6019 neighbors
@@ -140,7 +140,7 @@ class TestHNSW(unittest.TestCase):
 
     def test_add_0_vecs(self):
         index = faiss.IndexHNSWFlat(10, 16)
-        zero_vecs = np.zeros((0, 10), dtype='float32')
+        zero_vecs = np.zeros((0, 10), dtype="float32")
         # infinite loop
         index.add(zero_vecs)
 
@@ -182,13 +182,10 @@ class TestHNSW(unittest.TestCase):
             faiss.serialize_index(index, faiss.IO_FLAG_SKIP_STORAGE)
         )
         self.assertEqual(index2.storage, None)
-        self.assertRaises(
-            RuntimeError,
-            index2.search, self.xb, 1)
+        self.assertRaises(RuntimeError, index2.search, self.xb, 1)
 
         # make sure we can store an index with empty storage
-        index4 = faiss.deserialize_index(
-            faiss.serialize_index(index2))
+        index4 = faiss.deserialize_index(faiss.serialize_index(index2))
 
         # add storage afterwards
         index.storage = faiss.clone_index(index.storage)
@@ -350,15 +347,15 @@ class TestHNSWNaN(unittest.TestCase):
         d = 64
         nt = 2000
         nb = 1000
-        xt = np.random.default_rng(42).random((nt, d), dtype='float32')
-        xb = np.random.default_rng(43).random((nb, d), dtype='float32')
+        xt = np.random.default_rng(42).random((nt, d), dtype="float32")
+        xb = np.random.default_rng(43).random((nb, d), dtype="float32")
 
         index = faiss.index_factory(d, "IVF256_HNSW32,SQ8")
         index.train(xt)
         index.add(xb)
 
         # Create a vector with NaN in the first component
-        vec = np.zeros((1, d), dtype='float32')
+        vec = np.zeros((1, d), dtype="float32")
         vec[0, 0] = np.nan
 
         # This should not crash
@@ -372,9 +369,9 @@ class Issue3684(unittest.TestCase):
         np.random.seed(1234)  # For reproducibility
         d = 256  # Example dimension
         nb = 10  # Number of database vectors
-        nq = 2   # Number of query vectors
-        xb = np.random.random((nb, d)).astype('float32')
-        xq = np.random.random((nq, d)).astype('float32')
+        nq = 2  # Number of query vectors
+        xb = np.random.random((nb, d)).astype("float32")
+        xq = np.random.random((nq, d)).astype("float32")
 
         faiss.normalize_L2(xb)  # Normalize both query and database vectors
         faiss.normalize_L2(xq)
@@ -472,8 +469,7 @@ class TestNSG(unittest.TestCase):
 
     def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: 'L2',
-                   faiss.METRIC_INNER_PRODUCT: 'IP'}
+        metrics = {faiss.METRIC_L2: "L2", faiss.METRIC_INNER_PRODUCT: "IP"}
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
@@ -591,8 +587,7 @@ class TestNSG(unittest.TestCase):
             index.add(self.xb)
 
         self.assertIn(
-            "NSG does not support incremental addition",
-            str(context.exception)
+            "NSG does not support incremental addition", str(context.exception)
         )
 
     def test_nsg_rebuild_throws_with_pre_built_knn_graph(self):
@@ -739,8 +734,8 @@ class TestNNDescentGenRandom(unittest.TestCase):
         """
         d = 32
         nb = 200  # just above NUM_EVAL_POINTS=100
-        xb = np.random.default_rng(42).random((nb, d)).astype('float32')
-        xq = np.random.default_rng(43).random((10, d)).astype('float32')
+        xb = np.random.default_rng(42).random((nb, d)).astype("float32")
+        xq = np.random.default_rng(43).random((10, d)).astype("float32")
 
         index = faiss.IndexNNDescentFlat(d, 32)
         index.nndescent.search_L = nb  # triggers gen_random(size=nb, N=nb)
@@ -789,7 +784,7 @@ class TestNNDescentKNNG(unittest.TestCase):
         assert recall > 0.99
 
     def test_small_nndescent(self):
-        """ building a too small graph used to crash, make sure it raises
+        """building a too small graph used to crash, make sure it raises
         an exception instead.
         TODO: build the exact knn graph for small cases
         """
@@ -802,5 +797,5 @@ class TestNNDescentKNNG(unittest.TestCase):
         index.nndescent.iter = 5
         index.verbose = True
 
-        xb = np.zeros((78, d), dtype='float32')
+        xb = np.zeros((78, d), dtype="float32")
         self.assertRaises(RuntimeError, index.add, xb)

@@ -70,9 +70,9 @@ class Optimizer:
             evaluation="knn",
             accuracy_metric="knn_intersection",
             min_accuracy=min_accuracy,
-            name_filter=None
-            if include_flat
-            else (lambda n: not n.startswith("Flat")),
+            name_filter=(
+                None if include_flat else (lambda n: not n.startswith("Flat"))
+            ),
             pareto_mode=ParetoMode.GLOBAL,
             pareto_metric=pareto_metric,
         )
@@ -103,7 +103,9 @@ class Optimizer:
                 dry_run=False,
             )
 
-            descs = [IndexDescriptorClassic(factory="Flat"),] + [
+            descs = [
+                IndexDescriptorClassic(factory="Flat"),
+            ] + [
                 IndexDescriptorClassic(
                     factory="HNSW32",
                     construction_params=[{"efConstruction": 2**i}],
@@ -229,7 +231,8 @@ class Optimizer:
                 (None, "SQbf16"),
                 (None, "SQ8"),
                 (None, "SQ8_direct_signed"),
-            ] + [
+            ]
+            + [
                 (f"OPQ{M}_{M * dim}", f"PQ{M}x{b}")
                 for M in [8, 12, 16, 32, 48, 64, 96, 128, 192, 256]
                 if d % M == 0
@@ -237,7 +240,8 @@ class Optimizer:
                 if M * dim <= d
                 for b in range(4, 14, 2)
                 if M * b < d * 8  # smaller than SQ8
-            ] + [
+            ]
+            + [
                 (None, f"PQ{M}x{b}")
                 for M in [8, 12, 16, 32, 48, 64, 96, 128, 192, 256]
                 if d % M == 0
@@ -257,9 +261,11 @@ class Optimizer:
         _, filtered = self.benchmark_and_filter_candidates(
             index_descs=[
                 IndexDescriptorClassic(
-                    factory=f"IVF{nlist},{pq}"
-                    if opq is None
-                    else f"{opq},IVF{nlist},{pq}",
+                    factory=(
+                        f"IVF{nlist},{pq}"
+                        if opq is None
+                        else f"{opq},IVF{nlist},{pq}"
+                    ),
                     search_params={
                         "nprobe": nprobe,
                     },

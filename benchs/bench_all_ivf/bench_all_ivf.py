@@ -20,7 +20,6 @@ except ModuleNotFoundError:
 sanitize = datasets.sanitize
 
 
-
 def unwind_index_ivf(index):
     if isinstance(index, faiss.IndexPreTransform):
         assert index.chain.size() == 1
@@ -63,9 +62,8 @@ def apply_AQ_options(index, args):
         index.rq.use_beam_LUT = args.RQ_use_beam_LUT
 
 
-
 def eval_setting(index, xq, gt, k, inter, min_time):
-    """ evaluate searching in terms of precision vs. speed """
+    """evaluate searching in terms of precision vs. speed"""
     nq = xq.shape[0]
     ivf_stats = faiss.cvar.indexIVF_stats
     ivf_stats.reset()
@@ -77,28 +75,28 @@ def eval_setting(index, xq, gt, k, inter, min_time):
         t1 = time.time()
         if t1 - t0 > min_time:
             break
-    ms_per_query = ((t1 - t0) * 1000.0 / nq / nrun)
-    res = {
-        "ms_per_query": ms_per_query,
-        "nrun": nrun
-    }
+    ms_per_query = (t1 - t0) * 1000.0 / nq / nrun
+    res = {"ms_per_query": ms_per_query, "nrun": nrun}
     res["n"] = ms_per_query
     if inter:
         rank = k
-        inter_measure = faiss.eval_intersection(gt[:, :rank], I[:, :rank]) / (nq * rank)
-        print("%.4f" % inter_measure, end=' ')
+        inter_measure = faiss.eval_intersection(gt[:, :rank], I[:, :rank]) / (
+            nq * rank
+        )
+        print("%.4f" % inter_measure, end=" ")
         res["inter_measure"] = inter_measure
     else:
         res["recalls"] = {}
         for rank in 1, 10, 100:
             recall = (I[:, :rank] == gt[:, :1]).sum() / float(nq)
-            print("%.4f" % recall, end=' ')
+            print("%.4f" % recall, end=" ")
             res["recalls"][rank] = recall
-    print("   %9.5f  " % ms_per_query, end=' ')
-    print("%12d   " % (ivf_stats.ndis / nrun), end=' ')
+    print("   %9.5f  " % ms_per_query, end=" ")
+    print("%12d   " % (ivf_stats.ndis / nrun), end=" ")
     print(nrun)
     res["ndis"] = ivf_stats.ndis / nrun
     return res
+
 
 ######################################################
 # Training
@@ -109,8 +107,9 @@ def run_train(args, ds, res):
     print("build index, key=", args.indexkey)
 
     index = faiss.index_factory(
-        ds.d, args.indexkey, faiss.METRIC_L2 if ds.metric == "L2" else
-        faiss.METRIC_INNER_PRODUCT
+        ds.d,
+        args.indexkey,
+        faiss.METRIC_L2 if ds.metric == "L2" else faiss.METRIC_INNER_PRODUCT,
     )
 
     index_ivf, vec_transform = unwind_index_ivf(index)
@@ -118,7 +117,7 @@ def run_train(args, ds, res):
     if args.by_residual != -1:
         by_residual = args.by_residual == 1
         print("setting by_residual = ", by_residual)
-        index_ivf.by_residual   # check if field exists
+        index_ivf.by_residual  # check if field exists
         index_ivf.by_residual = by_residual
 
     if index_ivf:
@@ -127,16 +126,21 @@ def run_train(args, ds, res):
         # because otherwise the assignment is inaccurate
         quantizer = faiss.downcast_index(index_ivf.quantizer)
         if isinstance(quantizer, faiss.IndexRefine):
-            print("   update quantizer k_factor=", quantizer.k_factor, end=" -> ")
+            print(
+                "   update quantizer k_factor=", quantizer.k_factor, end=" -> "
+            )
             quantizer.k_factor = 32 if index_ivf.nlist < 1e6 else 64
             print(quantizer.k_factor)
             base_index = faiss.downcast_index(quantizer.base_index)
             if isinstance(base_index, faiss.IndexIVF):
-                print("   update quantizer nprobe=", base_index.nprobe, end=" -> ")
+                print(
+                    "   update quantizer nprobe=", base_index.nprobe, end=" -> "
+                )
                 base_index.nprobe = (
-                    16 if base_index.nlist < 1e5 else
-                    32 if base_index.nlist < 4e6 else
-                    64)
+                    16
+                    if base_index.nlist < 1e5
+                    else 32 if base_index.nlist < 4e6 else 64
+                )
                 print(base_index.nprobe)
         elif isinstance(quantizer, faiss.IndexHNSW):
             hnsw = quantizer.hnsw
@@ -159,7 +163,7 @@ def run_train(args, ds, res):
 
     maxtrain = args.maxtrain
     if maxtrain == 0:
-        if 'IMI' in args.indexkey:
+        if "IMI" in args.indexkey:
             maxtrain = int(256 * 2 ** (np.log2(index_ivf.nlist) / 2))
         elif index_ivf:
             maxtrain = 50 * index_ivf.nlist
@@ -178,28 +182,31 @@ def run_train(args, ds, res):
     print("train, size", xt2.shape)
     assert np.all(np.isfinite(xt2))
 
-    if (isinstance(vec_transform, faiss.OPQMatrix) and
-        isinstance(index_ivf, faiss.IndexIVFPQFastScan)):
+    if isinstance(vec_transform, faiss.OPQMatrix) and isinstance(
+        index_ivf, faiss.IndexIVFPQFastScan
+    ):
         print("  Forcing OPQ training PQ to PQ4")
         ref_pq = index_ivf.pq
-        training_pq = faiss.ProductQuantizer(
-            ref_pq.d, ref_pq.M, ref_pq.nbits
-        )
+        training_pq = faiss.ProductQuantizer(ref_pq.d, ref_pq.M, ref_pq.nbits)
         vec_transform.pq
         vec_transform.pq = training_pq
 
-
-    if args.get_centroids_from == '':
+    if args.get_centroids_from == "":
 
         if args.clustering_niter >= 0:
-            print(("setting nb of clustering iterations to %d" %
-                   args.clustering_niter))
+            print(
+                (
+                    "setting nb of clustering iterations to %d"
+                    % args.clustering_niter
+                )
+            )
             index_ivf.cp.niter = args.clustering_niter
 
         if args.train_on_gpu:
             print("add a training index on GPU")
             train_index = faiss.index_cpu_to_all_gpus(
-                    faiss.IndexFlatL2(index_ivf.d))
+                faiss.IndexFlatL2(index_ivf.d)
+            )
             index_ivf.clustering_index = train_index
 
     else:
@@ -229,6 +236,7 @@ def run_train(args, ds, res):
     print("  train in %.3f s" % res.train_time)
     return index
 
+
 ######################################################
 # Populating index
 ######################################################
@@ -242,14 +250,15 @@ def run_add(args, ds, index, res):
         assert args.split == [1, 0], "split not supported with full batch add"
         index.add(sanitize(ds.get_database()))
     else:
-        totn = ds.nb // args.split[0] # approximate
+        totn = ds.nb // args.split[0]  # approximate
         i0 = 0
         print(f"Adding in block sizes {args.add_bs} with split {args.split}")
         for xblock in ds.database_iterator(bs=args.add_bs, split=args.split):
             i1 = i0 + len(xblock)
-            print("  adding %d:%d / %d [%.3f s, RSS %d kiB] " % (
-                i0, i1, totn, time.time() - t0,
-                faiss.get_mem_usage_kb()))
+            print(
+                "  adding %d:%d / %d [%.3f s, RSS %d kiB] "
+                % (i0, i1, totn, time.time() - t0, faiss.get_mem_usage_kb())
+            )
             index.add(xblock)
             i0 = i1
 
@@ -260,6 +269,7 @@ def run_add(args, ds, index, res):
 ######################################################
 # Search
 ######################################################
+
 
 def run_search(args, ds, index, res):
 
@@ -283,7 +293,7 @@ def run_search(args, ds, index, res):
     print("current RSS:", faiss.get_mem_usage_kb() * 1024)
 
     precomputed_table_size = 0
-    if hasattr(index_ivf, 'precomputed_table'):
+    if hasattr(index_ivf, "precomputed_table"):
         precomputed_table_size = index_ivf.precomputed_table.size() * 4
 
     print("precomputed tables size:", precomputed_table_size)
@@ -294,7 +304,7 @@ def run_search(args, ds, index, res):
     nq, d = xq.shape
     gt = ds.get_groundtruth(k=args.k)
 
-    if not args.accept_short_gt: # Deep1B has only a single NN per query
+    if not args.accept_short_gt:  # Deep1B has only a single NN per query
         assert gt.shape[1] == args.k
 
     if args.searchthreads != -1:
@@ -309,26 +319,25 @@ def run_search(args, ds, index, res):
     parametersets = args.searchparams
 
     if args.inter:
-        header = (
-            '%-40s     inter@%3d time(ms/q)   nb distances #runs' %
-            ("parameters", args.k)
+        header = "%-40s     inter@%3d time(ms/q)   nb distances #runs" % (
+            "parameters",
+            args.k,
         )
     else:
 
         header = (
-            '%-40s     R@1   R@10  R@100  time(ms/q)   nb distances #runs' %
-            "parameters"
+            "%-40s     R@1   R@10  R@100  time(ms/q)   nb distances #runs"
+            % "parameters"
         )
 
-
     res.search_results = {}
-    if parametersets == ['autotune']:
+    if parametersets == ["autotune"]:
 
         ps.n_experiments = args.n_autotune
         ps.min_test_duration = args.min_test_duration
 
         for kv in args.autotune_max:
-            k, vmax = kv.split(':')
+            k, vmax = kv.split(":")
             vmax = float(vmax)
             print("limiting %s to %g" % (k, vmax))
             pr = ps.add_range(k)
@@ -337,8 +346,8 @@ def run_search(args, ds, index, res):
             faiss.copy_array_to_vector(values, pr.values)
 
         for kv in args.autotune_range:
-            k, vals = kv.split(':')
-            vals = np.fromstring(vals, sep=',')
+            k, vals = kv.split(":")
+            vals = np.fromstring(vals, sep=",")
             print("setting %s to %s" % (k, vals))
             pr = ps.add_range(k)
             faiss.copy_array_to_vector(vals, pr.values)
@@ -353,10 +362,13 @@ def run_search(args, ds, index, res):
 
         # by default, the criterion will request only 1 NN
         crit.nnn = args.k
-        crit.set_groundtruth(None, gt.astype('int64'))
+        crit.set_groundtruth(None, gt.astype("int64"))
 
         # then we let Faiss find the optimal parameters by itself
-        print("exploring operating points, %d threads" % faiss.omp_get_max_threads());
+        print(
+            "exploring operating points, %d threads"
+            % faiss.omp_get_max_threads()
+        )
         ps.display()
 
         t0 = time.time()
@@ -375,22 +387,25 @@ def run_search(args, ds, index, res):
 
             ps.set_index_parameters(index, opt.key)
 
-            print(opt.key.ljust(maxw), end=' ')
+            print(opt.key.ljust(maxw), end=" ")
             sys.stdout.flush()
 
-            res_i = eval_setting(index, xq, gt, args.k, args.inter, args.min_test_duration)
+            res_i = eval_setting(
+                index, xq, gt, args.k, args.inter, args.min_test_duration
+            )
             res.search_results[opt.key] = res_i
 
     else:
         print(header)
         for param in parametersets:
-            print("%-40s " % param, end=' ')
+            print("%-40s " % param, end=" ")
             sys.stdout.flush()
             ps.set_index_parameters(index, param)
 
-            res_i = eval_setting(index, xq, gt, args.k, args.inter, args.min_test_duration)
+            res_i = eval_setting(
+                index, xq, gt, args.k, args.inter, args.min_test_duration
+            )
             res.search_results[param] = res_i
-
 
 
 ######################################################
@@ -405,76 +420,173 @@ def main():
     def aa(*args, **kwargs):
         group.add_argument(*args, **kwargs)
 
-    group = parser.add_argument_group('general options')
-    aa('--nthreads', default=-1, type=int,
-        help='nb of threads to use at train and add time')
-    aa('--json', default=False, action="store_true",
-        help="output stats in JSON format at the end")
-    aa('--todo', default=["check_files"],
-       choices=["train", "add", "search", "check_files"],
-       nargs="+", help='what to do (check_files means decide depending on which index files exist)')
+    group = parser.add_argument_group("general options")
+    aa(
+        "--nthreads",
+        default=-1,
+        type=int,
+        help="nb of threads to use at train and add time",
+    )
+    aa(
+        "--json",
+        default=False,
+        action="store_true",
+        help="output stats in JSON format at the end",
+    )
+    aa(
+        "--todo",
+        default=["check_files"],
+        choices=["train", "add", "search", "check_files"],
+        nargs="+",
+        help="what to do (check_files means decide depending on which index files exist)",
+    )
 
-    group = parser.add_argument_group('dataset options')
-    aa('--db', default='deep1M', help='dataset')
-    aa('--compute_gt', default=False, action='store_true',
-        help='compute and store the groundtruth')
-    aa('--force_IP', default=False, action="store_true",
-        help='force IP search instead of L2')
-    aa('--accept_short_gt', default=False, action='store_true',
-        help='work around a problem with Deep1B GT')
+    group = parser.add_argument_group("dataset options")
+    aa("--db", default="deep1M", help="dataset")
+    aa(
+        "--compute_gt",
+        default=False,
+        action="store_true",
+        help="compute and store the groundtruth",
+    )
+    aa(
+        "--force_IP",
+        default=False,
+        action="store_true",
+        help="force IP search instead of L2",
+    )
+    aa(
+        "--accept_short_gt",
+        default=False,
+        action="store_true",
+        help="work around a problem with Deep1B GT",
+    )
 
-    group = parser.add_argument_group('index construction')
-    aa('--indexkey', default='HNSW32', help='index_factory type')
-    aa('--trained_indexfile', default='',
-       help='file to read or write a trained index from')
-    aa('--maxtrain', default=256 * 256, type=int,
-        help='maximum number of training points (0 to set automatically)')
-    aa('--indexfile', default='', help='file to read or write index from')
-    aa('--split', default=[1, 0], type=int, nargs=2, help="database split")
-    aa('--add_bs', default=-1, type=int,
-        help='add elements index by batches of this size')
+    group = parser.add_argument_group("index construction")
+    aa("--indexkey", default="HNSW32", help="index_factory type")
+    aa(
+        "--trained_indexfile",
+        default="",
+        help="file to read or write a trained index from",
+    )
+    aa(
+        "--maxtrain",
+        default=256 * 256,
+        type=int,
+        help="maximum number of training points (0 to set automatically)",
+    )
+    aa("--indexfile", default="", help="file to read or write index from")
+    aa("--split", default=[1, 0], type=int, nargs=2, help="database split")
+    aa(
+        "--add_bs",
+        default=-1,
+        type=int,
+        help="add elements index by batches of this size",
+    )
 
-    group = parser.add_argument_group('IVF options')
-    aa('--by_residual', default=-1, type=int,
-        help="set if index should use residuals (default=unchanged)")
-    aa('--no_precomputed_tables', action='store_true', default=False,
-        help='disable precomputed tables (uses less memory)')
-    aa('--get_centroids_from', default='',
-        help='get the centroids from this index (to speed up training)')
-    aa('--clustering_niter', default=-1, type=int,
-        help='number of clustering iterations (-1 = leave default)')
-    aa('--train_on_gpu', default=False, action='store_true',
-        help='do training on GPU')
+    group = parser.add_argument_group("IVF options")
+    aa(
+        "--by_residual",
+        default=-1,
+        type=int,
+        help="set if index should use residuals (default=unchanged)",
+    )
+    aa(
+        "--no_precomputed_tables",
+        action="store_true",
+        default=False,
+        help="disable precomputed tables (uses less memory)",
+    )
+    aa(
+        "--get_centroids_from",
+        default="",
+        help="get the centroids from this index (to speed up training)",
+    )
+    aa(
+        "--clustering_niter",
+        default=-1,
+        type=int,
+        help="number of clustering iterations (-1 = leave default)",
+    )
+    aa(
+        "--train_on_gpu",
+        default=False,
+        action="store_true",
+        help="do training on GPU",
+    )
 
-    group = parser.add_argument_group('index-specific options')
-    aa('--M0', default=-1, type=int, help='size of base level for HNSW')
-    aa('--RQ_train_default', default=False, action="store_true",
-        help='disable progressive dim training for RQ')
-    aa('--RQ_beam_size', default=-1, type=int,
-        help='set beam size at add time')
-    aa('--LSQ_encode_ils_iters', default=-1, type=int,
-        help='ILS iterations for LSQ')
-    aa('--RQ_use_beam_LUT', default=-1, type=int,
-        help='use beam LUT at add time')
+    group = parser.add_argument_group("index-specific options")
+    aa("--M0", default=-1, type=int, help="size of base level for HNSW")
+    aa(
+        "--RQ_train_default",
+        default=False,
+        action="store_true",
+        help="disable progressive dim training for RQ",
+    )
+    aa("--RQ_beam_size", default=-1, type=int, help="set beam size at add time")
+    aa(
+        "--LSQ_encode_ils_iters",
+        default=-1,
+        type=int,
+        help="ILS iterations for LSQ",
+    )
+    aa(
+        "--RQ_use_beam_LUT",
+        default=-1,
+        type=int,
+        help="use beam LUT at add time",
+    )
 
-    group = parser.add_argument_group('searching')
-    aa('--k', default=100, type=int, help='nb of nearest neighbors')
-    aa('--inter', default=False, action='store_true',
-        help='use intersection measure instead of 1-recall as metric')
-    aa('--searchthreads', default=-1, type=int,
-        help='nb of threads to use at search time')
-    aa('--searchparams', nargs='+', default=['autotune'],
-        help="search parameters to use (can be autotune or a list of params)")
-    aa('--n_autotune', default=500, type=int,
-        help="max nb of autotune experiments")
-    aa('--autotune_max', default=[], nargs='*',
-        help='set max value for autotune variables format "var:val" (exclusive)')
-    aa('--autotune_range', default=[], nargs='*',
-        help='set complete autotune range, format "var:val1,val2,..."')
-    aa('--min_test_duration', default=3.0, type=float,
-        help='run test at least for so long to avoid jitter')
-    aa('--indexes_to_merge', default=[], nargs="*",
-        help="load these indexes to search and merge them before searching")
+    group = parser.add_argument_group("searching")
+    aa("--k", default=100, type=int, help="nb of nearest neighbors")
+    aa(
+        "--inter",
+        default=False,
+        action="store_true",
+        help="use intersection measure instead of 1-recall as metric",
+    )
+    aa(
+        "--searchthreads",
+        default=-1,
+        type=int,
+        help="nb of threads to use at search time",
+    )
+    aa(
+        "--searchparams",
+        nargs="+",
+        default=["autotune"],
+        help="search parameters to use (can be autotune or a list of params)",
+    )
+    aa(
+        "--n_autotune",
+        default=500,
+        type=int,
+        help="max nb of autotune experiments",
+    )
+    aa(
+        "--autotune_max",
+        default=[],
+        nargs="*",
+        help='set max value for autotune variables format "var:val" (exclusive)',
+    )
+    aa(
+        "--autotune_range",
+        default=[],
+        nargs="*",
+        help='set complete autotune range, format "var:val1,val2,..."',
+    )
+    aa(
+        "--min_test_duration",
+        default=3.0,
+        type=float,
+        help="run test at least for so long to avoid jitter",
+    )
+    aa(
+        "--indexes_to_merge",
+        default=[],
+        nargs="*",
+        help="load these indexes to search and merge them before searching",
+    )
 
     args = parser.parse_args()
 
@@ -489,22 +601,23 @@ def main():
 
     print("args:", args)
 
-    os.system('echo -n "nb processors "; '
-            'cat /proc/cpuinfo | grep ^processor | wc -l; '
-            'cat /proc/cpuinfo | grep ^"model name" | tail -1')
+    os.system(
+        'echo -n "nb processors "; '
+        "cat /proc/cpuinfo | grep ^processor | wc -l; "
+        'cat /proc/cpuinfo | grep ^"model name" | tail -1'
+    )
 
     # object to collect results
     res = argparse.Namespace()
     res.args = args.__dict__
 
     res.cpu_model = [
-        l for l in open("/proc/cpuinfo", "r")
-        if "model name" in l][0]
+        l for l in open("/proc/cpuinfo", "r") if "model name" in l
+    ][0]
 
     print("Load dataset")
 
-    ds = datasets.load_dataset(
-        dataset=args.db, compute_gt=args.compute_gt)
+    ds = datasets.load_dataset(dataset=args.db, compute_gt=args.compute_gt)
 
     if args.force_IP:
         ds.metric = "IP"
