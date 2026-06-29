@@ -434,7 +434,36 @@ class TestIDMap(unittest.TestCase):
 
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_equal(Dref, Dnew)
-        
+
+    def test_idmap_ivf(self):
+        # IVF stores ids in its inverted lists, so add_sa_codes must not
+        # forward them to the sub-index (issue #5333)
+        ds = SyntheticDataset(32, 2000, 200, 100)
+        ids = (1000 + np.arange(ds.nb)).astype('int64')
+
+        index = faiss.index_factory(ds.d, "IDMap2,IVF20,Flat")
+        index.train(ds.get_train())
+        faiss.downcast_index(index.index).nprobe = 4
+        index.add_with_ids(ds.get_database(), ids)
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        index.reset()
+
+        index.train(ds.get_train())
+        faiss.downcast_index(index.index).nprobe = 4
+        codes = index.index.sa_encode(ds.get_database())
+        index.add_sa_codes(codes, ids)
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)
+
+        # reconstruct should work too (rev_map is updated)
+        faiss.extract_index_ivf(index).make_direct_map()
+        for key in ids[:5]:
+            recons = index.reconstruct(int(key))
+            np.testing.assert_array_almost_equal(
+                recons, ds.get_database()[int(key) - 1000])
 
 
 class TestRefine(unittest.TestCase):
