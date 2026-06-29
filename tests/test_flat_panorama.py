@@ -20,6 +20,7 @@ import faiss
 import numpy as np
 from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
 @for_all_simd_levels
@@ -58,26 +59,26 @@ class TestIndexFlatPanorama(unittest.TestCase):
         I_panorama,
         rtol=1e-5,
         atol=1e-4,
-        otol=1e-3,
     ):
-        # Allow small tolerance in overlap rate to account for
-        # floating-point errors in distance computations that can affect
-        # ordering when distances are nearly equal.
-        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b);
-        # these differ at the float32 ULP level, so atol absorbs the gap.
-        overlap_rate = np.mean(I_regular == I_panorama)
-
-        self.assertGreater(
-            overlap_rate,
-            1 - otol,
-            f"Overlap rate {overlap_rate:.6f} is not > {1 - otol:.3f}. ",
-        )
+        # The reference IndexFlat kernel is SIMD-dispatched, so its float
+        # reduction order changes with the runtime SIMD level (wide FMA under
+        # AVX512_SPR), while the Panorama kernel is compiled once at baseline
+        # and uses the algebraically equivalent a * a + b * b - 2(a * b)
+        # decomposition instead of (a - b) * (a - b). Both are exact but round
+        # differently, so near-tied neighbors can swap order. Compare with the
+        # tie-aware kNN comparator: distances must match within tolerance and
+        # ids only need to agree as sets within each distance tie-group. This is
+        # variant-agnostic (NONE / AVX2 / AVX512 / AVX512_SPR) rather than tuned
+        # to one dispatch level's gap.
         np.testing.assert_allclose(
             D_regular,
             D_panorama,
             rtol=rtol,
             atol=atol,
             err_msg="Distances mismatch",
+        )
+        check_ref_knn_with_draws(
+            D_regular, I_regular, D_panorama, I_panorama, rtol=rtol
         )
 
     def assert_range_results_equal(
