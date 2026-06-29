@@ -1974,6 +1974,8 @@
         <link refid="simd__levels_8h_source"/>
         <childnode refid="165" relation="include">
         </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
         <childnode refid="175" relation="include">
         </childnode>
         <childnode refid="206" relation="include">

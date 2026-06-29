@@ -13424,6 +13424,8 @@
     <member refid="namespacefaiss_1abbf2bb1faef7c8072b82a7db323397a0" kind="function"><name>beam_search_encode_step_tab</name></member>
     <member refid="namespacefaiss_1ae298d588e823c407f64b5a0aab4c9148" kind="function"><name>dispatch_knn_ResultHandler</name></member>
     <member refid="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" kind="function"><name>dispatch_range_ResultHandler</name></member>
+    <member refid="namespacefaiss_1a087cf08bf58efd47a208ad444a3c774b" kind="function"><name>top1_add_results_tpl</name></member>
+    <member refid="namespacefaiss_1ab13c17c79eb8e68e28b06ec4566fb305" kind="function"><name>reservoir_add_results_tpl</name></member>
     <member refid="namespacefaiss_1a959d72ca7b23268325bad5696725b683" kind="function"><name>get_simd_fallback</name></member>
     <member refid="namespacefaiss_1ac312cf29fbd655341d6464550c4bee72" kind="function"><name>dispatch_with_fallback</name></member>
     <member refid="namespacefaiss_1af531ac2f72724e9abcc311a12a71b1db" kind="function"><name>with_selected_simd_levels</name></member>

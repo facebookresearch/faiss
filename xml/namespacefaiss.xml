@@ -1293,7 +1293,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="53" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="54" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="54" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -1561,7 +1561,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="730" column="22" bodyfile="faiss/utils/distances.h" bodystart="381" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="730" declcolumn="22"/>
+        <location file="faiss/impl/ResultHandler.h" line="706" column="22" bodyfile="faiss/utils/distances.h" bodystart="381" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="706" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a12459a18353dd0cbfcc26e1090da53a5" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -6676,7 +6676,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="733" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="733" bodyend="770"/>
+        <location file="faiss/impl/ResultHandler.h" line="709" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="709" bodyend="746"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -6724,7 +6724,97 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="773" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="773" bodyend="800"/>
+        <location file="faiss/impl/ResultHandler.h" line="749" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="749" bodyend="776"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a087cf08bf58efd47a208ad444a3c774b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+          <param>
+            <type>bool</type>
+            <declname>use_sel</declname>
+            <defname>use_sel</defname>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::top1_add_results_tpl</definition>
+        <argsstring>(Top1BlockResultHandler&lt; C, use_sel &gt; *self, size_t j0, size_t j1, const typename C::T *dis_tab)</argsstring>
+        <name>top1_add_results_tpl</name>
+        <qualifiedname>faiss::top1_add_results_tpl</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1Top1BlockResultHandler" kindref="compound">Top1BlockResultHandler</ref>&lt; C, use_sel &gt; *</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j1</declname>
+        </param>
+        <param>
+          <type>const typename C::T *</type>
+          <declname>dis_tab</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="783" column="6" declfile="faiss/impl/ResultHandler.h" declline="783" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ab13c17c79eb8e68e28b06ec4566fb305" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+          <param>
+            <type>bool</type>
+            <declname>use_sel</declname>
+            <defname>use_sel</defname>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::reservoir_add_results_tpl</definition>
+        <argsstring>(ReservoirBlockResultHandler&lt; C, use_sel &gt; *self, size_t j0, size_t j1, const typename C::T *dis_in)</argsstring>
+        <name>reservoir_add_results_tpl</name>
+        <qualifiedname>faiss::reservoir_add_results_tpl</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ReservoirBlockResultHandler" kindref="compound">ReservoirBlockResultHandler</ref>&lt; C, use_sel &gt; *</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j1</declname>
+        </param>
+        <param>
+          <type>const typename C::T *</type>
+          <declname>dis_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="790" column="6" declfile="faiss/impl/ResultHandler.h" declline="790" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a959d72ca7b23268325bad5696725b683" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>constexpr SIMDLevel</type>

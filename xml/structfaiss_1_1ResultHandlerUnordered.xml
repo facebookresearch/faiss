@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="31" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="31" bodyend="31"/>
+        <location file="faiss/impl/ResultHandler.h" line="32" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="32" bodyend="32"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ResultHandlerUnordered_1a4f036aa994636a558a6815ed4cb97015" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedListScannerStats" kindref="compound">InvertedListScannerStats</ref></type>
@@ -38,7 +38,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="34" column="30" bodyfile="faiss/impl/ResultHandler.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="35" column="30" bodyfile="faiss/impl/ResultHandler.h" bodystart="35" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="37" column="18"/>
+        <location file="faiss/impl/ResultHandler.h" line="38" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResultHandlerUnordered_1abdb19c231ff11313ea9eaf72d6dd3631" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="39" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="39" bodyend="39"/>
+        <location file="faiss/impl/ResultHandler.h" line="40" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="40" bodyend="40"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -102,7 +102,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="29" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="29" bodyend="40"/>
+    <location file="faiss/impl/ResultHandler.h" line="30" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="30" bodyend="41"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ResultHandlerUnordered_1ab45ce5bc55959438c08d17c785c22320" prot="public" virt="pure-virtual"><scope>faiss::ResultHandlerUnordered</scope><name>add_result</name></member>
       <member refid="structfaiss_1_1ResultHandlerUnordered_1a4f036aa994636a558a6815ed4cb97015" prot="public" virt="non-virtual"><scope>faiss::ResultHandlerUnordered</scope><name>stats</name></member>
