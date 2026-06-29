@@ -23,8 +23,8 @@
 
 namespace faiss {
 
-IndexFlat::IndexFlat(idx_t d, MetricType metric)
-        : IndexFlatCodes(sizeof(float) * d, d, metric) {}
+IndexFlat::IndexFlat(idx_t d_, MetricType metric)
+        : IndexFlatCodes(sizeof(float) * d_, d_, metric) {}
 
 void IndexFlat::search(
         idx_t n,
@@ -65,6 +65,7 @@ void IndexFlat::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(result, "RangeSearchResult object must not be null");
     IDSelector* sel = params ? params->sel : nullptr;
 
     switch (metric_type) {
@@ -86,6 +87,7 @@ void IndexFlat::compute_distance_subset(
         idx_t k,
         float* distances,
         const idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             fvec_inner_products_by_idx(distances, x, get_xb(), labels, d, n, k);
@@ -103,13 +105,8 @@ namespace {
 template <SIMDLevel SL>
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* b;
-    size_t ndis;
-    size_t npartial_dot_products;
 
     float distance_to_code(const uint8_t* code) final {
-        ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
     }
 
@@ -117,25 +114,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             const idx_t i,
             const uint32_t offset,
             const uint32_t num_components) final override {
-        npartial_dot_products++;
+        const float* b = (const float*)this->codes;
         return fvec_inner_product<SL>(
                 q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
+        const float* b = (const float*)this->codes;
         return fvec_L2sqr<SL>(b + j * d, b + i * d, d);
     }
 
-    explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
+    explicit FlatL2Dis(const IndexFlat& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
-                      storage.code_size,
-                      q),
-              d(storage.d),
-              nb(storage.ntotal),
-              b(storage.get_xb()),
-              ndis(0),
-              npartial_dot_products(0) {}
+                      storage.code_size),
+              d(storage.d) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -151,8 +144,6 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -185,8 +176,6 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             float& dp3,
             const uint32_t offset,
             const uint32_t num_components) final override {
-        npartial_dot_products += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -222,29 +211,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 template <SIMDLevel SL>
 struct FlatIPDis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* q;
-    const float* b;
-    size_t ndis;
 
     float symmetric_dis(idx_t i, idx_t j) final override {
+        const float* b = (const float*)this->codes;
         return fvec_inner_product<SL>(b + j * d, b + i * d, d);
     }
 
     float distance_to_code(const uint8_t* code) final override {
-        ndis++;
         return fvec_inner_product<SL>(q, (const float*)code, d);
     }
 
-    explicit FlatIPDis(const IndexFlat& storage, const float* q = nullptr)
+    explicit FlatIPDis(const IndexFlat& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
-              d(storage.d),
-              nb(storage.ntotal),
-              q(q),
-              b(storage.get_xb()),
-              ndis(0) {}
+              d(storage.d) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -260,8 +241,6 @@ struct FlatIPDis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -294,8 +273,7 @@ FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
     } else if (metric_type == METRIC_INNER_PRODUCT) {
         with_simd_level([&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
     } else {
-        dc = get_extra_distance_computer(
-                d, metric_type, metric_arg, ntotal, get_xb());
+        dc = get_extra_distance_computer(d, metric_type, metric_arg, get_xb());
     }
     return dc;
 }
@@ -325,16 +303,11 @@ namespace {
 template <SIMDLevel SL>
 struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* q;
-    const float* b;
-    size_t ndis;
 
     const float* l2norms;
     float query_l2norm;
 
     float distance_to_code(const uint8_t* code) final override {
-        ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
     }
 
@@ -359,17 +332,11 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
         return l2norms[i] + l2norms[j] - 2 * dp0;
     }
 
-    explicit FlatL2WithNormsDis(
-            const IndexFlatL2& storage,
-            const float* q = nullptr)
+    explicit FlatL2WithNormsDis(const IndexFlatL2& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
               d(storage.d),
-              nb(storage.ntotal),
-              q(q),
-              b(storage.get_xb()),
-              ndis(0),
               l2norms(storage.cached_l2norms.data()),
               query_l2norm(0) {}
 
@@ -388,8 +355,6 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -452,8 +417,8 @@ FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
  * IndexFlat1D
  ***************************************************/
 
-IndexFlat1D::IndexFlat1D(bool continuous_update)
-        : IndexFlatL2(1), continuous_update(continuous_update) {}
+IndexFlat1D::IndexFlat1D(bool continuous_update_in)
+        : IndexFlatL2(1), continuous_update(continuous_update_in) {}
 
 /// if not continuous_update, call this between the last add and
 /// the first search
@@ -489,7 +454,8 @@ void IndexFlat1D::search(
             !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(
-            perm.size() == ntotal, "Call update_permutation before search");
+            perm.size() == static_cast<size_t>(ntotal),
+            "Call update_permutation before search");
     const float* xb = get_xb();
 
 #pragma omp parallel for if (n > 10000)
@@ -624,9 +590,11 @@ inline void flat_pano_search_core(
     {
         SingleResultHandler res(handler);
 
-        std::vector<float> query_cum_norms(index.n_levels + 1);
-        std::vector<float> exact_distances(index.batch_size);
+        std::vector<float> query_cum_norms(index.pano.n_levels + 1);
         std::vector<uint32_t> active_indices(index.batch_size);
+        std::vector<uint8_t> active_byteset(index.batch_size);
+        std::vector<float> exact_distances(index.batch_size);
+        std::vector<float> dot_buffer(index.batch_size);
 
 #pragma omp for
         for (int64_t i = 0; i < n; i++) {
@@ -661,7 +629,9 @@ inline void flat_pano_search_core(
                                     nullptr,
                                     use_sel,
                                     active_indices,
+                                    active_byteset,
                                     exact_distances,
+                                    dot_buffer,
                                     threshold,
                                     local_stats);
                         });
@@ -691,7 +661,7 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     size_t num_batches = (ntotal + batch_size - 1) / batch_size;
 
     codes.resize(num_batches * batch_size * code_size);
-    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+    cum_sums.resize(num_batches * batch_size * (pano.n_levels + 1));
 
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
@@ -706,7 +676,7 @@ void IndexFlatPanorama::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT(batch_size >= k);
+    FAISS_THROW_IF_NOT(batch_size >= static_cast<size_t>(k));
 
     dispatch_metric_compare(metric_type, [&]<typename C>() {
         HeapBlockResultHandler<C, false> handler(
@@ -764,7 +734,7 @@ size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
         ntotal = j;
         size_t num_batches = (ntotal + batch_size - 1) / batch_size;
         codes.resize(num_batches * batch_size * code_size);
-        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+        cum_sums.resize(num_batches * batch_size * (pano.n_levels + 1));
     }
     return nremove;
 }
@@ -836,7 +806,7 @@ void IndexFlatPanorama::search_subset(
             {
                 SingleResultHandler res(handler);
 
-                std::vector<float> query_cum_norms(n_levels + 1);
+                std::vector<float> query_cum_norms(pano.n_levels + 1);
 
                 // Panorama's optimized point-wise refinement (Algorithm 2):
                 // Batch-wise Panorama, as implemented in Panorama.h, incurs
@@ -867,14 +837,14 @@ void IndexFlatPanorama::search_subset(
 
                     res.begin(i);
 
-                    for (size_t j = 0; j < k_base; j++) {
+                    for (idx_t j = 0; j < k_base; j++) {
                         idx_t idx = idsi[j];
 
                         if (idx < 0) {
                             continue;
                         }
 
-                        size_t cum_sum_offset = (n_levels + 1) * idx;
+                        size_t cum_sum_offset = (pano.n_levels + 1) * idx;
                         float cum_sum = cum_sums[cum_sum_offset];
                         float exact_distance = 0.0f;
                         if constexpr (!is_sim) {
@@ -890,7 +860,7 @@ void IndexFlatPanorama::search_subset(
                         local_stats.total_dims += d;
 
                         bool pruned = false;
-                        for (size_t level = 0; level < n_levels; level++) {
+                        for (size_t level = 0; level < pano.n_levels; level++) {
                             local_stats.total_dims_scanned +=
                                     pano.level_width_floats;
 

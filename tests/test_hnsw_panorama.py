@@ -19,9 +19,11 @@ import os
 import numpy as np
 
 import faiss
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexHNSWFlatPanorama(unittest.TestCase):
     """Test Suite for IndexHNSWFlatPanorama."""
 
@@ -154,6 +156,31 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
                 # More levels should still maintain reasonable recall
                 self.assertGreaterEqual(recall, 0.80)
 
+    def test_uneven_dimension_division(self):
+        """Test when n_levels doesn't evenly divide dimension."""
+        test_cases = [(65, 4), (63, 8), (100, 7), (960, 128), (964, 128)]
+
+        nb, nt, nq, k = 1000, 700, 20, 5
+
+        for d, nlevels in test_cases:
+            with self.subTest(d=d, nlevels=nlevels):
+                _, xb, xq = self.generate_data(d, nt, nb, nq, seed=789)
+
+                index = faiss.IndexHNSWFlatPanorama(d, 32, nlevels)
+                index.hnsw.efSearch = 64
+                index.add(xb)
+
+                _, I = index.search(xq, k)
+
+                _, gt_I = self.compute_ground_truth(xb, xq, k)
+
+                recall = self.compute_recall(gt_I, I)
+                self.assertGreaterEqual(
+                    recall, 0.80,
+                    f"Recall too low for d={d}, nlevels={nlevels}: "
+                    f"{recall:.4f}",
+                )
+
     def test_consistency(self):
         """Test that search results are consistent across multiple searches."""
         d = 64
@@ -178,16 +205,17 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
 
     def test_io(self):
         """Test serialization and deserialization."""
-        d = 64
+        d = 964
         nb = 500
         nt = 700
         nq = 10
         k = 5
+        nlevels = 128
 
         # Generate data
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
-        index = faiss.IndexHNSWFlatPanorama(d, 16, 8)
+        index = faiss.IndexHNSWFlatPanorama(d, 16, nlevels)
         index.add(xb)
 
         # Get search results before saving
@@ -202,7 +230,7 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
             self.assertIsInstance(loaded_index, faiss.IndexHNSWFlatPanorama)
             self.assertEqual(loaded_index.d, d)
             self.assertEqual(loaded_index.ntotal, nb)
-            self.assertEqual(loaded_index.num_panorama_levels, 8)
+            self.assertEqual(loaded_index.num_panorama_levels, nlevels)
 
             # Search after loading
             D_after, I_after = loaded_index.search(xq, k)
@@ -521,3 +549,39 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
                     count += 1
 
         print(f"IDSelectorBatch test: {count} results")
+
+    def test_panorama_stats(self):
+        """Test that ratio_dims_scanned decreases as nlevels increases."""
+        d, nb, nq, k = 128, 10000, 10, 10
+
+        rs = np.random.RandomState(42)
+        xb = rs.rand(nb, d).astype("float32")
+        xq = rs.rand(nq, d).astype("float32")
+
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+
+        try:
+            ratios = []
+            nlevels_list = [1, 4, 8, 16]
+            for nlevels in nlevels_list:
+                faiss.cvar.indexPanorama_stats.reset()
+
+                index = faiss.IndexHNSWFlatPanorama(d, 32, nlevels)
+                index.hnsw.efSearch = 64
+                index.add(xb)
+                index.search(xq, k)
+
+                ratio = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+                ratios.append(ratio)
+                print(f"  nlevels={nlevels:2d}  ratio={ratio:.4f}")
+
+            for i in range(1, len(ratios)):
+                self.assertLessEqual(
+                    ratios[i], ratios[i - 1],
+                    f"ratio should decrease: nlevels={nlevels_list[i]} "
+                    f"ratio={ratios[i]:.4f} > prev={ratios[i-1]:.4f}",
+                )
+            self.assertLess(ratios[-1], 1.0, "Some pruning should occur")
+        finally:
+            faiss.omp_set_num_threads(nt)

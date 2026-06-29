@@ -29,7 +29,7 @@ namespace pq_code_distance {
  *
  * PQCodeDistance<PQDecoderT, SL> computes PQ code distances at a given
  * SIMD level. The dispatch site (IndexIVFPQ.cpp, IndexPQ.cpp) uses
- * DISPATCH_SIMDLevel to select SL at runtime, which instantiates
+ * with_simd_level to select SL at runtime, which instantiates
  * PQCodeDistance for ALL decoder types (PQDecoder8, PQDecoder16,
  * PQDecoderGeneric) at the chosen level.
  *
@@ -211,7 +211,7 @@ struct PQCodeDistance {
  * Non-templated PQ code distance dispatch (PQDecoder8 only).
  *
  * These follow the same pattern as distances.h: the caller does not
- * name a SIMDLevel. Internally they dispatch via DISPATCH_SIMDLevel
+ * name a SIMDLevel. Internally they dispatch via with_simd_level
  * to the best available SIMD implementation (DD: runtime detection,
  * static: compile-time selection). Definitions are in
  * pq_code_distance-generic.cpp.

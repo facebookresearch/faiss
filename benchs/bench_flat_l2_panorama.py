@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import argparse
 import multiprocessing as mp
 import time
 
@@ -11,11 +12,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 try:
-    from faiss.contrib.datasets_fb import DatasetGIST1M
+    from faiss.contrib.datasets_fb import DatasetSIFT1M, DatasetGIST1M
 except ImportError:
-    from faiss.contrib.datasets import DatasetGIST1M
+    from faiss.contrib.datasets import DatasetSIFT1M, DatasetGIST1M
 
-ds = DatasetGIST1M()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--dataset", default="gist1m", choices=["sift1m", "gist1m"]
+)
+args = parser.parse_args()
+
+if args.dataset == "sift1m":
+    ds = DatasetSIFT1M()
+else:
+    ds = DatasetGIST1M()
 
 nq = 10
 xq = ds.get_queries()[:nq]
@@ -60,7 +70,7 @@ def build_index(name):
     return index
 
 
-nlevels = 8
+nlevels = 16 if args.dataset == "gist1m" else 8
 batch_size = 512
 
 plt.figure(figsize=(8, 6), dpi=80)
@@ -93,7 +103,8 @@ ax.text(
 )
 plt.xticks(x, labels, rotation=0)
 plt.ylabel("QPS")
-plt.title("Flat Indexes on GIST1M")
+dataset_label = args.dataset.upper()
+plt.title(f"Flat Indexes on {dataset_label}")
 
 plt.tight_layout()
-plt.savefig("bench_flat_l2_panorama.png", bbox_inches="tight")
+plt.savefig(f"bench_flat_l2_panorama_{args.dataset}.png", bbox_inches="tight")

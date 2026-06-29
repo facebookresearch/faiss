@@ -32,7 +32,7 @@ struct SimilarityL2<SIMDLevel::NONE> {
 
     const float *y, *yi;
 
-    explicit SimilarityL2(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityL2(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     /******* scalar accumulator *******/
 
@@ -70,7 +70,7 @@ struct SimilarityIP<SIMDLevel::NONE> {
 
     float accu;
 
-    explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityIP(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     FAISS_ALWAYS_INLINE void begin() {
         accu = 0;

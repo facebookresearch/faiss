@@ -8,7 +8,10 @@ import unittest
 import numpy as np
 import faiss
 
+from common_faiss_tests import for_all_simd_levels
 
+
+@for_all_simd_levels
 class TestBinarySearchParams(unittest.TestCase):
 
     def do_test_with_param(

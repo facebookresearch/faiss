@@ -27,7 +27,16 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
+#include <faiss/impl/simd_dispatch.h>
+
 #include <random>
+
+// Scalar (NONE) fallback for dynamic dispatch
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h>
+#undef THE_SIMD_LEVEL
 
 namespace faiss {
 
@@ -61,10 +70,8 @@ void hnsw_add_vertices(
         printf("  max_level = %d\n", max_level);
     }
 
-    std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
-        omp_init_lock(&locks[i]);
-    }
+    auto& locks = index_hnsw.locks;
+    locks.prepare(ntotal);
 
     // add vectors from highest to lowest level
     std::vector<int> hist;
@@ -73,10 +80,11 @@ void hnsw_add_vertices(
     { // make buckets with vectors of the same level
 
         // build histogram
-        for (int i = 0; i < n; i++) {
-            HNSW::storage_idx_t pt_id = i + n0;
+        for (size_t i = 0; i < n; i++) {
+            HNSW::storage_idx_t pt_id =
+                    static_cast<HNSW::storage_idx_t>(i + n0);
             int pt_level = hnsw.levels[pt_id] - 1;
-            while (pt_level >= hist.size()) {
+            while (pt_level >= static_cast<int>(hist.size())) {
                 hist.push_back(0);
             }
             hist[pt_level]++;
@@ -84,13 +92,14 @@ void hnsw_add_vertices(
 
         // accumulate
         std::vector<int> offsets(hist.size() + 1, 0);
-        for (int i = 0; i < hist.size() - 1; i++) {
+        for (size_t i = 0; i < hist.size() - 1; i++) {
             offsets[i + 1] = offsets[i] + hist[i];
         }
 
         // bucket sort
-        for (int i = 0; i < n; i++) {
-            HNSW::storage_idx_t pt_id = i + n0;
+        for (size_t i = 0; i < n; i++) {
+            HNSW::storage_idx_t pt_id =
+                    static_cast<HNSW::storage_idx_t>(i + n0);
             int pt_level = hnsw.levels[pt_id] - 1;
             order[offsets[pt_level]++] = pt_id;
         }
@@ -99,33 +108,35 @@ void hnsw_add_vertices(
     { // perform add
         RandomGenerator rng2(789);
 
-        int i1 = n;
+        size_t i1 = static_cast<int>(n);
 
-        for (int pt_level = hist.size() - 1;
+        for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
-            int i0 = i1 - hist[pt_level];
+            size_t i0 = i1 - hist[pt_level];
 
             if (verbose) {
-                printf("Adding %d elements at level %d\n", i1 - i0, pt_level);
+                printf("Adding %zu elements at level %d\n", i1 - i0, pt_level);
             }
 
             // random permutation to get rid of dataset order bias
-            for (int j = i0; j < i1; j++) {
-                std::swap(order[j], order[j + rng2.rand_int(i1 - j)]);
+            for (size_t j = i0; j < i1; j++) {
+                std::swap(
+                        order[j],
+                        order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
             }
 
 #pragma omp parallel
             {
-                VisitedTable vt(ntotal);
+                std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
 
                 std::unique_ptr<DistanceComputer> dis(
                         index_hnsw.get_distance_computer());
-                int prev_display =
-                        verbose && omp_get_thread_num() == 0 ? 0 : -1;
+                bool do_display = verbose && omp_get_thread_num() == 0;
+                size_t prev_display = 0;
 
 #pragma omp for schedule(dynamic)
-                for (int i = i0; i < i1; i++) {
+                for (int64_t i = i0; i < i1; i++) {
                     HNSW::storage_idx_t pt_id = order[i];
                     dis->set_query(
                             (float*)(x + (pt_id - n0) * index_hnsw.code_size));
@@ -135,12 +146,12 @@ void hnsw_add_vertices(
                             pt_level,
                             pt_id,
                             locks,
-                            vt,
+                            *vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
-                    if (prev_display >= 0 && i - i0 > prev_display + 10000) {
+                    if (do_display && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
-                        printf("  %d / %d\r", i - i0, i1 - i0);
+                        printf("  %zu / %zu\r", i - i0, i1 - i0);
                         fflush(stdout);
                     }
                 }
@@ -156,9 +167,8 @@ void hnsw_add_vertices(
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
-
-    for (int i = 0; i < ntotal; i++) {
-        omp_destroy_lock(&locks[i]);
+    if (!index_hnsw.retain_locks) {
+        locks.clear();
     }
 }
 
@@ -172,14 +182,19 @@ IndexBinaryHNSW::IndexBinaryHNSW() {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(int d, int M) : IndexBinary(d), hnsw(M) {
-    storage = std::make_unique<IndexBinaryFlat>(d).release();
-    own_fields = true;
+IndexBinaryHNSW::IndexBinaryHNSW(int d_, int M)
+        : IndexBinary(d_),
+          hnsw(M),
+          own_fields(true),
+          storage(new IndexBinaryFlat(d_)) {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage, int M)
-        : IndexBinary(storage->d), hnsw(M), storage(storage) {
+IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage_, int M)
+        : IndexBinary(storage_->d),
+          hnsw(M),
+          own_fields(false),
+          storage(storage_) {
     is_trained = true;
 }
 
@@ -221,7 +236,7 @@ void IndexBinaryHNSW::search(
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal);
+        std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
         std::unique_ptr<DistanceComputer> dis(get_distance_computer());
         RH::SingleResultHandler res(bres);
 
@@ -231,9 +246,9 @@ void IndexBinaryHNSW::search(
             dis->set_query((float*)(x + i * code_size));
             // Given that IndexBinaryHNSW is not an IndexHNSW, we pass nullptr
             // as the index parameter. This state does not get used in the
-            // search function, as it is merely there to to enable Panorama
+            // search function, as it is merely there to enable Panorama
             // execution for IndexHNSWFlatPanorama.
-            HNSWStats stats = hnsw.search(*dis, nullptr, res, vt, params_in);
+            HNSWStats stats = hnsw.search(*dis, nullptr, res, *vt, params_in);
             n1 += stats.n1;
             n2 += stats.n2;
             ndis += stats.ndis;
@@ -245,22 +260,29 @@ void IndexBinaryHNSW::search(
     hnsw_stats.combine({n1, n2, ndis, nhops});
 
 #pragma omp parallel for
-    for (int i = 0; i < n * k; ++i) {
+    for (idx_t i = 0; i < n * k; ++i) {
         distances[i] = std::round(distances_f[i]);
     }
 }
 
 void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     FAISS_THROW_IF_NOT(is_trained);
-    int n0 = ntotal;
+    size_t n0 = ntotal;
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+    hnsw_add_vertices(
+            *this,
+            n0,
+            n,
+            x,
+            verbose,
+            hnsw.levels.size() == static_cast<size_t>(ntotal));
 }
 
 void IndexBinaryHNSW::reset() {
     hnsw.reset();
+    locks.clear();
     storage->reset();
     ntotal = 0;
 }
@@ -269,48 +291,15 @@ void IndexBinaryHNSW::reconstruct(idx_t key, uint8_t* recons) const {
     storage->reconstruct(key, recons);
 }
 
-namespace {
-
-template <class HammingComputer>
-struct FlatHammingDis : DistanceComputer {
-    const int code_size;
-    const uint8_t* b;
-    HammingComputer hc;
-
-    float operator()(idx_t i) override {
-        return hc.hamming(b + i * code_size);
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return HammingComputerDefault(b + j * code_size, code_size)
-                .hamming(b + i * code_size);
-    }
-
-    explicit FlatHammingDis(const IndexBinaryFlat& storage)
-            : code_size(storage.code_size), b(storage.xb.data()), hc() {}
-
-    // NOTE: Pointers are cast from float in order to reuse the floating-point
-    //   DistanceComputer.
-    void set_query(const float* x) override {
-        hc.set((uint8_t*)x, code_size);
-    }
-};
-
-struct BuildDistanceComputer {
-    using T = DistanceComputer*;
-    template <class HammingComputer>
-    DistanceComputer* f(IndexBinaryFlat* flat_storage) {
-        return new FlatHammingDis<HammingComputer>(*flat_storage);
-    }
-};
-
-} // namespace
-
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
-    FAISS_ASSERT(flat_storage != nullptr);
-    BuildDistanceComputer bd;
-    return dispatch_HammingComputer(code_size, bd, flat_storage);
+    FAISS_THROW_IF_NOT_MSG(
+            flat_storage != nullptr,
+            "IndexBinaryHNSW requires IndexBinaryFlat storage");
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return make_binary_hnsw_distance_computer_fixSL<SL>(
+                code_size, flat_storage);
+    });
 }
 
 /**************************************************************
@@ -321,8 +310,8 @@ IndexBinaryHNSWCagra::IndexBinaryHNSWCagra() : IndexBinaryHNSW() {
     storage = nullptr;
 }
 
-IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d, int M)
-        : IndexBinaryHNSW(d, M) {
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d_, int M)
+        : IndexBinaryHNSW(d_, M) {
     init_level0 = true;
     keep_max_size_level0 = true;
 }
@@ -345,6 +334,13 @@ void IndexBinaryHNSWCagra::search(
     if (!base_level_only) {
         IndexBinaryHNSW::search(n, x, k, distances, labels, params);
     } else {
+        FAISS_THROW_IF_NOT_MSG(
+                ntotal > 0, "IndexBinaryHNSWCagra: cannot search empty index");
+        FAISS_THROW_IF_NOT_MSG(
+                num_base_level_search_entrypoints > 0,
+                "IndexBinaryHNSWCagra: "
+                "num_base_level_search_entrypoints must be > 0");
+
         float* distances_f = (float*)distances;
 
         using RH = HeapBlockResultHandler<HNSW::C>;
@@ -370,7 +366,7 @@ void IndexBinaryHNSWCagra::search(
                 float distance = (*dis)(idx);
 
                 if (distance < nearest_d[i]) {
-                    nearest[i] = idx;
+                    nearest[i] = static_cast<storage_idx_t>(idx);
                     nearest_d[i] = distance;
                 }
             }
@@ -380,7 +376,7 @@ void IndexBinaryHNSWCagra::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
             std::unique_ptr<DistanceComputer> dis(get_distance_computer());
             HNSWStats search_stats;
             RH::SingleResultHandler res(bres);
@@ -398,7 +394,7 @@ void IndexBinaryHNSWCagra::search(
                         &nearest_d[i],
                         1, // search_type
                         search_stats,
-                        vt,
+                        *vt,
                         params);
 
                 res.end();
@@ -410,7 +406,7 @@ void IndexBinaryHNSWCagra::search(
         }
 
 #pragma omp parallel for
-        for (int i = 0; i < n * k; ++i) {
+        for (idx_t i = 0; i < n * k; ++i) {
             distances[i] = std::round(distances_f[i]);
         }
     }

@@ -162,10 +162,10 @@ void sa_decode_impl(
 
     // allocate tmp buffers
     std::vector<uint8_t> tmp(
-            (chunk_size < n_input ? chunk_size : n_input) * old_code_size);
-    std::vector<StorageMinMaxFP16> minmax(
-            (chunk_size < n_input ? chunk_size : n_input));
-
+            (chunk_size < static_cast<size_t>(n_input)
+                     ? chunk_size
+                     : static_cast<size_t>(n_input)) *
+            old_code_size);
     // all the elements to process
     size_t n_left = n_input;
 
@@ -226,7 +226,7 @@ void train_inplace_impl(
     std::vector<StorageMinMaxT> minmax(n);
 
     // normalize
-#pragma omp for
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         // compute min & max values
         float minv = std::numeric_limits<float>::max();
@@ -264,6 +264,7 @@ void train_inplace_impl(
     sub_index->train(n, x);
 
     // rescale data back
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         float scaler = 0;
         float minv = 0;
@@ -289,7 +290,7 @@ void train_impl(IndexRowwiseMinMaxBase* const index, idx_t n, const float* x) {
     // temp buffer
     std::vector<float> tmp(n * d);
 
-#pragma omp for
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         // compute min & max values
         float minv = std::numeric_limits<float>::max();
@@ -304,7 +305,7 @@ void train_impl(IndexRowwiseMinMaxBase* const index, idx_t n, const float* x) {
         const float scaler = maxv - minv;
 
         // save the coefficients
-        StorageMinMaxT storage;
+        StorageMinMaxT storage = {};
         storage.from_floats(scaler, minv);
 
         // and load them back, because the coefficients might
@@ -339,9 +340,9 @@ int rowwise_minmax_sa_decode_bs = 16384;
  * IndexRowwiseMinMaxBase implementation
  ********************************************************/
 
-IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase(Index* index)
-        : Index(index->d, index->metric_type),
-          index{index},
+IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase(Index* index_in)
+        : Index(index_in->d, index_in->metric_type),
+          index{index_in},
           own_fields{false} {}
 
 IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase()
@@ -376,8 +377,8 @@ void IndexRowwiseMinMaxBase::reset() {
  * IndexRowwiseMinMaxFP16 implementation
  ********************************************************/
 
-IndexRowwiseMinMaxFP16::IndexRowwiseMinMaxFP16(Index* index)
-        : IndexRowwiseMinMaxBase(index) {}
+IndexRowwiseMinMaxFP16::IndexRowwiseMinMaxFP16(Index* index_in)
+        : IndexRowwiseMinMaxBase(index_in) {}
 
 IndexRowwiseMinMaxFP16::IndexRowwiseMinMaxFP16() : IndexRowwiseMinMaxBase() {}
 
@@ -411,8 +412,8 @@ void IndexRowwiseMinMaxFP16::train_inplace(idx_t n, float* x) {
  * IndexRowwiseMinMax implementation
  ********************************************************/
 
-IndexRowwiseMinMax::IndexRowwiseMinMax(Index* index)
-        : IndexRowwiseMinMaxBase(index) {}
+IndexRowwiseMinMax::IndexRowwiseMinMax(Index* index_in)
+        : IndexRowwiseMinMaxBase(index_in) {}
 
 IndexRowwiseMinMax::IndexRowwiseMinMax() : IndexRowwiseMinMaxBase() {}
 

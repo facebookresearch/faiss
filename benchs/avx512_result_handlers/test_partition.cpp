@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if defined(__x86_64__)
+
 #include <gtest/gtest.h>
 
 #include "partition.h"
@@ -170,3 +172,5 @@ TEST(ArgpartitionTest, PartitionsCorrectly) {
         }
     }
 }
+
+#endif // defined(__x86_64__)

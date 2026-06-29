@@ -18,9 +18,11 @@ import unittest
 
 import faiss
 import numpy as np
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexIVFFlatPanorama(unittest.TestCase):
     """Test Suite for IndexIVFFlatPanorama."""
 
@@ -278,7 +280,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
-        test_cases = [(65, 4), (63, 8), (100, 7)]
+        test_cases = [(65, 4), (63, 8), (100, 7), (960, 128), (964, 128)]
 
         # TODO(aknayar): Test functions like get_single_code().
 
@@ -446,15 +448,15 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     # Batch size and edge case tests
 
     def test_batch_boundaries(self):
-        """Test correctness at various batch size boundaries (kBatchSize=256)"""
+        """Test correctness at various batch size boundaries (kDefaultBatchSize=128)"""
         d, nlist, nlevels, nt, nq, k = 128, 64, 8, 10000, 200, 15
+        np.random.seed(987)
         xt = np.random.rand(nt, d).astype("float32")
         xq = np.random.rand(nq, d).astype("float32")
 
         for metric in self.METRICS:
             for nb in [5000, 10000, 20000, 50000, 75000]:
                 with self.subTest(metric=metric, nb=nb):
-                    np.random.seed(987)
                     xb = np.random.rand(nb, d).astype("float32")
 
                     index_regular = self.create_ivf_flat(
@@ -586,6 +588,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     def test_incremental_add(self):
         """Test adding vectors incrementally in multiple batches"""
         d, nt, nlist, nlevels, k = 128, 20000, 256, 8, 15
+        np.random.seed(1515)
         xt = np.random.rand(nt, d).astype("float32")
 
         for metric in self.METRICS:

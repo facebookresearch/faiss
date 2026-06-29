@@ -24,7 +24,7 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void Index::train(
+void Index::train_with_queries(
         idx_t /*n*/,
         const float* /*x*/,
         idx_t /*n_train_q*/,
@@ -55,7 +55,7 @@ void Index::add_with_ids(
 
 size_t Index::remove_ids(const IDSelector& /*sel*/) {
     FAISS_THROW_MSG("remove_ids not implemented for this type of index");
-    return -1;
+    return static_cast<size_t>(-1);
 }
 
 void Index::reconstruct(idx_t, float*) const {
@@ -129,7 +129,7 @@ void Index::search1(const float*, ResultHandler&, SearchParameters*) const {
 
 void Index::compute_residual(const float* x, float* residual, idx_t key) const {
     reconstruct(key, residual);
-    for (size_t i = 0; i < d; i++) {
+    for (int i = 0; i < d; i++) {
         residual[i] = x[i] - residual[i];
     }
 }
@@ -168,9 +168,10 @@ struct GenericDistanceComputer : DistanceComputer {
     size_t d;
     const Index& storage;
     std::vector<float> buf;
-    const float* q;
+    const float* q = nullptr;
 
-    explicit GenericDistanceComputer(const Index& storage) : storage(storage) {
+    explicit GenericDistanceComputer(const Index& storage_in)
+            : storage(storage_in) {
         d = storage.d;
         buf.resize(d * 2);
     }

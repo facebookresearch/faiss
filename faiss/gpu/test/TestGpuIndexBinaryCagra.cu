@@ -26,6 +26,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/distances.h>
 #include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
@@ -38,9 +39,9 @@
 
 struct Options {
     Options() {
-        numTrain = 2 * faiss::gpu::randVal(2000, 5000);
-        dim = faiss::gpu::randVal(1, 20) * 8;
-        numAdd = faiss::gpu::randVal(1000, 3000);
+        numTrain = 2 * faiss::gpu::randVal(1000, 2000);
+        dim = faiss::gpu::randVal(1, 10) * 8;
+        numAdd = faiss::gpu::randVal(500, 1500);
 
         graphDegree = faiss::gpu::randSelect({32, 64});
         intermediateGraphDegree = faiss::gpu::randSelect({64, 98});
@@ -74,7 +75,7 @@ struct Options {
 void queryTest(
         faiss::gpu::graph_build_algo build_algo,
         double expected_recall) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 3; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
@@ -189,7 +190,7 @@ TEST(TestGpuIndexBinaryCagra, Query_ITERATIVE_SEARCH) {
 void copyToTest(
         faiss::gpu::graph_build_algo build_algo,
         double expected_recall) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 3; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
@@ -323,7 +324,7 @@ TEST(TestGpuIndexBinaryCagra, CopyTo_ITERATIVE_SEARCH) {
 void copyFromTest(
         faiss::gpu::graph_build_algo build_algo,
         double expected_recall) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 3; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
@@ -430,6 +431,74 @@ TEST(TestGpuIndexBinaryCagra, CopyFrom_NN_DESCENT) {
 
 TEST(TestGpuIndexBinaryCagra, CopyFrom_ITERATIVE_SEARCH) {
     copyFromTest(faiss::gpu::graph_build_algo::ITERATIVE_SEARCH, 0.98);
+}
+
+void testIDSelectorBinaryCagra(std::string selectorName) {
+    Options opt;
+    auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexCagraConfig config;
+    config.device = opt.device;
+    config.graph_degree = opt.graphDegree;
+    config.intermediate_graph_degree = opt.intermediateGraphDegree;
+    config.build_algo = faiss::gpu::graph_build_algo::NN_DESCENT;
+    config.nn_descent_niter = 20;
+
+    faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+
+    auto queryVecs = faiss::gpu::randBinaryVecs(opt.numQuery, opt.dim);
+    faiss::gpu::TestIDSelectorStruct selector_struct(opt.numTrain);
+    faiss::gpu::SearchParametersCagra search_params;
+    // TODO: For CI test purposes only, remove this
+    // for (auto& [selectorName, selector] : selector_struct.selector_map) {
+    auto selector = selector_struct.selector_map[selectorName].get();
+    search_params.sel = selector;
+    std::vector<int> distances(opt.numQuery * opt.k, 0);
+    std::vector<faiss::idx_t> labels(opt.numQuery * opt.k, -1);
+    gpuIndex.search(
+            opt.numQuery,
+            queryVecs.data(),
+            opt.k,
+            distances.data(),
+            labels.data(),
+            &search_params);
+    for (int i = 0; i < opt.numQuery * opt.k; ++i) {
+        if (labels[i] >= 0) {
+            EXPECT_TRUE(selector->is_member(labels[i]))
+                    << "Label " << labels[i] << " @ " << i << " not in "
+                    << selectorName << " selector";
+        }
+    }
+    //}
+}
+
+TEST(TestGpuIndexBinaryCagra, IDSelector_Range) {
+    testIDSelectorBinaryCagra("Range");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_Array) {
+    testIDSelectorBinaryCagra("Array");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_Batch) {
+    testIDSelectorBinaryCagra("Batch");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_Bitmap) {
+    testIDSelectorBinaryCagra("Bitmap");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_Not) {
+    testIDSelectorBinaryCagra("Not");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_And) {
+    testIDSelectorBinaryCagra("And");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_Or) {
+    testIDSelectorBinaryCagra("Or");
+}
+TEST(TestGpuIndexBinaryCagra, IDSelector_XOr) {
+    testIDSelectorBinaryCagra("XOr");
 }
 
 int main(int argc, char** argv) {

@@ -50,7 +50,7 @@ void round_uint8_per_column_multi(
 
 /** LUT quantization to uint8 and bias to uint16.
  *
- * (nprobe, M, ksub, lut_is_3d) determine the size of the the LUT
+ * (nprobe, M, ksub, lut_is_3d) determine the size of the LUT
  *
  *  LUT input:
  *  - 2D size (M, ksub): single matrix per probe (lut_is_3d=false)

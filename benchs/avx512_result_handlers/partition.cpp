@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if defined(__x86_64__)
+
 #include "partition.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
 #include <limits>
 #include <numeric>
@@ -601,3 +602,5 @@ void argsort(size_t n, float* val, int32_t* idx) {
     argsort(left_size, val, idx);
     argsort(n - left_size, val + left_size, idx + left_size);
 }
+
+#endif // defined(__x86_64__)

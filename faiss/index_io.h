@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <memory>
 
+#include <faiss/impl/platform_macros.h>
+
 /** I/O functions can read/write to a filename, a file handle or to an
  * object that abstracts the medium.
  *
@@ -67,6 +69,8 @@ const int IO_FLAG_MMAP = IO_FLAG_SKIP_IVF_DATA | 0x646f0000;
 // this is a temporary solution, it is expected to be merged with IO_FLAG_MMAP
 //   after OnDiskInvertedLists get properly updated.
 const int IO_FLAG_MMAP_IFC = 1 << 9;
+
+FAISS_API extern bool index_read_warn_on_null_invlists;
 
 Index* read_index(const char* fname, int io_flags = 0);
 Index* read_index(FILE* f, int io_flags = 0);
@@ -132,6 +136,22 @@ size_t get_deserialization_vector_byte_limit();
 // NOT thread-safe: set before any concurrent deserialization calls
 // and do not modify while deserialization is in progress on other threads.
 void set_deserialization_vector_byte_limit(size_t value);
+
+// Returns the current IndexLattice r2 limit for deserialization.
+// When nonzero, deserialization rejects IndexLattice payloads whose
+// r2 (squared lattice radius) exceeds this value.  The
+// ZnSphereCodecRec constructor that runs at IndexLattice deserialize
+// time builds a decode cache whose population cost scales
+// polynomially in r2 and dim, and can exceed real-world workload time
+// budgets even for r2 values that do not trip the existing
+// decode-cache memory cap.
+// Default: 0 (no limit).
+size_t get_deserialization_lattice_r2_limit();
+
+// Sets the IndexLattice r2 deserialization limit.
+// NOT thread-safe: set before any concurrent deserialization calls
+// and do not modify while deserialization is in progress on other threads.
+void set_deserialization_lattice_r2_limit(size_t value);
 
 } // namespace faiss
 

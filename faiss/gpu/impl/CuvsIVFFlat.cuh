@@ -24,6 +24,7 @@
 #pragma once
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
@@ -63,7 +64,8 @@ class CuvsIVFFlat : public IVFFlat {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices) override;
+            Tensor<idx_t, 2, true>& outIndices,
+            const IDSelector* sel = nullptr) override;
 
     /// Performs search when we are already given the IVF cells to look at
     /// (GpuIndexIVF::search_preassigned implementation)

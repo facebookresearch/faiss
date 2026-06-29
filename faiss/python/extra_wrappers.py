@@ -602,6 +602,56 @@ class Kmeans:
         return D.ravel(), I.ravel()
 
 
+class SuperKmeans(Kmeans):
+    """Drop-in replacement for `Kmeans` that runs `SuperKMeans` (ADSampling +
+    PDX progressive pruning) instead of `Clustering`. Same `centroids`, `obj`,
+    `iteration_stats`, and `assign()` surface; additionally exposes
+    `gemm_pruning_rates`.
+
+    kwargs are forwarded to `SuperKMeansParameters`. Fields not present on it
+    (e.g. `spherical`, `int_centroids`, `nredo`, `frozen_centroids`,
+    `init_method`, `update_index`, `early_stop_threshold`,
+    `progressive_dim_steps`, `gpu`) raise `AttributeError`.
+    """
+
+    def __init__(self, d, k, **kwargs):
+        self.d = d
+        self.reset(k)
+        self.gpu = False
+        self.cp = SuperKMeansParameters()
+        for key, v in kwargs.items():
+            getattr(self.cp, key)
+            setattr(self.cp, key, v)
+        self.set_index()
+
+    def set_index(self):
+        self.index = IndexFlatL2(self.d)
+
+    def train(self, x, weights=None, init_centroids=None):
+        assert weights is None, "SuperKmeans does not support weights"
+        assert init_centroids is None, \
+            "SuperKmeans does not support init_centroids"
+        x = np.ascontiguousarray(x, dtype='float32')
+        n, d = x.shape
+        assert d == self.d
+
+        sc = SuperKMeans(d, self.k, self.cp)
+        sc.train(x)
+
+        centroids = faiss.vector_to_array(sc.centroids)
+        self.centroids = centroids.reshape(self.k, d)
+        stats = sc.iteration_stats
+        stats = [stats.at(i) for i in range(stats.size())]
+        self.obj = np.array([st.obj for st in stats])
+        stat_fields = 'obj time time_search imbalance_factor nsplit'.split()
+        self.iteration_stats = [
+            {field: getattr(st, field) for field in stat_fields}
+            for st in stats
+        ]
+        self.gemm_pruning_rates = faiss.vector_to_array(sc.gemm_pruning_rates)
+        return self.obj[-1] if self.obj.size > 0 else 0.0
+
+
 ###########################################
 # Packing and unpacking bitstrings
 ###########################################

@@ -7,19 +7,23 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <random>
 #include <unordered_set>
 #include <vector>
 
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/utils/random.h>
 
-int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
+int reference_pop_min(faiss::MinimaxHeap& heap, float* vmin_out) {
     assert(heap.k > 0);
     // returns min. This is an O(n) operation
     int i = heap.k - 1;
@@ -54,7 +58,7 @@ int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
 
 void test_popmin(int heap_size, int amount_to_put) {
     // create a heap
-    faiss::HNSW::MinimaxHeap mm_heap(heap_size);
+    faiss::MinimaxHeap mm_heap(heap_size);
 
     using storage_idx_t = faiss::HNSW::storage_idx_t;
 
@@ -64,7 +68,7 @@ void test_popmin(int heap_size, int amount_to_put) {
 
     // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
-    while (indices.size() < amount_to_put) {
+    while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
@@ -80,7 +84,7 @@ void test_popmin(int heap_size, int amount_to_put) {
     }
 
     // clone the heap
-    faiss::HNSW::MinimaxHeap cloned_mm_heap = mm_heap;
+    faiss::MinimaxHeap cloned_mm_heap = mm_heap;
 
     // takes ones out one by one
     while (mm_heap.size() > 0) {
@@ -117,7 +121,7 @@ void test_popmin_identical_distances(
         int amount_to_put,
         const float distance) {
     // create a heap
-    faiss::HNSW::MinimaxHeap mm_heap(heap_size);
+    faiss::MinimaxHeap mm_heap(heap_size);
 
     using storage_idx_t = faiss::HNSW::storage_idx_t;
 
@@ -126,7 +130,7 @@ void test_popmin_identical_distances(
 
     // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
-    while (indices.size() < amount_to_put) {
+    while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
@@ -137,7 +141,7 @@ void test_popmin_identical_distances(
     }
 
     // clone the heap
-    faiss::HNSW::MinimaxHeap cloned_mm_heap = mm_heap;
+    faiss::MinimaxHeap cloned_mm_heap = mm_heap;
 
     // takes ones out one by one
     while (mm_heap.size() > 0) {
@@ -167,6 +171,52 @@ void test_popmin_identical_distances(
     ASSERT_EQ(mm_heap.nvalid, cloned_mm_heap.nvalid);
     ASSERT_EQ(mm_heap.ids, cloned_mm_heap.ids);
     ASSERT_EQ(mm_heap.dis, cloned_mm_heap.dis);
+}
+
+void copy_base_level_only(
+        const faiss::IndexHNSWCagra& src,
+        faiss::IndexHNSWCagra& dst) {
+    auto n = src.ntotal;
+    auto d = src.d;
+    auto M = src.hnsw.nb_neighbors(0) / 2;
+    auto graph_degree = src.hnsw.nb_neighbors(0);
+
+    if (dst.storage && dst.own_fields) {
+        delete dst.storage;
+    }
+    dst.storage = new faiss::IndexFlatL2(d);
+    dst.own_fields = true;
+    dst.d = d;
+    dst.metric_type = src.metric_type;
+    dst.is_trained = true;
+    dst.keep_max_size_level0 = true;
+
+    dst.hnsw.reset();
+    dst.hnsw.assign_probas.clear();
+    dst.hnsw.cum_nneighbor_per_level.clear();
+    dst.hnsw.set_default_probas(M, 1.0 / std::log(M));
+
+    dst.hnsw.prepare_level_tab(n, false);
+
+    auto src_flat = dynamic_cast<faiss::IndexFlat*>(src.storage);
+    FAISS_THROW_IF_NOT(src_flat);
+    dst.storage->add(n, src_flat->get_xb());
+    dst.ntotal = n;
+
+    for (faiss::idx_t i = 0; i < n; i++) {
+        size_t src_begin, src_end;
+        src.hnsw.neighbor_range(i, 0, &src_begin, &src_end);
+
+        size_t dst_begin, dst_end;
+        dst.hnsw.neighbor_range(i, 0, &dst_begin, &dst_end);
+
+        for (size_t j = 0; j < graph_degree && j < (dst_end - dst_begin); j++) {
+            dst.hnsw.neighbors[dst_begin + j] =
+                    src.hnsw.neighbors[src_begin + j];
+        }
+    }
+
+    dst.base_level_only = true;
 }
 
 TEST(HNSW, Test_popmin) {
@@ -218,6 +268,36 @@ TEST(HNSW, Test_IndexHNSW_METRIC_Lp) {
     EXPECT_EQ(label, 0);              // Label should be 0
 }
 
+TEST(HNSW, Test_IndexHNSWCagra_BaseLevelOnly_RangeSearch) {
+    int d = 8;
+    int nb = 100;
+    int nq = 5;
+    int M = 4;
+
+    std::vector<float> xb(nb * d);
+    std::vector<float> xq(nq * d);
+    faiss::float_rand(xb.data(), xb.size(), 1234);
+    faiss::float_rand(xq.data(), xq.size(), 4321);
+
+    faiss::IndexHNSWCagra index(d, M, faiss::METRIC_L2);
+    index.add(nb, xb.data());
+    index.base_level_only = true;
+    index.num_base_level_search_entrypoints = 8;
+
+    faiss::IndexHNSWCagra dst_index;
+    copy_base_level_only(index, dst_index);
+    dst_index.num_base_level_search_entrypoints = 8;
+
+    faiss::RangeSearchResult res(nq);
+    float radius = 1e9f;
+    dst_index.range_search(nq, xq.data(), radius, &res);
+
+    for (int i = 0; i < nq; i++) {
+        auto count = res.lims[i + 1] - res.lims[i];
+        EXPECT_GT(count, 0);
+    }
+}
+
 class HNSWTest : public testing::Test {
    protected:
     HNSWTest() {
@@ -251,7 +331,7 @@ int reference_search_from_candidates(
         const faiss::HNSW& hnsw,
         faiss::DistanceComputer& qdis,
         faiss::ResultHandler& res,
-        faiss::HNSW::MinimaxHeap& candidates,
+        faiss::MinimaxHeap& candidates,
         faiss::VisitedTable& vt,
         faiss::HNSWStats& stats,
         int level,
@@ -430,11 +510,12 @@ std::priority_queue<faiss::HNSW::Node> reference_search_from_candidate_unbounded
             float d1 = qdis(v1);
             ++ndis;
 
-            if (top_candidates.top().first > d1 || top_candidates.size() < ef) {
+            if (top_candidates.top().first > d1 ||
+                static_cast<int>(top_candidates.size()) < ef) {
                 candidates.emplace(d1, v1);
                 top_candidates.emplace(d1, v1);
 
-                if (top_candidates.size() > ef) {
+                if (static_cast<int>(top_candidates.size()) > ef) {
                     top_candidates.pop();
                 }
             }
@@ -457,18 +538,20 @@ TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
     auto nearest = index->hnsw.entry_point;
     float d_nearest = (*dis)(nearest);
     auto node = faiss::HNSW::Node(d_nearest, nearest);
-    faiss::VisitedTable vt(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> vt =
+            faiss::VisitedTable::create(index->ntotal);
     faiss::HNSWStats stats;
 
     // actual version
-    auto top_candidates = faiss::search_from_candidate_unbounded(
-            index->hnsw, node, *dis, k, &vt, stats);
+    auto top_candidates = faiss::hnsw_detail::search_from_candidate_unbounded(
+            index->hnsw, node, *dis, k, vt.get(), stats);
 
     auto reference_nearest = index->hnsw.entry_point;
     float reference_d_nearest = (*dis)(nearest);
     auto reference_node =
             faiss::HNSW::Node(reference_d_nearest, reference_nearest);
-    faiss::VisitedTable reference_vt(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> reference_vt =
+            faiss::VisitedTable::create(index->ntotal);
     faiss::HNSWStats reference_stats;
 
     // reference version
@@ -477,7 +560,7 @@ TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
             reference_node,
             *dis,
             k,
-            &reference_vt,
+            reference_vt.get(),
             reference_stats);
     EXPECT_EQ(stats.ndis, reference_stats.ndis);
     EXPECT_EQ(stats.nhops, reference_stats.nhops);
@@ -495,7 +578,7 @@ TEST_F(HNSWTest, TEST_greedy_update_nearest) {
     float reference_d_nearest = (*dis)(reference_nearest);
 
     // actual version
-    auto stats = faiss::greedy_update_nearest(
+    auto stats = faiss::hnsw_detail::greedy_update_nearest(
             index->hnsw, *dis, 0, nearest, d_nearest);
 
     // reference version
@@ -518,15 +601,17 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
     std::vector<float> reference_D(k * nq);
     using RH = faiss::HeapBlockResultHandler<faiss::HNSW::C>;
 
-    faiss::VisitedTable vt(index->ntotal);
-    faiss::VisitedTable reference_vt(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> vt =
+            faiss::VisitedTable::create(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> reference_vt =
+            faiss::VisitedTable::create(index->ntotal);
     int num_candidates = 10;
-    faiss::HNSW::MinimaxHeap candidates(num_candidates);
-    faiss::HNSW::MinimaxHeap reference_candidates(num_candidates);
+    faiss::MinimaxHeap candidates(num_candidates);
+    faiss::MinimaxHeap reference_candidates(num_candidates);
 
     for (int i = 0; i < num_candidates; i++) {
-        vt.set(i);
-        reference_vt.set(i);
+        vt->set(i);
+        reference_vt->set(i);
         candidates.push(i, (*dis)(i));
         reference_candidates.push(i, (*dis)(i));
     }
@@ -537,8 +622,8 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
             bres);
 
     res.begin(0);
-    faiss::search_from_candidates(
-            index->hnsw, *dis, res, candidates, vt, stats, 0, 0, nullptr);
+    faiss::hnsw_detail::search_from_candidates(
+            index->hnsw, *dis, res, candidates, *vt, stats, 0, 0, nullptr);
     res.end();
 
     faiss::HNSWStats reference_stats;
@@ -551,7 +636,7 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
             *dis,
             reference_res,
             reference_candidates,
-            reference_vt,
+            *reference_vt,
             reference_stats,
             0,
             0,
@@ -572,30 +657,32 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
 TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
     omp_set_num_threads(1);
 
-    faiss::VisitedTable vt(index->ntotal);
-    faiss::VisitedTable reference_vt(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> vt =
+            faiss::VisitedTable::create(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> reference_vt =
+            faiss::VisitedTable::create(index->ntotal);
 
     std::priority_queue<faiss::HNSW::NodeDistCloser> link_targets;
     std::priority_queue<faiss::HNSW::NodeDistCloser> reference_link_targets;
 
-    faiss::search_neighbors_to_add(
+    faiss::hnsw_detail::search_neighbors_to_add(
             index->hnsw,
             *dis,
             link_targets,
             index->hnsw.entry_point,
             (*dis)(index->hnsw.entry_point),
             index->hnsw.max_level,
-            vt,
+            *vt,
             false);
 
-    faiss::search_neighbors_to_add(
+    faiss::hnsw_detail::search_neighbors_to_add(
             index->hnsw,
             *dis,
             reference_link_targets,
             index->hnsw.entry_point,
             (*dis)(index->hnsw.entry_point),
             index->hnsw.max_level,
-            reference_vt,
+            *reference_vt,
             true);
 
     EXPECT_EQ(link_targets.size(), reference_link_targets.size());
@@ -633,8 +720,10 @@ TEST_F(HNSWTest, TEST_search_level_0) {
             bres2);
 
     faiss::HNSWStats stats1, stats2;
-    faiss::VisitedTable vt1(index->ntotal);
-    faiss::VisitedTable vt2(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> vt1 =
+            faiss::VisitedTable::create(index->ntotal);
+    std::unique_ptr<faiss::VisitedTable> vt2 =
+            faiss::VisitedTable::create(index->ntotal);
     auto nprobe = 5;
     const faiss::HNSW::storage_idx_t values[] = {1, 2, 3, 4, 5};
     const faiss::HNSW::storage_idx_t* nearest_i = values;
@@ -644,13 +733,13 @@ TEST_F(HNSWTest, TEST_search_level_0) {
     // search_type == 1
     res1.begin(0);
     index->hnsw.search_level_0(
-            *dis, res1, nprobe, nearest_i, nearest_d, 1, stats1, vt1, nullptr);
+            *dis, res1, nprobe, nearest_i, nearest_d, 1, stats1, *vt1, nullptr);
     res1.end();
 
     // search_type == 2
     res2.begin(0);
     index->hnsw.search_level_0(
-            *dis, res2, nprobe, nearest_i, nearest_d, 2, stats2, vt2, nullptr);
+            *dis, res2, nprobe, nearest_i, nearest_d, 2, stats2, *vt2, nullptr);
     res2.end();
 
     // search_type 1 calls search_from_candidates in a loop nprobe times.

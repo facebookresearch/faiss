@@ -9,6 +9,7 @@
 
 #include <faiss/IndexNNDescent.h>
 
+#include <atomic>
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
@@ -20,7 +21,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/VisitedTable.h>
-#include <faiss/utils/distances.h>
 
 extern "C" {
 
@@ -66,17 +66,17 @@ DistanceComputer* storage_distance_computer(const Index* storage) {
  * IndexNNDescent implementation
  **************************************************************/
 
-IndexNNDescent::IndexNNDescent(int d, int K, MetricType metric)
-        : Index(d, metric),
-          nndescent(d, K),
+IndexNNDescent::IndexNNDescent(int d_in, int K, MetricType metric)
+        : Index(d_in, metric),
+          nndescent(d_in, K),
           own_fields(false),
           storage(nullptr) {}
 
-IndexNNDescent::IndexNNDescent(Index* storage, int K)
-        : Index(storage->d, storage->metric_type),
-          nndescent(storage->d, K),
+IndexNNDescent::IndexNNDescent(Index* storage_in, int K)
+        : Index(storage_in->d, storage_in->metric_type),
+          nndescent(storage_in->d, K),
           own_fields(false),
-          storage(storage) {}
+          storage(storage_in) {}
 
 IndexNNDescent::~IndexNNDescent() {
     if (own_fields) {
@@ -119,28 +119,43 @@ void IndexNNDescent::search(
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
 
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
-
-            std::unique_ptr<DistanceComputer> dis(
-                    storage_distance_computer(storage));
+            std::unique_ptr<DistanceComputer> dis;
+            std::unique_ptr<VisitedTable> vt;
+            try {
+                vt = VisitedTable::create(ntotal);
+                dis.reset(storage_distance_computer(storage));
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
 
 #pragma omp for
             for (idx_t i = i0; i < i1; i++) {
-                idx_t* idxi = labels + i * k;
-                float* simi = distances + i * k;
-                dis->set_query(x + i * d);
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
+                }
+                try {
+                    idx_t* idxi = labels + i * k;
+                    float* simi = distances + i * k;
+                    dis->set_query(x + i * d);
 
-                nndescent.search(*dis, k, idxi, simi, vt);
+                    nndescent.search(
+                            *dis, static_cast<int>(k), idxi, simi, *vt);
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
             }
         }
+        omp_rethrow_if_exception(ex);
         InterruptCallback::check();
     }
 
     if (metric_type == METRIC_INNER_PRODUCT) {
         // we need to revert the negated distances
-        for (size_t i = 0; i < k * n; i++) {
+        for (idx_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
         }
     }
@@ -163,7 +178,7 @@ void IndexNNDescent::add(idx_t n, const float* x) {
     ntotal = storage->ntotal;
 
     std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
-    nndescent.build(*dis, ntotal, verbose);
+    nndescent.build(*dis, static_cast<int>(ntotal), verbose);
 }
 
 void IndexNNDescent::reset() {
@@ -184,8 +199,8 @@ IndexNNDescentFlat::IndexNNDescentFlat() {
     is_trained = true;
 }
 
-IndexNNDescentFlat::IndexNNDescentFlat(int d, int M, MetricType metric)
-        : IndexNNDescent(new IndexFlat(d, metric), M) {
+IndexNNDescentFlat::IndexNNDescentFlat(int d_in, int M, MetricType metric)
+        : IndexNNDescent(new IndexFlat(d_in, metric), M) {
     own_fields = true;
     is_trained = true;
 }

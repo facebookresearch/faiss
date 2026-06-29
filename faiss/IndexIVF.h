@@ -58,7 +58,7 @@ struct Level1Quantizer {
     void encode_listno(idx_t list_no, uint8_t* code) const;
     idx_t decode_listno(const uint8_t* code) const;
 
-    Level1Quantizer(Index* quantizer, size_t nlist);
+    Level1Quantizer(Index* quantizer_in, size_t nlist_in);
 
     Level1Quantizer();
 
@@ -68,6 +68,25 @@ struct Level1Quantizer {
 struct SearchParametersIVF : SearchParameters {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
+
+    /// FastScan k-NN only: maximum number of inverted lists to visit.
+    /// 0 means unlimited, i.e. bounded only by nprobe. When set together
+    /// with max_codes, either budget may stop the scan. With
+    /// ensure_topk_full, this limit is treated as at least k lists.
+    size_t max_lists_num = 0;
+
+    /// For k-NN search, make small early-stop budgets less aggressive:
+    /// max_codes is treated as at least k post-IDSelector scans. Supported
+    /// by generic IVF in parallel_mode 0 and 3, and by FastScan k-NN
+    /// implementations 10 and 11.
+    bool ensure_topk_full = false;
+
+    /// Range-search only: stop after this many consecutive probed lists add
+    /// no in-radius results. 0 disables the heuristic. This trades recall
+    /// for less work. Supported in parallel_mode 0; FastScan range search
+    /// uses implementation 10 for this option.
+    size_t max_empty_result_buckets = 0;
+
     SearchParameters* quantizer_params = nullptr;
     /// context object to pass to InvertedLists
     void* inverted_list_context = nullptr;
@@ -86,8 +105,10 @@ struct IndexIVFInterface : Level1Quantizer {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
 
-    explicit IndexIVFInterface(Index* quantizer = nullptr, size_t nlist = 0)
-            : Level1Quantizer(quantizer, nlist) {}
+    explicit IndexIVFInterface(
+            Index* quantizer_in = nullptr,
+            size_t nlist_in = 0)
+            : Level1Quantizer(quantizer_in, nlist_in) {}
 
     /** search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query
@@ -203,12 +224,12 @@ struct IndexIVF : Index, IndexIVFInterface {
      * identifier.
      */
     IndexIVF(
-            Index* quantizer,
-            size_t d,
-            size_t nlist,
-            size_t code_size,
+            Index* quantizer_in,
+            size_t d_in,
+            size_t nlist_in,
+            size_t code_size_in,
             MetricType metric = METRIC_L2,
-            bool own_invlists = true);
+            bool own_invlists_in = true);
 
     void reset() override;
 
@@ -484,9 +505,9 @@ struct InvertedListScanner {
     const IDSelector* sel;
 
     InvertedListScanner(
-            bool store_pairs = false,
-            const IDSelector* sel = nullptr)
-            : store_pairs(store_pairs), sel(sel) {}
+            bool store_pairs_in = false,
+            const IDSelector* sel_in = nullptr)
+            : store_pairs(store_pairs_in), sel(sel_in) {}
 
     /// used in default implementation of scan_codes
     size_t code_size = 0;
@@ -512,7 +533,7 @@ struct InvertedListScanner {
      * @param k          heap size
      * @return number of heap updates performed
      */
-    virtual size_t scan_codes(
+    size_t scan_codes(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,

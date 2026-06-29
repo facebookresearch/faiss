@@ -12,7 +12,6 @@
 #include <iostream>
 #include <memory>
 #include <random>
-#include <thread>
 #include <tuple>
 #include <vector>
 
@@ -32,7 +31,7 @@ std::tuple<std::shared_ptr<faiss::Index>, std::vector<uint8_t>> trainDataset(
         const uint64_t d,
         const std::string& description) {
     //
-    omp_set_num_threads(std::thread::hardware_concurrency());
+    omp_set_num_threads(omp_get_max_threads());
 
     // train an index
     auto index = std::shared_ptr<faiss::Index>(

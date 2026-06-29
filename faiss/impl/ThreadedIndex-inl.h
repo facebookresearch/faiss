@@ -19,8 +19,8 @@ ThreadedIndex<IndexT>::ThreadedIndex(bool threaded)
         : ThreadedIndex(0, threaded) {}
 
 template <typename IndexT>
-ThreadedIndex<IndexT>::ThreadedIndex(int d, bool threaded)
-        : IndexT(d), isThreaded_(threaded) {}
+ThreadedIndex<IndexT>::ThreadedIndex(int d_in, bool threaded)
+        : IndexT(d_in), isThreaded_(threaded) {}
 
 template <typename IndexT>
 ThreadedIndex<IndexT>::~ThreadedIndex() {
@@ -122,11 +122,12 @@ void ThreadedIndex<IndexT>::runOnIndex(std::function<void(int, IndexT*)> f) {
     if (isThreaded_) {
         std::vector<std::future<bool>> v;
 
-        for (int i = 0; i < this->indices_.size(); ++i) {
+        for (size_t i = 0; i < this->indices_.size(); ++i) {
             auto& p = this->indices_[i];
             auto indexPtr = p.first;
+            int idx = static_cast<int>(i);
             v.emplace_back(
-                    p.second->add([f, i, indexPtr]() { f(i, indexPtr); }));
+                    p.second->add([f, idx, indexPtr]() { f(idx, indexPtr); }));
         }
 
         waitAndHandleFutures(v);
@@ -135,13 +136,14 @@ void ThreadedIndex<IndexT>::runOnIndex(std::function<void(int, IndexT*)> f) {
         // while letting everything else run to completion
         std::vector<std::pair<int, std::exception_ptr>> exceptions;
 
-        for (int i = 0; i < this->indices_.size(); ++i) {
+        for (size_t i = 0; i < this->indices_.size(); ++i) {
             auto& p = this->indices_[i];
             try {
-                f(i, p.first);
+                f(static_cast<int>(i), p.first);
             } catch (...) {
                 exceptions.emplace_back(
-                        std::make_pair(i, std::current_exception()));
+                        std::make_pair(
+                                static_cast<int>(i), std::current_exception()));
             }
         }
 
@@ -164,10 +166,10 @@ void ThreadedIndex<IndexT>::reset() {
 }
 
 template <typename IndexT>
-void ThreadedIndex<IndexT>::onAfterAddIndex(IndexT* index) {}
+void ThreadedIndex<IndexT>::onAfterAddIndex(IndexT* /* index */) {}
 
 template <typename IndexT>
-void ThreadedIndex<IndexT>::onAfterRemoveIndex(IndexT* index) {}
+void ThreadedIndex<IndexT>::onAfterRemoveIndex(IndexT* /* index */) {}
 
 template <typename IndexT>
 void ThreadedIndex<IndexT>::waitAndHandleFutures(
@@ -176,14 +178,15 @@ void ThreadedIndex<IndexT>::waitAndHandleFutures(
     // exceptions that are generated
     std::vector<std::pair<int, std::exception_ptr>> exceptions;
 
-    for (int i = 0; i < v.size(); ++i) {
+    for (size_t i = 0; i < v.size(); ++i) {
         auto& fut = v[i];
 
         try {
             fut.get();
         } catch (...) {
             exceptions.emplace_back(
-                    std::make_pair(i, std::current_exception()));
+                    std::make_pair(
+                            static_cast<int>(i), std::current_exception()));
         }
     }
 

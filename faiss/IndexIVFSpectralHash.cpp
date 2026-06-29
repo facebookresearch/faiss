@@ -10,6 +10,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <memory>
 
@@ -20,25 +21,35 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
+#include <faiss/impl/simd_dispatch.h>
+
+// Scalar (NONE) fallback for dynamic dispatch
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/binary_hamming/IndexIVFSpectralHash_impl.h>
+#undef THE_SIMD_LEVEL
+
 namespace faiss {
 
 IndexIVFSpectralHash::IndexIVFSpectralHash(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
-        int nbit,
-        float period,
-        bool own_invlists)
+        Index* quantizer_in,
+        size_t d_in,
+        size_t nlist_in,
+        int nbit_in,
+        float period_in,
+        bool own_invlists_in)
         : IndexIVF(
-                  quantizer,
-                  d,
-                  nlist,
-                  (nbit + 7) / 8,
+                  quantizer_in,
+                  d_in,
+                  nlist_in,
+                  (nbit_in + 7) / 8,
                   METRIC_L2,
-                  own_invlists),
-          nbit(nbit),
-          period(period) {
-    auto rr = std::make_unique<RandomRotationMatrix>(d, nbit);
+                  own_invlists_in),
+          nbit(nbit_in),
+          period(period_in) {
+    auto rr = std::make_unique<RandomRotationMatrix>(
+            static_cast<int>(d_in), nbit_in);
     rr->init(1234);
     vt = rr.release();
     own_fields = true;
@@ -72,7 +83,7 @@ float median(size_t n, float* x) {
 void IndexIVFSpectralHash::train_encoder(
         idx_t n,
         const float* x,
-        const idx_t* assign) {
+        const idx_t* /*assign*/) {
     if (!vt->is_trained) {
         vt->train(n, x);
     }
@@ -103,13 +114,13 @@ void IndexIVFSpectralHash::train_encoder(
     quantizer->assign(n, x, idx.get());
 
     std::vector<size_t> sizes(nlist + 1);
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         FAISS_THROW_IF_NOT(idx[i] >= 0);
         sizes[idx[i]]++;
     }
 
     size_t ofs = 0;
-    for (int j = 0; j < nlist; j++) {
+    for (size_t j = 0; j < nlist; j++) {
         size_t o0 = ofs;
         ofs += sizes[j];
         sizes[j] = o0;
@@ -121,9 +132,9 @@ void IndexIVFSpectralHash::train_encoder(
     // transpose + reorder
     std::unique_ptr<float[]> xo(new float[n * nbit]);
 
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         size_t idest = sizes[idx[i]]++;
-        for (size_t j = 0; j < nbit; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(nbit); j++) {
             xo[idest + n * j] = xt[i * nbit + j];
         }
     }
@@ -131,7 +142,7 @@ void IndexIVFSpectralHash::train_encoder(
     trained.resize(n * nbit);
     // compute medians
 #pragma omp for
-    for (int i = 0; i < nlist; i++) {
+    for (idx_t i = 0; i < static_cast<idx_t>(nlist); i++) {
         size_t i0 = i == 0 ? 0 : sizes[i - 1];
         size_t i1 = sizes[i];
         for (int j = 0; j < nbit; j++) {
@@ -158,7 +169,7 @@ void binarize_with_freq(
     memset(codes, 0, (nbit + 7) / 8);
     for (size_t i = 0; i < nbit; i++) {
         float xf = (x[i] - c[i]);
-        int64_t xi = int64_t(floor(xf * freq));
+        int64_t xi = int64_t(std::floor(xf * freq));
         int64_t bit = xi & 1;
         codes[i >> 3] |= bit << (i & 7);
     }
@@ -206,114 +217,15 @@ void IndexIVFSpectralHash::encode_vectors(
     }
 }
 
-namespace {
-
-template <class HammingComputer>
-struct IVFScanner : InvertedListScanner {
-    // copied from index structure
-    const IndexIVFSpectralHash* index;
-    size_t nbit;
-
-    float period, freq;
-    std::vector<float> q;
-    std::vector<float> zero;
-    std::vector<uint8_t> qcode;
-    HammingComputer hc;
-
-    IVFScanner(const IndexIVFSpectralHash* index, bool store_pairs)
-            : index(index),
-              nbit(index->nbit),
-              period(index->period),
-              freq(2.0 / index->period),
-              q(nbit),
-              zero(nbit),
-              qcode(index->code_size),
-              hc(qcode.data(), index->code_size) {
-        this->store_pairs = store_pairs;
-        this->code_size = index->code_size;
-        this->keep_max = is_similarity_metric(index->metric_type);
-    }
-
-    void set_query(const float* query) override {
-        FAISS_THROW_IF_NOT(query);
-        FAISS_THROW_IF_NOT(q.size() == nbit);
-        index->vt->apply_noalloc(1, query, q.data());
-
-        if (index->threshold_type == IndexIVFSpectralHash::Thresh_global) {
-            binarize_with_freq(nbit, freq, q.data(), zero.data(), qcode.data());
-            hc.set(qcode.data(), code_size);
-        }
-    }
-
-    void set_list(idx_t list_no, float /*coarse_dis*/) override {
-        this->list_no = list_no;
-        if (index->threshold_type != IndexIVFSpectralHash::Thresh_global) {
-            const float* c = index->trained.data() + list_no * nbit;
-            binarize_with_freq(nbit, freq, q.data(), c, qcode.data());
-            hc.set(qcode.data(), code_size);
-        }
-    }
-
-    float distance_to_code(const uint8_t* code) const final {
-        return hc.hamming(code);
-    }
-
-    size_t scan_codes(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float* simi,
-            idx_t* idxi,
-            size_t k) const override {
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
-            float dis = hc.hamming(codes);
-
-            if (dis < simi[0]) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                maxheap_replace_top(k, simi, idxi, dis, id);
-                nup++;
-            }
-            codes += code_size;
-        }
-        return nup;
-    }
-
-    void scan_codes_range(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float radius,
-            RangeQueryResult& res) const override {
-        for (size_t j = 0; j < list_size; j++) {
-            float dis = hc.hamming(codes);
-            if (dis < radius) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                res.add(dis, id);
-            }
-            codes += code_size;
-        }
-    }
-};
-
-struct BuildScanner {
-    using T = InvertedListScanner*;
-
-    template <class HammingComputer>
-    static T f(const IndexIVFSpectralHash* index, bool store_pairs) {
-        return new IVFScanner<HammingComputer>(index, store_pairs);
-    }
-};
-
-} // anonymous namespace
-
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
     FAISS_THROW_IF_NOT(!sel);
-    BuildScanner bs;
-    return dispatch_HammingComputer(code_size, bs, this, store_pairs);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return make_spectral_hash_scanner_fixSL<SL>(
+                code_size, this, store_pairs);
+    });
 }
 
 void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {
@@ -324,8 +236,8 @@ void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {
     }
     vt = vt_in;
     threshold_type = Thresh_global;
-    is_trained = quantizer->is_trained && quantizer->ntotal == nlist &&
-            vt->is_trained;
+    is_trained = quantizer->is_trained &&
+            quantizer->ntotal == static_cast<idx_t>(nlist) && vt->is_trained;
     own_fields = own;
 }
 

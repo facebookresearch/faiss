@@ -169,7 +169,8 @@ void IVFFlat::search(
         int nprobe,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices,
+        const IDSelector* sel) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     // These are caught at a higher level

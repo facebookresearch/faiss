@@ -10,6 +10,7 @@
 #include <faiss/Index.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 #include <memory>
@@ -95,7 +96,8 @@ class IVFBase {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices) = 0;
+            Tensor<idx_t, 2, true>& outIndices,
+            const IDSelector* sel = nullptr) = 0;
 
     /// Performs search when we are already given the IVF cells to look at
     /// (GpuIndexIVF::search_preassigned implementation)

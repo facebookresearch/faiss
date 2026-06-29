@@ -55,6 +55,9 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
     // built from an IndexIVFPQ
     explicit IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs = 32);
 
+    /// Packed code size: M2 / 2 bytes (4-bit PQ sub-quantizer nibbles)
+    size_t fast_scan_code_size() const override;
+
     void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 
     idx_t train_encoder_num_vectors() const override;

@@ -4,10 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+#include <cstdio>
+
+#if defined(__x86_64__)
+
 #include <immintrin.h>
 #include <algorithm>
 #include <cassert>
-#include <cstdio>
 #include <numeric>
 #include <random>
 
@@ -109,3 +113,12 @@ int main() {
 
     return 0;
 }
+
+#else
+
+int main() {
+    printf("Test is disabled on non-x86 systems \n");
+    return 0;
+}
+
+#endif // defined(__x86_64__)

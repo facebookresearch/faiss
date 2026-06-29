@@ -9,13 +9,9 @@
 
 #include <faiss/utils/distances.h>
 
-#include <algorithm>
 #include <cmath>
-#include <cstdio>
 #include <cstring>
 
-#include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::NONE

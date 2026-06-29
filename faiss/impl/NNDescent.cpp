@@ -23,7 +23,7 @@ namespace nndescent {
 
 void gen_random(std::mt19937& rng, int* addr, const int size, const int N);
 
-Nhood::Nhood(int l, int s, std::mt19937& rng, int N) {
+Nhood::Nhood(int /* l */, int s, std::mt19937& rng, int N) {
     M = s;
     nn_new.resize(s * 2);
     gen_random(rng, nn_new.data(), (int)nn_new.size(), N);
@@ -31,25 +31,46 @@ Nhood::Nhood(int l, int s, std::mt19937& rng, int N) {
 
 /// Copy operator
 Nhood& Nhood::operator=(const Nhood& other) {
-    M = other.M;
-    std::copy(
-            other.nn_new.begin(),
-            other.nn_new.end(),
-            std::back_inserter(nn_new));
-    nn_new.reserve(other.nn_new.capacity());
-    pool.reserve(other.pool.capacity());
+    if (this != &other) {
+        M = other.M;
+        nn_new = other.nn_new;
+        nn_old = other.nn_old;
+        rnn_new = other.rnn_new;
+        rnn_old = other.rnn_old;
+        pool = other.pool;
+    }
     return *this;
 }
 
 /// Copy constructor
-Nhood::Nhood(const Nhood& other) {
-    M = other.M;
-    std::copy(
-            other.nn_new.begin(),
-            other.nn_new.end(),
-            std::back_inserter(nn_new));
-    nn_new.reserve(other.nn_new.capacity());
-    pool.reserve(other.pool.capacity());
+Nhood::Nhood(const Nhood& other)
+        : pool(other.pool),
+          M(other.M),
+          nn_old(other.nn_old),
+          nn_new(other.nn_new),
+          rnn_old(other.rnn_old),
+          rnn_new(other.rnn_new) {}
+
+/// Move constructor
+Nhood::Nhood(Nhood&& other) noexcept
+        : pool(std::move(other.pool)),
+          M(other.M),
+          nn_old(std::move(other.nn_old)),
+          nn_new(std::move(other.nn_new)),
+          rnn_old(std::move(other.rnn_old)),
+          rnn_new(std::move(other.rnn_new)) {}
+
+/// Move assignment operator
+Nhood& Nhood::operator=(Nhood&& other) noexcept {
+    if (this != &other) {
+        M = other.M;
+        nn_new = std::move(other.nn_new);
+        nn_old = std::move(other.nn_old);
+        rnn_new = std::move(other.rnn_new);
+        rnn_old = std::move(other.rnn_old);
+        pool = std::move(other.pool);
+    }
+    return *this;
 }
 
 /// Insert a point into the candidate pool
@@ -58,7 +79,7 @@ void Nhood::insert(int id, float dist) {
     if (dist > pool.front().distance) {
         return;
     }
-    for (int i = 0; i < pool.size(); i++) {
+    for (size_t i = 0; i < pool.size(); i++) {
         if (id == pool[i].id) {
             return;
         }
@@ -90,6 +111,22 @@ void Nhood::join(C callback) const {
 }
 
 void gen_random(std::mt19937& rng, int* addr, const int size, const int N) {
+    FAISS_THROW_IF_NOT_FMT(
+            size > 0 && size <= N,
+            "gen_random: size (%d) must be > 0 and <= N (%d)",
+            size,
+            N);
+    if (size == N) {
+        // Special case: return all indices in random order
+        for (int i = 0; i < size; ++i) {
+            addr[i] = i;
+        }
+        for (int i = size - 1; i > 0; --i) {
+            int j = rng() % (i + 1);
+            std::swap(addr[i], addr[j]);
+        }
+        return;
+    }
     for (int i = 0; i < size; ++i) {
         addr[i] = rng() % (N - size);
     }
@@ -153,7 +190,7 @@ using namespace nndescent;
 
 constexpr int NUM_EVAL_POINTS = 100;
 
-NNDescent::NNDescent(const int d, const int K) : K(K), d(d) {
+NNDescent::NNDescent(const int d_in, const int K_in) : K(K_in), d(d_in) {
     L = K + 50;
 }
 
@@ -197,7 +234,7 @@ void NNDescent::update() {
         auto& nn = graph[n];
         std::sort(nn.pool.begin(), nn.pool.end());
 
-        if (nn.pool.size() > L) {
+        if (nn.pool.size() > static_cast<size_t>(L)) {
             nn.pool.resize(L);
         }
         nn.pool.reserve(L); // keep the pool size be L
@@ -238,7 +275,7 @@ void NNDescent::update() {
                     // the candidate pool of the other side
                     if (nn.distance > other.pool.back().distance) {
                         LockGuard guard(other.lock);
-                        if (other.rnn_new.size() < R) {
+                        if (other.rnn_new.size() < static_cast<size_t>(R)) {
                             other.rnn_new.push_back(n);
                         } else {
                             int pos = rng() % R;
@@ -254,7 +291,7 @@ void NNDescent::update() {
                     // the candidate pool of the other side
                     if (nn.distance > other.pool.back().distance) {
                         LockGuard guard(other.lock);
-                        if (other.rnn_old.size() < R) {
+                        if (other.rnn_old.size() < static_cast<size_t>(R)) {
                             other.rnn_old.push_back(n);
                         } else {
                             int pos = rng() % R;
@@ -280,7 +317,7 @@ void NNDescent::update() {
 
         nn_new.insert(nn_new.end(), rnn_new.begin(), rnn_new.end());
         nn_old.insert(nn_old.end(), rnn_old.begin(), rnn_old.end());
-        if (nn_old.size() > R * 2) {
+        if (nn_old.size() > static_cast<size_t>(R * 2)) {
             nn_old.resize(R * 2);
             nn_old.reserve(R * 2);
         }
@@ -294,7 +331,7 @@ void NNDescent::nndescent(DistanceComputer& qdis, bool verbose) {
     int num_eval_points = std::min(NUM_EVAL_POINTS, ntotal);
     std::vector<int> eval_points(num_eval_points);
     std::vector<std::vector<int>> acc_eval_set(num_eval_points);
-    std::mt19937 rng(random_seed * 6577 + omp_get_thread_num());
+    std::mt19937 rng(random_seed * 6577);
     gen_random(rng, eval_points.data(), eval_points.size(), ntotal);
     generate_eval_set(qdis, eval_points, acc_eval_set, ntotal);
     for (int it = 0; it < iter; it++) {
@@ -315,7 +352,7 @@ void NNDescent::generate_eval_set(
         std::vector<std::vector<int>>& v,
         int N) {
 #pragma omp parallel for
-    for (int i = 0; i < c.size(); i++) {
+    for (int i = 0; i < static_cast<int>(c.size()); i++) {
         std::vector<Neighbor> tmp;
         for (int j = 0; j < N; j++) {
             if (c[i] == j) {
@@ -488,7 +525,7 @@ void NNDescent::search(
             ++k;
         }
     }
-    for (size_t i = 0; i < topk; i++) {
+    for (int i = 0; i < topk; i++) {
         indices[i] = retset[i].id;
         dists[i] = retset[i].distance;
     }

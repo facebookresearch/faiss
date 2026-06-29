@@ -9,6 +9,8 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <cstdlib>
+#include <type_traits>
 
 #include <faiss/IndexHNSW.h>
 
@@ -16,13 +18,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
-
-#ifdef __AVX2__
-#include <immintrin.h>
-
-#include <limits>
-#include <type_traits>
-#endif
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 
 namespace faiss {
 
@@ -31,7 +27,8 @@ namespace faiss {
  **************************************************************/
 
 int HNSW::nb_neighbors(int layer_no) const {
-    FAISS_THROW_IF_NOT(layer_no + 1 < cum_nneighbor_per_level.size());
+    FAISS_THROW_IF_NOT(
+            static_cast<size_t>(layer_no + 1) < cum_nneighbor_per_level.size());
     return cum_nneighbor_per_level[layer_no + 1] -
             cum_nneighbor_per_level[layer_no];
 }
@@ -39,7 +36,7 @@ int HNSW::nb_neighbors(int layer_no) const {
 void HNSW::set_nb_neighbors(int level_no, int n) {
     FAISS_THROW_IF_NOT(levels.size() == 0);
     int cur_n = nb_neighbors(level_no);
-    for (int i = level_no + 1; i < cum_nneighbor_per_level.size(); i++) {
+    for (size_t i = level_no + 1; i < cum_nneighbor_per_level.size(); i++) {
         cum_nneighbor_per_level[i] += n - cur_n;
     }
 }
@@ -67,7 +64,7 @@ HNSW::HNSW(int M) : rng(12345) {
 int HNSW::random_level() {
     double f = rng.rand_float();
     // could be a bit faster with bisection
-    for (int level = 0; level < assign_probas.size(); level++) {
+    for (size_t level = 0; level < assign_probas.size(); level++) {
         if (f < assign_probas[level]) {
             return level;
         }
@@ -92,7 +89,7 @@ void HNSW::set_default_probas(int M, float levelMult) {
 }
 
 void HNSW::clear_neighbor_tables(int level) {
-    for (int i = 0; i < levels.size(); i++) {
+    for (size_t i = 0; i < levels.size(); i++) {
         size_t begin, end;
         neighbor_range(i, level, &begin, &end);
         for (size_t j = begin; j < end; j++) {
@@ -111,14 +108,15 @@ void HNSW::reset() {
 }
 
 void HNSW::print_neighbor_stats(int level) const {
-    FAISS_THROW_IF_NOT(level < cum_nneighbor_per_level.size());
+    FAISS_THROW_IF_NOT(
+            static_cast<size_t>(level) < cum_nneighbor_per_level.size());
     printf("stats on level %d, max %d neighbors per vertex:\n",
            level,
            nb_neighbors(level));
     size_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
 #pragma omp parallel for reduction(+ : tot_neigh) reduction(+ : tot_common) \
         reduction(+ : tot_reciprocal) reduction(+ : n_node)
-    for (int i = 0; i < levels.size(); i++) {
+    for (idx_t i = 0; i < static_cast<idx_t>(levels.size()); i++) {
         if (levels[i] > level) {
             n_node++;
             size_t begin, end;
@@ -130,7 +128,7 @@ void HNSW::print_neighbor_stats(int level) const {
                 }
                 neighset.insert(neighbors[j]);
             }
-            int n_neigh = neighset.size();
+            size_t n_neigh = neighset.size();
             int n_common = 0;
             int n_reciprocal = 0;
             for (size_t j = begin; j < end; j++) {
@@ -174,26 +172,30 @@ void HNSW::print_neighbor_stats(int level) const {
 }
 
 void HNSW::fill_with_random_links(size_t n) {
-    int max_level_2 = prepare_level_tab(n);
+    if (n == 0) {
+        return;
+    }
+    max_level = prepare_level_tab(n);
+    entry_point = 0;
+
     RandomGenerator rng2(456);
 
-    for (int level = max_level_2 - 1; level >= 0; --level) {
+    for (int level = max_level - 1; level >= 0; --level) {
         std::vector<int> elts;
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             if (levels[i] > level) {
                 elts.push_back(i);
             }
         }
-        printf("linking %zd elements in level %d\n", elts.size(), level);
 
         if (elts.size() == 1) {
             continue;
         }
 
-        for (int ii = 0; ii < elts.size(); ii++) {
+        for (size_t ii = 0; ii < elts.size(); ii++) {
             int i = elts[ii];
             size_t begin, end;
-            neighbor_range(i, 0, &begin, &end);
+            neighbor_range(i, level, &begin, &end);
             for (size_t j = begin; j < end; j++) {
                 int other = 0;
                 do {
@@ -213,14 +215,14 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
         FAISS_ASSERT(n0 + n == levels.size());
     } else {
         FAISS_ASSERT(n0 == levels.size());
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             int pt_level = random_level();
             levels.push_back(pt_level + 1);
         }
     }
 
     int max_level_2 = 0;
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         int pt_level = levels[i + n0] - 1;
         if (pt_level > max_level_2) {
             max_level_2 = pt_level;
@@ -236,28 +238,32 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
  * neighbor only if there is no previous neighbor that is closer to
  * that vertex than the query.
  */
+template <class Comp>
 void HNSW::shrink_neighbor_list(
         DistanceComputer& qdis,
-        std::priority_queue<NodeDistFarther>& input,
-        std::vector<NodeDistFarther>& output,
-        int max_size,
+        std::priority_queue<NodeDistFartherT<Comp>>& input,
+        std::vector<NodeDistFartherT<Comp>>& output,
+        size_t max_size,
         bool keep_max_size_level0) {
     // This prevents number of neighbors at
     // level 0 from being shrunk to less than 2 * M.
     // This is essential in making sure
     // `faiss::gpu::GpuIndexCagra::copyFrom(IndexHNSWCagra*)` is functional
-    std::vector<NodeDistFarther> outsiders;
+    std::vector<NodeDistFartherT<Comp>> outsiders;
 
     while (input.size() > 0) {
-        NodeDistFarther v1 = input.top();
+        NodeDistFartherT<Comp> v1 = input.top();
         input.pop();
         float dist_v1_q = v1.d;
 
         bool good = true;
-        for (NodeDistFarther v2 : output) {
+        for (NodeDistFartherT<Comp> v2 : output) {
             float dist_v1_v2 = qdis.symmetric_dis(v2.id, v1.id);
 
-            if (dist_v1_v2 < dist_v1_q) {
+            // "v1 is bad" if some previously-kept neighbor v2 is closer
+            // (more similar, under CMin) to v1 than the query is. Encoded
+            // generically as: v1v2 is "better than" v1q under Comp.
+            if (Comp::cmp(dist_v1_q, dist_v1_v2)) {
                 good = false;
                 break;
             }
@@ -265,7 +271,7 @@ void HNSW::shrink_neighbor_list(
 
         if (good) {
             output.push_back(v1);
-            if (output.size() >= max_size) {
+            if (output.size() >= static_cast<size_t>(max_size)) {
                 return;
             }
         } else if (keep_max_size_level0) {
@@ -273,50 +279,95 @@ void HNSW::shrink_neighbor_list(
         }
     }
     size_t idx = 0;
-    while (keep_max_size_level0 && (output.size() < max_size) &&
+    while (keep_max_size_level0 &&
+           (output.size() < static_cast<size_t>(max_size)) &&
            (idx < outsiders.size())) {
         output.push_back(outsiders[idx++]);
     }
 }
 
+// Explicit instantiations for the two supported comparators.
+template void HNSW::shrink_neighbor_list<HNSW::C_distance>(
+        DistanceComputer&,
+        std::priority_queue<HNSW::NodeDistFartherT<HNSW::C_distance>>&,
+        std::vector<HNSW::NodeDistFartherT<HNSW::C_distance>>&,
+        size_t,
+        bool);
+template void HNSW::shrink_neighbor_list<HNSW::C_similarity>(
+        DistanceComputer&,
+        std::priority_queue<HNSW::NodeDistFartherT<HNSW::C_similarity>>&,
+        std::vector<HNSW::NodeDistFartherT<HNSW::C_similarity>>&,
+        size_t,
+        bool);
+
 namespace {
 
 using storage_idx_t = HNSW::storage_idx_t;
-using NodeDistCloser = HNSW::NodeDistCloser;
-using NodeDistFarther = HNSW::NodeDistFarther;
+
+// Map a (high-level) HNSW comparator C — which uses int64_t IDs — to the
+// (low-level) MinimaxHeap comparator HC, which uses int32_t IDs.
+template <class C>
+using HC_for = std::
+        conditional_t<C::is_max, CMax<float, int32_t>, CMin<float, int32_t>>;
+
+// Priority queue types used by the unbounded search variant. For CMax
+// (distance) "top_candidates" is a max-heap of the kept-so-far results
+// (top is the farthest) and "candidates" is a min-heap of the next nodes
+// to explore (top is the closest). For CMin (similarity) the orderings are
+// swapped: top_candidates is a min-heap (top is the least similar) and
+// candidates is a max-heap (top is the most similar).
+template <class C>
+using TopCandidatesQueue = std::conditional_t<
+        C::is_max,
+        std::priority_queue<HNSW::Node>,
+        std::priority_queue<
+                HNSW::Node,
+                std::vector<HNSW::Node>,
+                std::greater<HNSW::Node>>>;
+
+template <class C>
+using CandidatesQueue = std::conditional_t<
+        C::is_max,
+        std::priority_queue<
+                HNSW::Node,
+                std::vector<HNSW::Node>,
+                std::greater<HNSW::Node>>,
+        std::priority_queue<HNSW::Node>>;
 
 /**************************************************************
  * Addition subroutines
  **************************************************************/
 
 /// remove neighbors from the list to make it smaller than max_size
-void shrink_neighbor_list(
+template <class C>
+void shrink_neighbor_list_inner(
         DistanceComputer& qdis,
-        std::priority_queue<NodeDistCloser>& resultSet1,
-        int max_size,
+        std::priority_queue<HNSW::NodeDistCloserT<C>>& resultSet1,
+        size_t max_size,
         bool keep_max_size_level0 = false) {
-    if (resultSet1.size() < max_size) {
+    if (resultSet1.size() < static_cast<size_t>(max_size)) {
         return;
     }
-    std::priority_queue<NodeDistFarther> resultSet;
-    std::vector<NodeDistFarther> returnlist;
+    std::priority_queue<HNSW::NodeDistFartherT<C>> resultSet;
+    std::vector<HNSW::NodeDistFartherT<C>> returnlist;
 
     while (resultSet1.size() > 0) {
         resultSet.emplace(resultSet1.top().d, resultSet1.top().id);
         resultSet1.pop();
     }
 
-    HNSW::shrink_neighbor_list(
+    HNSW::shrink_neighbor_list<C>(
             qdis, resultSet, returnlist, max_size, keep_max_size_level0);
 
-    for (NodeDistFarther curen2 : returnlist) {
+    for (HNSW::NodeDistFartherT<C> curen2 : returnlist) {
         resultSet1.emplace(curen2.d, curen2.id);
     }
 }
 
 /// add a link between two elements, possibly shrinking the list
 /// of links to make room for it.
-void add_link(
+template <class C>
+void add_link_tpl(
         HNSW& hnsw,
         DistanceComputer& qdis,
         storage_idx_t src,
@@ -341,14 +392,17 @@ void add_link(
     // otherwise we let them fight out which to keep
 
     // copy to resultSet...
-    std::priority_queue<NodeDistCloser> resultSet;
+    std::priority_queue<HNSW::NodeDistCloserT<C>> resultSet;
     resultSet.emplace(qdis.symmetric_dis(src, dest), dest);
-    for (size_t i = begin; i < end; i++) { // HERE WAS THE BUG
+    for (size_t i = begin; i < end; i++) {
         storage_idx_t neigh = hnsw.neighbors[i];
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    shrink_neighbor_list(qdis, resultSet, end - begin, keep_max_size_level0);
+    size_t max_size = end - begin;
+    max_size -= max_size * std::clamp(hnsw.prune_headroom, 0.0f, 0.5f);
+    shrink_neighbor_list_inner<C>(
+            qdis, resultSet, max_size, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;
@@ -362,31 +416,33 @@ void add_link(
     }
 }
 
-} // namespace
-
-/// search neighbors on a single level, starting from an entry point
-void search_neighbors_to_add(
+/** Templated body of `search_neighbors_to_add` — instantiated once per final
+ * VisitedTable subclass × comparator so that `vt.set/advance` are inlined
+ * and the cost of virtual dispatch is paid only once at the top of the call.
+ */
+template <typename VTType, class C>
+static void search_neighbors_to_add_fixVT(
         HNSW& hnsw,
         DistanceComputer& qdis,
-        std::priority_queue<NodeDistCloser>& results,
+        std::priority_queue<HNSW::NodeDistCloserT<C>>& results,
         int entry_point,
         float d_entry_point,
         int level,
-        VisitedTable& vt,
+        VTType& vt,
         bool reference_version) {
     // top is nearest candidate
-    std::priority_queue<NodeDistFarther> candidates;
+    std::priority_queue<HNSW::NodeDistFartherT<C>> candidates;
 
-    NodeDistFarther ev(d_entry_point, entry_point);
+    HNSW::NodeDistFartherT<C> ev(d_entry_point, entry_point);
     candidates.push(ev);
     results.emplace(d_entry_point, entry_point);
     vt.set(entry_point);
 
     while (!candidates.empty()) {
         // get nearest
-        const NodeDistFarther& currEv = candidates.top();
+        const HNSW::NodeDistFartherT<C>& currEv = candidates.top();
 
-        if (currEv.d > results.top().d) {
+        if (C::cmp(currEv.d, results.top().d)) {
             break;
         }
         int currNode = currEv.id;
@@ -407,7 +463,7 @@ void search_neighbors_to_add(
         if (reference_version) {
             // a reference version
             for (size_t i = begin; i < end; i++) {
-                storage_idx_t nodeId = hnsw.neighbors[i];
+                HNSW::storage_idx_t nodeId = hnsw.neighbors[i];
                 if (nodeId < 0) {
                     break;
                 }
@@ -416,13 +472,14 @@ void search_neighbors_to_add(
                 }
 
                 float dis = qdis(nodeId);
-                NodeDistFarther evE1(dis, nodeId);
+                HNSW::NodeDistFartherT<C> evE1(dis, nodeId);
 
-                if (results.size() < hnsw.efConstruction ||
-                    results.top().d > dis) {
+                if (results.size() < static_cast<size_t>(hnsw.efConstruction) ||
+                    C::cmp(results.top().d, dis)) {
                     results.emplace(dis, nodeId);
                     candidates.emplace(dis, nodeId);
-                    if (results.size() > hnsw.efConstruction) {
+                    if (results.size() >
+                        static_cast<size_t>(hnsw.efConstruction)) {
                         results.pop();
                     }
                 }
@@ -431,23 +488,24 @@ void search_neighbors_to_add(
             // a faster version
 
             // the following version processes 4 neighbors at a time
-            auto update_with_candidate = [&](const storage_idx_t idx,
+            auto update_with_candidate = [&](const HNSW::storage_idx_t idx,
                                              const float dis) {
-                if (results.size() < hnsw.efConstruction ||
-                    results.top().d > dis) {
+                if (results.size() < static_cast<size_t>(hnsw.efConstruction) ||
+                    C::cmp(results.top().d, dis)) {
                     results.emplace(dis, idx);
                     candidates.emplace(dis, idx);
-                    if (results.size() > hnsw.efConstruction) {
+                    if (results.size() >
+                        static_cast<size_t>(hnsw.efConstruction)) {
                         results.pop();
                     }
                 }
             };
 
             int n_buffered = 0;
-            storage_idx_t buffered_ids[4];
+            HNSW::storage_idx_t buffered_ids[4];
 
             for (size_t j = begin; j < end; j++) {
-                storage_idx_t nodeId = hnsw.neighbors[j];
+                HNSW::storage_idx_t nodeId = hnsw.neighbors[j];
                 if (nodeId < 0) {
                     break;
                 }
@@ -479,7 +537,7 @@ void search_neighbors_to_add(
             }
 
             // process leftovers
-            for (size_t icnt = 0; icnt < n_buffered; icnt++) {
+            for (int icnt = 0; icnt < n_buffered; icnt++) {
                 float dis = qdis(buffered_ids[icnt]);
                 update_with_candidate(buffered_ids[icnt], dis);
             }
@@ -489,6 +547,81 @@ void search_neighbors_to_add(
     vt.advance();
 }
 
+/// Dispatches the VisitedTable concrete type for a given C, then calls
+/// the templated `search_neighbors_to_add_fixVT<VTType, C>`.
+template <class C>
+void search_neighbors_to_add_dispatch(
+        HNSW& hnsw,
+        DistanceComputer& qdis,
+        std::priority_queue<HNSW::NodeDistCloserT<C>>& results,
+        int entry_point,
+        float d_entry_point,
+        int level,
+        VisitedTable& vt,
+        bool reference_version) {
+    auto call = [&]<typename VTType>(VTType& vt_concrete) {
+        search_neighbors_to_add_fixVT<VTType, C>(
+                hnsw,
+                qdis,
+                results,
+                entry_point,
+                d_entry_point,
+                level,
+                vt_concrete,
+                reference_version);
+    };
+    if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
+        call(*vtv);
+        return;
+    }
+    VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
+    call(vts);
+}
+
+/// Templated implementation of `HNSW::add_links_starting_from`.
+template <class C>
+void add_links_starting_from_impl(
+        HNSW& hnsw,
+        DistanceComputer& ptdis,
+        storage_idx_t pt_id,
+        storage_idx_t nearest,
+        float d_nearest,
+        int level,
+        LockVector& locks,
+        VisitedTable& vt,
+        bool keep_max_size_level0) {
+    std::priority_queue<HNSW::NodeDistCloserT<C>> link_targets;
+
+    search_neighbors_to_add_dispatch<C>(
+            hnsw, ptdis, link_targets, nearest, d_nearest, level, vt, false);
+
+    // but we can afford only this many neighbors
+    int M = hnsw.nb_neighbors(level);
+
+    shrink_neighbor_list_inner<C>(ptdis, link_targets, M, keep_max_size_level0);
+
+    std::vector<storage_idx_t> neighbors_to_add;
+    neighbors_to_add.reserve(link_targets.size());
+    while (!link_targets.empty()) {
+        storage_idx_t other_id = link_targets.top().id;
+        add_link_tpl<C>(
+                hnsw, ptdis, pt_id, other_id, level, keep_max_size_level0);
+        neighbors_to_add.push_back(other_id);
+        link_targets.pop();
+    }
+
+    locks.unlock(pt_id);
+    for (storage_idx_t other_id : neighbors_to_add) {
+        locks.lock(other_id);
+        add_link_tpl<C>(
+                hnsw, ptdis, other_id, pt_id, level, keep_max_size_level0);
+        locks.unlock(other_id);
+    }
+    locks.lock(pt_id);
+}
+
+} // namespace
+
 /// Finds neighbors and builds links with them, starting from an entry
 /// point. The own neighbor list is assumed to be locked.
 void HNSW::add_links_starting_from(
@@ -497,58 +630,180 @@ void HNSW::add_links_starting_from(
         storage_idx_t nearest,
         float d_nearest,
         int level,
-        omp_lock_t* locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
-    std::priority_queue<NodeDistCloser> link_targets;
-
-    search_neighbors_to_add(
-            *this, ptdis, link_targets, nearest, d_nearest, level, vt);
-
-    // but we can afford only this many neighbors
-    int M = nb_neighbors(level);
-
-    ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
-
-    std::vector<storage_idx_t> neighbors_to_add;
-    neighbors_to_add.reserve(link_targets.size());
-    while (!link_targets.empty()) {
-        storage_idx_t other_id = link_targets.top().id;
-        add_link(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
-        neighbors_to_add.push_back(other_id);
-        link_targets.pop();
+    if (is_similarity) {
+        add_links_starting_from_impl<C_similarity>(
+                *this,
+                ptdis,
+                pt_id,
+                nearest,
+                d_nearest,
+                level,
+                locks,
+                vt,
+                keep_max_size_level0);
+    } else {
+        add_links_starting_from_impl<C_distance>(
+                *this,
+                ptdis,
+                pt_id,
+                nearest,
+                d_nearest,
+                level,
+                locks,
+                vt,
+                keep_max_size_level0);
     }
+}
 
-    omp_unset_lock(&locks[pt_id]);
-    for (storage_idx_t other_id : neighbors_to_add) {
-        omp_set_lock(&locks[other_id]);
-        add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
-        omp_unset_lock(&locks[other_id]);
-    }
-    omp_set_lock(&locks[pt_id]);
+/// search neighbors on a single level, starting from an entry point.
+/// Public dispatcher: always operates in distance (CMax) mode because its
+/// `priority_queue<HNSW::NodeDistCloser>` signature is the back-compat
+/// distance flavor. Internal callers that need similarity mode reach the
+/// templated implementation directly via `search_neighbors_to_add_dispatch`.
+void hnsw_detail::search_neighbors_to_add(
+        HNSW& hnsw,
+        DistanceComputer& qdis,
+        std::priority_queue<HNSW::NodeDistCloser>& results,
+        int entry_point,
+        float d_entry_point,
+        int level,
+        VisitedTable& vt,
+        bool reference_version) {
+    search_neighbors_to_add_dispatch<HNSW::C_distance>(
+            hnsw,
+            qdis,
+            results,
+            entry_point,
+            d_entry_point,
+            level,
+            vt,
+            reference_version);
 }
 
 /**************************************************************
  * Building, parallel
  **************************************************************/
 
-void HNSW::add_with_locks(
+namespace {
+
+/// Greedy update of the nearest entry point at a given level.
+template <class C>
+HNSWStats greedy_update_nearest_impl(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        int level,
+        storage_idx_t& nearest,
+        float& d_nearest) {
+    HNSWStats stats;
+
+    for (;;) {
+        storage_idx_t prev_nearest = nearest;
+
+        size_t begin, end;
+        hnsw.neighbor_range(nearest, level, &begin, &end);
+
+        size_t ndis = 0;
+
+        // a faster version: reference version in unit test test_hnsw.cpp
+        // the following version processes 4 neighbors at a time
+        auto update_with_candidate = [&](const storage_idx_t idx,
+                                         const float dis) {
+            if (C::cmp(d_nearest, dis)) {
+                nearest = idx;
+                d_nearest = dis;
+            }
+        };
+
+        int n_buffered = 0;
+        storage_idx_t buffered_ids[4];
+
+        for (size_t j = begin; j < end; j++) {
+            storage_idx_t v = hnsw.neighbors[j];
+            if (v < 0) {
+                break;
+            }
+            ndis += 1;
+
+            buffered_ids[n_buffered] = v;
+            n_buffered += 1;
+
+            if (n_buffered == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        buffered_ids[0],
+                        buffered_ids[1],
+                        buffered_ids[2],
+                        buffered_ids[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    update_with_candidate(buffered_ids[id4], dis[id4]);
+                }
+
+                n_buffered = 0;
+            }
+        }
+
+        // process leftovers
+        for (int icnt = 0; icnt < n_buffered; icnt++) {
+            float dis = qdis(buffered_ids[icnt]);
+            update_with_candidate(buffered_ids[icnt], dis);
+        }
+
+        // update stats
+        stats.ndis += ndis;
+        stats.nhops += 1;
+
+        if (nearest == prev_nearest) {
+            return stats;
+        }
+    }
+}
+
+} // namespace
+
+/// greedily update a nearest vector at a given level
+HNSWStats hnsw_detail::greedy_update_nearest(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        int level,
+        storage_idx_t& nearest,
+        float& d_nearest) {
+    if (hnsw.is_similarity) {
+        return greedy_update_nearest_impl<HNSW::C_similarity>(
+                hnsw, qdis, level, nearest, d_nearest);
+    }
+    return greedy_update_nearest_impl<HNSW::C_distance>(
+            hnsw, qdis, level, nearest, d_nearest);
+}
+
+namespace {
+
+template <class C>
+void add_with_locks_impl(
+        HNSW& hnsw,
         DistanceComputer& ptdis,
         int pt_level,
         int pt_id,
-        std::vector<omp_lock_t>& locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
-    storage_idx_t nearest = entry_point;
+    storage_idx_t nearest = hnsw.entry_point;
     if (nearest == -1) { // avoid locking after the first point.
 #pragma omp critical
-        if (entry_point == -1) { // double-check under lock.
-            max_level = pt_level;
-            entry_point = pt_id;
+        if (hnsw.entry_point == -1) { // double-check under lock.
+            hnsw.max_level = pt_level;
+            hnsw.entry_point = pt_id;
             // leave nearest = -1 to trigger early exit after critical block.
         } else {
             // else: Another thread set the entry point.
-            nearest = entry_point;
+            nearest = hnsw.entry_point;
         }
     }
 
@@ -556,33 +811,55 @@ void HNSW::add_with_locks(
         return;
     }
 
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 
-    int level = max_level; // level at which we start adding neighbors
+    int level = hnsw.max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
 
     //  greedy search on upper levels
     for (; level > pt_level; level--) {
-        greedy_update_nearest(*this, ptdis, level, nearest, d_nearest);
+        greedy_update_nearest_impl<C>(hnsw, ptdis, level, nearest, d_nearest);
     }
 
     for (; level >= 0; level--) {
-        add_links_starting_from(
+        add_links_starting_from_impl<C>(
+                hnsw,
                 ptdis,
                 pt_id,
                 nearest,
                 d_nearest,
                 level,
-                locks.data(),
+                locks,
                 vt,
                 keep_max_size_level0);
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
 
-    if (pt_level > max_level) {
-        max_level = pt_level;
-        entry_point = pt_id;
+#pragma omp critical
+    {
+        if (pt_level > hnsw.max_level) {
+            hnsw.max_level = pt_level;
+            hnsw.entry_point = pt_id;
+        }
+    }
+}
+
+} // namespace
+
+void HNSW::add_with_locks(
+        DistanceComputer& ptdis,
+        int pt_level,
+        int pt_id,
+        LockVector& locks,
+        VisitedTable& vt,
+        bool keep_max_size_level0) {
+    if (is_similarity) {
+        add_with_locks_impl<C_similarity>(
+                *this, ptdis, pt_level, pt_id, locks, vt, keep_max_size_level0);
+    } else {
+        add_with_locks_impl<C_distance>(
+                *this, ptdis, pt_level, pt_id, locks, vt, keep_max_size_level0);
     }
 }
 
@@ -590,12 +867,10 @@ void HNSW::add_with_locks(
  * Searching
  **************************************************************/
 
-using MinimaxHeap = HNSW::MinimaxHeap;
-using Node = HNSW::Node;
-using C = HNSW::C;
+namespace {
 
 /** Helper to extract search parameters from HNSW and SearchParameters */
-static inline void extract_search_params(
+inline void extract_search_params(
         const HNSW& hnsw,
         const SearchParameters* params,
         bool& do_dis_check,
@@ -615,13 +890,16 @@ static inline void extract_search_params(
     }
 }
 
-/** Do a BFS on the candidates list */
-int search_from_candidates(
+/** Templated body of `search_from_candidates` — instantiated once per
+ * VisitedTable subclass × comparator.
+ */
+template <typename VTType, class C>
+int search_from_candidates_fixVT(
         const HNSW& hnsw,
         DistanceComputer& qdis,
         ResultHandler& res,
-        MinimaxHeap& candidates,
-        VisitedTable& vt,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VTType& vt,
         HNSWStats& stats,
         int level,
         int nres_in,
@@ -634,13 +912,15 @@ int search_from_candidates(
     const IDSelector* sel;
     extract_search_params(hnsw, params, do_dis_check, efSearch, sel);
 
-    C::T threshold = res.threshold;
+    vt.reserve(efSearch);
+
+    typename C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
         if (!sel || sel->is_member(v1)) {
-            if (d < threshold) {
+            if (C::cmp(threshold, d)) {
                 if (res.add_result(d, v1)) {
                     threshold = res.threshold;
                 }
@@ -689,7 +969,7 @@ int search_from_candidates(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (!sel || sel->is_member(idx)) {
-                if (dis < threshold) {
+                if (C::cmp(threshold, dis)) {
                     if (res.add_result(dis, idx)) {
                         threshold = res.threshold;
                         nres += 1;
@@ -727,7 +1007,7 @@ int search_from_candidates(
             }
         }
 
-        for (size_t icnt = 0; icnt < counter; icnt++) {
+        for (int icnt = 0; icnt < counter; icnt++) {
             float dis = qdis(saved_j[icnt]);
             add_to_heap(saved_j[icnt], dis);
 
@@ -752,7 +1032,58 @@ int search_from_candidates(
     return nres;
 }
 
-int search_from_candidates_panorama(
+/// Dispatches the VisitedTable concrete type for a given C, then calls
+/// the templated `search_from_candidates_fixVT<VTType, C>`.
+template <class C>
+int search_from_candidates_dispatch(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    auto call = [&]<typename VTType>(VTType& vt_concrete) -> int {
+        return search_from_candidates_fixVT<VTType, C>(
+                hnsw,
+                qdis,
+                res,
+                candidates,
+                vt_concrete,
+                stats,
+                level,
+                nres_in,
+                params);
+    };
+    if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
+        return call(*vtv);
+    }
+    VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
+    return call(vts);
+}
+
+} // namespace
+
+/** Do a BFS on the candidates list. Public dispatcher: only handles the
+ *  distance (CMax) flavor because its `MinimaxHeap` parameter is the
+ *  CMax instantiation. */
+int hnsw_detail::search_from_candidates(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeap& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    return search_from_candidates_dispatch<HNSW::C_distance>(
+            hnsw, qdis, res, candidates, vt, stats, level, nres_in, params);
+}
+
+int hnsw_detail::search_from_candidates_panorama(
         const HNSW& hnsw,
         const IndexHNSW* index,
         DistanceComputer& qdis,
@@ -763,6 +1094,14 @@ int search_from_candidates_panorama(
         int level,
         int nres_in,
         const SearchParameters* params) {
+    // Panorama's progressive-bound math is L2-specific: refuse to run in
+    // similarity mode.
+    FAISS_THROW_IF_NOT_MSG(
+            !hnsw.is_similarity,
+            "search_from_candidates_panorama does not support is_similarity=true");
+
+    using C = HNSW::C_distance;
+
     int nres = nres_in;
     int ndis = 0;
 
@@ -777,7 +1116,7 @@ int search_from_candidates_panorama(
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
         if (!sel || sel->is_member(v1)) {
-            if (d < threshold) {
+            if (C::cmp(threshold, d)) {
                 if (res.add_result(d, v1)) {
                     threshold = res.threshold;
                 }
@@ -808,6 +1147,10 @@ int search_from_candidates_panorama(
     float query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
 
     int nstep = 0;
+    const size_t d = static_cast<size_t>(panorama_index->d);
+
+    PanoramaStats local_pano_stats;
+    local_pano_stats.reset();
 
     while (candidates.size() > 0) {
         float d0 = 0;
@@ -846,6 +1189,7 @@ int search_from_candidates_panorama(
             initial_size += is_selected && vt.set(v1) ? 1 : 0;
         }
 
+        local_pano_stats.total_dims += initial_size * d;
         size_t batch_size = initial_size;
         size_t curr_panorama_level = 0;
         const size_t num_panorama_levels = panorama_index->pano.n_levels;
@@ -908,28 +1252,28 @@ int search_from_candidates_panorama(
                 // the maintenance of the candidate heap), but micro-benchmarks
                 // have shown that it is not worth it to write horrible code to
                 // squeeze out those cycles.
-                if (lower_bound_0 <= threshold) {
+                if (!C::cmp(lower_bound_0, threshold)) {
                     exact_distances[next_batch_size] = new_exact_0;
                     index_array[next_batch_size] = idx_0;
                     next_batch_size += 1;
                 } else {
                     candidates.push(idx_0, new_exact_0);
                 }
-                if (lower_bound_1 <= threshold) {
+                if (!C::cmp(lower_bound_1, threshold)) {
                     exact_distances[next_batch_size] = new_exact_1;
                     index_array[next_batch_size] = idx_1;
                     next_batch_size += 1;
                 } else {
                     candidates.push(idx_1, new_exact_1);
                 }
-                if (lower_bound_2 <= threshold) {
+                if (!C::cmp(lower_bound_2, threshold)) {
                     exact_distances[next_batch_size] = new_exact_2;
                     index_array[next_batch_size] = idx_2;
                     next_batch_size += 1;
                 } else {
                     candidates.push(idx_2, new_exact_2);
                 }
-                if (lower_bound_3 <= threshold) {
+                if (!C::cmp(lower_bound_3, threshold)) {
                     exact_distances[next_batch_size] = new_exact_3;
                     index_array[next_batch_size] = idx_3;
                     next_batch_size += 1;
@@ -952,7 +1296,7 @@ int search_from_candidates_panorama(
                 float cs_bound = 2.0f * cum_sum * query_cum_norm;
                 float lower_bound = new_exact - cs_bound;
 
-                if (lower_bound <= threshold) {
+                if (!C::cmp(lower_bound, threshold)) {
                     exact_distances[next_batch_size] = new_exact;
                     index_array[next_batch_size] = idx;
                     next_batch_size += 1;
@@ -961,6 +1305,8 @@ int search_from_candidates_panorama(
                 }
             }
 
+            local_pano_stats.total_dims_scanned +=
+                    batch_size * (end_dim - start_dim);
             batch_size = next_batch_size;
             curr_panorama_level++;
         }
@@ -969,6 +1315,7 @@ int search_from_candidates_panorama(
         for (size_t i = 0; i < batch_size; i++) {
             idx_t idx = index_array[i];
             if (res.add_result(exact_distances[i], idx)) {
+                threshold = res.threshold;
                 nres += 1;
             }
             candidates.push(idx, exact_distances[i]);
@@ -989,31 +1336,53 @@ int search_from_candidates_panorama(
         stats.nhops += nstep;
     }
 
+    indexPanorama_stats.add(local_pano_stats);
     return nres;
 }
 
-std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
+namespace {
+
+template <typename T, typename Container, typename Compare>
+void reservePriorityQueue(
+        std::priority_queue<T, Container, Compare>& q,
+        std::size_t size) {
+    struct Access : std::priority_queue<T, Container, Compare> {
+        using std::priority_queue<T, Container, Compare>::c;
+    };
+    Access access{std::move(q)};
+    access.c.reserve(size);
+    q = std::move(access);
+}
+
+/// Templated body of `search_from_candidate_unbounded`. The choice of
+/// max-heap vs min-heap for both `top_candidates` and `candidates` is
+/// derived from C via `TopCandidatesQueue` / `CandidatesQueue`.
+template <typename VTType, class C>
+TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         const HNSW& hnsw,
-        const Node& node,
+        const HNSW::Node& node,
         DistanceComputer& qdis,
         int ef,
-        VisitedTable* vt,
+        VTType& vt,
         HNSWStats& stats) {
     int ndis = 0;
-    std::priority_queue<Node> top_candidates;
-    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
+    TopCandidatesQueue<C> top_candidates;
+    reservePriorityQueue(top_candidates, ef);
+
+    CandidatesQueue<C> candidates;
+    reservePriorityQueue(candidates, ef);
 
     top_candidates.push(node);
     candidates.push(node);
 
-    vt->set(node.second);
+    vt.set(node.second);
 
     while (!candidates.empty()) {
         float d0;
         storage_idx_t v0;
         std::tie(d0, v0) = candidates.top();
 
-        if (d0 > top_candidates.top().first) {
+        if (C::cmp(d0, top_candidates.top().first)) {
             break;
         }
 
@@ -1031,7 +1400,7 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
                 break;
             }
 
-            vt->prefetch(v1);
+            vt.prefetch(v1);
             jmax += 1;
         }
 
@@ -1039,12 +1408,12 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         size_t saved_j[4];
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
-            if (top_candidates.top().first > dis ||
-                top_candidates.size() < ef) {
+            if (C::cmp(top_candidates.top().first, dis) ||
+                top_candidates.size() < static_cast<size_t>(ef)) {
                 candidates.emplace(dis, idx);
                 top_candidates.emplace(dis, idx);
 
-                if (top_candidates.size() > ef) {
+                if (top_candidates.size() > static_cast<size_t>(ef)) {
                     top_candidates.pop();
                 }
             }
@@ -1054,7 +1423,7 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
             int v1 = hnsw.neighbors[j];
 
             saved_j[counter] = v1;
-            counter += vt->set(v1) ? 1 : 0;
+            counter += vt.set(v1) ? 1 : 0;
 
             if (counter == 4) {
                 float dis[4];
@@ -1078,7 +1447,7 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
             }
         }
 
-        for (size_t icnt = 0; icnt < counter; icnt++) {
+        for (int icnt = 0; icnt < counter; icnt++) {
             float dis = qdis(saved_j[icnt]);
             add_to_heap(saved_j[icnt], dis);
 
@@ -1097,159 +1466,127 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
     return top_candidates;
 }
 
-/// greedily update a nearest vector at a given level
-HNSWStats greedy_update_nearest(
+} // namespace
+
+/// Public dispatcher: only the distance (CMax) flavor is exposed because
+/// its return type — `std::priority_queue<HNSW::Node>` — is the CMax
+/// max-heap. Internal callers that need similarity mode use the same
+/// dispatch pattern inline.
+std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
         const HNSW& hnsw,
+        const HNSW::Node& node,
         DistanceComputer& qdis,
-        int level,
-        storage_idx_t& nearest,
-        float& d_nearest) {
-    HNSWStats stats;
-
-    for (;;) {
-        storage_idx_t prev_nearest = nearest;
-
-        size_t begin, end;
-        hnsw.neighbor_range(nearest, level, &begin, &end);
-
-        size_t ndis = 0;
-
-        // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
-        auto update_with_candidate = [&](const storage_idx_t idx,
-                                         const float dis) {
-            if (dis < d_nearest) {
-                nearest = idx;
-                d_nearest = dis;
-            }
-        };
-
-        int n_buffered = 0;
-        storage_idx_t buffered_ids[4];
-
-        for (size_t j = begin; j < end; j++) {
-            storage_idx_t v = hnsw.neighbors[j];
-            if (v < 0) {
-                break;
-            }
-            ndis += 1;
-
-            buffered_ids[n_buffered] = v;
-            n_buffered += 1;
-
-            if (n_buffered == 4) {
-                float dis[4];
-                qdis.distances_batch_4(
-                        buffered_ids[0],
-                        buffered_ids[1],
-                        buffered_ids[2],
-                        buffered_ids[3],
-                        dis[0],
-                        dis[1],
-                        dis[2],
-                        dis[3]);
-
-                for (size_t id4 = 0; id4 < 4; id4++) {
-                    update_with_candidate(buffered_ids[id4], dis[id4]);
-                }
-
-                n_buffered = 0;
-            }
-        }
-
-        // process leftovers
-        for (size_t icnt = 0; icnt < n_buffered; icnt++) {
-            float dis = qdis(buffered_ids[icnt]);
-            update_with_candidate(buffered_ids[icnt], dis);
-        }
-
-        // update stats
-        stats.ndis += ndis;
-        stats.nhops += 1;
-
-        if (nearest == prev_nearest) {
-            return stats;
-        }
+        int ef,
+        VisitedTable* vt,
+        HNSWStats& stats) {
+    using C = HNSW::C_distance;
+    auto call = [&]<typename VTType>(VTType& vt_concrete) {
+        return search_from_candidate_unbounded_fixVT<VTType, C>(
+                hnsw, node, qdis, ef, vt_concrete, stats);
+    };
+    if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(vt)) {
+        return call(*vtv);
     }
+    VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(*vt);
+    return call(vts);
 }
 
 namespace {
-using MinimaxHeap = HNSW::MinimaxHeap;
-using Node = HNSW::Node;
-using C = HNSW::C;
 
 // just used as a lower bound for the minmaxheap, but it is set for heap search
+template <class C>
 int extract_k_from_ResultHandler(ResultHandler& res) {
     using RH = HeapBlockResultHandler<C>;
-    if (auto hres = dynamic_cast<RH::SingleResultHandler*>(&res)) {
+    if (auto hres = dynamic_cast<typename RH::SingleResultHandler*>(&res)) {
         return hres->k;
     }
     return 1;
 }
 
-} // namespace
-
-HNSWStats HNSW::search(
+template <class C>
+HNSWStats search_impl(
+        const HNSW& hnsw,
         DistanceComputer& qdis,
         const IndexHNSW* index,
         ResultHandler& res,
         VisitedTable& vt,
-        const SearchParameters* params) const {
+        const SearchParameters* params) {
     HNSWStats stats;
-    if (entry_point == -1) {
+    if (hnsw.entry_point == -1) {
         return stats;
     }
-    int k = extract_k_from_ResultHandler(res);
+    int k = extract_k_from_ResultHandler<C>(res);
 
-    bool bounded_queue = this->search_bounded_queue;
-    int efSearch = this->efSearch;
+    bool bounded_queue = hnsw.search_bounded_queue;
+    int cur_efSearch = hnsw.efSearch;
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
             bounded_queue = hnsw_params->bounded_queue;
-            efSearch = hnsw_params->efSearch;
+            cur_efSearch = hnsw_params->efSearch;
         }
     }
 
     //  greedy search on upper levels
-    storage_idx_t nearest = entry_point;
+    storage_idx_t nearest = hnsw.entry_point;
     float d_nearest = qdis(nearest);
 
-    for (int level = max_level; level >= 1; level--) {
-        HNSWStats local_stats =
-                greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
+    for (int level = hnsw.max_level; level >= 1; level--) {
+        HNSWStats local_stats = greedy_update_nearest_impl<C>(
+                hnsw, qdis, level, nearest, d_nearest);
         stats.combine(local_stats);
     }
 
-    int ef = std::max(efSearch, k);
+    int ef = std::max(cur_efSearch, k);
     if (bounded_queue) { // this is the most common branch, for now we only
                          // support Panorama search in this branch
-        MinimaxHeap candidates(ef);
+        MinimaxHeapT<HC_for<C>> candidates(ef);
 
         candidates.push(nearest, d_nearest);
 
-        if (!is_panorama) {
-            search_from_candidates(
-                    *this, qdis, res, candidates, vt, stats, 0, 0, params);
+        if (!hnsw.is_panorama) {
+            search_from_candidates_dispatch<C>(
+                    hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
         } else {
-            search_from_candidates_panorama(
-                    *this,
-                    index,
-                    qdis,
-                    res,
-                    candidates,
-                    vt,
-                    stats,
-                    0,
-                    0,
-                    params);
+            // Panorama is L2-specific and is only valid for C_distance.
+            // The public dispatch ensures we never reach this code path
+            // with C != C_distance, but assert in debug builds.
+            if constexpr (std::is_same_v<C, HNSW::C_distance>) {
+                hnsw_detail::search_from_candidates_panorama(
+                        hnsw,
+                        index,
+                        qdis,
+                        res,
+                        candidates,
+                        vt,
+                        stats,
+                        0,
+                        0,
+                        params);
+            } else {
+                FAISS_THROW_MSG(
+                        "Panorama search is not supported with is_similarity=true");
+            }
         }
     } else {
-        std::priority_queue<Node> top_candidates =
-                search_from_candidate_unbounded(
-                        *this, Node(d_nearest, nearest), qdis, ef, &vt, stats);
+        auto call = [&]<typename VTType>(VTType& vt_concrete) {
+            return search_from_candidate_unbounded_fixVT<VTType, C>(
+                    hnsw,
+                    HNSW::Node(d_nearest, nearest),
+                    qdis,
+                    ef,
+                    vt_concrete,
+                    stats);
+        };
+        TopCandidatesQueue<C> top_candidates;
+        if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
+            top_candidates = call(*vtv);
+        } else {
+            VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
+            top_candidates = call(vts);
+        }
 
-        while (top_candidates.size() > k) {
+        while (top_candidates.size() > static_cast<size_t>(k)) {
             top_candidates.pop();
         }
 
@@ -1267,7 +1604,9 @@ HNSWStats HNSW::search(
     return stats;
 }
 
-void HNSW::search_level_0(
+template <class C>
+void search_level_0_impl(
+        const HNSW& hnsw,
         DistanceComputer& qdis,
         ResultHandler& res,
         idx_t nprobe,
@@ -1276,23 +1615,21 @@ void HNSW::search_level_0(
         int search_type,
         HNSWStats& search_stats,
         VisitedTable& vt,
-        const SearchParameters* params) const {
-    const HNSW& hnsw = *this;
-
-    auto efSearch = hnsw.efSearch;
+        const SearchParameters* params) {
+    auto cur_efSearch = hnsw.efSearch;
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
-            efSearch = hnsw_params->efSearch;
+            cur_efSearch = hnsw_params->efSearch;
         }
     }
 
-    int k = extract_k_from_ResultHandler(res);
+    int k = extract_k_from_ResultHandler<C>(res);
 
     if (search_type == 1) {
         int nres = 0;
 
-        for (int j = 0; j < nprobe; j++) {
+        for (idx_t j = 0; j < nprobe; j++) {
             storage_idx_t cj = nearest_i[j];
 
             if (cj < 0) {
@@ -1303,12 +1640,12 @@ void HNSW::search_level_0(
                 continue;
             }
 
-            int candidates_size = std::max(efSearch, k);
-            MinimaxHeap candidates(candidates_size);
+            int candidates_size = std::max(cur_efSearch, k);
+            MinimaxHeapT<HC_for<C>> candidates(candidates_size);
 
             candidates.push(cj, nearest_d[j]);
 
-            nres = search_from_candidates(
+            nres = search_from_candidates_dispatch<C>(
                     hnsw,
                     qdis,
                     res,
@@ -1321,11 +1658,11 @@ void HNSW::search_level_0(
             nres = std::min(nres, candidates_size);
         }
     } else if (search_type == 2) {
-        int candidates_size = std::max(efSearch, int(k));
+        int candidates_size = std::max(cur_efSearch, int(k));
         candidates_size = std::max(candidates_size, int(nprobe));
 
-        MinimaxHeap candidates(candidates_size);
-        for (int j = 0; j < nprobe; j++) {
+        MinimaxHeapT<HC_for<C>> candidates(candidates_size);
+        for (idx_t j = 0; j < nprobe; j++) {
             storage_idx_t cj = nearest_i[j];
 
             if (cj < 0) {
@@ -1334,8 +1671,59 @@ void HNSW::search_level_0(
             candidates.push(cj, nearest_d[j]);
         }
 
-        search_from_candidates(
+        search_from_candidates_dispatch<C>(
                 hnsw, qdis, res, candidates, vt, search_stats, 0, 0, params);
+    }
+}
+
+} // namespace
+
+HNSWStats HNSW::search(
+        DistanceComputer& qdis,
+        const IndexHNSW* index,
+        ResultHandler& res,
+        VisitedTable& vt,
+        const SearchParameters* params) const {
+    if (is_similarity) {
+        return search_impl<C_similarity>(*this, qdis, index, res, vt, params);
+    }
+    return search_impl<C_distance>(*this, qdis, index, res, vt, params);
+}
+
+void HNSW::search_level_0(
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        idx_t nprobe,
+        const storage_idx_t* nearest_i,
+        const float* nearest_d,
+        int search_type,
+        HNSWStats& search_stats,
+        VisitedTable& vt,
+        const SearchParameters* params) const {
+    if (is_similarity) {
+        search_level_0_impl<C_similarity>(
+                *this,
+                qdis,
+                res,
+                nprobe,
+                nearest_i,
+                nearest_d,
+                search_type,
+                search_stats,
+                vt,
+                params);
+    } else {
+        search_level_0_impl<C_distance>(
+                *this,
+                qdis,
+                res,
+                nprobe,
+                nearest_i,
+                nearest_d,
+                search_type,
+                search_stats,
+                vt,
+                params);
     }
 }
 
@@ -1370,259 +1758,6 @@ void HNSW::permute_entries(const idx_t* map) {
     std::swap(levels, new_levels);
     std::swap(offsets, new_offsets);
     neighbors = std::move(new_neighbors);
-}
-
-/**************************************************************
- * MinimaxHeap
- **************************************************************/
-
-void HNSW::MinimaxHeap::push(storage_idx_t i, float v) {
-    if (k == n) {
-        if (v >= dis[0]) {
-            return;
-        }
-        if (ids[0] != -1) {
-            --nvalid;
-        }
-        faiss::heap_pop<HC>(k--, dis.data(), ids.data());
-    }
-    faiss::heap_push<HC>(++k, dis.data(), ids.data(), v, i);
-    ++nvalid;
-}
-
-float HNSW::MinimaxHeap::max() const {
-    return dis[0];
-}
-
-int HNSW::MinimaxHeap::size() const {
-    return nvalid;
-}
-
-void HNSW::MinimaxHeap::clear() {
-    nvalid = k = 0;
-}
-
-#ifdef __AVX512F__
-
-int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
-    assert(k > 0);
-    static_assert(
-            std::is_same<storage_idx_t, int32_t>::value,
-            "This code expects storage_idx_t to be int32_t");
-
-    int32_t min_idx = -1;
-    float min_dis = std::numeric_limits<float>::infinity();
-
-    __m512i min_indices = _mm512_set1_epi32(-1);
-    __m512 min_distances =
-            _mm512_set1_ps(std::numeric_limits<float>::infinity());
-    __m512i current_indices = _mm512_setr_epi32(
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-    __m512i offset = _mm512_set1_epi32(16);
-
-    // The following loop tracks the rightmost index with the min distance.
-    // -1 index values are ignored.
-    const int k16 = (k / 16) * 16;
-    for (size_t iii = 0; iii < k16; iii += 16) {
-        __m512i indices =
-                _mm512_loadu_si512((const __m512i*)(ids.data() + iii));
-        __m512 distances = _mm512_loadu_ps(dis.data() + iii);
-
-        // This mask filters out -1 values among indices.
-        __mmask16 m1mask =
-                _mm512_cmpgt_epi32_mask(_mm512_setzero_si512(), indices);
-
-        __mmask16 dmask =
-                _mm512_cmp_ps_mask(min_distances, distances, _CMP_LT_OS);
-        __mmask16 finalmask = m1mask | dmask;
-
-        const __m512i min_indices_new = _mm512_mask_blend_epi32(
-                finalmask, current_indices, min_indices);
-        const __m512 min_distances_new =
-                _mm512_mask_blend_ps(finalmask, distances, min_distances);
-
-        min_indices = min_indices_new;
-        min_distances = min_distances_new;
-
-        current_indices = _mm512_add_epi32(current_indices, offset);
-    }
-
-    // leftovers
-    if (k16 != k) {
-        const __mmask16 kmask = (1 << (k - k16)) - 1;
-
-        __m512i indices = _mm512_mask_loadu_epi32(
-                _mm512_set1_epi32(-1), kmask, ids.data() + k16);
-        __m512 distances = _mm512_maskz_loadu_ps(kmask, dis.data() + k16);
-
-        // This mask filters out -1 values among indices.
-        __mmask16 m1mask =
-                _mm512_cmpgt_epi32_mask(_mm512_setzero_si512(), indices);
-
-        __mmask16 dmask =
-                _mm512_cmp_ps_mask(min_distances, distances, _CMP_LT_OS);
-        __mmask16 finalmask = m1mask | dmask;
-
-        const __m512i min_indices_new = _mm512_mask_blend_epi32(
-                finalmask, current_indices, min_indices);
-        const __m512 min_distances_new =
-                _mm512_mask_blend_ps(finalmask, distances, min_distances);
-
-        min_indices = min_indices_new;
-        min_distances = min_distances_new;
-    }
-
-    // grab min distance
-    min_dis = _mm512_reduce_min_ps(min_distances);
-    // blend
-    __mmask16 mindmask =
-            _mm512_cmpeq_ps_mask(min_distances, _mm512_set1_ps(min_dis));
-    // pick the max one
-    min_idx = _mm512_mask_reduce_max_epi32(mindmask, min_indices);
-
-    if (min_idx == -1) {
-        return -1;
-    }
-
-    if (vmin_out) {
-        *vmin_out = min_dis;
-    }
-    int ret = ids[min_idx];
-    ids[min_idx] = -1;
-    --nvalid;
-    return ret;
-}
-
-#elif __AVX2__
-
-int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
-    assert(k > 0);
-    static_assert(
-            std::is_same<storage_idx_t, int32_t>::value,
-            "This code expects storage_idx_t to be int32_t");
-
-    int32_t min_idx = -1;
-    float min_dis = std::numeric_limits<float>::infinity();
-
-    size_t iii = 0;
-
-    __m256i min_indices = _mm256_setr_epi32(-1, -1, -1, -1, -1, -1, -1, -1);
-    __m256 min_distances =
-            _mm256_set1_ps(std::numeric_limits<float>::infinity());
-    __m256i current_indices = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
-    __m256i offset = _mm256_set1_epi32(8);
-
-    // The baseline version is available in non-AVX2 branch.
-
-    // The following loop tracks the rightmost index with the min distance.
-    // -1 index values are ignored.
-    const int k8 = (k / 8) * 8;
-    for (; iii < k8; iii += 8) {
-        __m256i indices =
-                _mm256_loadu_si256((const __m256i*)(ids.data() + iii));
-        __m256 distances = _mm256_loadu_ps(dis.data() + iii);
-
-        // This mask filters out -1 values among indices.
-        __m256i m1mask = _mm256_cmpgt_epi32(_mm256_setzero_si256(), indices);
-
-        __m256i dmask = _mm256_castps_si256(
-                _mm256_cmp_ps(min_distances, distances, _CMP_LT_OS));
-        __m256 finalmask = _mm256_castsi256_ps(_mm256_or_si256(m1mask, dmask));
-
-        const __m256i min_indices_new = _mm256_castps_si256(_mm256_blendv_ps(
-                _mm256_castsi256_ps(current_indices),
-                _mm256_castsi256_ps(min_indices),
-                finalmask));
-
-        const __m256 min_distances_new =
-                _mm256_blendv_ps(distances, min_distances, finalmask);
-
-        min_indices = min_indices_new;
-        min_distances = min_distances_new;
-
-        current_indices = _mm256_add_epi32(current_indices, offset);
-    }
-
-    // Vectorizing is doable, but is not practical
-    int32_t vidx8[8];
-    float vdis8[8];
-    _mm256_storeu_ps(vdis8, min_distances);
-    _mm256_storeu_si256((__m256i*)vidx8, min_indices);
-
-    for (size_t j = 0; j < 8; j++) {
-        if (min_dis > vdis8[j] || (min_dis == vdis8[j] && min_idx < vidx8[j])) {
-            min_idx = vidx8[j];
-            min_dis = vdis8[j];
-        }
-    }
-
-    // process last values. Vectorizing is doable, but is not practical
-    for (; iii < k; iii++) {
-        if (ids[iii] != -1 && dis[iii] <= min_dis) {
-            min_dis = dis[iii];
-            min_idx = iii;
-        }
-    }
-
-    if (min_idx == -1) {
-        return -1;
-    }
-
-    if (vmin_out) {
-        *vmin_out = min_dis;
-    }
-    int ret = ids[min_idx];
-    ids[min_idx] = -1;
-    --nvalid;
-    return ret;
-}
-
-#else
-
-// baseline non-vectorized version
-int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
-    assert(k > 0);
-    // returns min. This is an O(n) operation
-    int i = k - 1;
-    while (i >= 0) {
-        if (ids[i] != -1) {
-            break;
-        }
-        i--;
-    }
-    if (i == -1) {
-        return -1;
-    }
-    int imin = i;
-    float vmin = dis[i];
-    i--;
-    while (i >= 0) {
-        if (ids[i] != -1 && dis[i] < vmin) {
-            vmin = dis[i];
-            imin = i;
-        }
-        i--;
-    }
-    if (vmin_out) {
-        *vmin_out = vmin;
-    }
-    int ret = ids[imin];
-    ids[imin] = -1;
-    --nvalid;
-
-    return ret;
-}
-#endif
-
-int HNSW::MinimaxHeap::count_below(float thresh) {
-    int n_below = 0;
-    for (int i = 0; i < k; i++) {
-        if (dis[i] < thresh) {
-            n_below++;
-        }
-    }
-
-    return n_below;
 }
 
 } // namespace faiss

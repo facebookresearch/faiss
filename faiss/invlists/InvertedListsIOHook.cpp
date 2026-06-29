@@ -24,9 +24,9 @@ namespace faiss {
  **********************************************************/
 
 InvertedListsIOHook::InvertedListsIOHook(
-        const std::string& key,
-        const std::string& classname)
-        : key(key), classname(classname) {}
+        const std::string& key_in,
+        const std::string& classname_in)
+        : key(key_in), classname(classname_in) {}
 
 namespace {
 
@@ -52,7 +52,7 @@ static IOHookTable InvertedListsIOHook_table;
 
 InvertedListsIOHook* InvertedListsIOHook::lookup(int h) {
     for (const auto& callback : InvertedListsIOHook_table) {
-        if (h == fourcc(callback->key)) {
+        if (static_cast<uint32_t>(h) == fourcc(callback->key)) {
             return callback;
         }
     }

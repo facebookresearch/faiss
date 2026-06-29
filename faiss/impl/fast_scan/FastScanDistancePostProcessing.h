@@ -35,6 +35,14 @@ struct FastScanDistancePostProcessing {
     /// Set to 0 to use index->nprobe as fallback.
     size_t nprobe = 0;
 
+    /// RaBitQ query quantization bits override.
+    /// Set to 0 to use the index default (index->qb).
+    uint8_t qb = 0;
+
+    /// RaBitQ centered scalar quantizer override.
+    /// Only used when qb > 0 (i.e., when params are overridden).
+    bool centered = false;
+
     /// Default constructor - no processing
     FastScanDistancePostProcessing() = default;
 

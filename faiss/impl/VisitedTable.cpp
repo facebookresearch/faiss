@@ -18,19 +18,19 @@ namespace faiss {
 // A size of ~1M seems to be the threshold where the hash set wins.
 size_t visited_table_hashset_threshold = 500000;
 
-VisitedTable::VisitedTable(size_t size, std::optional<bool> use_hashset)
-        : visno(use_hashset.value_or(size >= visited_table_hashset_threshold)
-                        ? 0
-                        : 1) {
-    if (visno != 0) {
-        visited.resize(size, 0);
+std::unique_ptr<VisitedTable> VisitedTable::create(
+        size_t size,
+        std::optional<bool> use_hashset) {
+    bool use_set =
+            use_hashset.value_or(size >= visited_table_hashset_threshold);
+    if (use_set) {
+        return std::make_unique<VisitedTableSet>();
     }
+    return std::make_unique<VisitedTableVector>(size);
 }
 
-void VisitedTable::advance() {
-    if (visno == 0) {
-        visited_set.clear();
-    } else if (visno < 254) {
+void VisitedTableVector::advance() {
+    if (visno < 254) {
         // 254 rather than 255 because sometimes we use visno and visno+1
         ++visno;
     } else {

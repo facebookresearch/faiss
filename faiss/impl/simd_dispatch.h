@@ -23,86 +23,145 @@
 
 namespace faiss {
 
-/*********************** x86 SIMD dispatch cases */
+/** Defining which SIMD levels are available for a given function is via a
+ * binary mask. Here we predefine the most common masks.
+ *  */
 
-#ifdef COMPILE_SIMD_AVX2
-#define DISPATCH_SIMDLevel_AVX2(f, ...) \
-    case SIMDLevel::AVX2:               \
-        return f<SIMDLevel::AVX2>(__VA_ARGS__)
-#else
-#define DISPATCH_SIMDLevel_AVX2(f, ...)
+constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
+
+constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
+
+// A0: same + AVX512 + RISCV_RVV
+constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+        (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
+
+// A0_SPR: same as A0 + AVX512_SPR (for functions with a dedicated SPR
+// specialization on top of an AVX512 fallback). Currently used by the
+// RaBitQ popcount kernels, which use VPOPCNTDQ on SPR+.
+constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
+        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_SPR));
+
+// A1: same + ARM_SVE (for functions with dedicated SVE implementations)
+constexpr int AVAILABLE_SIMD_LEVELS_A1 =
+        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::ARM_SVE));
+
+// A2: NONE + AVX2 + ARM_SVE only (for functions with only these
+// implementations)
+constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_SVE));
+
+constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
+
+constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
+    switch (level) {
+        case SIMDLevel::AVX512_SPR:
+            return SIMDLevel::AVX512;
+        case SIMDLevel::AVX512:
+            return SIMDLevel::AVX2;
+        case SIMDLevel::ARM_SVE:
+            return SIMDLevel::ARM_NEON;
+        case SIMDLevel::AVX2:
+        case SIMDLevel::ARM_NEON:
+        case SIMDLevel::RISCV_RVV:
+            return SIMDLevel::NONE;
+        default:
+            return SIMDLevel::NONE;
+    }
+}
+
+template <int available_levels, SIMDLevel current_level, typename LambdaType>
+inline auto dispatch_with_fallback(LambdaType&& action) {
+    if constexpr (available_levels & (1 << int(current_level))) {
+        return action.template operator()<current_level>();
+    } else if constexpr (current_level != SIMDLevel::NONE) {
+        return dispatch_with_fallback<
+                available_levels,
+                get_simd_fallback(current_level)>(
+                std::forward<LambdaType>(action));
+    } else {
+        return action.template operator()<SIMDLevel::NONE>();
+    }
+}
+
+/** The complete dispatching function. It takes into account:
+ * - the currently selected SIMD level
+ * - the compiled in SIMD levels (given by COMPILE_SIMD_XXX)
+ * - the available SIMD implementations for that particular function (given by
+ * available_levels)
+ */
+
+template <int available_levels, typename LambdaType>
+inline auto with_selected_simd_levels(LambdaType&& action) {
+#ifdef FAISS_ENABLE_DD
+    switch (SIMDConfig::level) {
+        // For x86 -- try from highest to lowest level
+
+#ifdef COMPILE_SIMD_AVX512_SPR
+        case SIMDLevel::AVX512_SPR:
+            if constexpr (
+                    available_levels & (1 << int(SIMDLevel::AVX512_SPR))) {
+                return action.template operator()<SIMDLevel::AVX512_SPR>();
+            }
+            [[fallthrough]];
 #endif
 
 #ifdef COMPILE_SIMD_AVX512
-#define DISPATCH_SIMDLevel_AVX512(f, ...) \
-    case SIMDLevel::AVX512:               \
-        return f<SIMDLevel::AVX512>(__VA_ARGS__)
-#else
-#define DISPATCH_SIMDLevel_AVX512(f, ...)
+        case SIMDLevel::AVX512:
+            if constexpr (available_levels & (1 << int(SIMDLevel::AVX512))) {
+                return action.template operator()<SIMDLevel::AVX512>();
+            }
+            [[fallthrough]];
 #endif
 
-#ifdef COMPILE_SIMD_AVX512_SPR
-#define DISPATCH_SIMDLevel_AVX512_SPR(f, ...) \
-    case SIMDLevel::AVX512_SPR:               \
-        return f<SIMDLevel::AVX512_SPR>(__VA_ARGS__)
-#else
-#define DISPATCH_SIMDLevel_AVX512_SPR(f, ...)
+#ifdef COMPILE_SIMD_AVX2
+        case SIMDLevel::AVX2:
+            if constexpr (available_levels & (1 << int(SIMDLevel::AVX2))) {
+                return action.template operator()<SIMDLevel::AVX2>();
+            }
+            [[fallthrough]];
 #endif
 
-/*********************** ARM SIMD dispatch cases */
+            // For ARM, try from highest to lowest level
+#ifdef COMPILE_SIMD_ARM_SVE
+        case SIMDLevel::ARM_SVE:
+            if constexpr (available_levels & (1 << int(SIMDLevel::ARM_SVE))) {
+                return action.template operator()<SIMDLevel::ARM_SVE>();
+            }
+            [[fallthrough]];
+#endif
 
 #ifdef COMPILE_SIMD_ARM_NEON
-#define DISPATCH_SIMDLevel_ARM_NEON(f, ...) \
-    case SIMDLevel::ARM_NEON:               \
-        return f<SIMDLevel::ARM_NEON>(__VA_ARGS__)
-#else
-#define DISPATCH_SIMDLevel_ARM_NEON(f, ...)
+        case SIMDLevel::ARM_NEON:
+            if constexpr (available_levels & (1 << int(SIMDLevel::ARM_NEON))) {
+                return action.template operator()<SIMDLevel::ARM_NEON>();
+            }
+            [[fallthrough]];
 #endif
 
-#ifdef COMPILE_SIMD_ARM_SVE
-#define DISPATCH_SIMDLevel_ARM_SVE(f, ...) \
-    case SIMDLevel::ARM_SVE:               \
-        return f<SIMDLevel::ARM_SVE>(__VA_ARGS__)
-#else
-#define DISPATCH_SIMDLevel_ARM_SVE(f, ...)
+#ifdef COMPILE_SIMD_RISCV_RVV
+        case SIMDLevel::RISCV_RVV:
+            if constexpr (available_levels & (1 << int(SIMDLevel::RISCV_RVV))) {
+                return action.template operator()<SIMDLevel::RISCV_RVV>();
+            }
+            [[fallthrough]];
 #endif
-
-/*********************** Main dispatch macro */
-
-#ifdef FAISS_ENABLE_DD
-
-// DD mode: runtime dispatch based on SIMDConfig::level
-#define DISPATCH_SIMDLevel(f, ...)                         \
-    switch (SIMDConfig::level) {                           \
-        case SIMDLevel::NONE:                              \
-            return f<SIMDLevel::NONE>(__VA_ARGS__);        \
-            DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);       \
-            DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__);     \
-            DISPATCH_SIMDLevel_AVX512_SPR(f, __VA_ARGS__); \
-            DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__);   \
-            DISPATCH_SIMDLevel_ARM_SVE(f, __VA_ARGS__);    \
-        default:                                           \
-            FAISS_THROW_MSG("Invalid SIMD level");         \
+        default:
+            return action.template operator()<SIMDLevel::NONE>();
     }
-
-#else // Static mode
-
-// Static mode: direct call to compiled-in SIMD level (no runtime switch)
-#if defined(COMPILE_SIMD_AVX512_SPR)
-#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::AVX512_SPR>(__VA_ARGS__)
-#elif defined(COMPILE_SIMD_AVX512)
-#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::AVX512>(__VA_ARGS__)
-#elif defined(COMPILE_SIMD_AVX2)
-#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::AVX2>(__VA_ARGS__)
-#elif defined(COMPILE_SIMD_ARM_SVE)
-#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::ARM_SVE>(__VA_ARGS__)
-#elif defined(COMPILE_SIMD_ARM_NEON)
-#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::ARM_NEON>(__VA_ARGS__)
-#else
-#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::NONE>(__VA_ARGS__)
+#else // static dispatch
+    // In static mode, SINGLE_SIMD_LEVEL is a constexpr resolved at compile
+    // time. We mirror the DD fallthrough behavior at compile time via
+    // dispatch_with_fallback, which recursively walks get_simd_fallback:
+    //   x86:   AVX512_SPR -> AVX512 -> AVX2 -> NONE
+    //   ARM:   ARM_SVE -> ARM_NEON -> NONE
+    //   RISCV: RISCV_RVV -> NONE
+    // The first level in the chain that appears in available_levels is
+    // selected; if none match, NONE is used unconditionally.
+    return dispatch_with_fallback<available_levels, SINGLE_SIMD_LEVEL>(
+            std::forward<LambdaType>(action));
 #endif
-
-#endif // FAISS_ENABLE_DD
+}
 
 /**
  * Dispatch to a lambda with SIMDLevel as a compile-time constant.
@@ -126,6 +185,8 @@ namespace faiss {
  *   });
  *
  * The lambda must be a generic lambda with a SIMDLevel template parameter.
+ * By default, the lambda uses levels AVX2 + AVX512 + NEON + RVV, since these
+ * are the most common cases.
  *
  * @param action A generic lambda with signature `template<SIMDLevel> T
  * operator()()`
@@ -133,24 +194,37 @@ namespace faiss {
  */
 template <typename LambdaType>
 inline auto with_simd_level(LambdaType&& action) {
-    DISPATCH_SIMDLevel(action.template operator());
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+            std::forward<LambdaType>(action));
 }
 
 /**
- * Like with_simd_level, but maps to the 256-bit SIMD equivalent:
- *   AVX512, AVX512_SPR -> AVX2
- *   ARM_SVE -> ARM_NEON
- *   AVX2, ARM_NEON, NONE -> unchanged
- *
- * Use for functions implemented with simd8float32 (256-bit) operations
+ * Use for functions with AVX512_SPR-specific implementations.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_spr(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for functions implemented with simdXintY (256-bit) operations
  * that don't have dedicated AVX512 or SVE implementations.
  */
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
-    return with_simd_level([&]<SIMDLevel level>() {
-        constexpr SIMDLevel level256 = simd256_level_selector<level>::value;
-        return action.template operator()<level256>();
-    });
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for functions that have A0-level implementations plus an AVX512_SPR
+ * specialization (e.g. using VPOPCNTDQ).
+ */
+template <typename LambdaType>
+inline auto with_simd_level_a0_spr(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            std::forward<LambdaType>(action));
 }
 
 } // namespace faiss

@@ -13,6 +13,7 @@ import platform
 import faiss
 import unittest
 
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import datasets
 
 faiss.omp_set_num_threads(4)
@@ -117,6 +118,7 @@ def icm_encode_ref(x, codebooks, codes):
     return codes
 
 
+@for_all_simd_levels
 class TestComponents(unittest.TestCase):
 
     def test_decode(self):
@@ -332,6 +334,7 @@ def eval_codec(q, xb):
     return ((xb - decoded) ** 2).sum()
 
 
+@for_all_simd_levels
 class TestLocalSearchQuantizer(unittest.TestCase):
 
     def test_training(self):

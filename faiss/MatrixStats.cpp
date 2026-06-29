@@ -52,7 +52,7 @@ void MatrixStats::PerDimStats::compute_mean_std() {
     if (var < 0) {
         var = 0;
     }
-    stddev = sqrt(var);
+    stddev = std::sqrt(var);
 }
 
 void MatrixStats::do_comment(const char* fmt, ...) {
@@ -67,7 +67,8 @@ void MatrixStats::do_comment(const char* fmt, ...) {
     buf += size;
 }
 
-MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
+MatrixStats::MatrixStats(size_t n_in, size_t d_in, const float* x)
+        : n(n_in), d(d_in) {
     std::vector<char> comment_buf(10000);
     buf = comment_buf.data();
     nbuf = comment_buf.size();
@@ -162,8 +163,8 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
     }
 
     { // norm stats
-        min_norm2 = sqrt(min_norm2);
-        max_norm2 = sqrt(max_norm2);
+        min_norm2 = std::sqrt(min_norm2);
+        max_norm2 = std::sqrt(max_norm2);
         do_comment(
                 "range of L2 norms=[%g, %g] (%zd null vectors)\n",
                 min_norm2,

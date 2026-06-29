@@ -58,7 +58,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::train: unsupported numeric type");
         }
-    };
+    }
 
     /** Add n vectors of dimension d to the index.
      *
@@ -72,7 +72,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::add: unsupported numeric type");
         }
-    };
+    }
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -93,7 +93,7 @@ struct IndexBinary {
             FAISS_THROW_MSG(
                     "IndexBinary::add_with_ids: unsupported numeric type");
         }
-    };
+    }
 
     /** Query n vectors of dimension d to the index.
      *
@@ -129,7 +129,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::search: unsupported numeric type");
         }
-    };
+    }
 
     /** Query n vectors of dimension d to the index.
      *

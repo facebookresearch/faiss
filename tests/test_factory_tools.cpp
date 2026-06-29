@@ -13,21 +13,13 @@ namespace faiss {
 
 TEST(TestFactoryTools, TestReverseIndexFactory) {
     for (const char* factory : {
-                 "Flat",
-                 "IMI2x5,PQ8x8",
-                 "IVF32_HNSW32,SQ8",
-                 "IVF8,Flat",
-                 "IVF8,SQ4",
-                 "IVF8,PQ4x8",
-                 "LSHrt",
-                 "PQ4x8",
-                 "HNSW32",
-                 "SQ8",
-                 "SQfp16",
-                 "NSG24,Flat",
-                 "NSG16,SQ8",
-                 "RaBitQ",
-                 "IVF8,RaBitQ",
+                 "Flat",      "IMI2x5,PQ8x8", "IVF32_HNSW32,SQ8",
+                 "IVF8,Flat", "IVF8,SQ4",     "IVF8,PQ4x8",
+                 "LSHrt",     "PQ4x8",        "HNSW32",
+                 "SQ8",       "SQtqmse1",     "SQtqmse2",
+                 "SQtqmse3",  "SQtqmse4",     "SQtqmse8",
+                 "SQfp16",    "NSG24,Flat",   "NSG16,SQ8",
+                 "RaBitQ",    "IVF8,RaBitQ",  "IVF8,SQtqmse8",
          }) {
         std::unique_ptr<Index> index{index_factory(64, factory)};
         ASSERT_TRUE(index);

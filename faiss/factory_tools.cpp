@@ -38,6 +38,15 @@ const std::map<faiss::ScalarQuantizer::QuantizerType, std::string> sq_types = {
         {faiss::ScalarQuantizer::QT_bf16, "SQbf16"},
         {faiss::ScalarQuantizer::QT_8bit_direct_signed, "SQ8_direct_signed"},
         {faiss::ScalarQuantizer::QT_8bit_direct, "SQ8_direct"},
+        {faiss::ScalarQuantizer::QT_1bit_tqmse, "SQtqmse1"},
+        {faiss::ScalarQuantizer::QT_2bit_tqmse, "SQtqmse2"},
+        {faiss::ScalarQuantizer::QT_3bit_tqmse, "SQtqmse3"},
+        {faiss::ScalarQuantizer::QT_4bit_tqmse, "SQtqmse4"},
+        {faiss::ScalarQuantizer::QT_8bit_tqmse, "SQtqmse8"},
+        {faiss::ScalarQuantizer::QT_2bit_tq, "SQtq2"},
+        {faiss::ScalarQuantizer::QT_3bit_tq, "SQtq3"},
+        {faiss::ScalarQuantizer::QT_4bit_tq, "SQtq4"},
+        {faiss::ScalarQuantizer::QT_5bit_tq, "SQtq5"},
 };
 
 int get_hnsw_M(const faiss::IndexHNSW* index) {

@@ -37,6 +37,18 @@ void train_NonUniform(
         int k,
         const float* x,
         std::vector<float>& trained);
+
+/** Build the TurboQuant MSE codebook using the beta-distribution-optimal
+ *  quantizer from the TurboQuant paper. The codebook is analytical
+ *  (depends only on d and nbits, no training data needed).
+ *
+ *  @param d         vector dimensionality (used for beta-distribution shape)
+ *  @param nbits     bits per component (1-8)
+ *  @param trained   output: [centroids (k floats), boundaries (k-1 floats)]
+ *                   where k = 2^nbits
+ */
+void train_TurboQuantMSE(size_t d, size_t nbits, std::vector<float>& trained);
+
 } // namespace scalar_quantizer
 
 } // namespace faiss

@@ -280,7 +280,7 @@ int faiss_RangeSearchPartialResult_new_result(
         idx_t qno,
         FaissRangeQueryResult** qr) {
     try {
-        auto q = &reinterpret_cast<RangeSearchPartialResult*>(res)->new_result(
+        auto& q = reinterpret_cast<RangeSearchPartialResult*>(res)->new_result(
                 qno);
         if (qr) {
             *qr = reinterpret_cast<FaissRangeQueryResult*>(&q);

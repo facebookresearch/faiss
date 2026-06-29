@@ -33,6 +33,12 @@ int faiss_SearchParametersIVF_new_with(
 FAISS_DECLARE_GETTER(SearchParametersIVF, const FaissIDSelector*, sel)
 FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, nprobe)
 FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, max_codes)
+FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, max_lists_num)
+FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, int, ensure_topk_full)
+FAISS_DECLARE_GETTER_SETTER(
+        SearchParametersIVF,
+        size_t,
+        max_empty_result_buckets)
 
 /** Index based on a inverted file (IVF)
  *

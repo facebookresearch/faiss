@@ -28,6 +28,7 @@
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 
 #include <variant>
+#include <vector>
 #include "faiss/Index.h"
 
 namespace faiss {
@@ -193,14 +194,14 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
 
 enum class search_algo {
     /// For large batch sizes.
-    SINGLE_CTA,
+    SINGLE_CTA = 0,
     /// For small batch sizes.
-    MULTI_CTA,
-    MULTI_KERNEL,
-    AUTO
+    MULTI_CTA = 1,
+    MULTI_KERNEL = 2,
+    AUTO = 100
 };
 
-enum class hash_mode { HASH, SMALL, AUTO };
+enum class hash_mode { HASH = 0, SMALL = 1, AUTO = 100 };
 
 struct SearchParametersCagra : SearchParameters {
     /// Maximum number of queries to search at the same time (batch size). Auto

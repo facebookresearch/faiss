@@ -37,7 +37,7 @@ std::vector<uint8_t> make_binary_data(
         size_t seed) {
     std::vector<uint8_t> database(n * d);
     std::mt19937 rng(seed);
-    std::uniform_int_distribution<uint8_t> distrib(0, 255);
+    std::uniform_int_distribution<int> distrib(0, 255);
 
     for (size_t i = 0; i < n * d; i++) {
         database[i] = distrib(rng);

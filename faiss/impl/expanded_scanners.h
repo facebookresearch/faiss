@@ -10,6 +10,7 @@
 #include <cstdio>
 
 #include <faiss/IndexIVF.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/impl/ResultHandler.h>
 
 /* This is the inner loop of the inverted list scanners. The default version
@@ -45,12 +46,16 @@ size_t run_scan_codes1(
             }
         }
 
+        // post-IDSelector: distance is about to be computed for this code.
+        handler.stats.scan_cnt++;
         float dis = scanner.distance_to_code(codes); // will be inlined if final
         if (C::cmp(threshold, dis)) {
             int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-            handler.add_result(dis, id);
-            threshold = handler.threshold;
-            nup++;
+            if (handler.add_result(dis, id)) {
+                handler.stats.nheap_updates++;
+                nup++;
+                threshold = handler.threshold;
+            }
         }
         codes += code_size;
     }

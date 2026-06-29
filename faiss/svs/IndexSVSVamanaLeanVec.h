@@ -35,7 +35,8 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             size_t degree,
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
-            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4);
+            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4,
+            bool is_static = false);
 
     ~IndexSVSVamanaLeanVec() override;
 
@@ -49,8 +50,13 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
      * sampled from different distributions (e.g., cross-modal). More details in
      * the original publication, arXiv:2312.16335.
      */
-    void train(idx_t n, const float* x, idx_t n_train_q, const float* xq_train)
-            override;
+    void train_with_queries(
+            idx_t n,
+            const float* x,
+            idx_t n_train_q,
+            const float* xq_train) override;
+
+    void reset() override;
 
     void serialize_training_data(std::ostream& out) const;
     void deserialize_training_data(std::istream& in);
@@ -61,7 +67,7 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     svs_runtime::LeanVecTrainingData* training_data{nullptr};
 
    protected:
-    void create_impl() override;
+    void create_impl(idx_t n, const float* x) override;
 };
 
 } // namespace faiss

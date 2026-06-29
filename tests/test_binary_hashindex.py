@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import faiss
 
-from common_faiss_tests import make_binary_dataset
+from common_faiss_tests import for_all_simd_levels, make_binary_dataset
 
 
 def bitvec_shuffle(a, order):
@@ -42,6 +42,7 @@ class TestSmallFuncs(unittest.TestCase):
         np.testing.assert_array_equal(x, z)
 
 
+@for_all_simd_levels
 class TestRange(unittest.TestCase):
 
     def test_hash(self):
@@ -122,6 +123,7 @@ class TestRange(unittest.TestCase):
         self.assertTrue(np.all(nfound[1:] >= nfound[:-1]))
 
 
+@for_all_simd_levels
 class TestKnn(unittest.TestCase):
 
     def test_hash_and_multihash(self):

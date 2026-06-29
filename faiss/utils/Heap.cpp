@@ -17,7 +17,7 @@ namespace faiss {
 template <typename C>
 void HeapArray<C>::heapify() {
 #pragma omp parallel for
-    for (int64_t j = 0; j < nh; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nh); j++) {
         heap_heapify<C>(k, val + j * k, ids + j * k);
     }
 }
@@ -25,7 +25,7 @@ void HeapArray<C>::heapify() {
 template <typename C>
 void HeapArray<C>::reorder() {
 #pragma omp parallel for
-    for (int64_t j = 0; j < nh; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nh); j++) {
         heap_reorder<C>(k, val + j * k, ids + j * k);
     }
 }
@@ -37,7 +37,7 @@ void HeapArray<C>::addn(size_t nj, const T* vin, TI j0, size_t i0, int64_t ni) {
     }
     assert(i0 >= 0 && i0 + ni <= nh);
 #pragma omp parallel for if (ni * nj > 100000)
-    for (int64_t i = i0; i < i0 + ni; i++) {
+    for (int64_t i = i0; i < static_cast<int64_t>(i0) + ni; i++) {
         T* __restrict simi = get_val(i);
         TI* __restrict idxi = get_ids(i);
         const T* ip_line = vin + (i - i0) * nj;
@@ -68,7 +68,7 @@ void HeapArray<C>::addn_with_ids(
     }
     assert(i0 >= 0 && i0 + ni <= nh);
 #pragma omp parallel for if (ni * nj > 100000)
-    for (int64_t i = i0; i < i0 + ni; i++) {
+    for (int64_t i = i0; i < static_cast<int64_t>(i0) + ni; i++) {
         T* __restrict simi = get_val(i);
         TI* __restrict idxi = get_ids(i);
         const T* ip_line = vin + (i - i0) * nj;
@@ -96,7 +96,7 @@ void HeapArray<C>::addn_query_subset_with_ids(
         id_stride = nj;
     }
 #pragma omp parallel for if (nsubset * nj > 100000)
-    for (int64_t si = 0; si < nsubset; si++) {
+    for (int64_t si = 0; si < static_cast<int64_t>(nsubset); si++) {
         TI i = subset[si];
         T* __restrict simi = get_val(i);
         TI* __restrict idxi = get_ids(i);
@@ -115,7 +115,7 @@ void HeapArray<C>::addn_query_subset_with_ids(
 template <typename C>
 void HeapArray<C>::per_line_extrema(T* out_val, TI* out_ids) const {
 #pragma omp parallel for if (nh * k > 100000)
-    for (int64_t j = 0; j < nh; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nh); j++) {
         int64_t imin = -1;
         typename C::T xval = C::Crev::neutral();
         const typename C::T* x_ = val + j * k;
@@ -187,7 +187,7 @@ void merge_knn_results(
         std::vector<distance_t> buf2(nshard);
         distance_t* heap_vals = buf2.data();
 #pragma omp for
-        for (long i = 0; i < n; i++) {
+        for (long i = 0; i < static_cast<long>(n); i++) {
             // the heap maps values to the shard where they are
             // produced.
             const distance_t* D_in = all_distances + i * k;
@@ -195,7 +195,7 @@ void merge_knn_results(
             int heap_size = 0;
 
             // push the first element of each shard (if not -1)
-            for (long s = 0; s < nshard; s++) {
+            for (long s = 0; s < static_cast<long>(nshard); s++) {
                 pointer[s] = 0;
                 if (I_in[stride * s] >= 0) {
                     heap_push<C>(
@@ -210,7 +210,7 @@ void merge_knn_results(
             distance_t* D = distances + i * k;
             idx_t* I = labels + i * k;
 
-            int j;
+            size_t j;
             for (j = 0; j < k && heap_size > 0; j++) {
                 // pop element from best shard
                 int s = shard_ids[0]; // top of heap
@@ -221,7 +221,7 @@ void merge_knn_results(
                 // pop from shard, advance pointer for this shard
                 heap_pop<C>(heap_size--, heap_vals, shard_ids);
                 p++;
-                if (p < k && I_in[stride * s + p] >= 0) {
+                if (static_cast<size_t>(p) < k && I_in[stride * s + p] >= 0) {
                     heap_push<C>(
                             ++heap_size,
                             heap_vals,

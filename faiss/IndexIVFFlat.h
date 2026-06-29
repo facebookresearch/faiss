@@ -76,7 +76,7 @@ struct IVFFlatScanner : InvertedListScanner {
         code_size = vd.d * sizeof(float);
     }
 
-    const float* xi;
+    const float* xi = nullptr;
     void set_query(const float* query) override {
         this->xi = query;
     }
@@ -91,7 +91,7 @@ struct IVFFlatScanner : InvertedListScanner {
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
-            ResultHandler& handler) const;
+            ResultHandler& handler) const override;
 };
 
 struct IndexIVFFlatDedup : IndexIVFFlat {

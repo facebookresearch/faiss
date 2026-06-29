@@ -77,6 +77,12 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::NONE> : SQDistanceComputer {
 template <class Similarity, SIMDLevel SL>
 struct DistanceComputerByte : SQDistanceComputer {};
 
+// Byte-domain distance computer for QT_8bit_direct_signed (storage is
+// value+128). Only specialized for AVX512_SPR; other levels fall back to
+// the float-domain DCTemplate path via the dispatch logic.
+template <class Similarity, SIMDLevel SL>
+struct DistanceComputerByteSigned : SQDistanceComputer {};
+
 template <class Similarity>
 struct DistanceComputerByte<Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     using Sim = Similarity;
@@ -84,7 +90,8 @@ struct DistanceComputerByte<Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+    DistanceComputerByte(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {}
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {

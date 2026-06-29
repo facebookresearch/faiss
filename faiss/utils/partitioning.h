@@ -11,6 +11,8 @@
 #include <stdio.h>
 
 #include <faiss/impl/platform_macros.h>
+#include <faiss/utils/ordered_key_value.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -51,6 +53,35 @@ void simd_histogram_8(
         int* hist);
 
 /** same for 16-bin histogram */
+void simd_histogram_16(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist);
+
+/** SIMD-dispatched partition for aligned uint16_t arrays.
+ *  Specializations live in per-ISA TUs (partitioning_avx2.cpp, etc.). */
+template <SIMDLevel SL, class C>
+typename C::T partition_fuzzy_simd(
+        uint16_t* vals,
+        typename C::TI* ids,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+/** SIMD-dispatched histogram functions.
+ *  Specializations live in per-ISA TUs. */
+template <SIMDLevel SL>
+void simd_histogram_8(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist);
+
+template <SIMDLevel SL>
 void simd_histogram_16(
         const uint16_t* data,
         int n,

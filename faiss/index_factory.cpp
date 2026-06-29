@@ -45,7 +45,6 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
-#include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
 
 #include <faiss/IndexBinaryFlat.h>
@@ -55,6 +54,9 @@
 
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
@@ -91,10 +93,10 @@ void find_matching_parentheses(
         int begin = 0) {
     int st = 0;
     i0 = i1 = 0;
-    for (int i = begin; i < s.length(); i++) {
+    for (size_t i = begin; i < s.length(); i++) {
         if (s[i] == '(') {
             if (st == 0) {
-                i0 = i;
+                i0 = static_cast<int>(i);
             }
             st++;
         }
@@ -102,7 +104,7 @@ void find_matching_parentheses(
         if (s[i] == ')') {
             st--;
             if (st == 0) {
-                i1 = i;
+                i1 = static_cast<int>(i);
                 return;
             }
             if (st < 0) {
@@ -128,6 +130,11 @@ char get_trains_alone(const Index* coarse_quantizer) {
     if (dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer)) {
         return 2;
     }
+#ifdef FAISS_ENABLE_SVS
+    if (dynamic_cast<const IndexSVSVamana*>(coarse_quantizer)) {
+        return 2;
+    }
+#endif
     return 2; // for complicated indexes, we assume they can't be used as a
               // kmeans index
 }
@@ -155,9 +162,19 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
         {"SQbf16", ScalarQuantizer::QT_bf16},
         {"SQ8_direct_signed", ScalarQuantizer::QT_8bit_direct_signed},
         {"SQ8_direct", ScalarQuantizer::QT_8bit_direct},
+        {"SQ0", ScalarQuantizer::QT_0bit},
+        {"SQtqmse1", ScalarQuantizer::QT_1bit_tqmse},
+        {"SQtqmse2", ScalarQuantizer::QT_2bit_tqmse},
+        {"SQtqmse3", ScalarQuantizer::QT_3bit_tqmse},
+        {"SQtqmse4", ScalarQuantizer::QT_4bit_tqmse},
+        {"SQtqmse8", ScalarQuantizer::QT_8bit_tqmse},
+        {"SQtq2", ScalarQuantizer::QT_2bit_tq},
+        {"SQtq3", ScalarQuantizer::QT_3bit_tq},
+        {"SQtq4", ScalarQuantizer::QT_4bit_tq},
+        {"SQtq5", ScalarQuantizer::QT_5bit_tq},
 };
 const std::string sq_pattern =
-        "(SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct)";
+        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -183,7 +200,7 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
                                    : AdditiveQuantizer::ST_LUT_nonorm;
     }
-    int pos = stok.rfind('_');
+    size_t pos = stok.rfind('_');
     return aq_search_type[stok.substr(pos)];
 }
 
@@ -206,7 +223,7 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
 
 VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     std::smatch sm;
-    auto match = [&sm, description](std::string pattern) {
+    auto match = [&sm, description](const std::string& pattern) {
         return re_match(description, pattern, sm);
     };
     if (match("PCA(W?)(R?)([0-9]+)")) {
@@ -264,7 +281,7 @@ Index* parse_coarse_quantizer(
         size_t& nlist,
         bool& use_2layer) {
     std::smatch sm;
-    auto match = [&sm, description](std::string pattern) {
+    auto match = [&sm, description](const std::string& pattern) {
         return re_match(description, pattern, sm);
     };
     use_2layer = false;
@@ -291,10 +308,34 @@ Index* parse_coarse_quantizer(
         int R = std::stoi(sm[2]);
         return new IndexNSGFlat(d, R, mt);
     }
+#ifdef FAISS_ENABLE_SVS
+    if (match("IVF([0-9]+[kM]?)_SVSVamana([0-9]*)(_.+)?")) {
+        nlist = parse_nlist(sm[1].str());
+        int degree = sm[2].length() > 0 ? std::stoi(sm[2]) : 32;
+        SVSStorageKind storage = SVSStorageKind::SVS_FP32;
+        if (sm[3].matched) {
+            std::string s = sm[3].str().substr(1);
+            if (s == "SQ8") {
+                storage = SVSStorageKind::SVS_SQ8;
+            } else if (s == "FP16") {
+                storage = SVSStorageKind::SVS_FP16;
+            } else if (s == "FP32") {
+                storage = SVSStorageKind::SVS_FP32;
+            } else {
+                FAISS_THROW_FMT(
+                        "unsupported SVSVamana coarse quantizer storage: %s",
+                        s.c_str());
+            }
+        }
+        return new IndexSVSVamana(d, degree, mt, storage);
+    }
+#endif
     if (match("IVF([0-9]+[kM]?)\\(Index([0-9])\\)")) {
         nlist = parse_nlist(sm[1].str());
         int no = std::stoi(sm[2].str());
-        FAISS_ASSERT(no >= 0 && no < parenthesis_indexes.size());
+        FAISS_ASSERT(
+                no >= 0 &&
+                static_cast<size_t>(no) < parenthesis_indexes.size());
         return parenthesis_indexes[no].release();
     }
 
@@ -340,9 +381,11 @@ IndexIVF* parse_IndexIVF(
     if (match("FlatDedup")) {
         return new IndexIVFFlatDedup(get_q(), d, nlist, mt, own_il);
     }
-    if (match("FlatPanorama([0-9]+)?")) {
+    if (match("FlatPanorama([0-9]+)?(_([0-9]+))?")) {
         int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
-        return new IndexIVFFlatPanorama(get_q(), d, nlist, nlevels, mt, own_il);
+        int bs = mres_to_int(sm[3], 128);
+        return new IndexIVFFlatPanorama(
+                get_q(), d, nlist, nlevels, mt, own_il, bs);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
@@ -588,6 +631,9 @@ SVSStorageKind parse_lvq(const std::string& lvq_string) {
     if (lvq_string == "LVQ4x8") {
         return SVSStorageKind::SVS_LVQ4x8;
     }
+    if (lvq_string == "LVQ8x0") {
+        return SVSStorageKind::SVS_LVQ8x0;
+    }
     FAISS_ASSERT(false && "not supported SVS LVQ level");
 }
 
@@ -619,28 +665,43 @@ Index* parse_svs_datatype(
         if (index_type == "Flat") {
             return new IndexSVSFlat(d, mt);
         }
-        FAISS_ASSERT(false && "Unspported SVS index type");
+        if (index_type == "IVF") {
+            return new IndexSVSIVF(d, std::stoul(arg_string), mt);
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type");
     }
     if (re_match(datatype_string, "FP16", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for Float16");
+        if (index_type == "IVF") {
+            return new IndexSVSIVF(
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for Float16");
     }
-    if (re_match(datatype_string, "SQI8", sm)) {
+    if (re_match(datatype_string, "SQ8", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for SQI8");
+        if (index_type == "IVF") {
+            return new IndexSVSIVF(
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for SQ8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamanaLVQ(
                     d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for LVQ");
+        if (index_type == "IVF") {
+            return new IndexSVSIVFLVQ(
+                    d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for LVQ");
     }
     if (re_match(datatype_string, "(LeanVec[0-9]+x[0-9]+)(_[0-9]+)?", sm)) {
         std::string leanvec_d_string =
@@ -655,7 +716,15 @@ Index* parse_svs_datatype(
                     leanvec_d,
                     parse_leanvec(sm[1].str()));
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for LeanVec");
+        if (index_type == "IVF") {
+            return new IndexSVSIVFLeanVec(
+                    d,
+                    std::stoul(arg_string),
+                    mt,
+                    leanvec_d,
+                    parse_leanvec(sm[1].str()));
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for LeanVec");
     }
     return nullptr;
 }
@@ -675,7 +744,10 @@ Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
                 "Vamana", degree_string, datatype_string, d, mt);
     }
     if (re_match(code_string, "IVF([0-9]+)(,.+)?", sm)) {
-        FAISS_ASSERT(false && "Unspported SVS index type");
+        std::string nlist_string = sm[1].str();
+        std::string datatype_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "";
+        return parse_svs_datatype("IVF", nlist_string, datatype_string, d, mt);
     }
     return nullptr;
 }
@@ -964,7 +1036,7 @@ std::unique_ptr<Index> index_factory_sub(
         int i0, i1;
         find_matching_parentheses(description, i0, i1, begin);
         std::string sub_description = description.substr(i0 + 1, i1 - i0 - 1);
-        int no = parenthesis_indexes.size();
+        size_t no = parenthesis_indexes.size();
         parenthesis_indexes.push_back(
                 index_factory_sub(d, sub_description, metric));
         description = description.substr(0, i0 + 1) + "Index" +

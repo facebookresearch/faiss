@@ -24,10 +24,11 @@ template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
 struct DummyScaler {
     static constexpr int nscale = 0;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    static constexpr SIMDLevel SL512 = simd512_level_selector<SL>::value;
     using simd32uint8 = simd32uint8_tpl<SL256>;
     using simd16uint16 = simd16uint16_tpl<SL256>;
-    using simd64uint8 = simd64uint8_tpl<SL>;
-    using simd32uint16 = simd32uint16_tpl<SL>;
+    using simd64uint8 = simd64uint8_tpl<SL512>;
+    using simd32uint16 = simd32uint16_tpl<SL512>;
 
     inline simd32uint8 lookup(const simd32uint8&, const simd32uint8&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
@@ -72,10 +73,11 @@ template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
 struct NormTableScaler {
     static constexpr int nscale = 2;
     static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    static constexpr SIMDLevel SL512 = simd512_level_selector<SL>::value;
     using simd32uint8 = simd32uint8_tpl<SL256>;
     using simd16uint16 = simd16uint16_tpl<SL256>;
-    using simd64uint8 = simd64uint8_tpl<SL>;
-    using simd32uint16 = simd32uint16_tpl<SL>;
+    using simd64uint8 = simd64uint8_tpl<SL512>;
+    using simd32uint16 = simd32uint16_tpl<SL512>;
 
     int scale_int;
     simd16uint16 scale_simd;

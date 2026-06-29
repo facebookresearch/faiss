@@ -36,6 +36,6 @@ namespace faiss::gpu {
 void convert_to_bitset(
         faiss::gpu::GpuResources* res,
         const faiss::IDSelector& selector,
-        cuvs::core::bitset_view<uint32_t, uint32_t> bitset,
+        cuvs::core::bitset_view<uint32_t, int64_t> bitset,
         int num_threads = 0);
 } // namespace faiss::gpu

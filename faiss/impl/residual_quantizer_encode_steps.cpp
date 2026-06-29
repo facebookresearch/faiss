@@ -66,12 +66,12 @@ void beam_search_encode_step(
 
     if (assign_index) {
         // search beam_size distances per query
-        FAISS_THROW_IF_NOT(assign_index->d == d);
+        FAISS_THROW_IF_NOT(assign_index->d == static_cast<int>(d));
         cent_distances.resize(n * beam_size * new_beam_size);
         cent_ids.resize(n * beam_size * new_beam_size);
         if (assign_index->ntotal != 0) {
             // then we assume the codebooks are already added to the index
-            FAISS_THROW_IF_NOT(assign_index->ntotal == K);
+            FAISS_THROW_IF_NOT(assign_index->ntotal == static_cast<idx_t>(K));
         } else {
             assign_index->add(K, cent);
         }
@@ -92,111 +92,96 @@ void beam_search_encode_step(
     }
     InterruptCallback::check();
 
+    // Resolve SIMD level once, not per iteration of the n-parallel loop.
+    with_simd_level_256bit([&]<SIMDLevel SL>() {
 #pragma omp parallel for if (n > 100)
-    for (int64_t i = 0; i < n; i++) {
-        const int32_t* codes_i = codes + i * m * beam_size;
-        int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
-        const float* residuals_i = residuals + i * d * beam_size;
-        float* new_residuals_i = new_residuals + i * d * new_beam_size;
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            const int32_t* codes_i = codes + i * m * beam_size;
+            int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
+            const float* residuals_i = residuals + i * d * beam_size;
+            float* new_residuals_i = new_residuals + i * d * new_beam_size;
 
-        float* new_distances_i = new_distances + i * new_beam_size;
-        using C = CMax<float, int>;
+            float* new_distances_i = new_distances + i * new_beam_size;
+            using C = CMax<float, int>;
 
-        if (assign_index) {
-            const float* cent_distances_i =
-                    cent_distances.data() + i * beam_size * new_beam_size;
-            const idx_t* cent_ids_i =
-                    cent_ids.data() + i * beam_size * new_beam_size;
+            if (assign_index) {
+                const float* cent_distances_i =
+                        cent_distances.data() + i * beam_size * new_beam_size;
+                const idx_t* cent_ids_i =
+                        cent_ids.data() + i * beam_size * new_beam_size;
 
-            // here we could be a tad more efficient by merging sorted arrays
-            for (int j = 0; j < new_beam_size; j++) {
-                new_distances_i[j] = C::neutral();
-            }
-            std::vector<int> perm(new_beam_size, -1);
-            heap_addn<C>(
-                    new_beam_size,
-                    new_distances_i,
-                    perm.data(),
-                    cent_distances_i,
-                    nullptr,
-                    beam_size * new_beam_size);
-            heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
-
-            for (int j = 0; j < new_beam_size; j++) {
-                int js = perm[j] / new_beam_size;
-                int ls = cent_ids_i[perm[j]];
-                if (m > 0) {
-                    memcpy(new_codes_i, codes_i + js * m, sizeof(*codes) * m);
+                // here we could be a tad more efficient by merging sorted
+                // arrays
+                for (size_t j = 0; j < new_beam_size; j++) {
+                    new_distances_i[j] = C::neutral();
                 }
-                new_codes_i[m] = ls;
-                new_codes_i += m + 1;
-                fvec_sub(
-                        d,
-                        residuals_i + js * d,
-                        cent + ls * d,
-                        new_residuals_i);
-                new_residuals_i += d;
-            }
+                std::vector<int> perm(new_beam_size, -1);
+                heap_addn<C>(
+                        new_beam_size,
+                        new_distances_i,
+                        perm.data(),
+                        cent_distances_i,
+                        nullptr,
+                        beam_size * new_beam_size);
+                heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-        } else {
-            const float* cent_distances_i =
-                    cent_distances.data() + i * beam_size * K;
-            // then we have to select the best results
-            for (int j = 0; j < new_beam_size; j++) {
-                new_distances_i[j] = C::neutral();
-            }
-            std::vector<int> perm(new_beam_size, -1);
+                for (size_t j = 0; j < new_beam_size; j++) {
+                    int js = perm[j] / new_beam_size;
+                    int ls = cent_ids_i[perm[j]];
+                    if (m > 0) {
+                        memcpy(new_codes_i,
+                               codes_i + js * m,
+                               sizeof(*codes) * m);
+                    }
+                    new_codes_i[m] = ls;
+                    new_codes_i += m + 1;
+                    fvec_sub(
+                            d,
+                            residuals_i + js * d,
+                            cent + ls * d,
+                            new_residuals_i);
+                    new_residuals_i += d;
+                }
 
-            auto approx = [&]<uint32_t NB, uint32_t ND>() {
-                HeapWithBuckets<C, NB, ND>::bs_addn(
+            } else {
+                const float* cent_distances_i =
+                        cent_distances.data() + i * beam_size * K;
+                // then we have to select the best results
+                for (size_t j = 0; j < new_beam_size; j++) {
+                    new_distances_i[j] = C::neutral();
+                }
+                std::vector<int> perm(new_beam_size, -1);
+
+                approx_topk_by_mode<SL>(
+                        approx_topk_mode,
                         beam_size,
                         K,
                         cent_distances_i,
                         new_beam_size,
                         new_distances_i,
                         perm.data());
-            };
-            switch (approx_topk_mode) {
-                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
-                    approx.template operator()<8, 3>();
-                    break;
-                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
-                    approx.template operator()<8, 2>();
-                    break;
-                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
-                    approx.template operator()<16, 2>();
-                    break;
-                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
-                    approx.template operator()<32, 2>();
-                    break;
-                default:
-                    heap_addn<C>(
-                            new_beam_size,
-                            new_distances_i,
-                            perm.data(),
-                            cent_distances_i,
-                            nullptr,
-                            beam_size * K);
-            }
-            heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
+                heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-            for (int j = 0; j < new_beam_size; j++) {
-                int js = perm[j] / K;
-                int ls = perm[j] % K;
-                if (m > 0) {
-                    memcpy(new_codes_i, codes_i + js * m, sizeof(*codes) * m);
+                for (size_t j = 0; j < new_beam_size; j++) {
+                    int js = perm[j] / K;
+                    int ls = perm[j] % K;
+                    if (m > 0) {
+                        memcpy(new_codes_i,
+                               codes_i + js * m,
+                               sizeof(*codes) * m);
+                    }
+                    new_codes_i[m] = ls;
+                    new_codes_i += m + 1;
+                    fvec_sub(
+                            d,
+                            residuals_i + js * d,
+                            cent + ls * d,
+                            new_residuals_i);
+                    new_residuals_i += d;
                 }
-                new_codes_i[m] = ls;
-                new_codes_i += m + 1;
-                fvec_sub(
-                        d,
-                        residuals_i + js * d,
-                        cent + ls * d,
-                        new_residuals_i);
-                new_residuals_i += d;
             }
         }
-    }
+    });
 }
 
 // exposed in the faiss namespace
@@ -380,20 +365,21 @@ void beam_search_encode_step_tab(
 {
     FAISS_THROW_IF_NOT(ldc >= K);
 
+    // Resolve SIMD level once, not per iteration of the n-parallel loop.
+    with_simd_level_256bit([&]<SIMDLevel SL>() {
 #pragma omp parallel for if (n > 100) schedule(dynamic)
-    for (int64_t i = 0; i < n; i++) {
-        std::vector<float> cent_distances(beam_size * K);
-        std::vector<float> cd_common(K);
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            std::vector<float> cent_distances(beam_size * K);
+            std::vector<float> cd_common(K);
 
-        const int32_t* codes_i = codes + i * m * beam_size;
-        const float* query_cp_i = query_cp + i * ldqc;
-        const float* distances_i = distances + i * beam_size;
+            const int32_t* codes_i = codes + i * m * beam_size;
+            const float* query_cp_i = query_cp + i * ldqc;
+            const float* distances_i = distances + i * beam_size;
 
-        for (size_t k = 0; k < K; k++) {
-            cd_common[k] = cent_norms_i[k] - 2 * query_cp_i[k];
-        }
+            for (size_t k = 0; k < K; k++) {
+                cd_common[k] = cent_norms_i[k] - 2 * query_cp_i[k];
+            }
 
-        with_simd_level_256bit([&]<SIMDLevel SL>() {
             if constexpr (SL == SIMDLevel::NONE) {
                 compute_cent_distances_baseline(
                         K,
@@ -419,64 +405,40 @@ void beam_search_encode_step_tab(
                         cd_common.data(),
                         cent_distances.data());
             }
-        });
-        using C = CMax<float, int>;
-        int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
-        float* new_distances_i = new_distances + i * new_beam_size;
 
-        const float* cent_distances_i = cent_distances.data();
+            using C = CMax<float, int>;
+            int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
+            float* new_distances_i = new_distances + i * new_beam_size;
 
-        // then we have to select the best results
-        for (int j = 0; j < new_beam_size; j++) {
-            new_distances_i[j] = C::neutral();
-        }
-        std::vector<int> perm(new_beam_size, -1);
+            const float* cent_distances_i = cent_distances.data();
 
-        auto approx = [&]<uint32_t NB, uint32_t ND>() {
-            HeapWithBuckets<C, NB, ND>::bs_addn(
+            // then we have to select the best results
+            for (size_t j = 0; j < new_beam_size; j++) {
+                new_distances_i[j] = C::neutral();
+            }
+            std::vector<int> perm(new_beam_size, -1);
+
+            approx_topk_by_mode<SL>(
+                    approx_topk_mode,
                     beam_size,
                     K,
                     cent_distances_i,
                     new_beam_size,
                     new_distances_i,
                     perm.data());
-        };
-        switch (approx_topk_mode) {
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
-                approx.template operator()<8, 3>();
-                break;
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
-                approx.template operator()<8, 2>();
-                break;
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
-                approx.template operator()<16, 2>();
-                break;
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
-                approx.template operator()<32, 2>();
-                break;
-            default:
-                heap_addn<C>(
-                        new_beam_size,
-                        new_distances_i,
-                        perm.data(),
-                        cent_distances_i,
-                        nullptr,
-                        beam_size * K);
-                break;
-        }
+            heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-        heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
-
-        for (int j = 0; j < new_beam_size; j++) {
-            int js = perm[j] / K;
-            int ls = perm[j] % K;
-            if (m > 0) {
-                memcpy(new_codes_i, codes_i + js * m, sizeof(*codes) * m);
+            for (size_t j = 0; j < new_beam_size; j++) {
+                int js = perm[j] / K;
+                int ls = perm[j] % K;
+                if (m > 0) {
+                    memcpy(new_codes_i, codes_i + js * m, sizeof(*codes) * m);
+                }
+                new_codes_i[m] = ls;
+                new_codes_i += m + 1;
             }
-            new_codes_i[m] = ls;
-            new_codes_i += m + 1;
         }
-    }
+    });
 }
 
 /********************************************************************
@@ -503,7 +465,7 @@ void refine_beam_mp(
     int max_beam_size = 0;
     {
         int tmp_beam_size = cur_beam_size;
-        for (int m = 0; m < rq.M; m++) {
+        for (size_t m = 0; m < rq.M; m++) {
             int K = 1 << rq.nbits[m];
             int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
             tmp_beam_size = new_beam_size;
@@ -544,7 +506,7 @@ void refine_beam_mp(
     size_t distances_size = 0;
     size_t residuals_size = 0;
 
-    for (int m = 0; m < rq.M; m++) {
+    for (size_t m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
         const float* __restrict codebooks_m =
@@ -583,14 +545,14 @@ void refine_beam_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            for (int j = 0; j < distances_size; j++) {
+            for (size_t j = 0; j < distances_size; j++) {
                 sum_distances += pool.distances[j];
             }
 
             printf("[%.3f s] encode stage %d, %d bits, "
                    "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
-                   m,
+                   int(m),
                    int(rq.nbits[m]),
                    sum_distances,
                    cur_beam_size);
@@ -629,7 +591,7 @@ void refine_beam_LUT_mp(
     int max_beam_size = 0;
     {
         int tmp_beam_size = beam_size;
-        for (int m = 0; m < rq.M; m++) {
+        for (size_t m = 0; m < rq.M; m++) {
             int K = 1 << rq.nbits[m];
             int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
             tmp_beam_size = new_beam_size;
@@ -662,7 +624,7 @@ void refine_beam_LUT_mp(
     size_t codes_size = 0;
     size_t distances_size = 0;
     size_t cross_ofs = 0;
-    for (int m = 0; m < rq.M; m++) {
+    for (size_t m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
         // it is guaranteed that (new_beam_size <= max_beam_size)
@@ -698,13 +660,13 @@ void refine_beam_LUT_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            for (int j = 0; j < distances_size; j++) {
+            for (size_t j = 0; j < distances_size; j++) {
                 sum_distances += distances_ptr[j];
             }
             printf("[%.3f s] encode stage %d, %d bits, "
                    "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
-                   m,
+                   int(m),
                    int(rq.nbits[m]),
                    sum_distances,
                    beam_size);

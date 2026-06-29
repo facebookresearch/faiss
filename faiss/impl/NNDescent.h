@@ -54,8 +54,8 @@ struct Neighbor {
     bool flag;
 
     Neighbor() = default;
-    Neighbor(int id, float distance, bool f)
-            : id(id), distance(distance), flag(f) {}
+    Neighbor(int id_in, float distance_in, bool f)
+            : id(id_in), distance(distance_in), flag(f) {}
 
     inline bool operator<(const Neighbor& other) const {
         return distance < other.distance;
@@ -79,6 +79,10 @@ struct Nhood {
     Nhood& operator=(const Nhood& other);
 
     Nhood(const Nhood& other);
+
+    Nhood(Nhood&& other) noexcept;
+
+    Nhood& operator=(Nhood&& other) noexcept;
 
     void insert(int id, float dist);
 

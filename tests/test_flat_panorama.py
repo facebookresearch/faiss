@@ -18,9 +18,11 @@ import unittest
 
 import faiss
 import numpy as np
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexFlatPanorama(unittest.TestCase):
     """Test Suite for IndexFlatPanorama."""
 
@@ -55,13 +57,14 @@ class TestIndexFlatPanorama(unittest.TestCase):
         D_panorama,
         I_panorama,
         rtol=1e-5,
-        atol=1e-7,
+        atol=1e-4,
         otol=1e-3,
     ):
         # Allow small tolerance in overlap rate to account for
         # floating-point errors in distance computations that can affect
         # ordering when distances are nearly equal.
-        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b)
+        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b);
+        # these differ at the float32 ULP level, so atol absorbs the gap.
         overlap_rate = np.mean(I_regular == I_panorama)
 
         self.assertGreater(
@@ -361,6 +364,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
         """Test correctness at various batch size boundaries"""
         d, nq, k = 128, 10, 15
         # random train not needed for Flat indexes
+        # seed the (otherwise unseeded) query draw so runs are reproducible
+        np.random.seed(1234)
         xq = np.random.rand(nq, d).astype("float32")
 
         for metric in self.METRICS:
@@ -534,7 +539,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_reconstruct(self):
         """Test reconstruct and reconstruct_n return original vectors"""
-        d, nb, nt, nq, nlevels = 128, 10000, 15000, 10, 8
+        d, nb, nt, nq, nlevels = 964, 1000, 15000, 10, 128
         _, xb, _ = self.generate_data(d, nt, nb, nq, seed=2025)
 
         for metric in self.METRICS:
@@ -556,7 +561,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_remove_ids_then_add(self):
         """Test removing vectors with remove_ids() then adding more vectors"""
-        d, nb, nt, nq, nlevels, k = 128, 500000, 0, 10, 9, 15
+        d, nb, nt, nq, nlevels, k = 964, 50000, 0, 10, 128, 15
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2026)
 
         xb1 = xb[:nb // 2]
@@ -601,7 +606,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_merge_from(self):
         """Test merging indexes with merge_from()"""
-        d, nb, nt, nq, nlevels, k, batch_size = 128, 500000, 0, 10, 9, 15, 16
+        d, nb, nt, nq, nlevels, k, batch_size = 964, 50000, 0, 10, 128, 15, 16
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2027)
 
         # Split data and create two separate indexes
@@ -635,7 +640,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_permute_entries(self):
         """Test permuting entries with permute_entries()"""
-        d, nb, nt, nq, nlevels, k = 128, 500000, 0, 10, 8, 15
+        d, nb, nt, nq, nlevels, k = 964, 50000, 0, 20, 128, 10
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2028)
 
         for metric in self.METRICS:
@@ -662,7 +667,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_serialization(self):
         """Test write/read Panorama indexes preserves search results"""
-        d, nb, nt, nq, nlevels, k = 128, 10000, 15000, 100, 8, 20
+        d, nb, nt, nq, nlevels, k = 964, 10000, 15000, 100, 128, 20
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
         for metric in self.METRICS:

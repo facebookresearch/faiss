@@ -275,7 +275,7 @@ class Optimizer:
             pareto_metric=ParetoMetric.TIME_SPACE,
         )
         results = [
-            factory[r] for r in set(v["factory"] for _, _, _, k, v in filtered)
+            factory[r] for r in {v["factory"] for _, _, _, k, v in filtered}
         ]
         return results
 

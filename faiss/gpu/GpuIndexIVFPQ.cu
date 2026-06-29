@@ -392,10 +392,10 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         cuvs::neighbors::ivf_pq::index_params cuvs_index_params;
         cuvs_index_params.n_lists = nlist;
         cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
-        cuvs_index_params.kmeans_trainset_fraction =
-                static_cast<double>(cp.max_points_per_centroid * nlist) /
-                static_cast<double>(n);
-        cuvs_index_params.kmeans_n_iters = cp.niter;
+        // kmeans_trainset_fraction and kmeans_n_iters intentionally left
+        // at cuVS defaults (0.5 and 20). Faiss's cp.max_points_per_centroid
+        // (256) was designed for CPU k-means and produces severely
+        // underparameterized training at scale through cuVS.
         cuvs_index_params.pq_bits = bitsPerCode_;
         cuvs_index_params.pq_dim = subQuantizers_;
         cuvs_index_params.conservative_memory_allocation = false;

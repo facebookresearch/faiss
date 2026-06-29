@@ -54,6 +54,15 @@ DEFINE_SETTER(SearchParametersIVF, size_t, nprobe)
 DEFINE_GETTER(SearchParametersIVF, size_t, max_codes)
 DEFINE_SETTER(SearchParametersIVF, size_t, max_codes)
 
+DEFINE_GETTER(SearchParametersIVF, size_t, max_lists_num)
+DEFINE_SETTER(SearchParametersIVF, size_t, max_lists_num)
+
+DEFINE_GETTER(SearchParametersIVF, int, ensure_topk_full)
+DEFINE_SETTER_STATIC(SearchParametersIVF, bool, int, ensure_topk_full)
+
+DEFINE_GETTER(SearchParametersIVF, size_t, max_empty_result_buckets)
+DEFINE_SETTER(SearchParametersIVF, size_t, max_empty_result_buckets)
+
 /// IndexIVF definitions
 
 DEFINE_DESTRUCTOR(IndexIVF)

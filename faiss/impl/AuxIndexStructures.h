@@ -18,6 +18,8 @@
 #include <mutex>
 #include <vector>
 
+#include <faiss/impl/InvertedListScannerStats.h>
+
 #include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
 
@@ -92,6 +94,7 @@ struct RangeQueryResult {
     idx_t qno;   //< id of the query
     size_t nres; //< nb of results for this query
     RangeSearchPartialResult* pres;
+    InvertedListScannerStats stats;
 
     /// called by search function to report a new result
     void add(float dis, idx_t id);

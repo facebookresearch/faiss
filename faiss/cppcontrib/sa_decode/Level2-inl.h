@@ -8,6 +8,12 @@
 #ifndef LEVEL2_INL_H
 #define LEVEL2_INL_H
 
+// GCC does not recognize #pragma unroll (Clang extension)
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif
+
 #include <cstddef>
 #include <cstdint>
 
@@ -464,4 +470,9 @@ struct Index2LevelDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
 #endif // LEVEL2_INL_H

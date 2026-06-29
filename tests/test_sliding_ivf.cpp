@@ -80,7 +80,7 @@ void make_index_slices(
         std::vector<faiss::idx_t> ids(nb);
         std::mt19937 rng;
         std::uniform_int_distribution<> distrib;
-        for (int j = 0; j < nb; j++) {
+        for (size_t j = 0; j < nb; j++) {
             ids[j] = distrib(rng);
         }
         index->add_with_ids(nb, xb.data(), ids.data());

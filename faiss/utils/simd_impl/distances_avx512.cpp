@@ -22,10 +22,10 @@ namespace faiss {
 template <>
 void fvec_madd<SIMDLevel::AVX512>(
         const size_t n,
-        const float* __restrict a,
+        const float* a,
         const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
+        const float* b,
+        float* c) {
     const size_t n16 = n / 16;
     const size_t n_for_masking = n % 16;
 
@@ -954,21 +954,6 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::AVX512>(
             &fvec_L2sqr_ny_nearest_D8<SIMDLevel::AVX512>);
 }
 
-template <>
-size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::AVX512>(
-        float* distances_tmp_buffer,
-        const float* x,
-        const float* y,
-        const float* y_sqlen,
-        size_t d,
-        size_t d_offset,
-        size_t ny) {
-    return fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::NONE>(
-            distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
-}
-
-// TODO: Following functions are not used in the current codebase. Check AVX2 ,
-// respective implementation has been used
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
         float* /* distances_tmp_buffer */,
@@ -1080,6 +1065,33 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
     }
 
     return current_min_index;
+}
+
+template <>
+size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::AVX512>(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    // optimized for a few special cases
+#define DISPATCH(dval)                                     \
+    case dval:                                             \
+        return fvec_L2sqr_ny_nearest_y_transposed_D<dval>( \
+                distances_tmp_buffer, x, y, y_sqlen, d_offset, ny);
+
+    switch (d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        default:
+            return fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::NONE>(
+                    distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
+    }
+#undef DISPATCH
 }
 
 template <>
