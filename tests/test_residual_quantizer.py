@@ -1276,6 +1276,33 @@ class TestIndexProductResidualQuantizer(unittest.TestCase):
         code_size = (ns * Msub * nbits + 7) // 8 + 1
         self.assertEqual(index.prq.code_size, code_size)
 
+    def test_symmetric_dis(self):
+        """AQDistanceComputerLUT::symmetric_dis must decode into its reserved
+        scratch region, not into LUT.data(). Decoding into LUT.data() silently
+        clobbers the lookup table computed by set_query(), so an interleaved
+        symmetric_dis() corrupts subsequent asymmetric distances -- which is
+        exactly what HNSW construction does. No crash, so only a value check
+        catches it."""
+        ds = datasets.SyntheticDataset(64, 1000, 10000, 1)
+        for search_type in (
+            faiss.AdditiveQuantizer.ST_LUT_nonorm,
+            faiss.AdditiveQuantizer.ST_decompress,
+        ):
+            index = faiss.IndexProductResidualQuantizer(
+                ds.d, 8, 2, 4, faiss.METRIC_INNER_PRODUCT, search_type
+            )
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            dc = index.get_distance_computer()
+            dc.set_query(faiss.swig_ptr(ds.get_queries()[0]))
+            before = [dc(j) for j in range(20)]
+            # An interleaved symmetric_dis() must leave the LUT
+            # untouched, and must stay in bounds.
+
+            dc.symmetric_dis(ds.nb - 1, ds.nb - 2)
+            after = [dc(j) for j in range(20)]
+            self.assertEqual(before, after)
+
 
 class TestIndexIVFProductResidualQuantizer(unittest.TestCase):
 

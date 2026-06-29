@@ -1171,7 +1171,7 @@ def handle_AutoTuneCriterion(the_class):
             assert I.shape == D.shape
         self.nq, self.gt_nnn = I.shape
         self.set_groundtruth_c(
-            self.gt_nnn, swig_ptr(D) if D else None, swig_ptr(I))
+            self.gt_nnn, swig_ptr(D) if D is not None else None, swig_ptr(I))
 
     def replacement_evaluate(self, D, I):
         assert I.shape == D.shape
