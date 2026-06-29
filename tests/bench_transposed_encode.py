@@ -103,11 +103,14 @@ def main() -> None:
     # Single-threaded for a clean per-core kernel signal.
     faiss.omp_set_num_threads(1)
 
+    # Sizes stay small so the run finishes well under the CI test deadline even
+    # in dynamic-dispatch mode, where the slow scalar NONE level is also timed
+    # on every case.
     # dsub in {1,2,4,8} -> the fast _D specialization is taken.
-    run_case(d=128, m=32, nbits=8, nb=1_000_000, ntrain=100_000, n_repeat=5)
-    run_case(d=64, m=16, nbits=8, nb=1_000_000, ntrain=100_000, n_repeat=5)
+    run_case(d=128, m=32, nbits=8, nb=50_000, ntrain=20_000, n_repeat=2)
+    run_case(d=64, m=16, nbits=8, nb=50_000, ntrain=20_000, n_repeat=2)
     # dsub=16 -> _D fast path NOT taken (control: no AVX512 vs NONE gap).
-    run_case(d=128, m=8, nbits=8, nb=1_000_000, ntrain=100_000, n_repeat=5)
+    run_case(d=128, m=8, nbits=8, nb=50_000, ntrain=20_000, n_repeat=2)
     sys.stdout.flush()
 
 
