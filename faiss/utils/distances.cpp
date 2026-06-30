@@ -442,6 +442,13 @@ void exhaustive_L2sqr_blas_default_impl(
         y_norms = y_norms2;
     }
 
+    // Heuristic threshold used to detect catastrophic cancellation in the
+    // L2-from-IP decomposition:
+    //   ||x||^2 + ||y||^2 - 2<x, y>.
+    // For suspiciously small results relative to the norm scale, recompute
+    // exact L2 directly from vector components.
+    constexpr float kBlasL2CancellationRelTol = 1e-6f;
+
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
         if (i1 > nx) {
@@ -474,19 +481,29 @@ void exhaustive_L2sqr_blas_default_impl(
                        &nyi);
             }
             for (size_t i = i0; i < i1; i++) {
+                const float* x_i = x + i * d;
                 float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
 
                 for (size_t j = j0; j < j1; j++) {
+                    if (!res.is_in_selection(j)) {
+                        *ip_line = HUGE_VALF;
+                        ip_line++;
+                        continue;
+                    }
+
                     float ip = *ip_line;
                     float dis = x_norms[i] + y_norms[j] - 2 * ip;
+                    const float norm_sum = x_norms[i] + y_norms[j];
 
-                    if (!res.is_in_selection(j)) {
-                        dis = HUGE_VALF;
+                    // For near-cancellation cases, avoid decomposition and
+                    // recompute the distance directly.
+                    if (dis < 0 || dis < kBlasL2CancellationRelTol * norm_sum) {
+                        dis = fvec_L2sqr(x_i, y + j * d, d);
                     }
-                    // negative values can occur for identical vectors
-                    // due to roundoff errors
-                    if (dis < 0) {
-                        dis = 0;
+
+                    // Clamp tiny negative values from rounding to zero.
+                    if (dis < 0.0f) {
+                        dis = 0.0f;
                     }
 
                     *ip_line = dis;
@@ -610,6 +627,7 @@ static void knn_db_parallel_impl(
 
     int nt = omp_get_max_threads();
     const size_t bs_y = distance_compute_blas_database_bs;
+    constexpr float kBlasL2CancellationRelTol = 1e-6f;
 
     // Per-thread result heaps: nt threads x nx queries x k results
     std::vector<T> all_dis(static_cast<size_t>(nt) * nx * k);
@@ -697,8 +715,17 @@ static void knn_db_parallel_impl(
 
                         if constexpr (C::is_max) {
                             dis = x_norms[i] + y_norms[global_j] - 2 * ip;
-                            if (dis < 0) {
-                                dis = 0;
+                            const float norm_sum = x_norms[i] + y_norms[global_j];
+                            if (
+                                    dis < 0 ||
+                                    dis <
+                                            kBlasL2CancellationRelTol *
+                                                    norm_sum) {
+                                dis = fvec_L2sqr(
+                                        x + i * d, y + global_j * d, d);
+                            }
+                            if (dis < 0.0f) {
+                                dis = 0.0f;
                             }
                         } else {
                             dis = ip;
