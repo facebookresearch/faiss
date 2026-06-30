@@ -29,8 +29,11 @@ from common_faiss_tests import for_all_simd_levels
 
 def _popcount_xor(a, b):
     """Reference Hamming distance via NumPy; bit-exact across platforms."""
-    return np.unpackbits(np.bitwise_xor(a, b), axis=-1).sum(axis=-1).astype(
-        np.int32)
+    return (
+        np.unpackbits(np.bitwise_xor(a, b), axis=-1)
+        .sum(axis=-1)
+        .astype(np.int32)
+    )
 
 
 def _make_codes(n, ncodes, seed):
@@ -60,8 +63,13 @@ class TestHammingUtils(unittest.TestCase):
                 b = _make_codes(nb, ncodes, seed=2 + ncodes)
                 dis = np.empty((na, nb), dtype=np.int32)
                 faiss.hammings(
-                    faiss.swig_ptr(a), faiss.swig_ptr(b),
-                    na, nb, ncodes, faiss.swig_ptr(dis))
+                    faiss.swig_ptr(a),
+                    faiss.swig_ptr(b),
+                    na,
+                    nb,
+                    ncodes,
+                    faiss.swig_ptr(dis),
+                )
                 expected = _popcount_xor(a[:, None, :], b[None, :, :])
                 np.testing.assert_array_equal(dis, expected)
 
@@ -74,9 +82,15 @@ class TestHammingUtils(unittest.TestCase):
                 D = np.empty((na, k), dtype=np.int32)
                 I = np.empty((na, k), dtype=np.int64)
                 faiss.hammings_knn_mc(
-                    faiss.swig_ptr(a), faiss.swig_ptr(b),
-                    na, nb, k, ncodes,
-                    faiss.swig_ptr(D), faiss.swig_ptr(I))
+                    faiss.swig_ptr(a),
+                    faiss.swig_ptr(b),
+                    na,
+                    nb,
+                    k,
+                    ncodes,
+                    faiss.swig_ptr(D),
+                    faiss.swig_ptr(I),
+                )
 
                 full = _popcount_xor(a[:, None, :], b[None, :, :])
                 # Distance-at-returned-index agrees with the reference.
@@ -85,7 +99,7 @@ class TestHammingUtils(unittest.TestCase):
                 # Each returned distance is no greater than the true k-th
                 # smallest, so the result really is a top-k (with ties
                 # broken in some impl-defined way).
-                kth = np.partition(full, k - 1, axis=1)[:, k - 1:k]
+                kth = np.partition(full, k - 1, axis=1)[:, k - 1 : k]
                 self.assertTrue(np.all(D <= kth))
                 # IDs within a row are unique.
                 for i in range(na):
@@ -99,10 +113,17 @@ class TestHammingUtils(unittest.TestCase):
                 b = _make_codes(n2, ncodes, seed=21 + ncodes)
                 count = np.zeros(1, dtype=np.uint64)
                 faiss.hamming_count_thres(
-                    faiss.swig_ptr(a), faiss.swig_ptr(b),
-                    n1, n2, ht, ncodes, faiss.swig_ptr(count))
-                expected = int((_popcount_xor(
-                    a[:, None, :], b[None, :, :]) <= ht).sum())
+                    faiss.swig_ptr(a),
+                    faiss.swig_ptr(b),
+                    n1,
+                    n2,
+                    ht,
+                    ncodes,
+                    faiss.swig_ptr(count),
+                )
+                expected = int(
+                    (_popcount_xor(a[:, None, :], b[None, :, :]) <= ht).sum()
+                )
                 # Sanity: thresholds chosen so the count is non-trivial
                 # (otherwise the test passes vacuously).
                 self.assertGreater(expected, 0)
@@ -123,13 +144,19 @@ class TestHammingUtils(unittest.TestCase):
                 idx = np.empty(2 * expected_count + 4, dtype=np.int64)
                 dis = np.empty(expected_count + 4, dtype=np.int32)
                 got = faiss.match_hamming_thres(
-                    faiss.swig_ptr(a), faiss.swig_ptr(b),
-                    n1, n2, ht, ncodes,
-                    faiss.swig_ptr(idx), faiss.swig_ptr(dis))
+                    faiss.swig_ptr(a),
+                    faiss.swig_ptr(b),
+                    n1,
+                    n2,
+                    ht,
+                    ncodes,
+                    faiss.swig_ptr(idx),
+                    faiss.swig_ptr(dis),
+                )
                 self.assertEqual(got, expected_count)
                 # Decode the (i, j) pairs.
-                i_idx = idx[0:2 * got:2]
-                j_idx = idx[1:2 * got:2]
+                i_idx = idx[0 : 2 * got : 2]
+                j_idx = idx[1 : 2 * got : 2]
                 dis = dis[:got]
                 # Every reported pair is within threshold and matches the
                 # reference distance at (i, j).
@@ -148,8 +175,8 @@ class TestHammingUtils(unittest.TestCase):
                 dbs = _make_codes(n, ncodes, seed=40 + ncodes)
                 count = np.zeros(1, dtype=np.uint64)
                 faiss.crosshamming_count_thres(
-                    faiss.swig_ptr(dbs), n, ht, ncodes,
-                    faiss.swig_ptr(count))
+                    faiss.swig_ptr(dbs), n, ht, ncodes, faiss.swig_ptr(count)
+                )
                 full = _popcount_xor(dbs[:, None, :], dbs[None, :, :])
                 # crosshamming counts unordered pairs i < j.
                 triu = np.triu(full <= ht, k=1)
@@ -172,19 +199,24 @@ class TestHammingUtils(unittest.TestCase):
                 heap.ids = faiss.swig_ptr(I)
                 heap.val = faiss.swig_ptr(D)
                 faiss.generalized_hammings_knn_hc(
-                    heap, faiss.swig_ptr(a), faiss.swig_ptr(b),
-                    nb, code_size, True)
+                    heap,
+                    faiss.swig_ptr(a),
+                    faiss.swig_ptr(b),
+                    nb,
+                    code_size,
+                    True,
+                )
 
                 # Reference distance: number of bytes that differ.
-                ref_dist = code_size - (
-                    a[:, None, :] == b[None, :, :]).sum(axis=-1).astype(
-                        np.int32)
+                ref_dist = code_size - (a[:, None, :] == b[None, :, :]).sum(
+                    axis=-1
+                ).astype(np.int32)
                 # Distance at returned index matches the reference.
                 returned = np.take_along_axis(ref_dist, I, axis=1)
                 np.testing.assert_array_equal(D, returned)
                 # Each returned distance is no greater than the true k-th
                 # smallest -- catches an impl that returns I=[0..k-1].
-                kth = np.partition(ref_dist, k - 1, axis=1)[:, k - 1:k]
+                kth = np.partition(ref_dist, k - 1, axis=1)[:, k - 1 : k]
                 self.assertTrue(np.all(D <= kth))
                 # ordered=True was passed: distances within each row are
                 # non-decreasing.

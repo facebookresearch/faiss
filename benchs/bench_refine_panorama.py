@@ -74,7 +74,9 @@ nprobe_list = [4, 16, 64, 256]
 kfactor_list = [1, 8, 64, 256, 1024]
 
 print(f"Benchmark on GIST1M with base '{factory}', k={k}, nq={nq}")
-print("nprobe  k_factor   recall_flat   qps_flat   recall_pano   qps_pano   dims_scanned(%)  speedup(x)")
+print(
+    "nprobe  k_factor   recall_flat   qps_flat   recall_pano   qps_pano   dims_scanned(%)  speedup(x)"
+)
 
 faiss.omp_set_num_threads(1)
 
@@ -111,10 +113,16 @@ for nprobe in nprobe_list:
             qps_p_list.append(qps_p)
 
             # Draw speedup and recall
-            plt.plot([kf, kf], [qps_f, qps_p], 'k--', linewidth=1, alpha=0.7)
+            plt.plot([kf, kf], [qps_f, qps_p], "k--", linewidth=1, alpha=0.7)
             mid_y = (qps_f * qps_p) ** 0.5
-            plt.text(kf + 10, mid_y, f"{speedup:.2f}x\nr={recall_p:.2f}", 
-            ha="left", va="center", fontsize=8)
+            plt.text(
+                kf + 10,
+                mid_y,
+                f"{speedup:.2f}x\nr={recall_p:.2f}",
+                ha="left",
+                va="center",
+                fontsize=8,
+            )
 
 plt.plot(kfactor_list, qps_f_list, label="RefineFlat")
 plt.plot(kfactor_list, qps_p_list, label=f"RefineFlatPanorama({nlevels})")
@@ -123,7 +131,9 @@ plt.ylim(bottom=100)
 plt.xlim(right=kfactor_list[-1] * 1.075)
 plt.xlabel("k_factor (k_base = k * k_factor)")
 plt.ylabel("QPS")
-plt.title(f"GIST1M, base={factory}, nprobe={fixed_nprobe}, nlevels={nlevels}, k={k}")
+plt.title(
+    f"GIST1M, base={factory}, nprobe={fixed_nprobe}, nlevels={nlevels}, k={k}"
+)
 plt.legend()
 plt.tight_layout()
 plt.savefig("bench_refine_panorama.png", bbox_inches="tight")

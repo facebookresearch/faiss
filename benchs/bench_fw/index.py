@@ -73,9 +73,8 @@ class IndexBase:
     def set_index_param(index, name, val, assert_same=False):
         index = faiss.downcast_index(index)
         val = int(val)
-        if (
-            isinstance(index, faiss.IndexPreTransform)
-            or isinstance(index, faiss.IndexIDMap)
+        if isinstance(index, faiss.IndexPreTransform) or isinstance(
+            index, faiss.IndexIDMap
         ):
             Index.set_index_param(index.index, name, val)
             return
@@ -278,8 +277,8 @@ class IndexBase:
     ):
         logger.info("knn_search: begin")
         if (
-            search_parameters is not None and
-            search_parameters.get("snap", 0) == 1
+            search_parameters is not None
+            and search_parameters.get("snap", 0) == 1
         ):
             query_vectors = self.snap(query_vectors)
         filename = (
@@ -329,9 +328,9 @@ class IndexBase:
                 xq = self.io.get_dataset(query_vectors)
                 (D, I), t, _ = timer("knn_search", lambda: index.search(xq, k))
             if (
-                self.is_flat() or
-                not hasattr(self, "database_vectors") or
-                (self.database_vectors is None)
+                self.is_flat()
+                or not hasattr(self, "database_vectors")
+                or (self.database_vectors is None)
             ):  # TODO
                 R = D
             else:
@@ -350,9 +349,7 @@ class IndexBase:
                     "nlist": int(stats.nlist // repeat),
                     "ndis": int(stats.ndis // repeat),
                     "nheap_updates": int(stats.nheap_updates // repeat),
-                    "quantization_time": int(
-                        stats.quantization_time // repeat
-                    ),
+                    "quantization_time": int(stats.quantization_time // repeat),
                     "search_time": int(stats.search_time // repeat),
                 }
             self.io.write_file(filename, ["D", "I", "R", "P"], [D, I, R, P])
@@ -482,14 +479,12 @@ class IndexBase:
     ):
         logger.info("range_search: begin")
         if (
-            search_parameters is not None and
-            search_parameters.get("snap", 0) == 1
+            search_parameters is not None
+            and search_parameters.get("snap", 0) == 1
         ):
             query_vectors = self.snap(query_vectors)
         filename = (
-            self.get_range_search_name(
-                search_parameters, query_vectors, radius
-            )
+            self.get_range_search_name(search_parameters, query_vectors, radius)
             + "zip"
         )
         if self.io.file_exist(filename):
@@ -527,9 +522,7 @@ class IndexBase:
                 R = D
             else:
                 xb = self.io.get_dataset(self.database_vectors)
-                R = refine_distances_range(
-                    lims, D, I, xq, xb, self.metric_type
-                )
+                R = refine_distances_range(lims, D, I, xq, xb, self.metric_type)
             P = {
                 "time": t,
                 "radius": radius,
@@ -543,9 +536,7 @@ class IndexBase:
                     "nlist": int(stats.nlist // repeat),
                     "ndis": int(stats.ndis // repeat),
                     "nheap_updates": int(stats.nheap_updates // repeat),
-                    "quantization_time": int(
-                        stats.quantization_time // repeat
-                    ),
+                    "quantization_time": int(stats.quantization_time // repeat),
                     "search_time": int(stats.search_time // repeat),
                 }
             self.io.write_file(
@@ -681,7 +672,8 @@ class Index(IndexBase):
             _, t, _ = timer(
                 "add_with_ids",
                 lambda: index.add_with_ids(
-                    xb, np.arange(len(xb), dtype='int32')),
+                    xb, np.arange(len(xb), dtype="int32")
+                ),
                 once=True,
             )
         else:
@@ -934,7 +926,9 @@ class IndexFromFactory(Index):
                 assert self.training_vectors is not None
                 codec_name += self.training_vectors.get_filename("xt")
             if self.construction_params is not None:
-                codec_name += IndexBaseDescriptor.param_dict_list_to_name(self.construction_params)
+                codec_name += IndexBaseDescriptor.param_dict_list_to_name(
+                    self.construction_params
+                )
         self.codec_name = codec_name
         return self.codec_name
 
@@ -969,7 +963,11 @@ class IndexFromFactory(Index):
             assert codec_size is not None
             meta = {
                 "training_time": training_time,
-                "training_size": self.training_vectors.num_vectors if self.training_vectors else 0,
+                "training_size": (
+                    self.training_vectors.num_vectors
+                    if self.training_vectors
+                    else 0
+                ),
                 "codec_size": codec_size,
                 "sa_code_size": self.get_sa_code_size(codec),
                 "code_size": self.get_code_size(codec),

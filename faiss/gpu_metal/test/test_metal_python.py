@@ -123,7 +123,8 @@ class TestMetalIVFFlat(unittest.TestCase):
 
         quantizer = faiss.IndexFlatIP(d)
         cpu_index = faiss.IndexIVFFlat(
-            quantizer, d, nlist, faiss.METRIC_INNER_PRODUCT)
+            quantizer, d, nlist, faiss.METRIC_INNER_PRODUCT
+        )
         cpu_index.nprobe = nprobe
         cpu_index.train(xb)
         cpu_index.add(xb)

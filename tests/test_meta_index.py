@@ -86,7 +86,9 @@ class Shards(unittest.TestCase):
         _Dref, Iref = ref_index.search(xq, k)
 
         # Create both threaded and non-threaded shard indexes
-        shard_index_nonthreaded = faiss.IndexShards(d, False)  # explicitly non-threaded
+        shard_index_nonthreaded = faiss.IndexShards(
+            d, False
+        )  # explicitly non-threaded
         shard_index_threaded = faiss.IndexShards(d, True)  # explicitly threaded
         shard_index_2 = faiss.IndexShards(d, True, False)
 
