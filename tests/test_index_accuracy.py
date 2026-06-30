@@ -130,7 +130,7 @@ class IndexAccuracy(unittest.TestCase):
         index.polysemous_training.n_iter = 50000
         index.polysemous_training.n_redo = 1
         res = ev.launch("normal PQ", index)
-        e_baseline = ev.evalres(res)
+        ev.evalres(res)
         index.search_type = faiss.IndexPQ.ST_polysemous
 
         index.polysemous_ht = int(M / 16.0 * 58)
@@ -139,7 +139,7 @@ class IndexAccuracy(unittest.TestCase):
         stats.reset()
 
         res = ev.launch("Polysemous ht=%d" % index.polysemous_ht, index)
-        e_polysemous = ev.evalres(res)
+        ev.evalres(res)
         # The randu dataset is difficult, so we are not too picky on
         # the results. Here we assert that we have < 10 % loss when
         # computing full PQ on fewer than 20% of the data.

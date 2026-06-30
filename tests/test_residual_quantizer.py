@@ -357,8 +357,7 @@ def retrain_AQ_codebook(index, xt):
     codes_packed = index.sa_encode(xt)
     n, code_size = codes_packed.shape
 
-    x_decoded = index.sa_decode(codes_packed)
-    MSE = ((xt - x_decoded) ** 2).sum() / n
+    index.sa_decode(codes_packed)
 
     codes = unpack_codes(index.rq, codes_packed)
     codebook_offsets = faiss.vector_to_array(rq.codebook_offsets)
@@ -381,8 +380,6 @@ def retrain_AQ_codebook(index, xt):
             C,
             xt,
         )
-
-    MSE = ((C @ B - xt) ** 2).sum() / n
 
     # replace codebook
     # faiss.copy_array_to_vector(B.astype('float32').ravel(), index.rq.codebooks)

@@ -119,10 +119,6 @@ class OfflineIVF:
             f"{self.index_factory_fn}_np{self.nprobe}.npy"
         )
 
-        fp = 32
-        if self.dt == "float16":
-            fp = 16
-
         self.xq_bs = cfg["query_batch_size"]
         if "metric" in cfg:
             self.metric = eval(f'faiss.{cfg["metric"]}')

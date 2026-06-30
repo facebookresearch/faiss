@@ -430,7 +430,7 @@ def train_preprocessor():
         dout = int(preproc_str[4:-1])
         preproc = faiss.PCAMatrix(d, dout, 0, True)
     else:
-        assert False
+        raise AssertionError()
     preproc.train(sanitize(xt[:1000000]))
     print("preproc train done in %.3f s" % (time.time() - t0))
     return preproc
@@ -632,7 +632,7 @@ def compute_populated_index_2(preproc):
                 i1 - i0, faiss.swig_ptr(xs), None, faiss.swig_ptr(assign)
             )
         else:
-            assert False
+            raise AssertionError()
 
         print("\r%d/%d (%.3f s)  " % (i0, nb, time.time() - t0), end=" ")
         sys.stdout.flush()

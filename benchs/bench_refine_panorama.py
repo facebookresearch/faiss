@@ -5,11 +5,9 @@
 
 import multiprocessing as mp
 import time
-import math
 
 import faiss
 import matplotlib.pyplot as plt
-import numpy as np
 
 try:
     from faiss.contrib.datasets_fb import DatasetGIST1M

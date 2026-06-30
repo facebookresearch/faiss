@@ -85,7 +85,7 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
             return None
 
     def perform_search(self, centroids):
-        assert False, "should not be called"
+        raise AssertionError("should not be called")
 
     def assign_to(self, centroids, weights=None):
         assert weights is None

@@ -185,7 +185,7 @@ class TestHNSW(unittest.TestCase):
         self.assertRaises(RuntimeError, index2.search, self.xb, 1)
 
         # make sure we can store an index with empty storage
-        index4 = faiss.deserialize_index(faiss.serialize_index(index2))
+        faiss.deserialize_index(faiss.serialize_index(index2))
 
         # add storage afterwards
         index.storage = faiss.clone_index(index.storage)
@@ -469,7 +469,6 @@ class TestNSG(unittest.TestCase):
 
     def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: "L2", faiss.METRIC_INNER_PRODUCT: "IP"}
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)

@@ -40,7 +40,7 @@ def run_bench(d, dsub, nbit=8, metric=None):
             elif metric == faiss.METRIC_L2:
                 pq.compute_distance_tables(nx, sp(x), sp(new_tab))
             else:
-                assert False
+                raise AssertionError()
             t1 = time.time()
             if run >= nrun // 5:  # the rest is considered warmup
                 times.append((t1 - t0))

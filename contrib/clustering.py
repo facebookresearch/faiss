@@ -53,9 +53,6 @@ def two_level_clustering(
     iteration_stats = [km.iteration_stats]
     log()
 
-    # coarse centroids
-    centroids1 = km.centroids
-
     log("assigning the training set")
     t0 = time.time()
     _, assign1 = km.assign(xt)

@@ -515,7 +515,7 @@ def dataset_from_name(dataset="deep1M", download=False):
         elif szsuf[-1] == "k":
             dbsize = 1000 * int(szsuf[:-1])
         else:
-            assert False, "did not recognize suffix " + szsuf
+            raise AssertionError("did not recognize suffix " + szsuf)
         return DatasetDeep1B(nb=dbsize)
 
     elif dataset == "music-100":

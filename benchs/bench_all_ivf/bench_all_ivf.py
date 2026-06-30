@@ -667,7 +667,7 @@ def main():
                         index.merge_from(index_i, index.ntotal)
                     sz = index.ntotal
             else:
-                assert False, "provide --indexfile"
+                raise AssertionError("provide --indexfile")
 
         print("================== Searching")
         run_search(args, ds, index, res)
