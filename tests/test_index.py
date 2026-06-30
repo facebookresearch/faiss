@@ -233,6 +233,42 @@ class TestIndexFlatL2(unittest.TestCase):
         #  np.testing.assert_equal(Iref, I1)
         np.testing.assert_equal(D3, D1)
 
+    def test_indexflat_l2_sync_norms_stale_after_add(self):
+        # Regression test for #5320: calling sync_l2norms() after a partial
+        # add() and then adding more vectors left cached_l2norms shorter than
+        # ntotal. The cached-norms distance computer then read stale/out-of-
+        # range norms, returning invalid (e.g. negative) squared L2 distances
+        # and inconsistent top-k results.
+        d = 16
+        nb = 200
+        nq = 16
+        k = 10
+        first_batch = 10
+        rs = np.random.RandomState(123)
+        xb = rs.randint(-50, 51, size=(nb, d)).astype("float32")
+        xq = rs.randint(-50, 51, size=(nq, d)).astype("float32")
+
+        # Exact oracle.
+        flat = faiss.IndexFlatL2(d)
+        flat.add(xb)
+        Dref, Iref = flat.search(xq, k)
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.hnsw.efConstruction = 128
+        index.hnsw.efSearch = 256
+        index.add(xb[:first_batch])
+        faiss.downcast_index(index.storage).sync_l2norms()
+        index.add(xb[first_batch:])
+        D, I = index.search(xq, k)
+
+        # Squared L2 distances must never be negative.
+        self.assertGreaterEqual(D.min(), 0.0)
+        # The exact nearest neighbour for each query must be found with the
+        # correct (non-negative) distance.
+        for row in range(nq):
+            self.assertEqual(I[row, 0], Iref[row, 0])
+            np.testing.assert_almost_equal(D[row, 0], Dref[row, 0], decimal=4)
+
 
 @for_all_simd_levels
 class TestIndexFlatL2Panorama(unittest.TestCase):
