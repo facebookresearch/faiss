@@ -116,6 +116,8 @@ void faiss_IndexBinaryIVF_invlists_get_ids(
     size_t list_size =
             reinterpret_cast<const IndexBinaryIVF*>(index)->get_list_size(
                     list_no);
-    memcpy(invlist, list, list_size * sizeof(idx_t));
+    if (list_size > 0 && list_size <= SIZE_MAX / sizeof(idx_t)) {
+        memcpy(invlist, list, list_size * sizeof(idx_t));
+    }
 }
 }
