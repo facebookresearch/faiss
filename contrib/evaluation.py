@@ -348,7 +348,7 @@ class OperatingPoints:
             # maybe it shadows some other operating point completely?
             while i < len(self.operating_points):
                 op_Ls, perf2, t2 = self.operating_points[i]
-                if perf >= perf2 and t < t2:
+                if perf >= perf2 and t <= t2:
                     self.suboptimal_points.append(self.operating_points.pop(i))
                 else:
                     i += 1

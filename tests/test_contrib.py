@@ -304,6 +304,25 @@ class TestRangeEval(unittest.TestCase):
             np.testing.assert_array_almost_equal(ref_recalls, recalls)
 
 
+class TestOperatingPoints(unittest.TestCase):
+
+    def test_equal_time_better_perf_shadows(self):
+        # A point with strictly better performance at the *same* time
+        # dominates an earlier point and must shadow it. The admission test
+        # is_pareto_optimal uses t <= t_new, so the prune loop must match.
+        op = evaluation.OperatingPoints()
+        op.add_operating_point("A", 0.5, 1.0)
+        op.add_operating_point("B", 0.9, 1.0)
+        keys = [k for k, _, _ in op.operating_points]
+        self.assertEqual(keys, ["B"])
+        # no kept point may be dominated by another kept point
+        pts = op.operating_points
+        for _, pi, ti in pts:
+            for _, pj, tj in pts:
+                self.assertFalse(
+                    pj >= pi and tj <= ti and (pj > pi or tj < ti))
+
+
 class TestPreassigned(unittest.TestCase):
 
     def test_index_pretransformed(self):
