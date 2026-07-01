@@ -20,6 +20,7 @@ import faiss
 import numpy as np
 from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
 @for_all_simd_levels
@@ -57,26 +58,27 @@ class TestIndexFlatPanorama(unittest.TestCase):
         D_panorama,
         I_panorama,
         rtol=1e-5,
-        atol=1e-7,
-        otol=1e-3,
+        atol=1e-4,
     ):
-        # Allow small tolerance in overlap rate to account for
-        # floating-point errors in distance computations that can affect
-        # ordering when distances are nearly equal.
-        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b)
-        overlap_rate = np.mean(I_regular == I_panorama)
-
-        self.assertGreater(
-            overlap_rate,
-            1 - otol,
-            f"Overlap rate {overlap_rate:.6f} is not > {1 - otol:.3f}. ",
-        )
+        # The reference IndexFlat kernel is SIMD-dispatched, so its float
+        # reduction order changes with the runtime SIMD level (wide FMA under
+        # AVX512_SPR), while the Panorama kernel is compiled once at baseline
+        # and uses the algebraically equivalent a * a + b * b - 2(a * b)
+        # decomposition instead of (a - b) * (a - b). Both are exact but round
+        # differently, so near-tied neighbors can swap order. Compare with the
+        # tie-aware kNN comparator: distances must match within tolerance and
+        # ids only need to agree as sets within each distance tie-group. This is
+        # variant-agnostic (NONE / AVX2 / AVX512 / AVX512_SPR) rather than tuned
+        # to one dispatch level's gap.
         np.testing.assert_allclose(
             D_regular,
             D_panorama,
             rtol=rtol,
             atol=atol,
             err_msg="Distances mismatch",
+        )
+        check_ref_knn_with_draws(
+            D_regular, I_regular, D_panorama, I_panorama, rtol=rtol
         )
 
     def assert_range_results_equal(
@@ -96,14 +98,15 @@ class TestIndexFlatPanorama(unittest.TestCase):
         for i in range(nq):
             n_results = lims_regular[i + 1] - lims_regular[i]
             if n_results > 0:
-                ids_reg = I_regular[lims_regular[i]: lims_regular[i + 1]]
-                dist_reg = D_regular[lims_regular[i]: lims_regular[i + 1]]
-                ids_pan = I_panorama[lims_panorama[i]: lims_panorama[i + 1]]
-                dist_pan = D_panorama[lims_panorama[i]: lims_panorama[i + 1]]
+                ids_reg = I_regular[lims_regular[i] : lims_regular[i + 1]]
+                dist_reg = D_regular[lims_regular[i] : lims_regular[i + 1]]
+                ids_pan = I_panorama[lims_panorama[i] : lims_panorama[i + 1]]
+                dist_pan = D_panorama[lims_panorama[i] : lims_panorama[i + 1]]
 
                 sort_reg, sort_pan = np.argsort(ids_reg), np.argsort(ids_pan)
                 np.testing.assert_array_equal(
-                    ids_reg[sort_reg], ids_pan[sort_pan])
+                    ids_reg[sort_reg], ids_pan[sort_pan]
+                )
                 np.testing.assert_allclose(
                     dist_reg[sort_reg], dist_pan[sort_pan], rtol=1e-5
                 )
@@ -119,7 +122,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
@@ -137,7 +141,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
@@ -153,15 +158,16 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
         for metric in self.METRICS:
             index_regular = self.create_flat(d, xb, metric=metric)
-            index_panorama = self.create_panorama(
-                d, nlevels, xb, metric=metric)
+            index_panorama = self.create_panorama(d, nlevels, xb, metric=metric)
 
             for radius in [0.5, 1.0, 2.0, 5.0]:
                 with self.subTest(metric=metric, radius=radius):
                     lims_reg, D_reg, I_reg = index_regular.range_search(
-                        xq, radius)
+                        xq, radius
+                    )
                     lims_pan, D_pan, I_pan = index_panorama.range_search(
-                        xq, radius)
+                        xq, radius
+                    )
 
                     is_valid = (
                         (D_pan <= radius)
@@ -200,8 +206,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
                     stats = faiss.cvar.indexPanorama_stats
                     ratio_dims_scanned = stats.ratio_dims_scanned
-                    self.assertLess(ratio_dims_scanned,
-                                    prev_ratio_dims_scanned)
+                    self.assertLess(ratio_dims_scanned, prev_ratio_dims_scanned)
                     prev_ratio_dims_scanned = ratio_dims_scanned
 
             faiss.omp_set_num_threads(nt)
@@ -218,7 +223,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
                     index_regular = self.create_flat(d, xb, metric=metric)
                     index_panorama = self.create_panorama(
-                        d, nlevels, xb, metric=metric)
+                        d, nlevels, xb, metric=metric
+                    )
 
                     D_regular, I_regular = index_regular.search(xq, k)
                     D_panorama, I_panorama = index_panorama.search(xq, k)
@@ -236,13 +242,15 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
 
                 self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama)
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
 
     def test_multiple_levels_small_dimension(self):
         """Test edge case: more levels than dimension naturally supports"""
@@ -253,13 +261,15 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
 
                 self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama)
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
 
     # ID selector tests
 
@@ -272,15 +282,18 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 params = faiss.SearchParameters()
                 params.sel = faiss.IDSelectorRange(10000, 50000)
 
                 D_regular, I_regular = index_regular.search(
-                    xq, k, params=params)
+                    xq, k, params=params
+                )
                 D_panorama, I_panorama = index_panorama.search(
-                    xq, k, params=params)
+                    xq, k, params=params
+                )
 
                 self.assertTrue(np.all(I_panorama >= 10000))
                 self.assertTrue(np.all(I_panorama < 50000))
@@ -297,17 +310,21 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 allowed_ids = np.array(
-                    [i * 100 for i in range(500)], dtype=np.int64)
+                    [i * 100 for i in range(500)], dtype=np.int64
+                )
                 params = faiss.SearchParameters()
                 params.sel = faiss.IDSelectorBatch(allowed_ids)
 
                 D_regular, I_regular = index_regular.search(
-                    xq, k, params=params)
+                    xq, k, params=params
+                )
                 D_panorama, I_panorama = index_panorama.search(
-                    xq, k, params=params)
+                    xq, k, params=params
+                )
 
                 allowed_set = set(allowed_ids)
                 for id_val in I_panorama.flatten():
@@ -325,15 +342,18 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 params = faiss.SearchParameters()
                 params.sel = faiss.IDSelectorRange(20, 60)
 
                 D_regular, I_regular = index_regular.search(
-                    xq, k, params=params)
+                    xq, k, params=params
+                )
                 D_panorama, I_panorama = index_panorama.search(
-                    xq, k, params=params)
+                    xq, k, params=params
+                )
 
                 self.assertTrue(np.all(I_panorama >= 20))
                 self.assertTrue(np.all(I_panorama < 60))
@@ -349,7 +369,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
         for metric in self.METRICS:
             with self.subTest(metric=metric):
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 params = faiss.SearchParameters()
                 params.sel = faiss.IDSelectorRange(nb + 100, nb + 200)
@@ -363,6 +384,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
         """Test correctness at various batch size boundaries"""
         d, nq, k = 128, 10, 15
         # random train not needed for Flat indexes
+        # seed the (otherwise unseeded) query draw so runs are reproducible
+        np.random.seed(1234)
         xq = np.random.rand(nq, d).astype("float32")
 
         for metric in self.METRICS:
@@ -384,7 +407,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
                     index_regular = self.create_flat(d, xb, metric=metric)
                     index_panorama = self.create_panorama(
-                        d, nlevels=8, xb=xb, metric=metric)
+                        d, nlevels=8, xb=xb, metric=metric
+                    )
 
                     D_regular, I_regular = index_regular.search(xq, k)
                     D_panorama, I_panorama = index_panorama.search(xq, k)
@@ -404,7 +428,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
             for k, bs in [(1, 1), (10, 128), (100, 4096)]:
                 with self.subTest(metric=metric, k=k, batch_size=bs):
                     index_panorama = self.create_panorama(
-                        d, nlevels, xb=xb, batch_size=bs, metric=metric)
+                        d, nlevels, xb=xb, batch_size=bs, metric=metric
+                    )
                     D_regular, I_regular = index_regular.search(xq, k)
                     D_panorama, I_panorama = index_panorama.search(xq, k)
                     self.assert_search_results_equal(
@@ -415,8 +440,9 @@ class TestIndexFlatPanorama(unittest.TestCase):
         """Test handling of empty search results (shapes only)"""
         d, nb, nt, nq, nlevels, k = 32, 100, 200, 10, 4, 10
         _, xb, _ = self.generate_data(d, nt, nb, nq, seed=111)
-        xq = np.random.rand(nq, d).astype("float32") + \
-            10.0  # Queries far from database
+        xq = (
+            np.random.rand(nq, d).astype("float32") + 10.0
+        )  # Queries far from database
 
         for metric in self.METRICS:
             with self.subTest(metric=metric):
@@ -435,12 +461,12 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 with self.subTest(metric=metric, nb=nb):
                     d, nt, nlevels, nq = 32, max(nb, 100), 4, 10
                     k = min(3, nb)
-                    _, xb, xq = self.generate_data(
-                        d, nt, nb, nq, seed=666 + nb)
+                    _, xb, xq = self.generate_data(d, nt, nb, nq, seed=666 + nb)
 
                     index_regular = self.create_flat(d, xb, metric=metric)
                     index_panorama = self.create_panorama(
-                        d, nlevels, xb, metric=metric)
+                        d, nlevels, xb, metric=metric
+                    )
 
                     D_regular, I_regular = index_regular.search(xq, k)
                     D_panorama, I_panorama = index_panorama.search(xq, k)
@@ -461,9 +487,11 @@ class TestIndexFlatPanorama(unittest.TestCase):
             for radius in [0.01, 0.1, 100.0, 1000.0]:
                 with self.subTest(metric=metric, radius=radius):
                     lims_reg, D_reg, I_reg = index_regular.range_search(
-                        xq, radius)
+                        xq, radius
+                    )
                     lims_pan, D_pan, I_pan = index_panorama.range_search(
-                        xq, radius)
+                        xq, radius
+                    )
 
                     np.testing.assert_array_equal(lims_reg, lims_pan)
 
@@ -481,8 +509,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
         for metric in self.METRICS:
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, metric=metric)
-                index_panorama = self.create_panorama(
-                    d, nlevels, metric=metric)
+                index_panorama = self.create_panorama(d, nlevels, metric=metric)
 
                 # Keep total nb under 100k
                 batch_sizes = [5000, 10000, 15000, 20000]
@@ -498,7 +525,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 D_panorama, I_panorama = index_panorama.search(xq, k)
 
                 self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama)
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
 
     def test_add_search_add_search(self):
         """Test interleaved add and search operations"""
@@ -508,8 +536,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
         for metric in self.METRICS:
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, metric=metric)
-                index_panorama = self.create_panorama(
-                    d, nlevels, metric=metric)
+                index_panorama = self.create_panorama(d, nlevels, metric=metric)
 
                 # First add and search
                 xb1 = np.random.rand(200, d).astype("float32")
@@ -521,7 +548,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 D_reg_1, I_reg_1 = index_regular.search(xq1, k)
                 D_pan_1, I_pan_1 = index_panorama.search(xq1, k)
                 self.assert_search_results_equal(
-                    D_reg_1, I_reg_1, D_pan_1, I_pan_1)
+                    D_reg_1, I_reg_1, D_pan_1, I_pan_1
+                )
 
                 # Second add and search
                 xb2 = np.random.rand(300, d).astype("float32")
@@ -532,7 +560,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 D_reg_2, I_reg_2 = index_regular.search(xq2, k)
                 D_pan_2, I_pan_2 = index_panorama.search(xq2, k)
                 self.assert_search_results_equal(
-                    D_reg_2, I_reg_2, D_pan_2, I_pan_2)
+                    D_reg_2, I_reg_2, D_pan_2, I_pan_2
+                )
 
     def test_reconstruct(self):
         """Test reconstruct and reconstruct_n return original vectors"""
@@ -542,7 +571,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
         for metric in self.METRICS:
             with self.subTest(metric=metric):
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 # Test reconstruct for single vector
                 idx = 123
@@ -551,24 +581,25 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
                 # Test reconstruct_n for range of vectors
                 start_idx, n_vectors = 120, 10
-                vn_panorama = index_panorama.reconstruct_n(
-                    start_idx, n_vectors)
+                vn_panorama = index_panorama.reconstruct_n(start_idx, n_vectors)
                 np.testing.assert_array_equal(
-                    xb[start_idx:start_idx + n_vectors], vn_panorama)
+                    xb[start_idx : start_idx + n_vectors], vn_panorama
+                )
 
     def test_remove_ids_then_add(self):
         """Test removing vectors with remove_ids() then adding more vectors"""
         d, nb, nt, nq, nlevels, k = 964, 50000, 0, 10, 128, 15
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2026)
 
-        xb1 = xb[:nb // 2]
-        xb2 = xb[nb // 2:]
+        xb1 = xb[: nb // 2]
+        xb2 = xb[nb // 2 :]
 
         for metric in self.METRICS:
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb1, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb1, metric=metric)
+                    d, nlevels, xb1, metric=metric
+                )
 
                 # Remove every even ID
                 ids_to_remove = np.arange(0, nb, 2, dtype=np.int64)
@@ -586,7 +617,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 D_reg_1, I_reg_1 = index_regular.search(xq, k)
                 D_pan_1, I_pan_1 = index_panorama.search(xq, k)
                 self.assert_search_results_equal(
-                    D_reg_1, I_reg_1, D_pan_1, I_pan_1)
+                    D_reg_1, I_reg_1, D_pan_1, I_pan_1
+                )
 
                 # Second add and search
                 index_regular.add(xb2)
@@ -599,7 +631,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 D_reg_2, I_reg_2 = index_regular.search(xq, k)
                 D_pan_2, I_pan_2 = index_panorama.search(xq, k)
                 self.assert_search_results_equal(
-                    D_reg_2, I_reg_2, D_pan_2, I_pan_2)
+                    D_reg_2, I_reg_2, D_pan_2, I_pan_2
+                )
 
     def test_merge_from(self):
         """Test merging indexes with merge_from()"""
@@ -617,9 +650,11 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 index2_regular = self.create_flat(d, xb2, metric=metric)
 
                 index1_panorama = self.create_panorama(
-                    d, nlevels, xb1, batch_size, metric=metric)
+                    d, nlevels, xb1, batch_size, metric=metric
+                )
                 index2_panorama = self.create_panorama(
-                    d, nlevels * 2, xb2, batch_size // 2, metric=metric)
+                    d, nlevels * 2, xb2, batch_size // 2, metric=metric
+                )
 
                 # Merge second index into first
                 index1_regular.merge_from(index2_regular, 0)
@@ -633,7 +668,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 D_regular, I_regular = index1_regular.search(xq, k)
                 D_panorama, I_panorama = index1_panorama.search(xq, k)
                 self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama)
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
 
     def test_permute_entries(self):
         """Test permuting entries with permute_entries()"""
@@ -644,7 +680,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
             with self.subTest(metric=metric):
                 index_regular = self.create_flat(d, xb, metric=metric)
                 index_panorama = self.create_panorama(
-                    d, nlevels, xb, metric=metric)
+                    d, nlevels, xb, metric=metric
+                )
 
                 # Create a random permutation
                 np.random.seed(1234)
@@ -660,7 +697,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
                 # Verify permuted indexes match each other
                 self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama)
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
 
     def test_serialization(self):
         """Test write/read Panorama indexes preserves search results"""
@@ -673,7 +711,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
                 D_before, I_before = index.search(xq, k)
                 index_after = faiss.deserialize_index(
-                    faiss.serialize_index(index))
+                    faiss.serialize_index(index)
+                )
                 D_after, I_after = index_after.search(xq, k)
 
                 np.testing.assert_array_equal(I_before, I_after)
@@ -711,7 +750,8 @@ class TestIndexFlatPanorama(unittest.TestCase):
                         self.assert_search_results_equal(D_base, I_base, D, I)
 
                         ratios.append(
-                            faiss.cvar.indexPanorama_stats.ratio_dims_scanned)
+                            faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+                        )
 
                 expected_ratios = [1 / nlevels for nlevels in nlevels_list]
                 np.testing.assert_allclose(ratios, expected_ratios, atol=1e-3)

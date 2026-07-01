@@ -1346,11 +1346,16 @@ class ScalarQuantizer(Quantizer):
     QT_6bit: int
     QT_bf16: int
     QT_8bit_direct_signed: int
+    QT_0bit: int
     QT_1bit_tqmse: int
     QT_2bit_tqmse: int
     QT_3bit_tqmse: int
     QT_4bit_tqmse: int
     QT_8bit_tqmse: int
+    QT_2bit_tq: int
+    QT_3bit_tq: int
+    QT_4bit_tq: int
+    QT_5bit_tq: int
 
     # RangeStat constants (as class attributes)
     RS_minmax: int
@@ -2288,6 +2293,12 @@ class IVFSearchParameters(SearchParameters):
     quantizer_params: SearchParameters | None
     inverted_list_context: Any
     sel: IDSelector | None
+    def __init__(self) -> None: ...
+
+class IVFSQTurboQSearchParameters(IVFSearchParameters):
+    qb: int
+    int_qjl: bool
+
     def __init__(self) -> None: ...
 
 # IVF Statistics tracking

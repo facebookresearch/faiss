@@ -135,6 +135,18 @@ struct ScalarQuantizer : Quantizer {
         float distance_to_code(const uint8_t* code) final {
             return query_to_code(code);
         }
+
+        void distance_to_code_batch_4(
+                const uint8_t* c1,
+                const uint8_t* c2,
+                const uint8_t* c3,
+                const uint8_t* c4,
+                float& d1,
+                float& d2,
+                float& d3,
+                float& d4) override {
+            query_to_codes_batch_4(c1, c2, c3, c4, d1, d2, d3, d4);
+        }
     };
 
     /// TurboQuant full (QT_*_tq) refinement state, isolated from the

@@ -8,9 +8,9 @@ import numpy as np
 import faiss
 
 
-d = 64       # dimension
+d = 64  # dimension
 nb = 100000  # database size
-nq = 10000   # number of queries
+nq = 10000  # number of queries
 
 np.random.seed(1234)
 
@@ -23,9 +23,9 @@ xq[:, 0] += np.arange(nq) / 1000.0
 k = 4
 
 index = faiss.IndexHNSWFlat(d, 32)  # M=32: neighbors per node
-index.hnsw.efConstruction = 40      # graph construction quality
+index.hnsw.efConstruction = 40  # graph construction quality
 index.add(xb)
-index.hnsw.efSearch = 64            # higher = better recall, slower
+index.hnsw.efSearch = 64  # higher = better recall, slower
 
 # sanity check
 D, I = index.search(xb[:5], k)

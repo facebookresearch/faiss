@@ -19,7 +19,7 @@ class TestClustering(unittest.TestCase):
         d = 64
         n = 1000
         rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
+        x = rs.uniform(size=(n, d)).astype("float32")
 
         x *= 10
 
@@ -45,24 +45,20 @@ class TestClustering(unittest.TestCase):
         self.assertGreater(err_int, err32)
         self.assertTrue(np.all(km.centroids == np.floor(km.centroids)))
 
-
     def test_nasty_clustering(self):
         d = 2
         rs = np.random.RandomState(123)
-        x = np.zeros((100, d), dtype='float32')
+        x = np.zeros((100, d), dtype="float32")
         for i in range(5):
-            x[i * 20:i * 20 + 20] = rs.uniform(size=d)
+            x[i * 20 : i * 20 + 20] = rs.uniform(size=d)
 
         # we have 5 distinct points but ask for 10 centroids...
         km = faiss.Kmeans(d, 10, niter=10, verbose=True)
         km.train(x)
 
-
-
-
     def test_1ptpercluster(self):
         # https://github.com/facebookresearch/faiss/issues/842
-        X = np.random.randint(0, 1, (5, 10)).astype('float32')
+        X = np.random.randint(0, 1, (5, 10)).astype("float32")
         k = 5
         niter = 10
         verbose = True
@@ -81,8 +77,13 @@ class TestClustering(unittest.TestCase):
 
         ccent = faiss.randn((10, d), 123)
         faiss.normalize_L2(ccent)
-        x = [ccent[i] + sigma * faiss.randn((100, d), 1234 + i) for i in range(5)]
-        x += [ccent[i] + sigma * faiss.randn((10, d), 1234 + i) for i in range(5, 10)]
+        x = [
+            ccent[i] + sigma * faiss.randn((100, d), 1234 + i) for i in range(5)
+        ]
+        x += [
+            ccent[i] + sigma * faiss.randn((10, d), 1234 + i)
+            for i in range(5, 10)
+        ]
         x = np.vstack(x)
 
         clus = faiss.Clustering(d, 5)
@@ -96,9 +97,9 @@ class TestClustering(unittest.TestCase):
 
         # now assign weight 0.1 to the 5 first clusters and weight 10
         # to the 5 last ones and re-run k-means
-        weights = np.ones(100 * 5 + 10 * 5, dtype='float32')
-        weights[:100 * 5] = 0.1
-        weights[100 * 5:] = 10
+        weights = np.ones(100 * 5 + 10 * 5, dtype="float32")
+        weights[: 100 * 5] = 0.1
+        weights[100 * 5 :] = 10
 
         clus = faiss.Clustering(d, 5)
         index = faiss.IndexFlatL2(d)
@@ -169,7 +170,7 @@ class TestClustering(unittest.TestCase):
         xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
         km = faiss.Kmeans(d, k, niter=4)
         km.train(xt)
-        assert list(km.obj) == [st['obj'] for st in km.iteration_stats]
+        assert list(km.obj) == [st["obj"] for st in km.iteration_stats]
 
 
 class TestCompositeClustering(unittest.TestCase):
@@ -179,7 +180,7 @@ class TestCompositeClustering(unittest.TestCase):
         n = 1000
 
         rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
+        x = rs.uniform(size=(n, d)).astype("float32")
 
         # make sure that doing 10 redos yields a better objective than just 1
 
@@ -201,7 +202,7 @@ class TestCompositeClustering(unittest.TestCase):
         n = 1000
 
         rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
+        x = rs.uniform(size=(n, d)).astype("float32")
         faiss.normalize_L2(x)
 
         # make sure that doing 10 redos yields a better objective than just 1
@@ -259,7 +260,7 @@ class TestClustering1D(unittest.TestCase):
 
     def subtest_cluster1d(self, n, k):
         rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, 1)).astype('float32')
+        x = rs.uniform(size=(n, 1)).astype("float32")
 
         clus = faiss.Clustering1D(k)
         clus.train_exact(x)
@@ -278,15 +279,188 @@ class TestClustering1D(unittest.TestCase):
 
     def test_smawk(self):
         # example in http://web.cs.unlv.edu/larmore/Courses/CSC477/monge.pdf.
-        A = [[ 25, 21, 13,10,20,13,19,35,37,41,58,66,82,99,124,133,156,178],
-             [ 42, 35, 26,20,29,21,25,37,36,39,56,64,76,91,116,125,146,164],
-             [ 57, 48, 35,28,33,24,28,40,37,37,54,61,72,83,107,113,131,146],
-             [ 78, 65, 51,42,44,35,38,48,42,42,55,61,70,80,100,106,120,135],
-             [ 90, 76, 58,48,49,39,42,48,39,35,47,51,56,63, 80, 86, 97,110],
-             [103, 85, 67,56,55,44,44,49,39,33,41,44,49,56, 71, 75, 84, 96],
-             [123,105, 86,75,73,59,57,62,51,44,50,52,55,59, 72, 74, 80, 92],
-             [142,123,100,86,82,65,61,62,50,43,47,45,46,46, 58, 59, 65, 73],
-             [151,130,104,88,80,59,52,49,37,29,29,24,23,20, 28, 25, 31, 39]];
+        A = [
+            [
+                25,
+                21,
+                13,
+                10,
+                20,
+                13,
+                19,
+                35,
+                37,
+                41,
+                58,
+                66,
+                82,
+                99,
+                124,
+                133,
+                156,
+                178,
+            ],
+            [
+                42,
+                35,
+                26,
+                20,
+                29,
+                21,
+                25,
+                37,
+                36,
+                39,
+                56,
+                64,
+                76,
+                91,
+                116,
+                125,
+                146,
+                164,
+            ],
+            [
+                57,
+                48,
+                35,
+                28,
+                33,
+                24,
+                28,
+                40,
+                37,
+                37,
+                54,
+                61,
+                72,
+                83,
+                107,
+                113,
+                131,
+                146,
+            ],
+            [
+                78,
+                65,
+                51,
+                42,
+                44,
+                35,
+                38,
+                48,
+                42,
+                42,
+                55,
+                61,
+                70,
+                80,
+                100,
+                106,
+                120,
+                135,
+            ],
+            [
+                90,
+                76,
+                58,
+                48,
+                49,
+                39,
+                42,
+                48,
+                39,
+                35,
+                47,
+                51,
+                56,
+                63,
+                80,
+                86,
+                97,
+                110,
+            ],
+            [
+                103,
+                85,
+                67,
+                56,
+                55,
+                44,
+                44,
+                49,
+                39,
+                33,
+                41,
+                44,
+                49,
+                56,
+                71,
+                75,
+                84,
+                96,
+            ],
+            [
+                123,
+                105,
+                86,
+                75,
+                73,
+                59,
+                57,
+                62,
+                51,
+                44,
+                50,
+                52,
+                55,
+                59,
+                72,
+                74,
+                80,
+                92,
+            ],
+            [
+                142,
+                123,
+                100,
+                86,
+                82,
+                65,
+                61,
+                62,
+                50,
+                43,
+                47,
+                45,
+                46,
+                46,
+                58,
+                59,
+                65,
+                73,
+            ],
+            [
+                151,
+                130,
+                104,
+                88,
+                80,
+                59,
+                52,
+                49,
+                37,
+                29,
+                29,
+                24,
+                23,
+                20,
+                28,
+                25,
+                31,
+                39,
+            ],
+        ]
 
         sp = faiss.swig_ptr
         A = np.array(A).astype(np.float32)
@@ -307,7 +481,7 @@ class TestEarlyStopping(unittest.TestCase):
         max_iter = 1000
 
         rs = np.random.RandomState(42)
-        x = rs.uniform(size=(n, d)).astype('float32')
+        x = rs.uniform(size=(n, d)).astype("float32")
 
         clus = faiss.Clustering(d, k)
         clus.niter = max_iter

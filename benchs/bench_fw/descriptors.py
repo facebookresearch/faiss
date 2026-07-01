@@ -142,9 +142,9 @@ class DatasetDescriptor:
         assert self.tablename is not None
         filename += self.tablename
         if self.partitions is not None:
-            filename += "_" + "_".join(
-                self.partitions
-            ).replace("=", "_").replace("/", "_")
+            filename += "_" + "_".join(self.partitions).replace(
+                "=", "_"
+            ).replace("/", "_")
         if self.num_vectors is not None:
             filename += f"_{self.num_vectors}"
         if self.filename_suffix is not None:
@@ -278,8 +278,12 @@ class CodecDescriptor(IndexBaseDescriptor):
         name += f"d_{self.d}.{self.metric.upper()}."
         if self.factory != "Flat":
             assert self.training_vectors is not None
-            name += self.training_vectors.get_filename(CodecDescriptor.FILENAME_PREFIX)
-        name += IndexBaseDescriptor.param_dict_list_to_name(self.construction_params)
+            name += self.training_vectors.get_filename(
+                CodecDescriptor.FILENAME_PREFIX
+            )
+        name += IndexBaseDescriptor.param_dict_list_to_name(
+            self.construction_params
+        )
         return name
 
     def name_from_path(self):
@@ -287,16 +291,23 @@ class CodecDescriptor(IndexBaseDescriptor):
         filename = os.path.basename(self.path)
         ext = filename.split(".")[-1]
         if filename.endswith(ext):
-            name = filename[:-len(ext)]
-        else: # should never hit this rather raise value error
+            name = filename[: -len(ext)]
+        else:  # should never hit this rather raise value error
             name = filename
         return name
 
     def alias(self, benchmark_io: BenchmarkIO):
         if hasattr(benchmark_io, "bucket"):
-            return CodecDescriptor(desc_name=self.get_name(), bucket=benchmark_io.bucket, path=self.get_path(benchmark_io), d=self.d, metric=self.metric)
-        return CodecDescriptor(desc_name=self.get_name(), d=self.d, metric=self.metric)
-
+            return CodecDescriptor(
+                desc_name=self.get_name(),
+                bucket=benchmark_io.bucket,
+                path=self.get_path(benchmark_io),
+                d=self.d,
+                metric=self.metric,
+            )
+        return CodecDescriptor(
+            desc_name=self.get_name(), d=self.d, metric=self.metric
+        )
 
 
 @dataclass
@@ -316,21 +327,39 @@ class IndexDescriptor(IndexBaseDescriptor):
 
     def get_name(self) -> str:
         if self.desc_name is None:
-            self.desc_name = self.codec_desc.get_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
+            self.desc_name = (
+                self.codec_desc.get_name()
+                + self.database_desc.get_filename(
+                    prefix=IndexDescriptor.FILENAME_PREFIX
+                )
+            )
 
         return self.desc_name
 
     def flat_name(self):
         if self.flat_desc_name is not None:
             return self.flat_desc_name
-        self.flat_desc_name = self.codec_desc.flat_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
+        self.flat_desc_name = (
+            self.codec_desc.flat_name()
+            + self.database_desc.get_filename(
+                prefix=IndexDescriptor.FILENAME_PREFIX
+            )
+        )
         return self.flat_desc_name
 
     # alias is used to refer when index is uploaded to blobstore and referred again
     def alias(self, benchmark_io: BenchmarkIO):
         if hasattr(benchmark_io, "bucket"):
-            return IndexDescriptor(desc_name=self.get_name(), bucket=benchmark_io.bucket, path=self.get_path(benchmark_io), d=self.d, metric=self.metric)
-        return IndexDescriptor(desc_name=self.get_name(), d=self.d, metric=self.metric)
+            return IndexDescriptor(
+                desc_name=self.get_name(),
+                bucket=benchmark_io.bucket,
+                path=self.get_path(benchmark_io),
+                d=self.d,
+                metric=self.metric,
+            )
+        return IndexDescriptor(
+            desc_name=self.get_name(), d=self.d, metric=self.metric
+        )
 
 
 @dataclass
