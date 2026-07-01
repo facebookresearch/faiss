@@ -12,7 +12,16 @@
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
+
+#if defined USE_NVIDIA_CUVS
+#include <cuvs/neighbors/ivf_sq.hpp>
+#include <faiss/gpu/utils/CuvsUtils.h>
+#include <faiss/gpu/impl/CuvsIVFSQ.cuh>
+#endif
+
 #include <limits>
+#include <optional>
+#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -89,6 +98,10 @@ void GpuIndexIVFScalarQuantizer::verifySQSettings_() const {
     FAISS_THROW_IF_NOT_MSG(
             isSQSupported(sq.qtype), "Unsupported scalar QuantizerType on GPU");
 
+    if (shouldUseCuvs_()) {
+        return;
+    }
+
     // Check the amount of shared memory per block available based on our type
     // is sufficient
     // This check was previously in IVFFlatScan.cu, moved here to apply upon
@@ -110,8 +123,66 @@ void GpuIndexIVFScalarQuantizer::verifySQSettings_() const {
     }
 }
 
+bool GpuIndexIVFScalarQuantizer::shouldUseCuvs_() const {
+    return should_use_cuvs(config_) &&
+            sq.qtype == faiss::ScalarQuantizer::QT_8bit && by_residual &&
+            ivfSQConfig_.indicesOptions == INDICES_64_BIT;
+}
+
+void GpuIndexIVFScalarQuantizer::setIndex_(
+        GpuResources* resources,
+        int dim,
+        idx_t nlist,
+        faiss::MetricType metric,
+        float metricArg,
+        bool useResidual,
+        faiss::ScalarQuantizer* scalarQ,
+        bool interleavedLayout,
+        IndicesOptions indicesOptions,
+        MemorySpace space) {
+    if (shouldUseCuvs_()) {
+#if defined USE_NVIDIA_CUVS
+        if (!ivfSQConfig_.interleavedLayout) {
+            fprintf(stderr,
+                    "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");
+        }
+        index_.reset(new CuvsIVFSQ(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                useResidual,
+                scalarQ,
+                interleavedLayout,
+                indicesOptions,
+                space));
+#else
+        FAISS_THROW_MSG(
+                "cuVS has not been compiled into the current version so it cannot be used.");
+#endif
+    } else {
+        index_.reset(new IVFFlat(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                useResidual,
+                scalarQ,
+                interleavedLayout,
+                indicesOptions,
+                space));
+    }
+}
+
 void GpuIndexIVFScalarQuantizer::reserveMemory(size_t numVecs) {
     DeviceScope scope(config_.device);
+
+    if (shouldUseCuvs_()) {
+        FAISS_THROW_MSG(
+                "Pre-allocation of IVF lists is not supported with cuVS enabled.");
+    }
 
     reserveMemoryVecs_ = numVecs;
     if (index_) {
@@ -142,7 +213,7 @@ void GpuIndexIVFScalarQuantizer::copyFrom(
     this->is_trained = true;
 
     // Copy our lists as well
-    index_.reset(new IVFFlat(
+    setIndex_(
             resources_.get(),
             this->d,
             this->nlist,
@@ -152,7 +223,7 @@ void GpuIndexIVFScalarQuantizer::copyFrom(
             &sq,
             ivfSQConfig_.interleavedLayout,
             ivfSQConfig_.indicesOptions,
-            config_.memorySpace));
+            config_.memorySpace);
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
     updateQuantizer();
 
@@ -173,8 +244,17 @@ void GpuIndexIVFScalarQuantizer::copyTo(
             "indices (INDICES_IVF)");
 
     GpuIndexIVF::copyTo(index);
-    index->sq = sq;
-    index->code_size = sq.code_size;
+    auto sqCopy = sq;
+#if defined USE_NVIDIA_CUVS
+    if (index_) {
+        auto cuvsIndex = dynamic_cast<const CuvsIVFSQ*>(index_.get());
+        if (cuvsIndex) {
+            cuvsIndex->setFaissSQFromCuvs(&sqCopy);
+        }
+    }
+#endif
+    index->sq = sqCopy;
+    index->code_size = sqCopy.code_size;
     index->by_residual = by_residual;
 
     auto ivf = new ArrayInvertedLists(nlist, index->code_size);
@@ -246,34 +326,99 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on
-    // the CPU, as we depend upon parts of the CPU code
-    auto hostData = toHost<float, 2>(
-            (float*)x,
-            resources_->getDefaultStream(config_.device),
-            {n, this->d});
+    if (shouldUseCuvs_() &&
+        !(quantizer->is_trained && quantizer->ntotal == nlist)) {
+#if defined USE_NVIDIA_CUVS
+        setIndex_(
+                resources_.get(),
+                this->d,
+                this->nlist,
+                this->metric_type,
+                this->metric_arg,
+                by_residual,
+                &sq,
+                ivfSQConfig_.interleavedLayout,
+                ivfSQConfig_.indicesOptions,
+                config_.memorySpace);
 
-    trainQuantizer_(n, hostData.data());
-    trainResiduals_(n, hostData.data());
+        auto cuvsIndex_ = std::static_pointer_cast<CuvsIVFSQ, IVFFlat>(index_);
 
-    // The quantizer is now trained; construct the IVF index
-    index_.reset(new IVFFlat(
-            resources_.get(),
-            this->d,
-            this->nlist,
-            this->metric_type,
-            this->metric_arg,
-            by_residual,
-            &sq,
-            ivfSQConfig_.interleavedLayout,
-            ivfSQConfig_.indicesOptions,
-            config_.memorySpace));
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
+
+        cuvs::neighbors::ivf_sq::index_params cuvs_index_params;
+        cuvs_index_params.n_lists = nlist;
+        cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
+        cuvs_index_params.add_data_on_build = false;
+
+        std::optional<cuvs::neighbors::ivf_sq::index<uint8_t>> cuvs_ivfsq_index;
+
+        if (getDeviceForAddress(x) >= 0) {
+            auto dataset_d =
+                    raft::make_device_matrix_view<const float, idx_t>(x, n, d);
+            cuvs_ivfsq_index = cuvs::neighbors::ivf_sq::build(
+                    raft_handle, cuvs_index_params, dataset_d);
+        } else {
+            auto dataset_h =
+                    raft::make_host_matrix_view<const float, idx_t>(x, n, d);
+            cuvs_ivfsq_index = cuvs::neighbors::ivf_sq::build(
+                    raft_handle, cuvs_index_params, dataset_h);
+        }
+
+        if (isGpuIndex(quantizer)) {
+            quantizer->train(
+                    nlist, cuvs_ivfsq_index.value().centers().data_handle());
+            quantizer->add(
+                    nlist, cuvs_ivfsq_index.value().centers().data_handle());
+        } else {
+            auto host_centroids = toHost<float, 2>(
+                    cuvs_ivfsq_index.value().centers().data_handle(),
+                    raft_handle.get_stream(),
+                    {idx_t(nlist), this->d});
+            quantizer->train(nlist, host_centroids.data());
+            quantizer->add(nlist, host_centroids.data());
+        }
+
+        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfsq_index));
+#else
+        FAISS_THROW_MSG(
+                "cuVS has not been compiled into the current version so it cannot be used.");
+#endif
+    } else {
+        // FIXME: GPUize more of this
+        // First, make sure that the data is resident on the CPU, if it is not
+        // on the CPU, as we depend upon parts of the CPU code
+        auto hostData = toHost<float, 2>(
+                (float*)x,
+                resources_->getDefaultStream(config_.device),
+                {n, this->d});
+
+        trainQuantizer_(n, hostData.data());
+        trainResiduals_(n, hostData.data());
+
+        setIndex_(
+                resources_.get(),
+                this->d,
+                this->nlist,
+                this->metric_type,
+                this->metric_arg,
+                by_residual,
+                &sq,
+                ivfSQConfig_.interleavedLayout,
+                ivfSQConfig_.indicesOptions,
+                config_.memorySpace);
+        updateQuantizer();
+    }
+
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
-    updateQuantizer();
 
     if (reserveMemoryVecs_) {
-        index_->reserveMemory(reserveMemoryVecs_);
+        if (shouldUseCuvs_()) {
+            FAISS_THROW_MSG(
+                    "Pre-allocation of IVF lists is not supported with cuVS enabled.");
+        } else {
+            index_->reserveMemory(reserveMemoryVecs_);
+        }
     }
 
     this->is_trained = true;
