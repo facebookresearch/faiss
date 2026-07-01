@@ -529,6 +529,27 @@ struct DCTemplate<
     using DCBF16_L2::DCBF16_L2;
 };
 
+/**********************************************************
+ * turboq_masked_sum — delegate to AVX512 implementation
+ **********************************************************/
+
+template <SIMDLevel SL0>
+float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
+
+template <>
+float turboq_masked_sum<SIMDLevel::AVX512>(
+        const float* arr,
+        const uint8_t* bits,
+        size_t d);
+
+template <>
+float turboq_masked_sum<SIMDLevel::AVX512_SPR>(
+        const float* arr,
+        const uint8_t* bits,
+        size_t d) {
+    return turboq_masked_sum<SIMDLevel::AVX512>(arr, bits, d);
+}
+
 } // namespace scalar_quantizer
 } // namespace faiss
 

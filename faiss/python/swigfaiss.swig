@@ -461,7 +461,45 @@ int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
 %}
 
 #endif // FAISS_ENABLE_ROCM
-#else // GPU_WRAPPER
+#elif defined(FAISS_ENABLE_METAL)
+
+%{
+#include <faiss/gpu_metal/MetalPythonBridge.h>
+
+int get_num_gpus()
+{
+    return faiss::gpu_metal::get_num_gpus();
+}
+
+void gpu_profiler_start()
+{
+    return faiss::gpu_metal::gpu_profiler_start();
+}
+
+void gpu_profiler_stop()
+{
+    return faiss::gpu_metal::gpu_profiler_stop();
+}
+
+void gpu_sync_all_devices()
+{
+    return faiss::gpu_metal::gpu_sync_all_devices();
+}
+%}
+
+%ignore faiss::gpu_metal::get_num_gpus;
+%ignore faiss::gpu_metal::gpu_profiler_start;
+%ignore faiss::gpu_metal::gpu_profiler_stop;
+%ignore faiss::gpu_metal::gpu_sync_all_devices;
+
+%rename(StandardGpuResources) faiss::gpu_metal::StandardMetalResourcesHolder;
+
+%newobject faiss::gpu_metal::index_cpu_to_gpu;
+%newobject faiss::gpu_metal::index_gpu_to_cpu;
+
+%include <faiss/gpu_metal/MetalPythonBridge.h>
+
+#else // no GPU backend
 
 %{
 int get_num_gpus()
@@ -483,7 +521,7 @@ void gpu_sync_all_devices()
 %}
 
 
-#endif // GPU_WRAPPER
+#endif // GPU_WRAPPER / FAISS_ENABLE_METAL
 
 // order matters because includes are not recursive
 

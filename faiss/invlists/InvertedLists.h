@@ -376,7 +376,7 @@ struct HStackInvertedLists : ReadOnlyInvertedLists {
     std::vector<const InvertedLists*> ils;
 
     /// build InvertedLists by concatenating nil of them
-    HStackInvertedLists(int nil, const InvertedLists** ils);
+    HStackInvertedLists(int n_il, const InvertedLists** ils);
 
     size_t list_size(size_t list_no) const override;
     const uint8_t* get_codes(size_t list_no) const override;
@@ -422,7 +422,7 @@ struct VStackInvertedLists : ReadOnlyInvertedLists {
     std::vector<idx_t> cumsz;
 
     /// build InvertedLists by concatenating nil of them
-    VStackInvertedLists(int nil, const InvertedLists** ils);
+    VStackInvertedLists(int n_il, const InvertedLists** ils);
 
     size_t list_size(size_t list_no) const override;
     const uint8_t* get_codes(size_t list_no) const override;

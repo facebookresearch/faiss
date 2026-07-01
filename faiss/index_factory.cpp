@@ -168,9 +168,13 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
         {"SQtqmse3", ScalarQuantizer::QT_3bit_tqmse},
         {"SQtqmse4", ScalarQuantizer::QT_4bit_tqmse},
         {"SQtqmse8", ScalarQuantizer::QT_8bit_tqmse},
+        {"SQtq2", ScalarQuantizer::QT_2bit_tq},
+        {"SQtq3", ScalarQuantizer::QT_3bit_tq},
+        {"SQtq4", ScalarQuantizer::QT_4bit_tq},
+        {"SQtq5", ScalarQuantizer::QT_5bit_tq},
 };
 const std::string sq_pattern =
-        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8)";
+        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -311,8 +315,8 @@ Index* parse_coarse_quantizer(
         SVSStorageKind storage = SVSStorageKind::SVS_FP32;
         if (sm[3].matched) {
             std::string s = sm[3].str().substr(1);
-            if (s == "SQI8") {
-                storage = SVSStorageKind::SVS_SQI8;
+            if (s == "SQ8") {
+                storage = SVSStorageKind::SVS_SQ8;
             } else if (s == "FP16") {
                 storage = SVSStorageKind::SVS_FP16;
             } else if (s == "FP32") {
@@ -677,16 +681,16 @@ Index* parse_svs_datatype(
         }
         FAISS_ASSERT(false && "Unsupported SVS index type for Float16");
     }
-    if (re_match(datatype_string, "SQI8", sm)) {
+    if (re_match(datatype_string, "SQ8", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
         if (index_type == "IVF") {
             return new IndexSVSIVF(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
-        FAISS_ASSERT(false && "Unsupported SVS index type for SQI8");
+        FAISS_ASSERT(false && "Unsupported SVS index type for SQ8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana") {

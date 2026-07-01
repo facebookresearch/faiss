@@ -17,7 +17,6 @@
 #include <cstdio>
 #include <limits>
 
-#include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexFlat.h>

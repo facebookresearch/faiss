@@ -34,12 +34,13 @@ def search_preassigned(xq, k, index, quantizer, batch_size=0):
     nprobe = index.nprobe
     if batch_size == 0:
         batch_size = n + 1
-    D = np.empty((n, k), dtype='float32')
-    I = np.empty((n, k), dtype='int64')
+    D = np.empty((n, k), dtype="float32")
+    I = np.empty((n, k), dtype="int64")
     for i0 in range(0, n, batch_size):
-        Dq, Iq = quantizer.search(xq[i0:i0 + batch_size], nprobe)
-        D[i0:i0 + batch_size], I[i0:i0 + batch_size] = \
-            index.search_preassigned(xq[i0:i0 + batch_size], k, Iq, Dq)
+        Dq, Iq = quantizer.search(xq[i0 : i0 + batch_size], nprobe)
+        D[i0 : i0 + batch_size], I[i0 : i0 + batch_size] = (
+            index.search_preassigned(xq[i0 : i0 + batch_size], k, Iq, Dq)
+        )
     return D, I
 
 
@@ -61,16 +62,17 @@ def tiled_search_preassigned(xq, k, index, quantizer, batch_size=32768):
         i1 = min(i0 + batch_size, n)
         return quantizer.search(xq[i0:i1], nprobe)
 
-    D = np.empty((n, k), dtype='float32')
-    I = np.empty((n, k), dtype='int64')
+    D = np.empty((n, k), dtype="float32")
+    I = np.empty((n, k), dtype="int64")
     qq = coarse_quant(0)
 
     for i0 in range(0, n, batch_size):
         i1 = min(i0 + batch_size, n)
-        qq_next = qq_pool.apply_async(coarse_quant, (i0 + batch_size, ))
+        qq_next = qq_pool.apply_async(coarse_quant, (i0 + batch_size,))
         Dq, Iq = qq
         index.search_preassigned(
-            xq[i0:i1], k, Iq=Iq, Dq=Dq, I=I[i0:i1], D=D[i0:i1])
+            xq[i0:i1], k, Iq=Iq, Dq=Dq, I=I[i0:i1], D=D[i0:i1]
+        )
         qq = qq_next.get()
 
     qq_pool.close()
@@ -80,6 +82,7 @@ def tiled_search_preassigned(xq, k, index, quantizer, batch_size=32768):
 #################################################################
 # IVF index objects with a separate coarse quantizer
 #################################################################
+
 
 class SeparateCoarseQuantizationIndex:
     """
@@ -120,10 +123,12 @@ class SeparateCoarseQuantizationIndex:
             return self.index_ivf.search_preassigned(xq, k, Iq, Dq)
         if self.seq_tiling:
             return search_preassigned(
-                xq, k, self.index_ivf, self.quantizer, self.bs)
+                xq, k, self.index_ivf, self.quantizer, self.bs
+            )
         else:
             return tiled_search_preassigned(
-                xq, k, self.index_ivf, self.quantizer, self.bs)
+                xq, k, self.index_ivf, self.quantizer, self.bs
+            )
 
 
 class ShardedGPUIndex:
@@ -131,6 +136,7 @@ class ShardedGPUIndex:
     Multiple GPU indexes, each on its GPU, with a common coarse quantizer.
     The Python version of IndexShardsIVF
     """
+
     def __init__(self, quantizer, index, bs=-1, seq_tiling=False):
         self.quantizer = quantizer
         self.cpu_index = index
@@ -159,8 +165,8 @@ class ShardedGPUIndex:
         sub_index_0 = faiss.downcast_index(index.at(0))
         nprobe = sub_index_0.nprobe
 
-        Dall = np.empty((ngpu, nq, k), dtype='float32')
-        Iall = np.empty((ngpu, nq, k), dtype='int64')
+        Dall = np.empty((ngpu, nq, k), dtype="float32")
+        Iall = np.empty((ngpu, nq, k), dtype="int64")
         bs = self.bs
         if bs <= 0:
 
@@ -169,7 +175,9 @@ class ShardedGPUIndex:
             def do_search(rank):
                 gpu_index = faiss.downcast_index(index.at(rank))
                 Dall[rank], Iall[rank] = gpu_index.search_preassigned(
-                    xq, k, Iq, Dq)
+                    xq, k, Iq, Dq
+                )
+
             list(self.pool.map(do_search, range(ngpu)))
         else:
             qq_pool = self.q_pool
@@ -178,30 +186,32 @@ class ShardedGPUIndex:
             def coarse_quant(i0):
                 if i0 >= nq:
                     return None
-                return self.quantizer.search(xq[i0:i0 + bs], nprobe)
+                return self.quantizer.search(xq[i0 : i0 + bs], nprobe)
 
             def do_search(rank, i0, qq):
                 gpu_index = faiss.downcast_index(index.at(rank))
                 Dq, Iq = qq
-                Dall[rank, i0:i0 + bs], Iall[rank, i0:i0 + bs] = \
-                    gpu_index.search_preassigned(xq[i0:i0 + bs], k, Iq, Dq)
+                Dall[rank, i0 : i0 + bs], Iall[rank, i0 : i0 + bs] = (
+                    gpu_index.search_preassigned(xq[i0 : i0 + bs], k, Iq, Dq)
+                )
 
             qq = coarse_quant(0)
 
             for i0 in range(0, nq, bs):
-                qq_next = qq_pool.apply_async(coarse_quant, (i0 + bs, ))
-                list(self.pool.map(
-                    lambda rank: do_search(rank, i0, qq),
-                    range(ngpu)
-                ))
+                qq_next = qq_pool.apply_async(coarse_quant, (i0 + bs,))
+                list(
+                    self.pool.map(
+                        lambda rank: do_search(rank, i0, qq), range(ngpu)
+                    )
+                )
                 qq = qq_next.get()
 
         return faiss.merge_knn_results(Dall, Iall)
 
 
 def extract_index_ivf(index):
-    """ extract the IVF sub-index from the index, supporting GpuIndexes
-    as well """
+    """extract the IVF sub-index from the index, supporting GpuIndexes
+    as well"""
     try:
         return faiss.extract_index_ivf(index)
     except RuntimeError:
@@ -221,7 +231,8 @@ def set_index_parameter(index, name, val):
             set_index_parameter(index.index_ivf, name, val)
         elif name.startswith("quantizer_"):
             set_index_parameter(
-                index.quantizer, name[name.find("_") + 1:], val)
+                index.quantizer, name[name.find("_") + 1 :], val
+            )
         else:
             raise RuntimeError()
         return
@@ -231,7 +242,8 @@ def set_index_parameter(index, name, val):
             set_index_parameter(index.cpu_index, name, val)
         elif name.startswith("quantizer_"):
             set_index_parameter(
-                index.quantizer, name[name.find("_") + 1:], val)
+                index.quantizer, name[name.find("_") + 1 :], val
+            )
         else:
             raise RuntimeError()
         return
@@ -244,20 +256,23 @@ def set_index_parameter(index, name, val):
     elif isinstance(index, faiss.IndexShardsIVF):
         if name != "nprobe" and name.startswith("quantizer_"):
             set_index_parameter(
-                index.quantizer, name[name.find("_") + 1:], val)
+                index.quantizer, name[name.find("_") + 1 :], val
+            )
         else:
             for i in range(index.count()):
                 sub_index = index.at(i)
                 set_index_parameter(sub_index, name, val)
-    elif (isinstance(index, faiss.IndexShards) or
-          isinstance(index, faiss.IndexReplicas)):
+    elif isinstance(index, faiss.IndexShards) or isinstance(
+        index, faiss.IndexReplicas
+    ):
         for i in range(index.count()):
             sub_index = index.at(i)
             set_index_parameter(sub_index, name, val)
     elif name.startswith("quantizer_"):
         index_ivf = extract_index_ivf(index)
         set_index_parameter(
-            index_ivf.quantizer, name[name.find("_") + 1:], val)
+            index_ivf.quantizer, name[name.find("_") + 1 :], val
+        )
     elif name == "efSearch":
         index.hnsw.efSearch
         index.hnsw.efSearch = int(val)
@@ -280,47 +295,85 @@ def main():
     def aa(*args, **kwargs):
         group.add_argument(*args, **kwargs)
 
-    group = parser.add_argument_group('dataset options')
-    aa('--nq', type=int, default=int(10e5),
-       help="nb queries (queries will be duplicated if below that number)")
-    aa('--db', default='bigann10M', help='dataset')
+    group = parser.add_argument_group("dataset options")
+    aa(
+        "--nq",
+        type=int,
+        default=int(10e5),
+        help="nb queries (queries will be duplicated if below that number)",
+    )
+    aa("--db", default="bigann10M", help="dataset")
 
-    group = parser.add_argument_group('index options')
-    aa('--indexname', default="", help="override index name")
-    aa('--mmap', default=False, action='store_true', help='mmap index')
-    aa('--shard_type', default=1, type=int, help="set type of sharding")
-    aa('--useFloat16', default=False, action='store_true',
-       help='GPU cloner options')
-    aa('--useFloat16CoarseQuantizer', default=False, action='store_true',
-       help='GPU cloner options')
-    aa('--usePrecomputed', default=False, action='store_true',
-       help='GPU cloner options')
-    group = parser.add_argument_group('search options')
-    aa('--k', type=int, default=100)
-    aa('--search_type', default="cpu",
+    group = parser.add_argument_group("index options")
+    aa("--indexname", default="", help="override index name")
+    aa("--mmap", default=False, action="store_true", help="mmap index")
+    aa("--shard_type", default=1, type=int, help="set type of sharding")
+    aa(
+        "--useFloat16",
+        default=False,
+        action="store_true",
+        help="GPU cloner options",
+    )
+    aa(
+        "--useFloat16CoarseQuantizer",
+        default=False,
+        action="store_true",
+        help="GPU cloner options",
+    )
+    aa(
+        "--usePrecomputed",
+        default=False,
+        action="store_true",
+        help="GPU cloner options",
+    )
+    group = parser.add_argument_group("search options")
+    aa("--k", type=int, default=100)
+    aa(
+        "--search_type",
+        default="cpu",
         choices=[
-            "cpu", "gpu", "gpu_flat_quantizer",
-            "cpu_flat_gpu_quantizer", "gpu_tiled", "gpu_ivf_quantizer",
-            "multi_gpu", "multi_gpu_flat_quantizer",
-            "multi_gpu_sharded", "multi_gpu_flat_quantizer_sharded",
-            "multi_gpu_sharded1", "multi_gpu_sharded1_flat",
+            "cpu",
+            "gpu",
+            "gpu_flat_quantizer",
+            "cpu_flat_gpu_quantizer",
+            "gpu_tiled",
+            "gpu_ivf_quantizer",
+            "multi_gpu",
+            "multi_gpu_flat_quantizer",
+            "multi_gpu_sharded",
+            "multi_gpu_flat_quantizer_sharded",
+            "multi_gpu_sharded1",
+            "multi_gpu_sharded1_flat",
             "multi_gpu_sharded1_ivf",
-            "multi_gpu_Csharded1", "multi_gpu_Csharded1_flat",
+            "multi_gpu_Csharded1",
+            "multi_gpu_Csharded1_flat",
             "multi_gpu_Csharded1_ivf",
         ],
-        help="how to search"
+        help="how to search",
     )
-    aa('--ivf_quant_nlist', type=int, default=1024,
-       help="nb of inverted lists for IVF quantizer")
-    aa('--batch_size', type=int, default=-1,
-       help="batch size for tiled CPU / GPU computation (-1= no tiling)")
-    aa('--n_autotune', type=int, default=300,
-        help="max nb of auto-tuning steps")
-    aa('--nt', type=int, default=-1, help="force number of CPU threads to this")
+    aa(
+        "--ivf_quant_nlist",
+        type=int,
+        default=1024,
+        help="nb of inverted lists for IVF quantizer",
+    )
+    aa(
+        "--batch_size",
+        type=int,
+        default=-1,
+        help="batch size for tiled CPU / GPU computation (-1= no tiling)",
+    )
+    aa(
+        "--n_autotune",
+        type=int,
+        default=300,
+        help="max nb of auto-tuning steps",
+    )
+    aa("--nt", type=int, default=-1, help="force number of CPU threads to this")
 
-    group = parser.add_argument_group('output options')
-    aa('--quiet', default=False, action="store_true")
-    aa('--stats', default="", help="pickle to store output stats")
+    group = parser.add_argument_group("output options")
+    aa("--quiet", default=False, action="store_true")
+    aa("--stats", default="", help="pickle to store output stats")
 
     args = parser.parse_args()
     print("args:", args)
@@ -342,7 +395,7 @@ def main():
         xqx = []
         n = 0
         while n < args.nq:
-            xqx.append(xq[:args.nq - n])
+            xqx.append(xq[: args.nq - n])
             n += len(xqx[-1])
         print(f"increased nb queries from {len(xq)} to {n}")
         xq = np.vstack(xqx)
@@ -365,10 +418,12 @@ def main():
     print("prepare index")
     op = OperatingPointsWithRanges()
     op.add_range(
-        "nprobe", [
-            2 ** i for i in range(20)
-            if 2 ** i < index_ivf.nlist * 0.1 and 2 ** i <= 4096
-        ]
+        "nprobe",
+        [
+            2**i
+            for i in range(20)
+            if 2**i < index_ivf.nlist * 0.1 and 2**i <= 4096
+        ],
     )
 
     # prepare options for GPU clone
@@ -380,18 +435,12 @@ def main():
     co.shard_type = args.shard_type
 
     if args.search_type == "cpu":
-        op.add_range(
-            "quantizer_efSearch",
-            [2 ** i for i in range(10)]
-        )
+        op.add_range("quantizer_efSearch", [2**i for i in range(10)])
     elif args.search_type == "gpu":
         print("move index to 1 GPU")
         res = faiss.StandardGpuResources()
         index = faiss.index_cpu_to_gpu(res, 0, index, co)
-        op.add_range(
-            "quantizer_efSearch",
-            [2 ** i for i in range(10)]
-        )
+        op.add_range("quantizer_efSearch", [2**i for i in range(10)])
         op.restrict_range("nprobe", 2049)
     elif args.search_type == "gpu_tiled":
         print("move index to 1 GPU")
@@ -399,31 +448,28 @@ def main():
         quantizer_hnsw = replace_ivf_quantizer(index_ivf, new_quantizer)
         res = faiss.StandardGpuResources()
         index = faiss.index_cpu_to_gpu(res, 0, index, co)
-        op.add_range(
-            "quantizer_efSearch",
-            [2 ** i for i in range(10)]
-        )
+        op.add_range("quantizer_efSearch", [2**i for i in range(10)])
         op.restrict_range("nprobe", 2049)
         index = SeparateCoarseQuantizationIndex(
-            quantizer_hnsw, index, bs=args.batch_size)
+            quantizer_hnsw, index, bs=args.batch_size
+        )
     elif args.search_type == "gpu_ivf_quantizer":
         index_ivf = faiss.extract_index_ivf(index)
         centroids = index_ivf.quantizer.reconstruct_n()
         replace_ivf_quantizer(index_ivf, faiss.IndexFlatL2(index_ivf.d))
         res = faiss.StandardGpuResources()
         new_quantizer = faiss.index_factory(
-            index_ivf.d, f"IVF{args.ivf_quant_nlist},Flat")
+            index_ivf.d, f"IVF{args.ivf_quant_nlist},Flat"
+        )
         new_quantizer.train(centroids)
         new_quantizer.add(centroids)
         index = SeparateCoarseQuantizationIndex(
             faiss.index_cpu_to_gpu(res, 0, new_quantizer, co),
             faiss.index_cpu_to_gpu(res, 0, index, co),
-            bs=args.batch_size, seq_tiling=True
+            bs=args.batch_size,
+            seq_tiling=True,
         )
-        op.add_range(
-            "quantizer_nprobe",
-            [2 ** i for i in range(9)]
-        )
+        op.add_range("quantizer_nprobe", [2**i for i in range(9)])
         op.restrict_range("nprobe", 1025)
     elif args.search_type == "gpu_flat_quantizer":
         index_ivf = faiss.extract_index_ivf(index)
@@ -438,27 +484,29 @@ def main():
         res = faiss.StandardGpuResources()
         quantizer = faiss.index_cpu_to_gpu(res, 0, quantizer, co)
         index = SeparateCoarseQuantizationIndex(
-            quantizer, index, bs=args.batch_size)
+            quantizer, index, bs=args.batch_size
+        )
         op.restrict_range("nprobe", 2049)
     elif args.search_type in ("multi_gpu", "multi_gpu_sharded"):
         print(f"move index to {faiss.get_num_gpus()} GPU")
         co.shard = "sharded" in args.search_type
         index = faiss.index_cpu_to_all_gpus(index, co=co)
-        op.add_range(
-            "quantizer_efSearch",
-            [2 ** i for i in range(10)]
-        )
+        op.add_range("quantizer_efSearch", [2**i for i in range(10)])
         op.restrict_range("nprobe", 2049)
     elif args.search_type in (
-            "multi_gpu_flat_quantizer", "multi_gpu_flat_quantizer_sharded"):
+        "multi_gpu_flat_quantizer",
+        "multi_gpu_flat_quantizer_sharded",
+    ):
         index_ivf = faiss.extract_index_ivf(index)
         new_quantizer = faiss.IndexFlatL2(ds.d)
         replace_ivf_quantizer(index_ivf, new_quantizer)
         index = faiss.index_cpu_to_all_gpus(index, co=co)
         op.restrict_range("nprobe", 2049)
     elif args.search_type in (
-            "multi_gpu_sharded1", "multi_gpu_sharded1_flat",
-            "multi_gpu_sharded1_ivf"):
+        "multi_gpu_sharded1",
+        "multi_gpu_sharded1_flat",
+        "multi_gpu_sharded1_ivf",
+    ):
         print(f"move index to {faiss.get_num_gpus()} GPU")
         new_quantizer = faiss.IndexFlatL2(index_ivf.d)
         hnsw_quantizer = replace_ivf_quantizer(index_ivf, new_quantizer)
@@ -469,47 +517,43 @@ def main():
         index = faiss.index_cpu_to_gpu_multiple_py(res, index, co, gpus)
         op.restrict_range("nprobe", 2049)
         if args.search_type == "multi_gpu_sharded1":
-            op.add_range(
-                "quantizer_efSearch",
-                [2 ** i for i in range(10)]
-            )
+            op.add_range("quantizer_efSearch", [2**i for i in range(10)])
             index = ShardedGPUIndex(hnsw_quantizer, index, bs=args.batch_size)
         elif args.search_type == "multi_gpu_sharded1_ivf":
             centroids = hnsw_quantizer.storage.reconstruct_n()
             quantizer = faiss.index_factory(
-                centroids.shape[1], f"IVF{args.ivf_quant_nlist},Flat")
+                centroids.shape[1], f"IVF{args.ivf_quant_nlist},Flat"
+            )
             quantizer.train(centroids)
             quantizer.add(centroids)
             co.shard = False
             quantizer = faiss.index_cpu_to_gpu_multiple_py(
-                res, quantizer, co, gpus)
+                res, quantizer, co, gpus
+            )
             index = ShardedGPUIndex(quantizer, index, bs=args.batch_size)
 
-            op.add_range(
-                "quantizer_nprobe",
-                [2 ** i for i in range(9)]
-            )
+            op.add_range("quantizer_nprobe", [2**i for i in range(9)])
             op.restrict_range("nprobe", 1025)
         elif args.search_type == "multi_gpu_sharded1_flat":
             quantizer = hnsw_quantizer.storage
             quantizer = faiss.index_cpu_to_gpu_multiple_py(
-                res, quantizer, co, gpus)
+                res, quantizer, co, gpus
+            )
             index = ShardedGPUIndex(quantizer, index, bs=args.batch_size)
         else:
             raise RuntimeError()
     elif args.search_type in (
-            "multi_gpu_Csharded1", "multi_gpu_Csharded1_flat",
-            "multi_gpu_Csharded1_ivf"):
+        "multi_gpu_Csharded1",
+        "multi_gpu_Csharded1_flat",
+        "multi_gpu_Csharded1_ivf",
+    ):
         print(f"move index to {faiss.get_num_gpus()} GPU")
         co.shard = True
         co.common_ivf_quantizer
         co.common_ivf_quantizer = True
         op.restrict_range("nprobe", 2049)
         if args.search_type == "multi_gpu_Csharded1":
-            op.add_range(
-                "quantizer_efSearch",
-                [2 ** i for i in range(10)]
-            )
+            op.add_range("quantizer_efSearch", [2**i for i in range(10)])
             index = faiss.index_cpu_to_all_gpus(index, co)
         elif args.search_type == "multi_gpu_Csharded1_flat":
             new_quantizer = faiss.IndexFlatL2(index_ivf.d)
@@ -517,12 +561,10 @@ def main():
             index = faiss.index_cpu_to_all_gpus(index, co)
         elif args.search_type == "multi_gpu_Csharded1_ivf":
             quantizer = faiss.index_factory(
-                index_ivf.d, f"IVF{args.ivf_quant_nlist},Flat")
-            quantizer_hnsw = replace_ivf_quantizer(index_ivf, quantizer)
-            op.add_range(
-                "quantizer_nprobe",
-                [2 ** i for i in range(9)]
+                index_ivf.d, f"IVF{args.ivf_quant_nlist},Flat"
             )
+            quantizer_hnsw = replace_ivf_quantizer(index_ivf, quantizer)
+            op.add_range("quantizer_nprobe", [2**i for i in range(9)])
             index = faiss.index_cpu_to_all_gpus(index, co)
         else:
             raise RuntimeError()
@@ -543,7 +585,7 @@ def main():
         "processor": [l for l in open("/proc/cpuinfo") if "model name" in l][0],
         "GPU": list(os.popen("nvidia-smi", "r")),
         "mem": open("/proc/meminfo", "r").readlines(),
-        "pid": os.getpid()
+        "pid": os.getpid(),
     }
     op.args = args
     if args.stats:
@@ -556,7 +598,9 @@ def main():
 
         (max_perf, min_time) = op.predict_bounds(key)
         if not op.is_pareto_optimal(max_perf, min_time):
-            print(f"SKIP, {max_perf=:.3f} {min_time=:.3f}", )
+            print(
+                f"SKIP, {max_perf=:.3f} {min_time=:.3f}",
+            )
             continue
 
         for name, val in parameters.items():
@@ -577,19 +621,21 @@ def main():
 
         recalls = {}
         for rank in 1, 10, 100:
-            recall = (gt[:, :1] == I[:ds.nq, :rank]).sum() / ds.nq
+            recall = (gt[:, :1] == I[: ds.nq, :rank]).sum() / ds.nq
             recalls[rank] = recall
 
         print(f"time={t1 - t0:.3f} s recalls={recalls}")
         perf = recalls[1]
         op.add_operating_point(key, perf, t1 - t0)
-        op.all_experiments.append({
-            "cno": cno,
-            "key": key,
-            "parameters": parameters,
-            "time": t1 - t0,
-            "recalls": recalls
-        })
+        op.all_experiments.append(
+            {
+                "cno": cno,
+                "key": key,
+                "parameters": parameters,
+                "time": t1 - t0,
+                "recalls": recalls,
+            }
+        )
 
         if args.stats:
             pickle.dump(op, open(args.stats, "wb"))

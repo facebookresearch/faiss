@@ -14,7 +14,6 @@ import torch
 from faiss.contrib.clustering import kmeans  # noqa: F401 some libraries import kmeans from here
 
 
-
 class DatasetAssign:
     """Wrapper for a tensor that offers a function to assign the vectors
     to centroids. All other implementations offer the same interface"""

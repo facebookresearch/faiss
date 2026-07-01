@@ -44,7 +44,7 @@ jobs:
     name: Linux x86_64 GPU w/ cuVS packages (CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
-      CUDA_ARCHS: "75-real;80;86-real;90;100;120"
+      CUDA_ARCHS: "75-real;80;90;100;120"
     steps:
       - name: Checkout
         uses: actions/checkout@v4

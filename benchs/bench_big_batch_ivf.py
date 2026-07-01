@@ -20,17 +20,17 @@ def aa(*args, **kwargs):
     group.add_argument(*args, **kwargs)
 
 
-group = parser.add_argument_group('dataset options')
-aa('--dim', type=int, default=64)
-aa('--size', default="S")
+group = parser.add_argument_group("dataset options")
+aa("--dim", type=int, default=64)
+aa("--size", default="S")
 
-group = parser.add_argument_group('index options')
-aa('--nlist', type=int, default=100)
-aa('--factory_string', default="", help="overrides nlist")
-aa('--k', type=int, default=10)
-aa('--nprobe', type=int, default=5)
-aa('--nt', type=int, default=-1, help="nb search threads")
-aa('--method', default="pairwise_distances", help="")
+group = parser.add_argument_group("index options")
+aa("--nlist", type=int, default=100)
+aa("--factory_string", default="", help="overrides nlist")
+aa("--k", type=int, default=10)
+aa("--nprobe", type=int, default=5)
+aa("--nt", type=int, default=-1, help="nb search threads")
+aa("--method", default="pairwise_distances", help="")
 
 args = parser.parse_args()
 print("args:", args)
@@ -98,8 +98,7 @@ t_ref = toc()
 
 tic("block search")
 Dnew, Inew = big_batch_search(
-    index, ds.get_queries(),
-    k, method=args.method, verbose=10
+    index, ds.get_queries(), k, method=args.method, verbose=10
 )
 t_tot = toc()
 

@@ -105,13 +105,8 @@ namespace {
 template <SIMDLevel SL>
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* b;
-    size_t ndis;
-    size_t npartial_dot_products;
 
     float distance_to_code(const uint8_t* code) final {
-        ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
     }
 
@@ -119,25 +114,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             const idx_t i,
             const uint32_t offset,
             const uint32_t num_components) final override {
-        npartial_dot_products++;
+        const float* b = (const float*)this->codes;
         return fvec_inner_product<SL>(
                 q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
+        const float* b = (const float*)this->codes;
         return fvec_L2sqr<SL>(b + j * d, b + i * d, d);
     }
 
-    explicit FlatL2Dis(const IndexFlat& storage, const float* q_ = nullptr)
+    explicit FlatL2Dis(const IndexFlat& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
-                      storage.code_size,
-                      q_),
-              d(storage.d),
-              nb(storage.ntotal),
-              b(storage.get_xb()),
-              ndis(0),
-              npartial_dot_products(0) {}
+                      storage.code_size),
+              d(storage.d) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -153,8 +144,6 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -187,8 +176,6 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             float& dp3,
             const uint32_t offset,
             const uint32_t num_components) final override {
-        npartial_dot_products += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -224,29 +211,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 template <SIMDLevel SL>
 struct FlatIPDis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* q;
-    const float* b;
-    size_t ndis;
 
     float symmetric_dis(idx_t i, idx_t j) final override {
+        const float* b = (const float*)this->codes;
         return fvec_inner_product<SL>(b + j * d, b + i * d, d);
     }
 
     float distance_to_code(const uint8_t* code) final override {
-        ndis++;
         return fvec_inner_product<SL>(q, (const float*)code, d);
     }
 
-    explicit FlatIPDis(const IndexFlat& storage, const float* q_in = nullptr)
+    explicit FlatIPDis(const IndexFlat& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
-              d(storage.d),
-              nb(storage.ntotal),
-              q(q_in),
-              b(storage.get_xb()),
-              ndis(0) {}
+              d(storage.d) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -262,8 +241,6 @@ struct FlatIPDis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -296,8 +273,7 @@ FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
     } else if (metric_type == METRIC_INNER_PRODUCT) {
         with_simd_level([&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
     } else {
-        dc = get_extra_distance_computer(
-                d, metric_type, metric_arg, ntotal, get_xb());
+        dc = get_extra_distance_computer(d, metric_type, metric_arg, get_xb());
     }
     return dc;
 }
@@ -327,16 +303,11 @@ namespace {
 template <SIMDLevel SL>
 struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* q;
-    const float* b;
-    size_t ndis;
 
     const float* l2norms;
     float query_l2norm;
 
     float distance_to_code(const uint8_t* code) final override {
-        ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
     }
 
@@ -361,17 +332,11 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
         return l2norms[i] + l2norms[j] - 2 * dp0;
     }
 
-    explicit FlatL2WithNormsDis(
-            const IndexFlatL2& storage,
-            const float* q_in = nullptr)
+    explicit FlatL2WithNormsDis(const IndexFlatL2& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
               d(storage.d),
-              nb(storage.ntotal),
-              q(q_in),
-              b(storage.get_xb()),
-              ndis(0),
               l2norms(storage.cached_l2norms.data()),
               query_l2norm(0) {}
 
@@ -390,8 +355,6 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
