@@ -706,6 +706,63 @@ class TestRoundoff(unittest.TestCase):
         finally:
             faiss.cvar.distance_compute_blas_threshold = saved_threshold
 
+    def test_zero_padding_invariance(self):
+        """Repro for #5327: zero-padding should preserve exact L2 results."""
+        d = 2
+        nq = 2
+        pad_dims = 63999
+        radius = 1.0
+
+        xb = np.array(
+            [
+                [10100.0, 10100.0],
+                [10004.0, 10006.0],
+                [10001.0, 10002.0],
+                [9997.0, 10007.0],
+            ],
+            dtype=np.float32,
+        )
+        xq = np.tile(np.array([[10000.0, 10000.0]], dtype=np.float32), (nq, 1))
+
+        xb_pad = np.pad(xb, ((0, 0), (0, pad_dims))).astype(np.float32)
+        xq_pad = np.pad(xq, ((0, 0), (0, pad_dims))).astype(np.float32)
+
+        # Ensure this case crosses the BLAS path threshold with default config.
+        self.assertGreaterEqual(
+            nq * (d + pad_dims), faiss.cvar.distance_compute_blas_threshold
+        )
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+        D, I = index.search(xq, 4)
+        lims, RD, RI = index.range_search(xq, radius)
+
+        index_pad = faiss.IndexFlatL2(d + pad_dims)
+        index_pad.add(xb_pad)
+        Dp, Ip = index_pad.search(xq_pad, 4)
+        limsp, RDp, RIp = index_pad.range_search(xq_pad, radius)
+
+        exact = np.sum(
+            (xb.astype(np.float64) - xq[0].astype(np.float64)) ** 2,
+            axis=1,
+        )
+        exact_pad = np.sum(
+            (xb_pad.astype(np.float64) - xq_pad[0].astype(np.float64)) ** 2,
+            axis=1,
+        )
+        np.testing.assert_allclose(exact_pad, exact)
+
+        # Zero-padding should preserve distances and hit sets.
+        np.testing.assert_array_equal(I[0], Ip[0])
+        np.testing.assert_allclose(D[0], Dp[0], rtol=0, atol=1e-5)
+
+        np.testing.assert_array_equal(
+            RI[lims[0] : lims[1]], RIp[limsp[0] : limsp[1]]
+        )
+        np.testing.assert_allclose(
+            RD[lims[0] : lims[1]], RDp[limsp[0] : limsp[1]], rtol=0, atol=1e-5
+        )
+
 
 @for_all_simd_levels
 class TestSpectralHash(unittest.TestCase):
