@@ -172,17 +172,21 @@ void HNSW::print_neighbor_stats(int level) const {
 }
 
 void HNSW::fill_with_random_links(size_t n) {
-    int max_level_2 = prepare_level_tab(n);
+    if (n == 0) {
+        return;
+    }
+    max_level = prepare_level_tab(n);
+    entry_point = 0;
+
     RandomGenerator rng2(456);
 
-    for (int level = max_level_2 - 1; level >= 0; --level) {
+    for (int level = max_level - 1; level >= 0; --level) {
         std::vector<int> elts;
         for (size_t i = 0; i < n; i++) {
             if (levels[i] > level) {
                 elts.push_back(i);
             }
         }
-        printf("linking %zd elements in level %d\n", elts.size(), level);
 
         if (elts.size() == 1) {
             continue;

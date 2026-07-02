@@ -45,8 +45,8 @@ class DatasetAssignDispatch:
         return self.d
 
     def get_subset(self, indices):
-        res = np.zeros((len(indices), self.d), dtype='float32')
-        nos = np.searchsorted(self.cs[1:], indices, side='right')
+        res = np.zeros((len(indices), self.d), dtype="float32")
+        nos = np.searchsorted(self.cs[1:], indices, side="right")
 
         def handle(i):
             mask = nos == i
@@ -58,10 +58,7 @@ class DatasetAssignDispatch:
         return res
 
     def assign_to(self, centroids, weights=None):
-        src = self.imap(
-            lambda x: x.assign_to(centroids, weights),
-            self.xes
-        )
+        src = self.imap(lambda x: x.assign_to(centroids, weights), self.xes)
         I = []
         D = []
         sum_per_centroid = None
@@ -76,9 +73,9 @@ class DatasetAssignDispatch:
 
 
 class AssignServer(rpc.Server):
-    """ Assign version that can be exposed via RPC """
+    """Assign version that can be exposed via RPC"""
 
-    def __init__(self, s, assign, log_prefix=''):
+    def __init__(self, s, assign, log_prefix=""):
         rpc.Server.__init__(self, s, log_prefix=log_prefix)
         self.assign = assign
 
@@ -86,11 +83,9 @@ class AssignServer(rpc.Server):
         return getattr(self.assign, f)
 
 
-
-
 def do_test(todo):
 
-    testdata = '/datasets01_101/simsearch/041218/bigann/bigann_learn.bvecs'
+    testdata = "/datasets01_101/simsearch/041218/bigann/bigann_learn.bvecs"
 
     if os.path.exists(testdata):
         x = bvecs_mmap(testdata)
@@ -108,7 +103,7 @@ def do_test(todo):
     if "0" in todo:
         # reference C++ run
         km = faiss.Kmeans(x.shape[1], 1000, niter=20, verbose=True)
-        km.train(xx.astype('float32'))
+        km.train(xx.astype("float32"))
 
     if "1" in todo:
         # using the Faiss c++ implementation
@@ -117,21 +112,24 @@ def do_test(todo):
 
     if "2" in todo:
         # use the dispatch object (on local datasets)
-        data = DatasetAssignDispatch([
-            DatasetAssign(xx[20000 * i : 20000 * (i + 1)])
-            for i in range(5)
-            ], False
+        data = DatasetAssignDispatch(
+            [DatasetAssign(xx[20000 * i : 20000 * (i + 1)]) for i in range(5)],
+            False,
         )
         kmeans(1000, data, 20)
 
     if "3" in todo:
         # same, with GPU
         ngpu = faiss.get_num_gpus()
-        print('using %d GPUs' % ngpu)
-        data = DatasetAssignDispatch([
-            DatasetAssignGPU(xx[100000 * i // ngpu: 100000 * (i + 1) // ngpu], i)
-            for i in range(ngpu)
-            ], True
+        print("using %d GPUs" % ngpu)
+        data = DatasetAssignDispatch(
+            [
+                DatasetAssignGPU(
+                    xx[100000 * i // ngpu : 100000 * (i + 1) // ngpu], i
+                )
+                for i in range(ngpu)
+            ],
+            True,
         )
         kmeans(1000, data, 20)
 
@@ -142,98 +140,112 @@ def main():
     def aa(*args, **kwargs):
         group.add_argument(*args, **kwargs)
 
-    group = parser.add_argument_group('general options')
-    aa('--test', default='', help='perform tests (comma-separated numbers)')
+    group = parser.add_argument_group("general options")
+    aa("--test", default="", help="perform tests (comma-separated numbers)")
 
-    aa('--k', default=0, type=int, help='nb centroids')
-    aa('--seed', default=1234, type=int, help='random seed')
-    aa('--niter', default=20, type=int, help='nb iterations')
-    aa('--gpu', default=-2, type=int, help='GPU to use (-2:none, -1: all)')
+    aa("--k", default=0, type=int, help="nb centroids")
+    aa("--seed", default=1234, type=int, help="random seed")
+    aa("--niter", default=20, type=int, help="nb iterations")
+    aa("--gpu", default=-2, type=int, help="GPU to use (-2:none, -1: all)")
 
-    group = parser.add_argument_group('I/O options')
-    aa('--indata', default='',
-       help='data file to load (supported formats fvecs, bvecs, npy')
-    aa('--i0', default=0, type=int, help='first vector to keep')
-    aa('--i1', default=-1, type=int, help='last vec to keep + 1')
-    aa('--out', default='', help='file to store centroids')
-    aa('--store_each_iteration', default=False, action='store_true',
-       help='store centroid checkpoints')
+    group = parser.add_argument_group("I/O options")
+    aa(
+        "--indata",
+        default="",
+        help="data file to load (supported formats fvecs, bvecs, npy",
+    )
+    aa("--i0", default=0, type=int, help="first vector to keep")
+    aa("--i1", default=-1, type=int, help="last vec to keep + 1")
+    aa("--out", default="", help="file to store centroids")
+    aa(
+        "--store_each_iteration",
+        default=False,
+        action="store_true",
+        help="store centroid checkpoints",
+    )
 
-    group = parser.add_argument_group('server options')
-    aa('--server', action='store_true', default=False, help='run server')
-    aa('--port', default=12345, type=int, help='server port')
-    aa('--when_ready', default=None, help='store host:port to this file when ready')
-    aa('--ipv4', default=False, action='store_true', help='force ipv4')
+    group = parser.add_argument_group("server options")
+    aa("--server", action="store_true", default=False, help="run server")
+    aa("--port", default=12345, type=int, help="server port")
+    aa(
+        "--when_ready",
+        default=None,
+        help="store host:port to this file when ready",
+    )
+    aa("--ipv4", default=False, action="store_true", help="force ipv4")
 
-    group = parser.add_argument_group('client options')
-    aa('--client', action='store_true', default=False, help='run client')
-    aa('--servers', default='', help='list of server:port separated by spaces')
+    group = parser.add_argument_group("client options")
+    aa("--client", action="store_true", default=False, help="run client")
+    aa("--servers", default="", help="list of server:port separated by spaces")
 
     args = parser.parse_args()
 
     if args.test:
-        do_test(args.test.split(','))
+        do_test(args.test.split(","))
         return
 
     # prepare data matrix (either local or remote)
     if args.indata:
-        print('loading ', args.indata)
-        if args.indata.endswith('.bvecs'):
+        print("loading ", args.indata)
+        if args.indata.endswith(".bvecs"):
             x = bvecs_mmap(args.indata)
-        elif args.indata.endswith('.fvecs'):
+        elif args.indata.endswith(".fvecs"):
             x = fvecs_mmap(args.indata)
-        elif args.indata.endswith('.npy'):
-            x = np.load(args.indata, mmap_mode='r')
+        elif args.indata.endswith(".npy"):
+            x = np.load(args.indata, mmap_mode="r")
         else:
             raise AssertionError
 
         if args.i1 == -1:
             args.i1 = len(x)
-        x = x[args.i0:args.i1]
+        x = x[args.i0 : args.i1]
         if args.gpu == -2:
             data = DatasetAssign(x)
         else:
-            print('moving to GPU')
+            print("moving to GPU")
             data = DatasetAssignGPU(x, args.gpu)
 
     elif args.client:
-        print('connecting to servers')
+        print("connecting to servers")
 
         def connect_client(hostport):
-            host, port = hostport.split(':')
+            host, port = hostport.split(":")
             port = int(port)
-            print('connecting %s:%d' % (host, port))
+            print("connecting %s:%d" % (host, port))
             client = rpc.Client(host, port, v6=not args.ipv4)
-            print('client %s:%d ready' % (host, port))
+            print("client %s:%d ready" % (host, port))
             return client
 
-        hostports = args.servers.strip().split(' ')
+        hostports = args.servers.strip().split(" ")
         # pool = ThreadPool(len(hostports))
 
-        data = DatasetAssignDispatch(
-            list(map(connect_client, hostports)),
-            True
-        )
+        data = DatasetAssignDispatch(list(map(connect_client, hostports)), True)
     else:
         raise AssertionError
 
-
     if args.server:
-        print('starting server')
+        print("starting server")
         log_prefix = f"{rpc.socket.gethostname()}:{args.port}"
         rpc.run_server(
             lambda s: AssignServer(s, data, log_prefix=log_prefix),
-            args.port, report_to_file=args.when_ready,
-            v6=not args.ipv4)
+            args.port,
+            report_to_file=args.when_ready,
+            v6=not args.ipv4,
+        )
 
     else:
-        print('running kmeans')
-        centroids = kmeans(args.k, data, niter=args.niter, seed=args.seed,
-                           checkpoint=args.out if args.store_each_iteration else None)
-        if args.out != '':
-            print('writing centroids to', args.out)
+        print("running kmeans")
+        centroids = kmeans(
+            args.k,
+            data,
+            niter=args.niter,
+            seed=args.seed,
+            checkpoint=args.out if args.store_each_iteration else None,
+        )
+        if args.out != "":
+            print("writing centroids to", args.out)
             np.save(args.out, centroids)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
