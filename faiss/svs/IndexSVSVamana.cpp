@@ -25,6 +25,7 @@
 #include <faiss/svs/IndexSVSVamana.h>
 
 #include <faiss/Index.h>
+#include <faiss/impl/mapped_io.h>
 
 #include <svs/runtime/api_defs.h>
 #include <svs/runtime/dynamic_vamana_index.h>
@@ -187,6 +188,7 @@ void IndexSVSVamana::reset() {
     }
     stored_vectors.clear();
     stored_vectors_valid = true;
+    mmap_owner.reset(); // Release the memory mapping
     is_trained = false;
     ntotal = 0;
 }
@@ -361,6 +363,34 @@ svs_runtime::DynamicVamanaIndex* IndexSVSVamana::dynamic_impl() const {
             is_static, "Operation not supported on a static Vamana index.");
     FAISS_THROW_IF_NOT(impl);
     return static_cast<svs_runtime::DynamicVamanaIndex*>(impl);
+}
+
+void IndexSVSVamana::map_to(MappedFileIOReader* mf) {
+    FAISS_THROW_IF_MSG(
+            !is_static,
+            "map_to() is only supported for static Vamana indices.");
+    FAISS_THROW_IF_MSG(impl, "Cannot map_to: SVS index already loaded.");
+    FAISS_THROW_IF_NOT(mf);
+
+    MmapSpan span = acquire_mmap_span(mf);
+
+    auto svs_metric = to_svs_metric(metric_type);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+
+    size_t read_bytes = 0;
+    auto status = svs_runtime::VamanaIndex::map_to_memory(
+            &impl,
+            span.data,
+            span.size_bytes,
+            svs_metric,
+            svs_storage_kind,
+            &read_bytes);
+
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+
+    finalize_mmap_span(mf, span, read_bytes, mmap_owner);
 }
 
 } // namespace faiss
