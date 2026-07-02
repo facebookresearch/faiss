@@ -30,6 +30,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/mapped_io.h>
 
 #include <algorithm>
 #include <concepts>
@@ -248,4 +249,63 @@ struct FaissResultsAllocator : public svs_runtime::ResultsAllocator {
     using LabelsConverter = OutputBufferConverter<size_t, faiss::idx_t>;
     mutable LabelsConverter labels_converter;
 };
+
+// Helper for memory-mapped SVS index loading.
+// Acquires a pointer to the remaining mapped region and returns the data
+// pointer, size in bytes, and starting position. Validates that mmap returns
+// expected byte count. MappedFileIOReader::mmap returns number of items (not
+// bytes); we always request size=1 so items == bytes, but we name variables
+// explicitly to avoid confusion.
+struct MmapSpan {
+    void* data = nullptr;
+    size_t size_bytes = 0;
+    size_t start_pos = 0;
+};
+
+inline MmapSpan acquire_mmap_span(MappedFileIOReader* mf) {
+    FAISS_THROW_IF_NOT(mf);
+    FAISS_THROW_IF_NOT(mf->mmap_owner);
+    size_t pos = mf->pos;
+    size_t size_to_end = mf->mmap_owner->size() - pos;
+    // Reject an empty span: MappedFileIOReader::mmap() returns 0 without
+    // writing *ptr when no bytes remain, which would otherwise pass the
+    // size check below and hand a nullptr / zero size to the SVS runtime
+    // (e.g. for a truncated or corrupt file).
+    FAISS_THROW_IF_NOT_FMT(
+            size_to_end > 0,
+            "acquire_mmap_span: no mapped bytes remain at reader position %zu",
+            pos);
+    void* data = nullptr;
+    // mmap returns actual_nitems; with size=1 this equals bytes
+    size_t actual_nitems = mf->mmap(&data, 1, size_to_end);
+    FAISS_THROW_IF_NOT_FMT(
+            actual_nitems == size_to_end,
+            "mmap() returned unexpected size: %zu items (expected %zu bytes)",
+            actual_nitems,
+            size_to_end);
+    return {data, size_to_end, pos};
+}
+
+// Adjusts MappedFileIOReader position after SVS consumes read_bytes,
+// storing mmap_owner reference to keep mapping alive.
+inline void finalize_mmap_span(
+        MappedFileIOReader* mf,
+        const MmapSpan& span,
+        size_t read_bytes,
+        std::shared_ptr<MmappedFileMappingOwner>& mmap_owner_out) {
+    // Take ownership of the mapping BEFORE validating read_bytes. By this point
+    // the caller's impl already holds pointers into the mapped region, so the
+    // index must keep the mapping alive even on the throw path. Otherwise the
+    // index would be left with a live impl but no mmap_owner, and once the
+    // reader's mapping reference is released the index destructor (which calls
+    // destroy(impl)) would touch unmapped memory.
+    mmap_owner_out = mf->mmap_owner;
+    FAISS_THROW_IF_NOT_FMT(
+            read_bytes > 0 && read_bytes <= span.size_bytes,
+            "map_to_memory returned invalid read_bytes: %zu (span size %zu)",
+            read_bytes,
+            span.size_bytes);
+    mf->pos = span.start_pos + read_bytes;
+}
+
 } // namespace faiss

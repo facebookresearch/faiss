@@ -82,8 +82,9 @@ class TestFactory(unittest.TestCase):
     def test_factory_HNSW_newstyle(self):
         index = faiss.index_factory(12, "HNSW32,Flat")
         assert index.storage.sa_code_size() == 12 * 4
-        index = faiss.index_factory(12, "HNSW32,SQ8",
-                                    faiss.METRIC_INNER_PRODUCT)
+        index = faiss.index_factory(
+            12, "HNSW32,SQ8", faiss.METRIC_INNER_PRODUCT
+        )
         assert index.storage.sa_code_size() == 12
         assert index.metric_type == faiss.METRIC_INNER_PRODUCT
         index = faiss.index_factory(12, "HNSW,PQ4")
@@ -130,9 +131,9 @@ class TestFactory(unittest.TestCase):
         assert index.pq.M == 2 and index.pq.nbits == 8
 
     def test_factory_lsh(self):
-        index = faiss.index_factory(128, 'LSHrt')
+        index = faiss.index_factory(128, "LSHrt")
         self.assertEqual(index.nbits, 128)
-        index = faiss.index_factory(128, 'LSH16rt')
+        index = faiss.index_factory(128, "LSH16rt")
         self.assertEqual(index.nbits, 16)
 
     def test_factory_fast_scan(self):
@@ -141,8 +142,9 @@ class TestFactory(unittest.TestCase):
         self.assertEqual(index.pq.nbits, 4)
         index = faiss.index_factory(56, "PQ28x4fs_64")
         self.assertEqual(index.bbs, 64)
-        index = faiss.index_factory(56, "IVF50,PQ28x4fs_64",
-                                    faiss.METRIC_INNER_PRODUCT)
+        index = faiss.index_factory(
+            56, "IVF50,PQ28x4fs_64", faiss.METRIC_INNER_PRODUCT
+        )
         self.assertEqual(index.bbs, 64)
         self.assertEqual(index.nlist, 50)
         self.assertTrue(index.cp.spherical)
@@ -192,14 +194,14 @@ class TestCodeSize(unittest.TestCase):
     def test_1(self):
         self.assertEqual(
             factory_tools.get_code_size(50, "IVF32,Flat,Refine(PQ25x12)"),
-            50 * 4 + (25 * 12 + 7) // 8
+            50 * 4 + (25 * 12 + 7) // 8,
         )
 
 
 class TestCloneSize(unittest.TestCase):
 
     def test_clone_size(self):
-        index = faiss.index_factory(20, 'PCA10,Flat')
+        index = faiss.index_factory(20, "PCA10,Flat")
         xb = faiss.rand((100, 20))
         index.train(xb)
         index.add(xb)
@@ -210,7 +212,7 @@ class TestCloneSize(unittest.TestCase):
 class TestCloneIVFPQ(unittest.TestCase):
 
     def test_clone(self):
-        index = faiss.index_factory(16, 'IVF10,PQ4np')
+        index = faiss.index_factory(16, "IVF10,PQ4np")
         xb = faiss.rand((1000, 16))
         index.train(xb)
         index.add(xb)
@@ -304,7 +306,7 @@ class TestAdditive(unittest.TestCase):
         index = faiss.index_factory(12, "IVF256(RCQ2x4),RQ3x4")
         self.assertEqual(
             faiss.downcast_index(index.quantizer).__class__,
-            faiss.ResidualCoarseQuantizer
+            faiss.ResidualCoarseQuantizer,
         )
 
     def test_rq3(self):
@@ -312,14 +314,14 @@ class TestAdditive(unittest.TestCase):
 
         np.testing.assert_array_equal(
             faiss.vector_to_array(index.rq.nbits),
-            np.array([16, 16, 8, 8, 8, 4, 4, 4, 4, 4, 4])
+            np.array([16, 16, 8, 8, 8, 4, 4, 4, 4, 4, 4]),
         )
 
     def test_norm(self):
         index = faiss.index_factory(5, "RQ8x8_Nqint8")
         self.assertEqual(
-            index.rq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_qint8)
+            index.rq.search_type, faiss.AdditiveQuantizer.ST_norm_qint8
+        )
 
 
 @for_all_simd_levels
@@ -372,7 +374,7 @@ class TestIVFSpectralHashOwnership(unittest.TestCase):
     def test_constructor(self):
         index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
         gc.collect()
-        index.quantizer.ntotal   # this should not crash
+        index.quantizer.ntotal  # this should not crash
 
     def test_replace_vt(self):
         index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
