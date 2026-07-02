@@ -8195,6 +8195,7 @@
   <compound refid="structfaiss_1_1IndexSVSFlat" kind="struct"><name>faiss::IndexSVSFlat</name>
     <member refid="structfaiss_1_1IndexSVSFlat_1a5af540fa62da6a0f12fe646df17926f8" kind="variable"><name>nlabels</name></member>
     <member refid="structfaiss_1_1IndexSVSFlat_1a895fd7ee1093ae1e81c3faa1624e91f7" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSFlat_1a162d727b74b7d51f9ffa4691e9dec724" kind="variable"><name>mmap_owner</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -8209,6 +8210,7 @@
     <member refid="structfaiss_1_1IndexSVSFlat_1a663c3c60f3eb06a0af992af16010bb33" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexSVSFlat_1ab593bdf64baeacd9e828d25622cfd2a4" kind="function"><name>serialize_impl</name></member>
     <member refid="structfaiss_1_1IndexSVSFlat_1aa220a36d31ddc554d32c6ddd6e771e9d" kind="function"><name>deserialize_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSFlat_1ac43fd0a197ab8c0f9f249c7a5adb00df" kind="function"><name>map_to</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
     <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" kind="function"><name>train_ex</name></member>
@@ -8436,6 +8438,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" kind="variable"><name>is_static</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a3c8a5d7f840ed2fe1e6fa914e5b49707" kind="variable"><name>mmap_owner</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -8455,6 +8458,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a9d65b591efa1bf7b7095300fb175cd50" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a12545dfde65b7439ad5100474b28dc17" kind="function"><name>serialize_impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a125ebfc4e368666d5c859accd8a115a7" kind="function"><name>deserialize_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a57980aa15ff2062fca057073f7713372" kind="function"><name>map_to</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
     <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" kind="function"><name>train_ex</name></member>
@@ -8497,6 +8501,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" kind="variable"><name>is_static</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a3c8a5d7f840ed2fe1e6fa914e5b49707" kind="variable"><name>mmap_owner</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -8520,6 +8525,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a4ae46d56b2782329c2c46a9553b3ce5a" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a12545dfde65b7439ad5100474b28dc17" kind="function"><name>serialize_impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a125ebfc4e368666d5c859accd8a115a7" kind="function"><name>deserialize_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a57980aa15ff2062fca057073f7713372" kind="function"><name>map_to</name></member>
     <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" kind="function"><name>train_ex</name></member>
     <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" kind="function"><name>add_ex</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
@@ -8558,6 +8564,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a9d65b591efa1bf7b7095300fb175cd50" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a12545dfde65b7439ad5100474b28dc17" kind="function"><name>serialize_impl</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a125ebfc4e368666d5c859accd8a115a7" kind="function"><name>deserialize_impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a57980aa15ff2062fca057073f7713372" kind="function"><name>map_to</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
     <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" kind="function"><name>train_ex</name></member>
@@ -8591,6 +8598,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" kind="variable"><name>is_static</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a3c8a5d7f840ed2fe1e6fa914e5b49707" kind="variable"><name>mmap_owner</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -9694,6 +9702,11 @@
     <member refid="structfaiss_1_1MmappedFileMappingOwner_1a3302aff829adb5dca13fc0031e98e2fc" kind="function"><name>~MmappedFileMappingOwner</name></member>
     <member refid="structfaiss_1_1MmappedFileMappingOwner_1ae8b8ecefe7d347fe265065e174e7ef26" kind="function"><name>data</name></member>
     <member refid="structfaiss_1_1MmappedFileMappingOwner_1a151096800e737d1ae944bf4094d729ea" kind="function"><name>size</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1MmapSpan" kind="struct"><name>faiss::MmapSpan</name>
+    <member refid="structfaiss_1_1MmapSpan_1a71f80d1d4047c43dbf5c3222be71c0db" kind="variable"><name>data</name></member>
+    <member refid="structfaiss_1_1MmapSpan_1aea5f6fe0f4008c3a3a3a77fee1ea679c" kind="variable"><name>size_bytes</name></member>
+    <member refid="structfaiss_1_1MmapSpan_1af9dc68a576df5ede9b40b86fa49a5c81" kind="variable"><name>start_pos</name></member>
   </compound>
   <compound refid="structfaiss_1_1MultiIndexQuantizer" kind="struct"><name>faiss::MultiIndexQuantizer</name>
     <member refid="structfaiss_1_1MultiIndexQuantizer_1a8ddb6030d00d326268b3a8ded2f83dac" kind="variable"><name>pq</name></member>
@@ -13539,6 +13552,8 @@
     <member refid="namespacefaiss_1a4c2998ae0350150fa20fb1657d15c174" kind="function"><name>convert_input_buffer</name></member>
     <member refid="namespacefaiss_1ae1e679f47d92aec25aa00069e6e2155a" kind="function"><name>convert_output_buffer</name></member>
     <member refid="namespacefaiss_1a86baa07840a69f553dddac10efa5dcf2" kind="function"><name>convert_output_buffer</name></member>
+    <member refid="namespacefaiss_1a269da2145992e5681f52f97c23210391" kind="function"><name>acquire_mmap_span</name></member>
+    <member refid="namespacefaiss_1a17ee937a0720e7fe0dcb15d0b9ec2f93" kind="function"><name>finalize_mmap_span</name></member>
     <member refid="namespacefaiss_1af80a4ca99b16b97df605594f16257643" kind="function"><name>to_svs_storage_kind</name></member>
     <member refid="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" kind="function"><name>is_aligned_pointer</name></member>
     <member refid="namespacefaiss_1a14b8c774f4115b66556dc772d2cafe43" kind="function"><name>encode_bf16</name></member>

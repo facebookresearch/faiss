@@ -7,6 +7,7 @@
     <includes local="no">memory</includes>
     <includes refid="io_8h" local="no">faiss/impl/io.h</includes>
     <includes refid="maybe__owned__vector_8h" local="no">faiss/impl/maybe_owned_vector.h</includes>
+    <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
     <incdepgraph>
       <node id="11">
         <label>faiss/impl/FaissAssert.h</label>
@@ -127,6 +128,62 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/impl/mapped_io.h</label>
+        <link refid="mapped__io_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/svs/IndexSVSFaissUtils.h</label>
+        <link refid="IndexSVSFaissUtils_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/svs/IndexSVSFlat.h</label>
+        <link refid="IndexSVSFlat_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/svs/IndexSVSIVF.h</label>
+        <link refid="IndexSVSIVF_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/svs/IndexSVSIVFLVQ.h</label>
+        <link refid="IndexSVSIVFLVQ_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/svs/IndexSVSIVFLeanVec.h</label>
+        <link refid="IndexSVSIVFLeanVec_8h_source"/>
+      </node>
+      <node id="7">
+        <label>faiss/svs/IndexSVSVamana.h</label>
+        <link refid="IndexSVSVamana_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/svs/IndexSVSVamanaLVQ.h</label>
+        <link refid="IndexSVSVamanaLVQ_8h_source"/>
+      </node>
+      <node id="9">
+        <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
+        <link refid="IndexSVSVamanaLeanVec_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1MmappedFileMappingOwner" prot="public">faiss::MmappedFileMappingOwner</innerclass>
     <innerclass refid="structfaiss_1_1MappedFileIOReader" prot="public">faiss::MappedFileIOReader</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

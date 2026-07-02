@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="88" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="93" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1a7d869ca54cc04c99872e2f7efd59f8a3" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="89" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="94" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1ab311381b305090b844d970b19e5eaee0" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="90" column="11" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="90" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="95" column="11" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="95" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1adeef224eb1e33f3415a0dbe19a2cac1a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -89,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="91" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="91" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="96" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1a05625593815e847ffb2b4f5c99f0a924" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -104,7 +104,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="92" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="97" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1acee8bc45fc2eb1af1c44e28966046015" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -119,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="93" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="98" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="98" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1a4e97bcb1196c74bf479f79b8aa2bb59d" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -134,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="94" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="99" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -149,7 +149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="95" column="10" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="95" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="100" column="10" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="100" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="98" column="10" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="103" column="10" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" prot="public" static="no" mutable="no">
         <type>SVSStorageKind</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="100" column="20" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="100" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="105" column="20" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1abed1972cbfcf22fe3dbb8b501343525e" prot="public" static="no" mutable="no">
         <type>svs_runtime::VamanaIndex *</type>
@@ -195,7 +195,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="146" column="30" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="146" bodyend="146"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="154" column="30" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="154" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1a3c8a5d7f840ed2fe1e6fa914e5b49707" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1MmappedFileMappingOwner" kindref="compound">MmappedFileMappingOwner</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;MmappedFileMappingOwner&gt; faiss::IndexSVSVamana::mmap_owner</definition>
+        <argsstring></argsstring>
+        <name>mmap_owner</name>
+        <qualifiedname>faiss::IndexSVSVamana::mmap_owner</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSVamana.h" line="159" column="21" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="159" bodyend="159"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -209,7 +224,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="151" column="17" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="151" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="164" column="17" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="164" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -224,7 +239,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="152" column="10" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="152" bodyend="152"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="165" column="10" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="165" bodyend="165"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -630,7 +645,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="119" column="10"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="124" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSVamana_1a019544f0725293e7cfe4d675d53eeaa0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -714,7 +729,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="121" column="10"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="126" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSVamana_1a9d9b2ff0114ac59965bcf990b09b844c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -786,7 +801,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="129" column="10"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="134" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSVamana_1a4ae46d56b2782329c2c46a9553b3ce5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -806,7 +821,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="136" column="12"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="141" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSVamana_1a12545dfde65b7439ad5100474b28dc17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -824,7 +839,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="141" column="10"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="146" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSVamana_1a125ebfc4e368666d5c859accd8a115a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -842,7 +857,25 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="142" column="18"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="147" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexSVSVamana_1a57980aa15ff2062fca057073f7713372" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::IndexSVSVamana::map_to</definition>
+        <argsstring>(MappedFileIOReader *mf)</argsstring>
+        <name>map_to</name>
+        <qualifiedname>faiss::IndexSVSVamana::map_to</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MappedFileIOReader" kindref="compound">MappedFileIOReader</ref> *</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSVamana.h" line="150" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1900,7 +1933,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="161" column="37"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="174" column="37"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -1916,7 +1949,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="115" column="17"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="120" column="17"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
@@ -2021,10 +2054,12 @@
       <member refid="structfaiss_1_1IndexSVSVamana_1ada826e4d618fb11e2fbedda558b94ea2" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>is_static</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a35ea21d9fc4b76d299f9958c4ba97596" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>leanvec_d</name></member>
+      <member refid="structfaiss_1_1IndexSVSVamana_1a57980aa15ff2062fca057073f7713372" prot="public" virt="virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>map_to</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1a4e97bcb1196c74bf479f79b8aa2bb59d" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>max_candidate_pool_size</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>metric_arg</name></member>
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1IndexSVSVamana_1a3c8a5d7f840ed2fe1e6fa914e5b49707" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>mmap_owner</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>ntotal</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1a7d869ca54cc04c99872e2f7efd59f8a3" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>prune_to</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1a9d9b2ff0114ac59965bcf990b09b844c" prot="public" virt="virtual"><scope>faiss::IndexSVSVamanaLeanVec</scope><name>range_search</name></member>

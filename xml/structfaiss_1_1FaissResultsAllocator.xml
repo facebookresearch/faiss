@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="248" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="248" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="249" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="249" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-attrib">
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="247" column="30" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="247" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="248" column="30" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="248" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FaissResultsAllocator_1a22ebea75c255135e8d623ded8df77d74" prot="private" static="no" mutable="yes">
         <type><ref refid="structfaiss_1_1OutputBufferConverter" kindref="compound">LabelsConverter</ref></type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="249" column="29" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="249" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="250" column="29" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="250" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="222" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="222" bodyend="224"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="223" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="223" bodyend="225"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FaissResultsAllocator_1a90db8072231667d791a595c5e1f7a311" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::SearchResultsStorage</type>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="226" column="39" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="226" bodyend="244"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="227" column="39" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="227" bodyend="245"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -113,7 +113,7 @@
         <label>svs_runtime::ResultsAllocator</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/svs/IndexSVSFaissUtils.h" line="221" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="221" bodyend="250"/>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="222" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="222" bodyend="251"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FaissResultsAllocator_1a90db8072231667d791a595c5e1f7a311" prot="public" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>allocate</name></member>
       <member refid="structfaiss_1_1FaissResultsAllocator_1a397c4c0b3f70f84bcb9cbc15cb351a60" prot="public" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>FaissResultsAllocator</name></member>

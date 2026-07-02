@@ -245,6 +245,7 @@
     <innerclass refid="structfaiss_1_1MaybeOwnedVectorOwner" prot="public">faiss::MaybeOwnedVectorOwner</innerclass>
     <innerclass refid="structfaiss_1_1MinimaxHeapT" prot="public">faiss::MinimaxHeapT</innerclass>
     <innerclass refid="structfaiss_1_1MmappedFileMappingOwner" prot="public">faiss::MmappedFileMappingOwner</innerclass>
+    <innerclass refid="structfaiss_1_1MmapSpan" prot="public">faiss::MmapSpan</innerclass>
     <innerclass refid="structfaiss_1_1MultiIndexQuantizer" prot="public">faiss::MultiIndexQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1MultiIndexQuantizer2" prot="public">faiss::MultiIndexQuantizer2</innerclass>
     <innerclass refid="structfaiss_1_1NegativeDistanceComputer" prot="public">faiss::NegativeDistanceComputer</innerclass>
@@ -1151,7 +1152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="44" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="44" bodyend="56"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="49" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="49" bodyend="61"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9e" prot="public" static="no" strong="yes">
         <type></type>
@@ -9475,7 +9476,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="50" column="32" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="50" bodyend="59"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="51" column="32" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="51" bodyend="60"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4b0faf1e9d9da1c14b118bdef8116f48" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FaissIDFilter" kindref="compound">FaissIDFilter</ref> &gt;</type>
@@ -9494,7 +9495,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="72" column="24" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="72" bodyend="78"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="73" column="24" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="73" bodyend="79"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a59dea145469ceef3a7710a7163d3e4ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -9520,7 +9521,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="193" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="193" bodyend="199"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="194" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="194" bodyend="200"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4c2998ae0350150fa20fb1657d15c174" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -9550,7 +9551,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="202" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="202" bodyend="204"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="203" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="203" bodyend="205"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae1e679f47d92aec25aa00069e6e2155a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -9576,7 +9577,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="208" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="208" bodyend="214"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="209" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="209" bodyend="215"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a86baa07840a69f553dddac10efa5dcf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -9606,7 +9607,55 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="217" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="217" bodyend="219"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="218" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="218" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a269da2145992e5681f52f97c23210391" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1MmapSpan" kindref="compound">MmapSpan</ref></type>
+        <definition>MmapSpan faiss::acquire_mmap_span</definition>
+        <argsstring>(MappedFileIOReader *mf)</argsstring>
+        <name>acquire_mmap_span</name>
+        <qualifiedname>faiss::acquire_mmap_span</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MappedFileIOReader" kindref="compound">MappedFileIOReader</ref> *</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="265" column="17" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="265" bodyend="287"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a17ee937a0720e7fe0dcb15d0b9ec2f93" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::finalize_mmap_span</definition>
+        <argsstring>(MappedFileIOReader *mf, const MmapSpan &amp;span, size_t read_bytes, std::shared_ptr&lt; MmappedFileMappingOwner &gt; &amp;mmap_owner_out)</argsstring>
+        <name>finalize_mmap_span</name>
+        <qualifiedname>faiss::finalize_mmap_span</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MappedFileIOReader" kindref="compound">MappedFileIOReader</ref> *</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MmapSpan" kindref="compound">MmapSpan</ref> &amp;</type>
+          <declname>span</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>read_bytes</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1MmappedFileMappingOwner" kindref="compound">MmappedFileMappingOwner</ref> &gt; &amp;</type>
+          <declname>mmap_owner_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="291" column="13" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="291" bodyend="309"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af80a4ca99b16b97df605594f16257643" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::StorageKind</type>
@@ -9624,7 +9673,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="58" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="58" bodyend="85"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="63" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="63" bodyend="90"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

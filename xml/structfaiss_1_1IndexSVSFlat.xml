@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="37" column="12" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="37" bodyend="37"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="42" column="12" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="42" bodyend="42"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSVSFlat_1a895fd7ee1093ae1e81c3faa1624e91f7" prot="public" static="no" mutable="no">
         <type>svs_runtime::FlatIndex *</type>
@@ -32,7 +32,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="57" column="28" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="57" bodyend="57"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="62" column="28" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexSVSFlat_1a162d727b74b7d51f9ffa4691e9dec724" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1MmappedFileMappingOwner" kindref="compound">MmappedFileMappingOwner</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;MmappedFileMappingOwner&gt; faiss::IndexSVSFlat::mmap_owner</definition>
+        <argsstring></argsstring>
+        <name>mmap_owner</name>
+        <qualifiedname>faiss::IndexSVSFlat::mmap_owner</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFlat.h" line="67" column="21" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="67" bodyend="67"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -138,7 +153,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="39" column="5"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="44" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1a016570d378f9dd0693442918198b8adf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -161,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="40" column="5"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="45" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1ab61841ba70d79514133482478fabfcb3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -175,7 +190,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="42" column="5"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="47" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1a2e3e1ac712b1abac6ed05e80a614f1c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -217,7 +232,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="44" column="10"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="49" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1a126d2241af23193d60badc4956d5b219" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -301,7 +316,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="46" column="10"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="51" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1a663c3c60f3eb06a0af992af16010bb33" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -317,7 +332,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="54" column="10"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="59" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1ab593bdf64baeacd9e828d25622cfd2a4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -335,7 +350,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="60" column="10"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="70" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1aa220a36d31ddc554d32c6ddd6e771e9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -353,7 +368,25 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="61" column="10"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="71" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexSVSFlat_1ac43fd0a197ab8c0f9f249c7a5adb00df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexSVSFlat::map_to</definition>
+        <argsstring>(MappedFileIOReader *mf)</argsstring>
+        <name>map_to</name>
+        <qualifiedname>faiss::IndexSVSFlat::map_to</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MappedFileIOReader" kindref="compound">MappedFileIOReader</ref> *</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFlat.h" line="74" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1704,7 +1737,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFlat.h" line="65" column="18"/>
+        <location file="faiss/svs/IndexSVSFlat.h" line="78" column="18"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
@@ -1765,7 +1798,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/svs/IndexSVSFlat.h" line="35" column="1" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="35" bodyend="66"/>
+    <location file="faiss/svs/IndexSVSFlat.h" line="40" column="1" bodyfile="faiss/svs/IndexSVSFlat.h" bodystart="40" bodyend="79"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexSVSFlat_1a2e3e1ac712b1abac6ed05e80a614f1c3" prot="public" virt="virtual"><scope>faiss::IndexSVSFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexSVSFlat</scope><name>add_ex</name></member>
@@ -1787,9 +1820,11 @@
       <member refid="structfaiss_1_1IndexSVSFlat_1a5fd862c319729b4c625f3efee737b8df" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>IndexSVSFlat</name></member>
       <member refid="structfaiss_1_1IndexSVSFlat_1a016570d378f9dd0693442918198b8adf" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>IndexSVSFlat</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1IndexSVSFlat_1ac43fd0a197ab8c0f9f249c7a5adb00df" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>map_to</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexSVSFlat</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>metric_arg</name></member>
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1IndexSVSFlat_1a162d727b74b7d51f9ffa4691e9dec724" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>mmap_owner</name></member>
       <member refid="structfaiss_1_1IndexSVSFlat_1a5af540fa62da6a0f12fe646df17926f8" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>nlabels</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>ntotal</name></member>
       <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" virt="virtual"><scope>faiss::IndexSVSFlat</scope><name>range_search</name></member>

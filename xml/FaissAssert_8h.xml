@@ -1288,6 +1288,8 @@
       <node id="172">
         <label>faiss/impl/mapped_io.h</label>
         <link refid="mapped__io_8h_source"/>
+        <childnode refid="120" relation="include">
+        </childnode>
       </node>
       <node id="170">
         <label>faiss/impl/maybe_owned_vector.h</label>

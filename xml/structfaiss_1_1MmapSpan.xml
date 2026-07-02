@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1MmapSpan" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::MmapSpan</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1MmapSpan_1a71f80d1d4047c43dbf5c3222be71c0db" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* faiss::MmapSpan::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>faiss::MmapSpan::data</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="260" column="10" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="260" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MmapSpan_1aea5f6fe0f4008c3a3a3a77fee1ea679c" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MmapSpan::size_bytes</definition>
+        <argsstring></argsstring>
+        <name>size_bytes</name>
+        <qualifiedname>faiss::MmapSpan::size_bytes</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="261" column="12" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="261" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MmapSpan_1af9dc68a576df5ede9b40b86fa49a5c81" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MmapSpan::start_pos</definition>
+        <argsstring></argsstring>
+        <name>start_pos</name>
+        <qualifiedname>faiss::MmapSpan::start_pos</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="262" column="12" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="262" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="259" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="259" bodyend="263"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1MmapSpan_1a71f80d1d4047c43dbf5c3222be71c0db" prot="public" virt="non-virtual"><scope>faiss::MmapSpan</scope><name>data</name></member>
+      <member refid="structfaiss_1_1MmapSpan_1aea5f6fe0f4008c3a3a3a77fee1ea679c" prot="public" virt="non-virtual"><scope>faiss::MmapSpan</scope><name>size_bytes</name></member>
+      <member refid="structfaiss_1_1MmapSpan_1af9dc68a576df5ede9b40b86fa49a5c81" prot="public" virt="non-virtual"><scope>faiss::MmapSpan</scope><name>start_pos</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
