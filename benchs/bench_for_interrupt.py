@@ -83,34 +83,6 @@ print("set nprobe=", nprobe)
 faiss.ParameterSpace().set_index_parameter(index_1, "nprobe", nprobe)
 
 
-class ResultHeap:
-    """Combine query results from a sliced dataset"""
-
-    def __init__(self, nq, k):
-        "nq: number of query vectors, k: number of results per query"
-        self.I = np.zeros((nq, k), dtype="int64")
-        self.D = np.zeros((nq, k), dtype="float32")
-        self.nq, self.k = nq, k
-        heaps = faiss.float_maxheap_array_t()
-        heaps.k = k
-        heaps.nh = nq
-        heaps.val = faiss.swig_ptr(self.D)
-        heaps.ids = faiss.swig_ptr(self.I)
-        heaps.heapify()
-        self.heaps = heaps
-
-    def add_batch_result(self, D, I, i0):
-        assert D.shape == (self.nq, self.k)
-        assert I.shape == (self.nq, self.k)
-        I += i0
-        self.heaps.addn_with_ids(
-            self.k, faiss.swig_ptr(D), faiss.swig_ptr(I), self.k
-        )
-
-    def finalize(self):
-        self.heaps.reorder()
-
-
 stats = faiss.cvar.indexIVF_stats
 stats.reset()
 
@@ -137,7 +109,7 @@ if args.twostage:
         index.add(xb[i : i + subset_len])
         indexes[i] = index
 
-rh = ResultHeap(nq, k)
+rh = faiss.ResultHeap(nq, k)
 sum_time = tq = ts = 0
 for i in range(0, nb, subset_len):
     if not args.twostage:
@@ -154,7 +126,8 @@ for i in range(0, nb, subset_len):
     sum_time = sum_time + time.time() - start
     tq += stats.quantization_time
     ts += stats.search_time
-    rh.add_batch_result(Di, Ii, i)
+    Ii += i
+    rh.add_result(Di, Ii)
 
 print(
     "time of searching separately: %.3f s = %.3f + %.3f ms" % (sum_time, tq, ts)
