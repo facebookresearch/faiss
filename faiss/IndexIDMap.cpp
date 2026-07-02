@@ -182,13 +182,6 @@ void IndexIDMapTemplate<IndexT>::search_ex(
         auto idtrans = dynamic_cast<const IDSelectorTranslated*>(params->sel);
 
         if (!idtrans) {
-            /*
-            FAISS_THROW_IF_NOT_MSG(
-                    idtrans,
-                    "IndexIDMap requires an IDSelectorTranslated on input");
-            */
-            // then make an idtrans and force it into the SearchParameters
-            // (hence the const_cast)
             auto params_non_const = const_cast<SearchParameters*>(params);
             this_idtrans.sel = params->sel;
             sel_change.set(params_non_const, &this_idtrans);
@@ -228,7 +221,11 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    if (params) {
+    // Fix: only build IDSelectorTranslated when params->sel is non-null.
+    // An empty SearchParameters() (sel == nullptr) must be treated the
+    // same as passing no params at all, otherwise IDSelectorTranslated
+    // receives a nullptr selector and enters an infinite loop.
+    if (params && params->sel) {
         SearchParameters internal_search_parameters;
         IDSelectorTranslated id_selector_translated(id_map, params->sel);
         internal_search_parameters.sel = &id_selector_translated;
@@ -249,7 +246,6 @@ void IndexIDMapTemplate<IndexT>::range_search(
 
 template <typename IndexT>
 size_t IndexIDMapTemplate<IndexT>::remove_ids(const IDSelector& sel) {
-    // remove in sub-index first
     IDSelectorTranslated sel2(id_map, &sel);
     size_t nremove = index->remove_ids(sel2);
 
@@ -360,7 +356,6 @@ void IndexIDMap2Template<IndexT>::construct_rev_map() {
 
 template <typename IndexT>
 size_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel) {
-    // This is quite inefficient
     size_t nremove = IndexIDMapTemplate<IndexT>::remove_ids(sel);
     construct_rev_map();
     return nremove;
