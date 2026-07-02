@@ -25,11 +25,13 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
@@ -63,6 +65,7 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
+#include <faiss/impl/EDENQuantizer.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -437,6 +440,20 @@ static void write_RaBitQuantizer(
     if (multi_bit) {
         WRITE1(rabitq->nb_bits);
     }
+}
+
+static void write_EDENScalarQuantizer(
+        const ScalarQuantizer* sq,
+        MetricType metric_type,
+        EDENScaleType scale_type,
+        size_t full_code_size,
+        IOWriter* f) {
+    WRITE1(sq->d);
+    WRITE1(full_code_size);
+    WRITE1(metric_type);
+    WRITE1(sq->bits);
+    int scale_type_int = static_cast<int>(scale_type);
+    WRITE1(scale_type_int);
 }
 
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
@@ -969,6 +986,33 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(imm_2, f);
         write_index(imm_2->index, f);
+    } else if (const IndexEDEN* idxe = dynamic_cast<const IndexEDEN*>(idx)) {
+        uint32_t h = fourcc("IxEe");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_EDENScalarQuantizer(
+                &idxe->sq,
+                idxe->metric_type,
+                idxe->scale_type,
+                idxe->code_size,
+                f);
+        WRITEVECTOR(idxe->codes);
+        WRITEVECTOR(idxe->center);
+    } else if (
+            const IndexIVFEDEN* iveden =
+                    dynamic_cast<const IndexIVFEDEN*>(idx)) {
+        uint32_t h = fourcc("IwEe");
+        WRITE1(h);
+        write_ivf_header(iveden, f);
+        write_EDENScalarQuantizer(
+                &iveden->sq,
+                iveden->metric_type,
+                iveden->scale_type,
+                iveden->code_size,
+                f);
+        WRITE1(iveden->code_size);
+        WRITE1(iveden->by_residual);
+        write_InvertedLists(iveden->invlists, f);
     } else if (
             const IndexRaBitQFastScan* idxqfs =
                     dynamic_cast<const IndexRaBitQFastScan*>(idx)) {

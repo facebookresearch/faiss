@@ -100,14 +100,14 @@ struct Quantizer8bitDirectSigned<SIMDLevel::AVX512_SPR>
 };
 
 /**********************************************************
- * TurboQuant MSE — inherit AVX512 implementations
+ * Lloyd-Max scalar quantizer - inherit AVX512 implementations
  **********************************************************/
 
 template <int NBits>
-struct QuantizerTurboQuantMSE<NBits, SIMDLevel::AVX512_SPR>
-        : QuantizerTurboQuantMSE<NBits, SIMDLevel::AVX512> {
-    using QuantizerTurboQuantMSE<NBits, SIMDLevel::AVX512>::
-            QuantizerTurboQuantMSE;
+struct QuantizerLloydMax<NBits, SIMDLevel::AVX512_SPR>
+        : QuantizerLloydMax<NBits, SIMDLevel::AVX512> {
+    using QuantizerLloydMax<NBits, SIMDLevel::AVX512>::
+            QuantizerLloydMax;
 };
 
 /**********************************************************

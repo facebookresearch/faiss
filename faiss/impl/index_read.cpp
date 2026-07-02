@@ -30,11 +30,13 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
@@ -68,6 +70,7 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
+#include <faiss/impl/EDENQuantizer.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -1086,6 +1089,30 @@ void read_ScalarQuantizer(
             case ScalarQuantizer::QT_8bit_tqmse:
                 expected = 256 + 255;
                 break;
+            case ScalarQuantizer::QT_1bit_eden:
+                expected = 2 + 1; // 2^bits centroids + (2^bits - 1) boundaries
+                break;
+            case ScalarQuantizer::QT_2bit_eden:
+                expected = 4 + 3;
+                break;
+            case ScalarQuantizer::QT_3bit_eden:
+                expected = 8 + 7;
+                break;
+            case ScalarQuantizer::QT_4bit_eden:
+                expected = 16 + 15;
+                break;
+            case ScalarQuantizer::QT_5bit_eden:
+                expected = 32 + 31;
+                break;
+            case ScalarQuantizer::QT_6bit_eden:
+                expected = 64 + 63;
+                break;
+            case ScalarQuantizer::QT_7bit_eden:
+                expected = 128 + 127;
+                break;
+            case ScalarQuantizer::QT_8bit_eden:
+                expected = 256 + 255;
+                break;
             case ScalarQuantizer::QT_2bit_tq:
             case ScalarQuantizer::QT_3bit_tq:
             case ScalarQuantizer::QT_4bit_tq:
@@ -1402,6 +1429,64 @@ static void read_RaBitQuantizer(
             "RaBitQuantizer dimension mismatch: rabitq.d=%zu vs index d=%d",
             rabitq.d,
             expected_d);
+}
+
+static void read_EDENScalarQuantizer(
+        ScalarQuantizer& sq,
+        EDENScaleType& scale_type,
+        IOReader* f,
+        int expected_d,
+        MetricType expected_metric_type,
+        bool read_scale_type) {
+    size_t d;
+    size_t stored_code_size;
+    size_t nb_bits;
+
+    READ1(d);
+    READ1(stored_code_size);
+    int metric_type_int;
+    READ1(metric_type_int);
+    const MetricType metric_type = metric_type_from_int(metric_type_int);
+    READ1(nb_bits);
+    if (read_scale_type) {
+        int scale_type_int;
+        READ1(scale_type_int);
+        if (scale_type_int == 0) {
+            scale_type = EDENScaleType_UNBIASED;
+        } else {
+            scale_type = static_cast<EDENScaleType>(scale_type_int);
+        }
+    } else {
+        scale_type = EDENScaleType_UNBIASED;
+    }
+
+    FAISS_THROW_IF_NOT_FMT(
+            d == static_cast<size_t>(expected_d),
+            "EDEN ScalarQuantizer dimension mismatch: sq.d=%zu vs index d=%d",
+            d,
+            expected_d);
+    FAISS_THROW_IF_NOT_FMT(
+            metric_type == expected_metric_type,
+            "EDEN ScalarQuantizer metric mismatch: stored=%d vs index=%d",
+            metric_type_int,
+            static_cast<int>(expected_metric_type));
+    FAISS_THROW_IF_NOT_FMT(
+            nb_bits >= 1 && nb_bits <= 8,
+            "invalid EDEN nb_bits=%zu (must be in [1, 8])",
+            nb_bits);
+    FAISS_THROW_IF_NOT_FMT(
+            scale_type == EDENScaleType_UNBIASED ||
+                    scale_type == EDENScaleType_BIASED,
+            "invalid EDEN scale_type=%d",
+            static_cast<int>(scale_type));
+    sq = ScalarQuantizer(d, eden_utils::quantizer_type_for_bits(nb_bits));
+    sq.train(0, nullptr);
+    const size_t expected_code_size = eden_utils::code_size(d, nb_bits);
+    FAISS_THROW_IF_NOT_FMT(
+            stored_code_size == expected_code_size,
+            "EDEN ScalarQuantizer code_size mismatch: stored=%zu vs expected=%zu",
+            stored_code_size,
+            expected_code_size);
 }
 
 void read_direct_map(DirectMap* dm, IOReader* f) {
@@ -2492,6 +2577,45 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = std::move(imm);
+    } else if (h == fourcc("IxEd") || h == fourcc("IxEe")) {
+        auto idxe = std::make_unique<IndexEDEN>();
+        read_index_header(*idxe, f);
+        read_EDENScalarQuantizer(
+                idxe->sq,
+                idxe->scale_type,
+                f,
+                idxe->d,
+                idxe->metric_type,
+                h == fourcc("IxEe"));
+        READVECTOR(idxe->codes);
+        READVECTOR(idxe->center);
+
+        idxe->code_size = eden_utils::code_size(idxe->d, idxe->sq.bits);
+        FAISS_THROW_IF_NOT(
+                idxe->codes.size() == idxe->ntotal * idxe->code_size);
+        idx = std::move(idxe);
+    } else if (h == fourcc("IwEd") || h == fourcc("IwEe")) {
+        auto iveden = std::make_unique<IndexIVFEDEN>();
+        read_ivf_header(iveden.get(), f);
+        read_EDENScalarQuantizer(
+                iveden->sq,
+                iveden->scale_type,
+                f,
+                iveden->d,
+                iveden->metric_type,
+                h == fourcc("IwEe"));
+        size_t stored_ivf_code_size;
+        READ1(stored_ivf_code_size);
+        READ1(iveden->by_residual);
+
+        iveden->code_size = eden_utils::code_size(iveden->d, iveden->sq.bits);
+        FAISS_THROW_IF_NOT_FMT(
+                stored_ivf_code_size == iveden->code_size,
+                "IndexIVFEDEN code_size mismatch: stored=%zu vs expected=%zu",
+                stored_ivf_code_size,
+                iveden->code_size);
+        read_InvertedLists(*iveden, f, io_flags);
+        idx = std::move(iveden);
     } else if (h == fourcc("Irfn") || h == fourcc("Irfs")) {
         // Irfn = new format (aux data embedded in SIMD blocks)
         // Irfs = legacy format (flat_storage separate, needs migration)

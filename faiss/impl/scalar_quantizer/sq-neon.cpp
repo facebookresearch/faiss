@@ -223,18 +223,18 @@ struct QuantizerTemplate<
 };
 
 /**********************************************************
- * TurboQuant MSE quantizer
+ * Lloyd-Max scalar quantizer
  **********************************************************/
 
-// NEON TurboQuantMSE: decode via gather, encode stays scalar.
+// NEON Lloyd-Max: decode via gather, encode stays scalar.
 // NEON doesn't have movemask so 1-bit encode is also scalar.
-#define DEFINE_TQMSE_NEON_SPECIALIZATION(NBITS, UNPACK_FN)                   \
+#define DEFINE_LLOYD_MAX_NEON_SPECIALIZATION(NBITS, UNPACK_FN)                   \
     template <>                                                              \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::ARM_NEON>                \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {               \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;         \
+    struct QuantizerLloydMax<NBITS, SIMDLevel::ARM_NEON>                \
+            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {               \
+        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;         \
                                                                              \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)  \
+        QuantizerLloydMax(size_t d, const std::vector<float>& trained)  \
                 : Base(d, trained) {                                         \
             assert(d % 8 == 0);                                              \
         }                                                                    \
@@ -256,19 +256,19 @@ struct QuantizerTemplate<
         }                                                                    \
     }
 
-DEFINE_TQMSE_NEON_SPECIALIZATION(1, unpack_8x1bit_to_u8);
-DEFINE_TQMSE_NEON_SPECIALIZATION(2, unpack_8x2bit_to_u8);
-DEFINE_TQMSE_NEON_SPECIALIZATION(3, unpack_8x3bit_to_u8);
-DEFINE_TQMSE_NEON_SPECIALIZATION(4, unpack_8x4bit_to_u8);
+DEFINE_LLOYD_MAX_NEON_SPECIALIZATION(1, unpack_8x1bit_to_u8);
+DEFINE_LLOYD_MAX_NEON_SPECIALIZATION(2, unpack_8x2bit_to_u8);
+DEFINE_LLOYD_MAX_NEON_SPECIALIZATION(3, unpack_8x3bit_to_u8);
+DEFINE_LLOYD_MAX_NEON_SPECIALIZATION(4, unpack_8x4bit_to_u8);
 
-#undef DEFINE_TQMSE_NEON_SPECIALIZATION
+#undef DEFINE_LLOYD_MAX_NEON_SPECIALIZATION
 
 template <>
-struct QuantizerTurboQuantMSE<8, SIMDLevel::ARM_NEON>
-        : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<8, SIMDLevel::NONE>;
+struct QuantizerLloydMax<8, SIMDLevel::ARM_NEON>
+        : QuantizerLloydMax<8, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 8 == 0);
     }
