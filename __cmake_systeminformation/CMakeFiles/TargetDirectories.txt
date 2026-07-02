@@ -1,0 +1,2 @@
+/mnt/f/GitHub/faiss/__cmake_systeminformation/CMakeFiles/edit_cache.dir
+/mnt/f/GitHub/faiss/__cmake_systeminformation/CMakeFiles/rebuild_cache.dir

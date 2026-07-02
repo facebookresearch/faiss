@@ -2,6 +2,8 @@
 
 Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python/numpy. Some of the most useful algorithms are implemented on the GPU. It is developed primarily at Meta's [Fundamental AI Research](https://ai.facebook.com/) group.
 
+> **Note:** This repository includes an **optional** CUDA GPU wheel toolkit under [gpu-cu](gpu-cu) (currently targeting CUDA 13.2 / cu132; the version is a single knob in `gpu-cu/scripts/cuda_env.sh`). Standard FAISS usage is unchanged.
+
 ## News
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed information about latest features.
@@ -14,9 +16,162 @@ Some of the methods, like those based on binary vectors and compact quantization
 
 The GPU implementation can accept input from either CPU or GPU memory. On a server with GPUs, the GPU indexes can be used a drop-in replacement for the CPU indexes (e.g., replace `IndexFlatL2` with `GpuIndexFlatL2`) and copies to/from GPU memory are handled automatically. Results will be faster however if both input and output remain resident on the GPU. Both single and multi-GPU usage is supported.
 
+### Supported GPU Architectures for CUDA 13.2 Builds
+
+**CUDA 13.2 Architecture Requirements:**
+This build is optimized for Compute Capability 8.0 and higher (Ampere generation and newer). NVIDIA's CUDA 13.2 toolkit no longer provides optimized libraries for pre-Ampere architectures (Volta 7.0, Turing 7.5). This build focuses on modern, actively supported GPU generations.
+
+**Supported Architectures:**
+- **Architecture 75** - NVIDIA RTX 2080, RTX 2060 (Turing)
+- **Architecture 80** - NVIDIA A100, RTX 3090 (Ampere)
+- **Architecture 86** - NVIDIA RTX 3080 Ti, RTX 3070 (Ampere)
+- **Architecture 89** - NVIDIA RTX 4090, RTX 4080 (Ada)
+- **Architecture 90** - NVIDIA H100 (Hopper)
+- **Architecture 120** - NVIDIA GB200, B200, RTX 5090 (Blackwell)
+- **Architecture 121** - NVIDIA GB10 Grace Blackwell — **DGX Spark** (aarch64; build via `make build-aarch64`)
+
+All architectures are included by default. Customize with `CUDA_ARCHS` environment variable.
+
+**Note:** Volta (70) and below (Maxwell 5.x, Pascal 6.x) are not supported in CUDA 13.2 — removed in CUDA 13.0. Turing (75) remains supported.
+
+**References:**
+- [CUDA 13.2 Toolkit Release Notes](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/) - Official NVIDIA documentation
+- [Deprecated Architectures in CUDA 13.0+](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#deprecated-architectures) - Details on Maxwell, Pascal, and Volta removal
+
 ## Installing
 
 Faiss comes with precompiled libraries for Anaconda in Python, see [faiss-cpu](https://anaconda.org/pytorch/faiss-cpu), [faiss-gpu](https://anaconda.org/pytorch/faiss-gpu) and [faiss-gpu-cuvs](https://anaconda.org/pytorch/faiss-gpu-cuvs). The library is mostly implemented in C++, the only dependency is a [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) implementation. Optional GPU support is provided via CUDA or AMD ROCm, and the Python interface is also optional. The backend GPU implementations of NVIDIA [cuVS](https://github.com/rapidsai/cuvs) can also be enabled optionally. It compiles with cmake. See [INSTALL.md](INSTALL.md) for details.
+
+### Building FAISS-GPU for CUDA 13.2
+
+This repository includes build scripts and tooling for creating FAISS-GPU wheels optimized for CUDA 13.2 with Python 3.14. Supports modern GPU architectures including H100 (Hopper), RTX 4090 (Ada), and RTX 5090 (Blackwell).
+
+**BLAS dependency (architecture-specific):**
+- **x86_64** (`gpu-cu/scripts/build_lib_x86_64.sh`): Intel MKL is required.
+- **aarch64 / DGX Spark** (`gpu-cu/scripts/build_lib_aarch64.sh`): MKL is unavailable on ARM; the build uses OpenBLAS together with NVIDIA cuVS.
+
+**Intel MKL source/install links:**
+- [Intel oneAPI Base Toolkit Download](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)
+- [Intel oneAPI MKL Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html)
+
+**Windows (PowerShell) install example:**
+```powershell
+winget install --id Intel.oneAPI.BaseToolkit -e --accept-source-agreements --accept-package-agreements
+```
+
+After installation, set `MKL_ROOT`, `MKL_LIB`, and `MKL_INCLUDE_DIR` if auto-detection does not find your installation.
+
+**Quick Start (WSL 2 on Windows):**
+```powershell
+# Full build — C++ library + Python bindings + wheel
+wsl -e bash gpu-cu/wsl/build.sh
+
+# Install wheel and run CPU + GPU verification
+wsl -e bash gpu-cu/wsl/verify.sh --install
+```
+
+See [BUILD_arch_x86_64.md](gpu-cu/docs/BUILD_arch_x86_64.md) for prerequisites, the WSL quick start, per-architecture builds, and troubleshooting.
+
+**Key Features:**
+- ✅ Multi-GPU architecture support (75, 80, 86, 89, 90, 120; 121 for DGX Spark)
+- ✅ Optimized x86_64 builds with AVX2/AVX512 SIMD variants
+- ✅ Separate aarch64 / DGX Spark (GB10 Grace Blackwell, SM 121) build pipeline
+- ✅ Comprehensive build documentation
+- ✅ Environment verification tools
+- ✅ Makefile targets for easy building
+
+**Documentation:**
+- [BUILD_arch_x86_64.md](gpu-cu/docs/BUILD_arch_x86_64.md) - x86_64 build guide (incl. WSL quick start)
+- [BUILD_arch_aarch64.md](gpu-cu/docs/BUILD_arch_aarch64.md) - aarch64 / DGX Spark build guide (OpenBLAS + cuVS)
+- [WHEEL_NAMING.md](gpu-cu/docs/WHEEL_NAMING.md) - Wheel/library naming + CUDA version selection
+- [SETUP_COMPLETE.md](gpu-cu/docs/SETUP_COMPLETE.md) - Setup overview
+- [BRANCH_CHANGES_SUMMARY.md](gpu-cu/docs/BRANCH_CHANGES_SUMMARY.md) - Semantic branch change summary
+
+**Build Scripts:**
+- `gpu-cu/wsl/build.sh` - WSL full build launcher (recommended)
+- `gpu-cu/wsl/verify.sh` - Install + CPU/GPU verification
+- `gpu-cu/wsl/env.sh` - Environment setup (source before manual steps)
+- `gpu-cu/scripts/build_lib_x86_64.sh` - Build C++ library
+- `gpu-cu/scripts/build_pkg_x86_64.sh` - Build Python package
+- `gpu-cu/scripts/package_wheel_x86_64.sh` - Package as wheel
+- `gpu-cu/verify_environment.py` - Check prerequisites
+- `Makefile` - Build targets and configuration
+
+#### Build Process Overview
+
+The build system uses a three-stage process:
+
+1. **C++ Library Build** (`gpu-cu/scripts/build_lib_x86_64.sh`)
+   - Compiles FAISS C++ core with CMake
+   - Generates optimized libraries for configured architectures
+   - Produces `libfaiss-x86_64-cu132.so`, plus `libfaiss_avx2.so`, `libfaiss_avx512.so` SIMD variants
+
+2. **Python Bindings** (`gpu-cu/scripts/build_pkg_x86_64.sh`)
+   - Generates SWIG bindings for Python interface
+   - Builds Python extension modules
+   - Creates `swigfaiss` modules for different optimizations
+
+3. **Wheel Packaging** (`gpu-cu/scripts/package_wheel_x86_64.sh`)
+   - Packages Python module as `.whl` distribution
+   - Output to `build_output/faiss_gpu_cu132-*.whl`
+
+#### Common Build Commands
+
+**Selecting the CUDA version (single input):**
+```bash
+# Default is CUDA 13.2 (cu132). Target another installed toolkit per build:
+make build FAISS_CUDA_VER=13.3            # → faiss-gpu-cu133
+# On a host with both cuda-13.2 and cuda-13.3, CUDA_HOME auto-resolves to the
+# matching /usr/local/cuda-13.3 (override CUDA_HOME to force a specific path).
+```
+
+**For DGX Spark (GB10 Grace Blackwell, aarch64):**
+```bash
+# DGX Spark uses a dedicated build pipeline (SM 121, aarch64)
+make build-aarch64                        # or: bash gpu-cu/scripts/build_wheel_aarch64.sh
+```
+
+**For RTX 4090:**
+```bash
+# Build for RTX 4090 only → single-arch wheel faiss-gpu-cu132-sm89
+CUDA_ARCHS="89" make build
+```
+
+**For RTX 5090:**
+```bash
+# Build for RTX 5090 (Blackwell) only → faiss-gpu-cu132-sm120
+CUDA_ARCHS="120" make build
+```
+
+> A build targeting a **single** GPU arch is named `faiss-gpu-cu132-sm<arch>`
+> (e.g. `-sm89`, `-sm121`) so it is identifiable as GPU-generation-specific.
+> Multi-arch (portable) builds stay `faiss-gpu-cu132` and select the CPU arch
+> via the wheel's platform tag.
+
+**For Multiple Architectures:**
+```bash
+# Build for Hopper + Blackwell
+CUDA_ARCHS="90;120" make build
+
+# Build all supported (default)
+make build
+```
+
+#### Advanced Customization
+
+```bash
+# Parallel build jobs
+FAISS_BUILD_JOBS=8 make build
+
+# Custom CUDA path
+CUDA_HOME=/opt/cuda-13.2 make build
+
+# Custom Python
+PYTHON=python3.14 make build
+
+# Clean build
+make clean
+```
 
 ## How Faiss works
 
@@ -90,3 +245,12 @@ You can report bugs, ask questions, etc.
 Faiss is MIT-licensed, refer to the [LICENSE file](https://github.com/facebookresearch/faiss/blob/main/LICENSE) in the top level directory.
 
 Copyright © Meta Platforms, Inc.
+
+## Branch-Specific CUDA 13.2 Docs
+
+For faiss-gpu-cu132 branch build instructions (CUDA 13.2 + MKL), see:
+
+- gpu-cu/docs/BUILD_arch_x86_64.md
+- gpu-cu/docs/BUILD_arch_aarch64.md
+- gpu-cu/docs/WHEEL_NAMING.md
+- gpu-cu/docs/SETUP_COMPLETE.md

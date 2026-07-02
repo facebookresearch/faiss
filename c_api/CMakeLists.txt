@@ -39,6 +39,9 @@ set(FAISS_C_SRC
 
 add_library(faiss_c ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
+if(FAISS_C_OUTPUT_NAME)
+  set_target_properties(faiss_c PROPERTIES OUTPUT_NAME "${FAISS_C_OUTPUT_NAME}")
+endif()
 
 add_library(faiss_c_avx2 ${FAISS_C_SRC})
 target_link_libraries(faiss_c_avx2 PRIVATE faiss_avx2)
