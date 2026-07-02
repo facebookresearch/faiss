@@ -182,5 +182,15 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
 
                 self.assertAlmostEqual(l2_dis, D2[i_lim], places=4)
 
+                # every returned result must be within the radius: candidates
+                # picked by approximate distance can exceed it once refined,
+                # and those must be dropped (issue #5367)
+                self.assertLessEqual(D2[i_lim], radius)
+
     def test_refine_1(self):
         self.do_test("SQ4")
+
+    def test_refine_sq6(self):
+        # coarser quantization makes approximate/exact distance mismatches
+        # near the radius boundary more likely, exercising the filtering
+        self.do_test("SQ6")
