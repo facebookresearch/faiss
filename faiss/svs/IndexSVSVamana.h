@@ -30,10 +30,15 @@
 #include <svs/runtime/dynamic_vamana_index.h>
 
 #include <iostream>
+#include <memory>
 #include <type_traits>
 #include <vector>
 
 namespace faiss {
+
+// Forward declarations
+struct MappedFileIOReader;
+struct MmappedFileMappingOwner;
 
 struct SearchParametersSVSVamana : public SearchParameters {
     size_t search_window_size = 0;
@@ -141,9 +146,17 @@ struct IndexSVSVamana : Index {
     void serialize_impl(std::ostream& out) const;
     virtual void deserialize_impl(std::istream& in);
 
+    /* Memory-mapped deserialization for static indices */
+    virtual void map_to(MappedFileIOReader* mf);
+
     /* The actual SVS implementation (VamanaIndex is the base for both
        static and dynamic variants) */
     svs_runtime::VamanaIndex* impl{nullptr};
+
+    // Holds a reference to the memory-mapped file owner to keep the memory
+    // mapping alive for the lifetime of this index. Only used when index is
+    // loaded via map_to() with memory-mapped I/O.
+    std::shared_ptr<MmappedFileMappingOwner> mmap_owner{nullptr};
 
     // The SVS runtime API does not expose vector retrieval, so we keep a copy
     // of added vectors to support reconstruct(). When used as a coarse
