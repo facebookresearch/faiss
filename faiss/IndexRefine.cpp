@@ -177,6 +177,30 @@ void IndexRefine::range_search(
             }
         }
     }
+
+    // The base index selects candidates by approximate distance, so a
+    // candidate that looked within the radius can fall outside it once refined
+    // above. Drop those and rebuild lims, using the same comparison the base
+    // index applies. Done serially: the results are packed into one contiguous
+    // per-query array, so removing an entry shifts the ones after it.
+    const bool is_similarity = is_similarity_metric(metric_type);
+    const std::vector<size_t> prev_lims(
+            result->lims, result->lims + n + 1);
+    size_t wp = 0;
+    for (idx_t i = 0; i < n; i++) {
+        for (size_t j = prev_lims[i]; j < prev_lims[i + 1]; j++) {
+            const float dis = result->distances[j];
+            const bool within = is_similarity
+                    ? CMin<float, idx_t>::cmp(radius, dis)
+                    : CMax<float, idx_t>::cmp(radius, dis);
+            if (within) {
+                result->labels[wp] = result->labels[j];
+                result->distances[wp] = result->distances[j];
+                wp++;
+            }
+        }
+        result->lims[i + 1] = wp;
+    }
 }
 
 void IndexRefine::reconstruct(idx_t key, float* recons) const {
