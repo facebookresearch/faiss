@@ -20,6 +20,56 @@ from faiss.contrib.evaluation import knn_intersection_measure
 
 
 class TestIVFSearchPreassigned(unittest.TestCase):
+    def test_ivfflat_add_preassigned(self):
+        res = faiss.StandardGpuResources()
+        d = 32
+        nb = 5000
+        nq = 100
+        nlist = 64
+        nprobe = 8
+        k = 10
+
+        rs = np.random.RandomState(123)
+        xt = rs.rand(2000, d).astype("float32")
+        xb = rs.rand(nb, d).astype("float32")
+        xq = rs.rand(nq, d).astype("float32")
+
+        # The IVF list assignment deliberately comes from a different
+        # quantizer over only part of the vector.
+        km = faiss.Kmeans(8, nlist, niter=10, verbose=False)
+        km.train(xt[:, :8].copy())
+        alt_quantizer = km.index
+
+        cpu_quantizer = faiss.IndexFlatL2(d)
+        idx_cpu = faiss.IndexIVFFlat(cpu_quantizer, d, nlist, faiss.METRIC_L2)
+
+        config = faiss.GpuIndexIVFFlatConfig()
+        config.use_cuvs = False
+        idx_gpu = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
+
+        fake_centroids = np.zeros((nlist, d), dtype="float32")
+        cpu_quantizer.add(fake_centroids)
+        idx_gpu.quantizer.add(fake_centroids)
+
+        idx_cpu.train(xt)
+        idx_gpu.train(xt)
+
+        assign = alt_quantizer.search(xb[:, :8].copy(), 1)[1].ravel()
+        ivf_tools.add_preassigned(idx_cpu, xb, assign)
+        ivf_tools.add_preassigned(idx_gpu, xb, assign)
+
+        self.assertEqual(idx_gpu.ntotal, nb)
+
+        idx_cpu.nprobe = nprobe
+        idx_gpu.nprobe = nprobe
+        query_assign = alt_quantizer.search(xq[:, :8].copy(), nprobe)[1]
+
+        cpu_d, cpu_i = ivf_tools.search_preassigned(idx_cpu, xq, k, query_assign)
+        gpu_d, gpu_i = ivf_tools.search_preassigned(idx_gpu, xq, k, query_assign)
+
+        np.testing.assert_allclose(gpu_d, cpu_d, rtol=1e-5, atol=1e-5)
+        np.testing.assert_array_equal(gpu_i, cpu_i)
+
     def test_ivfflat_search_preassigned(self):
         res = faiss.StandardGpuResources()
         d = 50
