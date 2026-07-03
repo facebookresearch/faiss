@@ -77,6 +77,7 @@ void IndexFlat::range_search(
             range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         default:
+            metric_type_from_int(static_cast<int>(metric_type));
             range_search_extra_metrics(
                     x,
                     get_xb(),

@@ -12,6 +12,7 @@
 
 #include <omp.h>
 #include <algorithm>
+#include <limits>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
@@ -59,20 +60,32 @@ void range_search_extra_metrics_impl(
         BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
-    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+    FAISS_THROW_IF_NOT_FMT(
+            nx <= static_cast<size_t>((std::numeric_limits<idx_t>::max)()),
+            "nx %zu overflows idx_t",
+            nx);
+    FAISS_THROW_IF_NOT_FMT(
+            ny <= static_cast<size_t>((std::numeric_limits<idx_t>::max)()),
+            "ny %zu overflows idx_t",
+            ny);
+
+    const idx_t nx_i = static_cast<idx_t>(nx);
+    const idx_t ny_i = static_cast<idx_t>(ny);
+    [[maybe_unused]] int nt = static_cast<int>(std::max<size_t>(
+            1, std::min(nx, static_cast<size_t>(omp_get_max_threads()))));
 
 #pragma omp parallel num_threads(nt)
     {
         SingleResultHandler resi(res);
 
 #pragma omp for
-        for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
-            const float* x_i = x + i * vd.d;
+        for (idx_t i = 0; i < nx_i; i++) {
+            const float* x_i = x + static_cast<size_t>(i) * vd.d;
             const float* y_j = y;
 
-            resi.begin(i);
+            resi.begin(static_cast<size_t>(i));
 
-            for (size_t j = 0; j < ny; j++, y_j += vd.d) {
+            for (idx_t j = 0; j < ny_i; j++, y_j += vd.d) {
                 if (!res.is_in_selection(j)) {
                     continue;
                 }
