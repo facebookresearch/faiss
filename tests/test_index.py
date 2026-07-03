@@ -546,6 +546,30 @@ class TestRangeSearch(unittest.TestCase):
                     idx = li[0]
                     self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
 
+    def test_range_search_l1(self):
+        xb = np.array(
+            [[0.0, 0.0], [2.0, 0.0], [0.0, 3.0], [5.0, 0.0]],
+            dtype="float32",
+        )
+        xq = np.array([[0.0, 0.0]], dtype="float32")
+
+        index = faiss.IndexFlat(2, faiss.METRIC_L1)
+        index.add(xb)
+
+        lims, D, I = index.range_search(xq, 3.0)
+
+        np.testing.assert_array_equal(lims, [0, 2])
+        np.testing.assert_array_equal(I, [0, 1])
+        np.testing.assert_array_equal(D, [0.0, 2.0])
+
+        params = faiss.SearchParameters()
+        params.sel = faiss.IDSelectorBatch(np.array([1, 2], dtype="int64"))
+        lims, D, I = index.range_search(xq, 3.0, params=params)
+
+        np.testing.assert_array_equal(lims, [0, 1])
+        np.testing.assert_array_equal(I, [1])
+        np.testing.assert_array_equal(D, [2.0])
+
 
 class TestSearchAndReconstruct(unittest.TestCase):
 

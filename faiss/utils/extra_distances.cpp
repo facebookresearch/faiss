@@ -16,6 +16,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -45,6 +46,56 @@ struct ExtraDistanceComputer : FlatCodesDistanceComputer {
 
     void set_query(const float* x) override {
         q = x;
+    }
+};
+
+template <class VD, class BlockResultHandler>
+void range_search_extra_metrics_impl(
+        const VD& vd,
+        const float* x,
+        const float* y,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    using SingleResultHandler =
+            typename BlockResultHandler::SingleResultHandler;
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler resi(res);
+
+#pragma omp for
+        for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
+            const float* x_i = x + i * vd.d;
+            const float* y_j = y;
+
+            resi.begin(i);
+
+            for (size_t j = 0; j < ny; j++, y_j += vd.d) {
+                if (!res.is_in_selection(j)) {
+                    continue;
+                }
+                float disij = vd(x_i, y_j);
+                resi.add_result(disij, j);
+            }
+            resi.end();
+        }
+    }
+}
+
+template <class VD>
+struct Run_range_search_extra_metrics {
+    using T = void;
+    const VD& vd;
+
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           size_t nx,
+           size_t ny) {
+        range_search_extra_metrics_impl(vd, x, y, nx, ny, res);
     }
 };
 
@@ -133,6 +184,23 @@ void knn_extra_metrics(
             }
             InterruptCallback::check();
         }
+    });
+}
+
+void range_search_extra_metrics(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        MetricType mt,
+        float metric_arg,
+        float radius,
+        RangeSearchResult* result,
+        const IDSelector* sel) {
+    with_VectorDistance(d, mt, metric_arg, [&](auto vd) {
+        Run_range_search_extra_metrics<decltype(vd)> r{vd};
+        dispatch_range_ResultHandler(result, radius, mt, sel, r, x, y, nx, ny);
     });
 }
 

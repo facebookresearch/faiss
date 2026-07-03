@@ -21,6 +21,7 @@
 namespace faiss {
 
 struct FlatCodesDistanceComputer;
+struct RangeSearchResult;
 
 void pairwise_extra_distances(
         int64_t d,
@@ -46,6 +47,18 @@ void knn_extra_metrics(
         size_t k,
         float* distances,
         int64_t* indexes,
+        const IDSelector* sel = nullptr);
+
+void range_search_extra_metrics(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        MetricType mt,
+        float metric_arg,
+        float radius,
+        RangeSearchResult* result,
         const IDSelector* sel = nullptr);
 
 /** get a DistanceComputer that refers to this type of distance and
