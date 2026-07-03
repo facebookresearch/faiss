@@ -683,11 +683,7 @@ idx_t IVFBase::addVectorsPreassigned(
 
         auto residuals2d = residuals.downcastOuter<2>();
         runCalcResidual(
-                vecs,
-                ivfCentroids_,
-                precomputedIndices,
-                residuals2d,
-                stream);
+                vecs, ivfCentroids_, precomputedIndices, residuals2d, stream);
     }
 
     return addVectorsToLists_(

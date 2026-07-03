@@ -236,7 +236,6 @@ class GpuIndex : public faiss::Index {
     }
 
    private:
-
     /// Calls addImpl_ for a single page of GPU-resident data
     void addPage_(
             idx_t n,
