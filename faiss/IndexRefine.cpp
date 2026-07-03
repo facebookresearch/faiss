@@ -184,8 +184,7 @@ void IndexRefine::range_search(
     // index applies. Done serially: the results are packed into one contiguous
     // per-query array, so removing an entry shifts the ones after it.
     const bool is_similarity = is_similarity_metric(metric_type);
-    const std::vector<size_t> prev_lims(
-            result->lims, result->lims + n + 1);
+    const std::vector<size_t> prev_lims(result->lims, result->lims + n + 1);
     size_t wp = 0;
     for (idx_t i = 0; i < n; i++) {
         for (size_t j = prev_lims[i]; j < prev_lims[i + 1]; j++) {
