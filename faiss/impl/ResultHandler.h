@@ -18,6 +18,7 @@
 #include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
+#include <faiss/utils/simd_levels.h>
 #include <algorithm>
 #include <iostream>
 
@@ -234,23 +235,9 @@ struct Top1BlockResultHandler : TopkBlockResultHandler<C, use_sel> {
     }
 
     /// add results for query i0..i1 and j0..j1
-    void add_results(size_t j0, size_t j1, const T* dis_tab_2) final {
-        for (size_t i = i0; i < i1; i++) {
-            const T* dis_tab_i = dis_tab_2 + (j1 - j0) * (i - i0) - j0;
-
-            auto& min_distance = this->dis_tab[i];
-            auto& min_index = this->ids_tab[i];
-
-            for (size_t j = j0; j < j1; j++) {
-                const T distance = dis_tab_i[j];
-
-                if (C::cmp(min_distance, distance)) {
-                    min_distance = distance;
-                    min_index = j;
-                }
-            }
-        }
-    }
+    /// Implemented in result_handler.cpp; dispatches via
+    /// with_selected_simd_levels to top1_add_results_tpl<C, use_sel, SL>.
+    void add_results(size_t j0, size_t j1, const T* dis_tab_2) final;
 
     void add_result(const size_t i, const T dis, const TI idx) {
         auto& min_distance = this->dis_tab[i];
@@ -553,20 +540,9 @@ struct ReservoirBlockResultHandler : TopkBlockResultHandler<C, use_sel> {
     }
 
     /// add results for query i0..i1 and j0..j1
-    void add_results(size_t j0, size_t j1, const T* dis_in) {
-#pragma omp parallel for
-        for (int64_t i = static_cast<int64_t>(i0); i < static_cast<int64_t>(i1);
-             i++) {
-            ReservoirTopN<C>& reservoir =
-                    reservoirs[i - static_cast<int64_t>(i0)];
-            const T* dis_tab_i =
-                    dis_in + (j1 - j0) * (i - static_cast<int64_t>(i0)) - j0;
-            for (size_t j = j0; j < j1; j++) {
-                T dis = dis_tab_i[j];
-                reservoir.add_result(dis, j);
-            }
-        }
-    }
+    /// Implemented in result_handler.cpp; dispatches via
+    /// with_selected_simd_levels to reservoir_add_results_tpl<C, use_sel, SL>.
+    void add_results(size_t j0, size_t j1, const T* dis_in);
 
     /// series of results for queries i0..i1 is done
     void end_multiple() final {
@@ -798,5 +774,23 @@ typename Consumer::T dispatch_range_ResultHandler(
     }
 #undef DISPATCH_C_SEL
 }
+
+// ------------------------------------------------------------------
+// SIMD-dispatch entry points for Top1 and Reservoir add_results.
+// ------------------------------------------------------------------
+
+template <class C, bool use_sel, SIMDLevel SL>
+void top1_add_results_tpl(
+        Top1BlockResultHandler<C, use_sel>* self,
+        size_t j0,
+        size_t j1,
+        const typename C::T* dis_tab);
+
+template <class C, bool use_sel, SIMDLevel SL>
+void reservoir_add_results_tpl(
+        ReservoirBlockResultHandler<C, use_sel>* self,
+        size_t j0,
+        size_t j1,
+        const typename C::T* dis_in);
 
 } // namespace faiss

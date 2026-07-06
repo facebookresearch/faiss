@@ -17,9 +17,7 @@ except ImportError:
     from faiss.contrib.datasets import DatasetSIFT1M, DatasetGIST1M
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--dataset", default="gist1m", choices=["sift1m", "gist1m"]
-)
+parser.add_argument("--dataset", default="gist1m", choices=["sift1m", "gist1m"])
 args = parser.parse_args()
 
 if args.dataset == "sift1m":
@@ -91,15 +89,15 @@ for name in names:
     qps_values.append(qps)
 
 x = np.arange(len(names))
-plt.bar(x, qps_values, color=['#1f77b4', '#ff7f0e'])
+plt.bar(x, qps_values, color=["#1f77b4", "#ff7f0e"])
 speedup = qps_values[1] / qps_values[0]
 ax = plt.gca()
 ax.text(
-	x[1],
-	qps_values[1] * 1.01,
-	f"{speedup:.2f}x",
-	ha="center",
-	va="bottom",
+    x[1],
+    qps_values[1] * 1.01,
+    f"{speedup:.2f}x",
+    ha="center",
+    va="bottom",
 )
 plt.xticks(x, labels, rotation=0)
 plt.ylabel("QPS")

@@ -184,9 +184,9 @@ TEST_F(SVS, WriteAndReadIndexSVSFP16) {
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVS, WriteAndReadIndexSVSSQI8) {
+TEST_F(SVS, WriteAndReadIndexSVSSQ8) {
     faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8};
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
     write_and_read_index(index, test_data, n);
 }
 
@@ -259,9 +259,9 @@ TEST_F(SVS, VamanaFP16TrainSaveLoadAndAdd) {
     train_save_load_and_add_index(index, test_data, n);
 }
 
-TEST_F(SVS, VamanaSQI8TrainSaveLoadAndAdd) {
+TEST_F(SVS, VamanaSQ8TrainSaveLoadAndAdd) {
     faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8};
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
     train_save_load_and_add_index(index, test_data, n);
 }
 
@@ -559,9 +559,9 @@ TEST_F(SVS, WriteAndReadIndexSVSIVFFP16) {
     write_and_read_ivf_index(index, test_data, n);
 }
 
-TEST_F(SVS, WriteAndReadIndexSVSIVFSQI8) {
+TEST_F(SVS, WriteAndReadIndexSVSIVFSQ8) {
     faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8};
+            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
     write_and_read_ivf_index(index, test_data, n);
 }
 
@@ -618,9 +618,9 @@ TEST_F(SVS, IVFFP16TrainAndAdd) {
     train_and_add_ivf_index(index, test_data, n);
 }
 
-TEST_F(SVS, IVFSQI8TrainAndAdd) {
+TEST_F(SVS, IVFSQ8TrainAndAdd) {
     faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8};
+            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
     train_and_add_ivf_index(index, test_data, n);
 }
 
@@ -855,7 +855,8 @@ template <typename T>
 void write_and_read_static_vamana_index(
         T& index,
         const std::vector<float>& xb,
-        size_t n) {
+        size_t n,
+        int read_io_flags = 0) {
     ASSERT_TRUE(index.is_static);
 
     // For LeanVec the training step seeds training_data; for plain Vamana
@@ -883,7 +884,8 @@ void write_and_read_static_vamana_index(
     // Deserialize
     T* loaded = nullptr;
     ASSERT_NO_THROW({
-        loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
+        loaded = dynamic_cast<T*>(
+                faiss::read_index(filename.c_str(), read_io_flags));
     });
 
     // Basic checks
@@ -923,9 +925,9 @@ TEST_F(SVS, WriteAndReadStaticVamanaFP16) {
     write_and_read_static_vamana_index(index, test_data, n);
 }
 
-TEST_F(SVS, WriteAndReadStaticVamanaSQI8) {
+TEST_F(SVS, WriteAndReadStaticVamanaSQ8) {
     faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQI8, true};
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8, true};
     write_and_read_static_vamana_index(index, test_data, n);
 }
 
@@ -994,4 +996,44 @@ TEST_F(SVS, StaticVamanaReconstruct) {
     for (size_t i = 0; i < d; ++i) {
         EXPECT_EQ(recons[i], test_data[i]);
     }
+}
+
+TEST_F(SVS, WriteAndMapStaticVamana) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+}
+
+TEST_F(SVS, WriteAndMapStaticVamanaFP16) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16, true};
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+}
+
+TEST_F(SVS, WriteAndMapStaticVamanaSQ8) {
+    faiss::IndexSVSVamana index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8, true};
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+}
+
+TEST_F(SVSLL, WriteAndMapStaticVamanaLVQ4x4) {
+    faiss::IndexSVSVamanaLVQ index{
+            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4, true};
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
+}
+
+TEST_F(SVSLL, WriteAndMapStaticVamanaLeanVec4x4) {
+    faiss::IndexSVSVamanaLeanVec index{
+            d,
+            64ul,
+            faiss::METRIC_L2,
+            0,
+            faiss::SVSStorageKind::SVS_LeanVec4x4,
+            true};
+    write_and_read_static_vamana_index(
+            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
