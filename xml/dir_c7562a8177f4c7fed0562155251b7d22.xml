@@ -11,6 +11,7 @@
     <innerfile refid="CuvsFlatIndex_8cuh">CuvsFlatIndex.cuh</innerfile>
     <innerfile refid="CuvsIVFFlat_8cuh">CuvsIVFFlat.cuh</innerfile>
     <innerfile refid="CuvsIVFPQ_8cuh">CuvsIVFPQ.cuh</innerfile>
+    <innerfile refid="CuvsIVFSQ_8cuh">CuvsIVFSQ.cuh</innerfile>
     <innerfile refid="Distance_8cuh">Distance.cuh</innerfile>
     <innerfile refid="DistanceUtils_8cuh">DistanceUtils.cuh</innerfile>
     <innerfile refid="FlatIndex_8cuh">FlatIndex.cuh</innerfile>

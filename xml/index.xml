@@ -2143,6 +2143,8 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ad1bfe04d4dcc7cdb49648c4678ebecf5" kind="function"><name>verifySQSettings_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a29c68d49d2cd64c874336b4b118a66ab" kind="function"><name>shouldUseCuvs_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8299dd7249e3f0a94fd2a23a78f124a0" kind="function"><name>setIndex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a9ab5f29ca28898c5382a3c0b4d6681ac" kind="function"><name>trainResiduals_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
@@ -14326,6 +14328,8 @@
   <compound refid="CuvsIVFFlat_8cuh" kind="file"><name>CuvsIVFFlat.cuh</name>
   </compound>
   <compound refid="CuvsIVFPQ_8cuh" kind="file"><name>CuvsIVFPQ.cuh</name>
+  </compound>
+  <compound refid="CuvsIVFSQ_8cuh" kind="file"><name>CuvsIVFSQ.cuh</name>
   </compound>
   <compound refid="Distance_8cuh" kind="file"><name>Distance.cuh</name>
   </compound>
