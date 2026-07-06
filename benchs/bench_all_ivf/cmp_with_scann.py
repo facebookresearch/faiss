@@ -3,10 +3,14 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import shlex
+import subprocess
 import time
 import sys
 import os
 import argparse
+
+import shutil
 
 import numpy as np
 
@@ -80,7 +84,7 @@ def main():
         'cat /proc/cpuinfo | grep ^"model name" | tail -1'
     )
 
-    cache_dir = args.base_dir + "/" + args.db + "/"
+    cache_dir = os.path.realpath(os.path.join(args.base_dir, args.db)) + "/"
     k = args.k
     nrun = args.nrun
 
@@ -91,7 +95,9 @@ def main():
         ds = load_dataset(args.db, download=args.download)
         print(ds)
         # store for SCANN
-        os.system(f"rm -rf {cache_dir}; mkdir -p {cache_dir}")
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
+        os.makedirs(cache_dir)
         tosave = {
             "xb": ds.get_database(),
             "xq": ds.get_queries(),
@@ -102,7 +108,8 @@ def main():
             print("save", fname)
             np.save(fname, v)
 
-        open(cache_dir + "metric", "w").write(ds.metric)
+        with open(os.path.join(cache_dir, "metric"), "w") as f:
+            f.write(ds.metric)
 
     dataset = {}
     for kn in "xb xq gt".split():
@@ -112,7 +119,8 @@ def main():
     xb = dataset["xb"]
     xq = dataset["xq"]
     gt = dataset["gt"]
-    distance_measure = open(cache_dir + "metric").read()
+    with open(os.path.join(cache_dir, "metric")) as f:
+        distance_measure = f.read()
 
     if args.lib == "faiss":
         import faiss
@@ -179,16 +187,17 @@ def main():
     if args.lib != "scann" and args.thenscann:
         # just append --lib scann, that will override the previous cmdline
         # options
-        cmdline = " ".join(sys.argv) + " --lib scann"
-        cmdline = (
+        quoted_argv = " ".join(shlex.quote(a) for a in sys.argv)
+        cmdline = quoted_argv + " --lib scann"
+        shell_cmd = (
             ". ~/anaconda3/etc/profile.d/conda.sh ; "
             + "conda activate scann_1.1.1; "
             "python -u " + cmdline
         )
 
-        print("running", cmdline)
+        print("running", shell_cmd)
 
-        os.system(cmdline)
+        subprocess.run(shell_cmd, shell=True, check=False)
 
 
 ###############################################################
@@ -221,7 +230,9 @@ def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
 
     print("write index to", scann_dir)
 
-    os.system(f"rm -rf {scann_dir}; mkdir -p {scann_dir}")
+    if os.path.exists(scann_dir):
+        shutil.rmtree(scann_dir)
+    os.makedirs(scann_dir)
     # os.mkdir(scann_dir)
     searcher.serialize(scann_dir)
     return searcher
