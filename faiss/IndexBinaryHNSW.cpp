@@ -24,7 +24,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
 #include <faiss/impl/simd_dispatch.h>
