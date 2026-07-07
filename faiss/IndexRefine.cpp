@@ -156,7 +156,24 @@ void IndexRefine::range_search(
     SearchParameters* base_index_params =
             (params != nullptr) ? params->base_index_params : nullptr;
 
-    base_index->range_search(n, x, radius, result, base_index_params);
+    float k_factor = (params != nullptr) ? params->k_factor : this->k_factor;
+    FAISS_THROW_IF_NOT(k_factor >= 1);
+
+    const bool is_similarity = is_similarity_metric(metric_type);
+
+    // The base index selects candidates from approximate (e.g. PQ/PCA)
+    // distances, so the ideal radius to query it with differs from the
+    // refinement radius. Widen the base radius by k_factor (which plays
+    // the same role as in the k-NN search). Results are still filtered at
+    // the requested radius below, so k_factor affects recall, not
+    // correctness. k_factor == 1 queries the base index at `radius`,
+    // reproducing the previous behavior.
+    float base_radius = radius;
+    if (k_factor != 1) {
+        base_radius = is_similarity ? radius / k_factor : radius * k_factor;
+    }
+
+    base_index->range_search(n, x, base_radius, result, base_index_params);
 
 #pragma omp parallel if (n > 1)
     {
@@ -178,12 +195,11 @@ void IndexRefine::range_search(
         }
     }
 
-    // The base index selects candidates by approximate distance, so a
-    // candidate that looked within the radius can fall outside it once refined
-    // above. Drop those and rebuild lims, using the same comparison the base
-    // index applies. Done serially: the results are packed into one contiguous
-    // per-query array, so removing an entry shifts the ones after it.
-    const bool is_similarity = is_similarity_metric(metric_type);
+    // A candidate that looked within the radius under the base index's
+    // approximate distance can fall outside it once refined above. Drop those
+    // and rebuild lims, using the same comparison the base index applies. Done
+    // serially: the results are packed into one contiguous per-query array, so
+    // removing an entry shifts the ones after it.
     const std::vector<size_t> prev_lims(result->lims, result->lims + n + 1);
     size_t wp = 0;
     for (idx_t i = 0; i < n; i++) {

@@ -194,3 +194,40 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
         # coarser quantization makes approximate/exact distance mismatches
         # near the radius boundary more likely, exercising the filtering
         self.do_test("SQ6")
+
+    def do_test_k_factor(self, factory_string):
+        d = 32
+        radius = 8
+
+        ds = datasets.SyntheticDataset(d, 1024, 512, 256)
+
+        index = faiss.index_factory(d, factory_string)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        xq = ds.get_queries()
+
+        index_flat = faiss.IndexFlatL2(d)
+        index_flat.add(ds.get_database())
+        lims_ref, Dref, Iref = index_flat.range_search(xq, radius)
+
+        index_r = faiss.IndexRefine(index, index_flat)
+
+        # k_factor widens the radius used to query the base index; the results
+        # are still filtered at the requested radius. A larger k_factor can only
+        # add candidates, so recall must not decrease, and every returned
+        # distance must stay within the radius (issue #5367).
+        recalls = []
+        for k_factor in (1, 4):
+            index_r.k_factor = k_factor
+            lims, D, I = index_r.range_search(xq, radius)
+            _, recall = evaluation.range_PR(lims_ref, Iref, lims, I)
+            recalls.append(recall)
+            for iq in range(ds.nq):
+                for i_lim in range(lims[iq], lims[iq + 1]):
+                    self.assertLessEqual(D[i_lim], radius)
+
+        # widening the base radius does not lose any results
+        self.assertGreaterEqual(recalls[1] + 1e-6, recalls[0])
+
+    def test_refine_k_factor(self):
+        self.do_test_k_factor("SQ4")
