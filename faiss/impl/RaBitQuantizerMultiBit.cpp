@@ -313,14 +313,6 @@ void quantize_ex_bits(
     pack_multibit_codes(tmp_code.data(), ex_code, d, nb_bits);
 
     // Step 8: Compute factors for distance computation
-    // Reconstruct total_code for factor computation
-    std::vector<int> total_code(d);
-    for (size_t i = 0; i < d; i++) {
-        // Form total_code = (sign << ex_bits) + ex_code
-        bool sign_bit = (residual[i] >= 0);
-        total_code[i] = tmp_code[i] + ((sign_bit ? 1 : 0) << ex_bits);
-    }
-
     // Compute ex-factors; centroid is needed for IP metric correction
     compute_ex_factors(
             residual,
