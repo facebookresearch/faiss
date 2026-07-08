@@ -1889,15 +1889,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivfl->code_size = ivfl->d * sizeof(float);
         ArrayInvertedLists* ail = set_array_invlist(ivfl.get(), ids);
 
-        // The legacy IvFl/IvFL on-disk formats serialize per-list ids and
-        // codes as two independent vectors. Without a cross-check between
-        // them, a malformed file can produce a list where codes.size() does
-        // not equal ids.size() * code_size; downstream consumers (notably
-        // the GPU clone path faiss::gpu::IVFBase::addEncodedVectorsToList_)
-        // size their memcpy from ids.size() * code_size and would read past
-        // the end of codes. Validate parity with the checked-multiplication
-        // pattern already used by the current `ilar`/IwFl InvertedLists
-        // reader (see read_InvertedLists_up above).
+        // Legacy IVF serialized ids and codes as separate vectors.
+        // Check not required in default IVF, due to single sizes vector.
         auto validate_legacy_codes_size = [&](size_t i) {
             const size_t expected_codes_bytes = mul_no_overflow(
                     ail->ids[i].size(),
