@@ -111,7 +111,7 @@ class MultiFileVectorDataset:
                 xb = xb[start:]
                 start = 0
             req = min(batch_size - rem, xb.shape[0])
-            buffer[rem:rem + req] = xb[:req]
+            buffer[rem : rem + req] = xb[:req]
             rem += req
             if rem == batch_size:
                 if self.normalize:

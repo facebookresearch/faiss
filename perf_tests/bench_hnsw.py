@@ -45,9 +45,7 @@ def is_perf_counter(key: str) -> bool:
 
 
 def accumulate_perf_counter(
-    phase: str,
-    t: PerfCounters,
-    counters: Dict[str, int]
+    phase: str, t: PerfCounters, counters: Dict[str, int]
 ):
     counters[f"{phase}_wall_time_us"] = int(t.wall_time_s * US_IN_S)
     counters[f"{phase}_user_time_us"] = int(t.user_time_s * US_IN_S)
@@ -198,8 +196,8 @@ def main():
     for counter, values in result.items():
         if is_perf_counter(counter):
             print(
-                "%s t=%.3f us (± %.4f)" % 
-                (counter, np.mean(values), np.std(values))
+                "%s t=%.3f us (± %.4f)"
+                % (counter, np.mean(values), np.std(values))
             )
 
 

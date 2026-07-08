@@ -19,7 +19,7 @@ class TestPCA(unittest.TestCase):
         d = 64
         n = 1000
         np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
+        x = np.random.random(size=(n, d)).astype("float32")
 
         pca = faiss.PCAMatrix(d, 10)
         pca.train(x)
@@ -43,7 +43,7 @@ class TestPCA(unittest.TestCase):
         d = 64
         n = 20  # n < d_in exercises the Gram-matrix branch
         np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
+        x = np.random.random(size=(n, d)).astype("float32")
 
         pca = faiss.PCAMatrix(d, 8)
         pca.train(x)
@@ -53,15 +53,13 @@ class TestPCA(unittest.TestCase):
         y_second = pca.apply_py(x)
 
         # Eigenvectors are unique up to per-component sign; compare abs.
-        np.testing.assert_allclose(
-            np.abs(y_first), np.abs(y_second), atol=1e-4
-        )
+        np.testing.assert_allclose(np.abs(y_first), np.abs(y_second), atol=1e-4)
 
     def test_pca_epsilon(self):
         d = 64
         n = 1000
         np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
+        x = np.random.random(size=(n, d)).astype("float32")
 
         # make sure data is in a sub-space
         x[:, ::2] = 0
@@ -110,7 +108,7 @@ class TestHadamardRotation(unittest.TestCase):
         d = 128
         n = 100
         np.random.seed(123)
-        x = np.random.randn(n, d).astype('float32')
+        x = np.random.randn(n, d).astype("float32")
 
         fr = faiss.HadamardRotation(d)
         y = fr.apply(x)
@@ -122,7 +120,7 @@ class TestHadamardRotation(unittest.TestCase):
         cases = {192: 256, 384: 512, 768: 1024, 1536: 2048}
         for d, expected_out in cases.items():
             np.random.seed(42)
-            x = np.random.randn(20, d).astype('float32')
+            x = np.random.randn(20, d).astype("float32")
             fr = faiss.HadamardRotation(d)
             self.assertEqual(fr.d_out, expected_out)
             y = fr.apply(x)
@@ -135,7 +133,7 @@ class TestHadamardRotation(unittest.TestCase):
         d = 64
         n = 20
         np.random.seed(789)
-        x = np.random.randn(n, d).astype('float32')
+        x = np.random.randn(n, d).astype("float32")
 
         fr1 = faiss.HadamardRotation(d, 42)
         fr2 = faiss.HadamardRotation(d, 42)
@@ -147,7 +145,7 @@ class TestHadamardRotation(unittest.TestCase):
         d = 64
         n = 20
         np.random.seed(101)
-        x = np.random.randn(n, d).astype('float32')
+        x = np.random.randn(n, d).astype("float32")
 
         fr1 = faiss.HadamardRotation(d, 1)
         fr2 = faiss.HadamardRotation(d, 2)
@@ -159,7 +157,7 @@ class TestHadamardRotation(unittest.TestCase):
         """Hadamard transform preserves L2 norms for power-of-2 dims."""
         d = 256
         np.random.seed(42)
-        x = np.random.randn(100, d).astype('float32')
+        x = np.random.randn(100, d).astype("float32")
         fr = faiss.HadamardRotation(d)
         y = fr.apply(x)
         norms_in = np.linalg.norm(x, axis=1)
@@ -170,7 +168,7 @@ class TestHadamardRotation(unittest.TestCase):
         d = 64
         n = 500
         np.random.seed(202)
-        x = np.random.randn(n, d).astype('float32')
+        x = np.random.randn(n, d).astype("float32")
 
         index = faiss.index_factory(d, "HR,Flat")
         index.train(x)
@@ -186,42 +184,42 @@ class TestOrthogonalReconstruct(unittest.TestCase):
         lt = faiss.LinearTransform(20, 10, True)
         rs = np.random.RandomState(10)
         A, _ = np.linalg.qr(rs.randn(20, 20))
-        A = A[:10].astype('float32')
+        A = A[:10].astype("float32")
         faiss.copy_array_to_vector(A.ravel(), lt.A)
-        faiss.copy_array_to_vector(rs.randn(10).astype('float32'), lt.b)
+        faiss.copy_array_to_vector(rs.randn(10).astype("float32"), lt.b)
 
         lt.set_is_orthonormal()
         lt.is_trained = True
         assert lt.is_orthonormal
 
-        x = rs.rand(30, 20).astype('float32')
+        x = rs.rand(30, 20).astype("float32")
         xt = lt.apply_py(x)
         xtt = lt.reverse_transform(xt)
         xttt = lt.apply_py(xtt)
 
-        err = ((xt - xttt)**2).sum()
+        err = ((xt - xttt) ** 2).sum()
 
         self.assertGreater(1e-5, err)
 
     def test_recons_orthogonal_impossible(self):
         lt = faiss.LinearTransform(20, 10, True)
         rs = np.random.RandomState(10)
-        A = rs.randn(10 * 20).astype('float32')
+        A = rs.randn(10 * 20).astype("float32")
         faiss.copy_array_to_vector(A.ravel(), lt.A)
-        faiss.copy_array_to_vector(rs.randn(10).astype('float32'), lt.b)
+        faiss.copy_array_to_vector(rs.randn(10).astype("float32"), lt.b)
         lt.is_trained = True
 
         lt.set_is_orthonormal()
         assert not lt.is_orthonormal
 
-        x = rs.rand(30, 20).astype('float32')
+        x = rs.rand(30, 20).astype("float32")
         xt = lt.apply_py(x)
         try:
             lt.reverse_transform(xt)
         except Exception:
             pass
         else:
-            self.assertFalse('should do an exception')
+            self.assertFalse("should do an exception")
 
 
 class TestMAdd(unittest.TestCase):
@@ -232,13 +230,13 @@ class TestMAdd(unittest.TestCase):
         swig_ptr = faiss.swig_ptr
         for dim in 16, 32, 20, 25:
             for _repeat in 1, 2, 3, 4, 5:
-                a = rs.rand(dim).astype('float32')
-                b = rs.rand(dim).astype('float32')
-                c = np.zeros(dim, dtype='float32')
+                a = rs.rand(dim).astype("float32")
+                b = rs.rand(dim).astype("float32")
+                c = np.zeros(dim, dtype="float32")
                 bf = rs.uniform(5.0) - 2.5
                 idx = faiss.fvec_madd_and_argmin(
-                    dim, swig_ptr(a), bf, swig_ptr(b),
-                    swig_ptr(c))
+                    dim, swig_ptr(a), bf, swig_ptr(b), swig_ptr(c)
+                )
                 ref_c = a + b * bf
                 assert np.abs(c - ref_c).max() < 1e-5
                 assert idx == ref_c.argmin()
@@ -250,13 +248,14 @@ class TestNyFuncs(unittest.TestCase):
         rs = np.random.RandomState(123)
         swig_ptr = faiss.swig_ptr
         for d in 1, 2, 4, 8, 12, 16:
-            x = rs.rand(d).astype('float32')
+            x = rs.rand(d).astype("float32")
             for ny in 128, 129, 130:
-                y = rs.rand(ny, d).astype('float32')
+                y = rs.rand(ny, d).astype("float32")
                 ref = ((x - y) ** 2).sum(1)
-                new = np.zeros(ny, dtype='float32')
-                faiss.fvec_L2sqr_ny(swig_ptr(new), swig_ptr(x),
-                                    swig_ptr(y), d, ny)
+                new = np.zeros(ny, dtype="float32")
+                faiss.fvec_L2sqr_ny(
+                    swig_ptr(new), swig_ptr(x), swig_ptr(y), d, ny
+                )
                 assert np.abs(ref - new).max() < 1e-4
 
     def test_IP(self):
@@ -264,13 +263,14 @@ class TestNyFuncs(unittest.TestCase):
         rs = np.random.RandomState(123)
         swig_ptr = faiss.swig_ptr
         for d in 1, 2, 4, 8, 12, 16:
-            x = rs.rand(d).astype('float32')
+            x = rs.rand(d).astype("float32")
             for ny in 128, 129, 130:
-                y = rs.rand(ny, d).astype('float32')
+                y = rs.rand(ny, d).astype("float32")
                 ref = (x * y).sum(1)
-                new = np.zeros(ny, dtype='float32')
+                new = np.zeros(ny, dtype="float32")
                 faiss.fvec_inner_products_ny(
-                    swig_ptr(new), swig_ptr(x), swig_ptr(y), d, ny)
+                    swig_ptr(new), swig_ptr(x), swig_ptr(y), d, ny
+                )
                 assert np.abs(ref - new).max() < 1e-4
 
 
@@ -278,45 +278,45 @@ class TestMatrixStats(unittest.TestCase):
 
     def test_0s(self):
         rs = np.random.RandomState(123)
-        m = rs.rand(40, 20).astype('float32')
+        m = rs.rand(40, 20).astype("float32")
         m[5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        assert 'has 5 copies' in comments
-        assert '5 null vectors' in comments
+        assert "has 5 copies" in comments
+        assert "5 null vectors" in comments
 
     def test_copies(self):
         rs = np.random.RandomState(123)
-        m = rs.rand(40, 20).astype('float32')
+        m = rs.rand(40, 20).astype("float32")
         m[::2] = m[1::2]
         comments = faiss.MatrixStats(m).comments
-        assert '20 vectors are distinct' in comments
+        assert "20 vectors are distinct" in comments
 
     def test_dead_dims(self):
         rs = np.random.RandomState(123)
-        m = rs.rand(40, 20).astype('float32')
+        m = rs.rand(40, 20).astype("float32")
         m[:, 5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        assert '5 dimensions are constant' in comments
+        assert "5 dimensions are constant" in comments
 
     def test_rogue_means(self):
         rs = np.random.RandomState(123)
-        m = rs.rand(40, 20).astype('float32')
+        m = rs.rand(40, 20).astype("float32")
         m[:, 5:10] += 12345
         comments = faiss.MatrixStats(m).comments
-        assert '5 dimensions are too large wrt. their variance' in comments
+        assert "5 dimensions are too large wrt. their variance" in comments
 
     def test_normalized(self):
         rs = np.random.RandomState(123)
-        m = rs.rand(40, 20).astype('float32')
+        m = rs.rand(40, 20).astype("float32")
         faiss.normalize_L2(m)
         comments = faiss.MatrixStats(m).comments
-        assert 'vectors are normalized' in comments
+        assert "vectors are normalized" in comments
 
     def test_hash(self):
         cc = []
         for _ in range(2):
             rs = np.random.RandomState(123)
-            m = rs.rand(40, 20).astype('float32')
+            m = rs.rand(40, 20).astype("float32")
             cc.append(faiss.MatrixStats(m).hash_value)
         self.assertTrue(cc[0] == cc[1])
 
@@ -328,7 +328,7 @@ class TestScalarQuantizer(unittest.TestCase):
         rs = np.random.RandomState(123)
         for _it in range(20):
             for d in 13, 16, 24:
-                x = np.floor(rs.rand(5, d) * 256).astype('float32')
+                x = np.floor(rs.rand(5, d) * 256).astype("float32")
                 x[0] = 0
                 x[1] = 255
 
@@ -339,18 +339,21 @@ class TestScalarQuantizer(unittest.TestCase):
                 x[3, 1] = 0
 
                 ref_index = faiss.IndexScalarQuantizer(
-                    d, faiss.ScalarQuantizer.QT_8bit)
+                    d, faiss.ScalarQuantizer.QT_8bit
+                )
                 ref_index.train(x[:2])
                 ref_index.add(x[2:3])
 
                 index = faiss.IndexScalarQuantizer(
-                    d, faiss.ScalarQuantizer.QT_8bit_direct)
+                    d, faiss.ScalarQuantizer.QT_8bit_direct
+                )
                 assert index.is_trained
                 index.add(x[2:3])
 
                 assert np.all(
-                    faiss.vector_to_array(ref_index.codes) ==
-                    faiss.vector_to_array(index.codes))
+                    faiss.vector_to_array(ref_index.codes)
+                    == faiss.vector_to_array(index.codes)
+                )
 
                 # Note that distances are not the same because ref_index
                 # reconstructs x as x + 0.5
@@ -362,15 +365,14 @@ class TestScalarQuantizer(unittest.TestCase):
     def test_6bit_equiv(self):
         rs = np.random.RandomState(123)
         for d in 3, 6, 8, 16, 36:
-            trainset = np.zeros((2, d), dtype='float32')
+            trainset = np.zeros((2, d), dtype="float32")
             trainset[0, :] = 0
             trainset[0, :] = 63
 
-            index = faiss.IndexScalarQuantizer(
-                d, faiss.ScalarQuantizer.QT_6bit)
+            index = faiss.IndexScalarQuantizer(d, faiss.ScalarQuantizer.QT_6bit)
             index.train(trainset)
 
-            x = rs.randint(64, size=(100, d)).astype('float32')
+            x = rs.randint(64, size=(100, d)).astype("float32")
 
             # verify encoder / decoder
             index.add(x)
@@ -378,7 +380,7 @@ class TestScalarQuantizer(unittest.TestCase):
             assert np.all(x == x2 - 0.5)
 
             # verify AVX decoder (used only for search)
-            y = 63 * rs.rand(20, d).astype('float32')
+            y = 63 * rs.rand(20, d).astype("float32")
 
             D, I = index.search(y, 10)
             for i in range(20):
@@ -406,9 +408,7 @@ class TestScalarQuantizer(unittest.TestCase):
         for i in range(5):
             for j in range(4):
                 self.assertAlmostEqual(
-                    ((xq[i] - xb2[I[i, j]]) ** 2).sum(),
-                    D[i, j],
-                    places=4
+                    ((xq[i] - xb2[I[i, j]]) ** 2).sum(), D[i, j], places=4
                 )
 
 
@@ -427,8 +427,8 @@ class TestRandom(unittest.TestCase):
         assert c.max() - c.min() < 50 * 2
 
     def test_rand_vector(self):
-        """ test if the smooth_vectors function is reasonably compressible with
-        a small PQ """
+        """test if the smooth_vectors function is reasonably compressible with
+        a small PQ"""
         x = faiss.rand_smooth_vectors(1300, 32)
         xt = x[:1000]
         xb = x[1000:1200]
@@ -453,16 +453,19 @@ class TestPairwiseDis(unittest.TestCase):
         y = faiss.rand((200, 10), seed=2)
         ix = faiss.randint(50, vmax=100)
         iy = faiss.randint(50, vmax=200)
-        dis = np.empty(50, dtype='float32')
+        dis = np.empty(50, dtype="float32")
         faiss.pairwise_indexed_L2sqr(
-            10, 50,
-            swig_ptr(x), swig_ptr(ix),
-            swig_ptr(y), swig_ptr(iy),
-            swig_ptr(dis))
+            10,
+            50,
+            swig_ptr(x),
+            swig_ptr(ix),
+            swig_ptr(y),
+            swig_ptr(iy),
+            swig_ptr(dis),
+        )
 
         for i in range(50):
-            assert np.allclose(
-                dis[i], ((x[ix[i]] - y[iy[i]]) ** 2).sum())
+            assert np.allclose(dis[i], ((x[ix[i]] - y[iy[i]]) ** 2).sum())
 
     def test_IP(self):
         swig_ptr = faiss.swig_ptr
@@ -470,16 +473,19 @@ class TestPairwiseDis(unittest.TestCase):
         y = faiss.rand((200, 10), seed=2)
         ix = faiss.randint(50, vmax=100)
         iy = faiss.randint(50, vmax=200)
-        dis = np.empty(50, dtype='float32')
+        dis = np.empty(50, dtype="float32")
         faiss.pairwise_indexed_inner_product(
-            10, 50,
-            swig_ptr(x), swig_ptr(ix),
-            swig_ptr(y), swig_ptr(iy),
-            swig_ptr(dis))
+            10,
+            50,
+            swig_ptr(x),
+            swig_ptr(ix),
+            swig_ptr(y),
+            swig_ptr(iy),
+            swig_ptr(dis),
+        )
 
         for i in range(50):
-            assert np.allclose(
-                dis[i], np.dot(x[ix[i]], y[iy[i]]))
+            assert np.allclose(dis[i], np.dot(x[ix[i]], y[iy[i]]))
 
 
 class TestResultHeap(unittest.TestCase):
@@ -534,7 +540,7 @@ class TestReconstructBatch(unittest.TestCase):
         subset = np.zeros(1200, dtype=int)
         self.assertRaises(
             RuntimeError,
-            lambda : index.reconstruct_batch(subset),
+            lambda: index.reconstruct_batch(subset),
         )
 
 
@@ -542,10 +548,10 @@ class TestBucketSort(unittest.TestCase):
 
     def do_test_bucket_sort(self, nt):
         rs = np.random.RandomState(123)
-        tab = rs.randint(100, size=1000, dtype='int64')
+        tab = rs.randint(100, size=1000, dtype="int64")
         lims, perm = faiss.bucket_sort(tab, nt=nt)
         for i in range(max(tab) + 1):
-            assert np.all(tab[perm[lims[i]: lims[i + 1]]] == i)
+            assert np.all(tab[perm[lims[i] : lims[i + 1]]] == i)
 
     def test_bucket_sort(self):
         self.do_test_bucket_sort(0)
@@ -554,8 +560,8 @@ class TestBucketSort(unittest.TestCase):
         self.do_test_bucket_sort(4)
 
     def do_test_bucket_sort_inplace(
-            self, nt, nrow=500, ncol=20, nbucket=300, repro=False,
-            dtype='int32'):
+        self, nt, nrow=500, ncol=20, nbucket=300, repro=False, dtype="int32"
+    ):
         rs = np.random.RandomState(123)
         tab = rs.randint(nbucket, size=(nrow, ncol), dtype=dtype)
 
@@ -569,9 +575,9 @@ class TestBucketSort(unittest.TestCase):
         for b in range(nbucket):
             rows, _ = np.where(tab == b)
             rows.sort()
-            tab2[lims[b]:lims[b + 1]].sort()
+            tab2[lims[b] : lims[b + 1]].sort()
             rows = set(rows)
-            self.assertEqual(rows, set(tab2[lims[b]:lims[b + 1]]))
+            self.assertEqual(rows, set(tab2[lims[b] : lims[b + 1]]))
 
     def test_bucket_sort_inplace(self):
         self.do_test_bucket_sort_inplace(0)
@@ -586,10 +592,10 @@ class TestBucketSort(unittest.TestCase):
         self.do_test_bucket_sort_inplace(4, nbucket=5)
 
     def test_bucket_sort_inplace_int64(self):
-        self.do_test_bucket_sort_inplace(0, dtype='int64')
+        self.do_test_bucket_sort_inplace(0, dtype="int64")
 
     def test_bucket_sort_inplace_parallel_int64(self):
-        self.do_test_bucket_sort_inplace(4, dtype='int64')
+        self.do_test_bucket_sort_inplace(4, dtype="int64")
 
 
 class TestMergeKNNResults(unittest.TestCase):
@@ -597,9 +603,9 @@ class TestMergeKNNResults(unittest.TestCase):
     def do_test(self, ismax, dtype):
         rs = np.random.RandomState()
         n, k, nshard = 10, 5, 3
-        all_ids = rs.randint(100000, size=(nshard, n, k)).astype('int64')
+        all_ids = rs.randint(100000, size=(nshard, n, k)).astype("int64")
         all_dis = rs.rand(nshard, n, k)
-        if dtype == 'int32':
+        if dtype == "int32":
             all_dis = (all_dis * 1000000).astype("int32")
         else:
             all_dis = all_dis.astype(dtype)
@@ -609,7 +615,7 @@ class TestMergeKNNResults(unittest.TestCase):
                 if ismax:
                     all_dis[i, j] = all_dis[i, j][::-1]
         Dref = np.zeros((n, k), dtype=dtype)
-        Iref = np.zeros((n, k), dtype='int64')
+        Iref = np.zeros((n, k), dtype="int64")
 
         for i in range(n):
             dis = all_dis[:, i, :].ravel()
@@ -625,25 +631,25 @@ class TestMergeKNNResults(unittest.TestCase):
         np.testing.assert_array_equal(Inew, Iref)
 
     def test_min_float(self):
-        self.do_test(ismax=False, dtype='float32')
+        self.do_test(ismax=False, dtype="float32")
 
     def test_max_int(self):
-        self.do_test(ismax=True, dtype='int32')
+        self.do_test(ismax=True, dtype="int32")
 
     def test_max_float(self):
-        self.do_test(ismax=True, dtype='float32')
+        self.do_test(ismax=True, dtype="float32")
 
 
 class TestMapInt64ToInt64(unittest.TestCase):
 
     def do_test(self, capacity, n):
-        """ test that we are able to lookup """
+        """test that we are able to lookup"""
         rs = np.random.RandomState(123)
         # make sure we have unique values
-        keys = np.unique(rs.choice(2 ** 29, size=n).astype("int64"))
+        keys = np.unique(rs.choice(2**29, size=n).astype("int64"))
         rs.shuffle(keys)
         n = keys.size
-        vals = rs.choice(2 ** 30, size=n).astype('int64')
+        vals = rs.choice(2**30, size=n).astype("int64")
         tab = faiss.MapInt64ToInt64(capacity)
         tab.add(keys, vals)
 
@@ -653,7 +659,7 @@ class TestMapInt64ToInt64(unittest.TestCase):
 
         # make a few keys that we know are not there
         mask = rs.rand(n) < 0.3
-        keys[mask] = rs.choice(2 ** 29, size=n)[mask] + 2 ** 29
+        keys[mask] = rs.choice(2**29, size=n)[mask] + 2**29
         vals2 = tab.lookup(keys)
         np.testing.assert_array_equal(-1, vals2[mask])
         np.testing.assert_array_equal(vals[~mask], vals2[~mask])
@@ -663,4 +669,4 @@ class TestMapInt64ToInt64(unittest.TestCase):
 
     def xx_test_large(self):
         # don't run by default because it's slow
-        self.do_test(2 ** 21, 10 ** 6)
+        self.do_test(2**21, 10**6)

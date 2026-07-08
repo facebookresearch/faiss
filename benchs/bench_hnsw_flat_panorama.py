@@ -104,7 +104,9 @@ def benchmark_dataset(ds, dataset_name, k=10, nlevels=8, M=32):
     plot_data = []
 
     # HNSW Flat (baseline)
-    eval_and_plot(f"HNSW{M},Flat", ds, k=k, nlevels=nlevels, plot_data=plot_data)
+    eval_and_plot(
+        f"HNSW{M},Flat", ds, k=k, nlevels=nlevels, plot_data=plot_data
+    )
 
     # HNSW Flat Panorama (with PCA to concentrate energy)
     eval_and_plot(
@@ -153,6 +155,6 @@ if __name__ == "__main__":
         print(f"{'='*60}")
         benchmark_dataset(ds, name, k=k, nlevels=nlevels, M=M)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("All benchmarks completed!")
-    print("="*60)
+    print("=" * 60)

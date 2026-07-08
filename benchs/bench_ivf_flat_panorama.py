@@ -17,9 +17,7 @@ except ImportError:
     from faiss.contrib.datasets import DatasetSIFT1M, DatasetGIST1M
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--dataset", default="gist1m", choices=["sift1m", "gist1m"]
-)
+parser.add_argument("--dataset", default="gist1m", choices=["sift1m", "gist1m"])
 args = parser.parse_args()
 
 if args.dataset == "sift1m":
