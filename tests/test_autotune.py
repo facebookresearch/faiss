@@ -70,3 +70,25 @@ class TestParameterSpace(unittest.TestCase):
             expected_nprobe = int(nprobe_range.values.at(cno))
             ps.update_search_parameters(params, cno)
             self.assertEqual(params.nprobe, expected_nprobe)
+
+class TestAutoTuneCriterion(unittest.TestCase):
+
+    def test_set_groundtruth_with_distances(self):
+        nq, gt_nnn = 10, 5
+        crit = faiss.OneRecallAtRCriterion(nq, gt_nnn)
+        rng = np.random.default_rng(42)
+        gt_I = rng.integers(0, 100, size=(nq, gt_nnn)).astype("int64")
+        gt_D = rng.random(size=(nq, gt_nnn)).astype("float32")
+        crit.set_groundtruth(gt_D, gt_I)
+        self.assertEqual(crit.gt_nnn, gt_nnn)
+        self.assertEqual(crit.gt_I.size(), nq * gt_nnn)
+
+    def test_set_groundtruth_null_distances(self):
+        # gt_D is documented as optional (None skips the distances copy).
+        nq, gt_nnn = 10, 5
+        crit = faiss.OneRecallAtRCriterion(nq, gt_nnn)
+        rng = np.random.default_rng(42)
+        gt_I = rng.integers(0, 100, size=(nq, gt_nnn)).astype("int64")
+        crit.set_groundtruth(None, gt_I)
+        self.assertEqual(crit.gt_nnn, gt_nnn)
+        self.assertEqual(crit.gt_I.size(), nq * gt_nnn)

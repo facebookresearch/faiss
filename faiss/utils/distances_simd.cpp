@@ -10,18 +10,19 @@
 #include <faiss/utils/distances.h>
 
 #include <cmath>
-#include <cstdio>
 #include <cstring>
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::NONE
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
+// This TU is the SIMDLevel::NONE build of the specializations that
+// distances_simdlib256.h emits, so the include is required despite no symbol
+// being named directly here.
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/utils/simd_impl/distances_simdlib256.h>
+#include <faiss/utils/simd_impl/distances_simdlib256.h> // IWYU pragma: keep
 
 namespace faiss {
 

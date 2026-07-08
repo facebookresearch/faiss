@@ -151,7 +151,9 @@ int64_t PyCallbackShardingFunction::operator()(int64_t i, int64_t shard_count) {
     if (shard_id == nullptr) {
         FAISS_THROW_MSG("propagate py error");
     }
-    return PyLong_AsLongLong(shard_id);
+    int64_t rv = PyLong_AsLongLong(shard_id);
+    Py_DECREF(shard_id);
+    return rv;
 }
 
 PyCallbackShardingFunction::~PyCallbackShardingFunction() {

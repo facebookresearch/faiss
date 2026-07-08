@@ -221,7 +221,7 @@ if "hnsw_locks" in todo:
         t2 = None
         for i in range(0, len(xb), batch_size):
             t1 = time.time()
-            index.add(xb[i: i + batch_size])
+            index.add(xb[i : i + batch_size])
             t2 = time.time()
             if i > 2 and t2 - t0 > 2:
                 break

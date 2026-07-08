@@ -1,0 +1,158 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+[build-system]
+# cuVS requires rapids-cmake which needs cmake >= 3.30.4.
+requires = ["scikit-build-core>=0.10", "swig>=4.2,<5", "numpy>=2.0", "cmake>=3.30.4", "ninja"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "faiss-gpu-cuvs"
+dynamic = ["version"]
+description = "A library for efficient similarity search and clustering of dense vectors (GPU + cuVS/CAGRA support)."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES"]
+requires-python = ">=3.11"
+authors = [
+  {name = "Meta AI Research"},
+]
+keywords = ["search", "nearest-neighbors", "clustering", "vectors", "similarity", "gpu", "cuda", "cuvs", "cagra"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Environment :: GPU :: NVIDIA CUDA :: 12",
+]
+dependencies = [
+  "numpy>=1.25",
+  "packaging",
+  "nvidia-cuda-runtime-cu12>=12.6,<13",
+  "nvidia-cublas-cu12>=12.6,<13",
+  "nvidia-curand-cu12>=10.3.7,<11",
+  "nvidia-nvjitlink-cu12>=12.6,<13",
+  "libcuvs-cu12>=26.06,<27",
+]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/faiss"
+Documentation = "https://github.com/facebookresearch/faiss/wiki"
+Repository = "https://github.com/facebookresearch/faiss"
+Issues = "https://github.com/facebookresearch/faiss/issues"
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+
+# Pull version from CMakeLists.txt's project(VERSION ...) — single source of truth.
+metadata.version.provider = "scikit_build_core.metadata.regex"
+metadata.version.input = "CMakeLists.txt"
+metadata.version.regex = '^\s+VERSION\s+(?P<value>[0-9]+\.[0-9]+\.[0-9]+)'
+
+# Exclude C++ headers, cmake configs, static libs, and binaries from the wheel.
+# Only the Python package (faiss/) and bundled shared libs remain.
+wheel.exclude = ["include/**", "share/**", "lib/**", "lib64/**", "bin/**"]
+
+[tool.scikit-build.cmake.define]
+FAISS_OPT_LEVEL = "dd"
+FAISS_ENABLE_GPU = "ON"
+FAISS_ENABLE_CUVS = "ON"
+FAISS_ENABLE_PYTHON = "ON"
+FAISS_ENABLE_MKL = "OFF"
+FAISS_ENABLE_C_API = "OFF"
+FAISS_ENABLE_EXTRAS = "OFF"
+FAISS_ENABLE_SVS = "OFF"
+FAISS_USE_LTO = "ON"
+# V100 → Hopper SASS + Hopper PTX trailer for forward compat (e.g. Blackwell JIT).
+# Drop 72 (Jetson Xavier) for a datacenter-targeted wheel; include 89 (L4/L40/RTX 40xx).
+CMAKE_CUDA_ARCHITECTURES = "70-real;75-real;80-real;86-real;89-real;90"
+CMAKE_CUDA_FLAGS_RELEASE = "-O3 -Xfatbin=-compress-all --threads 4 -Xcompiler=-fdata-sections,-ffunction-sections"
+CMAKE_C_FLAGS = "-fdata-sections -ffunction-sections"
+CMAKE_CXX_FLAGS = "-fdata-sections -ffunction-sections"
+CMAKE_SHARED_LINKER_FLAGS = "-Wl,--gc-sections -Wl,--strip-all"
+CMAKE_MODULE_LINKER_FLAGS = "-Wl,--gc-sections -Wl,--strip-all"
+BUILD_TESTING = "OFF"
+BUILD_SHARED_LIBS = "ON"
+# cuVS + transitive deps (raft, rmm, rapids_logger, header-only cutlass/cuco/nvtx3)
+# are found via CMAKE_PREFIX_PATH (environment block below) at the RAPIDS wheel roots,
+# mirroring the conda build — no explicit *_DIR, agnostic to lib/ vs lib64/.
+
+# Stable ABI (abi3): one cp311 wheel covers all 3.11+.
+# Floor is 3.11 because the runtime dep libcuvs-cu12>=26.06 (RAPIDS) requires
+# Python >=3.11 — RAPIDS dropped 3.10 in the 26.04 release.
+# GPU is Linux-only; free-threaded Python (cp3*t) cannot use abi3.
+[[tool.scikit-build.overrides]]
+if.platform-system = "linux"
+if.abi-flags = "^$"  # Free-threaded Python does not support stable ABI.
+wheel.py-api = "cp311"
+
+[tool.cibuildwheel]
+# Pass through the host GPU so the smoke test can actually exercise CUDA + cuVS.
+# Without this, faiss.get_num_gpus() returns 0 inside the container and all
+# GPU tests silently skip — masking real packaging / driver / SASS-arch problems.
+container-engine = { name = "docker", create-args = ["--gpus", "all"] }
+build = "cp311-manylinux_x86_64"
+test-requires = [
+  "numpy>=1.25,<3.0",
+  "pytest",
+  "nvidia-cuda-runtime-cu12>=12.6,<13",
+  "nvidia-cublas-cu12>=12.6,<13",
+  "nvidia-curand-cu12>=10.3.7,<11",
+  "nvidia-nvjitlink-cu12>=12.6,<13",
+  "libcuvs-cu12>=26.06,<27",
+]
+test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
+
+[tool.cibuildwheel.linux]
+# manylinux_2_28 ships gcc-toolset-14; CUDA 12.6 only supports GCC <=13, so install
+# gcc-toolset-13 explicitly and force the build to use it via CC/CXX/CUDAHOSTCXX below.
+# epel-release is needed for swig. Install the FULL cuda-toolkit-12-6 (not just nvcc +
+# narrow dev libs as faiss-gpu does) because cuVS pulls in RAFT which transitively
+# needs cuSOLVER, cuSPARSE, nvrtc, etc. headers — easier to install all than to track
+# the exact list. Wheel size is unaffected since auditwheel excludes all CUDA libs.
+#
+# cuVS dev files (headers + cmake) come from RAPIDS' manylinux PyPI wheels via
+# `pip install --target /opt/cuvs` — ABI-clean, so no libstdc++/libgcc_s/libgomp strip
+# or RMM symlink shim. cp311 interpreter is explicit (manylinux puts no `pip` on PATH).
+manylinux-x86_64-image = "manylinux_2_28"
+before-all = "dnf install -y gcc-toolset-13 epel-release && dnf install -y openblas-devel openblas-openmp swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y --setopt=obsoletes=0 cuda-toolkit-12-6 && /opt/python/cp311-cp311/bin/python -m pip install --target /opt/cuvs --no-deps --only-binary ':all:' --extra-index-url https://pypi.nvidia.com 'libcuvs-cu12==26.06.*' 'libraft-cu12==26.06.*' 'librmm-cu12==26.06.*' 'rapids-logger'"
+# auditwheel excludes (not vendored; supplied at runtime by nvidia-*-cu12 / libcuvs-cu12
+# wheels): host driver libcuda, CUDA runtime/math libs (cusparse/cusolver are explicit —
+# under the cuda-toolkit RPM, not /opt/cuvs), and every RAPIDS .so found under /opt/cuvs.
+repair-wheel-command = "bash -c 'EXCLUDES=\"--exclude libcuda.so.1 --exclude libcudart.so.12 --exclude libcublas.so.12 --exclude libcublasLt.so.12 --exclude libcurand.so.10 --exclude libnvJitLink.so.12 --exclude libcusparse.so.12 --exclude libcusolver.so.11\"; for f in $(find /opt/cuvs -name \"lib*.so*\" -printf \"%f\\n\" | sort -u); do EXCLUDES=\"$EXCLUDES --exclude $f\"; done; auditwheel repair -w {dest_dir} {wheel} $EXCLUDES'"
+# Canary: ensure the host GPU is actually visible to the container before tests
+# run. Without this, smoke tests would silently skip on broken --gpus passthrough.
+before-test = "nvidia-smi || (echo 'GPU not visible to container; check container-engine create-args' && exit 1)"
+
+# Run abi3audit on Linux to guarantee Stable ABI compliance.
+# We use 'append' so that the auditwheel repair-wheel-command from
+# [tool.cibuildwheel.linux] (with the CUDA + cuVS --exclude flags) still runs first.
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux*"
+inherit.repair-wheel-command = "append"
+repair-wheel-command = "pipx run abi3audit --strict --report {wheel}"
+
+# Build-tool paths. CUDA from /usr/local/cuda-12.6 (NVIDIA RPM convention);
+# GCC pinned to toolset-13 because CUDA 12.6 does not support GCC 14.
+# CUDAHOSTCXX must match CXX or nvcc host TUs get an ABI-mismatched libstdc++.
+# CMAKE_PREFIX_PATH points at the RAPIDS wheel roots so find_package(cuvs) resolves.
+# Set as env (not cmake.define) so CMake merges it with scikit-build-core's own path.
+[tool.cibuildwheel.linux.environment]
+CUDA_HOME = "/usr/local/cuda-12.6"
+CUDACXX = "/usr/local/cuda-12.6/bin/nvcc"
+CC = "/opt/rh/gcc-toolset-13/root/usr/bin/gcc"
+CXX = "/opt/rh/gcc-toolset-13/root/usr/bin/g++"
+CUDAHOSTCXX = "/opt/rh/gcc-toolset-13/root/usr/bin/g++"
+CMAKE_PREFIX_PATH = "/opt/cuvs/libcuvs:/opt/cuvs/libraft:/opt/cuvs/librmm:/opt/cuvs/rapids_logger"

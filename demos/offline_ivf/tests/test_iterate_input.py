@@ -38,9 +38,9 @@ class TestUtilsMethods(unittest.TestCase):
             data_creator.create_test_data()
             args = data_creator.setup_cli()
             cfg = load_config(args.config)
-            db_iterator = create_dataset_from_oivf_config(
-                cfg, args.xb
-            ).iterate(0, TEST_BATCH_SIZE, np.float32)
+            db_iterator = create_dataset_from_oivf_config(cfg, args.xb).iterate(
+                0, TEST_BATCH_SIZE, np.float32
+            )
 
             for i in range(len(SMALL_FILE_SIZES) - 1):
                 vecs = next(db_iterator)
@@ -65,9 +65,9 @@ class TestUtilsMethods(unittest.TestCase):
             data_creator.create_test_data()
             args = data_creator.setup_cli()
             cfg = load_config(args.config)
-            db_iterator = create_dataset_from_oivf_config(
-                cfg, args.xb
-            ).iterate(0, TEST_BATCH_SIZE, np.float32)
+            db_iterator = create_dataset_from_oivf_config(cfg, args.xb).iterate(
+                0, TEST_BATCH_SIZE, np.float32
+            )
 
             for i in range(len(LARGE_FILE_SIZES) - 1):
                 vecs = next(db_iterator)

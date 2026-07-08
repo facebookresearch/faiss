@@ -7,7 +7,7 @@ import logging
 
 # https://stackoverflow.com/questions/7016056/python-logging-not-outputting-anything
 logging.basicConfig()
-logger = logging.getLogger('faiss.contrib.exhaustive_search')
+logger = logging.getLogger("faiss.contrib.exhaustive_search")
 logger.setLevel(logging.INFO)
 
 from faiss.contrib import datasets
@@ -18,10 +18,6 @@ ds = datasets.DatasetDeep1B(nb=int(1e9))
 
 print("computing GT matches for", ds)
 
-D, I = knn_ground_truth(
-    ds.get_queries(),
-    ds.database_iterator(bs=65536),
-    k=100
-)
+D, I = knn_ground_truth(ds.get_queries(), ds.database_iterator(bs=65536), k=100)
 
 vecs_io.ivecs_write("/tmp/tt.ivecs", I)
