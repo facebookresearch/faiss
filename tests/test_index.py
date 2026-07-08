@@ -528,23 +528,26 @@ class TestRangeSearch(unittest.TestCase):
 
         (xt, xb, xq) = get_dataset(d, nb, nt, nq)
 
-        index = faiss.IndexFlatL2(d)
-        index.add(xb)
+        for metric, thresh in [
+            (faiss.METRIC_L2, 0.1),
+            (faiss.METRIC_L1, 0.5),
+        ]:
+            index = faiss.IndexFlat(d, metric)
+            index.add(xb)
 
-        Dref, Iref = index.search(xq, 5)
+            Dref, Iref = index.search(xq, 5)
 
-        thresh = 0.1  # *squared* distance
-        lims, D, I = index.range_search(xq, thresh)
+            lims, D, I = index.range_search(xq, thresh)
 
-        for i in range(nq):
-            Iline = I[lims[i] : lims[i + 1]]
-            Dline = D[lims[i] : lims[i + 1]]
-            for j, dis in zip(Iref[i], Dref[i]):
-                if dis < thresh:
-                    (li,) = np.where(Iline == j)
-                    self.assertTrue(li.size == 1)
-                    idx = li[0]
-                    self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
+            for i in range(nq):
+                Iline = I[lims[i] : lims[i + 1]]
+                Dline = D[lims[i] : lims[i + 1]]
+                for j, dis in zip(Iref[i], Dref[i]):
+                    if dis < thresh:
+                        (li,) = np.where(Iline == j)
+                        self.assertTrue(li.size == 1)
+                        idx = li[0]
+                        self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
 
 
 class TestSearchAndReconstruct(unittest.TestCase):
