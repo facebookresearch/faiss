@@ -1471,6 +1471,9 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a1fe07efe184d5e1811aec1020d47e2ba" kind="variable"><name>cagraConfig_</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1aeb6c2c39363d18848d127e3a14fb7594" kind="variable"><name>numeric_type_</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a65bd168068e8fc2138022f8beaae520c" kind="variable"><name>index_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1aa67648e9bc1452b987212cbddda467ab" kind="variable"><name>merged_knngraph_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a3e61f36bfd59f86bfe5305f273d0643f" kind="variable"><name>merged_knngraph_degree_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ab88cfef2e18101a16e7f4017a8828730" kind="variable"><name>multi_gpu_dataset_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5f6bffd99291b2198ef601ef7e5c5a30" kind="variable"><name>resources_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd" kind="variable"><name>config_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" kind="variable"><name>minPagedSize_</name></member>
@@ -1482,6 +1485,8 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1af944b1d92612e1f9c601bf8bb66f8cf4" kind="function"><name>copyFrom</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a8b46ebebdb93cca4aa4053a5775408e5" kind="function"><name>copyFrom_ex</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a0609eba4dffbb9168d024eed6cdc0842" kind="function"><name>copyTo</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1aa7f766dff21229152d5b7c5253cf268c" kind="function"><name>trainMultiGpu</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a9b68f906df81b85f952b2b6550021d8c" kind="function"><name>trainAllNeighbors</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac44c7ec1993d21f91e0c0f143459f074" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a088972f103d3a9f54daeb8ad1fdf93d4" kind="function"><name>get_knngraph</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a529fef0b0f070c0a7c7b77df06539f9a" kind="function"><name>get_numeric_type</name></member>
@@ -1517,6 +1522,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a5c1bdf0218c82973bdfd605eadd0fe9c" kind="function"><name>addImpl_ex_</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a7e58e95c649da44551033c97402ff1ab" kind="function"><name>searchImpl_</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a14e2742e30b4b1a047d7fe18ebf56399" kind="function"><name>searchImpl_ex_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a88b91d8ee9f3aec14eaf80cfe2f28171" kind="function"><name>copyToMultiGpu_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
