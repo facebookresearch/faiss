@@ -37,23 +37,34 @@ def supported_instruction_sets():
             return False
         # Numpy 2.0 supports SVE detection by __cpu_features__, so just skip
         import numpy
+
         if Version(numpy.__version__) >= Version("2.0"):
             return False
         # platform-dependent legacy fallback using numpy.distutils.cpuinfo
         try:
             import numpy.distutils.cpuinfo
-            return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
+
+            return (
+                "sve"
+                in numpy.distutils.cpuinfo.cpu.info[0]
+                .get("Features", "")
+                .split()
+            )
         except ImportError:
             # check if SVE is supported by checking the auxval
             # using values defined as:
             # #define AT_HWCAP 16
             # #define HWCAP_SVE  (1 << 22)
-            return bool(__import__('ctypes').CDLL(None).getauxval(16) & (1<<22))
+            return bool(
+                __import__("ctypes").CDLL(None).getauxval(16) & (1 << 22)
+            )
 
     import numpy
+
     if Version(numpy.__version__) >= Version("1.19"):
         # use private API as next-best thing until numpy/numpy#18058 is solved
         from numpy._core._multiarray_umath import __cpu_features__
+
         # __cpu_features__ is a dictionary with CPU features
         # as keys, and True / False as values
         supported = {k for k, v in __cpu_features__.items() if v}
@@ -65,16 +76,24 @@ def supported_instruction_sets():
 
     # platform-dependent legacy fallback before numpy 1.19, no windows
     if platform.system() == "Darwin":
-        if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
+        if (
+            subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[
+                -1
+            ]
+            == "1"
+        ):
             return {"AVX2"}
     elif platform.system() == "Linux":
         import numpy.distutils.cpuinfo
+
         result = set()
-        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get("flags", ""):
             result.add("AVX2")
-        if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get("flags", ""):
             result.add("AVX512")
-        if "avx512_fp16" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx512_fp16" in numpy.distutils.cpuinfo.cpu.info[0].get(
+            "flags", ""
+        ):
             # avx512_fp16 is supported starting SPR
             result.add("AVX512_SPR")
         if is_sve_supported():
@@ -83,6 +102,7 @@ def supported_instruction_sets():
             result.discard(f)
         return result
     return set()
+
 
 logger = logging.getLogger(__name__)
 
@@ -93,8 +113,10 @@ opt_env_variable_name = "FAISS_OPT_LEVEL"
 opt_level = os.environ.get(opt_env_variable_name, None)
 
 if opt_level is None:
-    logger.debug(f"Environment variable {opt_env_variable_name} is not set, " \
-                "so let's pick the instruction set according to the current CPU")
+    logger.debug(
+        f"Environment variable {opt_env_variable_name} is not set, "
+        "so let's pick the instruction set according to the current CPU"
+    )
     instruction_sets = supported_instruction_sets()
 else:
     logger.debug(f"Using {opt_level} as an instruction set.")
@@ -106,11 +128,14 @@ has_AVX512_SPR = any("AVX512_SPR" in x.upper() for x in instruction_sets)
 if has_AVX512_SPR:
     try:
         logger.info("Loading faiss with AVX512-SPR support.")
-        from .swigfaiss_avx512_spr import *
+        from .swigfaiss_avx512_spr import *  # noqa: F401,F403
+
         logger.info("Successfully loaded faiss with AVX512-SPR support.")
         loaded = True
     except ImportError as e:
-        logger.info(f"Could not load library with AVX512-SPR support due to:\n{e!r}")
+        logger.info(
+            f"Could not load library with AVX512-SPR support due to:\n{e!r}"
+        )
         # reset so that we load without AVX512 below
         loaded = False
 
@@ -118,11 +143,14 @@ has_AVX512 = any("AVX512" in x.upper() for x in instruction_sets)
 if has_AVX512 and not loaded:
     try:
         logger.info("Loading faiss with AVX512 support.")
-        from .swigfaiss_avx512 import *
+        from .swigfaiss_avx512 import *  # noqa: F401,F403
+
         logger.info("Successfully loaded faiss with AVX512 support.")
         loaded = True
     except ImportError as e:
-        logger.info(f"Could not load library with AVX512 support due to:\n{e!r}")
+        logger.info(
+            f"Could not load library with AVX512 support due to:\n{e!r}"
+        )
         # reset so that we load without AVX512 below
         loaded = False
 
@@ -130,7 +158,8 @@ has_AVX2 = "AVX2" in instruction_sets
 if has_AVX2 and not loaded:
     try:
         logger.info("Loading faiss with AVX2 support.")
-        from .swigfaiss_avx2 import *
+        from .swigfaiss_avx2 import *  # noqa: F401,F403
+
         logger.info("Successfully loaded faiss with AVX2 support.")
         loaded = True
     except ImportError as e:
@@ -142,7 +171,8 @@ has_SVE = "SVE" in instruction_sets
 if has_SVE and not loaded:
     try:
         logger.info("Loading faiss with SVE support.")
-        from .swigfaiss_sve import *
+        from .swigfaiss_sve import *  # noqa: F401,F403
+
         logger.info("Successfully loaded faiss with SVE support.")
         loaded = True
     except ImportError as e:
@@ -154,7 +184,8 @@ if not loaded:
     try:
         # we import * so that the symbol X can be accessed as faiss.X
         logger.info("Loading faiss.")
-        from .swigfaiss import *
+        from .swigfaiss import *  # noqa: F401,F403
+
         logger.info("Successfully loaded faiss.")
     except ModuleNotFoundError:
         formatted_ins_sets = ", ".join(supported_instruction_sets())
@@ -165,7 +196,6 @@ if not loaded:
             f"A) Set the correct FAISS_OPT_LEVEL value when executing "
             f"'cmake'.\n"
             f"B) Build the correct SWIG wrapper.\n\n"
-
             f"These are the supported instruction sets on your system:\n"
             f"{formatted_ins_sets}\n"
             f"- If 'AVX512_SPR' (case insensitive) is supported on your "

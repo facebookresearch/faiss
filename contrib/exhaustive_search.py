@@ -12,7 +12,9 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2, shard=False, ngpu=-1):
+def knn_ground_truth(
+    xq, db_iterator, k, metric_type=faiss.METRIC_L2, shard=False, ngpu=-1
+):
     """Computes the exact KNN search results for a dataset that possibly
     does not fit in RAM but for which we have an iterator that
     returns it block by block.
@@ -28,7 +30,7 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2, shard=Fals
         ngpu = faiss.get_num_gpus()
 
     if ngpu:
-        LOG.info('running on %d GPUs' % ngpu)
+        LOG.info("running on %d GPUs" % ngpu)
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
@@ -50,10 +52,9 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2, shard=Fals
 
     return rh.D, rh.I
 
+
 # knn function used to be here
 knn = faiss.knn
-
-
 
 
 def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
@@ -71,13 +72,14 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
     r2 = int(r2) if is_binary_index else float(r2)
     k = min(index_gpu.ntotal, gpu_k)
     LOG.debug(
-        f"GPU search {nq} queries with {k=:} {is_binary_index=:} {keep_max=:}")
+        f"GPU search {nq} queries with {k=:} {is_binary_index=:} {keep_max=:}"
+    )
     t0 = time.time()
     D, I = index_gpu.search(xq, k)
     t1 = time.time() - t0
     if is_binary_index:
         assert d * 8 < 32768  # let's compact the distance matrix
-        D = D.astype('int16')
+        D = D.astype("int16")
     t2 = 0
     lim_remain = None
     if index_cpu is not None:
@@ -96,16 +98,19 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
                 else:
                     index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
                 index_cpu.add(xb)
-            lim_remain, D_remain, I_remain = index_cpu.range_search(xq[mask], r2)
+            lim_remain, D_remain, I_remain = index_cpu.range_search(
+                xq[mask], r2
+            )
             if is_binary_index:
-                D_remain = D_remain.astype('int16')
+                D_remain = D_remain.astype("int16")
             t2 = time.time() - t0
     LOG.debug("combine")
     t0 = time.time()
 
     CombinerRangeKNN = (
-        faiss.CombinerRangeKNNint16 if is_binary_index else
-        faiss.CombinerRangeKNNfloat
+        faiss.CombinerRangeKNNint16
+        if is_binary_index
+        else faiss.CombinerRangeKNNfloat
     )
 
     combiner = CombinerRangeKNN(nq, k, r2, keep_max)
@@ -120,11 +125,11 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
             combiner.lim_remain = sp(lim_remain.view("int64"))
             combiner.I_remain = sp(I_remain)
             # combiner.set_range_result(sp(mask), sp(lim_remain.view("int64")), sp(D_remain), sp(I_remain))
-        L_res = np.empty(nq + 1, dtype='int64')
+        L_res = np.empty(nq + 1, dtype="int64")
         combiner.compute_sizes(sp(L_res))
         nres = L_res[-1]
         D_res = np.empty(nres, dtype=D.dtype)
-        I_res = np.empty(nres, dtype='int64')
+        I_res = np.empty(nres, dtype="int64")
         combiner.write_result(sp(D_res), sp(I_res))
     else:
         D_res, I_res = [], []
@@ -150,21 +155,27 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
     return L_res, D_res, I_res
 
 
-def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
-                       shard=False, ngpu=-1):
+def range_ground_truth(
+    xq,
+    db_iterator,
+    threshold,
+    metric_type=faiss.METRIC_L2,
+    shard=False,
+    ngpu=-1,
+):
     """Computes the range-search search results for a dataset that possibly
     does not fit in RAM but for which we have an iterator that
     returns it block by block.
     """
     nq, d = xq.shape
     t0 = time.time()
-    xq = np.ascontiguousarray(xq, dtype='float32')
+    xq = np.ascontiguousarray(xq, dtype="float32")
 
     index = faiss.IndexFlat(d, metric_type)
     if ngpu == -1:
         ngpu = faiss.get_num_gpus()
     if ngpu:
-        LOG.info('running on %d GPUs' % ngpu)
+        LOG.info("running on %d GPUs" % ngpu)
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
@@ -192,8 +203,8 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
         i0 += ni
         LOG.info("%d db elements, %.3f s" % (i0, time.time() - t0))
 
-    empty_I = np.zeros(0, dtype='int64')
-    empty_D = np.zeros(0, dtype='float32')
+    empty_I = np.zeros(0, dtype="int64")
+    empty_D = np.zeros(0, dtype="float32")
     # import pdb; pdb.set_trace()
     D = [(np.hstack(i) if i != [] else empty_D) for i in D]
     I = [(np.hstack(i) if i != [] else empty_I) for i in I]
@@ -205,7 +216,7 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
 
 
 def threshold_radius_nres(nres, dis, ids, thresh, keep_max=False):
-    """ select a set of results """
+    """select a set of results"""
     if keep_max:
         mask = dis > thresh
     else:
@@ -213,14 +224,14 @@ def threshold_radius_nres(nres, dis, ids, thresh, keep_max=False):
     new_nres = np.zeros_like(nres)
     o = 0
     for i, nr in enumerate(nres):
-        nr = int(nr)   # avoid issues with int64 + uint64
-        new_nres[i] = mask[o:o + nr].sum()
+        nr = int(nr)  # avoid issues with int64 + uint64
+        new_nres[i] = mask[o : o + nr].sum()
         o += nr
     return new_nres, dis[mask], ids[mask]
 
 
 def threshold_radius(lims, dis, ids, thresh, keep_max=False):
-    """ restrict range-search results to those below a given radius """
+    """restrict range-search results to those below a given radius"""
     if keep_max:
         mask = dis > thresh
     else:
@@ -246,24 +257,32 @@ def apply_maxres(res_batches, target_nres, keep_max=False):
         alldis.partition(target_nres)
         radius = alldis[target_nres]
 
-    if alldis.dtype == 'float32':
+    if alldis.dtype == "float32":
         radius = float(radius)
     else:
         radius = int(radius)
-    LOG.debug('   setting radius to %s' % radius)
+    LOG.debug("   setting radius to %s" % radius)
     totres = 0
     for i, (nres, dis, ids) in enumerate(res_batches):
         nres, dis, ids = threshold_radius_nres(
-            nres, dis, ids, radius, keep_max=keep_max)
+            nres, dis, ids, radius, keep_max=keep_max
+        )
         totres += len(dis)
         res_batches[i] = nres, dis, ids
-    LOG.debug('   updated previous results, new nb results %d' % totres)
+    LOG.debug("   updated previous results, new nb results %d" % totres)
     return radius, totres
 
 
-def range_search_max_results(index, query_iterator, radius,
-                             max_results=None, min_results=None,
-                             shard=False, ngpu=0, clip_to_min=False):
+def range_search_max_results(
+    index,
+    query_iterator,
+    radius,
+    max_results=None,
+    min_results=None,
+    shard=False,
+    ngpu=0,
+    clip_to_min=False,
+):
     """Performs a range search with many queries (given by an iterator)
     and adjusts the threshold on-the-fly so that the total results
     table does not grow larger than max_results.
@@ -287,7 +306,7 @@ def range_search_max_results(index, query_iterator, radius,
         ngpu = faiss.get_num_gpus()
 
     if ngpu:
-        LOG.info('running on %d GPUs' % ngpu)
+        LOG.info("running on %d GPUs" % ngpu)
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
@@ -314,54 +333,60 @@ def range_search_max_results(index, query_iterator, radius,
         t1 = time.time()
         if is_binary_index:
             # weird Faiss quirk that returns floats for Hamming distances
-            Di = Di.astype('int16')
+            Di = Di.astype("int16")
 
         totres += len(Di)
         res_batches.append((nres_i, Di, Ii))
 
         if max_results is not None and totres > max_results:
-            LOG.info('too many results %d > %d, scaling back radius' %
-                     (totres, max_results))
+            LOG.info(
+                "too many results %d > %d, scaling back radius"
+                % (totres, max_results)
+            )
             radius, totres = apply_maxres(
-                res_batches, min_results,
-                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
+                res_batches,
+                min_results,
+                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT,
             )
         t2 = time.time()
         t_search += t1 - t0
         t_post_process += t2 - t1
-        LOG.debug('   [%.3f s] %d queries done, %d results' % (
-            time.time() - t_start, qtot, totres))
+        LOG.debug(
+            "   [%.3f s] %d queries done, %d results"
+            % (time.time() - t_start, qtot, totres)
+        )
 
     LOG.info(
-        'search done in %.3f s + %.3f s, total %d results, end threshold %g' % (
-            t_search, t_post_process, totres, radius)
+        "search done in %.3f s + %.3f s, total %d results, end threshold %g"
+        % (t_search, t_post_process, totres, radius)
     )
 
     if clip_to_min and totres > min_results:
         radius, totres = apply_maxres(
-            res_batches, min_results,
-            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
+            res_batches,
+            min_results,
+            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT,
         )
 
     nres = np.hstack([nres_i for nres_i, dis_i, ids_i in res_batches])
     dis = np.hstack([dis_i for nres_i, dis_i, ids_i in res_batches])
     ids = np.hstack([ids_i for nres_i, dis_i, ids_i in res_batches])
 
-    lims = np.zeros(len(nres) + 1, dtype='uint64')
+    lims = np.zeros(len(nres) + 1, dtype="uint64")
     lims[1:] = np.cumsum(nres)
 
     return radius, lims, dis, ids
 
 
 def exponential_query_iterator(xq, start_bs=32, max_bs=20000):
-    """ produces batches of progressively increasing sizes. This is useful to
+    """produces batches of progressively increasing sizes. This is useful to
     adjust the search radius progressively without overflowing with
-    intermediate results """
+    intermediate results"""
     nq = len(xq)
     bs = start_bs
     i = 0
     while i < nq:
-        xqi = xq[i:i + bs]
+        xqi = xq[i : i + bs]
         yield xqi
         if bs < max_bs:
             bs *= 2

@@ -119,10 +119,6 @@ class OfflineIVF:
             f"{self.index_factory_fn}_np{self.nprobe}.npy"
         )
 
-        fp = 32
-        if self.dt == "float16":
-            fp = 16
-
         self.xq_bs = cfg["query_batch_size"]
         if "metric" in cfg:
             self.metric = eval(f'faiss.{cfg["metric"]}')
@@ -179,7 +175,9 @@ class OfflineIVF:
             idxs.append(np.empty((0,), dtype=np.uint32))
         bs = 1_000_000
         i = 0
-        for buffer in tqdm(self._iterate_transformed(self.xb_ds, 0, bs, np.float32)):
+        for buffer in tqdm(
+            self._iterate_transformed(self.xb_ds, 0, bs, np.float32)
+        ):
             for j in range(len(codecs)):
                 codec, codeset, idx = codecs[j], codesets[j], idxs[j]
                 uniq = codeset.insert(codec.sa_encode(buffer))
@@ -272,13 +270,17 @@ class OfflineIVF:
                             assert xb_j.shape[1] == index.chain.at(0).d_out
                             index_ivf.add_with_ids(
                                 xb_j,
-                                np.arange(start + jj, start + jj + xb_j.shape[0]),
+                                np.arange(
+                                    start + jj, start + jj + xb_j.shape[0]
+                                ),
                             )
                         else:
                             assert xb_j.shape[1] == index.d
                             index.add_with_ids(
                                 xb_j,
-                                np.arange(start + jj, start + jj + xb_j.shape[0]),
+                                np.arange(
+                                    start + jj, start + jj + xb_j.shape[0]
+                                ),
                             )
                         jj += xb_j.shape[0]
                         logging.info(jj)
@@ -413,7 +415,9 @@ class OfflineIVF:
         D_a_ann_file = (
             f"{self.eval_dir}/D_a_ann_{index_factory_fn}_np{nprobe}.npy"
         )
-        D_a_ann_refined_file = f"{self.eval_dir}/D_a_ann_refined_{index_factory_fn}_np{nprobe}.npy"
+        D_a_ann_refined_file = (
+            f"{self.eval_dir}/D_a_ann_refined_{index_factory_fn}_np{nprobe}.npy"
+        )
         D_b_gt_file = f"{self.eval_dir}/D_b_gt.npy"
         D_b_ann_file = (
             f"{self.eval_dir}/D_b_ann_{index_factory_fn}_np{nprobe}.npy"
@@ -684,26 +688,22 @@ class OfflineIVF:
                 else:
                     d = self.input_d
                 with open(Ifn, "xb") as f, open(Dfn, "xb") as g:
-                    xq_i = np.empty(
-                        shape=(self.xq_bs, d), dtype=np.float16
-                    )
+                    xq_i = np.empty(shape=(self.xq_bs, d), dtype=np.float16)
                     q_assign = np.empty(
                         (self.xq_bs, self.nprobe), dtype=np.int32
                     )
                     j = 0
-                    quantizer = faiss.index_cpu_to_all_gpus(
-                        index_ivf.quantizer
-                    )
+                    quantizer = faiss.index_cpu_to_all_gpus(index_ivf.quantizer)
                     for xq_i_j in tqdm(
                         self._iterate_transformed(
                             self.xq_ds, i, min(100_000, self.xq_bs), np.float16
                         ),
                         file=sys.stdout,
                     ):
-                        xq_i[j:j + xq_i_j.shape[0]] = xq_i_j
+                        xq_i[j : j + xq_i_j.shape[0]] = xq_i_j
                         (
                             _,
-                            q_assign[j:j + xq_i_j.shape[0]],
+                            q_assign[j : j + xq_i_j.shape[0]],
                         ) = quantizer.search(xq_i_j, self.nprobe)
                         j += xq_i_j.shape[0]
                         assert j <= xq_i.shape[0]
@@ -847,7 +847,8 @@ class OfflineIVF:
             for j in range(SMALL_DATA_SAMPLE):
                 assert np.where(I[j] == j + r)[0].size > 0, (
                     f"I[j]: {I[j]}, j: {j}, i: {i}, shard_size:"
-                    f" {self.shard_size}")
+                    f" {self.shard_size}"
+                )
 
         logging.info("search results...")
         index_ivf.nprobe = self.nprobe

@@ -43,13 +43,13 @@ sindex.set_omp_num_threads(64)
 
 
 def ivecs_read(fname):
-    a = np.fromfile(fname, dtype='int32')
+    a = np.fromfile(fname, dtype="int32")
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy()
 
 
 def fvecs_read(fname):
-    return ivecs_read(fname).view('float32')
+    return ivecs_read(fname).view("float32")
 
 
 deep1bdir = "/datasets01_101/simsearch/041218/deep1b/"
@@ -64,7 +64,7 @@ for nprobe in 1, 10, 100, 1000:
     t0 = time.time()
     D, I = sindex.search(xq, 100)
     t1 = time.time()
-    print('nprobe=%d 1-recall@1=%.4f t=%.2fs' % (
-        nprobe, (I[:, 0] == gt[:, 0]).sum() / len(xq),
-        t1 - t0
-    ))
+    print(
+        "nprobe=%d 1-recall@1=%.4f t=%.2fs"
+        % (nprobe, (I[:, 0] == gt[:, 0]).sum() / len(xq), t1 - t0)
+    )

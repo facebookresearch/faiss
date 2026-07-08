@@ -11,6 +11,7 @@
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/hnsw/avx2.cpp
+  impl/result_handler/avx2.cpp
   impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
@@ -25,7 +26,9 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
+  impl/result_handler/avx512.cpp
   impl/pq_code_distance/avx512.cpp
+  impl/polysemous_training/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
@@ -150,6 +153,7 @@ set(FAISS_SRC
   impl/HNSW.cpp
   impl/hnsw/LockVector.cpp
   impl/hnsw/MinimaxHeap.cpp
+  impl/result_handler/ResultHandler.cpp
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
@@ -296,6 +300,7 @@ set(FAISS_HEADERS
   impl/PanoramaStats.h
   impl/PdxLayout.h
   impl/PolysemousTraining.h
+  impl/polysemous_training/dispatch.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h

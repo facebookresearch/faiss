@@ -390,7 +390,9 @@ def search_with_parameters(index, x, k, params=None, output_stats=False):
 range_search_with_parameters_c = range_search_with_parameters
 
 
-def range_search_with_parameters(index, x, radius, params=None, output_stats=False):
+def range_search_with_parameters(
+    index, x, radius, params=None, output_stats=False
+):
     x = np.ascontiguousarray(x, dtype="float32")
     n, d = x.shape
     assert d == index.d
