@@ -24,7 +24,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
 #include <faiss/impl/simd_dispatch.h>
@@ -36,7 +35,6 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h>
-#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
 #undef THE_SIMD_LEVEL
 
 namespace faiss {
@@ -129,7 +127,7 @@ void hnsw_add_vertices(
 
 #pragma omp parallel
             {
-                VisitedTable vt(ntotal);
+                std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
 
                 std::unique_ptr<DistanceComputer> dis(
                         index_hnsw.get_distance_computer());
@@ -147,7 +145,7 @@ void hnsw_add_vertices(
                             pt_level,
                             pt_id,
                             locks,
-                            vt,
+                            *vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (do_display && i - i0 > prev_display + 10000) {
@@ -237,7 +235,7 @@ void IndexBinaryHNSW::search(
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal);
+        std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
         std::unique_ptr<DistanceComputer> dis(get_distance_computer());
         RH::SingleResultHandler res(bres);
 
@@ -249,7 +247,7 @@ void IndexBinaryHNSW::search(
             // as the index parameter. This state does not get used in the
             // search function, as it is merely there to enable Panorama
             // execution for IndexHNSWFlatPanorama.
-            HNSWStats stats = hnsw.search(*dis, nullptr, res, vt, params_in);
+            HNSWStats stats = hnsw.search(*dis, nullptr, res, *vt, params_in);
             n1 += stats.n1;
             n2 += stats.n2;
             ndis += stats.ndis;
@@ -377,7 +375,7 @@ void IndexBinaryHNSWCagra::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
             std::unique_ptr<DistanceComputer> dis(get_distance_computer());
             HNSWStats search_stats;
             RH::SingleResultHandler res(bres);
@@ -395,7 +393,7 @@ void IndexBinaryHNSWCagra::search(
                         &nearest_d[i],
                         1, // search_type
                         search_stats,
-                        vt,
+                        *vt,
                         params);
 
                 res.end();

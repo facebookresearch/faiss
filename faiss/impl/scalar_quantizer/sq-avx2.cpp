@@ -196,6 +196,12 @@ struct QuantizerTemplate<
         return simd8float32(_mm256_fmadd_ps(
                 xi, _mm256_set1_ps(this->vdiff), _mm256_set1_ps(this->vmin)));
     }
+
+    /// Raw codec decode without denormalization
+    FAISS_ALWAYS_INLINE simd8float32
+    decode_8_raw(const uint8_t* code, int i) const {
+        return Codec::decode_8_components(code, i);
+    }
 };
 
 template <class Codec>
@@ -229,32 +235,139 @@ struct QuantizerTemplate<
  * TurboQuant MSE quantizer
  **********************************************************/
 
-#define DEFINE_TQMSE_AVX2_SPECIALIZATION(NBITS, INDEX_EXPR)                 \
-    template <>                                                             \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX2>                   \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
-                                                                            \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
-                : Base(d, trained) {                                        \
-            assert(d % 8 == 0);                                             \
-        }                                                                   \
-                                                                            \
-        FAISS_ALWAYS_INLINE simd8float32                                    \
-        reconstruct_8_components(const uint8_t* code, int i) const {        \
-            const __m256i indices = (INDEX_EXPR);                           \
-            return simd8float32(_mm256_i32gather_ps(                        \
-                    this->centroids, indices, sizeof(float)));              \
-        }                                                                   \
+// 1-bit MSE: boundary is always at centroids midpoint.
+// Encode: 8 comparisons → 1 byte via movemask.
+// Decode: gather 8 centroids via index unpack.
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
+template <>
+struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX2>
+        : QuantizerTurboQuantMSE<1, SIMDLevel::NONE> {
+    using Base = QuantizerTurboQuantMSE<1, SIMDLevel::NONE>;
+
+    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+            : Base(d, trained) {
+        assert(d % 8 == 0);
     }
 
-DEFINE_TQMSE_AVX2_SPECIALIZATION(1, unpack_8x1bit_to_u32(code, i));
-DEFINE_TQMSE_AVX2_SPECIALIZATION(2, unpack_8x2bit_to_u32(code, i));
-DEFINE_TQMSE_AVX2_SPECIALIZATION(3, unpack_8x3bit_to_u32(code, i));
-DEFINE_TQMSE_AVX2_SPECIALIZATION(4, unpack_8x4bit_to_u32(code, i));
+    FAISS_ALWAYS_INLINE simd8float32
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        return simd8float32(_mm256_i32gather_ps(
+                this->centroids, unpack_8x1bit_to_u32(code, i), sizeof(float)));
+    }
 
-#undef DEFINE_TQMSE_AVX2_SPECIALIZATION
+    void encode_vector(const float* x, uint8_t* code) const final {
+        __m256 boundary = _mm256_set1_ps(this->boundaries[0]);
+        for (size_t i = 0; i < this->d; i += 8) {
+            __m256 vals = _mm256_loadu_ps(x + i);
+            int mask = _mm256_movemask_ps(
+                    _mm256_cmp_ps(vals, boundary, _CMP_GT_OQ));
+            code[i / 8] = static_cast<uint8_t>(mask);
+        }
+    }
 
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < this->d; i += 8) {
+            simd8float32 xi =
+                    reconstruct_8_components(code, static_cast<int>(i));
+            _mm256_storeu_ps(x + i, xi.f);
+        }
+    }
+};
+
+// 2-bit MSE: 4 centroids, 3 boundaries.
+// Encode: branchless index = sum of 3 comparisons per component.
+// Decode: gather via index unpack.
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
+template <>
+struct QuantizerTurboQuantMSE<2, SIMDLevel::AVX2>
+        : QuantizerTurboQuantMSE<2, SIMDLevel::NONE> {
+    using Base = QuantizerTurboQuantMSE<2, SIMDLevel::NONE>;
+
+    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+            : Base(d, trained) {
+        assert(d % 8 == 0);
+    }
+
+    FAISS_ALWAYS_INLINE simd8float32
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        return simd8float32(_mm256_i32gather_ps(
+                this->centroids, unpack_8x2bit_to_u32(code, i), sizeof(float)));
+    }
+
+    void encode_vector(const float* x, uint8_t* code) const final {
+        // 3 boundaries → branchless: idx = (x>b0) + (x>b1) + (x>b2)
+        // _mm256_cmp_ps returns all-ones (-1 as int32) for true,
+        // so we negate the sum to get positive indices.
+        __m256 b0 = _mm256_set1_ps(this->boundaries[0]);
+        __m256 b1 = _mm256_set1_ps(this->boundaries[1]);
+        __m256 b2 = _mm256_set1_ps(this->boundaries[2]);
+        for (size_t i = 0; i < this->d; i += 8) {
+            __m256 vals = _mm256_loadu_ps(x + i);
+            __m256i gt0 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b0, _CMP_GT_OQ));
+            __m256i gt1 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b1, _CMP_GT_OQ));
+            __m256i gt2 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b2, _CMP_GT_OQ));
+            // Each gt is 0 or -1 (0xFFFFFFFF). Sum = -(index).
+            __m256i idx = _mm256_sub_epi32(
+                    _mm256_setzero_si256(),
+                    _mm256_add_epi32(_mm256_add_epi32(gt0, gt1), gt2));
+            // Pack 8 x 2-bit indices into 2 bytes.
+            // Store to temp array and pack scalarly - faster than
+            // extract+permute.
+            alignas(32) int32_t idx_array[8];
+            _mm256_store_si256((__m256i*)idx_array, idx);
+            for (int j = 0; j < 8; j++) {
+                this->encode_index(
+                        static_cast<uint8_t>(idx_array[j] & 0x3), code, i + j);
+            }
+        }
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < this->d; i += 8) {
+            simd8float32 xi =
+                    reconstruct_8_components(code, static_cast<int>(i));
+            _mm256_storeu_ps(x + i, xi.f);
+        }
+    }
+};
+
+// 3-bit and 4-bit MSE: use branchless comparison chain for encode.
+// k boundaries → idx = sum of k-1 comparisons.
+#define DEFINE_TQMSE_AVX2_MULTIBIT(NBITS, UNPACK_EXPR)                       \
+    template <>                                                              \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX2>                    \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {               \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;         \
+                                                                             \
+        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)  \
+                : Base(d, trained) {                                         \
+            assert(d % 8 == 0);                                              \
+        }                                                                    \
+                                                                             \
+        FAISS_ALWAYS_INLINE simd8float32                                     \
+        reconstruct_8_components(const uint8_t* code, int i) const {         \
+            return simd8float32(_mm256_i32gather_ps(                         \
+                    this->centroids, (UNPACK_EXPR), sizeof(float)));         \
+        }                                                                    \
+                                                                             \
+        void decode_vector(const uint8_t* code, float* x) const final {      \
+            for (size_t i = 0; i < this->d; i += 8) {                        \
+                simd8float32 xi =                                            \
+                        reconstruct_8_components(code, static_cast<int>(i)); \
+                _mm256_storeu_ps(x + i, xi.f);                               \
+            }                                                                \
+        }                                                                    \
+    }
+
+DEFINE_TQMSE_AVX2_MULTIBIT(3, unpack_8x3bit_to_u32(code, i));
+DEFINE_TQMSE_AVX2_MULTIBIT(4, unpack_8x4bit_to_u32(code, i));
+
+#undef DEFINE_TQMSE_AVX2_MULTIBIT
+
+// 8-bit MSE: indices are raw bytes, no bit packing.
 template <>
 struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX2>
         : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
@@ -272,6 +385,14 @@ struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX2>
         const __m256i indices = _mm256_cvtepu8_epi32(packed);
         return simd8float32(
                 _mm256_i32gather_ps(this->centroids, indices, sizeof(float)));
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < this->d; i += 8) {
+            simd8float32 xi =
+                    reconstruct_8_components(code, static_cast<int>(i));
+            _mm256_storeu_ps(x + i, xi.f);
+        }
     }
 };
 
@@ -399,6 +520,22 @@ struct SimilarityL2<SIMDLevel::AVX2> {
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float inv_vdiff = (vdiff != 0) ? 1.0f / vdiff : 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = (x[i] - vmin) * inv_vdiff;
+        }
+        scale_factor = vdiff * vdiff;
+        bias = 0;
+    }
 };
 
 template <>
@@ -442,6 +579,23 @@ struct SimilarityIP<SIMDLevel::AVX2> {
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float sum_q = 0;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = x[i];
+            sum_q += x[i];
+        }
+        scale_factor = vdiff;
+        bias = vmin * sum_q;
+    }
 };
 
 /**********************************************************
@@ -454,8 +608,23 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
 
     Quantizer quant;
 
+    // Pre-adjusted query buffer for uniform quantizers
+    std::vector<float> q_adj;
+    float scale_factor = 0;
+    float bias = 0;
+
+    static constexpr bool has_decode_raw() {
+        return requires(const Quantizer& q, const uint8_t* c, int i) {
+            { q.decode_8_raw(c, i) };
+        };
+    }
+
     DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
+            : quant(d, trained) {
+        if constexpr (has_decode_raw()) {
+            q_adj.resize(d);
+        }
+    }
 
     float compute_distance(const float* x, const uint8_t* code) const {
         Similarity sim(x);
@@ -484,6 +653,26 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
 
     void set_query(const float* x) final {
         q = x;
+        if constexpr (has_decode_raw()) {
+            Sim::adjust_query_for_raw_decode(
+                    x,
+                    q_adj.data(),
+                    quant.d,
+                    quant.vmin,
+                    quant.vdiff,
+                    scale_factor,
+                    bias);
+        }
+    }
+
+    float query_to_code_predecoded(const uint8_t* code) const {
+        Similarity sim(q_adj.data());
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 xi = quant.decode_8_raw(code, static_cast<int>(i));
+            sim.add_8_components(xi);
+        }
+        return bias + scale_factor * sim.result_8();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -492,7 +681,11 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
+        if constexpr (has_decode_raw()) {
+            return query_to_code_predecoded(code);
+        } else {
+            return compute_distance(q, code);
+        }
     }
 
     void query_to_codes_batch_4(
@@ -593,6 +786,50 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
         return compute_code_distance(tmp.data(), code);
     }
 };
+
+/**********************************************************
+ * TurboQuant masked_sum AVX2 specialization
+ **********************************************************/
+
+template <SIMDLevel SL0>
+float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
+
+template <>
+float turboq_masked_sum<SIMDLevel::AVX2>(
+        const float* arr,
+        const uint8_t* bits,
+        size_t d) {
+    const __m256i bit_masks = _mm256_set_epi32(128, 64, 32, 16, 8, 4, 2, 1);
+    __m256 acc = _mm256_setzero_ps();
+    size_t full_bytes = d / 8;
+    for (size_t byte_idx = 0; byte_idx < full_bytes; byte_idx++) {
+        __m256i byte_broadcast =
+                _mm256_set1_epi32(static_cast<int>(bits[byte_idx]));
+        __m256i masked = _mm256_and_si256(byte_broadcast, bit_masks);
+        __m256i cmp = _mm256_cmpeq_epi32(masked, bit_masks);
+        __m256 mask = _mm256_castsi256_ps(cmp);
+        __m256 vals = _mm256_loadu_ps(arr + byte_idx * 8);
+        acc = _mm256_add_ps(acc, _mm256_and_ps(mask, vals));
+    }
+    __m128 hi = _mm256_extractf128_ps(acc, 1);
+    __m128 lo = _mm256_castps256_ps128(acc);
+    __m128 sum128 = _mm_add_ps(lo, hi);
+    __m128 shuf = _mm_movehdup_ps(sum128);
+    __m128 sums = _mm_add_ps(sum128, shuf);
+    shuf = _mm_movehl_ps(shuf, sums);
+    sums = _mm_add_ss(sums, shuf);
+    float result = _mm_cvtss_f32(sums);
+    size_t tail_start = full_bytes * 8;
+    if (tail_start < d) {
+        uint8_t last_byte = bits[full_bytes];
+        for (size_t j = tail_start; j < d; j++) {
+            if (last_byte & (1 << (j - tail_start))) {
+                result += arr[j];
+            }
+        }
+    }
+    return result;
+}
 
 } // namespace scalar_quantizer
 } // namespace faiss

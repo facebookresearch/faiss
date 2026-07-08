@@ -29,7 +29,8 @@ void bench_visited_table(benchmark::State& state) {
         total_queries += nq;
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal, use_hashset);
+            std::unique_ptr<VisitedTable> vt =
+                    VisitedTable::create(ntotal, use_hashset);
 
 #pragma omp for schedule(static)
             for (size_t q0 = 0; q0 < nq; q0 += batch_size) {
@@ -40,18 +41,18 @@ void bench_visited_table(benchmark::State& state) {
                     size_t added = 0;
                     for (int i = 0; i < ndis; ++i) {
                         auto id = randId(rng1);
-                        added += vt.set(id);
+                        added += vt->set(id);
                     }
                     size_t other_visited = 0;
                     for (int i = 0; i < ndis; ++i) {
                         auto id = randId(rng2);
-                        other_visited += vt.get(randId(rng1));
-                        auto r = vt.get(id);
+                        other_visited += vt->get(randId(rng1));
+                        auto r = vt->get(id);
                         FAISS_ASSERT(r);
-                        other_visited += vt.get(randId(rng1));
+                        other_visited += vt->get(randId(rng1));
                     }
                     benchmark::DoNotOptimize(other_visited + added);
-                    vt.advance();
+                    vt->advance();
                 }
             }
         }

@@ -14,51 +14,52 @@ definition of the formats here: http://corpus-texmex.irisa.fr/
 
 
 def ivecs_read(fname):
-    a = np.fromfile(fname, dtype='int32')
-    if sys.byteorder == 'big':
+    a = np.fromfile(fname, dtype="int32")
+    if sys.byteorder == "big":
         a.byteswap(inplace=True)
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy()
 
 
 def fvecs_read(fname):
-    return ivecs_read(fname).view('float32')
+    return ivecs_read(fname).view("float32")
 
 
 def ivecs_mmap(fname):
-    assert sys.byteorder != 'big'
-    a = np.memmap(fname, dtype='int32', mode='r')
+    assert sys.byteorder != "big"
+    a = np.memmap(fname, dtype="int32", mode="r")
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:]
 
 
 def fvecs_mmap(fname):
-    return ivecs_mmap(fname).view('float32')
+    return ivecs_mmap(fname).view("float32")
 
 
 def bvecs_mmap(fname):
-    x = np.memmap(fname, dtype='uint8', mode='r')
-    if sys.byteorder == 'big':
+    x = np.memmap(fname, dtype="uint8", mode="r")
+    if sys.byteorder == "big":
         da = x[:4][::-1].copy()
-        d = da.view('int32')[0]
+        d = da.view("int32")[0]
     else:
-        d = x[:4].view('int32')[0]
+        d = x[:4].view("int32")[0]
     return x.reshape(-1, d + 4)[:, 4:]
 
 
 def ivecs_write(fname, m):
     n, d = m.shape
-    m1 = np.empty((n, d + 1), dtype='int32')
+    m1 = np.empty((n, d + 1), dtype="int32")
     m1[:, 0] = d
     m1[:, 1:] = m
-    if sys.byteorder == 'big':
+    if sys.byteorder == "big":
         m1.byteswap(inplace=True)
     m1.tofile(fname)
 
 
 def fvecs_write(fname, m):
-    m = m.astype('float32')
-    ivecs_write(fname, m.view('int32'))
+    m = m.astype("float32")
+    ivecs_write(fname, m.view("int32"))
+
 
 def bvecs_iter(filepath, batch_size=100_000):
     """
@@ -66,18 +67,19 @@ def bvecs_iter(filepath, batch_size=100_000):
     """
 
     file_size = os.path.getsize(filepath)
-    with open(filepath, 'rb') as f:
-        dim = np.frombuffer(f.read(4), dtype='<i4')[0]
+    with open(filepath, "rb") as f:
+        dim = np.frombuffer(f.read(4), dtype="<i4")[0]
 
     bytes_per_vec = 4 + dim
     n_vectors = file_size // bytes_per_vec
 
-    mm = np.memmap(filepath, mode='r', dtype=np.uint8)
+    mm = np.memmap(filepath, mode="r", dtype=np.uint8)
     records = mm.reshape(n_vectors, bytes_per_vec)
 
     for start in range(0, n_vectors, batch_size):
         end = np.min([start + batch_size, n_vectors])
         yield records[start:end, 4:]
+
 
 def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
     """
@@ -99,7 +101,11 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
     # Find all chunk files and sort them
     chunk_files = []
     for entry in os.scandir(chunk_folder):
-        if entry.is_file() and entry.name.startswith("chunk_") and entry.name.endswith(".bvecs"):
+        if (
+            entry.is_file()
+            and entry.name.startswith("chunk_")
+            and entry.name.endswith(".bvecs")
+        ):
             chunk_files.append(entry.path)
     chunk_files.sort()
 
@@ -111,7 +117,7 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
     for path in chunk_files:
         basename = os.path.basename(path)
         try:
-            num_str = basename.split('_')[1].split('.')[0]
+            num_str = basename.split("_")[1].split(".")[0]
             chunk_numbers.append(int(num_str))
         except (IndexError, ValueError):
             raise ValueError(f"Invalid chunk filename format: {basename}")
@@ -127,8 +133,8 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
         )
 
     # Get dimension from first chunk
-    with open(chunk_files[0], 'rb') as f:
-        dim = np.frombuffer(f.read(4), dtype='<i4')[0]
+    with open(chunk_files[0], "rb") as f:
+        dim = np.frombuffer(f.read(4), dtype="<i4")[0]
 
     bytes_per_vec = 4 + dim
 
@@ -142,7 +148,7 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
         n_vectors = file_size // bytes_per_vec
 
         # Memory-map this chunk
-        mm = np.memmap(chunk_path, mode='r', dtype=np.uint8)
+        mm = np.memmap(chunk_path, mode="r", dtype=np.uint8)
         records = mm.reshape(n_vectors, bytes_per_vec)
         vectors = records[:, 4:]  # Skip dimension prefix
 
@@ -166,7 +172,7 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
 
         # Now process complete batches from this chunk
         while start + batch_size <= n_vectors:
-            yield vectors[start:start + batch_size]
+            yield vectors[start : start + batch_size]
             start += batch_size
 
         remainder = n_vectors - start

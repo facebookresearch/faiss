@@ -57,6 +57,8 @@ void pq_code_distance_8bit_four_impl<SIMDLevel::RISCV_RVV>(
 #define THE_SIMD_LEVEL SIMDLevel::RISCV_RVV
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/pq_code_distance/pq_scan_impl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/hamming_distance/hamming_computer-rvv.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/PQDistanceComputer_impl.h>

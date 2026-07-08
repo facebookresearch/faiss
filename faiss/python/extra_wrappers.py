@@ -25,10 +25,10 @@ import collections.abc
 def kmin(array, k):
     """return k smallest values (and their indices) of the lines of a
     float32 array"""
-    array = np.ascontiguousarray(array, dtype='float32')
+    array = np.ascontiguousarray(array, dtype="float32")
     m, n = array.shape
-    I = np.zeros((m, k), dtype='int64')
-    D = np.zeros((m, k), dtype='float32')
+    I = np.zeros((m, k), dtype="int64")
+    D = np.zeros((m, k), dtype="float32")
     ha = faiss.float_maxheap_array_t()
     ha.ids = swig_ptr(I)
     ha.val = swig_ptr(D)
@@ -43,10 +43,10 @@ def kmin(array, k):
 def kmax(array, k):
     """return k largest values (and their indices) of the lines of a
     float32 array"""
-    array = np.ascontiguousarray(array, dtype='float32')
+    array = np.ascontiguousarray(array, dtype="float32")
     m, n = array.shape
-    I = np.zeros((m, k), dtype='int64')
-    D = np.zeros((m, k), dtype='float32')
+    I = np.zeros((m, k), dtype="int64")
+    D = np.zeros((m, k), dtype="float32")
     ha = faiss.float_minheap_array_t()
     ha.ids = swig_ptr(I)
     ha.val = swig_ptr(D)
@@ -61,36 +61,38 @@ def kmax(array, k):
 def pairwise_distances(xq, xb, metric=METRIC_L2, metric_arg=0):
     """compute the whole pairwise distance matrix between two sets of
     vectors"""
-    xq = np.ascontiguousarray(xq, dtype='float32')
-    xb = np.ascontiguousarray(xb, dtype='float32')
+    xq = np.ascontiguousarray(xq, dtype="float32")
+    xb = np.ascontiguousarray(xb, dtype="float32")
     nq, d = xq.shape
     nb, d2 = xb.shape
     assert d == d2
-    dis = np.empty((nq, nb), dtype='float32')
+    dis = np.empty((nq, nb), dtype="float32")
     if metric == METRIC_L2:
-        pairwise_L2sqr(
-            d, nq, swig_ptr(xq),
-            nb, swig_ptr(xb),
-            swig_ptr(dis))
+        pairwise_L2sqr(d, nq, swig_ptr(xq), nb, swig_ptr(xb), swig_ptr(dis))
     elif metric == METRIC_INNER_PRODUCT:
         dis[:] = xq @ xb.T
     else:
         pairwise_extra_distances(
-            d, nq, swig_ptr(xq),
-            nb, swig_ptr(xb),
-            metric, metric_arg,
-            swig_ptr(dis))
+            d,
+            nq,
+            swig_ptr(xq),
+            nb,
+            swig_ptr(xb),
+            metric,
+            metric_arg,
+            swig_ptr(dis),
+        )
     return dis
 
 
 def rand(n, seed=12345):
-    res = np.empty(n, dtype='float32')
+    res = np.empty(n, dtype="float32")
     float_rand(swig_ptr(res), res.size, seed)
     return res
 
 
 def randint(n, seed=12345, vmax=None):
-    res = np.empty(n, dtype='int64')
+    res = np.empty(n, dtype="int64")
     if vmax is None:
         int64_rand(swig_ptr(res), res.size, seed)
     else:
@@ -102,47 +104,52 @@ lrand = randint
 
 
 def randn(n, seed=12345):
-    res = np.empty(n, dtype='float32')
+    res = np.empty(n, dtype="float32")
     float_randn(swig_ptr(res), res.size, seed)
     return res
 
 
 def checksum(a):
-    """ compute a checksum for quick-and-dirty comparisons of arrays """
-    a = a.view('uint8')
+    """compute a checksum for quick-and-dirty comparisons of arrays"""
+    a = a.view("uint8")
     if a.ndim == 1:
         return bvec_checksum(a.size, swig_ptr(a))
     n, d = a.shape
-    cs = np.zeros(n, dtype='uint64')
+    cs = np.zeros(n, dtype="uint64")
     bvecs_checksum(n, d, swig_ptr(a), swig_ptr(cs))
     return cs
 
+
 rand_smooth_vectors_c = rand_smooth_vectors
 
+
 def rand_smooth_vectors(n, d, seed=1234):
-    res = np.empty((n, d), dtype='float32')
+    res = np.empty((n, d), dtype="float32")
     rand_smooth_vectors_c(n, d, swig_ptr(res), seed)
     return res
 
 
 def eval_intersection(I1, I2):
-    """ size of intersection between each line of two result tables"""
-    I1 = np.ascontiguousarray(I1, dtype='int64')
-    I2 = np.ascontiguousarray(I2, dtype='int64')
+    """size of intersection between each line of two result tables"""
+    I1 = np.ascontiguousarray(I1, dtype="int64")
+    I2 = np.ascontiguousarray(I2, dtype="int64")
     n = I1.shape[0]
     assert I2.shape[0] == n
     k1, k2 = I1.shape[1], I2.shape[1]
     ninter = 0
     for i in range(n):
         ninter += ranklist_intersection_size(
-            k1, swig_ptr(I1[i]), k2, swig_ptr(I2[i]))
+            k1, swig_ptr(I1[i]), k2, swig_ptr(I2[i])
+        )
     return ninter
 
 
 def normalize_L2(x):
     fvec_renorm_L2(x.shape[1], x.shape[0], swig_ptr(x))
 
+
 bucket_sort_c = bucket_sort
+
 
 def bucket_sort(tab, nbucket=None, nt=0):
     """Perform a bucket sort on a table of integers.
@@ -166,16 +173,21 @@ def bucket_sort(tab, nbucket=None, nt=0):
     tab = np.ascontiguousarray(tab, dtype="int64")
     if nbucket is None:
         nbucket = int(tab.max() + 1)
-    lims = np.empty(nbucket + 1, dtype='int64')
-    perm = np.empty(tab.size, dtype='int64')
+    lims = np.empty(nbucket + 1, dtype="int64")
+    perm = np.empty(tab.size, dtype="int64")
     bucket_sort_c(
-        tab.size, faiss.swig_ptr(tab.view('uint64')),
-        nbucket, faiss.swig_ptr(lims), faiss.swig_ptr(perm),
-        nt
+        tab.size,
+        faiss.swig_ptr(tab.view("uint64")),
+        nbucket,
+        faiss.swig_ptr(lims),
+        faiss.swig_ptr(perm),
+        nt,
     )
     return lims, perm
 
+
 matrix_bucket_sort_inplace_c = matrix_bucket_sort_inplace
+
 
 def matrix_bucket_sort_inplace(tab, nbucket=None, nt=0):
     """Perform a bucket sort on a matrix, recording the original
@@ -199,15 +211,13 @@ def matrix_bucket_sort_inplace(tab, nbucket=None, nt=0):
     lims : array_like
         cumulative sum of bucket sizes (size vmax + 1)
     """
-    assert tab.dtype == 'int32' or tab.dtype == 'int64'
+    assert tab.dtype == "int32" or tab.dtype == "int64"
     nrow, ncol = tab.shape
     if nbucket is None:
         nbucket = int(tab.max() + 1)
-    lims = np.empty(nbucket + 1, dtype='int64')
+    lims = np.empty(nbucket + 1, dtype="int64")
     matrix_bucket_sort_inplace_c(
-        nrow, ncol, faiss.swig_ptr(tab),
-        nbucket, faiss.swig_ptr(lims),
-        nt
+        nrow, ncol, faiss.swig_ptr(tab), nbucket, faiss.swig_ptr(lims), nt
     )
     return lims
 
@@ -215,6 +225,7 @@ def matrix_bucket_sort_inplace(tab, nbucket=None, nt=0):
 ###########################################
 # ResultHeap
 ###########################################
+
 
 class ResultHeap:
     """Accumulate query results from a sliced dataset. The final result will
@@ -226,8 +237,8 @@ class ResultHeap:
         k: number of results per query
         keep_max: keep the top-k maximum values instead of the minima
         """
-        self.I = np.zeros((nq, k), dtype='int64')
-        self.D = np.zeros((nq, k), dtype='float32')
+        self.I = np.zeros((nq, k), dtype="int64")
+        self.D = np.zeros((nq, k), dtype="float32")
         self.nq, self.k = nq, k
         if keep_max:
             heaps = float_minheap_array_t()
@@ -247,13 +258,11 @@ class ResultHeap:
         D, I do not need to be in a particular order (heap or sorted)
         """
         nq, kd = D.shape
-        D = np.ascontiguousarray(D, dtype='float32')
-        I = np.ascontiguousarray(I, dtype='int64')
+        D = np.ascontiguousarray(D, dtype="float32")
+        I = np.ascontiguousarray(I, dtype="int64")
         assert I.shape == (nq, kd)
         assert nq == self.nq
-        self.heaps.addn_with_ids(
-            kd, swig_ptr(D),
-            swig_ptr(I), kd)
+        self.heaps.addn_with_ids(kd, swig_ptr(D), swig_ptr(I), kd)
 
     def add_result_subset(self, subset, D, I):
         """
@@ -264,16 +273,17 @@ class ResultHeap:
         nsubset, kd = D.shape
         assert nsubset == len(subset)
         assert (
-            I.ndim == 2 and D.shape == I.shape or
-            I.ndim == 1 and I.shape == (kd, )
+            I.ndim == 2
+            and D.shape == I.shape
+            or I.ndim == 1
+            and I.shape == (kd,)
         )
-        D = np.ascontiguousarray(D, dtype='float32')
-        I = np.ascontiguousarray(I, dtype='int64')
-        subset = np.ascontiguousarray(subset, dtype='int64')
+        D = np.ascontiguousarray(D, dtype="float32")
+        I = np.ascontiguousarray(I, dtype="int64")
+        subset = np.ascontiguousarray(subset, dtype="int64")
         id_stride = 0 if I.ndim == 1 else kd
         self.heaps.addn_query_subset_with_ids(
-            nsubset, swig_ptr(subset),
-            kd, swig_ptr(D), swig_ptr(I), id_stride
+            nsubset, swig_ptr(subset), kd, swig_ptr(D), swig_ptr(I), id_stride
         )
 
     def finalize(self):
@@ -292,43 +302,61 @@ def merge_knn_results(Dall, Iall, keep_max=False):
     Inew = np.empty((n, k), dtype=Iall.dtype)
     func = merge_knn_results_CMax if keep_max else merge_knn_results_CMin
     func(
-        n, k, nshard,
-        swig_ptr(Dall), swig_ptr(Iall),
-        swig_ptr(Dnew), swig_ptr(Inew)
+        n,
+        k,
+        nshard,
+        swig_ptr(Dall),
+        swig_ptr(Iall),
+        swig_ptr(Dnew),
+        swig_ptr(Inew),
     )
     return Dnew, Inew
+
 
 ######################################################
 # Efficient ID to ID map
 ######################################################
 
+
 class MapInt64ToInt64:
 
     def __init__(self, capacity):
         self.log2_capacity = int(np.log2(capacity))
-        assert capacity == 2 ** self.log2_capacity, "need power of 2 capacity"
+        assert capacity == 2**self.log2_capacity, "need power of 2 capacity"
         self.capacity = capacity
-        self.tab = np.empty((capacity, 2), dtype='int64')
-        faiss.hashtable_int64_to_int64_init(self.log2_capacity, swig_ptr(self.tab))
+        self.tab = np.empty((capacity, 2), dtype="int64")
+        faiss.hashtable_int64_to_int64_init(
+            self.log2_capacity, swig_ptr(self.tab)
+        )
 
     def add(self, keys, vals):
-        n, = keys.shape
+        (n,) = keys.shape
         assert vals.shape == (n,)
         faiss.hashtable_int64_to_int64_add(
-            self.log2_capacity, swig_ptr(self.tab),
-            n, swig_ptr(keys), swig_ptr(vals))
+            self.log2_capacity,
+            swig_ptr(self.tab),
+            n,
+            swig_ptr(keys),
+            swig_ptr(vals),
+        )
 
     def lookup(self, keys):
-        n, = keys.shape
-        vals = np.empty((n,), dtype='int64')
+        (n,) = keys.shape
+        vals = np.empty((n,), dtype="int64")
         faiss.hashtable_int64_to_int64_lookup(
-            self.log2_capacity, swig_ptr(self.tab),
-            n, swig_ptr(keys), swig_ptr(vals))
+            self.log2_capacity,
+            swig_ptr(self.tab),
+            n,
+            swig_ptr(keys),
+            swig_ptr(vals),
+        )
         return vals
+
 
 ######################################################
 # KNN function
 ######################################################
+
 
 def knn(xq, xb, k, metric=METRIC_L2, metric_arg=0.0):
     """
@@ -355,30 +383,35 @@ def knn(xq, xb, k, metric=METRIC_L2, metric_arg=0.0):
     I : array_like
         Labels of the nearest neighbors, shape (nq, k)
     """
-    xq = np.ascontiguousarray(xq, dtype='float32')
-    xb = np.ascontiguousarray(xb, dtype='float32')
+    xq = np.ascontiguousarray(xq, dtype="float32")
+    xb = np.ascontiguousarray(xb, dtype="float32")
     nq, d = xq.shape
     nb, d2 = xb.shape
     assert d == d2
 
-    I = np.empty((nq, k), dtype='int64')
-    D = np.empty((nq, k), dtype='float32')
+    I = np.empty((nq, k), dtype="int64")
+    D = np.empty((nq, k), dtype="float32")
 
     if metric == METRIC_L2:
         knn_L2sqr(
-            swig_ptr(xq), swig_ptr(xb),
-            d, nq, nb, k, swig_ptr(D), swig_ptr(I)
+            swig_ptr(xq), swig_ptr(xb), d, nq, nb, k, swig_ptr(D), swig_ptr(I)
         )
     elif metric == METRIC_INNER_PRODUCT:
         knn_inner_product(
-            swig_ptr(xq), swig_ptr(xb),
-            d, nq, nb, k, swig_ptr(D), swig_ptr(I)
+            swig_ptr(xq), swig_ptr(xb), d, nq, nb, k, swig_ptr(D), swig_ptr(I)
         )
-    else: 
+    else:
         knn_extra_metrics(
-            swig_ptr(xq), swig_ptr(xb),
-            d, nq, nb, metric, metric_arg, k, 
-            swig_ptr(D), swig_ptr(I)
+            swig_ptr(xq),
+            swig_ptr(xb),
+            d,
+            nq,
+            nb,
+            metric,
+            metric_arg,
+            k,
+            swig_ptr(D),
+            swig_ptr(I),
         )
 
     return D, I
@@ -412,8 +445,8 @@ def knn_hamming(xq, xb, k, variant="hc"):
     nq, d = xq.shape
     nb, d2 = xb.shape
     assert d == d2
-    D = np.empty((nq, k), dtype='int32')
-    I = np.empty((nq, k), dtype='int64')
+    D = np.empty((nq, k), dtype="int32")
+    I = np.empty((nq, k), dtype="int64")
 
     if variant == "hc":
         heap = faiss.int_maxheap_array_t()
@@ -422,13 +455,18 @@ def knn_hamming(xq, xb, k, variant="hc"):
         heap.ids = faiss.swig_ptr(I)
         heap.val = faiss.swig_ptr(D)
         faiss.hammings_knn_hc(
-            heap, faiss.swig_ptr(xq), faiss.swig_ptr(xb), nb,
-            d, 1
+            heap, faiss.swig_ptr(xq), faiss.swig_ptr(xb), nb, d, 1
         )
     elif variant == "mc":
         faiss.hammings_knn_mc(
-            faiss.swig_ptr(xq), faiss.swig_ptr(xb), nq, nb, k, d,
-            faiss.swig_ptr(D), faiss.swig_ptr(I)
+            faiss.swig_ptr(xq),
+            faiss.swig_ptr(xb),
+            nq,
+            nb,
+            k,
+            d,
+            faiss.swig_ptr(D),
+            faiss.swig_ptr(I),
         )
     else:
         raise NotImplementedError
@@ -487,8 +525,8 @@ class Kmeans:
 
     def __init__(self, d, k, **kwargs):
         """d: input dimension, k: nb of centroids. Additional
-         parameters are passed on the ClusteringParameters object,
-         including niter=25, verbose=False, spherical = False
+        parameters are passed on the ClusteringParameters object,
+        including niter=25, verbose=False, spherical = False
         """
         self.d = d
         self.reset(k)
@@ -498,7 +536,7 @@ class Kmeans:
         else:
             self.cp = ClusteringParameters()
         for k, v in kwargs.items():
-            if k == 'gpu':
+            if k == "gpu":
                 if v == True or v == -1:
                     v = get_num_gpus()
                 self.gpu = v
@@ -516,7 +554,9 @@ class Kmeans:
             else:
                 self.index = IndexFlatL2(d)
             if self.gpu:
-                self.index = faiss.index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
+                self.index = faiss.index_cpu_to_all_gpus(
+                    self.index, ngpu=self.gpu
+                )
         else:
             if self.gpu:
                 fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
@@ -525,8 +565,8 @@ class Kmeans:
             self.fac = fac
 
     def reset(self, k=None):
-        """ prepare k-means object to perform a new clustering, possibly
-        with another number of centroids """
+        """prepare k-means object to perform a new clustering, possibly
+        with another number of centroids"""
         if k is not None:
             self.k = int(k)
         self.centroids = None
@@ -534,7 +574,7 @@ class Kmeans:
         self.iteration_stats = None
 
     def train(self, x, weights=None, init_centroids=None):
-        """ Perform k-means clustering.
+        """Perform k-means clustering.
         On output of the function call:
 
         - the centroids are in the centroids field of size (`k`, `d`).
@@ -559,7 +599,7 @@ class Kmeans:
             final optimization objective
 
         """
-        x = np.ascontiguousarray(x, dtype='float32')
+        x = np.ascontiguousarray(x, dtype="float32")
         n, d = x.shape
         assert d == self.d
 
@@ -569,7 +609,9 @@ class Kmeans:
             if init_centroids is not None:
                 nc, d2 = init_centroids.shape
                 assert d2 == d
-                faiss.copy_array_to_vector(init_centroids.ravel(), clus.centroids)
+                faiss.copy_array_to_vector(
+                    init_centroids.ravel(), clus.centroids
+                )
             clus.train(x, self.index, weights)
         else:
             # not supported for progressive dim
@@ -586,15 +628,14 @@ class Kmeans:
         stats = [stats.at(i) for i in range(stats.size())]
         self.obj = np.array([st.obj for st in stats])
         # copy all the iteration_stats objects to a python array
-        stat_fields = 'obj time time_search imbalance_factor nsplit'.split()
+        stat_fields = "obj time time_search imbalance_factor nsplit".split()
         self.iteration_stats = [
-            {field: getattr(st, field) for field in stat_fields}
-            for st in stats
+            {field: getattr(st, field) for field in stat_fields} for st in stats
         ]
         return self.obj[-1] if self.obj.size > 0 else 0.0
 
     def assign(self, x):
-        x = np.ascontiguousarray(x, dtype='float32')
+        x = np.ascontiguousarray(x, dtype="float32")
         assert self.centroids is not None, "should train before assigning"
         self.index.reset()
         self.index.add(self.centroids)
@@ -629,9 +670,10 @@ class SuperKmeans(Kmeans):
 
     def train(self, x, weights=None, init_centroids=None):
         assert weights is None, "SuperKmeans does not support weights"
-        assert init_centroids is None, \
-            "SuperKmeans does not support init_centroids"
-        x = np.ascontiguousarray(x, dtype='float32')
+        assert (
+            init_centroids is None
+        ), "SuperKmeans does not support init_centroids"
+        x = np.ascontiguousarray(x, dtype="float32")
         n, d = x.shape
         assert d == self.d
 
@@ -643,10 +685,9 @@ class SuperKmeans(Kmeans):
         stats = sc.iteration_stats
         stats = [stats.at(i) for i in range(stats.size())]
         self.obj = np.array([st.obj for st in stats])
-        stat_fields = 'obj time time_search imbalance_factor nsplit'.split()
+        stat_fields = "obj time time_search imbalance_factor nsplit".split()
         self.iteration_stats = [
-            {field: getattr(st, field) for field in stat_fields}
-            for st in stats
+            {field: getattr(st, field) for field in stat_fields} for st in stats
         ]
         self.gemm_pruning_rates = faiss.vector_to_array(sc.gemm_pruning_rates)
         return self.obj[-1] if self.obj.size > 0 else 0.0
@@ -656,10 +697,13 @@ class SuperKmeans(Kmeans):
 # Packing and unpacking bitstrings
 ###########################################
 
+
 def is_sequence(x):
     return isinstance(x, collections.abc.Sequence)
 
+
 pack_bitstrings_c = pack_bitstrings
+
 
 def pack_bitstrings(a, nbit):
     """
@@ -672,21 +716,24 @@ def pack_bitstrings(a, nbit):
     If nbit is an array: entry (i, j) takes nbit[j] bits.
     """
     n, M = a.shape
-    a = np.ascontiguousarray(a, dtype='int32')
+    a = np.ascontiguousarray(a, dtype="int32")
     if is_sequence(nbit):
-        nbit = np.ascontiguousarray(nbit, dtype='int32')
+        nbit = np.ascontiguousarray(nbit, dtype="int32")
         assert nbit.shape == (M,)
         code_size = int((nbit.sum() + 7) // 8)
-        b = np.empty((n, code_size), dtype='uint8')
+        b = np.empty((n, code_size), dtype="uint8")
         pack_bitstrings_c(
-            n, M, swig_ptr(nbit), swig_ptr(a), swig_ptr(b), code_size)
+            n, M, swig_ptr(nbit), swig_ptr(a), swig_ptr(b), code_size
+        )
     else:
         code_size = (M * nbit + 7) // 8
-        b = np.empty((n, code_size), dtype='uint8')
+        b = np.empty((n, code_size), dtype="uint8")
         pack_bitstrings_c(n, M, nbit, swig_ptr(a), swig_ptr(b), code_size)
     return b
 
+
 unpack_bitstrings_c = unpack_bitstrings
+
 
 def unpack_bitstrings(b, M_or_nbits, nbit=None):
     """
@@ -703,19 +750,18 @@ def unpack_bitstrings(b, M_or_nbits, nbit=None):
     """
     n, code_size = b.shape
     if nbit is None:
-        nbit = np.ascontiguousarray(M_or_nbits, dtype='int32')
+        nbit = np.ascontiguousarray(M_or_nbits, dtype="int32")
         M = len(nbit)
         min_code_size = int((nbit.sum() + 7) // 8)
         assert code_size >= min_code_size
-        a = np.empty((n, M), dtype='int32')
+        a = np.empty((n, M), dtype="int32")
         unpack_bitstrings_c(
-            n, M, swig_ptr(nbit),
-            swig_ptr(b), code_size, swig_ptr(a))
+            n, M, swig_ptr(nbit), swig_ptr(b), code_size, swig_ptr(a)
+        )
     else:
         M = M_or_nbits
         min_code_size = (M * nbit + 7) // 8
         assert code_size >= min_code_size
-        a = np.empty((n, M), dtype='int32')
-        unpack_bitstrings_c(
-            n, M, nbit, swig_ptr(b), code_size, swig_ptr(a))
+        a = np.empty((n, M), dtype="int32")
+        unpack_bitstrings_c(n, M, nbit, swig_ptr(b), code_size, swig_ptr(a))
     return a

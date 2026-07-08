@@ -25,6 +25,7 @@
 #include <faiss/svs/IndexSVSVamana.h>
 
 #include <faiss/Index.h>
+#include <faiss/impl/mapped_io.h>
 
 #include <svs/runtime/api_defs.h>
 #include <svs/runtime/dynamic_vamana_index.h>
@@ -65,8 +66,12 @@ IndexSVSVamana::IndexSVSVamana(
         idx_t d,
         size_t degree,
         MetricType metric,
-        SVSStorageKind storage)
-        : Index(d, metric), graph_max_degree{degree}, storage_kind{storage} {
+        SVSStorageKind storage,
+        bool is_static)
+        : Index(d, metric),
+          graph_max_degree{degree},
+          is_static{is_static},
+          storage_kind{storage} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 
@@ -74,8 +79,9 @@ IndexSVSVamana::IndexSVSVamana(
     // NB: LVQ/LeanVec are only available on Intel(R) hardware AND when using
     //     a build based on LVQ/LeanVec-enabled SVS.
     auto svs_storage = to_svs_storage_kind(storage_kind);
-    auto status =
-            svs_runtime::DynamicVamanaIndex::check_storage_kind(svs_storage);
+    auto status = is_static
+            ? svs_runtime::VamanaIndex::check_storage_kind(svs_storage)
+            : svs_runtime::DynamicVamanaIndex::check_storage_kind(svs_storage);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -83,11 +89,19 @@ IndexSVSVamana::IndexSVSVamana(
 
 bool IndexSVSVamana::is_lvq_leanvec_enabled() {
     auto lvq = to_svs_storage_kind(SVS_LVQ4x0);
-    auto status = svs_runtime::DynamicVamanaIndex::check_storage_kind(lvq);
+    auto status = svs_runtime::VamanaIndex::check_storage_kind(lvq);
+    if (!status.ok()) {
+        return false;
+    }
+    status = svs_runtime::DynamicVamanaIndex::check_storage_kind(lvq);
     if (!status.ok()) {
         return false;
     }
     auto leanvec = to_svs_storage_kind(SVS_LeanVec4x4);
+    status = svs_runtime::VamanaIndex::check_storage_kind(leanvec);
+    if (!status.ok()) {
+        return false;
+    }
     status = svs_runtime::DynamicVamanaIndex::check_storage_kind(leanvec);
     if (!status.ok()) {
         return false;
@@ -97,21 +111,43 @@ bool IndexSVSVamana::is_lvq_leanvec_enabled() {
 
 IndexSVSVamana::~IndexSVSVamana() {
     if (impl) {
-        auto status = svs_runtime::DynamicVamanaIndex::destroy(impl);
+        svs_runtime::Status status;
+        if (is_static) {
+            status = svs_runtime::VamanaIndex::destroy(impl);
+        } else {
+            status = svs_runtime::DynamicVamanaIndex::destroy(
+                    static_cast<svs_runtime::DynamicVamanaIndex*>(impl));
+        }
         FAISS_ASSERT(status.ok());
         impl = nullptr;
     }
 }
 
 void IndexSVSVamana::add(idx_t n, const float* x) {
+    if (is_static) {
+        FAISS_THROW_IF_MSG(
+                impl,
+                "Static Vamana index does not support add() after initial "
+                "build. All data must be provided in a single add() call.");
+        create_impl(n, x);
+        if (stored_vectors_valid) {
+            stored_vectors.resize(static_cast<size_t>(n) * d);
+            std::memcpy(stored_vectors.data(), x, sizeof(float) * n * d);
+        }
+        ntotal = n;
+        is_trained = true;
+        return;
+    }
+
     if (!impl) {
-        create_impl();
+        create_impl(0, nullptr);
     }
 
     std::vector<size_t> labels(n);
     std::iota(labels.begin(), labels.end(), ntotal);
 
-    auto status = impl->add(n, labels.data(), x);
+    auto* dyn = dynamic_impl();
+    auto status = dyn->add(n, labels.data(), x);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -137,10 +173,22 @@ void IndexSVSVamana::reconstruct(idx_t key, float* recons) const {
 
 void IndexSVSVamana::reset() {
     if (impl) {
-        impl->reset();
+        if (is_static) {
+            // Static index: destroy the impl so the next add() rebuilds from
+            // scratch. The static SVS backend has no in-place reset that
+            // permits a follow-up add().
+            auto status = svs_runtime::VamanaIndex::destroy(impl);
+            FAISS_ASSERT(status.ok());
+            impl = nullptr;
+        } else {
+            // Dynamic index: in-place reset preserves the impl and avoids
+            // tearing down its allocated state.
+            impl->reset();
+        }
     }
     stored_vectors.clear();
     stored_vectors_valid = true;
+    mmap_owner.reset(); // Release the memory mapping
     is_trained = false;
     ntotal = 0;
 }
@@ -204,17 +252,22 @@ void IndexSVSVamana::range_search(
 }
 
 size_t IndexSVSVamana::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_MSG(
+            is_static,
+            "Static Vamana index does not support remove_ids(). "
+            "The index is immutable after creation.");
     FAISS_THROW_IF_NOT(impl);
+    auto* dyn = dynamic_impl();
     auto id_filter = FaissIDFilter{sel};
     size_t removed = 0;
-    auto Status = impl->remove_selected(&removed, id_filter);
+    auto Status = dyn->remove_selected(&removed, id_filter);
     ntotal -= removed;
     stored_vectors.clear();
     stored_vectors_valid = false;
     return removed;
 }
 
-void IndexSVSVamana::create_impl() {
+void IndexSVSVamana::create_impl(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(!impl);
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
@@ -231,15 +284,45 @@ void IndexSVSVamana::create_impl() {
             .search_window_size = search_window_size,
             .search_buffer_capacity = search_buffer_capacity,
     };
-    auto Status = svs_runtime::DynamicVamanaIndex::build(
-            &impl,
-            d,
-            svs_metric,
-            svs_storage_kind,
-            build_params,
-            search_params);
-    if (!Status.ok()) {
-        FAISS_THROW_MSG(Status.message());
+
+    svs_runtime::Status Status;
+    if (is_static) {
+        FAISS_THROW_IF_NOT_MSG(
+                n > 0 && x != nullptr,
+                "Static Vamana index requires data at build time.");
+        Status = svs_runtime::VamanaIndex::build(
+                &impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                build_params,
+                search_params);
+        if (!Status.ok()) {
+            FAISS_THROW_MSG(Status.message());
+        }
+        FAISS_THROW_IF_NOT(impl);
+        // Populate the static index with the full dataset (one-shot add).
+        Status = impl->add(static_cast<size_t>(n), x);
+        if (!Status.ok()) {
+            // Best-effort cleanup before propagating the error.
+            auto destroy_status = svs_runtime::VamanaIndex::destroy(impl);
+            FAISS_ASSERT(destroy_status.ok());
+            impl = nullptr;
+            FAISS_THROW_MSG(Status.message());
+        }
+    } else {
+        svs_runtime::DynamicVamanaIndex* dyn_impl = nullptr;
+        Status = svs_runtime::DynamicVamanaIndex::build(
+                &dyn_impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                build_params,
+                search_params);
+        if (!Status.ok()) {
+            FAISS_THROW_MSG(Status.message());
+        }
+        impl = dyn_impl;
     }
     FAISS_THROW_IF_NOT(impl);
 }
@@ -258,12 +341,56 @@ void IndexSVSVamana::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(impl, "Cannot deserialize: SVS index already loaded.");
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
-    auto status = svs_runtime::DynamicVamanaIndex::load(
-            &impl, in, svs_metric, svs_storage_kind);
+
+    svs_runtime::Status status;
+    if (is_static) {
+        status = svs_runtime::VamanaIndex::load(
+                &impl, in, svs_metric, svs_storage_kind);
+    } else {
+        svs_runtime::DynamicVamanaIndex* dyn_impl = nullptr;
+        status = svs_runtime::DynamicVamanaIndex::load(
+                &dyn_impl, in, svs_metric, svs_storage_kind);
+        impl = dyn_impl;
+    }
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT_MSG(impl, "Failed to load SVS Vamana index.");
+}
+
+svs_runtime::DynamicVamanaIndex* IndexSVSVamana::dynamic_impl() const {
+    FAISS_THROW_IF_MSG(
+            is_static, "Operation not supported on a static Vamana index.");
+    FAISS_THROW_IF_NOT(impl);
+    return static_cast<svs_runtime::DynamicVamanaIndex*>(impl);
+}
+
+void IndexSVSVamana::map_to(MappedFileIOReader* mf) {
+    FAISS_THROW_IF_MSG(
+            !is_static,
+            "map_to() is only supported for static Vamana indices.");
+    FAISS_THROW_IF_MSG(impl, "Cannot map_to: SVS index already loaded.");
+    FAISS_THROW_IF_NOT(mf);
+
+    MmapSpan span = acquire_mmap_span(mf);
+
+    auto svs_metric = to_svs_metric(metric_type);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+
+    size_t read_bytes = 0;
+    auto status = svs_runtime::VamanaIndex::map_to_memory(
+            &impl,
+            span.data,
+            span.size_bytes,
+            svs_metric,
+            svs_storage_kind,
+            &read_bytes);
+
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+
+    finalize_mmap_span(mf, span, read_bytes, mmap_owner);
 }
 
 } // namespace faiss

@@ -12,7 +12,6 @@ from contextlib import contextmanager
 
 import faiss
 import numpy as np
-import sys
 
 from common_faiss_tests import get_dataset_2
 
@@ -21,6 +20,7 @@ from faiss.contrib import (
     clustering,
     datasets,
     evaluation,
+    factory_tools,
     inspect_tools,
     ivf_tools,
 )
@@ -48,10 +48,11 @@ class TestComputeGT(unittest.TestCase):
 
         def matrix_iterator(xb, bs):
             for i0 in range(0, xb.shape[0], bs):
-                yield xb[i0:i0 + bs]
+                yield xb[i0 : i0 + bs]
 
         Dnew, Inew = knn_ground_truth(
-            xq, matrix_iterator(xb, 1000), 10, metric, ngpu=ngpu)
+            xq, matrix_iterator(xb, 1000), 10, metric, ngpu=ngpu
+        )
 
         np.testing.assert_array_equal(Iref, Inew)
         # decimal = 4 required when run on GPU
@@ -89,8 +90,7 @@ class TestDatasets(unittest.TestCase):
         index = faiss.IndexFlatIP(32)
         index.add(ds.get_database())
         np.testing.assert_array_equal(
-            ds.get_groundtruth(100),
-            index.search(ds.get_queries(), 100)[1]
+            ds.get_groundtruth(100), index.search(ds.get_queries(), 100)[1]
         )
 
     def test_synthetic_iterator(self):
@@ -106,8 +106,8 @@ class TestDatasets(unittest.TestCase):
 class TestExhaustiveSearch(unittest.TestCase):
 
     def test_knn_cpu(self):
-        xb = np.random.rand(200, 32).astype('float32')
-        xq = np.random.rand(100, 32).astype('float32')
+        xb = np.random.rand(200, 32).astype("float32")
+        xq = np.random.rand(100, 32).astype("float32")
 
         index = faiss.IndexFlatL2(32)
         index.add(xb)
@@ -139,12 +139,15 @@ class TestExhaustiveSearch(unittest.TestCase):
         ref_lims, ref_D, ref_I = index.range_search(xq, threshold)
 
         new_lims, new_D, new_I = range_ground_truth(
-            xq, ds.database_iterator(bs=100), threshold, ngpu=0,
-            metric_type=metric)
+            xq,
+            ds.database_iterator(bs=100),
+            threshold,
+            ngpu=0,
+            metric_type=metric,
+        )
 
         evaluation.check_ref_range_results(
-            ref_lims, ref_D, ref_I,
-            new_lims, new_D, new_I
+            ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
     def test_range_L2(self):
@@ -166,29 +169,29 @@ class TestExhaustiveSearch(unittest.TestCase):
 
         def matrix_iterator(xb, bs):
             for i0 in range(0, xb.shape[0], bs):
-                yield xb[i0:i0 + bs]
+                yield xb[i0 : i0 + bs]
 
         # check repro OK
         _, new_lims, new_D, new_I = range_search_max_results(
-            index, matrix_iterator(xq, 100), threshold, max_results=1e10)
+            index, matrix_iterator(xq, 100), threshold, max_results=1e10
+        )
 
         evaluation.check_ref_range_results(
-            ref_lims, ref_D, ref_I,
-            new_lims, new_D, new_I
+            ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
         max_res = ref_lims[-1] // 2
 
         new_threshold, new_lims, new_D, new_I = range_search_max_results(
-            index, matrix_iterator(xq, 100), threshold, max_results=max_res)
+            index, matrix_iterator(xq, 100), threshold, max_results=max_res
+        )
 
         self.assertLessEqual(new_lims[-1], max_res)
 
         ref_lims, ref_D, ref_I = index.range_search(xq, new_threshold)
 
         evaluation.check_ref_range_results(
-            ref_lims, ref_D, ref_I,
-            new_lims, new_D, new_I
+            ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
 
@@ -196,9 +199,9 @@ class TestInspect(unittest.TestCase):
 
     def test_LinearTransform(self):
         # training data
-        xt = np.random.rand(1000, 20).astype('float32')
+        xt = np.random.rand(1000, 20).astype("float32")
         # test data
-        x = np.random.rand(10, 20).astype('float32')
+        x = np.random.rand(10, 20).astype("float32")
         # make the PCA matrix
         pca = faiss.PCAMatrix(20, 10)
         pca.train(xt)
@@ -212,18 +215,16 @@ class TestInspect(unittest.TestCase):
         np.testing.assert_array_almost_equal(yref, ynew)
 
     def test_IndexFlat(self):
-        xb = np.random.rand(13, 20).astype('float32')
+        xb = np.random.rand(13, 20).astype("float32")
         index = faiss.IndexFlatL2(20)
         index.add(xb)
-        np.testing.assert_array_equal(
-            xb, inspect_tools.get_flat_data(index)
-        )
+        np.testing.assert_array_equal(xb, inspect_tools.get_flat_data(index))
 
     def test_make_LT(self):
         rs = np.random.RandomState(123)
-        X = rs.rand(13, 20).astype('float32')
-        A = rs.rand(5, 20).astype('float32')
-        b = rs.rand(5).astype('float32')
+        X = rs.rand(13, 20).astype("float32")
+        A = rs.rand(5, 20).astype("float32")
+        b = rs.rand(5).astype("float32")
         Yref = X @ A.T + b
         lt = inspect_tools.make_LinearTransform_matrix(A, b)
         Ynew = lt.apply(X)
@@ -243,18 +244,8 @@ class TestInspect(unittest.TestCase):
 class TestRangeEval(unittest.TestCase):
 
     def test_precision_recall(self):
-        Iref = [
-            [1, 2, 3],
-            [5, 6],
-            [],
-            []
-        ]
-        Inew = [
-            [1, 2],
-            [6, 7],
-            [1],
-            []
-        ]
+        Iref = [[1, 2, 3], [5, 6], [], []]
+        Inew = [[1, 2], [6, 7], [1], []]
 
         lims_ref = np.cumsum([0] + [len(x) for x in Iref])
         Iref = np.hstack(Iref)
@@ -295,22 +286,41 @@ class TestRangeEval(unittest.TestCase):
             for i, thr in enumerate(all_thr):
 
                 lims2, _, I2 = evaluation.filter_range_results(
-                    new_lims, new_D, new_I, thr)
+                    new_lims, new_D, new_I, thr
+                )
 
                 prec, recall = evaluation.range_PR(
-                    ref_lims, ref_I, lims2, I2, mode=mode)
+                    ref_lims, ref_I, lims2, I2, mode=mode
+                )
 
                 ref_precisions[i] = prec
                 ref_recalls[i] = recall
 
             precisions, recalls = evaluation.range_PR_multiple_thresholds(
-                ref_lims, ref_I,
-                new_lims, new_D, new_I, all_thr,
-                mode=mode
+                ref_lims, ref_I, new_lims, new_D, new_I, all_thr, mode=mode
             )
 
             np.testing.assert_array_almost_equal(ref_precisions, precisions)
             np.testing.assert_array_almost_equal(ref_recalls, recalls)
+
+
+class TestOperatingPoints(unittest.TestCase):
+
+    def test_equal_time_better_perf_shadows(self):
+        # A point with strictly better performance at the *same* time
+        # dominates an earlier point and must shadow it. The admission test
+        # is_pareto_optimal uses t <= t_new, so the prune loop must match.
+        op = evaluation.OperatingPoints()
+        op.add_operating_point("A", 0.5, 1.0)
+        op.add_operating_point("B", 0.9, 1.0)
+        keys = [k for k, _, _ in op.operating_points]
+        self.assertEqual(keys, ["B"])
+        # no kept point may be dominated by another kept point
+        pts = op.operating_points
+        for _, pi, ti in pts:
+            for _, pj, tj in pts:
+                self.assertFalse(
+                    pj >= pi and tj <= ti and (pj > pi or tj < ti))
 
 
 class TestPreassigned(unittest.TestCase):
@@ -321,7 +331,7 @@ class TestPreassigned(unittest.TestCase):
         xt = ds.get_train()
         xq = ds.get_queries()
         xb = ds.get_database()
-        index = faiss.index_factory(128, 'PCA64,IVF64,PQ4np')
+        index = faiss.index_factory(128, "PCA64,IVF64,PQ4np")
         index.train(xt)
         index.add(xb)
         index_downcasted = faiss.extract_index_ivf(index)
@@ -370,8 +380,7 @@ class TestPreassigned(unittest.TestCase):
             index.nprobe = nprobe
             a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
             D, I = ivf_tools.search_preassigned(index, xq, 4, a)
-            inter_perf = faiss.eval_intersection(
-                I, ds.get_groundtruth()[:, :4])
+            inter_perf = faiss.eval_intersection(I, ds.get_groundtruth()[:, :4])
             self.assertTrue(inter_perf >= prev_inter_perf)
             prev_inter_perf = inter_perf
 
@@ -385,7 +394,9 @@ class TestPreassigned(unittest.TestCase):
         D, I = ivf_tools.search_preassigned(index, xq, 4, a)
         radius = D.max() * 1.01
 
-        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, radius.item(), a)
+        lims, DR, IR = ivf_tools.range_search_preassigned(
+            index, xq, radius.item(), a
+        )
 
         # with that radius the k-NN results are a subset of the range search
         # results
@@ -394,8 +405,8 @@ class TestPreassigned(unittest.TestCase):
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
     @unittest.skipIf(
-        platform.system() == 'Windows',
-        'test_binary hangs for Windows on newer versions of MKL.'
+        platform.system() == "Windows",
+        "test_binary hangs for Windows on newer versions of MKL.",
     )
     def test_binary(self):
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
@@ -456,7 +467,8 @@ class TestPreassigned(unittest.TestCase):
         radius = int(D.max() + 1)
 
         lims, DR, IR = ivf_tools.range_search_preassigned(
-            index, xq_bin, radius, a)
+            index, xq_bin, radius, a
+        )
 
         # with that radius the k-NN results are a subset of the range
         # search results
@@ -508,13 +520,15 @@ class TestRangeSearchMaxResults(unittest.TestCase):
 
         init_radius = 1e10 if metric_type == faiss.METRIC_L2 else -1e10
         radius1, lims_new, Dnew, Inew = range_search_max_results(
-            index, query_iterator, init_radius,
-            min_results=Dref.size, clip_to_min=True
+            index,
+            query_iterator,
+            init_radius,
+            min_results=Dref.size,
+            clip_to_min=True,
         )
 
         evaluation.check_ref_range_results(
-            lims_ref, Dref, Iref,
-            lims_new, Dnew, Inew
+            lims_ref, Dref, Iref, lims_new, Dnew, Inew
         )
 
     def test_L2(self):
@@ -544,20 +558,22 @@ class TestRangeSearchMaxResults(unittest.TestCase):
         query_iterator = exponential_query_iterator(xq)
 
         radius1, lims_new, Dnew, Inew = range_search_max_results(
-            index, query_iterator, ds.d // 2,
-            min_results=Dref.size, clip_to_min=True
+            index,
+            query_iterator,
+            ds.d // 2,
+            min_results=Dref.size,
+            clip_to_min=True,
         )
 
         evaluation.check_ref_range_results(
-            lims_ref, Dref, Iref,
-            lims_new, Dnew, Inew
+            lims_ref, Dref, Iref, lims_new, Dnew, Inew
         )
 
 
 class TestClustering(unittest.TestCase):
 
     def test_python_kmeans(self):
-        """ Test the python implementation of kmeans """
+        """Test the python implementation of kmeans"""
         ds = datasets.SyntheticDataset(32, 5000, 0, 0)
         x = ds.get_train()
 
@@ -577,7 +593,7 @@ class TestClustering(unittest.TestCase):
         self.assertLess(err2, err * 1.1)
 
     def test_2level(self):
-        " verify that 2-level clustering is not too sub-optimal "
+        "verify that 2-level clustering is not too sub-optimal"
         ds = datasets.SyntheticDataset(32, 10000, 0, 0)
         xt = ds.get_train()
         km_ref = faiss.Kmeans(ds.d, 100)
@@ -590,7 +606,7 @@ class TestClustering(unittest.TestCase):
         self.assertLess(err2, err * 1.1)
 
     def test_ivf_train_2level(self):
-        " check 2-level clustering with IVF training "
+        "check 2-level clustering with IVF training"
         ds = datasets.SyntheticDataset(32, 10000, 1000, 200)
         index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
         faiss.extract_index_ivf(index).nprobe = 10
@@ -601,7 +617,8 @@ class TestClustering(unittest.TestCase):
         index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
         faiss.extract_index_ivf(index).nprobe = 10
         clustering.train_ivf_index_with_2level(
-            index, ds.get_train(), verbose=True, rebalance=False)
+            index, ds.get_train(), verbose=True, rebalance=False
+        )
         index.add(ds.get_database())
         Dnew, Inew = index.search(ds.get_queries(), 1)
 
@@ -662,9 +679,7 @@ class TestBigBatchSearch(unittest.TestCase):
         for method in ("pairwise_distances", "knn_function"):
             for threaded in 0, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
-                    index, ds.get_queries(),
-                    k, method=method,
-                    threaded=threaded
+                    index, ds.get_queries(), k, method=method, threaded=threaded
                 )
                 self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
                 np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
@@ -696,11 +711,14 @@ class TestBigBatchSearch(unittest.TestCase):
             # First big batch search
             try:
                 Dnew, Inew = big_batch_search.big_batch_search(
-                    index, ds.get_queries(),
-                    k, method="knn_function",
+                    index,
+                    ds.get_queries(),
+                    k,
+                    method="knn_function",
                     threaded=2,
-                    checkpoint=checkpoint, checkpoint_freq=0.1,
-                    crash_at=20
+                    checkpoint=checkpoint,
+                    checkpoint_freq=0.1,
+                    crash_at=20,
                 )
             except ZeroDivisionError:
                 pass
@@ -708,10 +726,13 @@ class TestBigBatchSearch(unittest.TestCase):
                 self.assertFalse("should have crashed")
             # Second big batch search
             Dnew, Inew = big_batch_search.big_batch_search(
-                index, ds.get_queries(),
-                k, method="knn_function",
+                index,
+                ds.get_queries(),
+                k,
+                method="knn_function",
                 threaded=2,
-                checkpoint=checkpoint, checkpoint_freq=5
+                checkpoint=checkpoint,
+                checkpoint_freq=5,
             )
             self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
             np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
@@ -723,8 +744,8 @@ class TestBigBatchSearch(unittest.TestCase):
 class TestInvlistSort(unittest.TestCase):
 
     def test_sort(self):
-        """ make sure that the search results do not change
-        after sorting the inverted lists """
+        """make sure that the search results do not change
+        after sorting the inverted lists"""
         ds = datasets.SyntheticDataset(32, 2000, 200, 20)
         index = faiss.index_factory(ds.d, "IVF50,SQ8")
         index.train(ds.get_train())
@@ -742,8 +763,8 @@ class TestInvlistSort(unittest.TestCase):
 
     def test_hnsw_permute(self):
         """
-            make sure HNSW permutation works
-            (useful when used as coarse quantizer)
+        make sure HNSW permutation works
+        (useful when used as coarse quantizer)
         """
         ds = datasets.SyntheticDataset(32, 0, 1000, 50)
         index = faiss.index_factory(ds.d, "HNSW32,Flat")
@@ -761,7 +782,7 @@ class TestInvlistSort(unittest.TestCase):
 class TestCodeSet(unittest.TestCase):
 
     def test_code_set(self):
-        """ CodeSet and np.unique should produce the same output """
+        """CodeSet and np.unique should produce the same output"""
         d = 8
         n = 1000  # > 256 and using only 0 or 1 so there must be duplicates
         codes = np.random.randint(0, 2, (n, d), dtype=np.uint8)
@@ -769,15 +790,14 @@ class TestCodeSet(unittest.TestCase):
         inserted = s.insert(codes)
         np.testing.assert_equal(
             np.sort(np.unique(codes, axis=0), axis=None),
-            np.sort(codes[inserted], axis=None))
+            np.sort(codes[inserted], axis=None),
+        )
 
 
 @unittest.skipIf(
-    platform.system() == 'Windows',
-    'OnDiskInvertedLists is unsupported on Windows.'
+    platform.system() == "Windows",
+    "OnDiskInvertedLists is unsupported on Windows.",
 )
-
-
 class TestMerge(unittest.TestCase):
     @contextmanager
     def temp_directory(self):
@@ -810,7 +830,9 @@ class TestMerge(unittest.TestCase):
 
             # construct the output index and merge them on disk
             index = faiss.read_index(tmpdir + "/trained.index")
-            block_fnames = [tmpdir + "/block_%d.index" % bno for bno in range(4)]
+            block_fnames = [
+                tmpdir + "/block_%d.index" % bno for bno in range(4)
+            ]
 
             merge_ondisk(
                 index, block_fnames, tmpdir + "/merged_index.ivfdata", shift_ids
@@ -834,3 +856,76 @@ class TestMerge(unittest.TestCase):
     def test_ondisk_merge_with_shift_ids(self):
         # verified that recall is same for test_ondisk_merge and
         self.do_test_ondisk_merge(True)
+
+
+class TestFactoryTools(unittest.TestCase):
+
+    def test_idmap(self):
+        index = faiss.IndexIDMap(faiss.IndexFlatL2(32))
+        self.assertEqual(
+            factory_tools.reverse_index_factory(index), "IDMap,Flat"
+        )
+        # IndexIDMap2 subclasses IndexIDMap, so it must be checked first.
+        index2 = faiss.IndexIDMap2(faiss.IndexFlatL2(32))
+        self.assertEqual(
+            factory_tools.reverse_index_factory(index2), "IDMap2,Flat"
+        )
+
+    def test_ivf_scalar_quantizer_types(self):
+        d = 32
+        sq_types = {
+            faiss.ScalarQuantizer.QT_8bit: "IVF32,SQ8",
+            faiss.ScalarQuantizer.QT_4bit: "IVF32,SQ4",
+            faiss.ScalarQuantizer.QT_8bit_uniform: "IVF32,SQ8u",
+            faiss.ScalarQuantizer.QT_4bit_uniform: "IVF32,SQ4u",
+            faiss.ScalarQuantizer.QT_6bit: "IVF32,SQ6",
+            faiss.ScalarQuantizer.QT_fp16: "IVF32,SQfp16",
+            faiss.ScalarQuantizer.QT_bf16: "IVF32,SQbf16",
+            faiss.ScalarQuantizer.QT_8bit_direct: "IVF32,SQ8_direct",
+            faiss.ScalarQuantizer.QT_8bit_direct_signed: "IVF32,SQ8_direct_signed",
+            faiss.ScalarQuantizer.QT_0bit: "IVF32,SQ0",
+            faiss.ScalarQuantizer.QT_1bit_tqmse: "IVF32,SQtqmse1",
+            faiss.ScalarQuantizer.QT_2bit_tqmse: "IVF32,SQtqmse2",
+            faiss.ScalarQuantizer.QT_3bit_tqmse: "IVF32,SQtqmse3",
+            faiss.ScalarQuantizer.QT_4bit_tqmse: "IVF32,SQtqmse4",
+            faiss.ScalarQuantizer.QT_8bit_tqmse: "IVF32,SQtqmse8",
+            faiss.ScalarQuantizer.QT_2bit_tq: "IVF32,SQtq2",
+            faiss.ScalarQuantizer.QT_3bit_tq: "IVF32,SQtq3",
+            faiss.ScalarQuantizer.QT_4bit_tq: "IVF32,SQtq4",
+            faiss.ScalarQuantizer.QT_5bit_tq: "IVF32,SQtq5",
+        }
+        for qtype, expected in sq_types.items():
+            index = faiss.IndexIVFScalarQuantizer(
+                faiss.IndexFlatL2(d), d, 32, qtype
+            )
+            self.assertEqual(
+                factory_tools.reverse_index_factory(index), expected
+            )
+
+    def test_scalar_quantizer_types(self):
+        d = 32
+        sq_types = {
+            faiss.ScalarQuantizer.QT_8bit: "SQ8",
+            faiss.ScalarQuantizer.QT_4bit: "SQ4",
+            faiss.ScalarQuantizer.QT_8bit_uniform: "SQ8u",
+            faiss.ScalarQuantizer.QT_4bit_uniform: "SQ4u",
+            faiss.ScalarQuantizer.QT_6bit: "SQ6",
+            faiss.ScalarQuantizer.QT_fp16: "SQfp16",
+            faiss.ScalarQuantizer.QT_bf16: "SQbf16",
+            faiss.ScalarQuantizer.QT_8bit_direct: "SQ8_direct",
+            faiss.ScalarQuantizer.QT_8bit_direct_signed: "SQ8_direct_signed",
+            faiss.ScalarQuantizer.QT_1bit_tqmse: "SQtqmse1",
+            faiss.ScalarQuantizer.QT_2bit_tqmse: "SQtqmse2",
+            faiss.ScalarQuantizer.QT_3bit_tqmse: "SQtqmse3",
+            faiss.ScalarQuantizer.QT_4bit_tqmse: "SQtqmse4",
+            faiss.ScalarQuantizer.QT_8bit_tqmse: "SQtqmse8",
+            faiss.ScalarQuantizer.QT_2bit_tq: "SQtq2",
+            faiss.ScalarQuantizer.QT_3bit_tq: "SQtq3",
+            faiss.ScalarQuantizer.QT_4bit_tq: "SQtq4",
+            faiss.ScalarQuantizer.QT_5bit_tq: "SQtq5",
+        }
+        for qtype, expected in sq_types.items():
+            index = faiss.IndexScalarQuantizer(d, qtype)
+            self.assertEqual(
+                factory_tools.reverse_index_factory(index), expected
+            )

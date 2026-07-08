@@ -116,13 +116,13 @@ TEST(NSGBugs, SyncPruneSingleNode) {
 
     // Search returns the only node
     nsg_obj.search_L = 1;
-    faiss::VisitedTable vt(1);
+    std::unique_ptr<faiss::VisitedTable> vt = faiss::VisitedTable::create(1);
     auto dis = std::unique_ptr<faiss::DistanceComputer>(
             faiss::nsg::storage_distance_computer(&storage));
     dis->set_query(vec);
 
     faiss::idx_t label = -1;
     float distance = -1;
-    nsg_obj.search(*dis, 1, &label, &distance, vt);
+    nsg_obj.search(*dis, 1, &label, &distance, *vt);
     EXPECT_EQ(label, 0);
 }

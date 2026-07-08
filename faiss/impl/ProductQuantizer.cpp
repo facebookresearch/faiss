@@ -13,12 +13,15 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <type_traits>
 
 #include <algorithm>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 
@@ -719,8 +722,28 @@ void pq_knn_search_with_tables(
 
         switch (nbits) {
             case 8:
-                pq_estimators_from_tables<uint8_t, C>(
-                        pq, codes, ncodes, dis_table, k, heap_dis, heap_ids);
+                if (ksub == 256) {
+                    constexpr bool max_heap =
+                            std::is_same_v<C, CMax<float, int64_t>>;
+                    pq_code_distance::pq_scan_8bit(
+                            M,
+                            dis_table,
+                            codes,
+                            ncodes,
+                            k,
+                            heap_dis,
+                            heap_ids,
+                            max_heap);
+                } else {
+                    pq_estimators_from_tables<uint8_t, C>(
+                            pq,
+                            codes,
+                            ncodes,
+                            dis_table,
+                            k,
+                            heap_dis,
+                            heap_ids);
+                }
                 break;
 
             case 16:

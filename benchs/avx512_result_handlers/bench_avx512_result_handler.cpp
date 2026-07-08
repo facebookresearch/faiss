@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cstdio>
+
 #if defined(__x86_64__)
 
 #include "faiss_avx512_result_handler.h"
@@ -15,7 +17,6 @@
 #include <faiss/utils/utils.h>
 #include <omp.h>
 
-#include <cstdio>
 #include <memory>
 #include <vector>
 
@@ -124,6 +125,13 @@ int main() {
         }
     }
 
+    return 0;
+}
+
+#else
+
+int main() {
+    printf("Benchmark is disabled on non-x86 systems \n");
     return 0;
 }
 

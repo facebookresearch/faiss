@@ -21,6 +21,8 @@
 import numpy as np
 import unittest
 import faiss
+import os
+import tempfile
 
 _SKIP_SVS = "SVS" not in faiss.get_compile_options().split()
 _SKIP_REASON = "SVS support not compiled in"
@@ -55,8 +57,8 @@ class TestSVSAdapter(unittest.TestCase):
         cls.nb = 500
         cls.nq = 50
         np.random.seed(1234)
-        cls.xb = np.random.random((cls.nb, cls.d)).astype('float32')
-        cls.xq = np.random.random((cls.nq, cls.d)).astype('float32')
+        cls.xb = np.random.random((cls.nb, cls.d)).astype("float32")
+        cls.xq = np.random.random((cls.nq, cls.d)).astype("float32")
 
     def test_svs_construction(self):
         """Test construction and basic properties"""
@@ -229,7 +231,7 @@ class TestSVSAdapter(unittest.TestCase):
         index = self._create_instance()
 
         # Test wrong dimension
-        wrong_dim_data = np.random.random((100, self.d + 1)).astype('float32')
+        wrong_dim_data = np.random.random((100, self.d + 1)).astype("float32")
         with self.assertRaises(AssertionError):
             index.add(wrong_dim_data)
 
@@ -283,11 +285,11 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.graph_max_degree, 16)
         self.assertEqual(index.storage_kind, faiss.SVS_FP16)
 
-    def test_svs_factory_sqi8(self):
-        index = faiss.index_factory(64, "SVSVamana24,SQI8")
+    def test_svs_factory_sq8(self):
+        index = faiss.index_factory(64, "SVSVamana24,SQ8")
         self.assertEqual(index.d, 64)
         self.assertEqual(index.graph_max_degree, 24)
-        self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
+        self.assertEqual(index.storage_kind, faiss.SVS_SQ8)
 
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
@@ -317,8 +319,8 @@ class TestSVSIVFCoarseQuantizerFactory(unittest.TestCase):
         self.assertEqual(index.d, 32)
         self.assertEqual(index.nlist, 256)
 
-    def test_ivf_svsvamana_sqi8(self):
-        index = faiss.index_factory(32, "IVF256_SVSVamana32_SQI8,Flat")
+    def test_ivf_svsvamana_sq8(self):
+        index = faiss.index_factory(32, "IVF256_SVSVamana32_SQ8,Flat")
         self.assertEqual(index.d, 32)
         self.assertEqual(index.nlist, 256)
 
@@ -340,6 +342,7 @@ class TestSVSIVFCoarseQuantizerFactory(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
@@ -347,11 +350,12 @@ class TestSVSAdapterFP16(TestSVSAdapter):
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
-class TestSVSAdapterSQI8(TestSVSAdapter):
+class TestSVSAdapterSQ8(TestSVSAdapter):
     """Repeat all tests for SVS SQ int8 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
-        idx.storage_kind = faiss.SVS_SQI8
+        idx.storage_kind = faiss.SVS_SQ8
         return idx
 
 
@@ -466,8 +470,8 @@ class TestSVSVamanaParameters(unittest.TestCase):
         cls.nb = 500
         cls.nq = 50
         np.random.seed(1234)
-        cls.xb = np.random.random((cls.nb, cls.d)).astype('float32')
-        cls.xq = np.random.random((cls.nq, cls.d)).astype('float32')
+        cls.xb = np.random.random((cls.nb, cls.d)).astype("float32")
+        cls.xq = np.random.random((cls.nq, cls.d)).astype("float32")
 
     def _create_instance(self):
         """Create an instance of the SVS Vamana index"""
@@ -552,6 +556,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS Float16 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
@@ -559,11 +564,12 @@ class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
-class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
+class TestSVSVamanaParametersSQ8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS SQ int8 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
-        idx.storage_kind = faiss.SVS_SQI8
+        idx.storage_kind = faiss.SVS_SQ8
         return idx
 
 
@@ -669,8 +675,8 @@ class TestSVSIVFAdapter(unittest.TestCase):
         self.nq = 100
         self.nlist = 4
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def _create_instance(self):
         idx = self.target_class(self.d, self.nlist)
@@ -694,7 +700,7 @@ class TestSVSIVFAdapter(unittest.TestCase):
         self.assertTrue(index.is_trained)
 
         # Add more data
-        extra = np.random.random((200, self.d)).astype('float32')
+        extra = np.random.random((200, self.d)).astype("float32")
         index.add(extra)
 
         # Search
@@ -714,7 +720,7 @@ class TestSVSIVFAdapter(unittest.TestCase):
         index = self._create_instance()
         index.train(self.xb)
 
-        extra = np.random.random((200, self.d)).astype('float32')
+        extra = np.random.random((200, self.d)).astype("float32")
         index.add(extra)
 
         D_before, I_before = index.search(self.xq, 4)
@@ -734,7 +740,7 @@ class TestSVSIVFAdapter(unittest.TestCase):
         index = self._create_instance()
         index.train(self.xb)
 
-        extra = np.random.random((200, self.d)).astype('float32')
+        extra = np.random.random((200, self.d)).astype("float32")
         index.add(extra)
         before = index.ntotal
 
@@ -749,7 +755,7 @@ class TestSVSIVFAdapter(unittest.TestCase):
         index = self._create_instance()
         index.train(self.xb)
 
-        extra = np.random.random((100, self.d)).astype('float32')
+        extra = np.random.random((100, self.d)).astype("float32")
         index.add(extra)
         self.assertGreater(index.ntotal, 0)
 
@@ -761,19 +767,23 @@ class TestSVSIVFAdapter(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSIVFAdapterFP16(TestSVSIVFAdapter):
     """Repeat IVF tests for FP16 variant"""
+
     def _create_instance(self):
-        idx = self.target_class(self.d, self.nlist, faiss.METRIC_L2,
-                                faiss.SVS_FP16)
+        idx = self.target_class(
+            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP16
+        )
         idx.num_threads = 4
         return idx
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
-class TestSVSIVFAdapterSQI8(TestSVSIVFAdapter):
-    """Repeat IVF tests for SQI8 variant"""
+class TestSVSIVFAdapterSQ8(TestSVSIVFAdapter):
+    """Repeat IVF tests for SQ8 variant"""
+
     def _create_instance(self):
-        idx = self.target_class(self.d, self.nlist, faiss.METRIC_L2,
-                                faiss.SVS_SQI8)
+        idx = self.target_class(
+            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_SQ8
+        )
         idx.num_threads = 4
         return idx
 
@@ -833,8 +843,8 @@ class TestSVSIVFAdapterLeanVec4x4(TestSVSIVFAdapter):
 
     def _create_instance(self):
         idx = self.target_class(
-            self.d, self.nlist, faiss.METRIC_L2, 0,
-            faiss.SVS_LeanVec4x4)
+            self.d, self.nlist, faiss.METRIC_L2, 0, faiss.SVS_LeanVec4x4
+        )
         idx.num_threads = 4
         return idx
 
@@ -856,11 +866,11 @@ class TestSVSIVFFactory(unittest.TestCase):
         self.assertIsInstance(index, faiss.IndexSVSIVF)
         self.assertEqual(index.storage_kind, faiss.SVS_FP16)
 
-    def test_svs_factory_ivf_sqi8(self):
-        index = faiss.index_factory(64, "SVSIVF8,SQI8")
+    def test_svs_factory_ivf_sq8(self):
+        index = faiss.index_factory(64, "SVSIVF8,SQ8")
         self.assertEqual(index.d, 64)
         self.assertIsInstance(index, faiss.IndexSVSIVF)
-        self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
+        self.assertEqual(index.storage_kind, faiss.SVS_SQ8)
 
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
@@ -891,8 +901,8 @@ class TestSVSIVFParameters(unittest.TestCase):
         self.nq = 50
         self.nlist = 100
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def test_ivf_parameter_setting(self):
         """Test that IVF parameters can be set and retrieved"""
@@ -936,7 +946,7 @@ class TestSVSIVFParameters(unittest.TestCase):
 
         # Train and add
         index.train(self.xb)
-        extra = np.random.random((100, self.d)).astype('float32')
+        extra = np.random.random((100, self.d)).astype("float32")
         index.add(extra)
 
         loaded = faiss.deserialize_index(faiss.serialize_index(index))
@@ -971,8 +981,11 @@ class TestSVSIVFLeanVecOOD(unittest.TestCase):
 
     def _create_instance(self):
         idx = faiss.IndexSVSIVFLeanVec(
-            self.d, self.nlist, faiss.METRIC_L2,
-            self.leanvec_d, faiss.SVS_LeanVec4x8
+            self.d,
+            self.nlist,
+            faiss.METRIC_L2,
+            self.leanvec_d,
+            faiss.SVS_LeanVec4x8,
         )
         idx.num_threads = 4
         return idx
@@ -1001,9 +1014,7 @@ class TestSVSIVFLeanVecOOD(unittest.TestCase):
         """OOD training rejects non-Float32 numeric_type with xq_train"""
         idx = self._create_instance()
         with self.assertRaises(TypeError):
-            idx.train(
-                self.x, xq_train=self.tq, numeric_type=faiss.Float16
-            )
+            idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
 
     def test_ivf_leanvec_ood_search(self):
         """OOD-trained IVF LeanVec index returns valid search results"""
@@ -1123,14 +1134,15 @@ class TestSVSStaticIVF(unittest.TestCase):
         self.nq = 100
         self.nlist = 4
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def _create_static(self, storage=None):
         if storage is None:
             storage = faiss.SVS_FP32
         idx = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, storage, True)
+            self.d, self.nlist, faiss.METRIC_L2, storage, True
+        )
         idx.num_threads = 4
         return idx
 
@@ -1156,7 +1168,7 @@ class TestSVSStaticIVF(unittest.TestCase):
         """add() must raise on a static index"""
         index = self._create_static()
         index.train(self.xb)
-        extra = np.random.random((100, self.d)).astype('float32')
+        extra = np.random.random((100, self.d)).astype("float32")
         with self.assertRaises(RuntimeError):
             index.add(extra)
 
@@ -1220,12 +1232,13 @@ class TestSVSStaticIVFLVQ(unittest.TestCase):
         self.nq = 100
         self.nlist = 4
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def _create_static_lvq(self):
         idx = faiss.IndexSVSIVFLVQ(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True)
+            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True
+        )
         idx.num_threads = 4
         return idx
 
@@ -1271,13 +1284,13 @@ class TestSVSStaticIVFLeanVec(unittest.TestCase):
         self.nq = 100
         self.nlist = 10
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def _create_static_leanvec(self):
         idx = faiss.IndexSVSIVFLeanVec(
-            self.d, self.nlist, faiss.METRIC_L2, 0,
-            faiss.SVS_LeanVec4x4, True)
+            self.d, self.nlist, faiss.METRIC_L2, 0, faiss.SVS_LeanVec4x4, True
+        )
         idx.num_threads = 4
         return idx
 
@@ -1323,5 +1336,305 @@ class TestSVSStaticIVFLeanVec(unittest.TestCase):
         self.assertEqual(D.shape, (self.nq, 4))
 
 
-if __name__ == '__main__':
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSStaticVamana(unittest.TestCase):
+    """Test the static (immutable) Vamana index variant."""
+
+    def setUp(self):
+        self.d = 32
+        self.nb = 1000
+        self.nq = 100
+        self.degree = 32
+        np.random.seed(1234)
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
+
+    def _create_static(self, storage=None):
+        if storage is None:
+            storage = faiss.SVS_FP32
+        return faiss.IndexSVSVamana(
+            self.d, self.degree, faiss.METRIC_L2, storage, True
+        )
+
+    def test_static_construction(self):
+        """is_static is set on the constructed index"""
+        index = self._create_static()
+        self.assertTrue(index.is_static)
+
+    def test_static_add_and_search(self):
+        """add() builds the static index and search returns shaped output"""
+        index = self._create_static()
+        index.add(self.xb)
+        self.assertTrue(index.is_trained)
+        self.assertEqual(index.ntotal, self.nb)
+
+        k = 4
+        D, I = index.search(self.xq, k)
+        self.assertEqual(D.shape, (self.nq, k))
+        self.assertEqual(I.shape, (self.nq, k))
+
+    def test_static_second_add_throws(self):
+        """A second add() must raise on a static Vamana index"""
+        index = self._create_static()
+        index.add(self.xb)
+        extra = np.random.random((100, self.d)).astype("float32")
+        with self.assertRaises(RuntimeError):
+            index.add(extra)
+
+    def test_static_remove_throws(self):
+        """remove_ids() must raise on a static Vamana index"""
+        index = self._create_static()
+        index.add(self.xb)
+        ids = np.arange(0, 10, dtype=np.int64)
+        sel = faiss.IDSelectorArray(len(ids), faiss.swig_ptr(ids))
+        with self.assertRaises(RuntimeError):
+            index.remove_ids(sel)
+
+    def test_static_serialization(self):
+        """Serialize/deserialize preserves is_static and search results"""
+        index = self._create_static()
+        index.add(self.xb)
+
+        D_before, I_before = index.search(self.xq, 4)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+        self.assertTrue(loaded.is_static)
+        self.assertEqual(loaded.ntotal, self.nb)
+
+        D_after, _ = loaded.search(self.xq, 4)
+        np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+
+    def test_static_memmapping(self):
+        """Serialize/deserialize preserves is_static and search results"""
+        index = self._create_static()
+        index.add(self.xb)
+
+        D_before, I_before = index.search(self.xq, 4)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        loaded = None
+        try:
+            faiss.write_index(index, fname)
+            loaded = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+            self.assertTrue(loaded.is_static)
+            self.assertEqual(loaded.ntotal, self.nb)
+
+            D_after, _ = loaded.search(self.xq, 4)
+            np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+        finally:
+            del loaded
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except OSError:
+                    pass
+
+    def test_static_fp16(self):
+        """Static Vamana with FP16 storage"""
+        index = self._create_static(faiss.SVS_FP16)
+        index.add(self.xb)
+        self.assertTrue(index.is_trained)
+        self.assertTrue(index.is_static)
+
+        D, _ = index.search(self.xq, 4)
+        self.assertEqual(D.shape, (self.nq, 4))
+
+    def test_static_sq8(self):
+        """Static Vamana with SQ8 storage"""
+        index = self._create_static(faiss.SVS_SQ8)
+        index.add(self.xb)
+        self.assertTrue(index.is_trained)
+        self.assertTrue(index.is_static)
+
+        D, _ = index.search(self.xq, 4)
+        self.assertEqual(D.shape, (self.nq, 4))
+
+    def test_static_reset_and_readd(self):
+        """reset() clears the static index so it can be rebuilt via add()"""
+        index = self._create_static()
+        index.add(self.xb)
+        self.assertTrue(index.is_trained)
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertFalse(index.is_trained)
+
+        index.add(self.xb)
+        self.assertTrue(index.is_trained)
+        self.assertEqual(index.ntotal, self.nb)
+
+    def test_static_reconstruct(self):
+        """reconstruct() returns the original vector for the static path"""
+        index = self._create_static()
+        index.add(self.xb)
+        recons = index.reconstruct(0)
+        np.testing.assert_array_equal(recons, self.xb[0])
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSStaticVamanaLVQ(unittest.TestCase):
+    """Test static Vamana with LVQ storage"""
+
+    def setUp(self):
+        self.d = 32
+        self.nb = 1000
+        self.nq = 100
+        self.degree = 32
+        np.random.seed(1234)
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
+
+    def _create_static_lvq(self):
+        return faiss.IndexSVSVamanaLVQ(
+            self.d, self.degree, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True
+        )
+
+    def test_static_lvq_add_search(self):
+        index = self._create_static_lvq()
+        index.add(self.xb)
+        self.assertTrue(index.is_static)
+        self.assertTrue(index.is_trained)
+
+        D, _ = index.search(self.xq, 4)
+        self.assertEqual(D.shape, (self.nq, 4))
+
+    def test_static_lvq_second_add_throws(self):
+        index = self._create_static_lvq()
+        index.add(self.xb)
+        with self.assertRaises(RuntimeError):
+            index.add(self.xb)
+
+    def test_static_lvq_serialization(self):
+        index = self._create_static_lvq()
+        index.add(self.xb)
+
+        D_before, _ = index.search(self.xq, 4)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertIsInstance(loaded, faiss.IndexSVSVamanaLVQ)
+        self.assertTrue(loaded.is_static)
+
+        D_after, _ = loaded.search(self.xq, 4)
+        np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+
+    def test_static_lvq_memmapping(self):
+        index = self._create_static_lvq()
+        index.add(self.xb)
+
+        D_before, _ = index.search(self.xq, 4)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        loaded = None
+        try:
+            faiss.write_index(index, fname)
+            loaded = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+            self.assertTrue(loaded.is_static)
+
+            D_after, _ = loaded.search(self.xq, 4)
+            np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+        finally:
+            del loaded
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except OSError:
+                    pass
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSStaticVamanaLeanVec(unittest.TestCase):
+    """Test static Vamana with LeanVec storage"""
+
+    def setUp(self):
+        self.d = 64
+        self.nb = 5000
+        self.nq = 100
+        self.degree = 32
+        np.random.seed(1234)
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
+
+    def _create_static_leanvec(self):
+        return faiss.IndexSVSVamanaLeanVec(
+            self.d, self.degree, faiss.METRIC_L2, 0, faiss.SVS_LeanVec4x4, True
+        )
+
+    def test_static_leanvec_train_add_search(self):
+        index = self._create_static_leanvec()
+        index.train(self.xb)
+        index.add(self.xb)
+        self.assertTrue(index.is_static)
+        self.assertTrue(index.is_trained)
+
+        D, _ = index.search(self.xq, 4)
+        self.assertEqual(D.shape, (self.nq, 4))
+
+    def test_static_leanvec_second_add_throws(self):
+        index = self._create_static_leanvec()
+        index.train(self.xb)
+        index.add(self.xb)
+        with self.assertRaises(RuntimeError):
+            index.add(self.xb)
+
+    def test_static_leanvec_ood(self):
+        """train_with_queries followed by add() builds the static OOD index"""
+        index = self._create_static_leanvec()
+        index.train(self.xb, xq_train=self.xq)
+        index.add(self.xb)
+        self.assertTrue(index.is_static)
+        self.assertTrue(index.is_trained)
+
+        D, _ = index.search(self.xq, 4)
+        self.assertEqual(D.shape, (self.nq, 4))
+
+    def test_static_leanvec_serialization(self):
+        index = self._create_static_leanvec()
+        index.train(self.xb)
+        index.add(self.xb)
+
+        D_before, _ = index.search(self.xq, 4)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertIsInstance(loaded, faiss.IndexSVSVamanaLeanVec)
+        self.assertTrue(loaded.is_static)
+
+        D_after, _ = loaded.search(self.xq, 4)
+        np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+
+    def test_static_leanvec_memmapping(self):
+        index = self._create_static_leanvec()
+        index.train(self.xb)
+        index.add(self.xb)
+
+        D_before, _ = index.search(self.xq, 4)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        loaded = None
+        try:
+            faiss.write_index(index, fname)
+            loaded = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(loaded, faiss.IndexSVSVamana)
+            self.assertTrue(loaded.is_static)
+
+            D_after, _ = loaded.search(self.xq, 4)
+            np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+        finally:
+            del loaded
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except OSError:
+                    pass
+
+
+if __name__ == "__main__":
     unittest.main()

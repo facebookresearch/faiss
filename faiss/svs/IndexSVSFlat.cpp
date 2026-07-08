@@ -22,6 +22,7 @@
  */
 
 #include <faiss/Index.h>
+#include <faiss/impl/mapped_io.h>
 #include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSFlat.h>
 
@@ -55,11 +56,16 @@ void IndexSVSFlat::add(idx_t n, const float* x) {
 
 void IndexSVSFlat::reset() {
     if (impl) {
-        auto status = impl->reset();
+        // Destroy impl to ensure no dangling pointers to mmap region remain.
+        // FlatIndex::reset may retain views; destroy guarantees clean state
+        // matching Vamana static behavior.
+        auto status = svs_runtime::FlatIndex::destroy(impl);
         if (!status.ok()) {
             FAISS_THROW_MSG(status.message());
         }
+        impl = nullptr;
     }
+    mmap_owner.reset(); // Release the memory mapping
     ntotal = 0;
 }
 
@@ -112,6 +118,25 @@ void IndexSVSFlat::deserialize_impl(std::istream& in) {
         FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT_MSG(impl, "Failed to load SVS Flat index.");
+}
+
+void IndexSVSFlat::map_to(MappedFileIOReader* mf) {
+    FAISS_THROW_IF_MSG(impl, "Cannot map_to: SVS index already loaded.");
+    FAISS_THROW_IF_NOT(mf);
+
+    MmapSpan span = acquire_mmap_span(mf);
+
+    auto svs_metric = to_svs_metric(metric_type);
+
+    size_t read_bytes = 0;
+    auto status = svs_runtime::FlatIndex::map_to_memory(
+            &impl, span.data, span.size_bytes, svs_metric, &read_bytes);
+
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+
+    finalize_mmap_span(mf, span, read_bytes, mmap_owner);
 }
 
 } // namespace faiss

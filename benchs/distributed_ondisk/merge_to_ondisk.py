@@ -7,28 +7,25 @@ import faiss
 import argparse
 from multiprocessing.pool import ThreadPool
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--inputs', nargs='*', required=True,
-                        help='input indexes to merge')
-    parser.add_argument('--l0', type=int, default=0)
-    parser.add_argument('--l1', type=int, default=-1)
+    parser.add_argument(
+        "--inputs", nargs="*", required=True, help="input indexes to merge"
+    )
+    parser.add_argument("--l0", type=int, default=0)
+    parser.add_argument("--l1", type=int, default=-1)
 
-    parser.add_argument('--nt', default=-1,
-                        help='nb threads')
+    parser.add_argument("--nt", default=-1, help="nb threads")
 
-    parser.add_argument('--output', required=True,
-                        help='output index filename')
-    parser.add_argument('--outputIL',
-                        help='output invfile filename')
+    parser.add_argument("--output", required=True, help="output index filename")
+    parser.add_argument("--outputIL", help="output invfile filename")
 
     args = parser.parse_args()
 
     if args.nt != -1:
-        print('set nb of threads to', args.nt)
-
+        print("set nb of threads to", args.nt)
 
     ils = faiss.InvertedListsPtrVector()
     ils_dont_dealloc = []
@@ -38,9 +35,11 @@ if __name__ == '__main__':
     def load_index(fname):
         print("loading", fname)
         try:
-            index = faiss.read_index(fname, faiss.IO_FLAG_MMAP | faiss.IO_FLAG_READ_ONLY)
+            index = faiss.read_index(
+                fname, faiss.IO_FLAG_MMAP | faiss.IO_FLAG_READ_ONLY
+            )
         except RuntimeError as e:
-            print('could not load %s: %s' % (fname, e))
+            print("could not load %s: %s" % (fname, e))
             return fname, None
 
         print("  %d entries" % index.ntotal)
@@ -57,7 +56,7 @@ if __name__ == '__main__':
         il.this.own()
         ils_dont_dealloc.append(il)
         if (args.l0, args.l1) != (0, -1):
-            print('restricting to lists %d:%d' % (args.l0, args.l1))
+            print("restricting to lists %d:%d" % (args.l0, args.l1))
             # il = faiss.SliceInvertedLists(il, args.l0, args.l1)
 
             il.crop_invlists(args.l0, args.l1)
@@ -70,13 +69,11 @@ if __name__ == '__main__':
     print("loaded %d invlists" % ils.size())
 
     if not args.outputIL:
-        args.outputIL = args.output + '_invlists'
+        args.outputIL = args.output + "_invlists"
 
     il0 = ils.at(0)
 
-    il = faiss.OnDiskInvertedLists(
-        il0.nlist, il0.code_size,
-        args.outputIL)
+    il = faiss.OnDiskInvertedLists(il0.nlist, il0.code_size, args.outputIL)
 
     print("perform merge")
 

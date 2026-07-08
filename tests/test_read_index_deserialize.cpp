@@ -152,6 +152,32 @@ TEST(ReadIndexDeserialize, PQWithMZeroDivideByZero) {
 }
 
 // -----------------------------------------------------------------------
+// Test: a non-{0,1} byte at a bool field position must be rejected as
+// FaissException rather than silently producing an invalid bool value.
+// Reading a non-canonical byte directly into a bool is UB and trips
+// UBSan's invalid-bool-load check; the READ1_BOOL helper routes every
+// bool READ1 through a value check and throws on anything outside {0,1}.
+// is_trained, read inside read_index_header, exercises the helper from
+// the most common deserialization path.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexHeaderInvalidBoolEncodingIsTrained) {
+    // Minimal IndexFlatL2 ("IxF2") with ntotal=0 - read_index_header is
+    // the first thing the deserializer consumes for this fourcc.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+
+    // is_trained sits at offset 4 (fourcc) + 4 (d) + 8 (ntotal) +
+    // 8 (dummy) + 8 (dummy) = 32. push_index_header writes 0x01 there;
+    // overwrite with a non-canonical bool byte.
+    constexpr size_t is_trained_offset = 32;
+    ASSERT_EQ(buf[is_trained_offset], uint8_t{1});
+    buf[is_trained_offset] = 0x02;
+
+    expect_read_throws_with(buf, "invalid bool encoding");
+}
+
+// -----------------------------------------------------------------------
 // Test: AdditiveQuantizer with nbits.size() != M causes out-of-bounds
 // access on the nbits vector in set_derived_values().  The fix validates
 // nbits.size() == M in read_AdditiveQuantizer.
@@ -414,6 +440,58 @@ TEST(ReadIndexDeserialize, IndexLatticeR2TooLarge) {
     push_val<int>(buf, 73); // r2 = 73 (decode cache too large for dsq=16)
 
     expect_read_throws_with(buf, "decode cache");
+}
+
+// -----------------------------------------------------------------------
+// Test: the configurable deserialization_lattice_r2_limit rejects
+// IndexLattice payloads whose r2 exceeds the limit, separately from
+// the in-codec decode-cache memory cap.  The limit's purpose is to
+// let callers that operate on untrusted index payloads cap the
+// ZnSphereCodecRec decode-cache build cost (which grows polynomially
+// in r2) before it dominates load time, even for parameter
+// combinations that the memory cap permits.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLatticeR2ConfigurableLimit) {
+    const size_t old_limit = get_deserialization_lattice_r2_limit();
+
+    // d=4, nsq=1, scale_nbit=4 produces dsq=4 -- a configuration that
+    // passes the existing structural checks.  r2 at the limit must
+    // deserialize cleanly (the cap is "r2 > limit", not "r2 >= limit");
+    // r2 above the limit must be rejected with a FaissException whose
+    // message names the limit, before the IndexLattice constructor
+    // (and the underlying ZnSphereCodecRec) is invoked.
+    constexpr int d = 4;
+    auto build = [](int r2) {
+        std::vector<uint8_t> buf;
+        push_fourcc(buf, "IxLa");
+        push_val<int>(buf, d);  // d
+        push_val<int>(buf, 1);  // nsq
+        push_val<int>(buf, 4);  // scale_nbit
+        push_val<int>(buf, r2); // r2
+        push_index_header(buf, d, /*ntotal=*/0);
+        // Untrained: empty trained vector.
+        push_vector<float>(buf, {});
+        return buf;
+    };
+
+    set_deserialization_lattice_r2_limit(2);
+    {
+        // r2 == limit: the limit check passes (since it is r2 > limit,
+        // not r2 >= limit) and the underlying ZnSphereCodecRec
+        // constructor runs to completion.
+        auto buf = build(2);
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_NO_THROW(read_index_up(&reader));
+    }
+    {
+        // r2 == limit + 1: rejected at the limit check with the
+        // configured limit value in the error message.
+        auto buf = build(3);
+        expect_read_throws_with(buf, "deserialization_lattice_r2_limit");
+    }
+
+    set_deserialization_lattice_r2_limit(old_limit);
 }
 
 // -----------------------------------------------------------------------
@@ -4024,6 +4102,7 @@ TEST(ReadIndexDeserialize, SVSVamanaInvalidStreamThrows) {
     push_val<size_t>(buf, 28);  // prune_to
     push_val<bool>(buf, false); // use_full_search_history
     push_val<int>(buf, 0);      // storage_kind (SVS_Float16)
+    push_val<bool>(buf, false); // is_static
     push_val<bool>(buf, true); // initialized = true → triggers deserialize_impl
     // Provide garbage SVS stream data — load should fail gracefully.
     for (int i = 0; i < 256; i++) {
@@ -4312,6 +4391,58 @@ TEST(ReadIndexDeserialize, IndexBinaryIDMap2InnerNtotalMismatchRejected) {
     auto buf = make_binary_idmap_payload(
             "IBM2", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
     expect_binary_read_throws_with(buf, "inner index ntotal");
+}
+
+// -----------------------------------------------------------------------
+// IndexIDMap with a "null" sub-index fourcc.  read_index returns
+// nullptr for that fourcc, so the inner-ntotal cross-check on the
+// IxMp/IxM2 path would dereference idxmap->index without protection.
+// Verify both float variants reject the payload at the new "inner
+// index is null" guard rather than crashing inside the validator.
+// The binary IBMp/IBM2 path is reached indirectly (an embedded float
+// IxMp/IxM2 inside a binary wrapper such as IndexBinaryFromFloat); it
+// is covered by the same float-side guard exercised here.
+// -----------------------------------------------------------------------
+
+namespace {
+
+std::vector<uint8_t> make_idmap_null_inner_payload(const char fourcc[4]) {
+    constexpr int d = 4;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, fourcc);
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_fourcc(buf, "null");
+    push_vector<int64_t>(buf, std::vector<int64_t>{});
+    return buf;
+}
+
+} // namespace
+
+TEST(ReadIndexDeserialize, IndexIDMapNullInnerRejected) {
+    auto buf = make_idmap_null_inner_payload("IxMp");
+    expect_read_throws_with(buf, "inner index is null");
+}
+
+TEST(ReadIndexDeserialize, IndexIDMap2NullInnerRejected) {
+    auto buf = make_idmap_null_inner_payload("IxM2");
+    expect_read_throws_with(buf, "inner index is null");
+}
+
+// -----------------------------------------------------------------------
+// IndexBinaryFromFloat ("IBFf") wraps an inner float index.  read_index
+// returns nullptr for the "null" sub-index fourcc, and the IBFf
+// deserialize site previously accepted it without validation -- the
+// resulting IndexBinaryFromFloat would null-deref on the first
+// search/add operation rather than at the deserialization boundary.
+// Verify the new guard rejects the payload up front.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexBinaryFromFloatNullInnerRejected) {
+    constexpr int d = 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBFf");
+    push_binary_index_header(buf, d, /*ntotal=*/0);
+    push_fourcc(buf, "null");
+    expect_binary_read_throws_with(buf, "inner index is null");
 }
 
 // A well-formed IxMp payload with matching ntotals deserializes cleanly.

@@ -9,17 +9,17 @@
 
 #define THE_SIMD_LEVEL SIMDLevel::AVX2
 
-// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+// NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
 #include <faiss/utils/hamming_distance/hamming_computer-avx2.h>
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h>
+#include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h> // IWYU pragma: keep
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryHash_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryIVF_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/impl/binary_hamming/IndexIVFSpectralHash_impl.h>
+#include <faiss/impl/binary_hamming/IndexIVFSpectralHash_impl.h> // IWYU pragma: keep
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexPQ_impl.h>
 
