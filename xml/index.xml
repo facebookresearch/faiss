@@ -13224,7 +13224,7 @@
     <member refid="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" kind="function"><name>search_multi</name></member>
   </compound>
-  <compound refid="namespace_0d114" kind="namespace"><name>@114</name>
+  <compound refid="namespace_0d115" kind="namespace"><name>@115</name>
   </compound>
   <compound refid="namespacefaiss" kind="namespace"><name>faiss</name>
     <member refid="namespacefaiss_1a3b270886d10d9188ac96726f40b669e8" kind="function"><name>make_binary_hnsw_distance_computer_fixSL</name></member>
@@ -13832,27 +13832,27 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d141" kind="namespace"><name>faiss::@141</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d144" kind="namespace"><name>faiss::@144</name>
+  <compound refid="namespacefaiss_1_1_0d142" kind="namespace"><name>faiss::@142</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d145" kind="namespace"><name>faiss::@145</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d146" kind="namespace"><name>faiss::@146</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d219" kind="namespace"><name>faiss::@219</name>
+  <compound refid="namespacefaiss_1_1_0d147" kind="namespace"><name>faiss::@147</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d223" kind="namespace"><name>faiss::@223</name>
+  <compound refid="namespacefaiss_1_1_0d220" kind="namespace"><name>faiss::@220</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d227" kind="namespace"><name>faiss::@227</name>
+  <compound refid="namespacefaiss_1_1_0d224" kind="namespace"><name>faiss::@224</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d239" kind="namespace"><name>faiss::@239</name>
+  <compound refid="namespacefaiss_1_1_0d228" kind="namespace"><name>faiss::@228</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d251" kind="namespace"><name>faiss::@251</name>
+  <compound refid="namespacefaiss_1_1_0d240" kind="namespace"><name>faiss::@240</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d254" kind="namespace"><name>faiss::@254</name>
+  <compound refid="namespacefaiss_1_1_0d252" kind="namespace"><name>faiss::@252</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d256" kind="namespace"><name>faiss::@256</name>
+  <compound refid="namespacefaiss_1_1_0d255" kind="namespace"><name>faiss::@255</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d257" kind="namespace"><name>faiss::@257</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d67" kind="namespace"><name>faiss::@67</name>
   </compound>
@@ -14125,6 +14125,21 @@
   <compound refid="namespacefaiss_1_1nsg" kind="namespace"><name>faiss::nsg</name>
     <member refid="NSG_8h_1a0e25b3a231c2eb38fcec063865811e52" kind="function"><name>storage_distance_computer</name></member>
   </compound>
+  <compound refid="namespacefaiss_1_1polysemous__training" kind="namespace"><name>faiss::polysemous_training</name>
+    <member refid="polysemous__training_2dispatch_8h_1adad7f06c40f3626eb0cace3ce7af7725" kind="variable"><name>SIMD_LEVELS</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a5753d954522964db0ac386dc295e67de" kind="function"><name>hamming_compute_cost</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a3929cca054f7207786902df003b209b6" kind="function"><name>hamming_cost_update</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1aa703066a3ef3a3fe926045de90be5fdc" kind="function"><name>distances_compute_cost</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a39319328548c83d20c8ca229ed1bd797" kind="function"><name>distances_cost_update</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a88df0845cd06b3da2e85e5e52b20321d" kind="function"><name>hamming_compute_cost&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a2162b0c71c8245e06e4ece27d314c4de" kind="function"><name>hamming_compute_cost&lt; SIMDLevel::AVX512 &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a465cf1864f2e295439c983c42036dc29" kind="function"><name>hamming_cost_update&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a251bebcfdce1f1bf64f4753e7e2a20ea" kind="function"><name>hamming_cost_update&lt; SIMDLevel::AVX512 &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1ac83870f882d0dfe10ccf0faa4b955a3e" kind="function"><name>distances_compute_cost&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a3756628c448d408fc2aa5402ae474d09" kind="function"><name>distances_compute_cost&lt; SIMDLevel::AVX512 &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a81dbac519dfe5294bcdcc4d5b2e39938" kind="function"><name>distances_cost_update&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="polysemous__training_2dispatch_8h_1a65adecb39acda39bc07518fb00bd66fa" kind="function"><name>distances_cost_update&lt; SIMDLevel::AVX512 &gt;</name></member>
+  </compound>
   <compound refid="namespacefaiss_1_1pq__code__distance" kind="namespace"><name>faiss::pq_code_distance</name>
     <member refid="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" kind="function"><name>make_IVFPQInvertedListScanner</name></member>
     <member refid="IVFPQScanner__impl_8h_1af6a7d6a634808cfff4adb38078cb54a4" kind="function"><name>make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</name></member>
@@ -14148,7 +14163,7 @@
     <member refid="pq__code__distance_8h_1a1918813645287593e72cce615ece1863" kind="function"><name>pq_code_distance_single</name></member>
     <member refid="pq__code__distance_8h_1aa271346d82ed780f8b8e65431a8021ce" kind="function"><name>pq_code_distance_four</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d118" kind="namespace"><name>faiss::pq_code_distance::@118</name>
+  <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d119" kind="namespace"><name>faiss::pq_code_distance::@119</name>
   </compound>
   <compound refid="namespacefaiss_1_1quantize__lut" kind="namespace"><name>faiss::quantize_lut</name>
     <member refid="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" kind="function"><name>round_uint8_per_column</name></member>
@@ -14230,7 +14245,7 @@
     <member refid="training_8h_1a034e56b144961f4bf96372b957fb0885" kind="function"><name>train_NonUniform</name></member>
     <member refid="training_8h_1abf3cbfe5f3be5bb8f2d0f8e720245576" kind="function"><name>train_TurboQuantMSE</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1scalar__quantizer_1_1_0d135" kind="namespace"><name>faiss::scalar_quantizer::@135</name>
+  <compound refid="namespacefaiss_1_1scalar__quantizer_1_1_0d136" kind="namespace"><name>faiss::scalar_quantizer::@136</name>
   </compound>
   <compound refid="namespacefaiss_1_1simd__partitioning" kind="namespace"><name>faiss::simd_partitioning</name>
   </compound>
@@ -14519,7 +14534,9 @@
   </compound>
   <compound refid="AuxIndexStructures_8h" kind="file"><name>AuxIndexStructures.h</name>
   </compound>
-  <compound refid="dispatch_8h" kind="file"><name>dispatch.h</name>
+  <compound refid="binary__hamming_2dispatch_8h" kind="file"><name>dispatch.h</name>
+  </compound>
+  <compound refid="polysemous__training_2dispatch_8h" kind="file"><name>dispatch.h</name>
   </compound>
   <compound refid="IndexBinaryHash__impl_8h" kind="file"><name>IndexBinaryHash_impl.h</name>
     <member refid="IndexBinaryHash__impl_8h_1abe6ea42d56bb6b1cf335146f0877d7a9" kind="variable"><name>nbit</name></member>
@@ -15066,6 +15083,8 @@
   <compound refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir"><name>faiss/invlists</name>
   </compound>
   <compound refid="dir_a183f389f7fdb8e3b256673548812ad2" kind="dir"><name>faiss/gpu/perf</name>
+  </compound>
+  <compound refid="dir_91b27e9ef764347773ffca62779352cf" kind="dir"><name>faiss/impl/polysemous_training</name>
   </compound>
   <compound refid="dir_c049bba3e09b3fcad22939d16e82a552" kind="dir"><name>faiss/impl/pq_code_distance</name>
   </compound>

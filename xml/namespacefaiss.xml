@@ -386,6 +386,7 @@
     <innernamespace refid="namespacefaiss_1_1nn">faiss::nn</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nndescent">faiss::nndescent</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nsg">faiss::nsg</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1polysemous__training">faiss::polysemous_training</innernamespace>
     <innernamespace refid="namespacefaiss_1_1pq__code__distance">faiss::pq_code_distance</innernamespace>
     <innernamespace refid="namespacefaiss_1_1quantize__lut">faiss::quantize_lut</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rabitq">faiss::rabitq</innernamespace>

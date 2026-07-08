@@ -10,7 +10,7 @@
     <includes refid="AuxIndexStructures_8h" local="no">faiss/impl/AuxIndexStructures.h</includes>
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <includes refid="ResultHandler_8h" local="no">faiss/impl/ResultHandler.h</includes>
-    <includes refid="dispatch_8h" local="no">faiss/impl/binary_hamming/dispatch.h</includes>
+    <includes refid="binary__hamming_2dispatch_8h" local="no">faiss/impl/binary_hamming/dispatch.h</includes>
     <includes refid="hamming_8h" local="no">faiss/utils/hamming.h</includes>
     <incdepgraph>
       <node id="18">
@@ -265,7 +265,7 @@
       </node>
       <node id="51">
         <label>faiss/impl/binary_hamming/dispatch.h</label>
-        <link refid="dispatch_8h_source"/>
+        <link refid="binary__hamming_2dispatch_8h_source"/>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="5" relation="include">

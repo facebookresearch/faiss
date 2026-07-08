@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="dispatch_8h" kind="file" language="C++">
+  <compounddef id="binary__hamming_2dispatch_8h" kind="file" language="C++">
     <compoundname>dispatch.h</compoundname>
     <includes refid="simd__levels_8h" local="no">faiss/utils/simd_levels.h</includes>
     <includes local="no">cstddef</includes>
@@ -13,7 +13,7 @@
     <incdepgraph>
       <node id="1">
         <label>faiss/impl/binary_hamming/dispatch.h</label>
-        <link refid="dispatch_8h"/>
+        <link refid="binary__hamming_2dispatch_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
@@ -75,7 +75,7 @@
       </node>
       <node id="1">
         <label>faiss/impl/binary_hamming/dispatch.h</label>
-        <link refid="dispatch_8h"/>
+        <link refid="binary__hamming_2dispatch_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">

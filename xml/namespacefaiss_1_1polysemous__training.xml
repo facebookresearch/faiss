@@ -1,0 +1,439 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1polysemous__training" kind="namespace" language="C++">
+    <compoundname>faiss::polysemous_training</compoundname>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="polysemous__training_2dispatch_8h_1adad7f06c40f3626eb0cace3ce7af7725" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::polysemous_training::SIMD_LEVELS</definition>
+        <argsstring></argsstring>
+        <name>SIMD_LEVELS</name>
+        <qualifiedname>faiss::polysemous_training::SIMD_LEVELS</qualifiedname>
+        <initializer>=
+        (1 &lt;&lt; int(SIMDLevel::NONE)) | (1 &lt;&lt; int(SIMDLevel::AVX512))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="21" column="15" bodyfile="faiss/impl/polysemous_training/dispatch.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a5753d954522964db0ac386dc295e67de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::hamming_compute_cost</definition>
+        <argsstring>(int n, const int *perm, const double *target_dis, const double *weights)</argsstring>
+        <name>hamming_compute_cost</name>
+        <qualifiedname>faiss::polysemous_training::hamming_compute_cost</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>target_dis</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute_cost for ReproduceWithHammingObjective. Parameters mirror the objective&apos;s fields to avoid exposing the anonymous-namespace struct. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="28" column="8" declfile="faiss/impl/polysemous_training/dispatch.h" declline="28" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a3929cca054f7207786902df003b209b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::hamming_cost_update</definition>
+        <argsstring>(int n, const int *perm, int iw, int jw, const double *target_dis, const double *weights)</argsstring>
+        <name>hamming_cost_update</name>
+        <qualifiedname>faiss::polysemous_training::hamming_cost_update</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iw</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>jw</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>target_dis</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+<para>cost_update for ReproduceWithHammingObjective. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="36" column="8" declfile="faiss/impl/polysemous_training/dispatch.h" declline="36" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1aa703066a3ef3a3fe926045de90be5fdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::distances_compute_cost</definition>
+        <argsstring>(const ReproduceDistancesObjective &amp;obj, const int *perm)</argsstring>
+        <name>distances_compute_cost</name>
+        <qualifiedname>faiss::polysemous_training::distances_compute_cost</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+<para>compute_cost for <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="46" column="8" declfile="faiss/impl/polysemous_training/dispatch.h" declline="46" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a39319328548c83d20c8ca229ed1bd797" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::distances_cost_update</definition>
+        <argsstring>(const ReproduceDistancesObjective &amp;obj, const int *perm, int iw, int jw)</argsstring>
+        <name>distances_cost_update</name>
+        <qualifiedname>faiss::polysemous_training::distances_cost_update</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iw</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>jw</declname>
+        </param>
+        <briefdescription>
+<para>cost_update for <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="52" column="8" declfile="faiss/impl/polysemous_training/dispatch.h" declline="52" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a88df0845cd06b3da2e85e5e52b20321d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::hamming_compute_cost&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(int n, const int *perm, const double *target_dis, const double *weights)</argsstring>
+        <name>hamming_compute_cost&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::polysemous_training::hamming_compute_cost&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>target_dis</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="63" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="63" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a2162b0c71c8245e06e4ece27d314c4de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::hamming_compute_cost&lt; SIMDLevel::AVX512 &gt;</definition>
+        <argsstring>(int n, const int *perm, const double *target_dis, const double *weights)</argsstring>
+        <name>hamming_compute_cost&lt; SIMDLevel::AVX512 &gt;</name>
+        <qualifiedname>faiss::polysemous_training::hamming_compute_cost&lt; SIMDLevel::AVX512 &gt;</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>target_dis</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="69" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="69" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a465cf1864f2e295439c983c42036dc29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::hamming_cost_update&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(int n, const int *perm, int iw, int jw, const double *target_dis, const double *weights)</argsstring>
+        <name>hamming_cost_update&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::polysemous_training::hamming_cost_update&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iw</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>jw</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>target_dis</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="76" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="76" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a251bebcfdce1f1bf64f4753e7e2a20ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::hamming_cost_update&lt; SIMDLevel::AVX512 &gt;</definition>
+        <argsstring>(int n, const int *perm, int iw, int jw, const double *target_dis, const double *weights)</argsstring>
+        <name>hamming_cost_update&lt; SIMDLevel::AVX512 &gt;</name>
+        <qualifiedname>faiss::polysemous_training::hamming_cost_update&lt; SIMDLevel::AVX512 &gt;</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iw</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>jw</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>target_dis</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="84" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="84" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1ac83870f882d0dfe10ccf0faa4b955a3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::distances_compute_cost&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const ReproduceDistancesObjective &amp;obj, const int *perm)</argsstring>
+        <name>distances_compute_cost&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::polysemous_training::distances_compute_cost&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="93" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="93" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a3756628c448d408fc2aa5402ae474d09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::distances_compute_cost&lt; SIMDLevel::AVX512 &gt;</definition>
+        <argsstring>(const ReproduceDistancesObjective &amp;obj, const int *perm)</argsstring>
+        <name>distances_compute_cost&lt; SIMDLevel::AVX512 &gt;</name>
+        <qualifiedname>faiss::polysemous_training::distances_compute_cost&lt; SIMDLevel::AVX512 &gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="97" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="97" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a81dbac519dfe5294bcdcc4d5b2e39938" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::distances_cost_update&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const ReproduceDistancesObjective &amp;obj, const int *perm, int iw, int jw)</argsstring>
+        <name>distances_cost_update&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::polysemous_training::distances_cost_update&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iw</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>jw</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="102" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="102" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="polysemous__training_2dispatch_8h_1a65adecb39acda39bc07518fb00bd66fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double faiss::polysemous_training::distances_cost_update&lt; SIMDLevel::AVX512 &gt;</definition>
+        <argsstring>(const ReproduceDistancesObjective &amp;obj, const int *perm, int iw, int jw)</argsstring>
+        <name>distances_cost_update&lt; SIMDLevel::AVX512 &gt;</name>
+        <qualifiedname>faiss::polysemous_training::distances_cost_update&lt; SIMDLevel::AVX512 &gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iw</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>jw</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/polysemous_training/dispatch.h" line="108" column="1" declfile="faiss/impl/polysemous_training/dispatch.h" declline="108" declcolumn="1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/polysemous_training/dispatch.h" line="16" column="1"/>
+  </compounddef>
+</doxygen>

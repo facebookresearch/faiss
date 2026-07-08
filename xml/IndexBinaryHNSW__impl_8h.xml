@@ -5,7 +5,7 @@
     <includes refid="hamming__computer_8h" local="no">faiss/utils/hamming_distance/hamming_computer.h</includes>
     <includes refid="IndexBinaryFlat_8h" local="no">faiss/IndexBinaryFlat.h</includes>
     <includes refid="DistanceComputer_8h" local="no">faiss/impl/DistanceComputer.h</includes>
-    <includes refid="dispatch_8h" local="no">faiss/impl/binary_hamming/dispatch.h</includes>
+    <includes refid="binary__hamming_2dispatch_8h" local="no">faiss/impl/binary_hamming/dispatch.h</includes>
     <includes refid="hamming_8h" local="no">faiss/utils/hamming.h</includes>
     <incdepgraph>
       <node id="15">
@@ -144,7 +144,7 @@
       </node>
       <node id="37">
         <label>faiss/impl/binary_hamming/dispatch.h</label>
-        <link refid="dispatch_8h_source"/>
+        <link refid="binary__hamming_2dispatch_8h_source"/>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
