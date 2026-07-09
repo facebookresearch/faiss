@@ -1889,9 +1889,28 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivfl->code_size = ivfl->d * sizeof(float);
         ArrayInvertedLists* ail = set_array_invlist(ivfl.get(), ids);
 
+        // Legacy IVF serialized ids and codes as separate vectors.
+        // Check not required in default IVF, due to single sizes vector.
+        auto validate_legacy_codes_size = [&](size_t i) {
+            const size_t expected_codes_bytes = mul_no_overflow(
+                    ail->ids[i].size(),
+                    ivfl->code_size,
+                    "legacy IVFFlat inverted list codes");
+            FAISS_THROW_IF_NOT_FMT(
+                    ail->codes[i].size() == expected_codes_bytes,
+                    "Legacy IVFFlat inverted list %zu: codes size %zu bytes "
+                    "does not match ids size %zu * code_size %zu = %zu bytes",
+                    i,
+                    ail->codes[i].size(),
+                    ail->ids[i].size(),
+                    (size_t)ivfl->code_size,
+                    expected_codes_bytes);
+        };
+
         if (h == fourcc("IvFL")) {
             for (size_t i = 0; i < ivfl->nlist; i++) {
                 READVECTOR(ail->codes[i]);
+                validate_legacy_codes_size(i);
             }
         } else { // old format
             for (size_t i = 0; i < ivfl->nlist; i++) {
@@ -1899,6 +1918,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 READVECTOR(vec);
                 ail->codes[i].resize(vec.size() * sizeof(float));
                 memcpy(ail->codes[i].data(), vec.data(), ail->codes[i].size());
+                validate_legacy_codes_size(i);
             }
         }
         idx = std::move(ivfl);

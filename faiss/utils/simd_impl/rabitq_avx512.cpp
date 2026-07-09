@@ -344,6 +344,41 @@ uint64_t popcount<SIMDLevel::AVX512>(const uint8_t* data, size_t size) {
     return sum;
 }
 
+template <>
+void rearrange_bit_planes<SIMDLevel::AVX512>(
+        const uint8_t* rotated_qq,
+        size_t d,
+        size_t qb,
+        uint8_t* out) {
+    const size_t offset = (d + 7) / 8;
+    memset(out, 0, offset * qb);
+    size_t idim = 0;
+    for (; idim + 64 <= d; idim += 64) {
+        __m512i vals = _mm512_loadu_si512((const __m512i*)(rotated_qq + idim));
+        for (size_t iv = 0; iv < qb; iv++) {
+            __m512i mask = _mm512_set1_epi8(static_cast<char>(1 << iv));
+            __mmask64 bits = _mm512_test_epi8_mask(vals, mask);
+            memcpy(&out[iv * offset + idim / 8], &bits, 8);
+        }
+    }
+    for (; idim + 32 <= d; idim += 32) {
+        __m256i vals = _mm256_loadu_si256((const __m256i*)(rotated_qq + idim));
+        for (size_t iv = 0; iv < qb; iv++) {
+            __m256i mask = _mm256_set1_epi8(static_cast<char>(1 << iv));
+            __m256i bits =
+                    _mm256_cmpeq_epi8(_mm256_and_si256(vals, mask), mask);
+            uint32_t packed = static_cast<uint32_t>(_mm256_movemask_epi8(bits));
+            memcpy(&out[iv * offset + idim / 8], &packed, 4);
+        }
+    }
+    for (; idim < d; idim++) {
+        for (size_t iv = 0; iv < qb; iv++) {
+            const bool bit = ((rotated_qq[idim] & (1 << iv)) != 0);
+            out[iv * offset + idim / 8] |= bit ? (1 << (idim % 8)) : 0;
+        }
+    }
+}
+
 } // namespace faiss::rabitq
 
 namespace faiss::rabitq::multibit {
