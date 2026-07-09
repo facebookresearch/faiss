@@ -13436,7 +13436,7 @@
     <member refid="namespacefaiss_1a613c867df3afeba8421d7ca1200e7529" kind="function"><name>kmeans1d</name></member>
     <member refid="namespacefaiss_1ae753c3918c4698ce7ad1eacb25b9c574" kind="function"><name>operator==</name></member>
     <member refid="namespacefaiss_1a19490ca11481c398d216a3e808386497" kind="function"><name>operator!=</name></member>
-    <member refid="namespacefaiss_1a363323eeb7964d0be3b343a97660aea2" kind="function"><name>compute_level_dot_kernel</name></member>
+    <member refid="namespacefaiss_1aa248b898e549702c13a3c6d472c9ecb5" kind="function"><name>compute_level_dot_kernel</name></member>
     <member refid="namespacefaiss_1a9831b89f0165e35baa42f0613aeecdd7" kind="function"><name>prune_kernel</name></member>
     <member refid="namespacefaiss_1a827b618a63e28ed37e15d58bac2651bf" kind="function"><name>compact_active_kernel</name></member>
     <member refid="namespacefaiss_1ae6f31f1aa3caf51109b4826f5beea953" kind="function"><name>with_level_width</name></member>

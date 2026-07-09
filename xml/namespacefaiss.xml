@@ -6106,7 +6106,7 @@
         </inbodydescription>
         <location file="faiss/impl/maybe_owned_vector.h" line="317" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="317" bodyend="321"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a363323eeb7964d0be3b343a97660aea2" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1aa248b898e549702c13a3c6d472c9ecb5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>bool</type>
@@ -6123,7 +6123,7 @@
         </templateparamlist>
         <type>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN void</type>
         <definition>static FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN void faiss::compute_level_dot_kernel</definition>
-        <argsstring>(const float *FAISS_RESTRICT query_level, const float *FAISS_RESTRICT level_storage, const uint32_t *active_indices, const size_t num_active, const size_t level_width_dims, float *FAISS_RESTRICT dot_products)</argsstring>
+        <argsstring>(const float *FAISS_RESTRICT query_level, const float *FAISS_RESTRICT level_storage, const uint32_t *active_indices, const size_t num_active, const size_t level_width_dims, float *FAISS_RESTRICT dot_products, size_t stride=0)</argsstring>
         <name>compute_level_dot_kernel</name>
         <qualifiedname>faiss::compute_level_dot_kernel</qualifiedname>
         <param>
@@ -6150,6 +6150,11 @@
           <type>float *FAISS_RESTRICT</type>
           <declname>dot_products</declname>
         </param>
+        <param>
+          <type>size_t</type>
+          <declname>stride</declname>
+          <defval>0</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -6175,7 +6180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="46" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="46" bodyend="90"/>
+        <location file="faiss/impl/Panorama.h" line="46" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="46" bodyend="92"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9831b89f0165e35baa42f0613aeecdd7" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6238,7 +6243,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="106" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="106" bodyend="139"/>
+        <location file="faiss/impl/Panorama.h" line="108" column="20" bodyfile="faiss/impl/Panorama.h" bodystart="108" bodyend="141"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a827b618a63e28ed37e15d58bac2651bf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_PRAGMA_IMPRECISE_FUNCTION_END size_t</type>
@@ -6265,7 +6270,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="148" column="15" bodyfile="faiss/impl/Panorama.h" bodystart="148" bodyend="178"/>
+        <location file="faiss/impl/Panorama.h" line="150" column="15" bodyfile="faiss/impl/Panorama.h" bodystart="150" bodyend="180"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae6f31f1aa3caf51109b4826f5beea953" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6293,7 +6298,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="201" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="201" bodyend="204"/>
+        <location file="faiss/impl/Panorama.h" line="203" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="203" bodyend="206"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acbfa0bb394a6f92972d97f6d4b1f8d3c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6320,7 +6325,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="207" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="207" bodyend="213"/>
+        <location file="faiss/impl/Panorama.h" line="209" column="13" bodyfile="faiss/impl/Panorama.h" bodystart="209" bodyend="215"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abd58cb9ccddf108229bd3f2d3f0d2bac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
