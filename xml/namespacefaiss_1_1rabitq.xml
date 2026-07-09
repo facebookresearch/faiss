@@ -205,6 +205,80 @@
         </inbodydescription>
         <location file="faiss/utils/rabitq_simd.h" line="59" column="10" declfile="faiss/utils/rabitq_simd.h" declline="59" declcolumn="10"/>
       </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a6d8a5bc919e7415ab435c0d88ba021c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::rearrange_bit_planes</definition>
+        <argsstring>(const uint8_t *rotated_qq, size_t d, size_t qb, uint8_t *out)</argsstring>
+        <name>rearrange_bit_planes</name>
+        <qualifiedname>faiss::rabitq::rearrange_bit_planes</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>rotated_qq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>qb</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Rearrange per-dimension quantized query codes into bit-plane layout.</para>
+<para><computeroutput>rotated_qq</computeroutput> holds one qb-bit code per dimension (one byte each, value in [0, 2^qb)). <computeroutput>out</computeroutput> receives qb bit-planes of ((d + 7) / 8) bytes each: bit-plane j packs bit j of code i into bit (i % 8) of byte (i / 8). <computeroutput>out</computeroutput> must have room for qb * ((d + 7) / 8) bytes and is fully overwritten.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>rotated_qq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>per-dimension codes (d bytes) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimensionality </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>qb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>quantization bits per dimension (1..8) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>bit-plane output buffer (qb * ((d + 7) / 8) bytes) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="75" column="6" declfile="faiss/utils/rabitq_simd.h" declline="75" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a5745fa8520d0e2fb3e6aba23d168c6cc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
         </templateparamlist>
@@ -235,7 +309,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="64" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="64" bodyend="86"/>
+        <location file="faiss/utils/rabitq_simd.h" line="84" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="84" bodyend="106"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a290007a2ca46073a49129d7d73f0768a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -267,7 +341,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="89" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="89" bodyend="111"/>
+        <location file="faiss/utils/rabitq_simd.h" line="109" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="109" bodyend="131"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ac0999cb30c3f92f1dda521134802811c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -291,7 +365,39 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="114" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="114" bodyend="126"/>
+        <location file="faiss/utils/rabitq_simd.h" line="134" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="134" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a01e0454f0fcdb6ba34c6473e7857bbd7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::rearrange_bit_planes&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const uint8_t *rotated_qq, size_t d, size_t qb, uint8_t *out)</argsstring>
+        <name>rearrange_bit_planes&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::rabitq::rearrange_bit_planes&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>rotated_qq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>qb</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="149" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="149" bodyend="162"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

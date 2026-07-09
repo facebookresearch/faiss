@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="149" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="149" bodyend="172"/>
+        <location file="faiss/utils/rabitq_simd.h" line="185" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="185" bodyend="208"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a61b6bf14620f5ba6dcd1a913419a1a0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -143,7 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="186" column="7" declfile="faiss/utils/rabitq_simd.h" declline="186" declcolumn="7"/>
+        <location file="faiss/utils/rabitq_simd.h" line="222" column="7" declfile="faiss/utils/rabitq_simd.h" declline="222" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ad22df7716dfd83e0fe96a8809f2124d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -183,13 +183,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="196" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="196" bodyend="204"/>
+        <location file="faiss/utils/rabitq_simd.h" line="232" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="232" bodyend="240"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/rabitq_simd.h" line="144" column="1"/>
+    <location file="faiss/utils/rabitq_simd.h" line="180" column="1"/>
   </compounddef>
 </doxygen>

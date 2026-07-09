@@ -14182,9 +14182,11 @@
     <member refid="rabitq__simd_8h_1afeb79d98edbdd4b10dcbf414c6b33a06" kind="function"><name>bitwise_and_dot_product</name></member>
     <member refid="rabitq__simd_8h_1aa369a4ff0088baa248147660f15980d6" kind="function"><name>bitwise_xor_dot_product</name></member>
     <member refid="rabitq__simd_8h_1af659144f46f1e1972f1283b537778619" kind="function"><name>popcount</name></member>
+    <member refid="rabitq__simd_8h_1a6d8a5bc919e7415ab435c0d88ba021c7" kind="function"><name>rearrange_bit_planes</name></member>
     <member refid="rabitq__simd_8h_1a5745fa8520d0e2fb3e6aba23d168c6cc" kind="function"><name>bitwise_and_dot_product&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="rabitq__simd_8h_1a290007a2ca46073a49129d7d73f0768a" kind="function"><name>bitwise_xor_dot_product&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="rabitq__simd_8h_1ac0999cb30c3f92f1dda521134802811c" kind="function"><name>popcount&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="rabitq__simd_8h_1a01e0454f0fcdb6ba34c6473e7857bbd7" kind="function"><name>rearrange_bit_planes&lt; SIMDLevel::NONE &gt;</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rabitq_1_1multibit" kind="namespace"><name>faiss::rabitq::multibit</name>
     <member refid="rabitq__simd_8h_1a7fc63cb7b1c8ae1167d5c595adff0103" kind="function"><name>ip_scalar</name></member>
