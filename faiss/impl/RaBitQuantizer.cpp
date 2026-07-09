@@ -285,7 +285,7 @@ struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
 
         if (metric_type == MetricType::METRIC_L2) {
             // ||or - q||^ 2
-            return pre_dist;
+            return std::max(0.0f, pre_dist);
         } else {
             // metric == MetricType::METRIC_INNER_PRODUCT
             // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
@@ -448,7 +448,7 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
 
         if (metric_type == MetricType::METRIC_L2) {
             // ||or - q||^ 2
-            return pre_dist;
+            return std::max(0.0f, pre_dist);
         } else {
             // metric == MetricType::METRIC_INNER_PRODUCT
             // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
