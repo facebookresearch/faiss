@@ -687,21 +687,12 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
             __m256i c2 = _mm256_loadu_epi8(code2 + i);
             __m512i c1i16 = _mm512_cvtepu8_epi16(c1);
             __m512i c2i16 = _mm512_cvtepu8_epi16(c2);
-#ifdef __AVX512VNNI__
-            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                accu = _mm512_dpwssd_epi32(accu, c1i16, c2i16);
-            } else {
-                __m512i diff = _mm512_sub_epi16(c1i16, c2i16);
-                accu = _mm512_dpwssd_epi32(accu, diff, diff);
-            }
-#else
             if (Sim::metric_type == METRIC_INNER_PRODUCT) {
                 accu = _mm512_add_epi32(accu, _mm512_madd_epi16(c1i16, c2i16));
             } else {
                 __m512i diff = _mm512_sub_epi16(c1i16, c2i16);
                 accu = _mm512_add_epi32(accu, _mm512_madd_epi16(diff, diff));
             }
-#endif
         }
         // tail handling for dimensions not divisible by 32
         if (i < d) {
@@ -710,21 +701,12 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
             __m256i c2 = _mm256_maskz_loadu_epi8(mask, code2 + i);
             __m512i c1i16 = _mm512_cvtepu8_epi16(c1);
             __m512i c2i16 = _mm512_cvtepu8_epi16(c2);
-#ifdef __AVX512VNNI__
-            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                accu = _mm512_dpwssd_epi32(accu, c1i16, c2i16);
-            } else {
-                __m512i diff = _mm512_sub_epi16(c1i16, c2i16);
-                accu = _mm512_dpwssd_epi32(accu, diff, diff);
-            }
-#else
             if (Sim::metric_type == METRIC_INNER_PRODUCT) {
                 accu = _mm512_add_epi32(accu, _mm512_madd_epi16(c1i16, c2i16));
             } else {
                 __m512i diff = _mm512_sub_epi16(c1i16, c2i16);
                 accu = _mm512_add_epi32(accu, _mm512_madd_epi16(diff, diff));
             }
-#endif
         }
         return _mm512_reduce_add_epi32(accu);
     }
