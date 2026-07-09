@@ -669,4 +669,42 @@ class TestMapInt64ToInt64(unittest.TestCase):
 
     def xx_test_large(self):
         # don't run by default because it's slow
-        self.do_test(2**21, 10**6)
+        self.do_test(2 ** 21, 10 ** 6)
+
+
+class TestRanklistIntersectionSize(unittest.TestCase):
+
+    def _intersect(self, v1, v2):
+        a = np.array(v1, dtype='int64')
+        b = np.array(v2, dtype='int64')
+        return faiss.ranklist_intersection_size(
+            len(a), faiss.swig_ptr(a), len(b), faiss.swig_ptr(b)
+        )
+
+    def _expected(self, v1, v2):
+        """Reference: set intersection of valid (non-negative) IDs."""
+        return len({x for x in v1 if x >= 0} & {x for x in v2 if x >= 0})
+
+    def test_basic_intersection(self):
+        v1, v2 = [1, 2, 3], [2, 3, 4]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_duplicates_in_v2_not_double_counted(self):
+        # 1 appears twice in v2 but should count only once
+        v1, v2 = [1, 2], [1, 1, 2]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_duplicates_in_v1_not_double_counted(self):
+        # 1 appears twice in v1 but the same v2 entry should not count twice
+        v1, v2 = [1, 1, 2], [1, 2]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_negative_values_not_counted(self):
+        # negative values are invalid IDs and must not count as matches
+        v1, v2 = [-1, -2, -5, 1, 2], [-1, -2, -5, 1, 2]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
+
+    def test_ids_above_2_pow_60(self):
+        # the old bit-flag trick corrupted IDs with bit 60 set
+        v1, v2 = [2 ** 60, 2 ** 61, 2 ** 62], [2 ** 61, 2 ** 62, 2 ** 63 - 1]
+        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
