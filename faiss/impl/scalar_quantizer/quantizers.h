@@ -147,14 +147,13 @@ struct QuantizerTemplate<
 };
 
 /*******************************************************************
- * TurboQuant MSE quantizer
+ * Lloyd-Max scalar quantizer
  *******************************************************************/
 template <int NBits, SIMDLevel SL>
-struct QuantizerTurboQuantMSE;
+struct QuantizerLloydMax;
 
 template <int NBits>
-struct QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>
-        : ScalarQuantizer::SQuantizer {
+struct QuantizerLloydMax<NBits, SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     static_assert(NBits >= 1 && NBits <= 8);
 
     static constexpr size_t kCentroidsCount = size_t(1) << NBits;
@@ -165,7 +164,7 @@ struct QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>
     const float* centroids;
     const float* boundaries;
 
-    QuantizerTurboQuantMSE(size_t d_in, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d_in, const std::vector<float>& trained)
             : d(d_in), centroids(nullptr), boundaries(nullptr) {
         FAISS_THROW_IF_NOT(trained.size() == 2 * kCentroidsCount - 1);
         centroids = trained.data();
@@ -221,10 +220,12 @@ struct QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>
 };
 
 template <int NBits, SIMDLevel SL>
-struct QuantizerTurboQuantMSE : QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE> {
-    using QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>::
-            QuantizerTurboQuantMSE;
+struct QuantizerLloydMax : QuantizerLloydMax<NBits, SIMDLevel::NONE> {
+    using QuantizerLloydMax<NBits, SIMDLevel::NONE>::QuantizerLloydMax;
 };
+
+template <int NBits, SIMDLevel SL>
+using QuantizerTurboQuantMSE = QuantizerLloydMax<NBits, SL>;
 
 /*******************************************************************
  * FP16 quantizer
