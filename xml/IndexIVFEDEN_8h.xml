@@ -1,0 +1,455 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="IndexIVFEDEN_8h" kind="file" language="C++">
+    <compoundname>IndexIVFEDEN.h</compoundname>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
+    <includes refid="EDENQuantizer_8h" local="no">faiss/impl/EDENQuantizer.h</includes>
+    <incdepgraph>
+      <node id="6">
+        <label>faiss/Clustering.h</label>
+        <link refid="Clustering_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/IndexIVFEDEN.h</label>
+        <link refid="IndexIVFEDEN_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>faiss/impl/AuxIndexStructures.h</label>
+        <link refid="AuxIndexStructures_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/impl/ClusteringInitialization.h</label>
+        <link refid="ClusteringInitialization_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>faiss/impl/EDENQuantizer.h</label>
+        <link refid="EDENQuantizer_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>faiss/impl/InvertedListScannerStats.h</label>
+        <link refid="InvertedListScannerStats_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>faiss/impl/Panorama.h</label>
+        <link refid="Panorama_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>faiss/impl/PanoramaStats.h</label>
+        <link refid="PanoramaStats_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>faiss/impl/Quantizer.h</label>
+        <link refid="Quantizer_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>faiss/impl/ScalarQuantizer.h</label>
+        <link refid="ScalarQuantizer_8h_source"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>faiss/impl/maybe_owned_vector.h</label>
+        <link refid="maybe__owned__vector_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>faiss/utils/distances.h</label>
+        <link refid="distances_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>algorithm</label>
+      </node>
+      <node id="32">
+        <label>cassert</label>
+      </node>
+      <node id="18">
+        <label>cinttypes</label>
+      </node>
+      <node id="29">
+        <label>climits</label>
+      </node>
+      <node id="30">
+        <label>cmath</label>
+      </node>
+      <node id="2">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="9">
+        <label>cstdio</label>
+      </node>
+      <node id="10">
+        <label>cstdlib</label>
+      </node>
+      <node id="31">
+        <label>cstring</label>
+      </node>
+      <node id="13">
+        <label>exception</label>
+      </node>
+      <node id="19">
+        <label>limits</label>
+      </node>
+      <node id="37">
+        <label>memory</label>
+      </node>
+      <node id="43">
+        <label>mutex</label>
+      </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="14">
+        <label>string</label>
+      </node>
+      <node id="38">
+        <label>unordered_map</label>
+      </node>
+      <node id="22">
+        <label>unordered_set</label>
+      </node>
+      <node id="15">
+        <label>utility</label>
+      </node>
+      <node id="16">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structfaiss_1_1IndexIVFEDEN" prot="public">faiss::IndexIVFEDEN</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVF.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/EDENQuantizer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="structfaiss_1_1IndexIVFEDEN" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexIVFEDEN" kindref="compound">IndexIVFEDEN</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref><sp/>sq;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>EDENScaleType<sp/>scale_type<sp/>=<sp/>EDENScaleType_UNBIASED;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Factory<sp/>strings:<sp/>IVF&lt;nlist&gt;,EDEN,<sp/>IVF&lt;nlist&gt;,EDEN&lt;n&gt;,<sp/>and<sp/>the<sp/>same</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>forms<sp/>with<sp/>the<sp/>BIASED<sp/>suffix<sp/>for<sp/>EDEN&apos;s<sp/>MSE-minimizing<sp/>scale.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFEDEN" kindref="compound">IndexIVFEDEN</ref>(</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5" kindref="member">quantizer</ref>,</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>,</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" kindref="member">nlist</ref>,</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>own_invlists<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>nb_bits<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EDENScaleType<sp/>scale_type<sp/>=<sp/>EDENScaleType_UNBIASED);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFEDEN" kindref="compound">IndexIVFEDEN</ref>();</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="structfaiss_1_1IndexIVFEDEN_1a3f27a908ce44b0fed6b2e7002baceec7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1a3f27a908ce44b0fed6b2e7002baceec7" kindref="member">train_encoder</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/><ref refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kindref="member">assign</ref>)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="structfaiss_1_1IndexIVFEDEN_1a7ccaaba808c438c65c27f174f1199508" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1a7ccaaba808c438c65c27f174f1199508" kindref="member">encode_vectors</ref>(</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>list_nos,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>include_listnos<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="structfaiss_1_1IndexIVFEDEN_1a750c8e6b2da2dcb7b3fa9a651dcd84b2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1a750c8e6b2da2dcb7b3fa9a651dcd84b2" kindref="member">decode_vectors</ref>(</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>list_nos,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="structfaiss_1_1IndexIVFEDEN_1a37a487a23db3c46448019e0f0cf5da62" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1a37a487a23db3c46448019e0f0cf5da62" kindref="member">add_core</ref>(</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>xids,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>*<sp/>precomputed_idx,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>inverted_list_context<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="structfaiss_1_1IndexIVFEDEN_1ab60fd693efd61c6782c0677536cdd4c4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref>*<sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1ab60fd693efd61c6782c0677536cdd4c4" kindref="member">get_InvertedListScanner</ref>(</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>store_pairs,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel,</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="structfaiss_1_1IndexIVFEDEN_1ac34806d704347fd6618c6aac83cea113" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1ac34806d704347fd6618c6aac83cea113" kindref="member">reconstruct_from_offset</ref>(int64_t<sp/>list_no,<sp/>int64_t<sp/>offset,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>recons)</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="structfaiss_1_1IndexIVFEDEN_1a8cbb8690d25f3629a18f54a4caf9dc66" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1a8cbb8690d25f3629a18f54a4caf9dc66" kindref="member">sa_decode</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>bytes,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>*<sp/><ref refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31" kindref="member">get_distance_computer</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/IndexIVFEDEN.h"/>
+  </compounddef>
+</doxygen>

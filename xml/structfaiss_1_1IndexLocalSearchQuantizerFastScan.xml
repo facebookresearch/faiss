@@ -1775,6 +1775,7 @@
         <argsstring>(idx_t n, const float *x, float radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const</argsstring>
         <name>range_search</name>
         <qualifiedname>faiss::Index::range_search</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexEDEN_1ab9695ad22fd61fe293f4dec326dc2540">range_search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af3c56bae3b28baeb3e50aed74006a319">range_search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60">range_search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ac0874451b339054470272d4eea5d62ff">range_search</reimplementedby>
@@ -2368,6 +2369,7 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545">get_distance_computer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a4e0180e2aa2aacaa2532660bdb4f9b8c">get_distance_computer</reimplementedby>
         <briefdescription>

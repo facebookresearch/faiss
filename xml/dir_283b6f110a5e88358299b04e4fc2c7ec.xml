@@ -27,6 +27,7 @@
     <innerfile refid="IndexBinaryHash_8h">IndexBinaryHash.h</innerfile>
     <innerfile refid="IndexBinaryHNSW_8h">IndexBinaryHNSW.h</innerfile>
     <innerfile refid="IndexBinaryIVF_8h">IndexBinaryIVF.h</innerfile>
+    <innerfile refid="IndexEDEN_8h">IndexEDEN.h</innerfile>
     <innerfile refid="IndexFastScan_8h">IndexFastScan.h</innerfile>
     <innerfile refid="IndexFlat_8h">IndexFlat.h</innerfile>
     <innerfile refid="IndexFlatCodes_8h">IndexFlatCodes.h</innerfile>
@@ -35,6 +36,7 @@
     <innerfile refid="IndexIVF_8h">IndexIVF.h</innerfile>
     <innerfile refid="IndexIVFAdditiveQuantizer_8h">IndexIVFAdditiveQuantizer.h</innerfile>
     <innerfile refid="IndexIVFAdditiveQuantizerFastScan_8h">IndexIVFAdditiveQuantizerFastScan.h</innerfile>
+    <innerfile refid="IndexIVFEDEN_8h">IndexIVFEDEN.h</innerfile>
     <innerfile refid="IndexIVFFastScan_8h">IndexIVFFastScan.h</innerfile>
     <innerfile refid="IndexIVFFlat_8h">IndexIVFFlat.h</innerfile>
     <innerfile refid="IndexIVFFlatPanorama_8h">IndexIVFFlatPanorama.h</innerfile>

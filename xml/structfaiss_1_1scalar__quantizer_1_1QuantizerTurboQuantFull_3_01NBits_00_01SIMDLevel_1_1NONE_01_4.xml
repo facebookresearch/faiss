@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="412" column="26" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="412" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="413" column="26" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="413" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ad847c98a88b0a70e27d49ea29c475790" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr size_t</type>
@@ -39,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="413" column="29" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="413" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="414" column="29" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="414" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="415" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="415" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="416" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="416" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5e52c12d9c90e6f38483ed5cd936bbe3" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="416" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="416" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="417" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="417" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a6ea2eee3f725752c4a59a36d7fca0a57" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -83,7 +83,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="417" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="417" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="418" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="418" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1acb505c52485c287f182afbb800fe2411" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -97,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="420" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="420" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="421" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="421" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5c41e1e6fd9357837cb33f2df31d1136" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -111,7 +111,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="423" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="423" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="424" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="424" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1adcd4f129a87fe98d3928f790fbcea47a" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -125,7 +125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="424" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="424" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="425" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="425" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a8eb25cd335347a9f282addbe49a87059" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="427" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="427" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="428" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="428" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a759b8bc4154bd50b9bead3c8316fa343" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -153,7 +153,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="429" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="429" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="430" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="430" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1acf51fdee4da101a5f348d725e7c0eb1a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -167,7 +167,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="430" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="430" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="431" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="431" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a637727cda2b79acacc279f1482b26e1b" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -181,7 +181,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="431" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="431" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="432" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="432" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -205,7 +205,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="433" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="433" bodyend="469"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="434" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="434" bodyend="470"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a770c0ccd443546450995d29fa6a92a36" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -227,7 +227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="471" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="471" bodyend="482"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="472" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="472" bodyend="483"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a19edc4602de32141ca6f75106e228944" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -250,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="485" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="485" bodyend="501"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="486" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="486" bodyend="502"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ac95434b6ddbf21fedba2b3490b938265" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -273,7 +273,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="504" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="504" bodyend="513"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="505" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="505" bodyend="514"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a2d852c34513c2674c758f3e6b3187f6c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -295,7 +295,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="515" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="515" bodyend="533"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="516" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="516" bodyend="534"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a134bafec69b07982891ae80242c29e8c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -317,7 +317,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="535" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="535" bodyend="553"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="536" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="536" bodyend="554"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a1ae73cb6c8e85013ebcc77b1eb2acea8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -344,7 +344,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="557" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="557" bodyend="563"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="558" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="558" bodyend="564"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5033ab97a939cf82b6be8f7210c1893c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>uint8_t</type>
@@ -367,7 +367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="566" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="566" bodyend="574"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="567" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="567" bodyend="575"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1adfadbc7244022a308f87bc0038e937b9" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -390,7 +390,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="576" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="576" bodyend="617"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="577" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="577" bodyend="618"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ab66456718680593a2afcec4a5ef9b884" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -413,7 +413,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="619" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="619" bodyend="657"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="620" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="620" bodyend="658"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -444,7 +444,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="408" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="409" bodyend="658"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="409" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="410" bodyend="659"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a6ea2eee3f725752c4a59a36d7fca0a57" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SIMDLevel::NONE &gt;</scope><name>boundaries</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5e52c12d9c90e6f38483ed5cd936bbe3" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SIMDLevel::NONE &gt;</scope><name>centroids</name></member>

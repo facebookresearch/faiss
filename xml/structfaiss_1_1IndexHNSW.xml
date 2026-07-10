@@ -1614,6 +1614,7 @@
         <qualifiedname>faiss::Index::sa_encode</qualifiedname>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1a205db18d83af2fc98faab3f0066e8c9f">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016">sa_encode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexEDEN_1a9ec8a51a09a4bb15e0fab5fea646a41c">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1a57ce48e11490ead0689aee9df3a502be">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6">sa_encode</reimplementedby>
@@ -1683,7 +1684,9 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1af849220ce067392a737dcbca233326ad">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexEDEN_1a76ad42b193899fd944b3be309c7ec2e1">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a8cbb8690d25f3629a18f54a4caf9dc66">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a1464960b17488f8ee8ae600c07f7b72c">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>

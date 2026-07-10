@@ -2171,6 +2171,7 @@
         <argsstring>(idx_t n, const float *x, const idx_t *xids, const idx_t *precomputed_idx, void *inverted_list_context=nullptr)</argsstring>
         <name>add_core</name>
         <qualifiedname>faiss::IndexIVF::add_core</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a37a487a23db3c46448019e0f0cf5da62">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1ae78a755e5cd0e53aed9154d168bcc653">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aea308b9e866162de738642fb8c2e95e3">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a8888e9b8bad0cd53e5493c14f2688c5a">add_core</reimplementedby>
@@ -2223,6 +2224,7 @@
         <name>decode_vectors</name>
         <qualifiedname>faiss::IndexIVF::decode_vectors</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1ab0d2adb3a50abd5f4b89f379a82437d1">decode_vectors</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a750c8e6b2da2dcb7b3fa9a651dcd84b2">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a2f52063a3e37cc6a9c229a81cf3133e1">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad52a73c3c2875d7d69de940b5c1fed66">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a76c6b58f2d1983c2639750f9c353004d">decode_vectors</reimplementedby>
@@ -2482,6 +2484,7 @@
         <qualifiedname>faiss::IndexIVF::get_InvertedListScanner</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a8589f41322e872f3acc9f7c40b35176b">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a468051ca8c1cc358f43c1b4324d27f3c">get_InvertedListScanner</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1ab60fd693efd61c6782c0677536cdd4c4">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a9b5ad8fe0e670f803a9292d6af2966fa">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a892bca2b82d19902f792cc09d7711eb6">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c">get_InvertedListScanner</reimplementedby>
@@ -3600,6 +3603,7 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545">get_distance_computer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a4e0180e2aa2aacaa2532660bdb4f9b8c">get_distance_computer</reimplementedby>
         <briefdescription>

@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="EDENQuantizer_8h" kind="file" language="C++">
+    <compoundname>EDENQuantizer.h</compoundname>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
+    <includes refid="DistanceComputer_8h" local="no">faiss/impl/DistanceComputer.h</includes>
+    <includes refid="ScalarQuantizer_8h" local="no">faiss/impl/ScalarQuantizer.h</includes>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includedby refid="IndexEDEN_8h" local="no">faiss/IndexEDEN.h</includedby>
+    <includedby refid="IndexIVFEDEN_8h" local="no">faiss/IndexIVFEDEN.h</includedby>
+    <incdepgraph>
+      <node id="17">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/impl/AuxIndexStructures.h</label>
+        <link refid="AuxIndexStructures_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/EDENQuantizer.h</label>
+        <link refid="EDENQuantizer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>faiss/impl/InvertedListScannerStats.h</label>
+        <link refid="InvertedListScannerStats_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>faiss/impl/Quantizer.h</label>
+        <link refid="Quantizer_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>faiss/impl/ScalarQuantizer.h</label>
+        <link refid="ScalarQuantizer_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>cinttypes</label>
+      </node>
+      <node id="2">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
+        <label>cstdio</label>
+      </node>
+      <node id="6">
+        <label>cstdlib</label>
+      </node>
+      <node id="19">
+        <label>cstring</label>
+      </node>
+      <node id="9">
+        <label>exception</label>
+      </node>
+      <node id="15">
+        <label>limits</label>
+      </node>
+      <node id="22">
+        <label>memory</label>
+      </node>
+      <node id="23">
+        <label>mutex</label>
+      </node>
+      <node id="21">
+        <label>stdint.h</label>
+      </node>
+      <node id="10">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+      <node id="12">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexEDEN.h</label>
+        <link refid="IndexEDEN_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/IndexIVFEDEN.h</label>
+        <link refid="IndexIVFEDEN_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/EDENQuantizer.h</label>
+        <link refid="EDENQuantizer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structfaiss_1_1EDENCodeFactors" prot="public">faiss::EDENCodeFactors</innerclass>
+    <innerclass refid="structfaiss_1_1EDENFlatCodesDistanceComputer" prot="public">faiss::EDENFlatCodesDistanceComputer</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1eden__utils">faiss::eden_utils</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/DistanceComputer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/ScalarQuantizer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>EDENScaleType<sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Original<sp/>EDEN<sp/>unbiased<sp/>scale.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>EDENScaleType_UNBIASED<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Biased<sp/>DRIVE<sp/>scale<sp/>(NeurIPS<sp/>2021,<sp/>arXiv:2105.08339),<sp/>generalized<sp/>to</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>multi-bit<sp/>EDEN;<sp/>see<sp/>also<sp/>https://arxiv.org/abs/2604.18555.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>EDENScaleType_BIASED<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal">FAISS_PACK_STRUCTS_BEGIN</highlight></codeline>
+<codeline lineno="29" refid="structfaiss_1_1EDENCodeFactors" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1EDENCodeFactors" kindref="compound">EDENCodeFactors</ref><sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>L2<sp/>term<sp/>used<sp/>by<sp/>the<sp/>distance<sp/>computer.<sp/>For<sp/>the<sp/>unbiased<sp/>scale<sp/>this<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>||r||^2.<sp/>For<sp/>the<sp/>biased<sp/>scale<sp/>this<sp/>is<sp/>S^2<sp/>*<sp/>||q_code||^2,<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>reconstructed-code<sp/>norm.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>l2_norm_term<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Per-vector<sp/>reconstruction<sp/>scale.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>scale<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">FAISS_PACK_STRUCTS_END</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="structfaiss_1_1EDENFlatCodesDistanceComputer" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1EDENFlatCodesDistanceComputer" kindref="compound">EDENFlatCodesDistanceComputer</ref><sp/>:<sp/><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">FlatCodesDistanceComputer::FlatCodesDistanceComputer;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>consecutive_distances_batch_8(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>first,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances)<sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84" kindref="member">distances_batch_4</ref>(</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>1,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>2,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>3,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[0],</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[1],</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[2],</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[3]);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84" kindref="member">distances_batch_4</ref>(</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>4,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>5,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>6,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>+<sp/>7,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[4],</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[5],</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[6],</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[7]);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>consecutive_distances_batch_16(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>first,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances)<sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>consecutive_distances_batch_8(first,<sp/>distances);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>consecutive_distances_batch_8(first<sp/>+<sp/>8,<sp/>distances<sp/>+<sp/>8);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment">//<sp/>EDEN<sp/>Lloyd-Max<sp/>quantizer<sp/>from<sp/>the<sp/>EDEN<sp/>ICML<sp/>2022<sp/>paper:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment">//<sp/>https://proceedings.mlr.press/v162/vargaftik22a.html.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment">//<sp/>EDEN<sp/>operates<sp/>on<sp/>the<sp/>vectors<sp/>supplied<sp/>to<sp/>it.<sp/>Optional<sp/>preprocessing<sp/>such<sp/>as</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="comment">//<sp/>a<sp/>random<sp/>rotation<sp/>can<sp/>be<sp/>applied<sp/>externally<sp/>with<sp/>IndexPreTransform.<sp/>The</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment">//<sp/>scalar<sp/>assignment<sp/>itself<sp/>is<sp/>a<sp/>ScalarQuantizer::QT_*_eden<sp/>qtype.<sp/>EDEN<sp/>adds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment">//<sp/>per-vector<sp/>scale<sp/>factors<sp/>after<sp/>the<sp/>packed<sp/>scalar<sp/>code<sp/>and<sp/>computes<sp/>them</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment">//<sp/>against<sp/>an<sp/>externally<sp/>supplied<sp/>centroid;<sp/>nullptr<sp/>means<sp/>a<sp/>zero<sp/>centroid.<sp/>The</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">//<sp/>default<sp/>stored<sp/>scale<sp/>is<sp/>EDEN&apos;s<sp/>original<sp/>unbiased<sp/>scale.<sp/>The<sp/>biased<sp/>scale</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">//<sp/>follows<sp/>DRIVE&apos;s<sp/>MSE-minimizing<sp/>scale<sp/>for<sp/>the<sp/>chosen<sp/>Lloyd-Max<sp/>codeword;<sp/>see</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">//<sp/>also</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment">//<sp/>https://arxiv.org/abs/2604.18555.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">eden_utils<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref><sp/>quantizer_type_for_bits(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_eden_quantizer_type(<ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref><sp/>qtype);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits_for_qtype(<ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref><sp/>qtype);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>packed_code_size(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal">uint8_t<sp/>extract_code(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>index,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_codes(</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref>&amp;<sp/>sq,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EDENScaleType<sp/>scale_type,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>decode(</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref>&amp;<sp/>sq,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><ref refid="structfaiss_1_1EDENFlatCodesDistanceComputer" kindref="compound">EDENFlatCodesDistanceComputer</ref>*<sp/>get_distance_computer(</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref>&amp;<sp/>sq,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>eden_utils</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/EDENQuantizer.h"/>
+  </compounddef>
+</doxygen>

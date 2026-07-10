@@ -5,6 +5,7 @@
     <basecompoundref refid="structfaiss_1_1Index" prot="public" virt="non-virtual">faiss::Index</basecompoundref>
     <basecompoundref refid="structfaiss_1_1IndexIVFInterface" prot="public" virt="non-virtual">faiss::IndexIVFInterface</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFAdditiveQuantizer" prot="public" virt="non-virtual">faiss::IndexIVFAdditiveQuantizer</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexIVFEDEN" prot="public" virt="non-virtual">faiss::IndexIVFEDEN</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFFastScan" prot="public" virt="non-virtual">faiss::IndexIVFFastScan</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFFlat" prot="public" virt="non-virtual">faiss::IndexIVFFlat</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFPQ" prot="public" virt="non-virtual">faiss::IndexIVFPQ</derivedcompoundref>
@@ -487,6 +488,7 @@
         <argsstring>(idx_t n, const float *x, const idx_t *xids, const idx_t *precomputed_idx, void *inverted_list_context=nullptr)</argsstring>
         <name>add_core</name>
         <qualifiedname>faiss::IndexIVF::add_core</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a37a487a23db3c46448019e0f0cf5da62">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1ae78a755e5cd0e53aed9154d168bcc653">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aea308b9e866162de738642fb8c2e95e3">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a8888e9b8bad0cd53e5493c14f2688c5a">add_core</reimplementedby>
@@ -541,6 +543,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a56f6ee1a3f9a44eb88ae3479f070de8e">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a292a50353235864f6d9c5020ad7a5d0b">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0500e17324cd24817e7832aac8fae5d7">encode_vectors</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a7ccaaba808c438c65c27f174f1199508">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a7dc16a5d92348098da7f50324a98e8e9">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1a6350ed3e2b070ad01b37dff14dc2fe2a">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1a022d55b7cf5f0ac348e0fc81dec8ec84">encode_vectors</reimplementedby>
@@ -610,6 +613,7 @@
         <name>decode_vectors</name>
         <qualifiedname>faiss::IndexIVF::decode_vectors</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1ab0d2adb3a50abd5f4b89f379a82437d1">decode_vectors</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a750c8e6b2da2dcb7b3fa9a651dcd84b2">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a2f52063a3e37cc6a9c229a81cf3133e1">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad52a73c3c2875d7d69de940b5c1fed66">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a76c6b58f2d1983c2639750f9c353004d">decode_vectors</reimplementedby>
@@ -719,6 +723,7 @@
         <qualifiedname>faiss::IndexIVF::train_encoder</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1aeb625ac4a0a5279d55af53c4c4919999">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a648b31c6d8c58265289a117f1030a296">train_encoder</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a3f27a908ce44b0fed6b2e7002baceec7">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1a7a151fadd969c807d538364c1aeadd1e">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a08ee6a05220e602c8b654aaf5e77b2b3">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a4a0b0ca0d89bafe1b9fdd56673d0b064">train_encoder</reimplementedby>
@@ -1180,6 +1185,7 @@
         <qualifiedname>faiss::IndexIVF::get_InvertedListScanner</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a8589f41322e872f3acc9f7c40b35176b">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a468051ca8c1cc358f43c1b4324d27f3c">get_InvertedListScanner</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1ab60fd693efd61c6782c0677536cdd4c4">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a9b5ad8fe0e670f803a9292d6af2966fa">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a892bca2b82d19902f792cc09d7711eb6">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c">get_InvertedListScanner</reimplementedby>
@@ -1476,6 +1482,7 @@
         <name>reconstruct_from_offset</name>
         <qualifiedname>faiss::IndexIVF::reconstruct_from_offset</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a06250df4bad3bcabaded275c12fc9ad6">reconstruct_from_offset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1ac34806d704347fd6618c6aac83cea113">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9f8c11f0496f76eb38b39d058373d798">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a12194f155176f68a779c1a41a1b2c2fb">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a8e60db84c02836ea5c786678171b55cf">reconstruct_from_offset</reimplementedby>
@@ -2380,6 +2387,7 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545">get_distance_computer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a4e0180e2aa2aacaa2532660bdb4f9b8c">get_distance_computer</reimplementedby>
         <briefdescription>
@@ -2401,7 +2409,9 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1af849220ce067392a737dcbca233326ad">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexEDEN_1a76ad42b193899fd944b3be309c7ec2e1">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a8cbb8690d25f3629a18f54a4caf9dc66">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a1464960b17488f8ee8ae600c07f7b72c">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>
@@ -2613,34 +2623,40 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss::IndexIVFAdditiveQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan"/>
-        <childnode refid="10" relation="public-inheritance">
+        <childnode refid="11" relation="public-inheritance">
         </childnode>
       </node>
       <node id="10">
+        <label>faiss::IndexIVFEDEN</label>
+        <link refid="structfaiss_1_1IndexIVFEDEN"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss::IndexIVFFastScan</label>
         <link refid="structfaiss_1_1IndexIVFFastScan"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss::IndexIVFFlat</label>
         <link refid="structfaiss_1_1IndexIVFFlat"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss::IndexIVFFlatDedup</label>
         <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="19" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss::IndexIVFFlatPanorama</label>
         <link refid="structfaiss_1_1IndexIVFFlatPanorama"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="19" relation="public-inheritance">
         </childnode>
       </node>
       <node id="3">
@@ -2655,28 +2671,28 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss::IndexIVFLocalSearchQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan"/>
-        <childnode refid="11" relation="public-inheritance">
+        <childnode refid="12" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss::IndexIVFPQ</label>
         <link refid="structfaiss_1_1IndexIVFPQ"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss::IndexIVFPQFastScan</label>
         <link refid="structfaiss_1_1IndexIVFPQFastScan"/>
-        <childnode refid="10" relation="public-inheritance">
+        <childnode refid="11" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="22">
+      <node id="23">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="21" relation="public-inheritance">
+        <childnode refid="22" relation="public-inheritance">
         </childnode>
       </node>
       <node id="7">
@@ -2685,10 +2701,10 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss::IndexIVFProductLocalSearchQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan"/>
-        <childnode refid="11" relation="public-inheritance">
+        <childnode refid="12" relation="public-inheritance">
         </childnode>
       </node>
       <node id="8">
@@ -2697,22 +2713,22 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss::IndexIVFProductResidualQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan"/>
-        <childnode refid="11" relation="public-inheritance">
+        <childnode refid="12" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="23">
+      <node id="24">
         <label>faiss::IndexIVFRaBitQ</label>
         <link refid="structfaiss_1_1IndexIVFRaBitQ"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss::IndexIVFRaBitQFastScan</label>
         <link refid="structfaiss_1_1IndexIVFRaBitQFastScan"/>
-        <childnode refid="10" relation="public-inheritance">
+        <childnode refid="11" relation="public-inheritance">
         </childnode>
       </node>
       <node id="9">
@@ -2721,19 +2737,19 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss::IndexIVFResidualQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan"/>
-        <childnode refid="11" relation="public-inheritance">
+        <childnode refid="12" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="24">
+      <node id="25">
         <label>faiss::IndexIVFScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFScalarQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>faiss::IndexIVFSpectralHash</label>
         <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
         <childnode refid="1" relation="public-inheritance">

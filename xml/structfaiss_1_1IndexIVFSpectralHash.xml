@@ -826,6 +826,7 @@
         <argsstring>(idx_t n, const float *x, const idx_t *xids, const idx_t *precomputed_idx, void *inverted_list_context=nullptr)</argsstring>
         <name>add_core</name>
         <qualifiedname>faiss::IndexIVF::add_core</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a37a487a23db3c46448019e0f0cf5da62">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1ae78a755e5cd0e53aed9154d168bcc653">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aea308b9e866162de738642fb8c2e95e3">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a8888e9b8bad0cd53e5493c14f2688c5a">add_core</reimplementedby>
@@ -878,6 +879,7 @@
         <name>decode_vectors</name>
         <qualifiedname>faiss::IndexIVF::decode_vectors</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1ab0d2adb3a50abd5f4b89f379a82437d1">decode_vectors</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a750c8e6b2da2dcb7b3fa9a651dcd84b2">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a2f52063a3e37cc6a9c229a81cf3133e1">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad52a73c3c2875d7d69de940b5c1fed66">decode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a76c6b58f2d1983c2639750f9c353004d">decode_vectors</reimplementedby>
@@ -1667,6 +1669,7 @@
         <name>reconstruct_from_offset</name>
         <qualifiedname>faiss::IndexIVF::reconstruct_from_offset</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a06250df4bad3bcabaded275c12fc9ad6">reconstruct_from_offset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1ac34806d704347fd6618c6aac83cea113">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9f8c11f0496f76eb38b39d058373d798">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a12194f155176f68a779c1a41a1b2c2fb">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a8e60db84c02836ea5c786678171b55cf">reconstruct_from_offset</reimplementedby>
@@ -2543,6 +2546,7 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545">get_distance_computer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a4e0180e2aa2aacaa2532660bdb4f9b8c">get_distance_computer</reimplementedby>
         <briefdescription>
@@ -2564,7 +2568,9 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1af849220ce067392a737dcbca233326ad">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexEDEN_1a76ad42b193899fd944b3be309c7ec2e1">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a8cbb8690d25f3629a18f54a4caf9dc66">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a1464960b17488f8ee8ae600c07f7b72c">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>

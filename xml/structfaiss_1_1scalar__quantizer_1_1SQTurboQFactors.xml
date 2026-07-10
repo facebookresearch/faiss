@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="399" column="11" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="399" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="400" column="11" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="400" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SQTurboQFactors_1a908bfd151ce5d63dcc8479b05013d7d7" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -31,14 +31,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="400" column="11" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="400" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="401" column="11" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="401" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="398" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="398" bodyend="401"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="399" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="399" bodyend="402"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SQTurboQFactors_1a908bfd151ce5d63dcc8479b05013d7d7" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SQTurboQFactors</scope><name>gamma</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SQTurboQFactors_1a9bc943345fc79c5fc01b03069c51994b" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SQTurboQFactors</scope><name>norm</name></member>

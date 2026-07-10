@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1eden__utils" kind="namespace" language="C++">
+    <compoundname>faiss::eden_utils</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="EDENQuantizer_8h_1ae916646cbacde1d70972720f3eb4791f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+        <definition>ScalarQuantizer::QuantizerType faiss::eden_utils::quantizer_type_for_bits</definition>
+        <argsstring>(size_t nb_bits)</argsstring>
+        <name>quantizer_type_for_bits</name>
+        <qualifiedname>faiss::eden_utils::quantizer_type_for_bits</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="84" column="32" declfile="faiss/impl/EDENQuantizer.h" declline="84" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a82dab6b1462aee13544f804f956ad3a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::eden_utils::is_eden_quantizer_type</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>is_eden_quantizer_type</name>
+        <qualifiedname>faiss::eden_utils::is_eden_quantizer_type</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="86" column="6" declfile="faiss/impl/EDENQuantizer.h" declline="86" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a863822391cbf8d7e22e10a8a72ec7685" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::eden_utils::nb_bits_for_qtype</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>nb_bits_for_qtype</name>
+        <qualifiedname>faiss::eden_utils::nb_bits_for_qtype</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="88" column="8" declfile="faiss/impl/EDENQuantizer.h" declline="88" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a18c819256a5ed1a7dac0e14bc572c3f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::eden_utils::packed_code_size</definition>
+        <argsstring>(size_t d, size_t nb_bits)</argsstring>
+        <name>packed_code_size</name>
+        <qualifiedname>faiss::eden_utils::packed_code_size</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="90" column="8" declfile="faiss/impl/EDENQuantizer.h" declline="90" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a2332c23da5ebfe8ac7dbb46c61a00715" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::eden_utils::code_size</definition>
+        <argsstring>(size_t d, size_t nb_bits)</argsstring>
+        <name>code_size</name>
+        <qualifiedname>faiss::eden_utils::code_size</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="92" column="8" declfile="faiss/impl/EDENQuantizer.h" declline="92" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a7d35ad09a4c8a179fe20cd2b8779cf5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::eden_utils::extract_code</definition>
+        <argsstring>(const uint8_t *codes, size_t index, size_t nb_bits)</argsstring>
+        <name>extract_code</name>
+        <qualifiedname>faiss::eden_utils::extract_code</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="94" column="9" declfile="faiss/impl/EDENQuantizer.h" declline="94" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1afee76f5f32655ef1c8bb05b6b0122910" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::eden_utils::compute_codes</definition>
+        <argsstring>(const ScalarQuantizer &amp;sq, MetricType metric_type, EDENScaleType scale_type, const float *x, uint8_t *codes, size_t n, const float *centroid=nullptr)</argsstring>
+        <name>compute_codes</name>
+        <qualifiedname>faiss::eden_utils::compute_codes</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <param>
+          <type>EDENScaleType</type>
+          <declname>scale_type</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="96" column="6" declfile="faiss/impl/EDENQuantizer.h" declline="96" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a449ec5745d28bc53cfce440df421d2ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::eden_utils::decode</definition>
+        <argsstring>(const ScalarQuantizer &amp;sq, const uint8_t *codes, float *x, size_t n, const float *centroid=nullptr)</argsstring>
+        <name>decode</name>
+        <qualifiedname>faiss::eden_utils::decode</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="105" column="6" declfile="faiss/impl/EDENQuantizer.h" declline="105" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="EDENQuantizer_8h_1a84deae6a82170a2478ed0e9b48262333" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1EDENFlatCodesDistanceComputer" kindref="compound">EDENFlatCodesDistanceComputer</ref> *</type>
+        <definition>EDENFlatCodesDistanceComputer * faiss::eden_utils::get_distance_computer</definition>
+        <argsstring>(const ScalarQuantizer &amp;sq, MetricType metric_type, const float *centroid=nullptr)</argsstring>
+        <name>get_distance_computer</name>
+        <qualifiedname>faiss::eden_utils::get_distance_computer</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="112" column="31" declfile="faiss/impl/EDENQuantizer.h" declline="112" declcolumn="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/EDENQuantizer.h" line="82" column="1"/>
+  </compounddef>
+</doxygen>

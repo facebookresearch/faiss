@@ -18,6 +18,7 @@
     <innerfile refid="CodePacker_8h">CodePacker.h</innerfile>
     <innerfile refid="CodePackerRaBitQ_8h">CodePackerRaBitQ.h</innerfile>
     <innerfile refid="DistanceComputer_8h">DistanceComputer.h</innerfile>
+    <innerfile refid="EDENQuantizer_8h">EDENQuantizer.h</innerfile>
     <innerfile refid="expanded__scanners_8h">expanded_scanners.h</innerfile>
     <innerfile refid="FaissAssert_8h">FaissAssert.h</innerfile>
     <innerfile refid="FaissException_8h">FaissException.h</innerfile>

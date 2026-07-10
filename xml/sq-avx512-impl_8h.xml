@@ -19,7 +19,7 @@
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Codec6bit&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quanti22167ad2af118e689107c5489efa5b08" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quantidb8ac2797b6e0d2b4ae7da8d4729263a" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::AVX512 &gt;</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerTurboQuantMSE&lt; 8, SIMDLevel::AVX512 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_018_00_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerLloydMax&lt; 8, SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</innerclass>
@@ -31,26 +31,26 @@
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1scalar__quantizer">faiss::scalar_quantizer</innernamespace>
     <sectiondef kind="define">
-      <memberdef kind="define" id="sq-avx512-impl_8h_1a45874dae7b13dc064d42020bcdbe4811" prot="public" static="no">
-        <name>DEFINE_TQMSE_AVX512_SPECIALIZATION</name>
+      <memberdef kind="define" id="sq-avx512-impl_8h_1a4bc5ce209e06f0c10efaeed4534362e5" prot="public" static="no">
+        <name>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</name>
         <param><defname>NBITS</defname></param>
         <param><defname>INDEX_EXPR</defname></param>
-        <initializer>    template &lt;&gt;                                                             \
-    struct QuantizerTurboQuantMSE&lt;NBITS, SIMDLevel::AVX512&gt;                 \
-            : QuantizerTurboQuantMSE&lt;NBITS, SIMDLevel::NONE&gt; {              \
-        using Base = QuantizerTurboQuantMSE&lt;NBITS, SIMDLevel::NONE&gt;;        \
-                                                                            \
-        QuantizerTurboQuantMSE(size_t d, const std::vector&lt;float&gt;&amp; trained) \
-                : Base(d, trained) {                                        \
-            assert(d % 16 == 0);                                            \
-        }                                                                   \
-                                                                            \
-        FAISS_ALWAYS_INLINE simd16float32                                   \
-        reconstruct_16_components(const uint8_t* code, int i) const {       \
-            const __m512i indices = (INDEX_EXPR);                           \
-            return simd16float32(_mm512_i32gather_ps(                       \
-                    indices, this-&gt;centroids, sizeof(float)));              \
-        }                                                                   \
+        <initializer>    template &lt;&gt;                                                        \
+    struct QuantizerLloydMax&lt;NBITS, SIMDLevel::AVX512&gt;                 \
+            : QuantizerLloydMax&lt;NBITS, SIMDLevel::NONE&gt; {              \
+        using Base = QuantizerLloydMax&lt;NBITS, SIMDLevel::NONE&gt;;        \
+                                                                       \
+        QuantizerLloydMax(size_t d, const std::vector&lt;float&gt;&amp; trained) \
+                : Base(d, trained) {                                   \
+            assert(d % 16 == 0);                                       \
+        }                                                              \
+                                                                       \
+        FAISS_ALWAYS_INLINE simd16float32                              \
+        reconstruct_16_components(const uint8_t* code, int i) const {  \
+            const __m512i indices = (INDEX_EXPR);                      \
+            return simd16float32(_mm512_i32gather_ps(                  \
+                    indices, this-&gt;centroids, sizeof(float)));         \
+        }                                                              \
     }</initializer>
         <briefdescription>
         </briefdescription>
@@ -309,42 +309,42 @@
 <codeline lineno="241"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="242"><highlight class="normal"></highlight></codeline>
 <codeline lineno="243"><highlight class="normal"></highlight><highlight class="comment">/**********************************************************</highlight></codeline>
-<codeline lineno="244"><highlight class="comment"><sp/>*<sp/>TurboQuant<sp/>MSE<sp/>quantizer</highlight></codeline>
+<codeline lineno="244"><highlight class="comment"><sp/>*<sp/>Lloyd-Max<sp/>scalar<sp/>quantizer</highlight></codeline>
 <codeline lineno="245"><highlight class="comment"><sp/>**********************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="246"><highlight class="normal"></highlight></codeline>
-<codeline lineno="247"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DEFINE_TQMSE_AVX512_SPECIALIZATION(NBITS,<sp/>INDEX_EXPR)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="248"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>template<sp/>&lt;&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="249"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>struct<sp/>QuantizerTurboQuantMSE&lt;NBITS,<sp/>SIMDLevel::AVX512&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="250"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>QuantizerTurboQuantMSE&lt;NBITS,<sp/>SIMDLevel::NONE&gt;<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="251"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>using<sp/>Base<sp/>=<sp/>QuantizerTurboQuantMSE&lt;NBITS,<sp/>SIMDLevel::NONE&gt;;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="252"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="253"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>QuantizerTurboQuantMSE(size_t<sp/>d,<sp/>const<sp/>std::vector&lt;float&gt;&amp;<sp/>trained)<sp/>\</highlight></codeline>
-<codeline lineno="254"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(d,<sp/>trained)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="255"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(d<sp/>%<sp/>16<sp/>==<sp/>0);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="256"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="257"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="258"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/>simd16float32<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="259"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reconstruct_16_components(const<sp/>uint8_t*<sp/>code,<sp/>int<sp/>i)<sp/>const<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="260"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>__m512i<sp/>indices<sp/>=<sp/>(INDEX_EXPR);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="261"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>simd16float32(_mm512_i32gather_ps(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="262"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>indices,<sp/>this-&gt;centroids,<sp/>sizeof(float)));<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="263"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(NBITS,<sp/>INDEX_EXPR)<sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="248"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>template<sp/>&lt;&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="249"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>struct<sp/>QuantizerLloydMax&lt;NBITS,<sp/>SIMDLevel::AVX512&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="250"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>QuantizerLloydMax&lt;NBITS,<sp/>SIMDLevel::NONE&gt;<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="251"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>using<sp/>Base<sp/>=<sp/>QuantizerLloydMax&lt;NBITS,<sp/>SIMDLevel::NONE&gt;;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="252"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="253"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>QuantizerLloydMax(size_t<sp/>d,<sp/>const<sp/>std::vector&lt;float&gt;&amp;<sp/>trained)<sp/>\</highlight></codeline>
+<codeline lineno="254"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(d,<sp/>trained)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="255"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(d<sp/>%<sp/>16<sp/>==<sp/>0);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="256"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="257"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="258"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ALWAYS_INLINE<sp/>simd16float32<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="259"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reconstruct_16_components(const<sp/>uint8_t*<sp/>code,<sp/>int<sp/>i)<sp/>const<sp/>{<sp/><sp/>\</highlight></codeline>
+<codeline lineno="260"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>__m512i<sp/>indices<sp/>=<sp/>(INDEX_EXPR);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="261"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>simd16float32(_mm512_i32gather_ps(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="262"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>indices,<sp/>this-&gt;centroids,<sp/>sizeof(float)));<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="263"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="264"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="265"><highlight class="normal"></highlight></codeline>
-<codeline lineno="266"><highlight class="normal">DEFINE_TQMSE_AVX512_SPECIALIZATION(1,<sp/>unpack_16x1bit_to_u32(code,<sp/>i));</highlight></codeline>
-<codeline lineno="267"><highlight class="normal">DEFINE_TQMSE_AVX512_SPECIALIZATION(2,<sp/>unpack_16x2bit_to_u32(code,<sp/>i));</highlight></codeline>
-<codeline lineno="268"><highlight class="normal">DEFINE_TQMSE_AVX512_SPECIALIZATION(3,<sp/>unpack_16x3bit_to_u32(code,<sp/>i));</highlight></codeline>
-<codeline lineno="269"><highlight class="normal">DEFINE_TQMSE_AVX512_SPECIALIZATION(4,<sp/>unpack_16x4bit_to_u32(code,<sp/>i));</highlight></codeline>
+<codeline lineno="266"><highlight class="normal">DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(1,<sp/>unpack_16x1bit_to_u32(code,<sp/>i));</highlight></codeline>
+<codeline lineno="267"><highlight class="normal">DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(2,<sp/>unpack_16x2bit_to_u32(code,<sp/>i));</highlight></codeline>
+<codeline lineno="268"><highlight class="normal">DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(3,<sp/>unpack_16x3bit_to_u32(code,<sp/>i));</highlight></codeline>
+<codeline lineno="269"><highlight class="normal">DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(4,<sp/>unpack_16x4bit_to_u32(code,<sp/>i));</highlight></codeline>
 <codeline lineno="270"><highlight class="normal"></highlight></codeline>
-<codeline lineno="271"><highlight class="normal"></highlight><highlight class="preprocessor">#undef<sp/>DEFINE_TQMSE_AVX512_SPECIALIZATION</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight><highlight class="preprocessor">#undef<sp/>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="272"><highlight class="normal"></highlight></codeline>
 <codeline lineno="273"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
-<codeline lineno="274" refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE_3_018_00_01SIMDLevel_1_1AVX512_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">QuantizerTurboQuantMSE</ref>&lt;8,<sp/>SIMDLevel::AVX512&gt;</highlight></codeline>
-<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">QuantizerTurboQuantMSE</ref>&lt;8,<sp/>SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">Base</ref><sp/>=<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">QuantizerTurboQuantMSE&lt;8, SIMDLevel::NONE&gt;</ref>;</highlight></codeline>
+<codeline lineno="274" refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_018_00_01SIMDLevel_1_1AVX512_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kindref="compound">QuantizerLloydMax</ref>&lt;8,<sp/>SIMDLevel::AVX512&gt;</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kindref="compound">QuantizerLloydMax</ref>&lt;8,<sp/>SIMDLevel::NONE&gt;<sp/>{</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kindref="compound">Base</ref><sp/>=<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kindref="compound">QuantizerLloydMax&lt;8, SIMDLevel::NONE&gt;</ref>;</highlight></codeline>
 <codeline lineno="277"><highlight class="normal"></highlight></codeline>
-<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">QuantizerTurboQuantMSE</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/>trained)</highlight></codeline>
-<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantMSE" kindref="compound">Base</ref>(d,<sp/>trained)<sp/>{</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kindref="compound">QuantizerLloydMax</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;float&gt;&amp;<sp/>trained)</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kindref="compound">Base</ref>(d,<sp/>trained)<sp/>{</highlight></codeline>
 <codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(d<sp/>%<sp/>16<sp/>==<sp/>0);</highlight></codeline>
 <codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="282"><highlight class="normal"></highlight></codeline>

@@ -490,6 +490,7 @@
         <qualifiedname>faiss::IndexIVF::train_encoder</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1aeb625ac4a0a5279d55af53c4c4919999">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a648b31c6d8c58265289a117f1030a296">train_encoder</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1a3f27a908ce44b0fed6b2e7002baceec7">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1a7a151fadd969c807d538364c1aeadd1e">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a08ee6a05220e602c8b654aaf5e77b2b3">train_encoder</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a4a0b0ca0d89bafe1b9fdd56673d0b064">train_encoder</reimplementedby>
@@ -2045,6 +2046,7 @@
         <reimplementedby refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545">get_distance_computer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFEDEN_1aadaf80de860a7c5c967f2aba644fcf31">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a4e0180e2aa2aacaa2532660bdb4f9b8c">get_distance_computer</reimplementedby>
         <briefdescription>

@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::SQuantizer</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>int</type>
+        <declname>NBits</declname>
+        <defname>NBits</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a30c327a69075e0eabd2e584a5922ec89" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::kCentroidsCount</definition>
+        <argsstring></argsstring>
+        <name>kCentroidsCount</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::kCentroidsCount</qualifiedname>
+        <initializer>= size_t(1) &lt;&lt; NBits</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="159" column="29" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a474520ec56a8f292552002ed34936b71" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr uint16_t</type>
+        <definition>constexpr uint16_t faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::kIndexMask</definition>
+        <argsstring></argsstring>
+        <name>kIndexMask</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::kIndexMask</qualifiedname>
+        <initializer>=
+            static_cast&lt;uint16_t&gt;((1u &lt;&lt; NBits) - 1)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="160" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a63444b7f32041ab1a31bb5d71033b9a4" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="163" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5be766f85e947d6c6ebd63bbbdffc22a" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::centroids</definition>
+        <argsstring></argsstring>
+        <name>centroids</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::centroids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="164" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ad540a5bc768df57fedc9588892887fe7" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::boundaries</definition>
+        <argsstring></argsstring>
+        <name>boundaries</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::boundaries</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="165" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="165" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ac07a7fd6cd25c51b4bfcee62874fe8df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::QuantizerLloydMax</definition>
+        <argsstring>(size_t d_in, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>QuantizerLloydMax</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::QuantizerLloydMax</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d_in</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="167" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="167" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ad6fae2b58163819f56a179e00cee556d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::select_index</definition>
+        <argsstring>(float x) const</argsstring>
+        <name>select_index</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::select_index</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="174" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="174" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a8ed206bc5992d95a69c2e93be8803399" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::encode_index</definition>
+        <argsstring>(uint8_t idx, uint8_t *code, size_t i) const</argsstring>
+        <name>encode_index</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::encode_index</qualifiedname>
+        <param>
+          <type>uint8_t</type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="181" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="181" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a0b6087fe2c2adf5ed54b34477ed5efa7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::decode_index</definition>
+        <argsstring>(const uint8_t *code, size_t i) const</argsstring>
+        <name>decode_index</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::decode_index</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="193" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="193" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5eaef6990061736b8ccc047423f972c0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::encode_vector</definition>
+        <argsstring>(const float *x, uint8_t *code) const override</argsstring>
+        <name>encode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::encode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="205" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="205" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a6b7b2aef20a7ce4bd94a3a3983f6904d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::decode_vector</definition>
+        <argsstring>(const uint8_t *code, float *x) const override</argsstring>
+        <name>decode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::decode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="211" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="211" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a24ca2563e14bf15d6d76e2523bc6362f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::reconstruct_component</definition>
+        <argsstring>(const uint8_t *code, size_t i) const</argsstring>
+        <name>reconstruct_component</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;::reconstruct_component</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="217" column="11" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="217" bodyend="219"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="156" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="156" bodyend="220"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ad540a5bc768df57fedc9588892887fe7" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>boundaries</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5be766f85e947d6c6ebd63bbbdffc22a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>centroids</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a63444b7f32041ab1a31bb5d71033b9a4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a0b6087fe2c2adf5ed54b34477ed5efa7" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>decode_index</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a6b7b2aef20a7ce4bd94a3a3983f6904d" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a8ed206bc5992d95a69c2e93be8803399" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>encode_index</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5eaef6990061736b8ccc047423f972c0" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a30c327a69075e0eabd2e584a5922ec89" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>kCentroidsCount</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a474520ec56a8f292552002ed34936b71" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>kIndexMask</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ac07a7fd6cd25c51b4bfcee62874fe8df" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>QuantizerLloydMax</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a24ca2563e14bf15d6d76e2523bc6362f" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ad6fae2b58163819f56a179e00cee556d" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>select_index</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</scope><name>~SQuantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

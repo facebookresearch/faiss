@@ -38,6 +38,8 @@
     <innerclass refid="structfaiss_1_1DirectMapAdd" prot="public">faiss::DirectMapAdd</innerclass>
     <innerclass refid="structfaiss_1_1DistanceComputer" prot="public">faiss::DistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1DummyScaler" prot="public">faiss::DummyScaler</innerclass>
+    <innerclass refid="structfaiss_1_1EDENCodeFactors" prot="public">faiss::EDENCodeFactors</innerclass>
+    <innerclass refid="structfaiss_1_1EDENFlatCodesDistanceComputer" prot="public">faiss::EDENFlatCodesDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1ElementOpIP" prot="public">faiss::ElementOpIP</innerclass>
     <innerclass refid="structfaiss_1_1ElementOpL2" prot="public">faiss::ElementOpL2</innerclass>
     <innerclass refid="structfaiss_1_1EnumeratedVectors" prot="public">faiss::EnumeratedVectors</innerclass>
@@ -125,6 +127,7 @@
     <innerclass refid="structfaiss_1_1IndexBinaryHNSWCagra" prot="public">faiss::IndexBinaryHNSWCagra</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryIVF" prot="public">faiss::IndexBinaryIVF</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryMultiHash" prot="public">faiss::IndexBinaryMultiHash</innerclass>
+    <innerclass refid="structfaiss_1_1IndexEDEN" prot="public">faiss::IndexEDEN</innerclass>
     <innerclass refid="structfaiss_1_1IndexFastScan" prot="public">faiss::IndexFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlat" prot="public">faiss::IndexFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlat1D" prot="public">faiss::IndexFlat1D</innerclass>
@@ -146,6 +149,7 @@
     <innerclass refid="structfaiss_1_1IndexIVF" prot="public">faiss::IndexIVF</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFAdditiveQuantizer" prot="public">faiss::IndexIVFAdditiveQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan" prot="public">faiss::IndexIVFAdditiveQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFEDEN" prot="public">faiss::IndexIVFEDEN</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFastScan" prot="public">faiss::IndexIVFFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlat" prot="public">faiss::IndexIVFFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlatDedup" prot="public">faiss::IndexIVFFlatDedup</innerclass>
@@ -378,6 +382,7 @@
     <innerclass refid="structfaiss_1_1ZnSphereSearch" prot="public">faiss::ZnSphereSearch</innerclass>
     <innernamespace refid="namespacefaiss_1_1cppcontrib">faiss::cppcontrib</innernamespace>
     <innernamespace refid="namespacefaiss_1_1detail">faiss::detail</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1eden__utils">faiss::eden_utils</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu__metal">faiss::gpu_metal</innernamespace>
     <innernamespace refid="namespacefaiss_1_1hnsw__detail">faiss::hnsw_detail</innernamespace>
@@ -923,6 +928,34 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/ClusteringInitialization.h" line="16" column="1" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="16" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespacefaiss_1a65cacb8c0e8acc68bcdeea90f3c0f56f" prot="public" static="no" strong="no">
+        <type></type>
+        <name>EDENScaleType</name>
+        <qualifiedname>faiss::EDENScaleType</qualifiedname>
+        <enumvalue id="namespacefaiss_1a65cacb8c0e8acc68bcdeea90f3c0f56fa9d0fcaf6d857aceb10d37f5c407f797e" prot="public">
+          <name>EDENScaleType_UNBIASED</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a65cacb8c0e8acc68bcdeea90f3c0f56fafd1b64376e083ad224860d42f2ebd31f" prot="public">
+          <name>EDENScaleType_BIASED</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="20" column="1" bodyfile="faiss/impl/EDENQuantizer.h" bodystart="20" bodyend="26"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912f" prot="public" static="no" strong="no">
         <type></type>

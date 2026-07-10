@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1EDENCodeFactors" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::EDENCodeFactors</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1EDENCodeFactors_1a47d4367e1f13d3f54c8d147782d8ab1d" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::EDENCodeFactors::l2_norm_term</definition>
+        <argsstring></argsstring>
+        <name>l2_norm_term</name>
+        <qualifiedname>faiss::EDENCodeFactors::l2_norm_term</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="33" column="11" bodyfile="faiss/impl/EDENQuantizer.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1EDENCodeFactors_1a7dad82e6e4bef988f8a13b47cece345d" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::EDENCodeFactors::scale</definition>
+        <argsstring></argsstring>
+        <name>scale</name>
+        <qualifiedname>faiss::EDENCodeFactors::scale</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/EDENQuantizer.h" line="35" column="11" bodyfile="faiss/impl/EDENQuantizer.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/EDENQuantizer.h" line="29" column="1" bodyfile="faiss/impl/EDENQuantizer.h" bodystart="29" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1EDENCodeFactors_1a47d4367e1f13d3f54c8d147782d8ab1d" prot="public" virt="non-virtual"><scope>faiss::EDENCodeFactors</scope><name>l2_norm_term</name></member>
+      <member refid="structfaiss_1_1EDENCodeFactors_1a7dad82e6e4bef988f8a13b47cece345d" prot="public" virt="non-virtual"><scope>faiss::EDENCodeFactors</scope><name>scale</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

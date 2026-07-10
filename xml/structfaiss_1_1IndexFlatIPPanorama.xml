@@ -891,6 +891,7 @@
         <reimplementedby refid="structfaiss_1_1IndexProductLocalSearchQuantizer_1aa165f6c8c6655052a39bbad89b1dd8d7">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a150b455e4152bc63ae4f51ba44405475">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ac209f095ccac62ca6cc86d24923471d3">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexEDEN_1a3bae05e14d04b7f9051fc283c30607c4">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86">train</reimplementedby>
