@@ -99,7 +99,7 @@ inline uint8_t round_nonnegative_to_uint8(float x) {
     assert(x == x);
     assert(x >= 0.0f);
     assert(x < 255.5f);
-    return static_cast<uint8_t>(static_cast<int>(x + 0.5f));
+    return rabitq::round_nonnegative_byte_scalar(x);
 }
 
 /** Same as round_nonnegative_to_uint8 for uint16 RaBitQ bias values. */
@@ -118,17 +118,7 @@ inline uint16_t round_nonnegative_to_uint16(float x) {
  */
 inline uint8_t round_clamped_to_uint8(float x, uint8_t max_code) {
     assert(x == x);
-
-    if (x <= 0.0f) {
-        return 0;
-    }
-
-    const float max_code_f = static_cast<float>(max_code);
-    if (x >= max_code_f) {
-        return max_code;
-    }
-
-    return static_cast<uint8_t>(static_cast<int>(x + 0.5f));
+    return rabitq::round_clamped_byte_scalar(x, max_code);
 }
 
 /** Compute factors for a single database vector using RaBitQ algorithm.

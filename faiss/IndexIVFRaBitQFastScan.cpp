@@ -19,8 +19,10 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/rabitq_simd.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -29,7 +31,6 @@ namespace faiss {
 using rabitq_utils::ExtraBitsFactors;
 using rabitq_utils::QueryFactorsData;
 using rabitq_utils::round_nonnegative_to_uint16;
-using rabitq_utils::round_nonnegative_to_uint8;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
 
@@ -455,6 +456,7 @@ void IndexIVFRaBitQFastScan::compute_LUT(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
+    FAISS_ASSERT(ksub == 16);
 
     // Use overridden qb/centered from context if provided, else index defaults
     const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
@@ -517,6 +519,7 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
+    FAISS_ASSERT(ksub == 16);
 
     const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
     const bool used_centered = context.qb > 0 ? context.centered : centered;
@@ -574,44 +577,53 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
             float glob_max_span = -HUGE_VAL;
             float glob_max_dis = -HUGE_VAL;
             float glob_b = HUGE_VAL;
-            for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
-                float b_j = 0;
-                float span_j = 0;
-                for (size_t m = 0; m < M; m++) {
-                    const float* tab = lut_float.get() + j2 * dim12 + m * ksub;
-                    float mn = tab[0], mx = tab[0];
-                    for (size_t s = 1; s < ksub; s++) {
-                        mn = std::min(mn, tab[s]);
-                        mx = std::max(mx, tab[s]);
-                    }
-                    all_mins[j2 * M + m] = mn;
-                    float span = mx - mn;
-                    glob_max_span = std::max(glob_max_span, span);
-                    b_j += mn;
-                    span_j += span;
-                }
-                probe_b[j2] = b_j;
-                glob_max_dis = std::max(glob_max_dis, span_j);
-                glob_b = std::min(glob_b, b_j);
-            }
-            float a = std::min(255.0f / glob_max_span, 65535.0f / glob_max_dis);
+            float a;
+            with_selected_simd_levels<rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS>(
+                    [&]<SIMDLevel SL>() {
+                        for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                            float b_j = 0;
+                            float span_j = 0;
+                            for (size_t m = 0; m < M; m++) {
+                                const float* tab =
+                                        lut_float.get() + j2 * dim12 + m * ksub;
+                                float mn, mx;
+                                rabitq::lut_minmax_16<SL>(tab, mn, mx);
+                                all_mins[j2 * M + m] = mn;
+                                float span = mx - mn;
+                                glob_max_span = std::max(glob_max_span, span);
+                                b_j += mn;
+                                span_j += span;
+                            }
+                            probe_b[j2] = b_j;
+                            glob_max_dis = std::max(glob_max_dis, span_j);
+                            glob_b = std::min(glob_b, b_j);
+                        }
 
-            // Second pass: quantize LUT and compute biasq
-            uint8_t* out_base = dis_tables.get() + i * cur_nprobe * dim12_2;
-            uint16_t* bq = biases.get() + i * cur_nprobe;
-            for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
-                for (size_t m = 0; m < M; m++) {
-                    const float* tab = lut_float.get() + j2 * dim12 + m * ksub;
-                    float mn = all_mins[j2 * M + m];
-                    uint8_t* out = out_base + j2 * dim12_2 + m * ksub;
-                    for (size_t s = 0; s < ksub; s++) {
-                        out[s] = round_nonnegative_to_uint8(a * (tab[s] - mn));
-                    }
-                }
-                memset(out_base + j2 * dim12_2 + M * ksub, 0, (M2 - M) * ksub);
-                bq[j2] =
-                        round_nonnegative_to_uint16(a * (probe_b[j2] - glob_b));
-            }
+                        a = std::min(
+                                255.0f / glob_max_span,
+                                65535.0f / glob_max_dis);
+
+                        // Second pass: quantize LUT and compute biasq.
+                        uint8_t* out_base =
+                                dis_tables.get() + i * cur_nprobe * dim12_2;
+                        uint16_t* bq = biases.get() + i * cur_nprobe;
+                        for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                            for (size_t m = 0; m < M; m++) {
+                                const float* tab =
+                                        lut_float.get() + j2 * dim12 + m * ksub;
+                                const float mn = all_mins[j2 * M + m];
+                                uint8_t* out =
+                                        out_base + j2 * dim12_2 + m * ksub;
+                                rabitq::lut_quantize_16_to_uint8<SL>(
+                                        tab, mn, a, out);
+                            }
+                            memset(out_base + j2 * dim12_2 + M * ksub,
+                                   0,
+                                   (M2 - M) * ksub);
+                            bq[j2] = round_nonnegative_to_uint16(
+                                    a * (probe_b[j2] - glob_b));
+                        }
+                    });
             normalizers[2 * i] = a;
             normalizers[2 * i + 1] = glob_b;
         }
@@ -827,35 +839,35 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         const size_t M = index.M;
         const size_t M2 = index.M2;
         const size_t ksub = index.ksub;
+        FAISS_ASSERT(ksub == 16);
 
         float max_span = -HUGE_VAL;
         float max_dis = 0;
         float b = 0;
         float* mins = mins_buf.data();
 
-        for (size_t m = 0; m < M; m++) {
-            const float* tab = lut_float.get() + m * ksub;
-            float mn = tab[0], mx = tab[0];
-            for (size_t s = 1; s < ksub; s++) {
-                mn = std::min(mn, tab[s]);
-                mx = std::max(mx, tab[s]);
-            }
-            mins[m] = mn;
-            float span = mx - mn;
-            max_span = std::max(max_span, span);
-            max_dis += span;
-            b += mn;
-        }
-
-        float a = std::min(255.0f / max_span, 65535.0f / max_dis);
+        float a;
         uint8_t* out = dis_tables.get();
-        for (size_t m = 0; m < M; m++) {
-            const float* tab = lut_float.get() + m * ksub;
-            for (size_t s = 0; s < ksub; s++) {
-                out[m * ksub + s] =
-                        round_nonnegative_to_uint8(a * (tab[s] - mins[m]));
-            }
-        }
+        with_selected_simd_levels<rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS>(
+                [&]<SIMDLevel SL>() {
+                    for (size_t m = 0; m < M; m++) {
+                        const float* tab = lut_float.get() + m * ksub;
+                        float mn, mx;
+                        rabitq::lut_minmax_16<SL>(tab, mn, mx);
+                        mins[m] = mn;
+                        float span = mx - mn;
+                        max_span = std::max(max_span, span);
+                        max_dis += span;
+                        b += mn;
+                    }
+
+                    a = std::min(255.0f / max_span, 65535.0f / max_dis);
+                    for (size_t m = 0; m < M; m++) {
+                        const float* tab = lut_float.get() + m * ksub;
+                        rabitq::lut_quantize_16_to_uint8<SL>(
+                                tab, mins[m], a, out + m * ksub);
+                    }
+                });
         memset(out + M * ksub, 0, (M2 - M) * ksub);
         biases[0] = 0;
         normalizers[0] = a;
