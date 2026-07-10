@@ -58,6 +58,26 @@ uint64_t bitwise_xor_dot_product(
 template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
 uint64_t popcount(const uint8_t* data, size_t size);
 
+/**
+ * Rearrange per-dimension quantized query codes into bit-plane layout.
+ *
+ * @p rotated_qq holds one qb-bit code per dimension (one byte each, value in
+ * [0, 2^qb)). @p out receives qb bit-planes of ((d + 7) / 8) bytes each:
+ * bit-plane j packs bit j of code i into bit (i % 8) of byte (i / 8). @p out
+ * must have room for qb * ((d + 7) / 8) bytes and is fully overwritten.
+ *
+ * @param rotated_qq  per-dimension codes (d bytes)
+ * @param d           dimensionality
+ * @param qb          quantization bits per dimension (1..8)
+ * @param out         bit-plane output buffer (qb * ((d + 7) / 8) bytes)
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+void rearrange_bit_planes(
+        const uint8_t* rotated_qq,
+        size_t d,
+        size_t qb,
+        uint8_t* out);
+
 // NONE specializations — scalar fallbacks
 
 template <>
@@ -123,6 +143,22 @@ inline uint64_t popcount<SIMDLevel::NONE>(const uint8_t* data, size_t size) {
         sum += popcount32(yv);
     }
     return sum;
+}
+
+template <>
+inline void rearrange_bit_planes<SIMDLevel::NONE>(
+        const uint8_t* rotated_qq,
+        size_t d,
+        size_t qb,
+        uint8_t* out) {
+    const size_t offset = (d + 7) / 8;
+    memset(out, 0, offset * qb);
+    for (size_t idim = 0; idim < d; idim++) {
+        for (size_t iv = 0; iv < qb; iv++) {
+            const bool bit = ((rotated_qq[idim] & (1 << iv)) != 0);
+            out[iv * offset + idim / 8] |= bit ? (1 << (idim % 8)) : 0;
+        }
+    }
 }
 
 } // namespace faiss::rabitq
