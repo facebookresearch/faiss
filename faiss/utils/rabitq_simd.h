@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -77,6 +78,42 @@ void rearrange_bit_planes(
         size_t d,
         size_t qb,
         uint8_t* out);
+
+/**
+ * Adjust 32 1-bit RaBitQ fast-scan distances and return lanes that beat the
+ * current heap threshold.
+ *
+ * aux_base points at 32 consecutive SignBitFactors records with
+ * storage_size == 2 * sizeof(float). This interface intentionally exposes only
+ * byte/scalar types so SIMD implementations stay hidden in per-ISA translation
+ * units.
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+uint32_t ivf_rabitq_fastscan_adjust_1bit_32(
+        const uint16_t* distances32,
+        const uint8_t* aux_base,
+        size_t storage_size,
+        float one_a,
+        float bias,
+        float c34,
+        float qr_to_c_l2sqr,
+        float qr_norm_l2sqr,
+        float heap_top,
+        bool c_is_max,
+        float* adjusted32);
+
+uint32_t ivf_rabitq_fastscan_adjust_1bit_32_dispatch(
+        const uint16_t* distances32,
+        const uint8_t* aux_base,
+        size_t storage_size,
+        float one_a,
+        float bias,
+        float c34,
+        float qr_to_c_l2sqr,
+        float qr_norm_l2sqr,
+        float heap_top,
+        bool c_is_max,
+        float* adjusted32);
 
 // NONE specializations — scalar fallbacks
 
@@ -159,6 +196,40 @@ inline void rearrange_bit_planes<SIMDLevel::NONE>(
             out[iv * offset + idim / 8] |= bit ? (1 << (idim % 8)) : 0;
         }
     }
+}
+
+template <>
+inline uint32_t ivf_rabitq_fastscan_adjust_1bit_32<SIMDLevel::NONE>(
+        const uint16_t* distances32,
+        const uint8_t* aux_base,
+        size_t storage_size,
+        float one_a,
+        float bias,
+        float c34,
+        float qr_to_c_l2sqr,
+        float qr_norm_l2sqr,
+        float heap_top,
+        bool c_is_max,
+        float* adjusted32) {
+    uint32_t candidate_mask = 0;
+    for (size_t j = 0; j < 32; j++) {
+        const float normalized = distances32[j] * one_a + bias;
+        const float* factors =
+                reinterpret_cast<const float*>(aux_base + j * storage_size);
+        const float final_dot = normalized - c34;
+        float adjusted =
+                factors[0] + qr_to_c_l2sqr - 2.0f * factors[1] * final_dot;
+        if (qr_norm_l2sqr != 0.0f) {
+            adjusted = -0.5f * (adjusted - qr_norm_l2sqr);
+        } else {
+            adjusted = std::max(0.0f, adjusted);
+        }
+        adjusted32[j] = adjusted;
+        if (c_is_max ? heap_top > adjusted : heap_top < adjusted) {
+            candidate_mask |= uint32_t(1) << j;
+        }
+    }
+    return candidate_mask;
 }
 
 } // namespace faiss::rabitq

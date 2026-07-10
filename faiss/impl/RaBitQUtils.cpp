@@ -17,6 +17,40 @@
 #include <limits>
 
 namespace faiss {
+namespace rabitq {
+
+uint32_t ivf_rabitq_fastscan_adjust_1bit_32_dispatch(
+        const uint16_t* distances32,
+        const uint8_t* aux_base,
+        size_t storage_size,
+        float one_a,
+        float bias,
+        float c34,
+        float qr_to_c_l2sqr,
+        float qr_norm_l2sqr,
+        float heap_top,
+        bool c_is_max,
+        float* adjusted32) {
+    constexpr int available_levels =
+            AVAILABLE_SIMD_LEVELS_NONE | (1 << int(SIMDLevel::AVX512));
+    return with_selected_simd_levels<available_levels>([&]<SIMDLevel SL>() {
+        return ivf_rabitq_fastscan_adjust_1bit_32<SL>(
+                distances32,
+                aux_base,
+                storage_size,
+                one_a,
+                bias,
+                c34,
+                qr_to_c_l2sqr,
+                qr_norm_l2sqr,
+                heap_top,
+                c_is_max,
+                adjusted32);
+    });
+}
+
+} // namespace rabitq
+
 namespace rabitq_utils {
 
 // Verify no unexpected padding in structures used for per-vector storage.

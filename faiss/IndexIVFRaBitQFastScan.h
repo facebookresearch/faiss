@@ -9,9 +9,6 @@
 
 #include <memory>
 #include <vector>
-#if defined(__AVX512F__) && defined(__AVX512BW__) && defined(__AVX512VL__)
-#include <immintrin.h>
-#endif
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -21,6 +18,7 @@
 #include <faiss/impl/fast_scan/rabitq_result_handler.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/rabitq_simd.h>
 
 namespace faiss {
 
@@ -282,65 +280,25 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
     const size_t qb = context->qb > 0 ? context->qb : index->qb;
     const size_t d = index->d;
 
-#if defined(__AVX512F__) && defined(__AVX512BW__) && defined(__AVX512VL__)
     if (!is_multibit && this->sel == nullptr && max_positions == 32 &&
         index->bbs == 32 && (idx_base % index->bbs) == 0 && !centered &&
         storage_size == sizeof(SignBitFactors)) {
         ALIGNED(64) float adjusted_tab[32];
-        const __m512 one_a_v = _mm512_set1_ps(one_a);
-        const __m512 bias_v = _mm512_set1_ps(bias);
-        const __m512 c34_v = _mm512_set1_ps(query_factors.c34);
-        const __m512 qr_to_c_v = _mm512_set1_ps(query_factors.qr_to_c_L2sqr);
-        const __m512 two_v = _mm512_set1_ps(2.0f);
-        const __m512 zero_v = _mm512_setzero_ps();
-        const __m512 qr_norm_v = _mm512_set1_ps(query_factors.qr_norm_L2sqr);
-        const __m512 neg_half_v = _mm512_set1_ps(-0.5f);
-        const __m512i even_idx = _mm512_setr_epi32(
-                0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30);
-        const __m512i odd_idx = _mm512_setr_epi32(
-                1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31);
 
         this->scan_cnt += 32;
-
-        uint32_t candidate_mask = 0;
-        for (size_t base = 0; base < 32; base += 16) {
-            const __m256i d16 = _mm256_loadu_si256(
-                    reinterpret_cast<const __m256i*>(d32tab + base));
-            __m512 normalized = _mm512_cvtepi32_ps(_mm512_cvtepu16_epi32(d16));
-            normalized =
-                    _mm512_add_ps(_mm512_mul_ps(normalized, one_a_v), bias_v);
-
-            const float* factors = reinterpret_cast<const float*>(
-                    aux_base + base * storage_size);
-            const __m512 packed0 = _mm512_loadu_ps(factors);
-            const __m512 packed1 = _mm512_loadu_ps(factors + 16);
-            const __m512 or_minus_c =
-                    _mm512_permutex2var_ps(packed0, even_idx, packed1);
-            const __m512 dp_multiplier =
-                    _mm512_permutex2var_ps(packed0, odd_idx, packed1);
-
-            const __m512 final_dot = _mm512_sub_ps(normalized, c34_v);
-            __m512 adjusted = _mm512_sub_ps(
-                    _mm512_add_ps(or_minus_c, qr_to_c_v),
-                    _mm512_mul_ps(
-                            two_v, _mm512_mul_ps(dp_multiplier, final_dot)));
-            if (query_factors.qr_norm_L2sqr != 0.0f) {
-                adjusted = _mm512_mul_ps(
-                        neg_half_v, _mm512_sub_ps(adjusted, qr_norm_v));
-            } else {
-                adjusted = _mm512_max_ps(zero_v, adjusted);
-            }
-
-            _mm512_storeu_ps(adjusted_tab + base, adjusted);
-            const __m512 heap_top = _mm512_set1_ps(heap_dis[0]);
-            __mmask16 mask;
-            if constexpr (Cfloat::is_max) {
-                mask = _mm512_cmp_ps_mask(heap_top, adjusted, _CMP_GT_OQ);
-            } else {
-                mask = _mm512_cmp_ps_mask(heap_top, adjusted, _CMP_LT_OQ);
-            }
-            candidate_mask |= uint32_t(mask) << base;
-        }
+        uint32_t candidate_mask =
+                rabitq::ivf_rabitq_fastscan_adjust_1bit_32_dispatch(
+                        d32tab,
+                        aux_base,
+                        storage_size,
+                        one_a,
+                        bias,
+                        query_factors.c34,
+                        query_factors.qr_to_c_L2sqr,
+                        query_factors.qr_norm_L2sqr,
+                        heap_dis[0],
+                        Cfloat::is_max,
+                        adjusted_tab);
 
         while (candidate_mask) {
             const int j = __builtin_ctz(candidate_mask);
@@ -356,9 +314,7 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                 nup++;
             }
         }
-    } else
-#endif
-    {
+    } else {
         for (size_t j = 0; j < max_positions; j++) {
             const int64_t result_id = this->adjust_id(b, j);
             if (result_id < 0) {

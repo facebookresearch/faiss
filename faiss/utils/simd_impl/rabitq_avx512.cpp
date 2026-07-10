@@ -7,6 +7,7 @@
 
 #ifdef COMPILE_SIMD_AVX512
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
 
@@ -377,6 +378,71 @@ void rearrange_bit_planes<SIMDLevel::AVX512>(
             out[iv * offset + idim / 8] |= bit ? (1 << (idim % 8)) : 0;
         }
     }
+}
+
+template <>
+uint32_t ivf_rabitq_fastscan_adjust_1bit_32<SIMDLevel::AVX512>(
+        const uint16_t* distances32,
+        const uint8_t* aux_base,
+        size_t storage_size,
+        float one_a,
+        float bias,
+        float c34,
+        float qr_to_c_l2sqr,
+        float qr_norm_l2sqr,
+        float heap_top_scalar,
+        bool c_is_max,
+        float* adjusted32) {
+    FAISS_ASSERT(storage_size == 2 * sizeof(float));
+
+    const __m512 one_a_v = _mm512_set1_ps(one_a);
+    const __m512 bias_v = _mm512_set1_ps(bias);
+    const __m512 c34_v = _mm512_set1_ps(c34);
+    const __m512 qr_to_c_v = _mm512_set1_ps(qr_to_c_l2sqr);
+    const __m512 two_v = _mm512_set1_ps(2.0f);
+    const __m512 zero_v = _mm512_setzero_ps();
+    const __m512 qr_norm_v = _mm512_set1_ps(qr_norm_l2sqr);
+    const __m512 neg_half_v = _mm512_set1_ps(-0.5f);
+    const __m512 heap_top = _mm512_set1_ps(heap_top_scalar);
+    const __m512i even_idx = _mm512_setr_epi32(
+            0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30);
+    const __m512i odd_idx = _mm512_setr_epi32(
+            1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31);
+
+    uint32_t candidate_mask = 0;
+    for (size_t base = 0; base < 32; base += 16) {
+        const __m256i d16 = _mm256_loadu_si256(
+                reinterpret_cast<const __m256i*>(distances32 + base));
+        __m512 normalized = _mm512_cvtepi32_ps(_mm512_cvtepu16_epi32(d16));
+        normalized = _mm512_add_ps(_mm512_mul_ps(normalized, one_a_v), bias_v);
+
+        const float* factors =
+                reinterpret_cast<const float*>(aux_base + base * storage_size);
+        const __m512 packed0 = _mm512_loadu_ps(factors);
+        const __m512 packed1 = _mm512_loadu_ps(factors + 16);
+        const __m512 or_minus_c =
+                _mm512_permutex2var_ps(packed0, even_idx, packed1);
+        const __m512 dp_multiplier =
+                _mm512_permutex2var_ps(packed0, odd_idx, packed1);
+
+        const __m512 final_dot = _mm512_sub_ps(normalized, c34_v);
+        __m512 adjusted = _mm512_sub_ps(
+                _mm512_add_ps(or_minus_c, qr_to_c_v),
+                _mm512_mul_ps(two_v, _mm512_mul_ps(dp_multiplier, final_dot)));
+        if (qr_norm_l2sqr != 0.0f) {
+            adjusted = _mm512_mul_ps(
+                    neg_half_v, _mm512_sub_ps(adjusted, qr_norm_v));
+        } else {
+            adjusted = _mm512_max_ps(adjusted, zero_v);
+        }
+
+        _mm512_storeu_ps(adjusted32 + base, adjusted);
+        const __mmask16 mask = c_is_max
+                ? _mm512_cmp_ps_mask(heap_top, adjusted, _CMP_GT_OQ)
+                : _mm512_cmp_ps_mask(heap_top, adjusted, _CMP_LT_OQ);
+        candidate_mask |= uint32_t(mask) << base;
+    }
+    return candidate_mask;
 }
 
 } // namespace faiss::rabitq
