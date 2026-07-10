@@ -378,6 +378,8 @@ configure_file(class_wrappers.py class_wrappers.py COPYONLY)
 configure_file(gpu_wrappers.py gpu_wrappers.py COPYONLY)
 configure_file(extra_wrappers.py extra_wrappers.py COPYONLY)
 configure_file(array_conversions.py array_conversions.py COPYONLY)
+configure_file(__init__.pyi __init__.pyi COPYONLY)
+configure_file(py.typed py.typed COPYONLY)
 
 # file(GLOB files "${PROJECT_SOURCE_DIR}/../../contrib/*.py")
 file(COPY ${PROJECT_SOURCE_DIR}/../../contrib  DESTINATION .)
