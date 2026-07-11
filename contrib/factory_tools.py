@@ -17,7 +17,7 @@ def get_code_size(d, indexkey):
     if indexkey.endswith(",RFlat"):
         return d * 4 + get_code_size(d, indexkey[: -len(",RFlat")])
 
-    mo = re.match("IVF\\d+(_HNSW32)?,(.*)$", indexkey)
+    mo = re.match("IVF\\d+(_HNSW\\d+)?,(.*)$", indexkey)
     if mo:
         return get_code_size(d, mo.group(2))
 

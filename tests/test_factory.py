@@ -197,6 +197,21 @@ class TestCodeSize(unittest.TestCase):
             50 * 4 + (25 * 12 + 7) // 8,
         )
 
+    def test_ivf_hnsw_quantizer(self):
+        # the HNSW coarse quantizer can use any M, and reverse_index_factory
+        # emits names such as IVF100_HNSW16; get_code_size must parse them, not
+        # only the default _HNSW32. The coarse quantizer does not change the
+        # per-vector code size, which is determined by the sub-index.
+        for m in (16, 32, 64):
+            self.assertEqual(
+                factory_tools.get_code_size(64, f"IVF100_HNSW{m},Flat"),
+                64 * 4,
+            )
+        self.assertEqual(
+            factory_tools.get_code_size(64, "IVF100_HNSW16,PQ8"),
+            8,
+        )
+
 
 class TestCloneSize(unittest.TestCase):
 
