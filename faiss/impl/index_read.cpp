@@ -1631,25 +1631,47 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READVECTOR(idxp->cum_sums);
         idxp->verbose = false;
         idx = std::move(idxp);
-    } else if (
-            h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
-        std::unique_ptr<IndexFlat> idxf;
-        if (h == fourcc("IxFI")) {
-            idxf = std::make_unique<IndexFlatIP>();
-        } else if (h == fourcc("IxF2")) {
-            idxf = std::make_unique<IndexFlatL2>();
-        } else {
-            idxf = std::make_unique<IndexFlat>();
-        }
+
+} else if (
+        h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
+    std::unique_ptr<IndexFlat> idxf;
+    if (h == fourcc("IxFI")) {
+        idxf = std::make_unique<IndexFlatIP>();
+    } else if (h == fourcc("IxF2")) {
+        idxf = std::make_unique<IndexFlatL2>();
+    } else {
+        idxf = std::make_unique<IndexFlat>();
+    }
+
+
+        // Read header values (sets d and ntotal)
         read_index_header(*idxf, f);
+
+        // ✅ Validate d and ntotal immediately after header read
+        FAISS_THROW_IF_NOT_FMT(idxf->d > 0 && idxf->d < 1000000,
+            "Invalid dimension %d in index file", idxf->d);
+
+        FAISS_THROW_IF_NOT_FMT(idxf->ntotal >= 0 && idxf->ntotal < 1000000000,
+            "Invalid ntotal %zd in index file", idxf->ntotal);
+
+        // Assign code_size based on dimension
         idxf->code_size = idxf->d * sizeof(float);
+
+        // ✅ Validate code_size after assignment
+        FAISS_THROW_IF_NOT_FMT(idxf->code_size > 0 && idxf->code_size < 65536,
+            "Invalid code_size %zd in index file", idxf->code_size);
+
+        // Read vector data
         read_xb_vector(idxf->codes, f);
+
+        // Existing FAISS check remains
         FAISS_THROW_IF_NOT(
-                idxf->codes.size() ==
-                mul_no_overflow(
-                        (size_t)idxf->ntotal,
-                        idxf->code_size,
-                        "IndexFlat codes"));
+            idxf->codes.size() ==
+            mul_no_overflow(
+                (size_t)idxf->ntotal,
+                idxf->code_size,
+                "IndexFlat codes"));
+
         idx = std::move(idxf);
     } else if (h == fourcc("IxHE") || h == fourcc("IxHe")) {
         auto idxl = std::make_unique<IndexLSH>();
@@ -1674,92 +1696,13 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             // leak
             idxl->code_size *= 8;
         }
-        validate_code_size_match(
-                idxl->code_size, (idxl->nbits + 7) / 8, "IndexLSH");
-        {
-            // Read, dereference, discard.
-            auto sub_vt = read_VectorTransform_up(f);
-            RandomRotationMatrix* rrot =
-                    dynamic_cast<RandomRotationMatrix*>(sub_vt.get());
-            FAISS_THROW_IF_NOT_MSG(rrot, "expected a random rotation");
-            idxl->rrot = *rrot;
-        }
-        read_vector(idxl->codes, f);
-        FAISS_THROW_IF_NOT(
-                idxl->rrot.d_in == idxl->d && idxl->rrot.d_out == idxl->nbits);
-        FAISS_THROW_IF_NOT(
-                idxl->codes.size() ==
-                mul_no_overflow(
-                        (size_t)idxl->ntotal,
-                        idxl->code_size,
-                        "IndexLSH codes"));
-        idx = std::move(idxl);
-    } else if (
-            h == fourcc("IxPQ") || h == fourcc("IxPo") || h == fourcc("IxPq")) {
-        // IxPQ and IxPo were merged into the same IndexPQ object
-        auto idxp = std::make_unique<IndexPQ>();
-        read_index_header(*idxp, f);
-        read_ProductQuantizer(&idxp->pq, f);
-        idxp->code_size = idxp->pq.code_size;
-        read_vector(idxp->codes, f);
-        FAISS_THROW_IF_NOT(
-                idxp->codes.size() ==
-                mul_no_overflow(
-                        (size_t)idxp->ntotal,
-                        idxp->code_size,
-                        "IndexPQ codes"));
-        if (h == fourcc("IxPo") || h == fourcc("IxPq")) {
-            READ1(idxp->search_type);
-            READ1_BOOL(idxp->encode_signs);
-            READ1(idxp->polysemous_ht);
-        }
-        // Old versions of PQ all had metric_type set to INNER_PRODUCT
-        // when they were in fact using L2. Therefore, we force metric type
-        // to L2 when the old format is detected
-        if (h == fourcc("IxPQ") || h == fourcc("IxPo")) {
-            idxp->metric_type = METRIC_L2;
-        }
-        idx = std::move(idxp);
-    } else if (h == fourcc("IxRQ") || h == fourcc("IxRq")) {
-        auto idxr = std::make_unique<IndexResidualQuantizer>();
-        read_index_header(*idxr, f);
-        if (h == fourcc("IxRQ")) {
-            read_ResidualQuantizer_old(idxr->rq, f);
-        } else {
-            read_ResidualQuantizer(idxr->rq, f, io_flags);
-        }
-        validate_aq_dimension_match(
-                idxr->rq, idxr->d, "IndexResidualQuantizer");
-        READ1(idxr->code_size);
-        validate_code_size_match(
-                idxr->code_size, idxr->rq.code_size, "IndexResidualQuantizer");
-        read_vector(idxr->codes, f);
-        FAISS_THROW_IF_NOT(
-                idxr->codes.size() ==
-                mul_no_overflow(
-                        (size_t)idxr->ntotal,
-                        idxr->code_size,
-                        "IndexResidualQuantizer codes"));
-        idx = std::move(idxr);
-    } else if (h == fourcc("IxLS")) {
-        auto idxr = std::make_unique<IndexLocalSearchQuantizer>();
-        read_index_header(*idxr, f);
-        read_LocalSearchQuantizer(idxr->lsq, f);
-        validate_aq_dimension_match(
-                idxr->lsq, idxr->d, "IndexLocalSearchQuantizer");
-        READ1(idxr->code_size);
-        validate_code_size_match(
-                idxr->code_size,
-                idxr->lsq.code_size,
-                "IndexLocalSearchQuantizer");
-        read_vector(idxr->codes, f);
-        FAISS_THROW_IF_NOT(
-                idxr->codes.size() ==
-                mul_no_overflow(
-                        (size_t)idxr->ntotal,
-                        idxr->code_size,
-                        "IndexLocalSearchQuantizer codes"));
-        idx = std::move(idxr);
+
+        
+        
+        
+        
+        
+        
     } else if (h == fourcc("IxPR")) {
         auto idxpr = std::make_unique<IndexProductResidualQuantizer>();
         read_index_header(*idxpr, f);
