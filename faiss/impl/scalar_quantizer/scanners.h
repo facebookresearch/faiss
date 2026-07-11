@@ -35,6 +35,19 @@ namespace scalar_quantizer {
 using QuantizerType = ScalarQuantizer::QuantizerType;
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
 
+// True when query_to_codes_batch_4 matches four query_to_code calls. The SIMD
+// DCTemplate batch differs from the single path only for the uniform
+// quantizers, whose single path predecodes the query, so those stay on the
+// scalar scan and batched results never differ from scalar.
+template <class DC>
+constexpr bool sq_batch_4_is_exact() {
+    if constexpr (requires { DC::has_decode_raw(); }) {
+        return !DC::has_decode_raw();
+    } else {
+        return true;
+    }
+}
+
 /*******************************************************************
  * IVFSQScannerIP / IVFSQScannerL2 — moved from anonymous namespace
  * in ScalarQuantizer.cpp
@@ -74,13 +87,35 @@ struct IVFSQScannerIP : InvertedListScanner {
         return accu0 + dc.query_to_code(code);
     }
 
+    void distance_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const {
+        dc.query_to_codes_batch_4(
+                code_0, code_1, code_2, code_3, dis0, dis1, dis2, dis3);
+        dis0 += accu0;
+        dis1 += accu0;
+        dis2 += accu0;
+        dis3 += accu0;
+    }
+
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const override {
-        return run_scan_codes_fix_C<CMin<float, idx_t>>(
-                *this, list_size, codes, ids, handler);
+        if constexpr (sq_batch_4_is_exact<DCClass>()) {
+            return run_scan_codes4_fix_C<CMin<float, idx_t>>(
+                    *this, list_size, codes, ids, handler);
+        } else {
+            return run_scan_codes_fix_C<CMin<float, idx_t>>(
+                    *this, list_size, codes, ids, handler);
+        }
     }
 };
 
@@ -133,13 +168,31 @@ struct IVFSQScannerL2 : InvertedListScanner {
         return dc.query_to_code(code);
     }
 
+    void distance_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const {
+        dc.query_to_codes_batch_4(
+                code_0, code_1, code_2, code_3, dis0, dis1, dis2, dis3);
+    }
+
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const override {
-        return run_scan_codes_fix_C<CMax<float, idx_t>>(
-                *this, list_size, codes, ids, handler);
+        if constexpr (sq_batch_4_is_exact<DCClass>()) {
+            return run_scan_codes4_fix_C<CMax<float, idx_t>>(
+                    *this, list_size, codes, ids, handler);
+        } else {
+            return run_scan_codes_fix_C<CMax<float, idx_t>>(
+                    *this, list_size, codes, ids, handler);
+        }
     }
 };
 
