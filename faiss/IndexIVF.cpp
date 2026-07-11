@@ -287,6 +287,7 @@ void IndexIVF::add_core(
 }
 
 void IndexIVF::make_direct_map(bool b) {
+    fprintf(stderr, "hello2\n");
     if (b) {
         direct_map.set_type(DirectMap::Array, invlists, ntotal);
     } else {
