@@ -27,7 +27,7 @@ add_library(faiss_perf_tests_utils
 target_include_directories(faiss_perf_tests_utils PRIVATE
    ${PROJECT_SOURCE_DIR}/..)
 
-include(../cmake/link_to_faiss_lib.cmake)
+include(../../../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_perf_tests_utils)
 

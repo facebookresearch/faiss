@@ -140,6 +140,9 @@ Several options can be passed to CMake, among which:
     are `ON` and `OFF`),
   - `-DFAISS_ENABLE_SVS=ON` in order to enable the Intel(R) Scalable Vector Search (SVS) integration (default is `OFF`, possible values are `ON` and `OFF`).
     Note: This will download and build the SVS runtime library (`libsvs_runtime.so`). When installing the python package, this library will be copied into the package directory. For C++ usage, ensure this library is in your library path.
+  - `-DFAISS_BUILD_BENCHMARKS=ON` in order to build the C++ benchmark suite in
+  `benchs/` (default is `OFF`, possible values are `ON` and `OFF`). See
+  [Benchmark suite](#benchmark-suite) below.
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
@@ -268,6 +271,34 @@ $ ./build/demos/demo_ivfpq_indexing_gpu
 
 This produces the GPU code equivalent to the CPU `demo_ivfpq_indexing`. It also
 shows how to translate indexes from/to a GPU.
+
+### Benchmark suite
+
+Faiss ships a performance benchmark suite under [`benchs/`](benchs/README.md)
+covering both low-level kernels (distances, quantizers, hamming, heap, k-means,
+...) and end-to-end index operations (build, add, search across Flat, IVF,
+fast-scan, PQ, HNSW/NSG, binary, RaBitQ, and more). A C++ suite uses
+[Google Benchmark](https://github.com/google/benchmark) and a companion Python
+suite uses [pytest-benchmark](https://pytest-benchmark.readthedocs.io/); both
+emit machine-readable JSON for regression tracking.
+
+The suite is not built by default. Enable it with `-DFAISS_BUILD_BENCHMARKS=ON`,
+and always build in `Release` — an unoptimized build produces meaningless
+numbers. From the root of the source directory:
+
+``` shell
+$ cmake -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DFAISS_BUILD_BENCHMARKS=ON \
+    -DFAISS_OPT_LEVEL=dd \
+    -DFAISS_ENABLE_GPU=OFF \
+    -DFAISS_ENABLE_PYTHON=OFF
+$ cmake --build build --config Release --target benchmarks -j$(nproc)
+```
+
+This builds all benchmark executables into `build/benchs/cpp/`. See the
+[benchmarks README](benchs/README.md) for running instructions, the full
+list of benchmarks, and the C++ ↔ Python mapping.
 
 ### A real-life benchmark
 

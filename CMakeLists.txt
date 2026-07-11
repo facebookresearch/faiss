@@ -85,7 +85,9 @@ set(CMAKE_CXX_STANDARD 20)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 # Valid values are "generic", "avx2", "avx512", "avx512_spr", "sve".
-option(FAISS_OPT_LEVEL "" "generic")
+set(FAISS_OPT_LEVEL "generic" CACHE STRING
+  "FAISS SIMD optimization level (generic, avx2, avx512, avx512_spr, sve, dd).")
+set_property(CACHE FAISS_OPT_LEVEL PROPERTY STRINGS generic avx2 avx512 avx512_spr sve dd)
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
 option(FAISS_GPU_STATIC "Link GPU libraries statically." OFF)
 option(FAISS_ENABLE_CUVS "Enable cuVS for GPU indexes." OFF)
@@ -148,8 +150,13 @@ endif()
 
 if(FAISS_ENABLE_EXTRAS)
   add_subdirectory(demos)
-  add_subdirectory(benchs)
+  add_subdirectory(benchs/legacy/benchs)
   add_subdirectory(tutorial/cpp)
+endif()
+
+option(FAISS_BUILD_BENCHMARKS "Build the benchmark suite" OFF)
+if(FAISS_BUILD_BENCHMARKS)
+  add_subdirectory(benchs)
 endif()
 
 # CTest must be included in the top level to enable `make test` target.
@@ -157,7 +164,7 @@ include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(tests)
   if(NOT WIN32 AND NOT CMAKE_CROSSCOMPILING)
-    add_subdirectory(perf_tests)
+    add_subdirectory(benchs/legacy/perf_tests)
   endif()
   if(FAISS_ENABLE_GPU)
     if(FAISS_ENABLE_ROCM)
