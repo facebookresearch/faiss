@@ -78,6 +78,7 @@ void GpuIndexIVF::init_() {
     // here we set a low # iterations because this is typically used
     // for large clusterings (copying IndexIVF.cpp's Level1Quantizer
     cp.niter = 10;
+    fprintf(stderr, "hello1\n");
 
     cp.verbose = verbose;
 
