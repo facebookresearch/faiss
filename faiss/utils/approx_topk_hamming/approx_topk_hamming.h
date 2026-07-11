@@ -118,7 +118,7 @@ struct HeapWithBucketsForHamming32<
                         }
                     }
 
-                    if (valid_counter == 8) {
+                    if (valid_counter == 0) {
                         continue; // Skip if all vectors are filtered out
                     }
 

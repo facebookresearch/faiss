@@ -74,19 +74,24 @@ runs:
         # CUDA install for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
           if [ "${{ inputs.cuvs }}" = "ON" ]; then
-            # Use CUDA 13.3 for cuVS cmake builds: the conda libcuvs 26.06 build
-            # links libnvJitLink 13.3 (needs the __nvJitLinkCreate_13_3 symbol).
-            # The nvjitlink runtime lib is a separate package that cuda-nvcc /
-            # cuda-cudart-dev / cuda-version do NOT pull to 13.3, so pin
-            # libnvjitlink explicitly — otherwise an older libnvJitLink.so.13 is
-            # left in the env and libcuvs fails to load at import. PyTorch via pip
-            # supports cu132, avoiding the conda-forge pytorch-gpu CUDA-12 limit.
+            # Pin the CUDA toolkit (nvcc + cudart/cupti/nvtx) to 13.2, not 13.3:
+            # the 13.3 cudart deadlocks cuVS GPU kernels on the T4 runner (the
+            # first cuVS op in index_cpu_to_gpu hangs, timing out
+            # test_gpu_index_serialize). CUDA 13.2 matches both the non-cuVS GPU
+            # job and the pip-wheel cuVS build (whose GPU smoke test passes), and
+            # the T4 driver. Only libnvJitLink must be 13.3: the conda libcuvs
+            # 26.06 build links it (needs the __nvJitLinkCreate_13_3 symbol), and
+            # it is a standalone package that cuda-nvcc / cuda-cudart-dev /
+            # cuda-version do NOT pull to 13.3, so pin it explicitly — otherwise
+            # an older libnvJitLink.so.13 is left in the env and libcuvs fails to
+            # load at import. PyTorch via pip supports cu132, avoiding the
+            # conda-forge pytorch-gpu CUDA-12 limit.
             conda install -y -q \
-              cuda-nvcc=13.3 cuda-nvtx=13.3 cuda-cupti=13.3 cuda-cudart-dev=13.3 \
+              cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 \
               'libnvjitlink>=13.3,<14' \
               libcublas-dev libcusolver-dev libcusparse-dev \
               gxx_linux-64=14.2 \
-              libcuvs=26.06 'cuda-version>=13.3,<14' sysroot_linux-64=2.34 \
+              libcuvs=26.06 'cuda-version>=13.2,<14' sysroot_linux-64=2.34 \
               -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
             conda clean --index-cache 2>/dev/null || true
           else
@@ -116,7 +121,7 @@ runs:
           # conda 13.3 lib that cuVS 26.06 needs, so faiss then fails to load with
           # "undefined symbol __nvJitLinkCreate_13_3". No torch cu133 build exists,
           # so upgrade the pip nvjitlink to 13.3 (symbol-complete, CUDA-13 forward
-          # compatible). cuVS-only: the non-cuVS GPU path is CUDA 12.
+          # compatible). cuVS-only: the non-cuVS GPU path does not use libcuvs.
           if [ "${{ inputs.cuvs }}" = "ON" ]; then
             pip install --break-system-packages --upgrade "nvidia-nvjitlink>=13.3,<14"
           fi

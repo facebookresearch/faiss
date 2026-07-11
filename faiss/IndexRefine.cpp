@@ -157,19 +157,14 @@ void IndexRefine::range_search(
             (params != nullptr) ? params->base_index_params : nullptr;
 
     const float kf = (params != nullptr) ? params->k_factor : this->k_factor;
-    FAISS_THROW_IF_NOT(kf >= 1);
 
     const bool is_similarity = is_similarity_metric(metric_type);
 
-    // Widen base_index search radius by k_factor.
-    // Filtered to exact radius below; k_factor affects recall, not correctness.
-    // For similarity metrics a negative radius widens by multiplying, not
-    // dividing, so branch on the sign to always loosen the base threshold.
-    float base_radius = radius;
-    if (kf != 1) {
-        base_radius = is_similarity ? (radius >= 0 ? radius / kf : radius * kf)
-                                    : radius * kf;
-    }
+    // Scale the base_index search radius by k_factor. Results are filtered to
+    // the exact radius below, so this only affects recall, not correctness; it
+    // is up to the user to pick a k_factor that widens the base search for
+    // their metric.
+    const float base_radius = radius * kf;
 
     base_index->range_search(n, x, base_radius, result, base_index_params);
 
