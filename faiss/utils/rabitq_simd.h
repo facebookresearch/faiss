@@ -16,6 +16,11 @@
 
 namespace faiss::rabitq {
 
+struct BitwiseAndDotProductResult {
+    uint64_t dot_product;
+    uint64_t popcount;
+};
+
 /**
  * Compute dot product between query and binary data using popcount on AND.
  *
@@ -27,6 +32,17 @@ namespace faiss::rabitq {
  */
 template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
 uint64_t bitwise_and_dot_product(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb);
+
+/**
+ * Compute bitwise_and_dot_product(query, data, size, qb) and popcount(data,
+ * size) in one pass over data.
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount(
         const uint8_t* query,
         const uint8_t* data,
         size_t size,
@@ -103,6 +119,35 @@ inline uint64_t bitwise_and_dot_product<SIMDLevel::NONE>(
         }
     }
     return sum;
+}
+
+template <>
+inline BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
+        SIMDLevel::NONE>(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb) {
+    uint64_t dot_product = 0;
+    uint64_t popcount_sum = 0;
+    size_t offset = 0;
+    for (size_t step = 64 / 8; offset + step <= size; offset += step) {
+        const auto yv = *(const uint64_t*)(data + offset);
+        popcount_sum += popcount64(yv);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(const uint64_t*)(query + j * size + offset);
+            dot_product += popcount64(qv & yv) << j;
+        }
+    }
+    for (; offset < size; ++offset) {
+        const auto yv = *(data + offset);
+        popcount_sum += popcount32(yv);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(query + j * size + offset);
+            dot_product += popcount32(qv & yv) << j;
+        }
+    }
+    return {dot_product, popcount_sum};
 }
 
 template <>
