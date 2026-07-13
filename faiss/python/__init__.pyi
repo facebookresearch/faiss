@@ -34,6 +34,11 @@ METRIC_Jaccard: int
 METRIC_NaNEuclidean: int
 METRIC_GOWER: int
 
+ClusteringInitMethod = int
+ClusteringInitMethod_RANDOM: int
+ClusteringInitMethod_KMEANS_PLUS_PLUS: int
+ClusteringInitMethod_AFK_MC2: int
+
 # I/O flag constants for reading/writing indexes
 IO_FLAG_SKIP_STORAGE: int  # skip the storage for graph-based indexes
 IO_FLAG_READ_ONLY: int  # read-only mode
@@ -2446,7 +2451,7 @@ class ClusteringParameters:
     decode_block_size: int
     check_input_data_for_NaNs: bool
     use_faster_subsampling: bool
-    init_method: int  # ClusteringInitMethod enum (RANDOM=0, KMEANS_PLUS_PLUS=1, AFK_MC2=2)
+    init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
 
