@@ -35,11 +35,17 @@ namespace {
 const std::map<faiss::ScalarQuantizer::QuantizerType, std::string> sq_types = {
         {faiss::ScalarQuantizer::QT_8bit, "SQ8"},
         {faiss::ScalarQuantizer::QT_4bit, "SQ4"},
+        // QT_8bit_uniform and QT_4bit_uniform have no round-trippable
+        // index_factory string; the names below are synthetic identifiers used
+        // for telemetry logging only.
+        {faiss::ScalarQuantizer::QT_8bit_uniform, "SQ8u"},
+        {faiss::ScalarQuantizer::QT_4bit_uniform, "SQ4u"},
         {faiss::ScalarQuantizer::QT_6bit, "SQ6"},
         {faiss::ScalarQuantizer::QT_fp16, "SQfp16"},
         {faiss::ScalarQuantizer::QT_bf16, "SQbf16"},
         {faiss::ScalarQuantizer::QT_8bit_direct_signed, "SQ8_direct_signed"},
         {faiss::ScalarQuantizer::QT_8bit_direct, "SQ8_direct"},
+        {faiss::ScalarQuantizer::QT_0bit, "SQ0"},
         {faiss::ScalarQuantizer::QT_1bit_tqmse, "SQtqmse1"},
         {faiss::ScalarQuantizer::QT_2bit_tqmse, "SQtqmse2"},
         {faiss::ScalarQuantizer::QT_3bit_tqmse, "SQtqmse3"},
@@ -204,6 +210,11 @@ std::string reverse_index_factory(const faiss::Index* index) {
             const faiss::IndexScalarQuantizer* sq_index =
                     dynamic_cast<const faiss::IndexScalarQuantizer*>(index)) {
         return sq_types.at(sq_index->sq.qtype);
+    } else if (
+            // IndexIDMap2 inherits IndexIDMap — check subclass first.
+            const faiss::IndexIDMap2* idmap2 =
+                    dynamic_cast<const faiss::IndexIDMap2*>(index)) {
+        return std::string("IDMap2,") + reverse_index_factory(idmap2->index);
     } else if (
             const faiss::IndexIDMap* idmap =
                     dynamic_cast<const faiss::IndexIDMap*>(index)) {
