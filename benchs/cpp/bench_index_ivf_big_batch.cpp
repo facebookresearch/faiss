@@ -14,10 +14,10 @@
 // to their nprobe lists, then processes the index list-by-list with a
 // reservoir/block strategy so each inverted list is scanned once for every
 // query that probes it. There is NO C++ equivalent of that algorithm in faiss.
-// The faithful reproduction lives in benchs/python/bench_index_ivf_big_batch.py;
-// this C++ file measures ordinary large-batch IndexIVF::search throughput as
-// the closest C++ analogue (the "reference search" baseline that
-// big_batch_search is compared against).
+// The faithful reproduction lives in
+// benchs/python/bench_index_ivf_big_batch.py; this C++ file measures ordinary
+// large-batch IndexIVF::search throughput as the closest C++ analogue (the
+// "reference search" baseline that big_batch_search is compared against).
 //
 // Default options: d=32, nlist=100, k=10, nprobe=5, and the S/M/L
 // SyntheticDataset sizes (nb 4000/40000/400000, trained on nt = nb/2). The

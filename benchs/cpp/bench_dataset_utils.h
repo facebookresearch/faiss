@@ -32,7 +32,10 @@ inline std::vector<float> fvecs_read(
     int d;
     size_t nr = fread(&d, sizeof(int), 1, f);
     if (nr != 1 || d <= 0 || d > 1000000) {
-        fprintf(stderr, "benchmarks: unreasonable dimension %d in %s\n", d, fname);
+        fprintf(stderr,
+                "benchmarks: unreasonable dimension %d in %s\n",
+                d,
+                fname);
         fclose(f);
         *d_out = 0;
         *n_out = 0;
@@ -232,7 +235,8 @@ struct DatasetSIFT1M {
 /// directory by name. This supports on-disk .?vecs-framed datasets:
 /// sift1M, bigann*, deep*, glove and music-100. If the expected
 /// files are absent the loader returns false and callers fall back to
-/// synthetic data (exactly as bench_index_ivf_factory.cpp already does for SIFT1M).
+/// synthetic data (exactly as bench_index_ivf_factory.cpp already does for
+/// SIFT1M).
 ///
 /// Filename conventions under <data_dir>:
 ///   sift1M / sift  : sift_learn.fvecs, sift_base.fvecs, sift_query.fvecs,
@@ -267,8 +271,8 @@ struct GenericDataset {
         bool is_bvecs = name.rfind("bigann", 0) == 0;
         // Sift files are prefixed "sift"; keep that convention while
         // letting other datasets use their own name as the file prefix.
-        std::string prefix = (name == "sift1M" || name == "sift") ? "sift"
-                                                                   : name;
+        std::string prefix =
+                (name == "sift1M" || name == "sift") ? "sift" : name;
         std::string ext = is_bvecs ? ".bvecs" : ".fvecs";
         auto vread = is_bvecs ? &bvecs_read : &fvecs_read;
 

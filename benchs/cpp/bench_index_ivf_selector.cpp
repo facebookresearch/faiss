@@ -91,8 +91,7 @@ static SharedIndex& get_shared_index() {
     si.index->add(si.nb, si.xb);
     si.index_ivf = dynamic_cast<IndexIVF*>(si.index.get());
     FAISS_THROW_IF_NOT_MSG(
-            si.index_ivf != nullptr,
-            "--factory did not produce an IndexIVF");
+            si.index_ivf != nullptr, "--factory did not produce an IndexIVF");
     return si;
 }
 
@@ -199,8 +198,7 @@ static SharedIndex& get_dataset_index(
     si.index->add(nb, xb);
     si.index_ivf = dynamic_cast<IndexIVF*>(si.index.get());
     FAISS_THROW_IF_NOT_MSG(
-            si.index_ivf != nullptr,
-            "--factory did not produce an IndexIVF");
+            si.index_ivf != nullptr, "--factory did not produce an IndexIVF");
     return si;
 }
 

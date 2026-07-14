@@ -71,10 +71,7 @@ DEFINE_string(
         "",
         "comma-separated 0/1 rescale_norm settings for the additive "
         "quantizer fastscan groups (default: 0,1)");
-DEFINE_string(
-        k,
-        "",
-        "comma-separated knn k values (default: 1,10)");
+DEFINE_string(k, "", "comma-separated knn k values (default: 1,10)");
 
 static void bench_ivfpq_fastscan_search(
         benchmark::State& state,

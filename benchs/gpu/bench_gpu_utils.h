@@ -15,7 +15,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/utils/random.h>
 
-#include "bench_cli_utils.h"     // BENCH_DEFINE_DATASET_FILE_FLAGS, bench_init, int_list
+#include "bench_cli_utils.h" // BENCH_DEFINE_DATASET_FILE_FLAGS, bench_init, int_list
 #include "bench_dataset_utils.h" // DatasetSIFT1M, compute_recall_at, ...
 
 // Shared helpers for the GPU benchmark suite (benchs/gpu). Kept separate from

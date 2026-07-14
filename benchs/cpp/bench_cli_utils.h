@@ -32,23 +32,23 @@
 /// filename extension; ground truth is always .ivecs. The resulting flags are
 /// FLAGS_data_dir, FLAGS_train_file, FLAGS_base_file, FLAGS_query_file and
 /// FLAGS_gt_file, passed positionally to DatasetSIFT1M::load().
-#define BENCH_DEFINE_DATASET_FILE_FLAGS()                                    \
-    DEFINE_string(data_dir, "sift1M", "path to the dataset directory");      \
-    DEFINE_string(                                                           \
-            train_file,                                                      \
-            "sift_learn.fvecs",                                              \
-            "train/learn vectors filename under --data_dir (.fvecs/.bvecs)"); \
-    DEFINE_string(                                                           \
-            base_file,                                                       \
-            "sift_base.fvecs",                                               \
+#define BENCH_DEFINE_DATASET_FILE_FLAGS()                                       \
+    DEFINE_string(data_dir, "sift1M", "path to the dataset directory");         \
+    DEFINE_string(                                                              \
+            train_file,                                                         \
+            "sift_learn.fvecs",                                                 \
+            "train/learn vectors filename under --data_dir (.fvecs/.bvecs)");   \
+    DEFINE_string(                                                              \
+            base_file,                                                          \
+            "sift_base.fvecs",                                                  \
             "base/database vectors filename under --data_dir (.fvecs/.bvecs)"); \
-    DEFINE_string(                                                           \
-            query_file,                                                      \
-            "sift_query.fvecs",                                              \
-            "query vectors filename under --data_dir (.fvecs/.bvecs)");      \
-    DEFINE_string(                                                           \
-            gt_file,                                                         \
-            "sift_groundtruth.ivecs",                                        \
+    DEFINE_string(                                                              \
+            query_file,                                                         \
+            "sift_query.fvecs",                                                 \
+            "query vectors filename under --data_dir (.fvecs/.bvecs)");         \
+    DEFINE_string(                                                              \
+            gt_file,                                                            \
+            "sift_groundtruth.ivecs",                                           \
             "ground-truth neighbors filename under --data_dir (.ivecs)")
 
 namespace benchmarks {
