@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexIDMap.h>
 #include <faiss/factory_tools.h>
 #include <faiss/index_factory.h>
 #include <gtest/gtest.h>
@@ -22,6 +23,7 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  "RaBitQ",    "IVF8,RaBitQ",  "IVF8,SQtqmse8",
                  "EDEN",      "EDEN4",        "EDEN4BIASED",
                  "IVF8,EDEN", "IVF8,EDEN4",   "IVF8,EDEN4BIASED",
+                 "IVF8,SQ0",
          }) {
         std::unique_ptr<Index> index{index_factory(64, factory)};
         ASSERT_TRUE(index);
@@ -37,6 +39,18 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
         ASSERT_TRUE(index);
         EXPECT_EQ(dst, reverse_index_factory(index.get()));
     }
+}
+
+// IndexIDMap2 inherits IndexIDMap; verify the subclass is distinguished.
+TEST(TestFactoryTools, TestReverseIndexFactoryIDMap) {
+    std::unique_ptr<Index> base{index_factory(64, "Flat")};
+    ASSERT_TRUE(base);
+
+    IndexIDMap idmap(base.get());
+    EXPECT_EQ("IDMap,Flat", reverse_index_factory(&idmap));
+
+    IndexIDMap2 idmap2(base.get());
+    EXPECT_EQ("IDMap2,Flat", reverse_index_factory(&idmap2));
 }
 
 } // namespace faiss
