@@ -959,3 +959,20 @@ class TestFactoryTools(unittest.TestCase):
         # get_code_size(reverse_index_factory(index)) must not raise for any M
         code_size = factory_tools.get_code_size(d, factory_str)
         self.assertEqual(code_size, d * 4 + 16 * 2 * 4)
+
+    def test_rabitq_reverse_index_factory(self):
+        d = 64
+        quantizer = faiss.IndexFlatL2(d)
+        for nb_bits in [1, 2, 4]:
+            expected = "RaBitQ" if nb_bits == 1 else f"RaBitQ{nb_bits}"
+            index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
+            self.assertEqual(
+                factory_tools.reverse_index_factory(index), expected
+            )
+            ivf_index = faiss.IndexIVFRaBitQ(
+                quantizer, d, 8, faiss.METRIC_L2, False, nb_bits
+            )
+            self.assertEqual(
+                factory_tools.reverse_index_factory(ivf_index),
+                f"IVF8,{expected}",
+            )
