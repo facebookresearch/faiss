@@ -274,16 +274,16 @@ void NNDescent::update() {
                     // push itself into other.rnn_new if it is not in
                     // the candidate pool of the other side
                     {
-                    LockGuard guard(other.lock);
-                    if (nn.distance > other.pool.back().distance) {
-                        if (other.rnn_new.size() < static_cast<size_t>(R)) {
-                            other.rnn_new.push_back(n);
-                        } else {
-                            int pos = rng() % R;
-                            other.rnn_new[pos] = n;
+                        LockGuard guard(other.lock);
+                        if (nn.distance > other.pool.back().distance) {
+                            if (other.rnn_new.size() < static_cast<size_t>(R)) {
+                                other.rnn_new.push_back(n);
+                            } else {
+                                int pos = rng() % R;
+                                other.rnn_new[pos] = n;
+                            }
                         }
                     }
-                }
                     nn.flag = false;
                 } else { // the node is old
                     // push the neighbor into nn_old
@@ -291,16 +291,16 @@ void NNDescent::update() {
                     // push itself into other.rnn_old if it is not in
                     // the candidate pool of the other side
                     {
-                    LockGuard guard(other.lock);
-                    if (nn.distance > other.pool.back().distance) {
-                        if (other.rnn_old.size() < static_cast<size_t>(R)) {
-                            other.rnn_old.push_back(n);
-                        } else {
-                            int pos = rng() % R;
-                            other.rnn_old[pos] = n;
+                        LockGuard guard(other.lock);
+                        if (nn.distance > other.pool.back().distance) {
+                            if (other.rnn_old.size() < static_cast<size_t>(R)) {
+                                other.rnn_old.push_back(n);
+                            } else {
+                                int pos = rng() % R;
+                                other.rnn_old[pos] = n;
+                            }
                         }
                     }
-                }
                 }
             }
             // make heap to join later (in join() function)
