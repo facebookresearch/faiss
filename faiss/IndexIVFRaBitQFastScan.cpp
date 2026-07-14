@@ -62,7 +62,8 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "RaBitQ only supports L2 and Inner Product metrics");
     FAISS_THROW_IF_NOT_MSG(
-            bbs_in % 32 == 0, "Batch size must be multiple of 32");
+            bbs_in > 0 && bbs_in % 32 == 0,
+            "Batch size must be positive and a multiple of 32");
     FAISS_THROW_IF_NOT_MSG(quantizer_in != nullptr, "Quantizer cannot be null");
 
     by_residual = true;
@@ -91,10 +92,12 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
     }
 }
 
-// Constructor that converts an existing IndexIVFRaBitQ to FastScan format
+// Constructor that converts an existing IndexIVFRaBitQ to FastScan format.
+// Like other IVF FastScan conversion constructors, this borrows orig's
+// quantizer and orig_invlists; orig must outlive the converted index.
 IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
         const IndexIVFRaBitQ& orig,
-        int /* bbs */)
+        int bbs_in)
         : IndexIVFFastScan(
                   orig.quantizer,
                   orig.d,
@@ -102,7 +105,93 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
                   0,
                   orig.metric_type,
                   false),
-          rabitq(orig.rabitq) {}
+          rabitq(orig.rabitq) {
+    FAISS_THROW_IF_NOT_MSG(orig.d > 0, "Dimension must be positive");
+    FAISS_THROW_IF_NOT_MSG(
+            orig.metric_type == METRIC_L2 ||
+                    orig.metric_type == METRIC_INNER_PRODUCT,
+            "RaBitQ only supports L2 and Inner Product metrics");
+    FAISS_THROW_IF_NOT_MSG(
+            bbs_in > 0 && bbs_in % 32 == 0,
+            "Batch size must be positive and a multiple of 32");
+    FAISS_THROW_IF_NOT_MSG(orig.invlists != nullptr, "Source invlists null");
+
+    by_residual = true;
+    qb = orig.qb;
+    centered = false;
+
+    const size_t M_fastscan = (orig.d + 3) / 4;
+    constexpr size_t nbits_fastscan = 4;
+
+    this->bbs = bbs_in;
+    this->fine_quantizer = &rabitq;
+    this->M = M_fastscan;
+    this->nbits = nbits_fastscan;
+    this->ksub = (1 << nbits_fastscan);
+    this->M2 = roundup(M_fastscan, 2);
+
+    const size_t bit_pattern_size = (d + 7) / 8;
+    const size_t storage_size = compute_per_vector_storage_size();
+    this->code_size = bit_pattern_size + storage_size;
+    FAISS_THROW_IF_NOT_MSG(
+            orig.code_size == code_size,
+            "Source IndexIVFRaBitQ code size is incompatible");
+
+    ntotal = orig.ntotal;
+    is_trained = orig.is_trained;
+    nprobe = orig.nprobe;
+
+    replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+
+#pragma omp parallel for if (nlist > 100)
+    for (idx_t list_no = 0; list_no < static_cast<idx_t>(nlist); list_no++) {
+        const size_t nb = orig.invlists->list_size(list_no);
+        if (nb == 0) {
+            continue;
+        }
+
+        AlignedTable<uint8_t> flat_codes(nb * code_size);
+        memset(flat_codes.get(), 0, nb * code_size);
+
+        InvertedLists::ScopedCodes orig_codes(orig.invlists, list_no);
+        for (size_t i = 0; i < nb; i++) {
+            const uint8_t* orig_code = orig_codes.get() + i * orig.code_size;
+            uint8_t* fs_code = flat_codes.get() + i * code_size;
+
+            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+                const size_t orig_byte_idx = j / 8;
+                const size_t orig_bit_offset = j % 8;
+                const bool bit_value =
+                        (orig_code[orig_byte_idx] >> orig_bit_offset) & 1;
+                if (bit_value) {
+                    rabitq_utils::set_bit_fastscan(fs_code, j);
+                }
+            }
+
+            memcpy(fs_code + bit_pattern_size,
+                   orig_code + bit_pattern_size,
+                   storage_size);
+        }
+
+        std::unique_ptr<CodePacker> packer(get_CodePacker());
+        const size_t nb2 = roundup(nb, bbs);
+        AlignedTable<uint8_t> block_codes(nb2 / bbs * packer->block_size);
+        memset(block_codes.get(), 0, block_codes.size());
+
+        for (size_t i = 0; i < nb; i++) {
+            packer->pack_1(
+                    flat_codes.get() + i * code_size, i, block_codes.get());
+        }
+
+        invlists->add_entries(
+                list_no,
+                nb,
+                InvertedLists::ScopedIds(orig.invlists, list_no).get(),
+                block_codes.get());
+    }
+
+    orig_invlists = orig.invlists;
+}
 
 size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
     return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
