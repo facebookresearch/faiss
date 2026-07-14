@@ -329,6 +329,20 @@ class TestResidualQuantizer(unittest.TestCase):
             )
             self.assertEqual(br.read(rq3.tot_bits), br3.read(rq3.tot_bits))
 
+    def test_use_beam_LUT_invalid_raises(self):
+        """use_beam_LUT values other than 0 or 1 must raise"""
+        ds = datasets.SyntheticDataset(32, 1000, 100, 0)
+        rq = faiss.ResidualQuantizer(ds.d, 4, 6)
+        rq.train_type = faiss.ResidualQuantizer.Train_default
+        rq.train(ds.get_train())
+
+        rq.use_beam_LUT = 2
+        with self.assertRaisesRegex(Exception, "use_beam_LUT=2"):
+            rq.compute_codes(ds.get_database())
+        # n=0 must also raise — guard runs before the per-batch loop
+        with self.assertRaisesRegex(Exception, "use_beam_LUT=2"):
+            rq.compute_codes(ds.get_database()[:0])
+
 
 ###########################################################
 # Test index, index factory sa_encode / sa_decode

@@ -435,6 +435,10 @@ void ResidualQuantizer::compute_codes_add_centroids(
         size_t n,
         const float* centroids) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "RQ is not trained yet.");
+    FAISS_THROW_IF_NOT_FMT(
+            use_beam_LUT == 0 || use_beam_LUT == 1,
+            "use_beam_LUT=%d is not supported (must be 0 or 1)",
+            use_beam_LUT);
 
     //
     size_t mem = memory_per_point();

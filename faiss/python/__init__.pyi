@@ -1082,7 +1082,7 @@ class ResidualQuantizer(AdditiveQuantizer):
 
     niter_codebook_refine: int  # iterations for codebook refinement
     max_beam_size: int  # beam size for training and encoding
-    use_beam_LUT: int  # use LUT for beam search
+    use_beam_LUT: int  # 0 = lut0 (direct L2 residuals), 1 = lut1 (LUT-accelerated); no other value is valid
     approx_topk_mode: int  # ApproxTopK_mode_t enum value
 
     # Clustering parameters

@@ -56,7 +56,9 @@ struct ResidualQuantizer : AdditiveQuantizer {
     /// beam size used for training and for encoding
     int max_beam_size = 5;
 
-    /// use LUT for beam search
+    /// beam search encoding strategy: 0 = direct L2 residuals (lut0),
+    /// 1 = LUT-accelerated inner-product encoding (lut1). No other value is
+    /// valid.
     int use_beam_LUT = 0;
 
     /// Currently used mode of approximate min-k computations.
