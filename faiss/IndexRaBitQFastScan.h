@@ -215,7 +215,8 @@ struct RaBitQHeapHandler
         for (size_t i = 0; i < max_vectors; i++) {
             const size_t db_idx = base_db_idx + i;
             const float normalized_distance = d32tab[i] * one_a + bias;
-            const uint8_t* base_ptr = aux_base + i * storage_size;
+            const uint8_t* base_ptr = aux_base +
+                    ((base_db_idx % rabitq_index->bbs) + i) * storage_size;
 
             if (is_multi_bit) {
                 const SignBitFactorsWithError& full_factors =

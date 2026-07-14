@@ -268,8 +268,8 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
     const size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
 
     // Hoist aux pointer base out of loop: all 32 elements in this block share
-    // the same block base. Only the per-element offset (j * storage_size)
-    // varies.
+    // the same block base. The per-element offset is relative to the bbs block,
+    // not to the 32-lane SIMD sub-block.
     const uint8_t* aux_base = this->list_codes_ptr +
             (idx_base / index->bbs) * full_block_size + packed_block_size;
 
@@ -291,7 +291,8 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
         this->scan_cnt++;
 
         const float normalized_distance = d32tab[j] * one_a + bias;
-        const uint8_t* base_ptr = aux_base + j * storage_size;
+        const uint8_t* base_ptr =
+                aux_base + ((idx_base % index->bbs) + j) * storage_size;
 
         if (is_multibit) {
             const SignBitFactorsWithError& full_factors =
