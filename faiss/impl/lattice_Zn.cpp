@@ -300,7 +300,7 @@ void EnumeratedVectors::find_nn(
         int64_t* labels,
         float* distances) {
     for (size_t i = 0; i < nq; i++) {
-        distances[i] = -1e20;
+        distances[i] = -HUGE_VALF;
         labels[i] = -1;
     }
 

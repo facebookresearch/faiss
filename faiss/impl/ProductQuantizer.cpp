@@ -337,7 +337,7 @@ void ProductQuantizer::compute_code_from_distance_table(
         uint8_t* code) const {
     PQEncoderGeneric encoder(code, nbits);
     for (size_t m = 0; m < M; m++) {
-        float mindis = 1e20;
+        float mindis = HUGE_VALF;
         uint64_t idxm = 0;
 
         /* Find best centroid */

@@ -106,7 +106,7 @@ int fvec_madd_and_argmin<SIMDLevel::ARM_NEON>(
         float bf,
         const float* b,
         float* c) {
-    float32x4_t vminv = vdupq_n_f32(1e20);
+    float32x4_t vminv = vdupq_n_f32(HUGE_VALF);
     uint32x4_t iminv = vdupq_n_u32(static_cast<uint32_t>(-1));
     size_t i;
     {

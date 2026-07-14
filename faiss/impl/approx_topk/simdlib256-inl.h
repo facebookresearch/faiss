@@ -51,8 +51,7 @@ void HeapWithBucketsCMaxFloat<NBUCKETS, N, SL>::bs_addn(
 
         for (uint32_t j = 0; j < NBUCKETS / 8; j++) {
             for (uint32_t p = 0; p < N; p++) {
-                min_distances_i[j][p] =
-                        simd_float(std::numeric_limits<float>::max());
+                min_distances_i[j][p] = simd_float(HUGE_VALF);
                 min_indices_i[j][p] = simd_uint(0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u);
             }
         }

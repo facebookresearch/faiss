@@ -310,7 +310,7 @@ inline int fvec_madd_and_argmin_sse_ref(
         float* c) {
     n >>= 2;
     __m128 bf4 = _mm_set_ps1(bf);
-    __m128 vmin4 = _mm_set_ps1(1e20);
+    __m128 vmin4 = _mm_set_ps1(HUGE_VALF);
     __m128i imin4 = _mm_set1_epi32(-1);
     __m128i idx4 = _mm_set_epi32(3, 2, 1, 0);
     __m128i inc4 = _mm_set1_epi32(4);

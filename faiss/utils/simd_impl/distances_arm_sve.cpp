@@ -103,7 +103,7 @@ int fvec_madd_and_argmin<SIMDLevel::ARM_SVE>(
         float bf,
         const float* b,
         float* c) {
-    float vmin = 1e20;
+    float vmin = HUGE_VALF;
     int imin = -1;
 
     for (size_t i = 0; i < n; i++) {

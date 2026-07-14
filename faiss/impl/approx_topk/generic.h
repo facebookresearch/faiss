@@ -72,7 +72,7 @@ struct HeapWithBucketsGenericCMaxFloat {
 
             for (uint32_t p = 0; p < N; p++) {
                 for (uint32_t j = 0; j < NBUCKETS; j++) {
-                    min_distances_i[p][j] = std::numeric_limits<float>::max();
+                    min_distances_i[p][j] = HUGE_VALF;
                     min_indices_i[p][j] = 0;
                 }
             }

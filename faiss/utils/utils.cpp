@@ -277,7 +277,9 @@ void matrix_qr(int m, int n, float* a) {
  ***************************************************************************/
 
 void ranklist_handle_ties(int k, int64_t* idx, const float* dis) {
-    float prev_dis = -1e38;
+    // NaN != x is always true in IEEE 754 — safe sentinel even for -inf
+    // distances.
+    float prev_dis = std::numeric_limits<float>::quiet_NaN();
     int prev_i = -1;
     for (int i = 0; i < k; i++) {
         if (dis[i] != prev_dis) {
