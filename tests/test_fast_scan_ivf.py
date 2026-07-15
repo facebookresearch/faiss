@@ -143,6 +143,33 @@ class TestLUTQuantization(unittest.TestCase):
 
         self.do_test(LUT, bias, nprobe, alt_3d=True)
 
+    def test_zero_span(self):
+        # All LUT entries identical => max_span == 0.  Before the fix this
+        # divided by zero, giving a = inf and NaN quantized entries.  The guard
+        # makes a = 0 and keeps the output finite.
+        M, ksub, nprobe = 20, 16, 10
+        LUT = np.full((M, ksub), 5.0, dtype="float32")
+        LUTq = np.zeros(LUT.shape, dtype="uint8")
+        atab = np.zeros(1, dtype="float32")
+        btab = np.zeros(1, dtype="float32")
+
+        faiss.quantize_LUT_and_bias(
+            nprobe,
+            M,
+            ksub,
+            False,
+            faiss.swig_ptr(LUT),
+            None,
+            faiss.swig_ptr(LUTq),
+            M,
+            None,
+            faiss.swig_ptr(atab),
+            faiss.swig_ptr(btab),
+        )
+
+        self.assertEqual(atab[0], 0.0)
+        self.assertTrue(np.all(LUTq == 0))
+
 
 ##########################################################
 # Tests for various IndexPQFastScan implementations
