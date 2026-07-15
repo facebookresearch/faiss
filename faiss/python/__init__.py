@@ -17,10 +17,11 @@ import inspect
 def _preload_gpu_libs():
     """Pre-load CUDA / RAPIDS shared libs from pip wheels with RTLD_GLOBAL.
 
-    These libs ship in nvidia-*-cu12 / libcuvs-cu12 wheels, off ld.so's search
+    These libs ship in nvidia-*-cuNN / libcuvs-cuNN wheels, off ld.so's search
     path, so we dlopen them before the SWIG extension loads libfaiss.so. Gated
     on the `faiss._gpu_build` marker (CMake writes it only for GPU builds); the
-    `_cuvs_build` marker adds the cuVS stack. Missing wheels raise a fix-it.
+    `_cuvs_build` marker selects the CUDA 13 cuVS variant (else CUDA 12) and adds
+    the cuVS stack. Missing wheels raise a fix-it.
     """
     try:
         from . import _gpu_build  # noqa: F401
@@ -30,50 +31,81 @@ def _preload_gpu_libs():
     import ctypes
     import os
 
-    def _nvidia_lib_dir(import_name, pip_spec):
-        """Return the lib/ dir of an nvidia-*-cu12 wheel, or raise a fix-it."""
-        try:
-            mod = __import__("nvidia." + import_name, fromlist=[import_name])
-        except ImportError as e:
-            pip_name = pip_spec.split(">")[0].split("<")[0].split("=")[0]
-            raise RuntimeError(
-                f"faiss-gpu installed but {pip_name} is missing — "
-                f"pip install '{pip_spec}'"
-            ) from e
-        # __path__[0] not __file__: PEP 420 namespace pkgs have __file__ = None.
-        return os.path.join(mod.__path__[0], "lib")
-
     def _load(path):
         """dlopen one .so with global visibility, or raise a fix-it."""
         try:
             ctypes.CDLL(path, mode=ctypes.RTLD_GLOBAL)
         except OSError as e:
             raise RuntimeError(
-                f"faiss-gpu: failed to load {os.path.basename(path)} from {path} — "
-                f"corrupt or incomplete nvidia-*-cu12 wheel? Try: pip install "
-                f"--force-reinstall 'nvidia-cuda-runtime-cu12>=12.6,<13' "
-                f"'nvidia-cublas-cu12>=12.6,<13' 'nvidia-curand-cu12>=10.3.7,<11'"
+                f"faiss-gpu: failed to load {os.path.basename(path)} from {path} "
+                f"— corrupt or incomplete nvidia CUDA wheel?"
             ) from e
 
-    # Base CUDA libs the faiss extension links directly, in dependency order
-    # (libcudart first — it provides symbols the others resolve against). Loaded
-    # RTLD_GLOBAL so the SWIG extension's later dlopen of libfaiss.so resolves them.
-    _cudart = _nvidia_lib_dir("cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13")
-    _cublas = _nvidia_lib_dir("cublas", "nvidia-cublas-cu12>=12.6,<13")
-    _curand = _nvidia_lib_dir("curand", "nvidia-curand-cu12>=10.3.7,<11")
-    _load(os.path.join(_cudart, "libcudart.so.12"))
-    _load(os.path.join(_cublas, "libcublas.so.12"))
-    _load(os.path.join(_cublas, "libcublasLt.so.12"))
-    _load(os.path.join(_curand, "libcurand.so.10"))
-
-    # faiss-gpu-cuvs wheels (the _cuvs_build marker) also need the cuVS stack.
-    # Delegate to RAPIDS' load_library() (loads each .so RTLD_GLOBAL + its CUDA deps);
-    # order rmm -> raft -> cuvs makes every symbol global before the SWIG extension loads.
+    # faiss-gpu-cuvs wheels carry the `_cuvs_build` marker and are built against
+    # CUDA 13 (+ the cuVS stack); the plain faiss-gpu wheel is CUDA 12. The two
+    # use different pip wheel layouts (handled separately below). Load order
+    # matters: libcudart first (others resolve symbols against it), and load
+    # RTLD_GLOBAL so the SWIG extension's later dlopen of libfaiss.so sees them.
     try:
         from . import _cuvs_build  # noqa: F401
+
+        is_cuvs = True
     except ImportError:
+        is_cuvs = False
+
+    if is_cuvs:
+        # CUDA 13 nvidia wheels (nvidia-cuda-runtime / -cublas / -curand /
+        # -nvjitlink — all unsuffixed) ship every lib in one PEP 420 namespace
+        # dir, nvidia/cu13/lib/, with no importable per-component module. This
+        # differs from CUDA 12's per-component nvidia/<name>/lib/ layout.
+        try:
+            import nvidia.cu13 as _cu13
+
+            _libdir = os.path.join(list(_cu13.__path__)[0], "lib")
+        except ImportError as e:
+            raise RuntimeError(
+                "faiss-gpu-cuvs installed but the CUDA 13 runtime wheels are "
+                "missing — pip install 'nvidia-cuda-runtime>=13.2,<14' "
+                "'nvidia-cublas>=13.2,<14' 'nvidia-curand>=10.3.7,<11' "
+                "'nvidia-nvjitlink>=13.2,<14'"
+            ) from e
+        # nvjitlink before cublas: cublas 13 links it.
+        for _soname in (
+            "libcudart.so.13",
+            "libnvJitLink.so.13",
+            "libcublas.so.13",
+            "libcublasLt.so.13",
+            "libcurand.so.10",
+        ):
+            _load(os.path.join(_libdir, _soname))
+    else:
+        # CUDA 12 per-component layout: each nvidia-*-cu12 wheel exposes an
+        # importable module whose lib/ dir holds the .so.
+        def _nvidia_lib_dir(import_name, pip_spec):
+            """Return the lib/ dir of an nvidia-*-cu12 wheel, or raise a fix-it."""
+            try:
+                mod = __import__("nvidia." + import_name, fromlist=[import_name])
+            except ImportError as e:
+                pip_name = pip_spec.split(">")[0].split("<")[0].split("=")[0]
+                raise RuntimeError(
+                    f"faiss-gpu installed but {pip_name} is missing — "
+                    f"pip install '{pip_spec}'"
+                ) from e
+            # __path__[0] not __file__: PEP 420 namespace pkgs have __file__ = None.
+            return os.path.join(mod.__path__[0], "lib")
+
+        _cudart = _nvidia_lib_dir("cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13")
+        _cublas = _nvidia_lib_dir("cublas", "nvidia-cublas-cu12>=12.6,<13")
+        _curand = _nvidia_lib_dir("curand", "nvidia-curand-cu12>=10.3.7,<11")
+        _load(os.path.join(_cudart, "libcudart.so.12"))
+        _load(os.path.join(_cublas, "libcublas.so.12"))
+        _load(os.path.join(_cublas, "libcublasLt.so.12"))
+        _load(os.path.join(_curand, "libcurand.so.10"))
         return  # faiss-gpu (non-cuVS) build: base CUDA preload is sufficient.
 
+    # faiss-gpu-cuvs wheels also need the cuVS stack. Delegate to RAPIDS'
+    # load_library() (loads each .so RTLD_GLOBAL + its CUDA deps); order
+    # rmm -> raft -> cuvs makes every symbol global before the SWIG extension loads.
     try:
         import libcuvs
         import libraft
@@ -81,7 +113,7 @@ def _preload_gpu_libs():
     except ImportError as e:
         raise RuntimeError(
             "faiss-gpu-cuvs installed but the cuVS runtime wheels are missing — "
-            "pip install 'libcuvs-cu12>=26.06,<27' "
+            "pip install 'libcuvs-cu13>=26.06,<27' "
             "--extra-index-url https://pypi.nvidia.com"
         ) from e
 
@@ -332,6 +364,7 @@ add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
 add_ref_in_constructor(IndexIVFRaBitQ, 0)
 add_ref_in_constructor(IndexIVFRaBitQFastScan, 0)
+add_ref_in_constructor(IndexIVFEDEN, 0)
 
 if "SVS" in get_compile_options():
     add_ref_in_constructor(IndexSVSVamana, 0)

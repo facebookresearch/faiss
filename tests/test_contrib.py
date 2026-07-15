@@ -929,3 +929,50 @@ class TestFactoryTools(unittest.TestCase):
             self.assertEqual(
                 factory_tools.reverse_index_factory(index), expected
             )
+
+    def test_get_code_size_hnsw_non_default_m(self):
+        d = 128
+        # Non-default M values previously raised RuntimeError("cannot parse HNSW16")
+        self.assertEqual(factory_tools.get_code_size(d, "HNSW16"), d * 4 + 16 * 2 * 4)
+        self.assertEqual(factory_tools.get_code_size(d, "HNSW64"), d * 4 + 64 * 2 * 4)
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW16,Flat"), d * 4 + 16 * 2 * 4
+        )
+        # HNSW32 backward compat: formula generalizes correctly
+        self.assertEqual(factory_tools.get_code_size(d, "HNSW32"), d * 4 + 32 * 2 * 4)
+
+    def test_get_code_size_ivf_hnsw_non_default_m(self):
+        d = 128
+        # IVF+HNSW coarse quantizer with non-default M: code size is inner type only
+        self.assertEqual(
+            factory_tools.get_code_size(d, "IVF64_HNSW16,Flat"), d * 4
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "IVF64_HNSW64,PQ8x8"), (8 * 8 + 7) // 8
+        )
+
+    def test_get_code_size_hnsw_roundtrip(self):
+        d = 128
+        index = faiss.index_factory(d, "HNSW16,Flat")
+        factory_str = factory_tools.reverse_index_factory(index)
+        self.assertEqual(factory_str, "HNSW16")
+        # get_code_size(reverse_index_factory(index)) must not raise for any M
+        code_size = factory_tools.get_code_size(d, factory_str)
+        self.assertEqual(code_size, d * 4 + 16 * 2 * 4)
+
+    def test_rabitq_reverse_index_factory(self):
+        d = 64
+        quantizer = faiss.IndexFlatL2(d)
+        for nb_bits in [1, 2, 4]:
+            expected = "RaBitQ" if nb_bits == 1 else f"RaBitQ{nb_bits}"
+            index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
+            self.assertEqual(
+                factory_tools.reverse_index_factory(index), expected
+            )
+            ivf_index = faiss.IndexIVFRaBitQ(
+                quantizer, d, 8, faiss.METRIC_L2, False, nb_bits
+            )
+            self.assertEqual(
+                factory_tools.reverse_index_factory(ivf_index),
+                f"IVF8,{expected}",
+            )

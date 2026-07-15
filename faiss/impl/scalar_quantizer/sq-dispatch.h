@@ -416,6 +416,34 @@ ScalarQuantizer::SQuantizer* sq_select_quantizer<THE_LEVEL_TO_DISPATCH>(
             return new QuantizerTurboQuantMSE<4, SL>(d, trained);
         case ScalarQuantizer::QT_8bit_tqmse:
             return new QuantizerTurboQuantMSE<8, SL>(d, trained);
+        case ScalarQuantizer::QT_1bit_eden:
+            return new QuantizerLloydMax<1, SL>(d, trained);
+        case ScalarQuantizer::QT_2bit_eden:
+            return new QuantizerLloydMax<2, SL>(d, trained);
+        case ScalarQuantizer::QT_3bit_eden:
+            return new QuantizerLloydMax<3, SL>(d, trained);
+        case ScalarQuantizer::QT_4bit_eden:
+            return new QuantizerLloydMax<4, SL>(d, trained);
+        case ScalarQuantizer::QT_5bit_eden:
+            if constexpr (SL != SIMDLevel::NONE) {
+                return nullptr;
+            } else {
+                return new QuantizerLloydMax<5, SL>(d, trained);
+            }
+        case ScalarQuantizer::QT_6bit_eden:
+            if constexpr (SL != SIMDLevel::NONE) {
+                return nullptr;
+            } else {
+                return new QuantizerLloydMax<6, SL>(d, trained);
+            }
+        case ScalarQuantizer::QT_7bit_eden:
+            if constexpr (SL != SIMDLevel::NONE) {
+                return nullptr;
+            } else {
+                return new QuantizerLloydMax<7, SL>(d, trained);
+            }
+        case ScalarQuantizer::QT_8bit_eden:
+            return new QuantizerLloydMax<8, SL>(d, trained);
         case ScalarQuantizer::QT_2bit_tq:
             return new QuantizerTurboQuantFull<2, SL>(d, trained);
         case ScalarQuantizer::QT_3bit_tq:
@@ -538,6 +566,42 @@ SQDistanceComputer* select_distance_computer_body(
                     d, trained);
         case ScalarQuantizer::QT_8bit_tqmse:
             return new DCTemplate<QuantizerTurboQuantMSE<8, SL2>, Sim, SL2>(
+                    d, trained);
+        case ScalarQuantizer::QT_1bit_eden:
+            return new DCTemplate<QuantizerLloydMax<1, SL2>, Sim, SL2>(
+                    d, trained);
+        case ScalarQuantizer::QT_2bit_eden:
+            return new DCTemplate<QuantizerLloydMax<2, SL2>, Sim, SL2>(
+                    d, trained);
+        case ScalarQuantizer::QT_3bit_eden:
+            return new DCTemplate<QuantizerLloydMax<3, SL2>, Sim, SL2>(
+                    d, trained);
+        case ScalarQuantizer::QT_4bit_eden:
+            return new DCTemplate<QuantizerLloydMax<4, SL2>, Sim, SL2>(
+                    d, trained);
+        case ScalarQuantizer::QT_5bit_eden:
+            if constexpr (SL2 != SIMDLevel::NONE) {
+                return nullptr;
+            } else {
+                return new DCTemplate<QuantizerLloydMax<5, SL2>, Sim, SL2>(
+                        d, trained);
+            }
+        case ScalarQuantizer::QT_6bit_eden:
+            if constexpr (SL2 != SIMDLevel::NONE) {
+                return nullptr;
+            } else {
+                return new DCTemplate<QuantizerLloydMax<6, SL2>, Sim, SL2>(
+                        d, trained);
+            }
+        case ScalarQuantizer::QT_7bit_eden:
+            if constexpr (SL2 != SIMDLevel::NONE) {
+                return nullptr;
+            } else {
+                return new DCTemplate<QuantizerLloydMax<7, SL2>, Sim, SL2>(
+                        d, trained);
+            }
+        case ScalarQuantizer::QT_8bit_eden:
+            return new DCTemplate<QuantizerLloydMax<8, SL2>, Sim, SL2>(
                     d, trained);
         case ScalarQuantizer::QT_2bit_tq:
             // FRICTION: bypasses DCTemplate entirely — custom DC
@@ -717,6 +781,58 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
             case ScalarQuantizer::QT_8bit_tqmse:
                 return scan.template operator()<DCTemplate<
                         QuantizerTurboQuantMSE<8, SL2>,
+                        Similarity,
+                        SL2>>();
+            case ScalarQuantizer::QT_1bit_eden:
+                return scan.template operator()<DCTemplate<
+                        QuantizerLloydMax<1, SL2>,
+                        Similarity,
+                        SL2>>();
+            case ScalarQuantizer::QT_2bit_eden:
+                return scan.template operator()<DCTemplate<
+                        QuantizerLloydMax<2, SL2>,
+                        Similarity,
+                        SL2>>();
+            case ScalarQuantizer::QT_3bit_eden:
+                return scan.template operator()<DCTemplate<
+                        QuantizerLloydMax<3, SL2>,
+                        Similarity,
+                        SL2>>();
+            case ScalarQuantizer::QT_4bit_eden:
+                return scan.template operator()<DCTemplate<
+                        QuantizerLloydMax<4, SL2>,
+                        Similarity,
+                        SL2>>();
+            case ScalarQuantizer::QT_5bit_eden:
+                if constexpr (SL2 != SIMDLevel::NONE) {
+                    return nullptr;
+                } else {
+                    return scan.template operator()<DCTemplate<
+                            QuantizerLloydMax<5, SL2>,
+                            Similarity,
+                            SL2>>();
+                }
+            case ScalarQuantizer::QT_6bit_eden:
+                if constexpr (SL2 != SIMDLevel::NONE) {
+                    return nullptr;
+                } else {
+                    return scan.template operator()<DCTemplate<
+                            QuantizerLloydMax<6, SL2>,
+                            Similarity,
+                            SL2>>();
+                }
+            case ScalarQuantizer::QT_7bit_eden:
+                if constexpr (SL2 != SIMDLevel::NONE) {
+                    return nullptr;
+                } else {
+                    return scan.template operator()<DCTemplate<
+                            QuantizerLloydMax<7, SL2>,
+                            Similarity,
+                            SL2>>();
+                }
+            case ScalarQuantizer::QT_8bit_eden:
+                return scan.template operator()<DCTemplate<
+                        QuantizerLloydMax<8, SL2>,
                         Similarity,
                         SL2>>();
             case ScalarQuantizer::QT_2bit_tq:

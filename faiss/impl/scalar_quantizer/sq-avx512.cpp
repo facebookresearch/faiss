@@ -250,16 +250,16 @@ struct QuantizerTemplate<
 };
 
 /**********************************************************
- * TurboQuant MSE quantizer
+ * Lloyd-Max scalar quantizer
  **********************************************************/
 
-// 1-bit MSE AVX512: 16 comparisons → 2 bytes via mask compare.
+// 1-bit Lloyd-Max AVX512: 16 comparisons → 2 bytes via mask compare.
 template <>
-struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX512>
-        : QuantizerTurboQuantMSE<1, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<1, SIMDLevel::NONE>;
+struct QuantizerLloydMax<1, SIMDLevel::AVX512>
+        : QuantizerLloydMax<1, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<1, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 16 == 0);
     }
@@ -291,14 +291,14 @@ struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX512>
     }
 };
 
-// 2-4 bit MSE AVX512: decode via gather, encode stays scalar.
-#define DEFINE_TQMSE_AVX512_MULTIBIT(NBITS, UNPACK_EXPR)                      \
+// 2-4 bit Lloyd-Max AVX512: decode via gather, encode stays scalar.
+#define DEFINE_LLOYD_MAX_AVX512_MULTIBIT(NBITS, UNPACK_EXPR)                  \
     template <>                                                               \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                   \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {                \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;          \
+    struct QuantizerLloydMax<NBITS, SIMDLevel::AVX512>                        \
+            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {                     \
+        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;               \
                                                                               \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)   \
+        QuantizerLloydMax(size_t d, const std::vector<float>& trained)        \
                 : Base(d, trained) {                                          \
             assert(d % 16 == 0);                                              \
         }                                                                     \
@@ -318,19 +318,19 @@ struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX512>
         }                                                                     \
     }
 
-DEFINE_TQMSE_AVX512_MULTIBIT(2, unpack_16x2bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_MULTIBIT(3, unpack_16x3bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_MULTIBIT(4, unpack_16x4bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_MULTIBIT(2, unpack_16x2bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_MULTIBIT(3, unpack_16x3bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_MULTIBIT(4, unpack_16x4bit_to_u32(code, i));
 
-#undef DEFINE_TQMSE_AVX512_MULTIBIT
+#undef DEFINE_LLOYD_MAX_AVX512_MULTIBIT
 
-// 8-bit MSE AVX512
+// 8-bit Lloyd-Max AVX512
 template <>
-struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX512>
-        : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<8, SIMDLevel::NONE>;
+struct QuantizerLloydMax<8, SIMDLevel::AVX512>
+        : QuantizerLloydMax<8, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 16 == 0);
     }
@@ -677,24 +677,36 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
-        // compute 16 lanes of 32-bit products (16-bytes) at once for
+        // compute 32 lanes of 16-bit products (32-bytes) at once for
         // the supported metrics
         __m512i accu = _mm512_setzero_si512();
-        constexpr int kLanes = 16;
-        for (int i = 0; i < d; i += kLanes) {
-            __m128i c1 = _mm_loadu_si128((__m128i*)(code1 + i));
-            __m128i c2 = _mm_loadu_si128((__m128i*)(code2 + i));
-            __m512i c1i = _mm512_cvtepu8_epi32(c1);
-            __m512i c2i = _mm512_cvtepu8_epi32(c2);
-
-            __m512i v;
+        constexpr int kLanes = 32;
+        int i = 0;
+        for (; i + kLanes <= d; i += kLanes) {
+            __m256i c1 = _mm256_loadu_epi8(code1 + i);
+            __m256i c2 = _mm256_loadu_epi8(code2 + i);
+            __m512i c1i16 = _mm512_cvtepu8_epi16(c1);
+            __m512i c2i16 = _mm512_cvtepu8_epi16(c2);
             if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                v = _mm512_mullo_epi32(c1i, c2i);
+                accu = _mm512_add_epi32(accu, _mm512_madd_epi16(c1i16, c2i16));
             } else {
-                __m512i diff = _mm512_sub_epi32(c1i, c2i);
-                v = _mm512_mullo_epi32(diff, diff);
+                __m512i diff = _mm512_sub_epi16(c1i16, c2i16);
+                accu = _mm512_add_epi32(accu, _mm512_madd_epi16(diff, diff));
             }
-            accu = _mm512_add_epi32(accu, v);
+        }
+        // tail handling for dimensions not divisible by 32
+        if (i < d) {
+            __mmask32 mask = (__mmask32)((1ULL << (d - i)) - 1ULL);
+            __m256i c1 = _mm256_maskz_loadu_epi8(mask, code1 + i);
+            __m256i c2 = _mm256_maskz_loadu_epi8(mask, code2 + i);
+            __m512i c1i16 = _mm512_cvtepu8_epi16(c1);
+            __m512i c2i16 = _mm512_cvtepu8_epi16(c2);
+            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
+                accu = _mm512_add_epi32(accu, _mm512_madd_epi16(c1i16, c2i16));
+            } else {
+                __m512i diff = _mm512_sub_epi16(c1i16, c2i16);
+                accu = _mm512_add_epi32(accu, _mm512_madd_epi16(diff, diff));
+            }
         }
         return _mm512_reduce_add_epi32(accu);
     }

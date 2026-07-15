@@ -9,7 +9,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, overload
+from typing import Any, Callable, Literal, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -21,6 +21,7 @@ except ImportError:
 
 idx_t = int
 MetricType = int
+EDENScaleType = Literal[1, 2]
 METRIC_INNER_PRODUCT: int
 METRIC_L2: int
 METRIC_L1: int
@@ -33,6 +34,11 @@ METRIC_Jaccard: int
 METRIC_NaNEuclidean: int
 METRIC_GOWER: int
 
+ClusteringInitMethod = int
+ClusteringInitMethod_RANDOM: int
+ClusteringInitMethod_KMEANS_PLUS_PLUS: int
+ClusteringInitMethod_AFK_MC2: int
+
 # I/O flag constants for reading/writing indexes
 IO_FLAG_SKIP_STORAGE: int  # skip the storage for graph-based indexes
 IO_FLAG_READ_ONLY: int  # read-only mode
@@ -42,6 +48,10 @@ IO_FLAG_SKIP_PRECOMPUTE_TABLE: int  # don't initialize precomputed table after l
 IO_FLAG_PQ_SKIP_SDC_TABLE: int  # don't compute the sdc table for PQ-based indices
 IO_FLAG_MMAP: int  # try to memmap data (useful to load as OnDiskInvertedLists)
 IO_FLAG_MMAP_IFC: int  # mmap for IndexFlatCodes-derived indices and HNSW
+
+# EDEN scale type enum
+EDENScaleType_UNBIASED: Literal[1]
+EDENScaleType_BIASED: Literal[2]
 
 # Numeric type enum
 Float32: int
@@ -1356,6 +1366,14 @@ class ScalarQuantizer(Quantizer):
     QT_3bit_tq: int
     QT_4bit_tq: int
     QT_5bit_tq: int
+    QT_1bit_eden: int
+    QT_2bit_eden: int
+    QT_3bit_eden: int
+    QT_4bit_eden: int
+    QT_5bit_eden: int
+    QT_6bit_eden: int
+    QT_7bit_eden: int
+    QT_8bit_eden: int
 
     # RangeStat constants (as class attributes)
     RS_minmax: int
@@ -2433,7 +2451,7 @@ class ClusteringParameters:
     decode_block_size: int
     check_input_data_for_NaNs: bool
     use_faster_subsampling: bool
-    init_method: int  # ClusteringInitMethod enum (RANDOM=0, KMEANS_PLUS_PLUS=1, AFK_MC2=2)
+    init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
 
@@ -3567,6 +3585,35 @@ class IndexIVFRaBitQ(IndexIVF):
         metric: MetricType = METRIC_L2,
         own_invlists: bool = True,
         nb_bits: int = 1,
+    ) -> None: ...
+
+# EDEN indices
+class IndexEDEN(IndexFlatCodes):
+    sq: ScalarQuantizer
+    scale_type: EDENScaleType
+    center: Float32Vector
+
+    def __init__(
+        self,
+        d: int,
+        metric: MetricType = METRIC_L2,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
+    ) -> None: ...
+
+class IndexIVFEDEN(IndexIVF):
+    sq: ScalarQuantizer
+    scale_type: EDENScaleType
+
+    def __init__(
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        own_invlists: bool = True,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
     ) -> None: ...
 
 class IndexRaBitQFastScan(IndexFastScan):

@@ -14,7 +14,6 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -286,7 +285,7 @@ struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
 
         if (metric_type == MetricType::METRIC_L2) {
             // ||or - q||^ 2
-            return pre_dist;
+            return std::max(0.0f, pre_dist);
         } else {
             // metric == MetricType::METRIC_INNER_PRODUCT
             // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
@@ -449,7 +448,7 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
 
         if (metric_type == MetricType::METRIC_L2) {
             // ||or - q||^ 2
-            return pre_dist;
+            return std::max(0.0f, pre_dist);
         } else {
             // metric == MetricType::METRIC_INNER_PRODUCT
             // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
@@ -526,16 +525,12 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
         size_t offset = (d + 7) / 8;
 
         rearranged_rotated_qq.resize(offset * qb);
-        std::fill(
-                rearranged_rotated_qq.begin(), rearranged_rotated_qq.end(), 0);
-
-        for (size_t idim = 0; idim < d; idim++) {
-            for (size_t iv = 0; iv < qb; iv++) {
-                const bool bit = ((rotated_qq[idim] & (1 << iv)) != 0);
-                rearranged_rotated_qq[iv * offset + idim / 8] |=
-                        bit ? (1 << (idim % 8)) : 0;
-            }
-        }
+        with_selected_simd_levels<
+                AVAILABLE_SIMD_LEVELS_NONE | (1 << int(SIMDLevel::AVX2)) |
+                (1 << int(SIMDLevel::AVX512))>([&]<SIMDLevel RSL>() {
+            rabitq::rearrange_bit_planes<RSL>(
+                    rotated_qq.data(), d, qb, rearranged_rotated_qq.data());
+        });
     }
 };
 
