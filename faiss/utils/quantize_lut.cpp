@@ -75,7 +75,7 @@ void round_uint8_per_column(
             max_span = span;
         }
     }
-    float a = 255 / max_span;
+    float a = max_span > 0 ? 255.0f / max_span : 0.0f;
     float b = 0;
     for (size_t i = 0; i < n; i++) {
         b += mins[i];
@@ -111,7 +111,7 @@ void round_uint8_per_column_multi(
             max_span = span;
         }
     }
-    float a = 255 / max_span;
+    float a = max_span > 0 ? 255.0f / max_span : 0.0f;
     float b = 0;
     for (size_t i = 0; i < n; i++) {
         b += mins[i];
@@ -154,7 +154,12 @@ void quantize_LUT_and_bias(
             max_span_dis += span;
             b += mins[i];
         }
-        a = std::min(255 / max_span_LUT, 65535 / max_span_dis);
+        a = std::min(
+                max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
+                max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
+        if (!std::isfinite(a)) {
+            a = 0.0f;
+        }
 
         for (size_t i = 0; i < M; i++) {
             round_tab(LUT + i * ksub, ksub, a, mins[i], LUTq + i * ksub);
@@ -174,7 +179,12 @@ void quantize_LUT_and_bias(
             max_span_dis += span;
             b += mins[i];
         }
-        a = std::min(255 / max_span_LUT, 65535 / max_span_dis);
+        a = std::min(
+                max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
+                max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
+        if (!std::isfinite(a)) {
+            a = 0.0f;
+        }
         b += bias_min;
 
         for (size_t i = 0; i < M; i++) {
@@ -208,7 +218,12 @@ void quantize_LUT_and_bias(
             b = std::min(b, b2j);
         }
 
-        a = std::min(255 / max_span_LUT, 65535 / max_span_dis);
+        a = std::min(
+                max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
+                max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
+        if (!std::isfinite(a)) {
+            a = 0.0f;
+        }
 
         ij = 0;
         size_t ij_2 = 0;
@@ -256,7 +271,7 @@ void quantize_LUT_and_bias(
             max_span = std::max(max_span, span);
             b += mins[i];
         }
-        a = 255 / max_span;
+        a = max_span > 0 ? 255.0f / max_span : 0.0f;
         ij = 0;
         size_t ij_2 = 0;
         for (size_t j = 0; j < nprobe; j++) {
@@ -305,7 +320,12 @@ void aq_quantize_LUT_and_bias(
         max_span_dis += (i >= M - M_norm ? span * norm_scale : span);
         b += mins[i];
     }
-    a = std::min(255 / max_span_LUT, 65535 / max_span_dis);
+    a = std::min(
+            max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
+            max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
+    if (!std::isfinite(a)) {
+        a = 0.0f;
+    }
     b += bias_min;
 
     for (size_t i = 0; i < M; i++) {

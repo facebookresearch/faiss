@@ -18,10 +18,12 @@ identical distances.
 """
 
 import unittest
+
 import faiss
 import numpy as np
 from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
 @for_all_simd_levels
@@ -79,20 +81,8 @@ class TestIndexRefinePanorama(unittest.TestCase):
         D_panorama,
         I_panorama,
         rtol=1e-5,
-        atol=1e-7,
-        otol=1e-3,
+        atol=1e-4,
     ):
-        # Allow small tolerance in overlap rate to account for
-        # floating-point errors in distance computations that can
-        # affect ordering when distances are nearly equal.
-        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b)
-        overlap_rate = np.mean(I_regular == I_panorama)
-
-        self.assertGreater(
-            overlap_rate,
-            1 - otol,
-            f"Overlap rate {overlap_rate:.6f} is not > {1 - otol:.3f}. ",
-        )
         np.testing.assert_allclose(
             D_regular,
             D_panorama,
@@ -100,6 +90,7 @@ class TestIndexRefinePanorama(unittest.TestCase):
             atol=atol,
             err_msg="Distances mismatch",
         )
+        check_ref_knn_with_draws(D_regular, I_regular, D_regular, I_panorama, rtol=rtol)
 
     def test_refine_panorama_correctness(self):
         d = 128

@@ -135,8 +135,12 @@ std::string reverse_index_factory(const faiss::Index* index) {
                                 ivf_index)) {
             return prefix + ",PQ" + std::to_string(ivfpqfs_index->pq.M) + "x" +
                     std::to_string(ivfpqfs_index->pq.nbits) + "fs";
-        } else if (dynamic_cast<const faiss::IndexIVFRaBitQ*>(ivf_index)) {
-            return prefix + ",RaBitQ";
+        } else if (
+                const faiss::IndexIVFRaBitQ* ivfrabitq_index =
+                        dynamic_cast<const faiss::IndexIVFRaBitQ*>(ivf_index)) {
+            size_t nb_bits = ivfrabitq_index->rabitq.nb_bits;
+            return prefix + ",RaBitQ" +
+                    (nb_bits == 1 ? "" : std::to_string(nb_bits));
         } else if (
                 const faiss::IndexIVFEDEN* ivf_eden =
                         dynamic_cast<const faiss::IndexIVFEDEN*>(ivf_index)) {
@@ -219,8 +223,12 @@ std::string reverse_index_factory(const faiss::Index* index) {
             const faiss::IndexIDMap* idmap =
                     dynamic_cast<const faiss::IndexIDMap*>(index)) {
         return std::string("IDMap,") + reverse_index_factory(idmap->index);
-    } else if (dynamic_cast<const faiss::IndexRaBitQ*>(index)) {
-        return "RaBitQ";
+    } else if (
+            const faiss::IndexRaBitQ* rabitq_index =
+                    dynamic_cast<const faiss::IndexRaBitQ*>(index)) {
+        size_t nb_bits = rabitq_index->rabitq.nb_bits;
+        return "RaBitQ" +
+                (nb_bits == 1 ? std::string() : std::to_string(nb_bits));
     } else if (
             const faiss::IndexEDEN* eden =
                     dynamic_cast<const faiss::IndexEDEN*>(index)) {
