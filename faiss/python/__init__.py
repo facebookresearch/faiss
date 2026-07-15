@@ -84,7 +84,9 @@ def _preload_gpu_libs():
         def _nvidia_lib_dir(import_name, pip_spec):
             """Return the lib/ dir of an nvidia-*-cu12 wheel, or raise a fix-it."""
             try:
-                mod = __import__("nvidia." + import_name, fromlist=[import_name])
+                mod = __import__(
+                    "nvidia." + import_name, fromlist=[import_name]
+                )
             except ImportError as e:
                 pip_name = pip_spec.split(">")[0].split("<")[0].split("=")[0]
                 raise RuntimeError(
@@ -94,7 +96,9 @@ def _preload_gpu_libs():
             # __path__[0] not __file__: PEP 420 namespace pkgs have __file__ = None.
             return os.path.join(mod.__path__[0], "lib")
 
-        _cudart = _nvidia_lib_dir("cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13")
+        _cudart = _nvidia_lib_dir(
+            "cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13"
+        )
         _cublas = _nvidia_lib_dir("cublas", "nvidia-cublas-cu12>=12.6,<13")
         _curand = _nvidia_lib_dir("curand", "nvidia-curand-cu12>=10.3.7,<11")
         _load(os.path.join(_cudart, "libcudart.so.12"))
