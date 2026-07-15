@@ -11033,6 +11033,8 @@
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a5520cfc82e08d38240f1b0096ff57ee9" kind="function"><name>symmetric_dis</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1af17809ad73d49dd0b74141972cd6e8a3" kind="function"><name>distance_to_code_1bit</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a05eaf054b823178549c305432219783c" kind="function"><name>distance_to_code_full</name></member>
+    <member refid="structfaiss_1_1RaBitQDistanceComputer_1a0c2f30e07d3e6ea56a79b73e81e45657" kind="function"><name>set_centroid</name></member>
+    <member refid="structfaiss_1_1RaBitQDistanceComputer_1ac9e4dfcc3377decb9432f96146477ec2" kind="function"><name>scan_codes_multibit</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a056b42b9fea10cf699e0ba16ea1afdaa" kind="function"><name>distance_to_code</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84" kind="function"><name>distances_batch_4</name></member>
