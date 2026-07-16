@@ -91,7 +91,7 @@ class TestIndexRefinePanorama(unittest.TestCase):
             err_msg="Distances mismatch",
         )
         check_ref_knn_with_draws(
-            D_regular, I_regular, D_regular, I_panorama, rtol=rtol
+            D_regular, I_regular, D_panorama, I_panorama, rtol=rtol, atol=atol
         )
 
     def test_refine_panorama_correctness(self):
