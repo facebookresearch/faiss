@@ -233,6 +233,27 @@ class TestIndexRefinePanorama(unittest.TestCase):
                     D_regular, I_regular, D_panorama, I_panorama
                 )
 
+    def test_empty_query_batch(self):
+        """Test search() with an empty query batch (nq=0), which is routed
+        through IndexFlatPanorama::search_subset. This must not enter the
+        OpenMP parallel region with num_threads(0), which is unspecified
+        behavior."""
+        d, nb, nt, nlevels, k = 32, 500, 700, 1, 5
+        xt, xb, _ = self.generate_data(d, nt, nb, nq=1, seed=1515)
+        xq_empty = np.empty((0, d)).astype("float32")
+
+        base_cfg = "Flat"
+
+        for metric in self.METRICS:
+            with self.subTest(metric=metric):
+                index_panorama = self.create_panorama(
+                    d, base_cfg, nlevels, xt=xt, xb=xb, metric=metric
+                )
+
+                D, I = index_panorama.search(xq_empty, k)
+                self.assertEqual(D.shape, (0, k))
+                self.assertEqual(I.shape, (0, k))
+
     def test_id_selector_range(self):
         """Test ID filtering with range selector"""
         d, nb, nt, nq, nlevels, k = 128, 80000, 120000, 500, 8, 20

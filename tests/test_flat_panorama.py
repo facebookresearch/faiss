@@ -452,6 +452,25 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 self.assertEqual(D.shape, (nq, k))
                 self.assertEqual(I.shape, (nq, k))
 
+    def test_empty_query_batch(self):
+        """Test search() and range_search() with an empty query batch
+        (nq=0). This must not enter the OpenMP parallel region with
+        num_threads(0), which is unspecified behavior."""
+        d, nb, nt, nlevels, k = 32, 500, 700, 4, 5
+        _, xb, _ = self.generate_data(d, nt, nb, nq=1, seed=1414)
+        xq_empty = np.empty((0, d)).astype("float32")
+
+        for metric in self.METRICS:
+            with self.subTest(metric=metric):
+                index = self.create_panorama(d, nlevels, xb, metric=metric)
+
+                D, I = index.search(xq_empty, k)
+                self.assertEqual(D.shape, (0, k))
+                self.assertEqual(I.shape, (0, k))
+
+                lims, _, _ = index.range_search(xq_empty, 1.0)
+                np.testing.assert_array_equal(lims, np.zeros(1, dtype=np.int64))
+
     def test_very_small_dataset(self):
         """Test with dataset smaller than batch size (< 128 vectors)"""
         test_cases = [10, 50, 100]

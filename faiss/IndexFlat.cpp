@@ -581,6 +581,10 @@ inline void flat_pano_search_core(
         const SearchParameters* params) {
     using SingleResultHandler = typename BlockHandler::SingleResultHandler;
 
+    if (n <= 0) {
+        return;
+    }
+
     IDSelector* sel = params ? params->sel : nullptr;
     bool use_sel = sel != nullptr;
 
@@ -800,6 +804,10 @@ void IndexFlatPanorama::search_subset(
 
             FAISS_THROW_IF_NOT(k > 0);
             FAISS_THROW_IF_NOT(batch_size == 1);
+
+            if (n <= 0) {
+                return;
+            }
 
             [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
