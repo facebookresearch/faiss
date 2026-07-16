@@ -16,6 +16,10 @@
 
 namespace faiss {
 
+struct IDSelector;
+template <typename T, typename TI>
+struct ResultHandlerUnordered;
+
 // the reference implementation of the https://arxiv.org/pdf/2405.12497
 //   Jianyang Gao, Cheng Long, "RaBitQ: Quantizing High-Dimensional Vectors
 //   with a Theoretical Error Bound for Approximate Nearest Neighbor Search".
@@ -128,6 +132,21 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
 
     // Compute full multi-bit distance (accurate)
     virtual float distance_to_code_full(const uint8_t* code) = 0;
+
+    virtual void set_centroid(const float* centroid_in) {
+        centroid = centroid_in;
+    }
+
+    virtual size_t scan_codes_multibit(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            size_t code_size,
+            idx_t list_no,
+            bool store_pairs,
+            const IDSelector* sel,
+            bool keep_max,
+            ResultHandlerUnordered<float, idx_t>& handler) = 0;
 
     // Override from FlatCodesDistanceComputer
     // Delegates to distance_to_code_full() for multi-bit distance computation

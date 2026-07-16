@@ -229,60 +229,30 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         }
 
         // Multi-bit: Two-stage search with adaptive filtering
-        size_t nup = 0;
-
-        for (size_t j = 0; j < list_size; j++) {
-            if (sel != nullptr) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel->is_member(id)) {
-                    codes += code_size;
-                    continue;
-                }
-            }
-
-            float est_distance = rabitq_dc->distance_to_code_1bit(codes);
-
-            size_t code_size_base = (ivf_rabitq.d + 7) / 8;
-            const rabitq_utils::SignBitFactorsWithError* base_fac =
-                    reinterpret_cast<
-                            const rabitq_utils::SignBitFactorsWithError*>(
-                            codes + code_size_base);
-
-            bool should_refine = rabitq_utils::should_refine_candidate(
-                    est_distance,
-                    base_fac->f_error,
-                    rabitq_dc->g_error,
-                    handler.threshold,
-                    keep_max);
-            if (should_refine) {
-                // Refining computes the full distance — counts as a
-                // post-filter "distance computed" for stats purposes.
-                handler.stats.scan_cnt++;
-                float dis = distance_to_code(codes);
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-
-                if (handler.add_result(dis, id)) {
-                    handler.stats.nheap_updates++;
-                    nup++;
-                }
-            }
-            codes += code_size;
-        }
-
-        return nup;
+        return rabitq_dc->scan_codes_multibit(
+                list_size,
+                codes,
+                ids,
+                code_size,
+                list_no,
+                store_pairs,
+                sel,
+                keep_max,
+                handler);
     }
 
     void internal_try_setup_dc() {
         if (!query_vector.empty() && !reconstructed_centroid.empty()) {
-            // both query_vector and centroid are available!
-            // set up DistanceComputer
-            dc.reset(ivf_rabitq.rabitq.get_distance_computer(
-                    qb, reconstructed_centroid.data(), centered));
-
+            // both query_vector and centroid are available
+            if (!dc) {
+                dc.reset(ivf_rabitq.rabitq.get_distance_computer(
+                        qb, nullptr, centered));
+                // Try to cast to RaBitQDistanceComputer for multi-bit support
+                rabitq_dc = dynamic_cast<RaBitQDistanceComputer*>(dc.get());
+                FAISS_THROW_IF_NOT(rabitq_dc);
+            }
+            rabitq_dc->set_centroid(reconstructed_centroid.data());
             dc->set_query(query_vector.data());
-
-            // Try to cast to RaBitQDistanceComputer for multi-bit support
-            rabitq_dc = dynamic_cast<RaBitQDistanceComputer*>(dc.get());
         }
     }
 };

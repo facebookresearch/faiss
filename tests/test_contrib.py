@@ -319,8 +319,7 @@ class TestOperatingPoints(unittest.TestCase):
         pts = op.operating_points
         for _, pi, ti in pts:
             for _, pj, tj in pts:
-                self.assertFalse(
-                    pj >= pi and tj <= ti and (pj > pi or tj < ti))
+                self.assertFalse(pj >= pi and tj <= ti and (pj > pi or tj < ti))
 
 
 class TestPreassigned(unittest.TestCase):
@@ -933,13 +932,19 @@ class TestFactoryTools(unittest.TestCase):
     def test_get_code_size_hnsw_non_default_m(self):
         d = 128
         # Non-default M values previously raised RuntimeError("cannot parse HNSW16")
-        self.assertEqual(factory_tools.get_code_size(d, "HNSW16"), d * 4 + 16 * 2 * 4)
-        self.assertEqual(factory_tools.get_code_size(d, "HNSW64"), d * 4 + 64 * 2 * 4)
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW16"), d * 4 + 16 * 2 * 4
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW64"), d * 4 + 64 * 2 * 4
+        )
         self.assertEqual(
             factory_tools.get_code_size(d, "HNSW16,Flat"), d * 4 + 16 * 2 * 4
         )
         # HNSW32 backward compat: formula generalizes correctly
-        self.assertEqual(factory_tools.get_code_size(d, "HNSW32"), d * 4 + 32 * 2 * 4)
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32"), d * 4 + 32 * 2 * 4
+        )
 
     def test_get_code_size_ivf_hnsw_non_default_m(self):
         d = 128
@@ -948,7 +953,8 @@ class TestFactoryTools(unittest.TestCase):
             factory_tools.get_code_size(d, "IVF64_HNSW16,Flat"), d * 4
         )
         self.assertEqual(
-            factory_tools.get_code_size(d, "IVF64_HNSW64,PQ8x8"), (8 * 8 + 7) // 8
+            factory_tools.get_code_size(d, "IVF64_HNSW64,PQ8x8"),
+            (8 * 8 + 7) // 8,
         )
 
     def test_get_code_size_hnsw_roundtrip(self):
