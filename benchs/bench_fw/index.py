@@ -19,7 +19,7 @@ from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib
     knn_intersection_measure,
     OperatingPointsWithRanges,
 )
-from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib
+from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib  # noqa: E501
     reverse_index_factory,
 )
 from faiss.contrib.ivf_tools import (  # @manual=//faiss/contrib:faiss_contrib
@@ -206,7 +206,9 @@ class IndexBase:
 
     def transform(self, vectors):
         transformed_vectors = DatasetDescriptor(
-            tablename=f"{vectors.get_filename()}{self.get_codec_name()}transform.npy"
+            tablename=(
+                f"{vectors.get_filename()}{self.get_codec_name()}transform.npy"
+            )
         )
         if not self.io.file_exist(transformed_vectors.tablename):
             codec = self.get_codec()

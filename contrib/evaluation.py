@@ -312,11 +312,12 @@ class OperatingPoints:
 
     def compare_keys(self, k1, k2):
         """return -1 if k1 > k2, 1 if k2 > k1, 0 otherwise"""
-        raise NotImplemented
+        raise NotImplementedError
 
     def do_nothing_key(self):
-        """parameters to say we do nothing, takes 0 time and has 0 performance"""
-        raise NotImplemented
+        """parameters to say we do nothing, takes 0 time and has 0
+        performance"""
+        raise NotImplementedError
 
     def is_pareto_optimal(self, perf_new, t_new):
         for _, perf, t in self.operating_points:
@@ -496,5 +497,6 @@ class RepeatTimer:
         return np.std(self.times) * 1000 if len(self.times) > 1 else 0.0
 
     def nruns(self):
-        """effective number of runs (may be lower than runs - warmup due to timeout)"""
+        """effective number of runs (may be lower than runs - warmup due
+        to timeout)"""
         return len(self.times)

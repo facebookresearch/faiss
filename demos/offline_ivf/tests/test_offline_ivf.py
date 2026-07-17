@@ -37,7 +37,8 @@ A_INDEX_OPQ_FILES: List[str] = [
 
 class TestOIVF(unittest.TestCase):
     """
-    Unit tests for OIVF. Some of these unit tests first copy the required test data objects and puts them in the tempdir created by the context manager.
+    Unit tests for OIVF. Some of these unit tests first copy the required test
+    data objects and puts them in the tempdir created by the context manager.
     """
 
     def assert_file_exists(self, filepath: str) -> None:
@@ -46,7 +47,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_consistency_check(self) -> None:
         """
-        Test the OIVF consistency check step, that it throws if no other steps have been ran.
+        Test the OIVF consistency check step, that it throws if no other steps
+        have been ran.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(
@@ -69,7 +71,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_train_index(self) -> None:
         """
-        Test the OIVF train index step, that it correctly produces the empty.faissindex template file.
+        Test the OIVF train index step, that it correctly produces the
+        empty.faissindex template file.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(
@@ -98,7 +101,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_index_shard_equal_file_sizes(self) -> None:
         """
-        Test the case where the shard size is a divisor of the database size and it is equal to the first file size.
+        Test the case where the shard size is a divisor of the database size
+        and it is equal to the first file size.
         """
 
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -142,7 +146,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_index_shard_unequal_file_sizes(self) -> None:
         """
-        Test the case where the shard size is not a divisor of the database size and is greater than the first file size.
+        Test the case where the shard size is not a divisor of the database
+        size and is greater than the first file size.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             file_sizes = [20000, 15001, 13990]
@@ -182,7 +187,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_search(self) -> None:
         """
-        Test search step using test data objects to bypass dependencies on previous steps.
+        Test search step using test data objects to bypass dependencies on
+        previous steps.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             num_files = 3
@@ -220,7 +226,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_evaluate_without_margin(self) -> None:
         """
-        Test evaluate step using test data objects, no margin evaluation, single index.
+        Test evaluate step using test data objects, no margin evaluation,
+        single index.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(
@@ -255,7 +262,8 @@ class TestOIVF(unittest.TestCase):
 
     def test_evaluate_without_margin_OPQ(self) -> None:
         """
-        Test evaluate step using test data objects, no margin evaluation, single index.
+        Test evaluate step using test data objects, no margin evaluation,
+        single index.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(
