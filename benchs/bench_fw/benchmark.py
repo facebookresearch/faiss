@@ -93,7 +93,8 @@ def optimizer(op, search, cost_metric, perf_metric):
         (max_perf, min_cost) = op.predict_bounds(key)
         if not op.is_pareto_optimal(max_perf, min_cost):
             logger.info(
-                f"{cno=:4d} {str(parameters):50}: SKIP, {max_perf=:.3f} {min_cost=:.3f}",
+                f"{cno=:4d} {str(parameters):50}: SKIP, "
+                f"{max_perf=:.3f} {min_cost=:.3f}",
             )
             continue
 
@@ -150,7 +151,8 @@ def get_range_search_metric_function(range_metric, D, R):
             else:
                 real_radius = mean([radius_from, radius_to])
             logger.info(
-                f"range_search_metric_function {radius_from=} {radius_to=} {real_radius=} {score=}"
+                f"range_search_metric_function {radius_from=} "
+                f"{radius_to=} {real_radius=} {score=}"
             )
             aradius.append(real_radius)
             ascore.append(score)
@@ -518,7 +520,8 @@ class SearchOperator(IndexOperator):
         if flat_desc is None:
             flat_desc = self.get_flat_desc()
         self.build_index_wrapper(flat_desc)
-        # TODO(kuarora): Consider moving gt results(gt_knn_D, gt_knn_I) to the index as there can be multiple ground truths.
+        # TODO(kuarora): Consider moving gt results(gt_knn_D, gt_knn_I) to
+        # the index as there can be multiple ground truths.
         (
             self.gt_knn_D,
             self.gt_knn_I,
@@ -734,7 +737,8 @@ class SearchOperator(IndexOperator):
         ref_index_desc = self.get_desc(knn_desc.range_ref_index_desc)
         if ref_index_desc is None:
             raise ValueError(
-                f"{knn_desc.get_name()}: Unknown range index {knn_desc.range_ref_index_desc}"
+                f"{knn_desc.get_name()}: Unknown range index "
+                f"{knn_desc.range_ref_index_desc}"
             )
         if ref_index_desc.range_metrics is None:
             raise ValueError(
@@ -779,7 +783,9 @@ class SearchOperator(IndexOperator):
                         metric_key=metric_key,
                         radius=knn_desc.radius,
                         gt_radius=gt_radius,
-                        range_search_metric_function=range_search_metric_function,
+                        range_search_metric_function=(
+                            range_search_metric_function
+                        ),
                         gt_rsm=gt_rsm,
                         query_dataset=knn_desc.query_dataset,
                     )
@@ -1112,7 +1118,8 @@ class Benchmark:
         reconstruct,
         range,
     ) -> ExecutionOperator:
-        # all operators are created, as ground truth are always created in benchmarking
+        # all operators are created, as ground truth are always created in
+        # benchmarking
         train_op = TrainOperator(
             num_threads=self.num_threads, distance_metric=self.distance_metric
         )

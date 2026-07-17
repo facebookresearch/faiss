@@ -41,7 +41,8 @@ def two_level_clustering(
     log = print if verbose else print_nop
 
     log(
-        f"2-level clustering of {xt.shape} nb 1st level clusters = {nc1} total {nc2}"
+        f"2-level clustering of {xt.shape} nb 1st level clusters = {nc1} "
+        f"total {nc2}"
     )
     log("perform coarse training")
 
@@ -58,7 +59,8 @@ def two_level_clustering(
     _, assign1 = km.assign(xt)
     bc = np.bincount(assign1, minlength=nc1)
     log(
-        f"done in {time.time() - t0:.2f} s. Sizes of clusters {min(bc)}-{max(bc)}"
+        f"done in {time.time() - t0:.2f} s. "
+        f"Sizes of clusters {min(bc)}-{max(bc)}"
     )
     o = assign1.argsort()
     del km
@@ -81,7 +83,8 @@ def two_level_clustering(
     for c1 in range(nc1):
         nc2 = int(all_nc2[c1])
         log(
-            f"[{time.time() - t0:.2f} s] training sub-cluster {c1}/{nc1} nc2={nc2}\r",
+            f"[{time.time() - t0:.2f} s] training sub-cluster "
+            f"{c1}/{nc1} nc2={nc2}\r",
             end="",
             flush=True,
         )
@@ -171,7 +174,8 @@ def balanced_assignment_with_penalties(
     n = len(x)
     nopt = n / nc  # targed bin sizes
 
-    # we assign to the top-maxk clusters. The final assignment will pick among these clusters.
+    # we assign to the top-maxk clusters. The final assignment will pick
+    # among these clusters.
     full_d2, full_assign = faiss.knn(x, centroids, maxk)
 
     # scalar penalty for each cluster
@@ -184,7 +188,8 @@ def balanced_assignment_with_penalties(
         a0 = full_d2_penalized.argmin(axis=1)
         assign = np.take_along_axis(full_assign, a0[:, None], axis=1).ravel()
         binsizes = np.bincount(assign, minlength=nc)
-        # print(imbalance_factor(nc, assign), mse, int(binsizes.min()), int(binsizes.max()))
+        # print(imbalance_factor(nc, assign), mse, int(binsizes.min()),
+        #       int(binsizes.max()))
         penalties *= (binsizes / nopt) ** alpha
 
     stats = dict(

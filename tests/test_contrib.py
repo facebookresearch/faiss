@@ -881,7 +881,9 @@ class TestFactoryTools(unittest.TestCase):
             faiss.ScalarQuantizer.QT_fp16: "IVF32,SQfp16",
             faiss.ScalarQuantizer.QT_bf16: "IVF32,SQbf16",
             faiss.ScalarQuantizer.QT_8bit_direct: "IVF32,SQ8_direct",
-            faiss.ScalarQuantizer.QT_8bit_direct_signed: "IVF32,SQ8_direct_signed",
+            faiss.ScalarQuantizer.QT_8bit_direct_signed: (
+                "IVF32,SQ8_direct_signed"
+            ),
             faiss.ScalarQuantizer.QT_0bit: "IVF32,SQ0",
             faiss.ScalarQuantizer.QT_1bit_tqmse: "IVF32,SQtqmse1",
             faiss.ScalarQuantizer.QT_2bit_tqmse: "IVF32,SQtqmse2",
@@ -931,7 +933,8 @@ class TestFactoryTools(unittest.TestCase):
 
     def test_get_code_size_hnsw_non_default_m(self):
         d = 128
-        # Non-default M values previously raised RuntimeError("cannot parse HNSW16")
+        # Non-default M values previously raised
+        # RuntimeError("cannot parse HNSW16")
         self.assertEqual(
             factory_tools.get_code_size(d, "HNSW16"), d * 4 + 16 * 2 * 4
         )
@@ -948,7 +951,8 @@ class TestFactoryTools(unittest.TestCase):
 
     def test_get_code_size_ivf_hnsw_non_default_m(self):
         d = 128
-        # IVF+HNSW coarse quantizer with non-default M: code size is inner type only
+        # IVF+HNSW coarse quantizer with non-default M: code size is inner
+        # type only
         self.assertEqual(
             factory_tools.get_code_size(d, "IVF64_HNSW16,Flat"), d * 4
         )

@@ -291,6 +291,11 @@ void exhaustive_inner_product_seq(
         BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
+
+    if (nx == 0) {
+        return;
+    }
+
     [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)
@@ -327,6 +332,11 @@ void exhaustive_L2sqr_seq(
         BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
+
+    if (nx == 0) {
+        return;
+    }
+
     [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)

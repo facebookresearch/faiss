@@ -46,12 +46,16 @@ def _make_deprecated_swig_class(deprecated_name, base_name):
     base_class = globals()[base_name]
 
     def new_meth(cls, *args, **kwargs):
-        msg = f"The class faiss.{deprecated_name} is deprecated in favour of faiss.{base_name}!"
+        msg = (
+            f"The class faiss.{deprecated_name} is deprecated in favour of "
+            f"faiss.{base_name}!"
+        )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
         instance = super(base_class, cls).__new__(cls, *args, **kwargs)
         return instance
 
-    # three-argument version of "type" uses (name, tuple-of-bases, dict-of-attributes)
+    # three-argument version of "type" uses (name, tuple-of-bases,
+    # dict-of-attributes)
     klazz = type(deprecated_name, (base_class,), {"__new__": new_meth})
 
     # this ends up adding the class to the "faiss" namespace, in a way that it
@@ -87,7 +91,8 @@ for depr_prefix, base_prefix in deprecated_name_map.items():
         )
 
 # mapping from vector names in swigfaiss.swig and the numpy dtype names
-# TODO: once deprecated classes are removed, remove the dict and just use .lower() below
+# TODO: once deprecated classes are removed, remove the dict and just use
+# .lower() below
 vector_name_map = {
     "Float32": "float32",
     "Float64": "float64",
