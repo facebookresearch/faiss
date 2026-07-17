@@ -1702,6 +1702,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ProductQuantizer(&idxp->pq, f);
         idxp->code_size = idxp->pq.code_size;
         read_vector(idxp->codes, f);
+        FAISS_THROW_IF_NOT_MSG(
+                idxp->code_size > 0 || idxp->ntotal == 0,
+                "IndexPQ with ntotal > 0 must have code_size > 0 "
+                "(corrupt ProductQuantizer nbits?)");
         FAISS_THROW_IF_NOT(
                 idxp->codes.size() ==
                 mul_no_overflow(
