@@ -70,6 +70,57 @@ class TestIVFSearchPreassigned(unittest.TestCase):
         np.testing.assert_allclose(gpu_d, cpu_d, rtol=1e-5, atol=1e-5)
         np.testing.assert_array_equal(gpu_i, cpu_i)
 
+    def test_ivfpq_add_preassigned(self):
+        res = faiss.StandardGpuResources()
+        d = 32
+        nb = 500
+        nq = 20
+        nlist = 16
+        nprobe = 8
+        k = 10
+
+        rs = np.random.RandomState(123)
+        xt = rs.rand(10000, d).astype("float32")
+        xb = rs.rand(nb, d).astype("float32")
+        xq = rs.rand(nq, d).astype("float32")
+
+        idx_cpu = faiss.IndexIVFPQ(
+            faiss.IndexFlatL2(d), d, nlist, 4, 8
+        )
+        self.assertTrue(idx_cpu.by_residual)
+        idx_cpu.train(xt)
+
+        config = faiss.GpuIndexIVFPQConfig()
+        config.use_cuvs = False
+        idx_gpu = faiss.GpuIndexIVFPQ(res, idx_cpu, config)
+
+        # Force assignments away from the coarse quantizer result so this
+        # exercises residual encoding against the preassigned centroid.
+        assign = idx_cpu.quantizer.search(xb, 1)[1].ravel()
+        assign = (assign + 1) % nlist
+
+        ivf_tools.add_preassigned(idx_cpu, xb, assign)
+        ivf_tools.add_preassigned(idx_gpu, xb, assign)
+
+        self.assertEqual(idx_gpu.ntotal, nb)
+        expected_sizes = np.bincount(assign, minlength=nlist)
+        for list_no, expected_size in enumerate(expected_sizes):
+            self.assertEqual(idx_gpu.getListLength(list_no), expected_size)
+
+        idx_cpu.nprobe = nprobe
+        idx_gpu.nprobe = nprobe
+        query_dis, query_assign = idx_cpu.quantizer.search(xq, nprobe)
+
+        cpu_d, cpu_i = ivf_tools.search_preassigned(
+            idx_cpu, xq, k, query_assign, query_dis
+        )
+        gpu_d, gpu_i = ivf_tools.search_preassigned(
+            idx_gpu, xq, k, query_assign, query_dis
+        )
+
+        np.testing.assert_allclose(gpu_d, cpu_d, rtol=1e-5, atol=1e-5)
+        np.testing.assert_array_equal(gpu_i, cpu_i)
+
     def test_ivfflat_search_preassigned(self):
         res = faiss.StandardGpuResources()
         d = 50
