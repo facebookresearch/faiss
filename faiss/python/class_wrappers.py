@@ -53,7 +53,8 @@ def _numeric_to_str(numeric_type):
         return "int8"
     else:
         raise ValueError(
-            "numeric type must be either faiss.Float32, faiss.Float16, or faiss.Int8"
+            "numeric type must be either faiss.Float32, faiss.Float16, "
+            "or faiss.Int8"
         )
 
 
@@ -76,17 +77,20 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
 def handle_Clustering(the_class):
 
     def replacement_train(self, x, index, weights=None):
-        """Perform clustering on a set of vectors. The index is used for assignment.
+        """Perform clustering on a set of vectors. The index is used for
+        assignment.
 
         Parameters
         ----------
         x : array_like
             Training vectors, shape (n, self.d). `dtype` must be float32.
         index : faiss.Index
-            Index used for assignment. The dimension of the index should be `self.d`.
+            Index used for assignment. The dimension of the index
+            should be `self.d`.
         weights : array_like, optional
-            Per training sample weight (size n) used when computing the weighted
-            average to obtain the centroid (default is 1 for all training vectors).
+            Per training sample weight (size n) used when computing
+            the weighted average to obtain the centroid (default is
+            1 for all training vectors).
         """
         n, d = x.shape
         x = np.ascontiguousarray(x, dtype="float32")
@@ -99,20 +103,24 @@ def handle_Clustering(the_class):
             self.train_c(n, swig_ptr(x), index)
 
     def replacement_train_encoded(self, x, codec, index, weights=None):
-        """Perform clustering on a set of compressed vectors. The index is used for assignment.
+        """Perform clustering on a set of compressed vectors. The index is
+        used for assignment.
         The decompression is performed on-the-fly.
 
         Parameters
         ----------
         x : array_like
-            Training vectors, shape (n, codec.code_size()). `dtype` must be `uint8`.
+            Training vectors, shape (n, codec.code_size()). `dtype` must
+            be `uint8`.
         codec : faiss.Index
             Index used to decode the vectors. Should have dimension `self.d`.
         index : faiss.Index
-            Index used for assignment. The dimension of the index should be `self.d`.
+            Index used for assignment. The dimension of the index
+            should be `self.d`.
         weights : array_like, optional
-            Per training sample weight (size n) used when computing the weighted
-            average to obtain the centroid (default is 1 for all training vectors).
+            Per training sample weight (size n) used when computing
+            the weighted average to obtain the centroid (default is
+            1 for all training vectors).
         """
         n, d = x.shape
         x = _check_dtype_uint8(x)
@@ -213,7 +221,8 @@ def handle_Quantizer(the_class):
 
         Returns
         -------
-            Reconstructed vectors for each code, shape `(n, d)` and `dtype` float32.
+            Reconstructed vectors for each code, shape `(n, d)` and
+            `dtype` float32.
         """
         n, cs = codes.shape
         codes = _check_dtype_uint8(codes)
@@ -280,8 +289,9 @@ def handle_Index(the_class):
     def replacement_add(self, x, numeric_type=faiss.Float32):
         """Adds vectors to the index.
         The index must be trained before vectors can be added to it.
-        The vectors are implicitly numbered in sequence. When `n` vectors are
-        added to the index, they are given ids `ntotal`, `ntotal + 1`, ..., `ntotal + n - 1`.
+        The vectors are implicitly numbered in sequence. When `n`
+        vectors are added to the index, they are given ids `ntotal`,
+        `ntotal + 1`, ..., `ntotal + n - 1`.
 
         Parameters
         ----------
@@ -299,7 +309,8 @@ def handle_Index(the_class):
             self.add_ex(n, swig_ptr(x), numeric_type)
 
     def replacement_add_with_ids(self, x, ids, numeric_type=faiss.Float32):
-        """Adds vectors with arbitrary ids to the index (not all indexes support this).
+        """Adds vectors with arbitrary ids to the index (not all indexes
+        support this).
         The index must be trained before vectors can be added to it.
         Vector `i` is stored in `x[i]` and has id `ids[i]`.
 
@@ -309,8 +320,9 @@ def handle_Index(the_class):
             Query vectors, shape (n, d) where d is appropriate for the index.
             `dtype` must be float32.
         ids : array_like
-            Array if ids of size n. The ids must be of type `int64`. Note that `-1` is reserved
-            in result lists to mean "not found" so it's better to not use it as an id.
+            Array if ids of size n. The ids must be of type `int64`.
+            Note that `-1` is reserved in result lists to mean "not
+            found" so it's better to not use it as an id.
         """
         n, d = x.shape
         assert d == self.d
@@ -419,7 +431,8 @@ def handle_Index(the_class):
         k : int
             Number of nearest neighbors.
         params : SearchParameters
-            Search parameters of the current search (overrides the class-level params)
+            Search parameters of the current search (overrides the
+            class-level params)
         D : array_like, optional
             Distance array to store the result.
         I : array_like, optional
@@ -428,8 +441,9 @@ def handle_Index(the_class):
         Returns
         -------
         D : array_like
-            Distances of the nearest neighbors, shape (n, k). When not enough results are found
-            the label is set to +Inf or -Inf.
+            Distances of the nearest neighbors, shape (n, k). When
+            not enough results are found the label is set to +Inf or
+            -Inf.
         I : array_like
             Labels of the nearest neighbors, shape (n, k).
             When not enough results are found, the label is set to -1
@@ -479,7 +493,8 @@ def handle_Index(the_class):
         k : int
             Number of nearest neighbors.
         params : SearchParameters
-            Search parameters of the current search (overrides the class-level params)
+            Search parameters of the current search (overrides the
+            class-level params)
         D : array_like, optional
             Distance array to store the result.
         I : array_like, optional
@@ -490,13 +505,15 @@ def handle_Index(the_class):
         Returns
         -------
         D : array_like
-            Distances of the nearest neighbors, shape (n, k). When not enough results are found
-            the label is set to +Inf or -Inf.
+            Distances of the nearest neighbors, shape (n, k). When
+            not enough results are found the label is set to +Inf or
+            -Inf.
         I : array_like
-            Labels of the nearest neighbors, shape (n, k). When not enough results are found,
-            the label is set to -1
+            Labels of the nearest neighbors, shape (n, k). When not
+            enough results are found, the label is set to -1
         R : array_like
-            Approximate (reconstructed) nearest neighbor vectors, shape (n, k, d).
+            Approximate (reconstructed) nearest neighbor vectors,
+            shape (n, k, d).
         """
         n, d = x.shape
         assert d == self.d
@@ -546,7 +563,8 @@ def handle_Index(the_class):
         k : int
             Number of nearest neighbors.
         params : SearchParameters
-            Search parameters of the current search (overrides the class-level params)
+            Search parameters of the current search (overrides the
+            class-level params)
         include_listnos : bool, optional
             whether to include the list ids in the first bytes of each code
         D : array_like, optional
@@ -559,13 +577,15 @@ def handle_Index(the_class):
         Returns
         -------
         D : array_like
-            Distances of the nearest neighbors, shape (n, k). When not enough results are found
-            the label is set to +Inf or -Inf.
+            Distances of the nearest neighbors, shape (n, k). When
+            not enough results are found the label is set to +Inf or
+            -Inf.
         I : array_like
-            Labels of the nearest neighbors, shape (n, k). When not enough results are found,
-            the label is set to -1
+            Labels of the nearest neighbors, shape (n, k). When not
+            enough results are found, the label is set to -1
         R : array_like
-            Approximate (reconstructed) nearest neighbor vectors, shape (n, k, d).
+            Approximate (reconstructed) nearest neighbor vectors,
+            shape (n, k, d).
         """
         n, d = x.shape
         assert d == self.d
@@ -679,7 +699,8 @@ def handle_Index(the_class):
         return x
 
     def replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
-        """Approximate reconstruction of vectors `n0` ... `n0 + ni - 1` from the index.
+        """Approximate reconstruction of vectors `n0` ... `n0 + ni - 1`
+        from the index.
         Missing vectors trigger an exception.
 
         Parameters
@@ -724,11 +745,13 @@ def handle_Index(the_class):
             Query vectors, shape (n, d) where d is appropriate for the index.
             `dtype` must be float32.
         thresh : float
-            Threshold to select neighbors. All elements within this radius are returned,
-            except for maximum inner product indexes, where the elements above the
-            threshold are returned
+            Threshold to select neighbors. All elements within this
+            radius are returned, except for maximum inner product
+            indexes, where the elements above the threshold are
+            returned
         params : SearchParameters
-            Search parameters of the current search (overrides the class-level params)
+            Search parameters of the current search (overrides the
+            class-level params)
 
 
         Returns
@@ -736,8 +759,8 @@ def handle_Index(the_class):
         lims: array_like
             Starting index of the results for each query vector, size n+1.
         D : array_like
-            Distances of the nearest neighbors, shape `lims[n]`. The distances for
-            query i are in `D[lims[i]:lims[i+1]]`.
+            Distances of the nearest neighbors, shape `lims[n]`. The
+            distances for query i are in `D[lims[i]:lims[i+1]]`.
         I : array_like
             Labels of nearest neighbors, shape `lims[n]`. The labels for query i
             are in `I[lims[i]:lims[i+1]]`.
@@ -776,7 +799,8 @@ def handle_Index(the_class):
             Nearest centroids, size (n, nprobe)
 
         params : SearchParameters
-            Search parameters of the current search (overrides the class-level params)
+            Search parameters of the current search (overrides the
+            class-level params)
         D : array_like, optional
             Distance array to store the result.
         I : array_like, optional
@@ -785,8 +809,9 @@ def handle_Index(the_class):
         Returns
         -------
         D : array_like
-            Distances of the nearest neighbors, shape (n, k). When not enough results are found
-            the label is set to +Inf or -Inf.
+            Distances of the nearest neighbors, shape (n, k). When
+            not enough results are found the label is set to +Inf or
+            -Inf.
         I : array_like
             Labels of the nearest neighbors, shape (n, k).
             When not enough results are found, the label is set to -1
@@ -839,15 +864,17 @@ def handle_Index(the_class):
             Query vectors, shape (n, d) where d is appropriate for the index.
             `dtype` must be float32.
         thresh : float
-            Threshold to select neighbors. All elements within this radius are returned,
-            except for maximum inner product indexes, where the elements above the
-            threshold are returned
+            Threshold to select neighbors. All elements within this
+            radius are returned, except for maximum inner product
+            indexes, where the elements above the threshold are
+            returned
         Iq : array_like, optional
             Nearest centroids, size (n, nprobe)
         Dq : array_like, optional
             Distance array to the centroids, size (n, nprobe)
         params : SearchParameters
-            Search parameters of the current search (overrides the class-level params)
+            Search parameters of the current search (overrides the
+            class-level params)
 
 
         Returns
@@ -855,8 +882,8 @@ def handle_Index(the_class):
         lims: array_like
             Starting index of the results for each query vector, size n+1.
         D : array_like
-            Distances of the nearest neighbors, shape `lims[n]`. The distances for
-            query i are in `D[lims[i]:lims[i+1]]`.
+            Distances of the nearest neighbors, shape `lims[n]`. The
+            distances for query i are in `D[lims[i]:lims[i+1]]`.
         I : array_like
             Labels of nearest neighbors, shape `lims[n]`. The labels for query i
             are in `I[lims[i]:lims[i+1]]`.
@@ -1378,7 +1405,8 @@ def add_to_referenced_objects(self, ref):
 class RememberSwigOwnership:
     """
     SWIG's seattr transfers ownership of SWIG wrapped objects to the class
-    (btw this seems to contradict https://www.swig.org/Doc1.3/Python.html#Python_nn22
+    (btw this seems to contradict
+    https://www.swig.org/Doc1.3/Python.html#Python_nn22
     31.4.2)
     This interferes with how we manage ownership: with the referenced_objects
     table. Therefore, we reset the thisown field in this context manager.
