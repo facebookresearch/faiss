@@ -2847,6 +2847,13 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
         if (h == fourcc("ISV2")) {
             READVECTOR(svs->stored_vectors);
+            FAISS_THROW_IF_NOT_MSG(
+                    svs->stored_vectors.size() ==
+                            mul_no_overflow(
+                                    (size_t)svs->ntotal,
+                                    (size_t)svs->d,
+                                    "IndexSVSVamana stored_vectors"),
+                    "ISV2: stored_vectors size inconsistent with ntotal * d");
         } else {
             svs->stored_vectors_valid = false;
         }
