@@ -112,6 +112,31 @@ class TestIndexFlat(unittest.TestCase):
     def test_with_blas_reservoir_ip(self):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
+    def test_empty_query_batch(self):
+        """search()/range_search() with nq=0 must not enter an OpenMP
+        parallel region with num_threads(0), which is unspecified
+        behavior. An empty batch always has nq * d below
+        distance_compute_blas_threshold, so this exercises the non-BLAS
+        exhaustive_{inner_product,L2sqr}_seq path unconditionally."""
+        d = 32
+        nb = 1000
+        _, xb, _ = get_dataset_2(d, 0, nb, 1)
+        xq_empty = np.empty((0, d), dtype="float32")
+
+        for metric_type in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+            with self.subTest(metric_type=metric_type):
+                index = faiss.IndexFlat(d, metric_type)
+                index.add(xb)
+
+                D, I = index.search(xq_empty, 10)
+                self.assertEqual(D.shape, (0, 10))
+                self.assertEqual(I.shape, (0, 10))
+
+                lims, _, _ = index.range_search(xq_empty, 1.0)
+                np.testing.assert_array_equal(
+                    lims, np.zeros(1, dtype=np.int64)
+                )
+
 
 @for_all_simd_levels
 class TestDbParallelSearch(unittest.TestCase):
