@@ -69,13 +69,12 @@ def build_index(name):
 
 
 nlevels = 16 if args.dataset == "gist1m" else 8
-batch_size = 512
 
 plt.figure(figsize=(8, 6), dpi=80)
 
 names = [
     "Flat",
-    f"PCA{d},FlatL2Panorama{nlevels}_{batch_size}",
+    f"PCA{d},FlatL2Panorama{nlevels}",
 ]
 
 labels = []

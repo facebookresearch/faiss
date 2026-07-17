@@ -385,7 +385,7 @@ IndexIVF* parse_IndexIVF(
     }
     if (match("FlatPanorama([0-9]+)?(_([0-9]+))?")) {
         int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
-        int bs = mres_to_int(sm[3], 128);
+        int bs = mres_to_int(sm[3], Panorama::kDefaultBatchSize);
         return new IndexIVFFlatPanorama(
                 get_q(), d, nlist, nlevels, mt, own_il, bs);
     }

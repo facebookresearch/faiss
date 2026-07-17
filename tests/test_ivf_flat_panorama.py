@@ -71,6 +71,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         nprobe=None,
         make_direct_map=False,
         metric=faiss.METRIC_L2,
+        batch_size=128,
     ):
         """Create and initialize IndexIVFFlatPanorama."""
         quantizer = (
@@ -78,7 +79,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
             if metric == faiss.METRIC_L2
             else faiss.IndexFlatIP(d)
         )
-        index = faiss.IndexIVFFlatPanorama(quantizer, d, nlist, nlevels, metric)
+        index = faiss.IndexIVFFlatPanorama(
+            quantizer, d, nlist, nlevels, metric, True, batch_size
+        )
         index.train(xt)
         if make_direct_map:
             index.make_direct_map()
@@ -763,6 +766,56 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
                 np.testing.assert_array_equal(I_before, I_after)
                 np.testing.assert_array_equal(D_before, D_after)
+
+    def test_read_legacy_format(self):
+        """Indexes serialized in the legacy "IwPn"/"ilpn" format (which does
+        not store batch_size and implies the legacy value of 128) must keep
+        deserializing correctly, whatever the current default batch_size is.
+
+        The current code always writes the explicit-batch_size format
+        ("IwP2"/"ilp2"), so a legacy stream is reconstructed here by
+        transforming a serialized index: swap the fourccs and drop the two
+        8-byte batch_size fields.
+        """
+        d, nlist, nlevels, nb, nq, k = 32, 4, 8, 2000, 10, 10
+        legacy_bs = 128
+        rng = np.random.RandomState(123)
+        xb = rng.rand(nb, d).astype("float32")
+        xq = rng.rand(nq, d).astype("float32")
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFFlatPanorama(
+            quantizer, d, nlist, nlevels, faiss.METRIC_L2, True, legacy_bs
+        )
+        index.train(xb)
+        index.add(xb)
+        index.nprobe = nlist
+        D_ref, I_ref = index.search(xq, k)
+
+        buf = faiss.serialize_index(index).tobytes()
+        # layout: "IwP2" | ivf header | n_levels (8) | batch_size (8) |
+        #         "ilp2" | nlist (8) | code_size (8) | n_levels (8) |
+        #         batch_size (8) | inverted lists data
+        self.assertEqual(buf[:4], b"IwP2")
+        self.assertEqual(buf.count(b"ilp2"), 1)
+        p = buf.index(b"ilp2")
+        legacy = (
+            b"IwPn"
+            + buf[4 : p - 8]  # drop the IVF-level batch_size field
+            + b"ilpn"
+            + buf[p + 4 : p + 28]  # nlist, code_size, n_levels
+            + buf[p + 36 :]  # drop the invlist-level batch_size field
+        )
+
+        index_legacy = faiss.deserialize_index(
+            np.frombuffer(legacy, dtype=np.uint8)
+        )
+        self.assertIsInstance(index_legacy, faiss.IndexIVFFlatPanorama)
+        self.assertEqual(index_legacy.batch_size, legacy_bs)
+        index_legacy.nprobe = nlist
+        D_legacy, I_legacy = index_legacy.search(xq, k)
+        np.testing.assert_array_equal(I_ref, I_legacy)
+        np.testing.assert_array_equal(D_ref, D_legacy)
 
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
