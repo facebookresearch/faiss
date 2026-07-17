@@ -459,9 +459,9 @@ class TestScalarQuantizer(unittest.TestCase):
         D, I = index.search(xq, 10)
         nok["flat"] = (I[:, 0] == I_ref[:, 0]).sum()
 
-        for (
-            qname
-        ) in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16".split():
+        for qname in (
+            "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16"
+        ).split():
             qtype = getattr(faiss.ScalarQuantizer, qname)
             index = faiss.IndexIVFScalarQuantizer(
                 quantizer, d, ncent, qtype, faiss.METRIC_L2
@@ -500,9 +500,9 @@ class TestScalarQuantizer(unittest.TestCase):
 
         nok = {}
 
-        for (
-            qname
-        ) in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16".split():
+        for qname in (
+            "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16"
+        ).split():
             qtype = getattr(faiss.ScalarQuantizer, qname)
             index = faiss.IndexScalarQuantizer(d, qtype, faiss.METRIC_L2)
             index.train(xt)

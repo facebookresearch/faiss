@@ -291,7 +291,8 @@ class DatasetGlove(Dataset):
         if not loc:
             loc = dataset_basedir + "glove/glove-100-angular.hdf5"
         self.glove_h5py = h5py.File(loc, "r")
-        # IP and L2 are equivalent in this case, but it is traditionally seen as an IP dataset
+        # IP and L2 are equivalent in this case, but it is traditionally
+        # seen as an IP dataset
         self.metric = "IP"
         self.d, self.nt = 100, 0
         self.nb = self.glove_h5py["train"].shape[0]
@@ -379,9 +380,14 @@ class DatasetGIST1M(Dataset):
 class DatasetDINO10B(Dataset):
     """
     Data from https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/
-    The dataset contains 10 billion 1024-d vectors extracted from image patches from the YFCC100M dataset, using a Dino-ViT-L 16 model (facebook/dinov3-vitl16-pretrain-lvd1689m).
-    The dataset is sharded in multiple chunked .bvecs files. Downloading instructions can be obtained with "wget https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md".
-    Supported sizes : 100k 200k 500k 1M ... 5B 10B listed in supported_nbs (see __init__).
+    The dataset contains 10 billion 1024-d vectors extracted from image
+    patches from the YFCC100M dataset, using a Dino-ViT-L 16 model
+    (facebook/dinov3-vitl16-pretrain-lvd1689m).
+    The dataset is sharded in multiple chunked .bvecs files. Downloading
+    instructions can be obtained with
+    "wget https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md".
+    Supported sizes : 100k 200k 500k 1M ... 5B 10B listed in supported_nbs
+    (see __init__).
     """
 
     def __init__(self, nb, ignore_supported=False):
@@ -406,11 +412,13 @@ class DatasetDINO10B(Dataset):
         ]
         if nb not in supported_nbs and not ignore_supported:
             raise ValueError(
-                f"Unsupported dataset size: {nb}, supported values are: {supported_nbs}"
+                f"Unsupported dataset size: {nb}, supported values are: "
+                f"{supported_nbs}"
             )
         if not os.path.exists(dataset_basedir):
             raise ValueError(
-                f"Provided dataset base directory does not exist: {dataset_basedir}"
+                "Provided dataset base directory does not exist: "
+                f"{dataset_basedir}"
             )
         self.basedir = dataset_basedir + "dino_vitl_10B/"
         self.indexdir = self.basedir + "chunked_base_10B"
@@ -418,9 +426,10 @@ class DatasetDINO10B(Dataset):
             self.indexdir
         ), f"Index path should exist, check your dataset path: {self.indexdir}"
         self.queriesdir = self.basedir + "queries_clean.bvecs"
-        assert os.path.exists(
-            self.queriesdir
-        ), f"Queries path should exist as dataset size {nb} is supported: {self.queriesdir}"
+        assert os.path.exists(self.queriesdir), (
+            f"Queries path should exist as dataset size {nb} is supported: "
+            f"{self.queriesdir}"
+        )
         self.gtsdir = (
             self.basedir
             + "gts/"
@@ -445,7 +454,10 @@ class DatasetDINO10B(Dataset):
         """Get training query vectors as a single array"""
         if maxtrain is None or maxtrain > 10_000_000:
             raise NotImplementedError(
-                "The training set is potentially too large to fit in RAM (400 GB of data). Please use train_iterator or use maxtrain parameter below 10_000_000 to get the first maxtrain training vectors."
+                "The training set is potentially too large to fit in RAM "
+                "(400 GB of data). Please use train_iterator or use "
+                "maxtrain parameter below 10_000_000 to get the first "
+                "maxtrain training vectors."
             )
         return sanitize(bvecs_mmap(self.train_queriesdir)[:maxtrain])
 
@@ -453,7 +465,9 @@ class DatasetDINO10B(Dataset):
         """Get all database vectors as a single array"""
         if self.nb > 10_000_000:
             raise NotImplementedError(
-                "The dataset is potentially too large to fit in RAM. Please use database_iterator or use a dataset size equal to or below 10_000_000."
+                "The dataset is potentially too large to fit in RAM. "
+                "Please use database_iterator or use a dataset size equal "
+                "to or below 10_000_000."
             )
         else:
             return sanitize(
@@ -461,7 +475,8 @@ class DatasetDINO10B(Dataset):
             )
 
     def database_iterator(self, bs=10_000):
-        """Iterator over the database of size nb, corresponding to the first nb vectors in the .bvecs file"""
+        """Iterator over the database of size nb, corresponding to the
+        first nb vectors in the .bvecs file"""
         total_read = 0
         for batch in bvecs_iter_chunked(self.indexdir, batch_size=bs):
             if total_read + batch.shape[0] > self.nb:
