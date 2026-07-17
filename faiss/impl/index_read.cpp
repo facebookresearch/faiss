@@ -1617,6 +1617,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(n_levels);
         FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
+        FAISS_THROW_IF_NOT_FMT(
+                batch_size > 0, "invalid IxFP batch_size %zd", batch_size);
         std::unique_ptr<IndexFlatPanorama> idxp;
         if (h == fourcc("IxFP")) {
             idxp = std::make_unique<IndexFlatL2Panorama>(
@@ -1629,6 +1631,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1_BOOL(idxp->is_trained);
         READVECTOR(idxp->codes);
         READVECTOR(idxp->cum_sums);
+        size_t num_slots = mul_no_overflow(
+                ((size_t)idxp->ntotal + idxp->batch_size - 1) /
+                        idxp->batch_size,
+                idxp->batch_size,
+                "IndexFlatPanorama num_batches*batch_size");
+        FAISS_THROW_IF_NOT(
+                idxp->codes.size() ==
+                mul_no_overflow(
+                        num_slots, idxp->code_size, "IndexFlatPanorama codes"));
+        FAISS_THROW_IF_NOT(
+                idxp->cum_sums.size() ==
+                mul_no_overflow(
+                        num_slots,
+                        idxp->pano.n_levels + 1,
+                        "IndexFlatPanorama cum_sums"));
         idxp->verbose = false;
         idx = std::move(idxp);
     } else if (
@@ -2040,6 +2057,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivfp->code_size = ivfp->d * sizeof(float);
         READ1(ivfp->n_levels);
         READ1(ivfp->batch_size);
+        FAISS_THROW_IF_NOT_FMT(
+                ivfp->batch_size > 0,
+                "invalid IwP2 batch_size %zd",
+                ivfp->batch_size);
         read_InvertedLists(*ivfp, f, io_flags);
         idx = std::move(ivfp);
     } else if (h == fourcc("IwFl")) {
