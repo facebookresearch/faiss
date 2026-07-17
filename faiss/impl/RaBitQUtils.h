@@ -13,6 +13,7 @@
 #include <faiss/utils/rabitq_simd.h>
 #include <faiss/utils/simd_levels.h>
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -85,6 +86,50 @@ struct QueryFactorsData {
  * L2 reconstruction error. Shared between all RaBitQ implementations.
  */
 FAISS_API extern const float Z_MAX_BY_QB[8];
+
+/** Fast half-away rounding for non-negative RaBitQ quantization values.
+ *
+ * Contract: x must be finite, non-NaN, and in [0, 255.5). This is not a
+ * bit-exact replacement for roundf within a few ulps below k + 0.5, where the
+ * addition may round across the tie. It is intended only for RaBitQ LUT
+ * quantization paths where a +/- 1 code difference at those boundaries is
+ * acceptable.
+ */
+inline uint8_t round_nonnegative_to_uint8(float x) {
+    assert(x == x);
+    assert(x >= 0.0f);
+    assert(x < 255.5f);
+    return static_cast<uint8_t>(static_cast<int>(x + 0.5f));
+}
+
+/** Same as round_nonnegative_to_uint8 for uint16 RaBitQ bias values. */
+inline uint16_t round_nonnegative_to_uint16(float x) {
+    assert(x == x);
+    assert(x >= 0.0f);
+    assert(x < 65535.5f);
+    return static_cast<uint16_t>(static_cast<int>(x + 0.5f));
+}
+
+/** Fast clamped rounding for query-byte quantization.
+ *
+ * Contract: x must be non-NaN. Values outside [0, max_code] are clamped before
+ * applying the same non-bit-exact rounding used by
+ * round_nonnegative_to_uint8().
+ */
+inline uint8_t round_clamped_to_uint8(float x, uint8_t max_code) {
+    assert(x == x);
+
+    if (x <= 0.0f) {
+        return 0;
+    }
+
+    const float max_code_f = static_cast<float>(max_code);
+    if (x >= max_code_f) {
+        return max_code;
+    }
+
+    return static_cast<uint8_t>(static_cast<int>(x + 0.5f));
+}
 
 /** Compute factors for a single database vector using RaBitQ algorithm.
  * This function consolidates the mathematical logic that was duplicated

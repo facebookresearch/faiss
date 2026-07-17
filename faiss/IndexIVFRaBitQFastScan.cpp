@@ -28,6 +28,8 @@ namespace faiss {
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
 using rabitq_utils::QueryFactorsData;
+using rabitq_utils::round_nonnegative_to_uint16;
+using rabitq_utils::round_nonnegative_to_uint8;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
 
@@ -603,13 +605,12 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
                     float mn = all_mins[j2 * M + m];
                     uint8_t* out = out_base + j2 * dim12_2 + m * ksub;
                     for (size_t s = 0; s < ksub; s++) {
-                        out[s] = static_cast<uint8_t>(
-                                std::roundf(a * (tab[s] - mn)));
+                        out[s] = round_nonnegative_to_uint8(a * (tab[s] - mn));
                     }
                 }
                 memset(out_base + j2 * dim12_2 + M * ksub, 0, (M2 - M) * ksub);
-                bq[j2] = static_cast<uint16_t>(
-                        std::roundf(a * (probe_b[j2] - glob_b)));
+                bq[j2] =
+                        round_nonnegative_to_uint16(a * (probe_b[j2] - glob_b));
             }
             normalizers[2 * i] = a;
             normalizers[2 * i + 1] = glob_b;
@@ -851,8 +852,8 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         for (size_t m = 0; m < M; m++) {
             const float* tab = lut_float.get() + m * ksub;
             for (size_t s = 0; s < ksub; s++) {
-                out[m * ksub + s] = static_cast<uint8_t>(
-                        std::roundf(a * (tab[s] - mins[m])));
+                out[m * ksub + s] =
+                        round_nonnegative_to_uint8(a * (tab[s] - mins[m]));
             }
         }
         memset(out + M * ksub, 0, (M2 - M) * ksub);

@@ -33,6 +33,7 @@ set(FAISS_TEST_SRC
   test_ivf_early_termination.cpp
   test_callback.cpp
   test_utils.cpp
+  test_rabitq_utils.cpp
   test_hamming.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
