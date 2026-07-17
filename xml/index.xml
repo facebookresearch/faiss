@@ -4253,6 +4253,7 @@
     <member refid="structfaiss_1_1IndexIDMap2Template_1afbd7827eb740d19fb7f48f734cd05dd4" kind="function"><name>construct_rev_map</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a751cb1ab67ffa1de83260e7bc72f61fe" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1abe13023a6d58623f3749097a3c412f3b" kind="function"><name>add_with_ids_ex</name></member>
+    <member refid="structfaiss_1_1IndexIDMap2Template_1a7c6706c042c6293f008269022256fc97" kind="function"><name>add_sa_codes</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a8bd3808ffe012654687a584f5e553d50" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a2c3380bb909224c37d536316134d348a" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a35a2f9d4b5ff5c13ba4da8bd4385d14a" kind="function"><name>check_consistency</name></member>
@@ -4269,7 +4270,6 @@
     <member refid="structfaiss_1_1IndexIDMapTemplate_1ac5c72a7cfa93433325e3e5f1584146f3" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a4f8a46a711b5f2d4f921c717b4ebba37" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1ad31234e502c5dd7c8881a25cd582424a" kind="function"><name>sa_code_size</name></member>
-    <member refid="structfaiss_1_1IndexIDMapTemplate_1ab8d1ceb41636c39ea47a91fcb923e0db" kind="function"><name>add_sa_codes</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIDMapTemplate" kind="struct"><name>faiss::IndexIDMapTemplate</name>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1ad3e369ada29b7412c33e509f687efb00" kind="typedef"><name>component_t</name></member>
@@ -14374,6 +14374,9 @@
   </compound>
   <compound refid="namespacefaiss_1_1rabitq__utils" kind="namespace"><name>faiss::rabitq_utils</name>
     <member refid="RaBitQUtils_8h_1a6d8f1381f334033fce7b24083624c200" kind="variable"><name>Z_MAX_BY_QB</name></member>
+    <member refid="RaBitQUtils_8h_1ac95b6e224c7b6489340310261becd8a8" kind="function"><name>round_nonnegative_to_uint8</name></member>
+    <member refid="RaBitQUtils_8h_1a41973b74126807727779e77373f90374" kind="function"><name>round_nonnegative_to_uint16</name></member>
+    <member refid="RaBitQUtils_8h_1a40f75a7566dee95c6d2d4932cf80fd93" kind="function"><name>round_clamped_to_uint8</name></member>
     <member refid="RaBitQUtils_8h_1acd13d8ea72089c8b929681b422023f2d" kind="function"><name>compute_vector_factors</name></member>
     <member refid="RaBitQUtils_8h_1a331fb43e107f687e17ccd9d3c7c59a80" kind="function"><name>compute_vector_intermediate_values</name></member>
     <member refid="RaBitQUtils_8h_1ae2ce53f865a2754f82b416b803b8df7f" kind="function"><name>compute_factors_from_intermediates</name></member>

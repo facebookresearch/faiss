@@ -1370,7 +1370,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="126" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="126" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="128" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="128" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -1384,7 +1384,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="127" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="127" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="129" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="129" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1af3735e1903da947aaa2d79389d4ddfd0" prot="public" static="no">
         <type><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
