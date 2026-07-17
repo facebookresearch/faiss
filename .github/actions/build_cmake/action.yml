@@ -273,7 +273,7 @@ runs:
       shell: bash
       run: |
         conda list --show-channel-urls
-        find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
+        find ./build/benchs/legacy/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
       if: inputs.metal != 'ON'
       shell: bash
