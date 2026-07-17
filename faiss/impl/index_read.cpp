@@ -2143,6 +2143,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     r2);
         }
         read_index_header(*idxl, f);
+        FAISS_THROW_IF_NOT_FMT(
+                idxl->ntotal == 0,
+                "IndexLattice deserialization carries no code storage; "
+                "ntotal=%zd != 0 is corrupt",
+                (size_t)idxl->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxl->d == d,
+                "IndexLattice header d=%d inconsistent with encoded d=%d",
+                idxl->d,
+                d);
         READVECTOR(idxl->trained);
         idx = std::move(idxl);
     } else if (h == fourcc("IvSQ")) { // legacy
@@ -2379,6 +2389,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxp->code_size_2);
         READ1(idxp->code_size);
         validate_code_size_match(
+                idxp->code_size_1,
+                idxp->q1.coarse_code_size(),
+                "Index2Layer code_size_1");
+        validate_code_size_match(
                 idxp->code_size_2,
                 idxp->pq.code_size,
                 "Index2Layer code_size_2");
@@ -2387,6 +2401,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxp->code_size_1 + idxp->code_size_2,
                 "Index2Layer");
         read_vector(idxp->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxp->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxp->ntotal,
+                        idxp->code_size,
+                        "Index2Layer codes"));
         idx = std::move(idxp);
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
