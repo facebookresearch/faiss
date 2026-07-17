@@ -68,11 +68,11 @@ void faiss_fvec_renorm_L2(size_t d, size_t nx, float* x) {
     faiss::fvec_renorm_L2(d, nx, x);
 }
 
-void faiss_set_distance_compute_blas_threshold(int value) {
+void faiss_set_distance_compute_blas_threshold(int64_t value) {
     faiss::distance_compute_blas_threshold = value;
 }
 
-int faiss_get_distance_compute_blas_threshold() {
+int64_t faiss_get_distance_compute_blas_threshold() {
     return faiss::distance_compute_blas_threshold;
 }
 
