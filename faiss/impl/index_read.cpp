@@ -866,6 +866,11 @@ static void validate_fastscan_fields(
             M,
             ksub);
     FAISS_THROW_IF_NOT_FMT(
+            ksub == 16,
+            "%s: invalid ksub=%zd (fast-scan requires nbits=4 / ksub=16)",
+            index_type,
+            ksub);
+    FAISS_THROW_IF_NOT_FMT(
             bbs > 0 && bbs % 32 == 0,
             "%s: invalid bbs=%d (must be > 0 and a multiple of 32)",
             index_type,
