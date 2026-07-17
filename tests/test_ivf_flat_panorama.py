@@ -71,7 +71,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         nprobe=None,
         make_direct_map=False,
         metric=faiss.METRIC_L2,
-        batch_size=128,
+        batch_size=faiss.Panorama.kDefaultBatchSize,
     ):
         """Create and initialize IndexIVFFlatPanorama."""
         quantizer = (
@@ -846,7 +846,14 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                     with self.subTest(nlevels=nlevels):
                         faiss.cvar.indexPanorama_stats.reset()
                         index = self.create_panorama(
-                            d, nlist, nlevels, xt, xb, nprobe=1, metric=metric
+                            d,
+                            nlist,
+                            nlevels,
+                            xt,
+                            xb,
+                            nprobe=1,
+                            metric=metric,
+                            batch_size=128,
                         )
                         D, I = index.search(xq, k)
                         self.assert_search_results_equal(D_base, I_base, D, I)
