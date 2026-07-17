@@ -224,8 +224,8 @@ QueryFactorsData compute_query_factors(
     uint8_t* rqq = rotated_qq.data();
     for (size_t i = 0; i < d; i++) {
         const float v_q = rq[i];
-        const uint8_t v_qq = std::clamp<float>(
-                std::round((v_q - v_min) * inv_delta), 0, max_code);
+        const uint8_t v_qq =
+                round_clamped_to_uint8((v_q - v_min) * inv_delta, max_code);
         rqq[i] = v_qq;
         sum_qq += v_qq;
 

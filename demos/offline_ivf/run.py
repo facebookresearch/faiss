@@ -16,7 +16,8 @@ import submitit
 
 def join_lists_in_dict(poss: List[str]) -> List[str]:
     """
-    Joins two lists of prod and non-prod values, checking if the prod value is already included.
+    Joins two lists of prod and non-prod values, checking if the prod value is
+    already included.
     If there is no non-prod list, it returns the prod list.
     """
     if "non-prod" in poss.keys():
@@ -40,9 +41,11 @@ def main(
 
 def process_options_and_run_jobs(args: argparse.Namespace) -> None:
     """
-    If "--cluster_run", it launches an array of jobs to the cluster using the submitit library for all the index strings. In
-    the case of evaluate, it launches a job for each index string and nprobe pair. Otherwise, it launches a single job
-    that is ran locally with the prod values for index string and nprobe.
+    If "--cluster_run", it launches an array of jobs to the cluster using the
+    submitit library for all the index strings. In the case of evaluate, it
+    launches a job for each index string and nprobe pair. Otherwise, it
+    launches a single job that is ran locally with the prod values for index
+    string and nprobe.
     """
 
     cfg = load_config(args.config)
