@@ -71,7 +71,8 @@ def knn_gpu(
     queriesMemoryLimit=0,
 ):
     """
-    Compute the k nearest neighbors of a vector on one GPU without constructing an index
+    Compute the k nearest neighbors of a vector on one GPU without constructing
+    an index
 
     Parameters
     ----------
@@ -95,7 +96,8 @@ def knn_gpu(
         Which CUDA device in the system to run the search on. -1 indicates that
         the current thread-local device state (via cudaGetDevice) should be used
         (can also be set via torch.cuda.set_device in PyTorch)
-        Otherwise, an integer 0 <= device < numDevices indicates the GPU on which
+        Otherwise, an integer 0 <= device < numDevices indicates the GPU on
+        which
         the computation should be run
     vectorsMemoryLimit: int, optional
     queriesMemoryLimit: int, optional
@@ -208,7 +210,8 @@ def knn_gpu(
 
 def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2, device=-1):
     """
-    Compute all pairwise distances between xq and xb on one GPU without constructing an index
+    Compute all pairwise distances between xq and xb on one GPU without
+    constructing an index
 
     Parameters
     ----------
@@ -228,7 +231,8 @@ def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2, device=-1):
         Which CUDA device in the system to run the search on. -1 indicates that
         the current thread-local device state (via cudaGetDevice) should be used
         (can also be set via torch.cuda.set_device in PyTorch)
-        Otherwise, an integer 0 <= device < numDevices indicates the GPU on which
+        Otherwise, an integer 0 <= device < numDevices indicates the GPU on
+        which
         the computation should be run
 
     Returns

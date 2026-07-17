@@ -155,7 +155,10 @@ def reverse_index_factory(index):
         return f"HNSW{get_hnsw_M(index)}"
 
     elif isinstance(index, faiss.IndexRefine):
-        return f"{reverse_index_factory(index.base_index)},Refine({reverse_index_factory(index.refine_index)})"
+        return (
+            f"{reverse_index_factory(index.base_index)},"
+            f"Refine({reverse_index_factory(index.refine_index)})"
+        )
 
     elif isinstance(index, faiss.IndexPQFastScan):
         return f"PQ{index.pq.M}x{index.pq.nbits}fs"
