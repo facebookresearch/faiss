@@ -2,34 +2,35 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="SuperKMeans_8h" kind="file" language="C++">
     <compoundname>SuperKMeans.h</compoundname>
+    <includes local="no">cstdint</includes>
     <includes local="no">vector</includes>
     <includes refid="Clustering_8h" local="no">faiss/Clustering.h</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <incdepgraph>
-      <node id="3">
+      <node id="4">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
@@ -47,13 +48,15 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="17">
         <label>faiss/impl/ClusteringInitialization.h</label>
         <link refid="ClusteringInitialization_8h_source"/>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -83,13 +86,13 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="14">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
@@ -100,7 +103,7 @@
       <node id="18">
         <label>cstddef</label>
       </node>
-      <node id="6">
+      <node id="2">
         <label>cstdint</label>
       </node>
       <node id="7">
@@ -121,12 +124,13 @@
       <node id="13">
         <label>utility</label>
       </node>
-      <node id="2">
+      <node id="3">
         <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1SuperKMeansParameters" prot="public">faiss::SuperKMeansParameters</innerclass>
     <innerclass refid="structfaiss_1_1SuperKMeans" prot="public">faiss::SuperKMeans</innerclass>
+    <innerclass refid="structfaiss_1_1SuperKMeansAssignScratch" prot="public">faiss::SuperKMeansAssignScratch</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -158,78 +162,108 @@
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Clustering.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="structfaiss_1_1SuperKMeansParameters" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Initial<sp/>d_prime<sp/>as<sp/>a<sp/>fraction<sp/>of<sp/>d<sp/>(GEMM/PRUNING<sp/>split).</highlight></codeline>
-<codeline lineno="35" refid="structfaiss_1_1SuperKMeansParameters_1a708c4c222c46005b1fe7722ae036f9cf" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a708c4c222c46005b1fe7722ae036f9cf" kindref="member">d_prime_fraction</ref><sp/>=<sp/>0.125f;</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Matches<sp/>block_l2<sp/>SIMD<sp/>width.</highlight></codeline>
-<codeline lineno="38" refid="structfaiss_1_1SuperKMeansParameters_1a8a5eb7416db54a603aa5623a6280cbca" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a8a5eb7416db54a603aa5623a6280cbca" kindref="member">pdx_block_size</ref><sp/>=<sp/>64;</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ADSampling<sp/>significance:<sp/>epsilon<sp/>=<sp/>ad_epsilon_factor<sp/>/<sp/>d.</highlight></codeline>
-<codeline lineno="41" refid="structfaiss_1_1SuperKMeansParameters_1a5a7caa98e5786937e9b0c897f440dd5b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a5a7caa98e5786937e9b0c897f440dd5b" kindref="member">ad_epsilon_factor</ref><sp/>=<sp/>1.0f;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Adaptive<sp/>d_prime<sp/>stay-in-band<sp/>controller.<sp/>Per<sp/>iteration:</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>pruning<sp/>&gt;<sp/>high<sp/>→<sp/>shrink<sp/>d_prime<sp/><sp/>(over-pruning,<sp/>cheaper<sp/>threshold)</highlight></codeline>
-<codeline lineno="45"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>pruning<sp/>&lt;<sp/>low<sp/><sp/>→<sp/>grow<sp/><sp/><sp/>d_prime<sp/><sp/>(under-pruning,<sp/>more<sp/>GEMM<sp/>work)</highlight></codeline>
-<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>else:<sp/>hold.</highlight></codeline>
-<codeline lineno="47" refid="structfaiss_1_1SuperKMeansParameters_1ab040e20edc3895b5cb2d9fd8bce33aa0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1ab040e20edc3895b5cb2d9fd8bce33aa0" kindref="member">pruning_target_low</ref><sp/>=<sp/>0.95f;</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>pruning_target_high<sp/>=<sp/>0.97f;</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Relative<sp/>step<sp/>size<sp/>for<sp/>d_prime<sp/>adjustments.</highlight></codeline>
-<codeline lineno="51" refid="structfaiss_1_1SuperKMeansParameters_1a5634e760e792b6dc352b023ffa8e6093" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a5634e760e792b6dc352b023ffa8e6093" kindref="member">d_prime_adjust</ref><sp/>=<sp/>0.20f;</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Floor<sp/>on<sp/>d_prime;<sp/>below<sp/>this<sp/>the<sp/>chi-squared<sp/>bound<sp/>is<sp/>unvalidated.</highlight></codeline>
-<codeline lineno="54" refid="structfaiss_1_1SuperKMeansParameters_1ab6e71f639d4191ff739f506bad342ba6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1ab6e71f639d4191ff739f506bad342ba6" kindref="member">d_prime_min</ref><sp/>=<sp/>16;</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x_batch<sp/>=<sp/>4096;</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>y_batch<sp/>=<sp/>1024;</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>OpenMP<sp/>dynamic-schedule<sp/>chunk<sp/>size<sp/>for<sp/>the<sp/>pruning<sp/>loop.</highlight></codeline>
-<codeline lineno="60" refid="structfaiss_1_1SuperKMeansParameters_1a96e65f6e670ba9f2815ee0ce464e03e1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a96e65f6e670ba9f2815ee0ce464e03e1" kindref="member">omp_chunk</ref><sp/>=<sp/>8;</highlight></codeline>
-<codeline lineno="61"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="63"><highlight class="comment">/**<sp/>Drop-in<sp/>faster<sp/>k-means:<sp/>same<sp/>interface<sp/>as<sp/>faiss::Clustering.<sp/>Per<sp/>iteration:</highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/>*<sp/><sp/><sp/>iter<sp/>0:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>full<sp/>GEMM<sp/>over<sp/>all<sp/>d<sp/>dims<sp/>(vanilla<sp/>Lloyd&apos;s).</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/>*<sp/><sp/><sp/>iter<sp/>1..niter-1:<sp/><sp/>GEMM<sp/>over<sp/>front<sp/>d_prime<sp/>dims,<sp/>then<sp/>ADSampling</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>progressive<sp/>pruning<sp/>over<sp/>PDX-laid<sp/>trailing<sp/>dims.</highlight></codeline>
-<codeline lineno="67"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/>*<sp/>Trains<sp/>in<sp/>a<sp/>randomly-rotated<sp/>space;<sp/>centroids<sp/>are<sp/>un-rotated<sp/>before<sp/>return.</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="70" refid="structfaiss_1_1SuperKMeans" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref><sp/>{</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref><sp/>cp;</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k;</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Output:<sp/>k<sp/>*<sp/>d<sp/>floats,<sp/>row-major,<sp/>un-rotated.</highlight></codeline>
-<codeline lineno="76" refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" kindref="member">centroids</ref>;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Per-iter<sp/>stats.<sp/>`obj`,<sp/>`time`,<sp/>and<sp/>`nsplit`<sp/>are<sp/>populated<sp/>faithfully.</highlight></codeline>
-<codeline lineno="79"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>`time_search`<sp/>mirrors<sp/>`time`<sp/>(phases<sp/>not<sp/>timed<sp/>separately)<sp/>and</highlight></codeline>
-<codeline lineno="80"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>`imbalance_factor`<sp/>is<sp/>set<sp/>to<sp/>NaN<sp/>(not<sp/>computed).</highlight></codeline>
-<codeline lineno="81" refid="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;ClusteringIterationStats&gt;<sp/><ref refid="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" kindref="member">iteration_stats</ref>;</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="83"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Per-iter<sp/>fraction<sp/>of<sp/>(vector,<sp/>centroid)<sp/>pairs<sp/>pruned<sp/>at<sp/>the<sp/>d_prime</highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>GEMM-boundary<sp/>chi-squared<sp/>check.<sp/>Per-PDX-block<sp/>early-exits<sp/>are<sp/>NOT</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>counted.<sp/>iter<sp/>0<sp/>uses<sp/>full<sp/>GEMM,<sp/>so<sp/>gemm_pruning_rates[0]<sp/>==<sp/>0.0f.</highlight></codeline>
-<codeline lineno="86" refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" kindref="member">gemm_pruning_rates</ref>;</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"></highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref>&amp;<sp/>cp<sp/>=<sp/>{});</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Train<sp/>on<sp/>`n`<sp/>row-major<sp/>vectors<sp/>of<sp/>dimension<sp/>`d`.<sp/>Honors<sp/>the<sp/>applicable</highlight></codeline>
-<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ClusteringParameters<sp/>fields<sp/>(niter,<sp/>seed,<sp/>verbose,</highlight></codeline>
-<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>max_points_per_centroid,<sp/>use_faster_subsampling,</highlight></codeline>
-<codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>check_input_data_for_NaNs).</highlight></codeline>
-<codeline lineno="94" refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" kindref="member">train</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
-<codeline lineno="95"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"></highlight></codeline>
-<codeline lineno="97"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Clustering.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="structfaiss_1_1SuperKMeansParameters" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Initial<sp/>d_prime<sp/>as<sp/>a<sp/>fraction<sp/>of<sp/>d<sp/>(GEMM/PRUNING<sp/>split).</highlight></codeline>
+<codeline lineno="36" refid="structfaiss_1_1SuperKMeansParameters_1a708c4c222c46005b1fe7722ae036f9cf" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a708c4c222c46005b1fe7722ae036f9cf" kindref="member">d_prime_fraction</ref><sp/>=<sp/>0.125f;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Matches<sp/>block_l2<sp/>SIMD<sp/>width.</highlight></codeline>
+<codeline lineno="39" refid="structfaiss_1_1SuperKMeansParameters_1a8a5eb7416db54a603aa5623a6280cbca" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a8a5eb7416db54a603aa5623a6280cbca" kindref="member">pdx_block_size</ref><sp/>=<sp/>64;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ADSampling<sp/>significance:<sp/>epsilon<sp/>=<sp/>ad_epsilon_factor<sp/>/<sp/>d.</highlight></codeline>
+<codeline lineno="42" refid="structfaiss_1_1SuperKMeansParameters_1a5a7caa98e5786937e9b0c897f440dd5b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a5a7caa98e5786937e9b0c897f440dd5b" kindref="member">ad_epsilon_factor</ref><sp/>=<sp/>1.0f;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Adaptive<sp/>d_prime<sp/>stay-in-band<sp/>controller.<sp/>Per<sp/>iteration:</highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>pruning<sp/>&gt;<sp/>high<sp/>→<sp/>shrink<sp/>d_prime<sp/><sp/>(over-pruning,<sp/>cheaper<sp/>threshold)</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>pruning<sp/>&lt;<sp/>low<sp/><sp/>→<sp/>grow<sp/><sp/><sp/>d_prime<sp/><sp/>(under-pruning,<sp/>more<sp/>GEMM<sp/>work)</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>else:<sp/>hold.</highlight></codeline>
+<codeline lineno="48" refid="structfaiss_1_1SuperKMeansParameters_1ab040e20edc3895b5cb2d9fd8bce33aa0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1ab040e20edc3895b5cb2d9fd8bce33aa0" kindref="member">pruning_target_low</ref><sp/>=<sp/>0.95f;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>pruning_target_high<sp/>=<sp/>0.97f;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Relative<sp/>step<sp/>size<sp/>for<sp/>d_prime<sp/>adjustments.</highlight></codeline>
+<codeline lineno="52" refid="structfaiss_1_1SuperKMeansParameters_1a5634e760e792b6dc352b023ffa8e6093" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a5634e760e792b6dc352b023ffa8e6093" kindref="member">d_prime_adjust</ref><sp/>=<sp/>0.20f;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Floor<sp/>on<sp/>d_prime;<sp/>below<sp/>this<sp/>the<sp/>chi-squared<sp/>bound<sp/>is<sp/>unvalidated.</highlight></codeline>
+<codeline lineno="55" refid="structfaiss_1_1SuperKMeansParameters_1ab6e71f639d4191ff739f506bad342ba6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1ab6e71f639d4191ff739f506bad342ba6" kindref="member">d_prime_min</ref><sp/>=<sp/>16;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x_batch<sp/>=<sp/>4096;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>y_batch<sp/>=<sp/>1024;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>OpenMP<sp/>dynamic-schedule<sp/>chunk<sp/>size<sp/>for<sp/>the<sp/>pruning<sp/>loop.</highlight></codeline>
+<codeline lineno="61" refid="structfaiss_1_1SuperKMeansParameters_1a96e65f6e670ba9f2815ee0ce464e03e1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters_1a96e65f6e670ba9f2815ee0ce464e03e1" kindref="member">omp_chunk</ref><sp/>=<sp/>8;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="64"><highlight class="comment">/**<sp/>Drop-in<sp/>faster<sp/>k-means:<sp/>same<sp/>interface<sp/>as<sp/>faiss::Clustering.<sp/>Per<sp/>iteration:</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*<sp/><sp/><sp/>iter<sp/>0:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>full<sp/>GEMM<sp/>over<sp/>all<sp/>d<sp/>dims<sp/>(vanilla<sp/>Lloyd&apos;s).</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/>*<sp/><sp/><sp/>iter<sp/>1..niter-1:<sp/><sp/>GEMM<sp/>over<sp/>front<sp/>d_prime<sp/>dims,<sp/>then<sp/>ADSampling</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>progressive<sp/>pruning<sp/>over<sp/>PDX-laid<sp/>trailing<sp/>dims.</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/>*<sp/>Trains<sp/>in<sp/>a<sp/>randomly-rotated<sp/>space;<sp/>centroids<sp/>are<sp/>un-rotated<sp/>before<sp/>return.</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="structfaiss_1_1SuperKMeans" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref><sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref><sp/>cp;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="76"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Output:<sp/>k<sp/>*<sp/>d<sp/>floats,<sp/>row-major,<sp/>un-rotated.</highlight></codeline>
+<codeline lineno="77" refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" kindref="member">centroids</ref>;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Per-iter<sp/>stats.<sp/>`obj`,<sp/>`time`,<sp/>and<sp/>`nsplit`<sp/>are<sp/>populated<sp/>faithfully.</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>`time_search`<sp/>mirrors<sp/>`time`<sp/>(phases<sp/>not<sp/>timed<sp/>separately)<sp/>and</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>`imbalance_factor`<sp/>is<sp/>set<sp/>to<sp/>NaN<sp/>(not<sp/>computed).</highlight></codeline>
+<codeline lineno="82" refid="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;ClusteringIterationStats&gt;<sp/><ref refid="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" kindref="member">iteration_stats</ref>;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Per-iter<sp/>fraction<sp/>of<sp/>(vector,<sp/>centroid)<sp/>pairs<sp/>pruned<sp/>at<sp/>the<sp/>d_prime</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>GEMM-boundary<sp/>chi-squared<sp/>check.<sp/>Per-PDX-block<sp/>early-exits<sp/>are<sp/>NOT</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>counted.<sp/>iter<sp/>0<sp/>uses<sp/>full<sp/>GEMM,<sp/>so<sp/>gemm_pruning_rates[0]<sp/>==<sp/>0.0f.</highlight></codeline>
+<codeline lineno="87" refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" kindref="member">gemm_pruning_rates</ref>;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref>&amp;<sp/>cp<sp/>=<sp/>{});</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Train<sp/>on<sp/>`n`<sp/>row-major<sp/>vectors<sp/>of<sp/>dimension<sp/>`d`.<sp/>Honors<sp/>the<sp/>applicable</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ClusteringParameters<sp/>fields<sp/>(niter,<sp/>seed,<sp/>verbose,</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>max_points_per_centroid,<sp/>use_faster_subsampling,</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>check_input_data_for_NaNs).</highlight></codeline>
+<codeline lineno="95" refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" kindref="member">train</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="98"><highlight class="comment">///<sp/>Reusable<sp/>scratch<sp/>for<sp/>super_kmeans_assign_iteration;<sp/>pass<sp/>one<sp/>instance<sp/>across</highlight></codeline>
+<codeline lineno="99"><highlight class="comment">///<sp/>a<sp/>loop<sp/>of<sp/>calls<sp/>to<sp/>avoid<sp/>reallocating<sp/>(buffers<sp/>grow<sp/>only<sp/>as<sp/>needed).</highlight></codeline>
+<codeline lineno="100" refid="structfaiss_1_1SuperKMeansAssignScratch" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SuperKMeansAssignScratch" kindref="compound">SuperKMeansAssignScratch</ref><sp/>{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>Y_trail;<sp/></highlight><highlight class="comment">//<sp/>(k,<sp/>d_trail)<sp/>row-major,<sp/>input<sp/>to<sp/>pdxify</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>Y_pdx;<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>PDX-laid-out<sp/>trailing<sp/>block</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>x_norms_partial;<sp/></highlight><highlight class="comment">//<sp/>||X[i,<sp/>0:d_prime]||^2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>y_norms_partial;<sp/></highlight><highlight class="comment">//<sp/>||Y[j,<sp/>0:d_prime]||^2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>partial_ip;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>partial-GEMM<sp/>tile<sp/>buffer</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="108"><highlight class="comment">///<sp/>One<sp/>SuperKMeans<sp/>iter-1+<sp/>assignment<sp/>pass:<sp/>partial<sp/>GEMM<sp/>over<sp/>the<sp/>front</highlight></codeline>
+<codeline lineno="109"><highlight class="comment">///<sp/>`d_prime`<sp/>dims<sp/>+<sp/>ADSampling<sp/>progressive<sp/>pruning<sp/>over<sp/>the<sp/>PDX-laid-out</highlight></codeline>
+<codeline lineno="110"><highlight class="comment">///<sp/>trailing<sp/>block.<sp/>Updates<sp/>`tau`<sp/>and<sp/>`assignments`<sp/>in<sp/>place.</highlight></codeline>
+<codeline lineno="111" refid="namespacefaiss_1ad0d2f80822e879ae5e97c62800035495" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad0d2f80822e879ae5e97c62800035495" kindref="member">super_kmeans_assign_iteration</ref>(</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>X_tilde,<sp/></highlight><highlight class="comment">//<sp/>(n,<sp/>d)<sp/>points,<sp/>row-major,<sp/>rotated<sp/>space</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>Y_tilde,<sp/></highlight><highlight class="comment">//<sp/>(k,<sp/>d)<sp/>centroids,<sp/>row-major,<sp/>rotated<sp/>space</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>tau,<sp/></highlight><highlight class="comment">//<sp/>in/out,<sp/>len<sp/>n;<sp/>entry<sp/>=<sp/>exact<sp/>full-d<sp/>L2<sp/>to<sp/>assignment</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>assignments,<sp/><sp/></highlight><highlight class="comment">//<sp/>in/out,<sp/>len<sp/>n</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_prime,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>GEMM/pruning<sp/>split,<sp/>1<sp/>&lt;=<sp/>d_prime<sp/>&lt;<sp/>d</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>ad_coeff,<sp/></highlight><highlight class="comment">//<sp/>ADSampling<sp/>threshold<sp/>table,<sp/>len<sp/>d+1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref>&amp;<sp/>cp,</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>total_pairs<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>optional<sp/>out-counter</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>pruned_at_gemm<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">//<sp/>optional<sp/>out-counter</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SuperKMeansAssignScratch" kindref="compound">SuperKMeansAssignScratch</ref>*<sp/>scratch<sp/>=</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);<sp/></highlight><highlight class="comment">//<sp/>optional,<sp/>reuse<sp/>across<sp/>calls</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/SuperKMeans.h"/>
   </compounddef>

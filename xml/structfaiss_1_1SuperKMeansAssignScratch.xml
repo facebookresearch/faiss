@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SuperKMeansAssignScratch" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SuperKMeansAssignScratch</compoundname>
+    <includes refid="SuperKMeans_8h" local="no">SuperKMeans.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a35058c7e7bafe83383278b08e05524c8" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeansAssignScratch::Y_trail</definition>
+        <argsstring></argsstring>
+        <name>Y_trail</name>
+        <qualifiedname>faiss::SuperKMeansAssignScratch::Y_trail</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="101" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a4b17a50bc348b70289fc443727a4151b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeansAssignScratch::Y_pdx</definition>
+        <argsstring></argsstring>
+        <name>Y_pdx</name>
+        <qualifiedname>faiss::SuperKMeansAssignScratch::Y_pdx</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="102" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a2d415527bddefdb67b6836e5de1b88c4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeansAssignScratch::x_norms_partial</definition>
+        <argsstring></argsstring>
+        <name>x_norms_partial</name>
+        <qualifiedname>faiss::SuperKMeansAssignScratch::x_norms_partial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="103" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a1747a4b0846877ccec7ba264f9f7564a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeansAssignScratch::y_norms_partial</definition>
+        <argsstring></argsstring>
+        <name>y_norms_partial</name>
+        <qualifiedname>faiss::SuperKMeansAssignScratch::y_norms_partial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="104" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a274d349b1df747541565779d0a29eddf" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeansAssignScratch::partial_ip</definition>
+        <argsstring></argsstring>
+        <name>partial_ip</name>
+        <qualifiedname>faiss::SuperKMeansAssignScratch::partial_ip</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="105" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Reusable scratch for super_kmeans_assign_iteration; pass one instance across a loop of calls to avoid reallocating (buffers grow only as needed). </para>
+    </detaileddescription>
+    <location file="faiss/SuperKMeans.h" line="100" column="1" bodyfile="faiss/SuperKMeans.h" bodystart="100" bodyend="106"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a274d349b1df747541565779d0a29eddf" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>partial_ip</name></member>
+      <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a2d415527bddefdb67b6836e5de1b88c4" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>x_norms_partial</name></member>
+      <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a1747a4b0846877ccec7ba264f9f7564a" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>y_norms_partial</name></member>
+      <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a4b17a50bc348b70289fc443727a4151b" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>Y_pdx</name></member>
+      <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a35058c7e7bafe83383278b08e05524c8" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>Y_trail</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

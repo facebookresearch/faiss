@@ -362,6 +362,7 @@
     <innerclass refid="structfaiss_1_1SplitMix64RandomGenerator" prot="public">faiss::SplitMix64RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1StopWordsInvertedLists" prot="public">faiss::StopWordsInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1SuperKMeans" prot="public">faiss::SuperKMeans</innerclass>
+    <innerclass refid="structfaiss_1_1SuperKMeansAssignScratch" prot="public">faiss::SuperKMeansAssignScratch</innerclass>
     <innerclass refid="structfaiss_1_1SuperKMeansParameters" prot="public">faiss::SuperKMeansParameters</innerclass>
     <innerclass refid="classfaiss_1_1ThreadedIndex" prot="public">faiss::ThreadedIndex</innerclass>
     <innerclass refid="structfaiss_1_1TimeoutCallback" prot="public">faiss::TimeoutCallback</innerclass>
@@ -9498,6 +9499,76 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/MetricType.h" line="73" column="18" bodyfile="faiss/MetricType.h" bodystart="73" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ad0d2f80822e879ae5e97c62800035495" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::super_kmeans_assign_iteration</definition>
+        <argsstring>(const float *X_tilde, int n, int d, const float *Y_tilde, int k, float *tau, int32_t *assignments, int d_prime, const float *ad_coeff, const SuperKMeansParameters &amp;cp, int64_t *total_pairs=nullptr, int64_t *pruned_at_gemm=nullptr, SuperKMeansAssignScratch *scratch=nullptr)</argsstring>
+        <name>super_kmeans_assign_iteration</name>
+        <qualifiedname>faiss::super_kmeans_assign_iteration</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>X_tilde</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>Y_tilde</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>tau</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>assignments</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d_prime</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>ad_coeff</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref> &amp;</type>
+          <declname>cp</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>total_pairs</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>pruned_at_gemm</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1SuperKMeansAssignScratch" kindref="compound">SuperKMeansAssignScratch</ref> *</type>
+          <declname>scratch</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>One <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref> iter-1+ assignment pass: partial GEMM over the front <computeroutput>d_prime</computeroutput> dims + ADSampling progressive pruning over the PDX-laid-out trailing block. Updates <computeroutput>tau</computeroutput> and <computeroutput>assignments</computeroutput> in place. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="111" column="6" declfile="faiss/SuperKMeans.h" declline="111" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::MetricType</type>

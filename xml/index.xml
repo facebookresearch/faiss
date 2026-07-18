@@ -12994,6 +12994,13 @@
     <member refid="structfaiss_1_1SuperKMeans_1a6ccc8a3ab08caaef496c072db242ccb4" kind="function"><name>SuperKMeans</name></member>
     <member refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" kind="function"><name>train</name></member>
   </compound>
+  <compound refid="structfaiss_1_1SuperKMeansAssignScratch" kind="struct"><name>faiss::SuperKMeansAssignScratch</name>
+    <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a35058c7e7bafe83383278b08e05524c8" kind="variable"><name>Y_trail</name></member>
+    <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a4b17a50bc348b70289fc443727a4151b" kind="variable"><name>Y_pdx</name></member>
+    <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a2d415527bddefdb67b6836e5de1b88c4" kind="variable"><name>x_norms_partial</name></member>
+    <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a1747a4b0846877ccec7ba264f9f7564a" kind="variable"><name>y_norms_partial</name></member>
+    <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a274d349b1df747541565779d0a29eddf" kind="variable"><name>partial_ip</name></member>
+  </compound>
   <compound refid="structfaiss_1_1SuperKMeansParameters" kind="struct"><name>faiss::SuperKMeansParameters</name>
     <member refid="structfaiss_1_1SuperKMeansParameters_1a708c4c222c46005b1fe7722ae036f9cf" kind="variable"><name>d_prime_fraction</name></member>
     <member refid="structfaiss_1_1SuperKMeansParameters_1a8a5eb7416db54a603aa5623a6280cbca" kind="variable"><name>pdx_block_size</name></member>
@@ -13716,6 +13723,7 @@
     <member refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kind="function"><name>is_similarity_metric</name></member>
     <member refid="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" kind="function"><name>metric_type_from_int</name></member>
     <member refid="namespacefaiss_1a0695c74d2b29888c1c5858e5c6bc1d88" kind="function"><name>metric_type_count</name></member>
+    <member refid="namespacefaiss_1ad0d2f80822e879ae5e97c62800035495" kind="function"><name>super_kmeans_assign_iteration</name></member>
     <member refid="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" kind="function"><name>to_svs_metric</name></member>
     <member refid="namespacefaiss_1a4b0faf1e9d9da1c14b118bdef8116f48" kind="function"><name>make_faiss_id_filter</name></member>
     <member refid="namespacefaiss_1a59dea145469ceef3a7710a7163d3e4ab" kind="function"><name>convert_input_buffer</name></member>
