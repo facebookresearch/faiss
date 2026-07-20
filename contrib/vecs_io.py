@@ -84,8 +84,9 @@ def bvecs_iter(filepath, batch_size=100_000):
 def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
     """
     Memory-mapped iterator over chunked .bvecs files.
-    Iterates through all chunk files in order (chunk_0000.bvecs, chunk_0001.bvecs, etc.)
-    and yields batches of vectors, handling cases where batches span multiple files.
+    Iterates through all chunk files in order (chunk_0000.bvecs,
+    chunk_0001.bvecs, etc.) and yields batches of vectors, handling cases
+    where batches span multiple files.
 
     Args:
         chunk_folder: path to folder containing chunk_XXXX.bvecs files
@@ -127,7 +128,8 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
     if sorted(chunk_numbers) != expected_chunks:
         missing = set(expected_chunks) - set(chunk_numbers)
         raise ValueError(
-            f"Gap detected in chunk sequence! Missing chunks: {sorted(missing)}\n"
+            f"Gap detected in chunk sequence! Missing chunks: "
+            f"{sorted(missing)}\n"
             f"Found chunks: {sorted(chunk_numbers)}\n"
             f"Expected continuous sequence from 0 to {len(chunk_numbers)-1}"
         )

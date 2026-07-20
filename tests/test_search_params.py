@@ -33,7 +33,8 @@ class TestSelector(unittest.TestCase):
     ):
         """Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
-        Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
+        Supports id_selector_type="batch", "bitmap", "range",
+        "range_sorted", "and", "or", "xor"
         """
         d = 32  # make sure dimension is multiple of 8 for binary
         ds = datasets.SyntheticDataset(d, 1000, 100, 20)

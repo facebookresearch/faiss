@@ -669,14 +669,14 @@ class TestMapInt64ToInt64(unittest.TestCase):
 
     def xx_test_large(self):
         # don't run by default because it's slow
-        self.do_test(2 ** 21, 10 ** 6)
+        self.do_test(2**21, 10**6)
 
 
 class TestRanklistIntersectionSize(unittest.TestCase):
 
     def _intersect(self, v1, v2):
-        a = np.array(v1, dtype='int64')
-        b = np.array(v2, dtype='int64')
+        a = np.array(v1, dtype="int64")
+        b = np.array(v2, dtype="int64")
         return faiss.ranklist_intersection_size(
             len(a), faiss.swig_ptr(a), len(b), faiss.swig_ptr(b)
         )
@@ -706,5 +706,5 @@ class TestRanklistIntersectionSize(unittest.TestCase):
 
     def test_ids_above_2_pow_60(self):
         # the old bit-flag trick corrupted IDs with bit 60 set
-        v1, v2 = [2 ** 60, 2 ** 61, 2 ** 62], [2 ** 61, 2 ** 62, 2 ** 63 - 1]
+        v1, v2 = [2**60, 2**61, 2**62], [2**61, 2**62, 2**63 - 1]
         self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))

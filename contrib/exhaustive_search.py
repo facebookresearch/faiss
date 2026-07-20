@@ -124,7 +124,8 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
             combiner.D_remain = sp(D_remain)
             combiner.lim_remain = sp(lim_remain.view("int64"))
             combiner.I_remain = sp(I_remain)
-            # combiner.set_range_result(sp(mask), sp(lim_remain.view("int64")), sp(D_remain), sp(I_remain))
+            # combiner.set_range_result(sp(mask),
+            #     sp(lim_remain.view("int64")), sp(D_remain), sp(I_remain))
         L_res = np.empty(nq + 1, dtype="int64")
         combiner.compute_sizes(sp(L_res))
         nres = L_res[-1]

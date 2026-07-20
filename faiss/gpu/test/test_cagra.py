@@ -246,11 +246,11 @@ class TestIDMapCagra(unittest.TestCase):
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if cuVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+)
 @unittest.skipIf(
-    faiss.get_num_gpus() < 2,
-    "need at least 2 GPUs for multi-GPU test")
+    faiss.get_num_gpus() < 2, "need at least 2 GPUs for multi-GPU test"
+)
 class TestMultiGpuCagra(unittest.TestCase):
 
     def test_multi_gpu_build_and_search(self):
@@ -285,11 +285,12 @@ class TestMultiGpuCagra(unittest.TestCase):
         cpu_index.hnsw.efSearch = 128
         Dnew, Inew = cpu_index.search(xq, k)
 
-        recall = np.mean([
-            len(set(Inew[i]) & set(Iref[i])) / k for i in range(ds.nq)
-        ])
-        self.assertGreater(recall, 0.80,
-                           f"Multi-GPU recall@{k} too low: {recall:.4f}")
+        recall = np.mean(
+            [len(set(Inew[i]) & set(Iref[i])) / k for i in range(ds.nq)]
+        )
+        self.assertGreater(
+            recall, 0.80, f"Multi-GPU recall@{k} too low: {recall:.4f}"
+        )
 
         # Serialization roundtrip
         data = faiss.serialize_index(cpu_index)
@@ -317,11 +318,10 @@ class TestMultiGpuCagra(unittest.TestCase):
         config = faiss.GpuIndexCagraConfig()
         config.graph_degree = 32
         config.intermediate_graph_degree = 48
-        index = faiss.GpuIndexCagra(
-            res, ds.d, faiss.METRIC_L2, config)
+        index = faiss.GpuIndexCagra(res, ds.d, faiss.METRIC_L2, config)
         index.trainAllNeighbors(
-            ds.nb, faiss.swig_ptr(xb), devices,
-            0, 0, True, 0)
+            ds.nb, faiss.swig_ptr(xb), devices, 0, 0, True, 0
+        )
 
         cpu_index = faiss.IndexHNSWCagra()
         cpu_index.base_level_only = True
@@ -332,11 +332,8 @@ class TestMultiGpuCagra(unittest.TestCase):
         Dnew, Inew = cpu_index.search(xq, k)
 
         recall = np.mean(
-            [
-                len(set(Inew[i]) & set(Iref[i])) / k
-                for i in range(ds.nq)
-            ]
+            [len(set(Inew[i]) & set(Iref[i])) / k for i in range(ds.nq)]
         )
         self.assertGreater(
-            recall, 0.70,
-            f"all_neighbors recall@{k} too low: {recall:.4f}")
+            recall, 0.70, f"all_neighbors recall@{k} too low: {recall:.4f}"
+        )

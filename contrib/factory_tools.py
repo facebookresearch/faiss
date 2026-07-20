@@ -45,8 +45,10 @@ def get_code_size(d, indexkey):
     if mo:
         return int(mo.group(1))
 
-    if indexkey == "HNSW32" or indexkey == "HNSW32,Flat":
-        return d * 4 + 64 * 4  # roughly
+    mo = re.match("HNSW(\\d+)(,Flat)?$", indexkey)
+    if mo:
+        M = int(mo.group(1))
+        return d * 4 + M * 2 * 4  # roughly
 
     if indexkey == "SQ8":
         return d
@@ -129,6 +131,10 @@ def reverse_index_factory(index):
             return prefix + f",PQ{index.pq.M}x{index.pq.nbits}"
         if isinstance(index, faiss.IndexIVFPQFastScan):
             return prefix + f",PQ{index.pq.M}x{index.pq.nbits}fs"
+        if isinstance(index, faiss.IndexIVFRaBitQ):
+            nb_bits = index.rabitq.nb_bits
+            suffix = "RaBitQ" if nb_bits == 1 else f"RaBitQ{nb_bits}"
+            return prefix + "," + suffix
 
     elif isinstance(index, faiss.IndexPreTransform):
         if index.chain.size() != 1:
@@ -149,7 +155,10 @@ def reverse_index_factory(index):
         return f"HNSW{get_hnsw_M(index)}"
 
     elif isinstance(index, faiss.IndexRefine):
-        return f"{reverse_index_factory(index.base_index)},Refine({reverse_index_factory(index.refine_index)})"
+        return (
+            f"{reverse_index_factory(index.base_index)},"
+            f"Refine({reverse_index_factory(index.refine_index)})"
+        )
 
     elif isinstance(index, faiss.IndexPQFastScan):
         return f"PQ{index.pq.M}x{index.pq.nbits}fs"
@@ -166,6 +175,10 @@ def reverse_index_factory(index):
 
     elif isinstance(index, faiss.IndexScalarQuantizer):
         return sq_names[index.sq.qtype]
+
+    elif isinstance(index, faiss.IndexRaBitQ):
+        nb_bits = index.rabitq.nb_bits
+        return "RaBitQ" if nb_bits == 1 else f"RaBitQ{nb_bits}"
 
     # IndexIDMap2 is a subclass of IndexIDMap, so it must be checked first.
     elif isinstance(index, faiss.IndexIDMap2):

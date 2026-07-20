@@ -5,7 +5,7 @@
 
 import logging
 
-# https://stackoverflow.com/questions/7016056/python-logging-not-outputting-anything
+# https://stackoverflow.com/questions/7016056/python-logging-not-outputting-anything  # noqa: E501
 logging.basicConfig()
 logger = logging.getLogger("faiss.contrib.exhaustive_search")
 logger.setLevel(logging.INFO)

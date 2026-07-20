@@ -189,6 +189,7 @@ typedef uint64_t size_t;
 
 #include <faiss/Clustering.h>
 #include <faiss/SuperKMeans.h>
+#include <faiss/impl/AdSampling.h>
 #include <faiss/impl/ClusteringInitialization.h>
 
 #include <faiss/utils/hamming.h>
@@ -564,6 +565,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ClusteringInitialization.h>
 %include  <faiss/Clustering.h>
 %include  <faiss/SuperKMeans.h>
+%include  <faiss/impl/AdSampling.h>
 
 %include  <faiss/utils/extra_distances.h>
 

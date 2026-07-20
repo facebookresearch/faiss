@@ -8,6 +8,7 @@
 #include <faiss/IndexFastScan.h>
 
 #include <omp.h>
+#include <algorithm>
 #include <cstring>
 #include <memory>
 
@@ -617,8 +618,19 @@ template void IndexFastScan::search_dispatch_implem<false>(
         const FastScanDistancePostProcessing& context) const;
 
 void IndexFastScan::reconstruct(idx_t key, float* recons) const {
-    std::vector<uint8_t> code(code_size, 0);
+    FAISS_THROW_IF_NOT_FMT(
+            key >= 0 && key < ntotal,
+            "IndexFastScan::reconstruct: key %zd out of range (ntotal=%zd)",
+            (size_t)key,
+            (size_t)ntotal);
     std::unique_ptr<CodePacker> packer(get_CodePacker());
+    size_t block_no = (size_t)key / packer->nvec;
+    FAISS_THROW_IF_NOT_MSG(
+            mul_no_overflow(
+                    block_no + 1, packer->block_size, "IndexFastScan codes") <=
+                    codes.size(),
+            "IndexFastScan::reconstruct: packed codes buffer too small");
+    std::vector<uint8_t> code(std::max(code_size, packer->code_size), 0);
     packer->unpack_1(codes.data(), key, code.data());
     sa_decode(1, code.data(), recons);
 }
