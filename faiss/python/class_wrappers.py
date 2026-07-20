@@ -1279,11 +1279,12 @@ def handle_AutoTuneCriterion(the_class):
 
 
 def handle_ParameterSpace(the_class):
-    def replacement_explore(self, index, xq, crit):
+    def replacement_explore(self, index, xq, crit, params=None):
         assert xq.shape == (crit.nq, index.d)
         xq = np.ascontiguousarray(xq, dtype="float32")
         ops = OperatingPoints()
-        self.explore_c(index, crit.nq, swig_ptr(xq), crit, ops)
+        self.explore_c(index, crit.nq, swig_ptr(xq),
+                       crit, ops, params)
         return ops
 
     replace_method(the_class, "explore", replacement_explore)
