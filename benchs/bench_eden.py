@@ -229,9 +229,9 @@ def rabitq_reconstruction_errors(index, xb):
         center = np.zeros(d, dtype="float32")
 
     cb = -(float(1 << ex_bits) - 0.5)
-    signs = np.unpackbits(
-        codes[:, :binary_size], axis=1, bitorder="little"
-    )[:, :d].astype("float32")
+    signs = np.unpackbits(codes[:, :binary_size], axis=1, bitorder="little")[
+        :, :d
+    ].astype("float32")
     ex_bitplanes = np.unpackbits(
         codes[:, ex_code_offset:ex_factors_offset],
         axis=1,
@@ -414,9 +414,13 @@ def print_markdown_tables(
             values = f"| {row.bits} |"
             for index_name in indexes:
                 metric = row.metrics.get(index_name)
-                values += f" {format_float(metric.recall if metric else None)} |"
+                values += (
+                    f" {format_float(metric.recall if metric else None)} |"
+                )
                 if include_ci:
-                    values += f" {format_ci(metric.recall_ci) if metric else ''} |"
+                    values += (
+                        f" {format_ci(metric.recall_ci) if metric else ''} |"
+                    )
             if target is not None:
                 for baseline in baselines:
                     recall_delta = result_delta(row, target, baseline, "recall")

@@ -63,7 +63,9 @@ def eden_reference_reconstruct(x, bits, center=None, scale_type="unbiased"):
     return out
 
 
-def eden_reference_l2_distances(x, query, bits, center=None, scale_type="unbiased"):
+def eden_reference_l2_distances(
+    x, query, bits, center=None, scale_type="unbiased"
+):
     x = np.asarray(x, dtype="float32")
     query = np.asarray(query, dtype="float32")
     if center is None:
@@ -205,9 +207,7 @@ class TestEDENScalarQuantizer(unittest.TestCase):
         self.assertTrue(np.any(I >= 0))
 
     def test_search_matches_none_simd_level(self):
-        if not faiss.SIMDConfig.is_simd_level_available(
-            faiss.SIMDLevel_NONE
-        ):
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
             self.skipTest("SIMDLevel.NONE not available")
 
         levels = [
