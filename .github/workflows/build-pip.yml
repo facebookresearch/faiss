@@ -10,8 +10,30 @@ on:
   workflow_dispatch:
 
 jobs:
+  changes:
+    name: Detect CPU-relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_cpu_changes: ${{ steps.filter.outputs.cpu }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # CPU wheels are pointless on a GPU-only PR. This single negated glob
+          # matches any changed file that is NOT exclusive to a GPU backend, so
+          # shared build files (cmake, CMakeLists, pyproject, this workflow)
+          # still count as CPU changes and keep the wheel matrix running.
+          filters: |
+            cpu:
+              - '!{faiss/gpu,faiss/gpu_metal,c_api/gpu,conda/faiss-gpu,conda/faiss-gpu-cuvs}/**'
+
   build-wheels:
     name: Build wheels on ${{ matrix.os }}
+    needs: changes
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     strategy:

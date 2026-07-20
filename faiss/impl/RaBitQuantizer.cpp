@@ -8,9 +8,12 @@
 #include <faiss/impl/RaBitQuantizer.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/simd_dispatch.h>
+#include <faiss/invlists/DirectMap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 
@@ -227,7 +230,7 @@ namespace {
 // directly to the SIMD-specialized code.
 
 template <SIMDLevel SL>
-struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
+struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
     // the rotated query (qr - c)
     std::vector<float> rotated_q;
     // some additional numbers for the query
@@ -236,26 +239,9 @@ struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
     RaBitQDistanceComputerNotQ() = default;
 
     // Compute distance using only 1-bit codes (fast)
-    float distance_to_code_1bit(const uint8_t* code) override {
-        FAISS_ASSERT(code != nullptr);
-        FAISS_ASSERT(
-                (metric_type == MetricType::METRIC_L2 ||
-                 metric_type == MetricType::METRIC_INNER_PRODUCT));
-        FAISS_ASSERT(rotated_q.size() == d);
-
-        // split the code into parts
-        const uint8_t* binary_data = code;
-
-        // Cast to appropriate type based on nb_bits
-        // For 1-bit: use SignBitFactors (8 bytes)
-        // For multi-bit: use SignBitFactorsWithError (12 bytes) which includes
-        // f_error
-        size_t ex_bits = nb_bits - 1;
-        const SignBitFactors* base_fac = (ex_bits == 0)
-                ? reinterpret_cast<const SignBitFactors*>(code + (d + 7) / 8)
-                : reinterpret_cast<const SignBitFactorsWithError*>(
-                          code + (d + 7) / 8);
-
+    float distance_to_code_1bit_impl(
+            const uint8_t* binary_data,
+            const SignBitFactors* base_fac) const {
         // this is the baseline code
         //
         // compute <q,o> using floats
@@ -293,8 +279,24 @@ struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
         }
     }
 
+    float distance_to_code_1bit(const uint8_t* code) final {
+        FAISS_ASSERT(code != nullptr);
+        FAISS_ASSERT(
+                (metric_type == MetricType::METRIC_L2 ||
+                 metric_type == MetricType::METRIC_INNER_PRODUCT));
+        FAISS_ASSERT(rotated_q.size() == d);
+
+        const size_t code_size_base = (d + 7) / 8;
+        const size_t ex_bits = nb_bits - 1;
+        const SignBitFactors* base_fac = (ex_bits == 0)
+                ? reinterpret_cast<const SignBitFactors*>(code + code_size_base)
+                : reinterpret_cast<const SignBitFactorsWithError*>(
+                          code + code_size_base);
+        return distance_to_code_1bit_impl(code, base_fac);
+    }
+
     // Compute full distance using 1-bit + ex-bits (accurate)
-    float distance_to_code_full(const uint8_t* code) override {
+    float distance_to_code_full(const uint8_t* code) final {
         FAISS_ASSERT(code != nullptr);
         FAISS_ASSERT(
                 (metric_type == MetricType::METRIC_L2 ||
@@ -330,7 +332,7 @@ struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
                 metric_type);
     }
 
-    void set_query(const float* x) override {
+    void set_query(const float* x) final {
         q = x;
         FAISS_ASSERT(x != nullptr);
         FAISS_ASSERT(
@@ -371,10 +373,62 @@ struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {
                     centroid ? fvec_inner_product(x, centroid, d) : 0.0f;
         }
     }
+
+    size_t scan_codes_multibit(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            size_t code_size,
+            idx_t list_no,
+            bool store_pairs,
+            const IDSelector* sel,
+            bool keep_max,
+            ResultHandler& handler) final {
+        const size_t code_size_base = (d + 7) / 8;
+        const size_t ex_bits = nb_bits - 1;
+        FAISS_ASSERT(ex_bits > 0);
+
+        size_t nup = 0;
+        for (size_t j = 0; j < list_size; j++) {
+            if (sel != nullptr) {
+                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                if (!sel->is_member(id)) {
+                    codes += code_size;
+                    continue;
+                }
+            }
+
+            const auto* base_fac =
+                    reinterpret_cast<const SignBitFactorsWithError*>(
+                            codes + code_size_base);
+            const float est_distance =
+                    distance_to_code_1bit_impl(codes, base_fac);
+
+            const bool should_refine = rabitq_utils::should_refine_candidate(
+                    est_distance,
+                    base_fac->f_error,
+                    g_error,
+                    handler.threshold,
+                    keep_max);
+            if (should_refine) {
+                handler.stats.scan_cnt++;
+                const float dis = distance_to_code_full(codes);
+                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+
+                if (handler.add_result(dis, id)) {
+                    handler.stats.nheap_updates++;
+                    nup++;
+                }
+            }
+            codes += code_size;
+        }
+
+        return nup;
+    }
 };
 
 template <SIMDLevel SL>
-struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
+struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
     // the rotated and quantized query (qr - c)
     std::vector<float> rotated_q;
     // the rotated and quantized query (qr - c) for fast 1-bit computation
@@ -394,25 +448,10 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
     RaBitQDistanceComputerQ() = default;
 
     // Compute distance using only 1-bit codes (fast)
-    float distance_to_code_1bit(const uint8_t* code) override {
-        FAISS_ASSERT(code != nullptr);
-        FAISS_ASSERT(
-                (metric_type == MetricType::METRIC_L2 ||
-                 metric_type == MetricType::METRIC_INNER_PRODUCT));
-
-        // split the code into parts
-        size_t size = (d + 7) / 8;
-        const uint8_t* binary_data = code;
-
-        // Cast to appropriate type based on nb_bits
-        // For 1-bit: use SignBitFactors (8 bytes)
-        // For multi-bit: use SignBitFactorsWithError (12 bytes) which
-        // includes f_error
-        size_t ex_bits = nb_bits - 1;
-        const SignBitFactors* base_fac = (ex_bits == 0)
-                ? reinterpret_cast<const SignBitFactors*>(code + size)
-                : reinterpret_cast<const SignBitFactorsWithError*>(code + size);
-
+    float distance_to_code_1bit_impl(
+            const uint8_t* binary_data,
+            const SignBitFactors* base_fac,
+            size_t size) const {
         // this is ||or - c||^2 - (IP ? ||or||^2 : 0)
         float final_dot = 0;
         if (centered) {
@@ -455,8 +494,22 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
         }
     }
 
+    float distance_to_code_1bit(const uint8_t* code) final {
+        FAISS_ASSERT(code != nullptr);
+        FAISS_ASSERT(
+                (metric_type == MetricType::METRIC_L2 ||
+                 metric_type == MetricType::METRIC_INNER_PRODUCT));
+
+        const size_t size = (d + 7) / 8;
+        const size_t ex_bits = nb_bits - 1;
+        const SignBitFactors* base_fac = (ex_bits == 0)
+                ? reinterpret_cast<const SignBitFactors*>(code + size)
+                : reinterpret_cast<const SignBitFactorsWithError*>(code + size);
+        return distance_to_code_1bit_impl(code, base_fac, size);
+    }
+
     // Compute full distance using 1-bit + ex-bits (accurate)
-    float distance_to_code_full(const uint8_t* code) override {
+    float distance_to_code_full(const uint8_t* code) final {
         FAISS_ASSERT(code != nullptr);
         FAISS_ASSERT(
                 (metric_type == MetricType::METRIC_L2 ||
@@ -492,7 +545,7 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
                 metric_type);
     }
 
-    void set_query(const float* x) override {
+    void set_query(const float* x) final {
         q = x;
         FAISS_ASSERT(x != nullptr);
         FAISS_ASSERT(
@@ -530,6 +583,58 @@ struct RaBitQDistanceComputerQ : RaBitQDistanceComputer {
             rabitq::rearrange_bit_planes<RSL>(
                     rotated_qq.data(), d, qb, rearranged_rotated_qq.data());
         });
+    }
+
+    size_t scan_codes_multibit(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            size_t code_size,
+            idx_t list_no,
+            bool store_pairs,
+            const IDSelector* sel,
+            bool keep_max,
+            ResultHandler& handler) final {
+        const size_t code_size_base = (d + 7) / 8;
+        const size_t ex_bits = nb_bits - 1;
+        FAISS_ASSERT(ex_bits > 0);
+
+        size_t nup = 0;
+        for (size_t j = 0; j < list_size; j++) {
+            if (sel != nullptr) {
+                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                if (!sel->is_member(id)) {
+                    codes += code_size;
+                    continue;
+                }
+            }
+
+            const auto* base_fac =
+                    reinterpret_cast<const SignBitFactorsWithError*>(
+                            codes + code_size_base);
+            const float est_distance =
+                    distance_to_code_1bit_impl(codes, base_fac, code_size_base);
+
+            const bool should_refine = rabitq_utils::should_refine_candidate(
+                    est_distance,
+                    base_fac->f_error,
+                    g_error,
+                    handler.threshold,
+                    keep_max);
+            if (should_refine) {
+                handler.stats.scan_cnt++;
+                const float dis = distance_to_code_full(codes);
+                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+
+                if (handler.add_result(dis, id)) {
+                    handler.stats.nheap_updates++;
+                    nup++;
+                }
+            }
+            codes += code_size;
+        }
+
+        return nup;
     }
 };
 

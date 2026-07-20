@@ -61,7 +61,9 @@ if platform.system() != "AIX":
         or found_faiss_example_external_module_lib
     ), (
         f"Could not find {swigfaiss_generic_lib} or "
-        f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
+        f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or "
+        f"{swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or "
+        f"{faiss_example_external_module_lib}. "
         f"Faiss may not be compiled yet."
     )
 
@@ -118,7 +120,10 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 setup(
     name="faiss",
     version="1.14.3",
-    description="A library for efficient similarity search and clustering of dense vectors",
+    description=(
+        "A library for efficient similarity search and clustering of dense "
+        "vectors"
+    ),
     long_description=long_description,
     long_description_content_type="text/plain",
     url="https://github.com/facebookresearch/faiss",
