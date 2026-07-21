@@ -2287,6 +2287,38 @@ TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Ixrr) {
     EXPECT_NO_THROW(read_index_up(&reader));
 }
 
+// -----------------------------------------------------------------------
+// Test: IndexRaBitQ codes vector size mismatch. A header ntotal that does
+// not match the stored codes buffer would otherwise be accepted and then
+// read past the buffer during search()/sa_decode(), which stride
+// codes.data() + i * code_size for i in 0..ntotal.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, RaBitQCodesSizeMismatch_Ixrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/100);
+    push_rabitq(buf, 4); // code_size = 1
+    // codes: should be ntotal * code_size = 100 bytes; provide 4
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(4, 0));
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0
+
+    expect_read_throws_with(buf, "codes.size()");
+}
+
+TEST(ReadIndexDeserialize, RaBitQCodesSizeMismatch_Ixrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrr");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/100);
+    push_rabitq_multibit(buf, 4); // code_size = 1
+    // codes: should be ntotal * code_size = 100 bytes; provide 4
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(4, 0));
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0
+
+    expect_read_throws_with(buf, "codes.size()");
+}
+
 // -- Irfn (IndexRaBitQFastScan, new format) --
 // qb=0 is not supported: FastScan requires quantized queries for SIMD.
 

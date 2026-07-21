@@ -2765,6 +2765,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         idxq->code_size = idxq->rabitq.code_size;
+        FAISS_THROW_IF_NOT(
+                idxq->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxq->ntotal,
+                        idxq->code_size,
+                        "IndexRaBitQ codes"));
         idx = std::move(idxq);
     } else if (h == fourcc("Ixrr")) {
         // Ixrr = multi-bit format (new)
@@ -2783,6 +2789,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxq->qb);
 
         idxq->code_size = idxq->rabitq.code_size;
+        FAISS_THROW_IF_NOT(
+                idxq->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxq->ntotal,
+                        idxq->code_size,
+                        "IndexRaBitQ codes"));
         idx = std::move(idxq);
     } else if (h == fourcc("Iwrq")) {
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
