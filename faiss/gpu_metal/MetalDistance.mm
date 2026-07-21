@@ -355,5 +355,305 @@ bool runMetalIVFFlatFullSearch(
     return cmdBuf.status == MTLCommandBufferStatusCompleted;
 }
 
+// ============================================================
+//  runMetalIVFPQFullSearch
+// ============================================================
+
+bool runMetalIVFPQFullSearch(
+        id<MTLDevice> device,
+        id<MTLCommandQueue> queue,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> coarseAssign,
+        id<MTLBuffer> coarseCentroids,
+        id<MTLBuffer> pqCentroids,
+        id<MTLBuffer> lookupTable,
+        id<MTLBuffer> codes,
+        id<MTLBuffer> ids,
+        id<MTLBuffer> listOffset,
+        id<MTLBuffer> listLength,
+        int nq,
+        int d,
+        int M,
+        int k,
+        int nprobe,
+        int nlist,
+        int avgListLen,
+        bool lookupFp16,
+        bool isL2,
+        id<MTLBuffer> outDistances,
+        id<MTLBuffer> outIndices,
+        id<MTLBuffer> perListDistBuf,
+        id<MTLBuffer> perListIdxBuf,
+        bool waitForCompletion) {
+    if (!device || !queue || !queries || !coarseAssign || !pqCentroids ||
+        !lookupTable || !codes || !ids || !listOffset || !listLength ||
+        !outDistances || !outIndices || !perListDistBuf || !perListIdxBuf) {
+        return false;
+    }
+    if (nq <= 0 || d <= 0 || M <= 0 || k <= 0 || nprobe <= 0 || nlist <= 0)
+        return false;
+    if (isL2 && !coarseCentroids)
+        return false;
+    if (!fitsU32(nq) || !fitsU32(M) || !fitsU32(k) || !fitsU32(nprobe))
+        return false;
+
+    // The scan and merge kernels retain only kIvfReduceExactCandidates
+    // candidates (TG_SIZE * LOCAL_K). The result is exact only when both the
+    // merge input (nprobe * k) and every scanned list fit within that bound;
+    // otherwise fall back to the caller's CPU path.
+    if (!ivfMergeExactnessHolds(nprobe, k))
+        return false;
+    if (!ivfScanExactnessHoldsForAllLists(
+                listLength, nlist, kIvfReduceExactCandidates)) {
+        return false;
+    }
+
+    MetalKernels& K = getMetalKernels(device);
+    if (!K.isValid())
+        return false;
+
+    uint32_t sp[5] = {
+            (uint32_t)nq,
+            (uint32_t)M,
+            (uint32_t)k,
+            (uint32_t)nprobe,
+            isL2 ? 1u : 0u};
+    id<MTLBuffer> paramsBuf =
+            [device newBufferWithBytes:sp
+                                length:sizeof(sp)
+                               options:MTLResourceStorageModeShared];
+    if (!paramsBuf)
+        return false;
+
+    id<MTLCommandBuffer> cmdBuf = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> enc = [cmdBuf computeCommandEncoder];
+
+    // Step 1: build per-(query, probe) PQ lookup tables.
+    K.encodeIVFPQBuildLookupTables(
+            enc,
+            isL2,
+            lookupFp16,
+            queries,
+            coarseAssign,
+            coarseCentroids,
+            pqCentroids,
+            lookupTable,
+            nq,
+            d,
+            M,
+            nprobe);
+
+    // Step 2: scan the assigned inverted lists with 8-bit ADC. The small-list
+    // kernel is exact only when every list is provably bounded.
+    (void)avgListLen;
+    const bool useSmall = !lookupFp16 && k <= (int)kIvfSmallExactCandidates &&
+            ivfScanExactnessHoldsForAllLists(
+                    listLength, nlist, kIvfSmallExactCandidates);
+    K.encodeIVFPQScanList(
+            enc,
+            useSmall,
+            lookupFp16,
+            lookupTable,
+            codes,
+            ids,
+            listOffset,
+            listLength,
+            coarseAssign,
+            perListDistBuf,
+            perListIdxBuf,
+            paramsBuf,
+            nq,
+            nprobe);
+
+    // Step 3: merge per-list top-k into the final top-k.
+    K.encodeIVFMergeLists(
+            enc,
+            perListDistBuf,
+            perListIdxBuf,
+            outDistances,
+            outIndices,
+            paramsBuf,
+            nq);
+
+    [enc endEncoding];
+    [cmdBuf commit];
+    if (!waitForCompletion)
+        return true;
+    [cmdBuf waitUntilCompleted];
+    return cmdBuf.status == MTLCommandBufferStatusCompleted;
+}
+
+// ============================================================
+//  IVF-PQ precomputed-table path
+// ============================================================
+
+// Must match the limits in MetalDistance.metal (PQPRE_* / MERGE_GROUP_CAND).
+constexpr int kIvfPQPrecompMaxK = 512;
+constexpr int kIvfPQPrecompMaxM = 16;
+constexpr int kIvfPQPrecompMaxDsub = 256;
+constexpr uint32_t kIvfMergeGroupCand = 2048;
+
+bool runMetalIVFPQPrecomputeTerm2(
+        id<MTLDevice> device,
+        id<MTLCommandQueue> queue,
+        id<MTLBuffer> coarseCentroids,
+        id<MTLBuffer> pqCentroids,
+        id<MTLBuffer> outTerm2,
+        int nlist,
+        int d,
+        int M) {
+    if (!device || !queue || !coarseCentroids || !pqCentroids || !outTerm2)
+        return false;
+    if (nlist <= 0 || d <= 0 || M <= 0 || (d % M) != 0)
+        return false;
+    if (M > kIvfPQPrecompMaxM || (d / M) > kIvfPQPrecompMaxDsub)
+        return false;
+    if (!fitsU32(nlist) || !fitsU32(d) || !fitsU32(M))
+        return false;
+
+    MetalKernels& K = getMetalKernels(device);
+    if (!K.isValid())
+        return false;
+
+    id<MTLCommandBuffer> cmdBuf = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> enc = [cmdBuf computeCommandEncoder];
+    K.encodeIVFPQPrecomputeTerm2(
+            enc, coarseCentroids, pqCentroids, outTerm2, nlist, d, M);
+    [enc endEncoding];
+    [cmdBuf commit];
+    [cmdBuf waitUntilCompleted];
+    return cmdBuf.status == MTLCommandBufferStatusCompleted;
+}
+
+bool runMetalIVFPQPrecompSearch(
+        id<MTLDevice> device,
+        id<MTLCommandQueue> queue,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> coarseAssign,
+        id<MTLBuffer> coarseDist,
+        id<MTLBuffer> term2,
+        id<MTLBuffer> qtermScratch,
+        id<MTLBuffer> pqCentroids,
+        id<MTLBuffer> codes,
+        id<MTLBuffer> ids,
+        id<MTLBuffer> listOffset,
+        id<MTLBuffer> listLength,
+        int nq,
+        int d,
+        int M,
+        int k,
+        int nprobe,
+        bool isL2,
+        bool useDis0,
+        id<MTLBuffer> outDistances,
+        id<MTLBuffer> outIndices,
+        id<MTLBuffer> perListDistBuf,
+        id<MTLBuffer> perListIdxBuf,
+        id<MTLBuffer> mergeScratchDistBuf,
+        id<MTLBuffer> mergeScratchIdxBuf,
+        bool waitForCompletion) {
+    if (!device || !queue || !queries || !coarseAssign || !coarseDist ||
+        !qtermScratch || !pqCentroids || !codes || !ids || !listOffset ||
+        !listLength || !outDistances || !outIndices) {
+        return false;
+    }
+    if (nq <= 0 || d <= 0 || M <= 0 || k <= 0 || nprobe <= 0)
+        return false;
+    if ((d % M) != 0)
+        return false;
+    if (M > kIvfPQPrecompMaxM || (d / M) > kIvfPQPrecompMaxDsub)
+        return false;
+    if (k > kIvfPQPrecompMaxK)
+        return false;
+    if (isL2 && !term2)
+        return false;
+    if (nprobe > 1 &&
+        (!perListDistBuf || !perListIdxBuf || !mergeScratchDistBuf ||
+         !mergeScratchIdxBuf)) {
+        return false;
+    }
+    if (!fitsU32(nq) || !fitsU32(d) || !fitsU32(M) || !fitsU32(k) ||
+        !fitsU32(nprobe)) {
+        return false;
+    }
+
+    MetalKernels& K = getMetalKernels(device);
+    if (!K.isValid())
+        return false;
+
+    const bool wantMin = isL2;
+    const bool useTerm2 = isL2;
+
+    id<MTLCommandBuffer> cmdBuf = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> enc = [cmdBuf computeCommandEncoder];
+
+    // Step 1: per-query M*256 term (once per batch, not per probe).
+    K.encodeIVFPQBuildQueryTerm(
+            enc, queries, pqCentroids, qtermScratch, nq, d, M, isL2);
+
+    // Step 2: fused LUT-combine + list scan with exact running top-k.
+    // With a single probe the per-list result is the final result.
+    id<MTLBuffer> scanDist = (nprobe == 1) ? outDistances : perListDistBuf;
+    id<MTLBuffer> scanIdx = (nprobe == 1) ? outIndices : perListIdxBuf;
+    K.encodeIVFPQScanListPrecomp(
+            enc,
+            useTerm2 ? term2 : nil,
+            qtermScratch,
+            coarseDist,
+            codes,
+            ids,
+            listOffset,
+            listLength,
+            coarseAssign,
+            scanDist,
+            scanIdx,
+            nq,
+            M,
+            k,
+            nprobe,
+            wantMin,
+            useTerm2,
+            useDis0);
+
+    // Step 3: merge the nprobe per-list top-k in rounds of groupSize lists
+    // per threadgroup, ping-ponging between the per-list and scratch buffers.
+    if (nprobe > 1) {
+        const int groupSize =
+                std::max(2, (int)(kIvfMergeGroupCand / (uint32_t)k));
+        int numLists = nprobe;
+        id<MTLBuffer> curD = perListDistBuf;
+        id<MTLBuffer> curI = perListIdxBuf;
+        id<MTLBuffer> altD = mergeScratchDistBuf;
+        id<MTLBuffer> altI = mergeScratchIdxBuf;
+        while (numLists > 1) {
+            const int nGroups = (numLists + groupSize - 1) / groupSize;
+            const bool last = (nGroups == 1);
+            K.encodeIVFMergeListsGrouped(
+                    enc,
+                    curD,
+                    curI,
+                    last ? outDistances : altD,
+                    last ? outIndices : altI,
+                    nq,
+                    numLists,
+                    groupSize,
+                    k,
+                    wantMin);
+            if (!last) {
+                std::swap(curD, altD);
+                std::swap(curI, altI);
+            }
+            numLists = nGroups;
+        }
+    }
+
+    [enc endEncoding];
+    [cmdBuf commit];
+    if (!waitForCompletion)
+        return true;
+    [cmdBuf waitUntilCompleted];
+    return cmdBuf.status == MTLCommandBufferStatusCompleted;
+}
+
 } // namespace gpu_metal
 } // namespace faiss

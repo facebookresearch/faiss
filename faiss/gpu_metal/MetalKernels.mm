@@ -274,6 +274,210 @@ void MetalKernels::encodeIVFMergeLists(
             threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
 }
 
+void MetalKernels::encodeIVFPQBuildLookupTables(
+        id<MTLComputeCommandEncoder> enc,
+        bool isL2,
+        bool outFp16,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> coarseAssign,
+        id<MTLBuffer> coarseCentroids,
+        id<MTLBuffer> pqCentroids,
+        id<MTLBuffer> outLookup,
+        int nq,
+        int d,
+        int M,
+        int nprobe) {
+    const char* name = nullptr;
+    if (isL2) {
+        name = outFp16 ? "ivfpq_build_lut_l2_f16" : "ivfpq_build_lut_l2";
+    } else {
+        name = outFp16 ? "ivfpq_build_lut_ip_f16" : "ivfpq_build_lut_ip";
+    }
+    [enc setComputePipelineState:pipeline(name)];
+    [enc setBuffer:queries offset:0 atIndex:0];
+    [enc setBuffer:coarseAssign offset:0 atIndex:1];
+    [enc setBuffer:coarseCentroids offset:0 atIndex:2];
+    [enc setBuffer:pqCentroids offset:0 atIndex:3];
+    [enc setBuffer:outLookup offset:0 atIndex:4];
+    uint32_t args[4] = {
+            (uint32_t)nq, (uint32_t)d, (uint32_t)M, (uint32_t)nprobe};
+    [enc setBytes:args length:sizeof(args) atIndex:5];
+    const NSUInteger totalTG =
+            (NSUInteger)nq * (NSUInteger)nprobe * (NSUInteger)M;
+    [enc dispatchThreadgroups:MTLSizeMake(totalTG, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
+
+void MetalKernels::encodeIVFPQScanList(
+        id<MTLComputeCommandEncoder> enc,
+        bool useSmall,
+        bool useFp16Lookup,
+        id<MTLBuffer> lookupTable,
+        id<MTLBuffer> codes,
+        id<MTLBuffer> ids,
+        id<MTLBuffer> listOffset,
+        id<MTLBuffer> listLength,
+        id<MTLBuffer> coarseAssign,
+        id<MTLBuffer> perListDist,
+        id<MTLBuffer> perListIdx,
+        id<MTLBuffer> paramsBuf,
+        int nq,
+        int nprobe) {
+    const char* name = "ivf_scan_list_pq8";
+    if (useFp16Lookup) {
+        name = "ivf_scan_list_pq8_f16";
+    } else if (useSmall) {
+        name = "ivf_scan_list_pq8_small";
+    }
+    [enc setComputePipelineState:pipeline(name)];
+    [enc setBuffer:lookupTable offset:0 atIndex:0];
+    [enc setBuffer:codes offset:0 atIndex:1];
+    [enc setBuffer:ids offset:0 atIndex:2];
+    [enc setBuffer:listOffset offset:0 atIndex:3];
+    [enc setBuffer:listLength offset:0 atIndex:4];
+    [enc setBuffer:coarseAssign offset:0 atIndex:5];
+    [enc setBuffer:perListDist offset:0 atIndex:6];
+    [enc setBuffer:perListIdx offset:0 atIndex:7];
+    [enc setBuffer:paramsBuf offset:0 atIndex:8];
+    [enc dispatchThreadgroups:MTLSizeMake(
+                                      (NSUInteger)nq * (NSUInteger)nprobe, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(
+                                          (useSmall && !useFp16Lookup) ? 32
+                                                                       : 256,
+                                          1,
+                                          1)];
+}
+
+void MetalKernels::encodeIVFPQPrecomputeTerm2(
+        id<MTLComputeCommandEncoder> enc,
+        id<MTLBuffer> coarseCentroids,
+        id<MTLBuffer> pqCentroids,
+        id<MTLBuffer> outTerm2,
+        int nlist,
+        int d,
+        int M) {
+    [enc setComputePipelineState:pipeline("ivfpq_precompute_term2")];
+    [enc setBuffer:coarseCentroids offset:0 atIndex:0];
+    [enc setBuffer:pqCentroids offset:0 atIndex:1];
+    [enc setBuffer:outTerm2 offset:0 atIndex:2];
+    uint32_t args[3] = {(uint32_t)nlist, (uint32_t)d, (uint32_t)M};
+    [enc setBytes:args length:sizeof(args) atIndex:3];
+    const NSUInteger totalTG = (NSUInteger)nlist * (NSUInteger)M;
+    [enc dispatchThreadgroups:MTLSizeMake(totalTG, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
+
+void MetalKernels::encodeIVFPQBuildQueryTerm(
+        id<MTLComputeCommandEncoder> enc,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> pqCentroids,
+        id<MTLBuffer> outQTerm,
+        int nq,
+        int d,
+        int M,
+        bool isL2) {
+    [enc setComputePipelineState:pipeline("ivfpq_build_query_term")];
+    [enc setBuffer:queries offset:0 atIndex:0];
+    [enc setBuffer:pqCentroids offset:0 atIndex:1];
+    [enc setBuffer:outQTerm offset:0 atIndex:2];
+    uint32_t args[4] = {(uint32_t)nq, (uint32_t)d, (uint32_t)M, isL2 ? 1u : 0u};
+    [enc setBytes:args length:sizeof(args) atIndex:3];
+    const NSUInteger totalTG = (NSUInteger)nq * (NSUInteger)M;
+    [enc dispatchThreadgroups:MTLSizeMake(totalTG, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
+
+void MetalKernels::encodeIVFPQScanListPrecomp(
+        id<MTLComputeCommandEncoder> enc,
+        id<MTLBuffer> term2,
+        id<MTLBuffer> qterm,
+        id<MTLBuffer> coarseDist,
+        id<MTLBuffer> codes,
+        id<MTLBuffer> ids,
+        id<MTLBuffer> listOffset,
+        id<MTLBuffer> listLength,
+        id<MTLBuffer> coarseAssign,
+        id<MTLBuffer> perListDist,
+        id<MTLBuffer> perListIdx,
+        int nq,
+        int M,
+        int k,
+        int nprobe,
+        bool wantMin,
+        bool useTerm2,
+        bool useDis0) {
+    [enc setComputePipelineState:pipeline("ivf_scan_list_pq8_precomp")];
+    // The kernel never reads term2 when useTerm2 is 0, but Metal requires a
+    // valid binding; rebind qterm in that case.
+    [enc setBuffer:(term2 ? term2 : qterm) offset:0 atIndex:0];
+    [enc setBuffer:qterm offset:0 atIndex:1];
+    [enc setBuffer:coarseDist offset:0 atIndex:2];
+    [enc setBuffer:codes offset:0 atIndex:3];
+    [enc setBuffer:ids offset:0 atIndex:4];
+    [enc setBuffer:listOffset offset:0 atIndex:5];
+    [enc setBuffer:listLength offset:0 atIndex:6];
+    [enc setBuffer:coarseAssign offset:0 atIndex:7];
+    [enc setBuffer:perListDist offset:0 atIndex:8];
+    [enc setBuffer:perListIdx offset:0 atIndex:9];
+    uint32_t args[7] = {
+            (uint32_t)nq,
+            (uint32_t)M,
+            (uint32_t)k,
+            (uint32_t)nprobe,
+            wantMin ? 1u : 0u,
+            useTerm2 ? 1u : 0u,
+            useDis0 ? 1u : 0u};
+    [enc setBytes:args length:sizeof(args) atIndex:10];
+    [enc dispatchThreadgroups:MTLSizeMake(
+                                      (NSUInteger)nq * (NSUInteger)nprobe, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
+
+void MetalKernels::encodeIVFMergeListsGrouped(
+        id<MTLComputeCommandEncoder> enc,
+        id<MTLBuffer> inDist,
+        id<MTLBuffer> inIdx,
+        id<MTLBuffer> outDist,
+        id<MTLBuffer> outIdx,
+        int nq,
+        int numLists,
+        int groupSize,
+        int k,
+        bool wantMin) {
+    [enc setComputePipelineState:pipeline("ivf_merge_lists_grouped")];
+    [enc setBuffer:inDist offset:0 atIndex:0];
+    [enc setBuffer:inIdx offset:0 atIndex:1];
+    [enc setBuffer:outDist offset:0 atIndex:2];
+    [enc setBuffer:outIdx offset:0 atIndex:3];
+    uint32_t args[5] = {
+            (uint32_t)nq,
+            (uint32_t)numLists,
+            (uint32_t)groupSize,
+            (uint32_t)k,
+            wantMin ? 1u : 0u};
+    [enc setBytes:args length:sizeof(args) atIndex:4];
+    const NSUInteger nGroups =
+            ((NSUInteger)numLists + (NSUInteger)groupSize - 1) /
+            (NSUInteger)groupSize;
+    [enc dispatchThreadgroups:MTLSizeMake((NSUInteger)nq * nGroups, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
+
+void MetalKernels::encodeConvertF32ToF16(
+        id<MTLComputeCommandEncoder> enc,
+        id<MTLBuffer> src,
+        id<MTLBuffer> dst,
+        size_t numElems) {
+    [enc setComputePipelineState:pipeline("convert_f32_to_f16")];
+    [enc setBuffer:src offset:0 atIndex:0];
+    [enc setBuffer:dst offset:0 atIndex:1];
+    uint32_t n = (uint32_t)numElems;
+    [enc setBytes:&n length:sizeof(n) atIndex:2];
+    const NSUInteger tg = 256;
+    [enc dispatchThreads:MTLSizeMake((NSUInteger)numElems, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(tg, 1, 1)];
+}
+
 MetalKernels& getMetalKernels(id<MTLDevice> device) {
     static std::mutex mu;
     static std::unordered_map<uintptr_t, std::unique_ptr<MetalKernels>> map;
