@@ -245,12 +245,18 @@ void IndexNSG::add(idx_t n, const float* x) {
 
 void IndexNSG::reset() {
     nsg.reset();
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
     storage->reset();
     ntotal = 0;
     is_built = false;
 }
 
 void IndexNSG::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
     storage->reconstruct(key, recons);
 }
 

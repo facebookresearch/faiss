@@ -170,7 +170,8 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
 
         self.assertAlmostEqual(recall_1, recall_2)
 
-        # validate: refined range_search() updates distances, and new distances are correct L2 distances
+        # validate: refined range_search() updates distances, and new
+        # distances are correct L2 distances
         for iq in range(0, ds.nq):
             start_lim = lims_2[iq]
             end_lim = lims_2[iq + 1]
@@ -225,10 +226,13 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
 
         index_r = faiss.IndexRefine(index, index_flat)
 
-        # k_factor widens the radius used to query the base index; the results
-        # are still filtered at the requested radius. A larger k_factor can only
-        # add candidates, so recall must not decrease, and every returned
-        # distance must stay on the correct side of the radius (issue #5367).
+        # k_factor scales the radius used to query the base index (base_radius =
+        # radius * k_factor); the results are still filtered at the requested
+        # radius, so every returned distance must stay on the correct side of it
+        # regardless of k_factor (issue #5367). For an L2 base a larger k_factor
+        # widens the base search and can only add candidates, so recall must not
+        # decrease; for a similarity base radius * k_factor does not necessarily
+        # widen the search, so no recall guarantee is asserted there.
         recalls = []
         for k_factor in (1, 4):
             index_r.k_factor = k_factor
@@ -242,16 +246,16 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
                     else:
                         self.assertLessEqual(D[i_lim], radius)
 
-        # widening the base radius does not lose any results
-        self.assertGreaterEqual(recalls[1] + 1e-6, recalls[0])
+        if not is_similarity:
+            # widening the L2 base radius does not lose any results
+            self.assertGreaterEqual(recalls[1] + 1e-6, recalls[0])
 
     def test_refine_k_factor(self):
         self.do_test_k_factor("SQ4")
 
     def test_refine_k_factor_ip(self):
-        # an inner-product base exercises the is_similarity branch of the
-        # base-radius widening; the negative radius additionally covers the
-        # sign-dependent path (radius < 0 widens by multiplying, not dividing).
+        # an inner-product base exercises the is_similarity (CMin) branch of the
+        # exact radius filter, with both a positive and a negative radius.
         # Inner products on this dataset span roughly [-5, +5], so these radii
         # select non-trivial result sets on either side of zero.
         self.do_test_k_factor("SQ4", faiss.METRIC_INNER_PRODUCT, radius=4)

@@ -232,7 +232,7 @@ struct QuantizerTemplate<
 };
 
 /**********************************************************
- * TurboQuant MSE quantizer
+ * Lloyd-Max scalar quantizer
  **********************************************************/
 
 // 1-bit MSE: boundary is always at centroids midpoint.
@@ -240,11 +240,11 @@ struct QuantizerTemplate<
 // Decode: gather 8 centroids via index unpack.
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
-struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX2>
-        : QuantizerTurboQuantMSE<1, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<1, SIMDLevel::NONE>;
+struct QuantizerLloydMax<1, SIMDLevel::AVX2>
+        : QuantizerLloydMax<1, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<1, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 8 == 0);
     }
@@ -279,11 +279,11 @@ struct QuantizerTurboQuantMSE<1, SIMDLevel::AVX2>
 // Decode: gather via index unpack.
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
-struct QuantizerTurboQuantMSE<2, SIMDLevel::AVX2>
-        : QuantizerTurboQuantMSE<2, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<2, SIMDLevel::NONE>;
+struct QuantizerLloydMax<2, SIMDLevel::AVX2>
+        : QuantizerLloydMax<2, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<2, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 8 == 0);
     }
@@ -334,15 +334,15 @@ struct QuantizerTurboQuantMSE<2, SIMDLevel::AVX2>
     }
 };
 
-// 3-bit and 4-bit MSE: use branchless comparison chain for encode.
+// 3-bit and 4-bit Lloyd-Max: use branchless comparison chain for encode.
 // k boundaries → idx = sum of k-1 comparisons.
-#define DEFINE_TQMSE_AVX2_MULTIBIT(NBITS, UNPACK_EXPR)                       \
+#define DEFINE_LLOYD_MAX_AVX2_MULTIBIT(NBITS, UNPACK_EXPR)                   \
     template <>                                                              \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX2>                    \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {               \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;         \
+    struct QuantizerLloydMax<NBITS, SIMDLevel::AVX2>                         \
+            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {                    \
+        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;              \
                                                                              \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)  \
+        QuantizerLloydMax(size_t d, const std::vector<float>& trained)       \
                 : Base(d, trained) {                                         \
             assert(d % 8 == 0);                                              \
         }                                                                    \
@@ -362,18 +362,18 @@ struct QuantizerTurboQuantMSE<2, SIMDLevel::AVX2>
         }                                                                    \
     }
 
-DEFINE_TQMSE_AVX2_MULTIBIT(3, unpack_8x3bit_to_u32(code, i));
-DEFINE_TQMSE_AVX2_MULTIBIT(4, unpack_8x4bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX2_MULTIBIT(3, unpack_8x3bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX2_MULTIBIT(4, unpack_8x4bit_to_u32(code, i));
 
-#undef DEFINE_TQMSE_AVX2_MULTIBIT
+#undef DEFINE_LLOYD_MAX_AVX2_MULTIBIT
 
-// 8-bit MSE: indices are raw bytes, no bit packing.
+// 8-bit Lloyd-Max: indices are raw bytes, no bit packing.
 template <>
-struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX2>
-        : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<8, SIMDLevel::NONE>;
+struct QuantizerLloydMax<8, SIMDLevel::AVX2>
+        : QuantizerLloydMax<8, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 8 == 0);
     }

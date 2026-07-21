@@ -233,7 +233,10 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             "limitation: both vectorType and queryType must currently "
             "be the same (F32 / F16 / BF16");
 
-#if defined USE_NVIDIA_CUVS
+// cuVS brute-force (flat) lives in the full cuVS build only; the aarch64
+// cuvs-ivfpq subset omits neighbors/brute_force, so FAISS_CUVS_NO_FLAT compiles
+// this branch out and bfKnn falls back to faiss's own kernels below.
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_FLAT)
     // Note: For now, cuVS bfknn requires queries and vectors to be same layout
     if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor &&
         args.outIndicesType == IndicesDataType::I64 &&
