@@ -9,6 +9,7 @@
 #import "MetalIndexIVFPQ.h"
 
 #include <faiss/IndexFlat.h>
+#include <faiss/gpu_metal/MetalDistance.h>
 #include <faiss/gpu_metal/impl/MetalIVFPQ.h>
 #include <faiss/impl/FaissAssert.h>
 
@@ -20,6 +21,22 @@
 
 namespace faiss {
 namespace gpu_metal {
+
+namespace {
+inline int checkedIdxToInt(faiss::idx_t v, const char* what) {
+    if (!(v >= 0 && v <= (faiss::idx_t)std::numeric_limits<int>::max())) {
+        FAISS_THROW_FMT("%s", what);
+    }
+    return (int)v;
+}
+
+inline int checkedSizeToInt(size_t v, const char* what) {
+    if (!(v <= (size_t)std::numeric_limits<int>::max())) {
+        FAISS_THROW_FMT("%s", what);
+    }
+    return (int)v;
+}
+} // namespace
 
 // ============================================================
 //  Constructors
@@ -114,6 +131,95 @@ MetalIndexIVFPQ::MetalIndexIVFPQ(
 MetalIndexIVFPQ::~MetalIndexIVFPQ() = default;
 
 // ============================================================
+//  GPU buffer helpers
+// ============================================================
+
+void MetalIndexIVFPQ::ensureSearchBuf_(
+        id<MTLBuffer>& buf,
+        size_t& cap,
+        size_t needed) const {
+    if (buf != nil && cap >= needed)
+        return;
+    size_t newCap = std::max(needed, cap * 2);
+    id<MTLDevice> device = resources_->getDevice();
+    buf = [device newBufferWithLength:newCap
+                              options:MTLResourceStorageModeShared];
+    cap = buf ? newCap : 0;
+}
+
+void MetalIndexIVFPQ::uploadCentroids_() const {
+    if (!cpuIndex_ || !cpuIndex_->quantizer || !resources_)
+        return;
+    auto* flatQ = dynamic_cast<faiss::IndexFlat*>(cpuIndex_->quantizer);
+    if (!flatQ || flatQ->ntotal == 0) {
+        centroidBuf_ = nil;
+        return;
+    }
+    size_t bytes = (size_t)flatQ->ntotal * (size_t)d * sizeof(float);
+    id<MTLDevice> device = resources_->getDevice();
+    if (!device)
+        return;
+    centroidBuf_ = [device newBufferWithLength:bytes
+                                       options:MTLResourceStorageModeShared];
+    if (centroidBuf_) {
+        std::memcpy([centroidBuf_ contents], flatQ->get_xb(), bytes);
+    }
+}
+
+void MetalIndexIVFPQ::uploadPQCentroids_() const {
+    if (!cpuIndex_ || !gpuIvf_)
+        return;
+    const auto& pq = cpuIndex_->pq;
+    if (pq.centroids.empty())
+        return;
+    gpuIvf_->setPQCentroids(pq.centroids.data());
+}
+
+void MetalIndexIVFPQ::precomputeTerm2_() const {
+    // GPU analogue of faiss::IndexIVFPQ::precompute_table(): the
+    // query-independent term ||pq||^2 + 2<c, pq> of the L2 by_residual
+    // decomposition, built once per trained index.
+    term2Buf_ = nil;
+    if (!cpuIndex_ || !resources_ || !gpuIvf_)
+        return;
+    if (cpuIndex_->metric_type != METRIC_L2 || !cpuIndex_->by_residual)
+        return;
+    if (!centroidBuf_ || !gpuIvf_->pqCentroidsBuffer())
+        return;
+
+    const int M = (int)cpuIndex_->pq.M;
+    const idx_t nl = cpuIndex_->nlist;
+    if (M <= 0 || M > 16 || (d % M) != 0 || (d / M) > 256 || nl <= 0)
+        return;
+
+    // Mirror the CPU's precomputed_table_max_bytes default (2 GiB).
+    const size_t bytes = (size_t)nl * (size_t)M * 256 * sizeof(float);
+    if (bytes > ((size_t)1 << 31))
+        return;
+
+    id<MTLDevice> device = resources_->getDevice();
+    id<MTLCommandQueue> queue = resources_->getCommandQueue();
+    if (!device || !queue)
+        return;
+
+    term2Buf_ = [device newBufferWithLength:bytes
+                                    options:MTLResourceStorageModeShared];
+    if (!term2Buf_)
+        return;
+    if (!runMetalIVFPQPrecomputeTerm2(
+                device,
+                queue,
+                centroidBuf_,
+                gpuIvf_->pqCentroidsBuffer(),
+                term2Buf_,
+                (int)nl,
+                d,
+                M)) {
+        term2Buf_ = nil;
+    }
+}
+
+// ============================================================
 //  Train / add / reset
 // ============================================================
 
@@ -125,6 +231,11 @@ void MetalIndexIVFPQ::train(idx_t n, const float* x) {
         cpuIndex_->precompute_table();
     }
     is_trained = cpuIndex_->is_trained;
+
+    // Mirror coarse and PQ centroids onto the GPU for the lookup-table build.
+    uploadCentroids_();
+    uploadPQCentroids_();
+    precomputeTerm2_();
 }
 
 void MetalIndexIVFPQ::encodeResidualAndAppend_(
@@ -217,12 +328,220 @@ void MetalIndexIVFPQ::search(
     FAISS_THROW_IF_NOT(cpuIndex_);
     FAISS_THROW_IF_NOT(k > 0);
 
-    if (auto* ivfParams = dynamic_cast<const IVFSearchParameters*>(params)) {
-        if (ivfParams->nprobe > 0)
-            cpuIndex_->nprobe = ivfParams->nprobe;
+    const float inf = std::numeric_limits<float>::infinity();
+    const float negInf = -std::numeric_limits<float>::infinity();
+    const bool isL2 = (metric_type == METRIC_L2);
+
+    if (cpuIndex_->ntotal == 0 || n == 0) {
+        for (idx_t i = 0; i < n * k; ++i) {
+            labels[i] = -1;
+            distances[i] = isL2 ? inf : negInf;
+        }
+        return;
     }
 
-    cpuIndex_->search(n, x, k, distances, labels);
+    id<MTLDevice> device = resources_ ? resources_->getDevice() : nil;
+    id<MTLCommandQueue> queue =
+            resources_ ? resources_->getCommandQueue() : nil;
+
+    // Fall back to CPU when the GPU-resident storage or device is unavailable,
+    // when k exceeds what the Metal top-k kernels support, or when the PQ
+    // centroids have not been mirrored onto the GPU.
+    const int maxK = getMetalDistanceMaxK();
+    if (!device || !queue || !gpuIvf_ || !gpuIvf_->codesBuffer() ||
+        !gpuIvf_->idsBuffer() || !gpuIvf_->listOffsetGpuBuffer() ||
+        !gpuIvf_->listLengthGpuBuffer() || !gpuIvf_->pqCentroidsBuffer() ||
+        k > maxK) {
+        if (auto* ivfParams =
+                    dynamic_cast<const IVFSearchParameters*>(params)) {
+            if (ivfParams->nprobe > 0)
+                cpuIndex_->nprobe = ivfParams->nprobe;
+        }
+        cpuIndex_->search(n, x, k, distances, labels);
+        return;
+    }
+
+    size_t nprobe = cpuIndex_->nprobe;
+    if (auto* ivfParams = dynamic_cast<const IVFSearchParameters*>(params)) {
+        if (ivfParams->nprobe > 0)
+            nprobe = ivfParams->nprobe;
+    }
+    nprobe = std::min(nprobe, (size_t)cpuIndex_->nlist);
+    if (nprobe == 0) {
+        for (idx_t i = 0; i < n * k; ++i) {
+            labels[i] = -1;
+            distances[i] = isL2 ? inf : negInf;
+        }
+        return;
+    }
+
+    // Coarse quantization on the CPU.
+    std::vector<float> coarseDistVec((size_t)n * nprobe);
+    std::vector<idx_t> coarseAssignVec((size_t)n * nprobe);
+    cpuIndex_->quantizer->search(
+            n, x, (idx_t)nprobe, coarseDistVec.data(), coarseAssignVec.data());
+
+    const int M = (int)cpuIndex_->pq.M;
+    const int ksub = (int)cpuIndex_->pq.ksub;
+    const bool useFp16Lut = config_.useFloat16;
+
+    const size_t outDistBytes = (size_t)n * (size_t)k * sizeof(float);
+    const size_t outIdxBytes = (size_t)n * (size_t)k * sizeof(int64_t);
+    const size_t queryBytes = (size_t)n * (size_t)d * sizeof(float);
+    const size_t perListBytes = (size_t)n * nprobe * (size_t)k * sizeof(float);
+    const size_t perListIdxB = (size_t)n * nprobe * (size_t)k * sizeof(int64_t);
+    const size_t coarseBytes = (size_t)n * nprobe * sizeof(int32_t);
+
+    ensureSearchBuf_(searchQueriesBuf_, searchQueriesCap_, queryBytes);
+    ensureSearchBuf_(searchOutDistBuf_, searchOutDistCap_, outDistBytes);
+    ensureSearchBuf_(searchOutIdxBuf_, searchOutIdxCap_, outIdxBytes);
+    ensureSearchBuf_(
+            searchPerListDistBuf_, searchPerListDistCap_, perListBytes);
+    ensureSearchBuf_(searchPerListIdxBuf_, searchPerListIdxCap_, perListIdxB);
+    ensureSearchBuf_(searchCoarseBuf_, searchCoarseCap_, coarseBytes);
+
+    if (!searchQueriesBuf_ || !searchOutDistBuf_ || !searchOutIdxBuf_ ||
+        !searchPerListDistBuf_ || !searchPerListIdxBuf_ || !searchCoarseBuf_) {
+        cpuIndex_->search(n, x, k, distances, labels);
+        return;
+    }
+    std::memcpy([searchQueriesBuf_ contents], x, queryBytes);
+
+    // Upload coarse assignments as int32.
+    auto* coarseDst = reinterpret_cast<int32_t*>([searchCoarseBuf_ contents]);
+    for (size_t i = 0; i < (size_t)n * nprobe; ++i) {
+        FAISS_THROW_IF_NOT_MSG(
+                coarseAssignVec[i] >=
+                                (idx_t)std::numeric_limits<int32_t>::min() &&
+                        coarseAssignVec[i] <=
+                                (idx_t)std::numeric_limits<int32_t>::max(),
+                "MetalIndexIVFPQ: coarse assignment exceeds int32 range");
+        coarseDst[i] = (int32_t)coarseAssignVec[i];
+    }
+
+    const int nI = checkedIdxToInt(n, "MetalIndexIVFPQ: n exceeds int range");
+    const int kI = checkedIdxToInt(k, "MetalIndexIVFPQ: k exceeds int range");
+    const int nprobeI = checkedSizeToInt(
+            nprobe, "MetalIndexIVFPQ: nprobe exceeds int range");
+    const int avgListLen = cpuIndex_->nlist > 0
+            ? (int)(cpuIndex_->ntotal / cpuIndex_->nlist)
+            : 0;
+
+    bool ok = false;
+
+    // Preferred path: precomputed-table decomposition. The per-query term is
+    // built once per batch (no per-(query, probe) LUT), the scan is exact for
+    // any list length, and the merge runs in rounds for any nprobe * k.
+    const int dsub = d / M;
+    const bool byResidual = cpuIndex_->by_residual;
+    const bool canPrecomp = M <= 16 && dsub <= 256 && kI <= 512 &&
+            (!isL2 || (byResidual && term2Buf_ != nil)) &&
+            gpuIvf_->totalVecs() <= (size_t)std::numeric_limits<int32_t>::max();
+    if (canPrecomp) {
+        const size_t coarseDistBytes = (size_t)n * nprobe * sizeof(float);
+        const size_t qtermBytes =
+                (size_t)n * (size_t)M * (size_t)ksub * sizeof(float);
+        ensureSearchBuf_(
+                searchCoarseDistBuf_, searchCoarseDistCap_, coarseDistBytes);
+        ensureSearchBuf_(searchQTermBuf_, searchQTermCap_, qtermBytes);
+        if (nprobeI > 1) {
+            ensureSearchBuf_(
+                    searchMergeDistBuf_, searchMergeDistCap_, perListBytes);
+            ensureSearchBuf_(
+                    searchMergeIdxBuf_, searchMergeIdxCap_, perListIdxB);
+        }
+        if (searchCoarseDistBuf_ && searchQTermBuf_ &&
+            (nprobeI == 1 || (searchMergeDistBuf_ && searchMergeIdxBuf_))) {
+            std::memcpy(
+                    [searchCoarseDistBuf_ contents],
+                    coarseDistVec.data(),
+                    coarseDistBytes);
+            ok = runMetalIVFPQPrecompSearch(
+                    device,
+                    queue,
+                    searchQueriesBuf_,
+                    searchCoarseBuf_,
+                    searchCoarseDistBuf_,
+                    isL2 ? term2Buf_ : nil,
+                    searchQTermBuf_,
+                    gpuIvf_->pqCentroidsBuffer(),
+                    gpuIvf_->codesBuffer(),
+                    gpuIvf_->idsBuffer(),
+                    gpuIvf_->listOffsetGpuBuffer(),
+                    gpuIvf_->listLengthGpuBuffer(),
+                    nI,
+                    d,
+                    M,
+                    kI,
+                    nprobeI,
+                    isL2,
+                    byResidual,
+                    searchOutDistBuf_,
+                    searchOutIdxBuf_,
+                    searchPerListDistBuf_,
+                    searchPerListIdxBuf_,
+                    searchMergeDistBuf_,
+                    searchMergeIdxBuf_);
+        }
+    }
+
+    // Legacy path: per-(query, probe) lookup tables. Only allocate the large
+    // LUT buffer when this path is actually taken.
+    if (!ok) {
+        const size_t tableSize = (size_t)n * nprobe * M * ksub;
+        const size_t tableBytes = tableSize * sizeof(float);
+        const size_t tableHalfBytes = tableSize * sizeof(uint16_t);
+        ensureSearchBuf_(lookupTableBuf_, lookupTableCap_, tableBytes);
+        if (useFp16Lut) {
+            ensureSearchBuf_(
+                    lookupTableHalfBuf_, lookupTableHalfCap_, tableHalfBytes);
+        }
+        if (lookupTableBuf_ && (!useFp16Lut || lookupTableHalfBuf_)) {
+            ok = runMetalIVFPQFullSearch(
+                    device,
+                    queue,
+                    searchQueriesBuf_,
+                    searchCoarseBuf_,
+                    centroidBuf_,
+                    gpuIvf_->pqCentroidsBuffer(),
+                    useFp16Lut ? lookupTableHalfBuf_ : lookupTableBuf_,
+                    gpuIvf_->codesBuffer(),
+                    gpuIvf_->idsBuffer(),
+                    gpuIvf_->listOffsetGpuBuffer(),
+                    gpuIvf_->listLengthGpuBuffer(),
+                    nI,
+                    d,
+                    M,
+                    kI,
+                    nprobeI,
+                    (int)cpuIndex_->nlist,
+                    avgListLen,
+                    useFp16Lut,
+                    isL2,
+                    searchOutDistBuf_,
+                    searchOutIdxBuf_,
+                    searchPerListDistBuf_,
+                    searchPerListIdxBuf_);
+        }
+    }
+
+    if (!ok) {
+        cpuIndex_->search(n, x, k, distances, labels);
+        return;
+    }
+
+    const float* outDistPtr =
+            reinterpret_cast<const float*>([searchOutDistBuf_ contents]);
+    const int64_t* outIdxPtr =
+            reinterpret_cast<const int64_t*>([searchOutIdxBuf_ contents]);
+    for (idx_t qi = 0; qi < n; ++qi) {
+        for (idx_t j = 0; j < k; ++j) {
+            const size_t pos = (size_t)qi * (size_t)k + (size_t)j;
+            const int64_t globalId = outIdxPtr[pos];
+            labels[pos] = (globalId < 0) ? -1 : (idx_t)globalId;
+            distances[pos] = outDistPtr[pos];
+        }
+    }
 }
 
 // ============================================================
@@ -279,6 +598,11 @@ void MetalIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* src) {
         cpuIndex_->precompute_table();
     }
     is_trained = true;
+
+    // Mirror coarse and PQ centroids onto the GPU for the lookup-table build.
+    uploadCentroids_();
+    uploadPQCentroids_();
+    precomputeTerm2_();
 
     // Gather IVF list data.
     size_t totalN = 0;
