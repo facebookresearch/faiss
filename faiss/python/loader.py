@@ -15,7 +15,7 @@ from packaging.version import Version
 def supported_instruction_sets():
     """
     Returns the set of supported CPU features, see
-    https://github.com/numpy/numpy/blob/master/numpy/core/src/common/npy_cpu_features.h
+    https://github.com/numpy/numpy/blob/master/numpy/core/src/common/npy_cpu_features.h  # noqa: E501
     for the list of features that this set may contain per architecture.
 
     Example:

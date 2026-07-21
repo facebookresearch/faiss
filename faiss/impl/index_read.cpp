@@ -866,6 +866,11 @@ static void validate_fastscan_fields(
             M,
             ksub);
     FAISS_THROW_IF_NOT_FMT(
+            ksub == 16,
+            "%s: invalid ksub=%zd (fast-scan requires nbits=4 / ksub=16)",
+            index_type,
+            ksub);
+    FAISS_THROW_IF_NOT_FMT(
             bbs > 0 && bbs % 32 == 0,
             "%s: invalid bbs=%d (must be > 0 and a multiple of 32)",
             index_type,
@@ -1617,6 +1622,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(n_levels);
         FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
+        FAISS_THROW_IF_NOT_FMT(
+                batch_size > 0, "invalid IxFP batch_size %zd", batch_size);
         std::unique_ptr<IndexFlatPanorama> idxp;
         if (h == fourcc("IxFP")) {
             idxp = std::make_unique<IndexFlatL2Panorama>(
@@ -1629,6 +1636,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1_BOOL(idxp->is_trained);
         READVECTOR(idxp->codes);
         READVECTOR(idxp->cum_sums);
+        size_t num_slots = mul_no_overflow(
+                ((size_t)idxp->ntotal + idxp->batch_size - 1) /
+                        idxp->batch_size,
+                idxp->batch_size,
+                "IndexFlatPanorama num_batches*batch_size");
+        FAISS_THROW_IF_NOT(
+                idxp->codes.size() ==
+                mul_no_overflow(
+                        num_slots, idxp->code_size, "IndexFlatPanorama codes"));
+        FAISS_THROW_IF_NOT(
+                idxp->cum_sums.size() ==
+                mul_no_overflow(
+                        num_slots,
+                        idxp->pano.n_levels + 1,
+                        "IndexFlatPanorama cum_sums"));
         idxp->verbose = false;
         idx = std::move(idxp);
     } else if (
@@ -1702,6 +1724,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ProductQuantizer(&idxp->pq, f);
         idxp->code_size = idxp->pq.code_size;
         read_vector(idxp->codes, f);
+        FAISS_THROW_IF_NOT_MSG(
+                idxp->code_size > 0 || idxp->ntotal == 0,
+                "IndexPQ with ntotal > 0 must have code_size > 0 "
+                "(corrupt ProductQuantizer nbits?)");
         FAISS_THROW_IF_NOT(
                 idxp->codes.size() ==
                 mul_no_overflow(
@@ -2040,6 +2066,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivfp->code_size = ivfp->d * sizeof(float);
         READ1(ivfp->n_levels);
         READ1(ivfp->batch_size);
+        FAISS_THROW_IF_NOT_FMT(
+                ivfp->batch_size > 0,
+                "invalid IwP2 batch_size %zd",
+                ivfp->batch_size);
         read_InvertedLists(*ivfp, f, io_flags);
         idx = std::move(ivfp);
     } else if (h == fourcc("IwFl")) {
@@ -2118,6 +2148,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     r2);
         }
         read_index_header(*idxl, f);
+        FAISS_THROW_IF_NOT_FMT(
+                idxl->ntotal == 0,
+                "IndexLattice deserialization carries no code storage; "
+                "ntotal=%zd != 0 is corrupt",
+                (size_t)idxl->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxl->d == d,
+                "IndexLattice header d=%d inconsistent with encoded d=%d",
+                idxl->d,
+                d);
         READVECTOR(idxl->trained);
         idx = std::move(idxl);
     } else if (h == fourcc("IvSQ")) { // legacy
@@ -2354,6 +2394,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxp->code_size_2);
         READ1(idxp->code_size);
         validate_code_size_match(
+                idxp->code_size_1,
+                idxp->q1.coarse_code_size(),
+                "Index2Layer code_size_1");
+        validate_code_size_match(
                 idxp->code_size_2,
                 idxp->pq.code_size,
                 "Index2Layer code_size_2");
@@ -2362,6 +2406,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxp->code_size_1 + idxp->code_size_2,
                 "Index2Layer");
         read_vector(idxp->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxp->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxp->ntotal,
+                        idxp->code_size,
+                        "Index2Layer codes"));
         idx = std::move(idxp);
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
@@ -2847,6 +2897,13 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
         if (h == fourcc("ISV2")) {
             READVECTOR(svs->stored_vectors);
+            FAISS_THROW_IF_NOT_MSG(
+                    svs->stored_vectors.size() ==
+                            mul_no_overflow(
+                                    (size_t)svs->ntotal,
+                                    (size_t)svs->d,
+                                    "IndexSVSVamana stored_vectors"),
+                    "ISV2: stored_vectors size inconsistent with ntotal * d");
         } else {
             svs->stored_vectors_valid = false;
         }

@@ -84,7 +84,7 @@ def load_from_hive(
         if xb is None:
             xb = np.empty((n, arr.shape[1]), dtype=np.float32)
         m = min(arr.shape[0], n - i)
-        xb[i:i+m] = arr[:m]
+        xb[i : i + m] = arr[:m]
         i += m
         if i % (batch_size * 50) == 0:
             elapsed = time.time() - t0
@@ -398,12 +398,10 @@ def main():
         "(not needed when --hive-table is set)",
     )
     parser.add_argument(
-        "--n", type=int, default=0,
-        help="Use first N vectors (0=all)"
+        "--n", type=int, default=0, help="Use first N vectors (0=all)"
     )
     parser.add_argument(
-        "--nq", type=int, default=1000,
-        help="Number of queries"
+        "--nq", type=int, default=1000, help="Number of queries"
     )
     parser.add_argument("--num-gpus", type=int, default=0)
     parser.add_argument("--graph-degree", type=int, default=32)
@@ -413,7 +411,7 @@ def main():
         "--n-clusters",
         type=int,
         default=0,
-        help="all_neighbors n_clusters (0=auto)"
+        help="all_neighbors n_clusters (0=auto)",
     )
     parser.add_argument(
         "--overlap-factor",
@@ -462,8 +460,10 @@ def main():
         "--approaches",
         type=str,
         default="A,B,C,D",
-        help=("A (IndexShards), B (GPU stitch), "
-                "C (CPU stitch), D (all_neighbors)"),
+        help=(
+            "A (IndexShards), B (GPU stitch), "
+            "C (CPU stitch), D (all_neighbors)"
+        ),
     )
     parser.add_argument(
         "--index-dir",

@@ -80,34 +80,6 @@ if __name__ == "__main__":
 ############################################################
 
 
-class ResultHeap:
-    """Combine query results from a sliced dataset (for k-nn search)"""
-
-    def __init__(self, nq, k):
-        "nq: number of query vectors, k: number of results per query"
-        self.I = np.zeros((nq, k), dtype="int64")
-        self.D = np.zeros((nq, k), dtype="float32")
-        self.nq, self.k = nq, k
-        heaps = faiss.float_maxheap_array_t()
-        heaps.k = k
-        heaps.nh = nq
-        heaps.val = faiss.swig_ptr(self.D)
-        heaps.ids = faiss.swig_ptr(self.I)
-        heaps.heapify()
-        self.heaps = heaps
-
-    def add_batch_result(self, D, I, i0):
-        assert D.shape == (self.nq, self.k)
-        assert I.shape == (self.nq, self.k)
-        I += i0
-        self.heaps.addn_with_ids(
-            self.k, faiss.swig_ptr(D), faiss.swig_ptr(I), self.k
-        )
-
-    def finalize(self):
-        self.heaps.reorder()
-
-
 def distribute_weights(weights, nbin):
     """assign a set of weights to a smaller set of bins to balance them"""
     nw = weights.size
@@ -189,11 +161,11 @@ class SplitPerListIndex:
                 print("client %d: %.3f s" % (i, time.time() - t0))
             return Di, Ii
 
-        rh = ResultHeap(x.shape[0], k)
+        rh = faiss.ResultHeap(x.shape[0], k)
 
         for Di, Ii in self.pool.imap(do_query, range(self.ni)):
             # print("ADD", Ii, rh.I)
-            rh.add_batch_result(Di, Ii, 0)
+            rh.add_result(Di, Ii)
         rh.finalize()
         return rh.D, rh.I
 

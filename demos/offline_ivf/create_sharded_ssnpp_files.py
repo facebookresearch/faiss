@@ -11,7 +11,7 @@ import os
 def xbin_mmap(fname, dtype, maxn=-1):
     """
     Code from
-    https://github.com/harsha-simhadri/big-ann-benchmarks/blob/main/benchmark/dataset_io.py#L94
+    https://github.com/harsha-simhadri/big-ann-benchmarks/blob/main/benchmark/dataset_io.py#L94  # noqa: E501
     mmap the competition file format for a given type of items
     """
     n, d = map(int, np.fromfile(fname, dtype="uint32", count=2))
@@ -49,7 +49,10 @@ if __name__ == "__main__":
         "--filepath",
         dest="filepath",
         type=str,
-        default="/datasets01/big-ann-challenge-data/FB_ssnpp/FB_ssnpp_database.u8bin",
+        default=(
+            "/datasets01/big-ann-challenge-data/FB_ssnpp/"
+            "FB_ssnpp_database.u8bin"
+        ),
         help="path of 1B ssnpp database vectors' original file",
     )
     parser.add_argument(

@@ -13,7 +13,7 @@
 #include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFSQ)
 #include <cuvs/neighbors/ivf_sq.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFSQ.cuh>
@@ -124,9 +124,15 @@ void GpuIndexIVFScalarQuantizer::verifySQSettings_() const {
 }
 
 bool GpuIndexIVFScalarQuantizer::shouldUseCuvs_() const {
+#if defined(FAISS_CUVS_NO_IVFSQ)
+    // cuVS IVF-SQ backend compiled out (e.g. against cuVS 26.02, which has no
+    // ivf_sq); fall back to the classic (non-cuVS) GPU scalar-quantizer impl.
+    return false;
+#else
     return should_use_cuvs(config_) &&
             sq.qtype == faiss::ScalarQuantizer::QT_8bit && by_residual &&
             ivfSQConfig_.indicesOptions == INDICES_64_BIT;
+#endif
 }
 
 void GpuIndexIVFScalarQuantizer::setIndex_(
@@ -141,7 +147,7 @@ void GpuIndexIVFScalarQuantizer::setIndex_(
         IndicesOptions indicesOptions,
         MemorySpace space) {
     if (shouldUseCuvs_()) {
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFSQ)
         if (!ivfSQConfig_.interleavedLayout) {
             fprintf(stderr,
                     "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");
@@ -245,7 +251,7 @@ void GpuIndexIVFScalarQuantizer::copyTo(
 
     GpuIndexIVF::copyTo(index);
     auto sqCopy = sq;
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFSQ)
     if (index_) {
         auto cuvsIndex = dynamic_cast<const CuvsIVFSQ*>(index_.get());
         if (cuvsIndex) {
@@ -328,7 +334,7 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
 
     if (shouldUseCuvs_() &&
         !(quantizer->is_trained && quantizer->ntotal == nlist)) {
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFSQ)
         setIndex_(
                 resources_.get(),
                 this->d,

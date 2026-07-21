@@ -170,7 +170,8 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
 
         self.assertAlmostEqual(recall_1, recall_2)
 
-        # validate: refined range_search() updates distances, and new distances are correct L2 distances
+        # validate: refined range_search() updates distances, and new
+        # distances are correct L2 distances
         for iq in range(0, ds.nq):
             start_lim = lims_2[iq]
             end_lim = lims_2[iq + 1]

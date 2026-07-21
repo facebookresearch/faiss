@@ -183,11 +183,19 @@ void IndexNNDescent::add(idx_t n, const float* x) {
 
 void IndexNNDescent::reset() {
     nndescent.reset();
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNNDescentFlat (or variants) "
+            "instead of IndexNNDescent directly");
     storage->reset();
     ntotal = 0;
 }
 
 void IndexNNDescent::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNNDescentFlat (or variants) "
+            "instead of IndexNNDescent directly");
     storage->reconstruct(key, recons);
 }
 
