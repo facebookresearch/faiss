@@ -15,8 +15,12 @@ namespace faiss {
 // advance() is O(1) except every 250 calls, which are O(size).
 // The hash set strategy is a constant factor slower for get()/set(),
 // but O(1) to construct and O(visits) to advance.
-// A size of ~1M seems to be the threshold where the hash set wins.
-size_t visited_table_hashset_threshold = 500000;
+// 10M is only a current estimated threshold, not a proven crossover: we are not
+// sure the array still wins at 10M. The point where the array stops paying off
+// varies by dataset (it shifts with dimension, working-set / cache pressure,
+// etc.), so this is a coarse default that should eventually be replaced by
+// smarter per-index tuning.
+size_t visited_table_hashset_threshold = 10000000;
 
 std::unique_ptr<VisitedTable> VisitedTable::create(
         size_t size,
