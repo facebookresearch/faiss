@@ -26,6 +26,8 @@
 
 #include <faiss/impl/FaissAssert.h>
 
+#include <faiss/impl/polysemous_training/dispatch.h>
+
 /*****************************************
  * Mixed PQ / Hamming
  ******************************************/
@@ -168,16 +170,100 @@ static inline int hamming_dis(uint64_t a, uint64_t b) {
     return popcount64(a ^ b);
 }
 
+static inline double sqr(double x) {
+    return x * x;
+}
+
+// Scalar (NONE) kernels for the two objectives. The dispatch boundary lives in
+// the objective methods below, which route to these or to the AVX-512
+// specializations (in polysemous_training/avx512.cpp) via
+// with_selected_simd_levels.
+namespace polysemous_training {
+
+template <>
+double hamming_compute_cost<SIMDLevel::NONE>(
+        int n,
+        const int* perm,
+        const double* target_dis,
+        const double* weights) {
+    double cost = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            double wanted = target_dis[i * n + j];
+            double w = weights[i * n + j];
+            double actual = hamming_dis(perm[i], perm[j]);
+            cost += w * sqr(wanted - actual);
+        }
+    }
+    return cost;
+}
+
+template <>
+double hamming_cost_update<SIMDLevel::NONE>(
+        int n,
+        const int* perm,
+        int iw,
+        int jw,
+        const double* target_dis,
+        const double* weights) {
+    double delta_cost = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (i == iw) {
+            for (int j = 0; j < n; j++) {
+                double wanted = target_dis[i * n + j], w = weights[i * n + j];
+                double actual = hamming_dis(perm[i], perm[j]);
+                delta_cost -= w * sqr(wanted - actual);
+                double new_actual = hamming_dis(
+                        perm[jw],
+                        perm[j == iw           ? jw
+                                     : j == jw ? iw
+                                               : j]);
+                delta_cost += w * sqr(wanted - new_actual);
+            }
+        } else if (i == jw) {
+            for (int j = 0; j < n; j++) {
+                double wanted = target_dis[i * n + j], w = weights[i * n + j];
+                double actual = hamming_dis(perm[i], perm[j]);
+                delta_cost -= w * sqr(wanted - actual);
+                double new_actual = hamming_dis(
+                        perm[iw],
+                        perm[j == iw           ? jw
+                                     : j == jw ? iw
+                                               : j]);
+                delta_cost += w * sqr(wanted - new_actual);
+            }
+        } else {
+            int j = iw;
+            {
+                double wanted = target_dis[i * n + j], w = weights[i * n + j];
+                double actual = hamming_dis(perm[i], perm[j]);
+                delta_cost -= w * sqr(wanted - actual);
+                double new_actual = hamming_dis(perm[i], perm[jw]);
+                delta_cost += w * sqr(wanted - new_actual);
+            }
+            j = jw;
+            {
+                double wanted = target_dis[i * n + j], w = weights[i * n + j];
+                double actual = hamming_dis(perm[i], perm[j]);
+                delta_cost -= w * sqr(wanted - actual);
+                double new_actual = hamming_dis(perm[i], perm[iw]);
+                delta_cost += w * sqr(wanted - new_actual);
+            }
+        }
+    }
+
+    return delta_cost;
+}
+
+} // namespace polysemous_training
+
 namespace {
 
 /// optimize permutation to reproduce a distance table with Hamming distances
 struct ReproduceWithHammingObjective : PermutationObjective {
     int nbits;
     double dis_weight_factor;
-
-    static double sqr(double x) {
-        return x * x;
-    }
 
     // weighting of distances: it is more important to reproduce small
     // distances well
@@ -190,73 +276,21 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
     // cost = quadratic difference between actual distance and Hamming distance
     double compute_cost(const int* perm) const override {
-        double cost = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                double wanted = target_dis[i * n + j];
-                double w = weights[i * n + j];
-                double actual = hamming_dis(perm[i], perm[j]);
-                cost += w * sqr(wanted - actual);
-            }
-        }
-        return cost;
+        return with_selected_simd_levels<polysemous_training::SIMD_LEVELS>(
+                [&]<SIMDLevel SL>() {
+                    return polysemous_training::hamming_compute_cost<SL>(
+                            n, perm, target_dis.data(), weights.data());
+                });
     }
 
     // what would the cost update be if iw and jw were swapped?
     // computed in O(n) instead of O(n^2) for the full re-computation
     double cost_update(const int* perm, int iw, int jw) const override {
-        double delta_cost = 0;
-
-        for (int i = 0; i < n; i++) {
-            if (i == iw) {
-                for (int j = 0; j < n; j++) {
-                    double wanted = target_dis[i * n + j],
-                           w = weights[i * n + j];
-                    double actual = hamming_dis(perm[i], perm[j]);
-                    delta_cost -= w * sqr(wanted - actual);
-                    double new_actual = hamming_dis(
-                            perm[jw],
-                            perm[j == iw           ? jw
-                                         : j == jw ? iw
-                                                   : j]);
-                    delta_cost += w * sqr(wanted - new_actual);
-                }
-            } else if (i == jw) {
-                for (int j = 0; j < n; j++) {
-                    double wanted = target_dis[i * n + j],
-                           w = weights[i * n + j];
-                    double actual = hamming_dis(perm[i], perm[j]);
-                    delta_cost -= w * sqr(wanted - actual);
-                    double new_actual = hamming_dis(
-                            perm[iw],
-                            perm[j == iw           ? jw
-                                         : j == jw ? iw
-                                                   : j]);
-                    delta_cost += w * sqr(wanted - new_actual);
-                }
-            } else {
-                int j = iw;
-                {
-                    double wanted = target_dis[i * n + j],
-                           w = weights[i * n + j];
-                    double actual = hamming_dis(perm[i], perm[j]);
-                    delta_cost -= w * sqr(wanted - actual);
-                    double new_actual = hamming_dis(perm[i], perm[jw]);
-                    delta_cost += w * sqr(wanted - new_actual);
-                }
-                j = jw;
-                {
-                    double wanted = target_dis[i * n + j],
-                           w = weights[i * n + j];
-                    double actual = hamming_dis(perm[i], perm[j]);
-                    delta_cost -= w * sqr(wanted - actual);
-                    double new_actual = hamming_dis(perm[i], perm[iw]);
-                    delta_cost += w * sqr(wanted - new_actual);
-                }
-            }
-        }
-
-        return delta_cost;
+        return with_selected_simd_levels<polysemous_training::SIMD_LEVELS>(
+                [&]<SIMDLevel SL>() {
+                    return polysemous_training::hamming_cost_update<SL>(
+                            n, perm, iw, jw, target_dis.data(), weights.data());
+                });
     }
 
     ReproduceWithHammingObjective(
@@ -306,14 +340,20 @@ double ReproduceDistancesObjective::get_source_dis(int i, int j) const {
     return source_dis[i * n + j];
 }
 
+namespace polysemous_training {
+
 // cost = quadratic difference between actual distance and Hamming distance
-double ReproduceDistancesObjective::compute_cost(const int* perm) const {
+template <>
+double distances_compute_cost<SIMDLevel::NONE>(
+        const ReproduceDistancesObjective& obj,
+        const int* perm) {
+    const int n = obj.n;
     double cost = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            double wanted = target_dis[i * n + j];
-            double w = weights[i * n + j];
-            double actual = get_source_dis(perm[i], perm[j]);
+            double wanted = obj.target_dis[i * n + j];
+            double w = obj.weights[i * n + j];
+            double actual = obj.get_source_dis(perm[i], perm[j]);
             cost += w * sqr(wanted - actual);
         }
     }
@@ -322,16 +362,22 @@ double ReproduceDistancesObjective::compute_cost(const int* perm) const {
 
 // what would the cost update be if iw and jw were swapped?
 // computed in O(n) instead of O(n^2) for the full re-computation
-double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
-        const {
+template <>
+double distances_cost_update<SIMDLevel::NONE>(
+        const ReproduceDistancesObjective& obj,
+        const int* perm,
+        int iw,
+        int jw) {
+    const int n = obj.n;
     double delta_cost = 0;
     for (int i = 0; i < n; i++) {
         if (i == iw) {
             for (int j = 0; j < n; j++) {
-                double wanted = target_dis[i * n + j], w = weights[i * n + j];
-                double actual = get_source_dis(perm[i], perm[j]);
+                double wanted = obj.target_dis[i * n + j],
+                       w = obj.weights[i * n + j];
+                double actual = obj.get_source_dis(perm[i], perm[j]);
                 delta_cost -= w * sqr(wanted - actual);
-                double new_actual = get_source_dis(
+                double new_actual = obj.get_source_dis(
                         perm[jw],
                         perm[j == iw           ? jw
                                      : j == jw ? iw
@@ -340,10 +386,11 @@ double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
             }
         } else if (i == jw) {
             for (int j = 0; j < n; j++) {
-                double wanted = target_dis[i * n + j], w = weights[i * n + j];
-                double actual = get_source_dis(perm[i], perm[j]);
+                double wanted = obj.target_dis[i * n + j],
+                       w = obj.weights[i * n + j];
+                double actual = obj.get_source_dis(perm[i], perm[j]);
                 delta_cost -= w * sqr(wanted - actual);
-                double new_actual = get_source_dis(
+                double new_actual = obj.get_source_dis(
                         perm[iw],
                         perm[j == iw           ? jw
                                      : j == jw ? iw
@@ -353,23 +400,44 @@ double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
         } else {
             int j = iw;
             {
-                double wanted = target_dis[i * n + j], w = weights[i * n + j];
-                double actual = get_source_dis(perm[i], perm[j]);
+                double wanted = obj.target_dis[i * n + j],
+                       w = obj.weights[i * n + j];
+                double actual = obj.get_source_dis(perm[i], perm[j]);
                 delta_cost -= w * sqr(wanted - actual);
-                double new_actual = get_source_dis(perm[i], perm[jw]);
+                double new_actual = obj.get_source_dis(perm[i], perm[jw]);
                 delta_cost += w * sqr(wanted - new_actual);
             }
             j = jw;
             {
-                double wanted = target_dis[i * n + j], w = weights[i * n + j];
-                double actual = get_source_dis(perm[i], perm[j]);
+                double wanted = obj.target_dis[i * n + j],
+                       w = obj.weights[i * n + j];
+                double actual = obj.get_source_dis(perm[i], perm[j]);
                 delta_cost -= w * sqr(wanted - actual);
-                double new_actual = get_source_dis(perm[i], perm[iw]);
+                double new_actual = obj.get_source_dis(perm[i], perm[iw]);
                 delta_cost += w * sqr(wanted - new_actual);
             }
         }
     }
     return delta_cost;
+}
+
+} // namespace polysemous_training
+
+double ReproduceDistancesObjective::compute_cost(const int* perm) const {
+    return with_selected_simd_levels<polysemous_training::SIMD_LEVELS>(
+            [&]<SIMDLevel SL>() {
+                return polysemous_training::distances_compute_cost<SL>(
+                        *this, perm);
+            });
+}
+
+double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
+        const {
+    return with_selected_simd_levels<polysemous_training::SIMD_LEVELS>(
+            [&]<SIMDLevel SL>() {
+                return polysemous_training::distances_cost_update<SL>(
+                        *this, perm, iw, jw);
+            });
 }
 
 ReproduceDistancesObjective::ReproduceDistancesObjective(

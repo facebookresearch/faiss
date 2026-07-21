@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
 #include <faiss/Clustering.h>
@@ -93,5 +94,34 @@ struct SuperKMeans {
     /// check_input_data_for_NaNs).
     void train(idx_t n, const float* x);
 };
+
+/// Reusable scratch for super_kmeans_assign_iteration; pass one instance across
+/// a loop of calls to avoid reallocating (buffers grow only as needed).
+struct SuperKMeansAssignScratch {
+    std::vector<float> Y_trail; // (k, d_trail) row-major, input to pdxify
+    std::vector<float> Y_pdx;   // PDX-laid-out trailing block
+    std::vector<float> x_norms_partial; // ||X[i, 0:d_prime]||^2
+    std::vector<float> y_norms_partial; // ||Y[j, 0:d_prime]||^2
+    std::vector<float> partial_ip;      // partial-GEMM tile buffer
+};
+
+/// One SuperKMeans iter-1+ assignment pass: partial GEMM over the front
+/// `d_prime` dims + ADSampling progressive pruning over the PDX-laid-out
+/// trailing block. Updates `tau` and `assignments` in place.
+void super_kmeans_assign_iteration(
+        const float* X_tilde, // (n, d) points, row-major, rotated space
+        int n,
+        int d,
+        const float* Y_tilde, // (k, d) centroids, row-major, rotated space
+        int k,
+        float* tau, // in/out, len n; entry = exact full-d L2 to assignment
+        int32_t* assignments,  // in/out, len n
+        int d_prime,           // GEMM/pruning split, 1 <= d_prime < d
+        const float* ad_coeff, // ADSampling threshold table, len d+1
+        const SuperKMeansParameters& cp,
+        int64_t* total_pairs = nullptr,    // optional out-counter
+        int64_t* pruned_at_gemm = nullptr, // optional out-counter
+        SuperKMeansAssignScratch* scratch =
+                nullptr); // optional, reuse across calls
 
 } // namespace faiss

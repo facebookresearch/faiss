@@ -17,7 +17,6 @@
 #include <cstdio>
 #include <limits>
 
-#include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexFlat.h>
@@ -1056,7 +1055,19 @@ InvertedListScanner* IndexIVF::get_InvertedListScanner(
 
 void IndexIVF::reconstruct(idx_t key, float* recons) const {
     idx_t lo = direct_map.get(key);
-    reconstruct_from_offset(lo_listno(lo), lo_offset(lo), recons);
+    const size_t list_no = lo_listno(lo);
+    const size_t offset = lo_offset(lo);
+    FAISS_THROW_IF_NOT_FMT(
+            list_no < nlist,
+            "IndexIVF::reconstruct: list_no %zd out of range (nlist=%zd)",
+            list_no,
+            nlist);
+    FAISS_THROW_IF_NOT_FMT(
+            offset < invlists->list_size(list_no),
+            "IndexIVF::reconstruct: offset %zd out of range (list_size=%zd)",
+            offset,
+            invlists->list_size(list_no));
+    reconstruct_from_offset(list_no, offset, recons);
 }
 
 void IndexIVF::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {

@@ -26,15 +26,19 @@ def compute_expected_code_size(d, nb_bits):
 
 
 def _create_fastscan_index(
-    d, metric, use_ivf=False,
-    nlist=16, nprobe=4, bbs=32, nb_bits=1,
+    d,
+    metric,
+    use_ivf=False,
+    nlist=16,
+    nprobe=4,
+    bbs=32,
+    nb_bits=1,
 ):
     """Create FastScan index (IVF or non-IVF)."""
     if use_ivf:
         quantizer = faiss.IndexFlat(d, metric)
         index = faiss.IndexIVFRaBitQFastScan(
-            quantizer, d, nlist, metric, bbs,
-            True, nb_bits
+            quantizer, d, nlist, metric, bbs, True, nb_bits
         )
         index.nprobe = nprobe
     else:
@@ -50,13 +54,22 @@ class TestRaBitQFastScan(unittest.TestCase):
     NPROBE = 4
 
     def _create_index(
-        self, d, metric, use_ivf=False,
-        nlist=None, bbs=32, nb_bits=1,
+        self,
+        d,
+        metric,
+        use_ivf=False,
+        nlist=None,
+        bbs=32,
+        nb_bits=1,
     ):
         return _create_fastscan_index(
-            d, metric, use_ivf=use_ivf,
-            nlist=nlist or self.NLIST, nprobe=self.NPROBE,
-            bbs=bbs, nb_bits=nb_bits,
+            d,
+            metric,
+            use_ivf=use_ivf,
+            nlist=nlist or self.NLIST,
+            nprobe=self.NPROBE,
+            bbs=bbs,
+            nb_bits=nb_bits,
         )
 
     def _create_baseline(self, d, metric, use_ivf=False, nlist=None):
@@ -134,9 +147,7 @@ class TestRaBitQFastScan(unittest.TestCase):
                     )
                 else:
                     # Non-IVF: use sa_encode + sa_decode
-                    index_fs = faiss.IndexRaBitQFastScan(
-                        ds.d, faiss.METRIC_L2
-                    )
+                    index_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
                     index_fs.train(ds.get_train())
 
                     codes_fs = np.empty(
@@ -145,7 +156,7 @@ class TestRaBitQFastScan(unittest.TestCase):
                     index_fs.compute_codes(
                         faiss.swig_ptr(codes_fs),
                         len(test_vectors),
-                        faiss.swig_ptr(test_vectors)
+                        faiss.swig_ptr(test_vectors),
                     )
                     decoded_fs = index_fs.sa_decode(codes_fs)
 
@@ -174,7 +185,9 @@ class TestRaBitQFastScan(unittest.TestCase):
                     ds = datasets.SyntheticDataset(128, 1000, 200, 20)
 
                     index = self._create_index(
-                        128, faiss.METRIC_L2, use_ivf,
+                        128,
+                        faiss.METRIC_L2,
+                        use_ivf,
                         nb_bits=nb_bits,
                     )
                     index.train(ds.get_train())
@@ -224,7 +237,7 @@ class TestRaBitQFastScan(unittest.TestCase):
 
                 I_gt = ds.get_groundtruth(5)
                 recall = faiss.eval_intersection(I[:, :5], I_gt[:, :5])
-                recall /= (ds.nq * 5)
+                recall /= ds.nq * 5
                 np.testing.assert_(recall > 0.1)
 
     # ==================== Thread Safety Tests ====================
@@ -260,7 +273,8 @@ class TestRaBitQFastScan(unittest.TestCase):
             with self.subTest(use_ivf=use_ivf):
                 factory_str = f"IVF{nlist},RaBitQfs" if use_ivf else "RaBitQfs"
                 expected_type = (
-                    faiss.IndexIVFRaBitQFastScan if use_ivf
+                    faiss.IndexIVFRaBitQFastScan
+                    if use_ivf
                     else faiss.IndexRaBitQFastScan
                 )
 
@@ -397,16 +411,14 @@ class TestRaBitQFastScan(unittest.TestCase):
 
                 params_fs = faiss.IVFSearchParameters()
                 params_fs.nprobe = nprobe
-                _, I_fs = index_fs.search(
-                    ds.get_queries(), k, params=params_fs
-                )
+                _, I_fs = index_fs.search(ds.get_queries(), k, params=params_fs)
 
                 eval_base = faiss.eval_intersection(
                     I_base[:, :k], I_gt[:, :k]
                 ) / (ds.nq * k)
-                eval_fs = faiss.eval_intersection(
-                    I_fs[:, :k], I_gt[:, :k]
-                ) / (ds.nq * k)
+                eval_fs = faiss.eval_intersection(I_fs[:, :k], I_gt[:, :k]) / (
+                    ds.nq * k
+                )
 
                 np.testing.assert_(abs(eval_base - eval_fs) < 0.01)
 
@@ -434,9 +446,9 @@ class TestRaBitQFastScan(unittest.TestCase):
         params_base.centered = False
         _, I_base = index_base.search(ds.get_queries(), k, params=params_base)
 
-        eval_base = faiss.eval_intersection(
-            I_base[:, :k], I_gt[:, :k]
-        ) / (ds.nq * k)
+        eval_base = faiss.eval_intersection(I_base[:, :k], I_gt[:, :k]) / (
+            ds.nq * k
+        )
 
         # FastScan with specific implementation
         quantizer2 = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
@@ -454,9 +466,9 @@ class TestRaBitQFastScan(unittest.TestCase):
         params_fs.nprobe = nprobe
         _, I_fs = index_fs.search(ds.get_queries(), k, params=params_fs)
 
-        eval_fs = faiss.eval_intersection(
-            I_fs[:, :k], I_gt[:, :k]
-        ) / (ds.nq * k)
+        eval_fs = faiss.eval_intersection(I_fs[:, :k], I_gt[:, :k]) / (
+            ds.nq * k
+        )
 
         np.testing.assert_(abs(eval_base - eval_fs) < 0.05)
 
@@ -488,9 +500,7 @@ class TestRaBitQFastScan(unittest.TestCase):
         params = faiss.IVFSearchParameters()
         params.nprobe = nprobe
 
-        D, I = faiss.search_with_parameters(
-            index, ds.get_queries(), k, params
-        )
+        D, I = faiss.search_with_parameters(index, ds.get_queries(), k, params)
 
         self.assertEqual(D.shape, (nq, k))
         self.assertEqual(I.shape, (nq, k))
@@ -536,10 +546,12 @@ class TestIVFRaBitQFastScanFiltering(unittest.TestCase):
             sel = faiss.IDSelectorBatch(subset)
             allowed = set(subset.tolist())
         elif selector_type == "whole_block_not":
-            excluded = np.concatenate([
-                np.arange(0, min(32, nb), dtype="int64"),
-                np.arange(64, min(96, nb), dtype="int64"),
-            ])
+            excluded = np.concatenate(
+                [
+                    np.arange(0, min(32, nb), dtype="int64"),
+                    np.arange(64, min(96, nb), dtype="int64"),
+                ]
+            )
             inner_sel = faiss.IDSelectorBatch(excluded)
             sel = faiss.IDSelectorNot(inner_sel)
             allowed = {i for i in range(nb) if i not in excluded}
@@ -633,8 +645,8 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
             self.assertEqual(index.code_size, expected_size)
 
     def test_ivf_construction(self):
-        """Test IndexIVFRaBitQFastScan construction with valid/invalid nb_bits.
-        """
+        """Test IndexIVFRaBitQFastScan construction with valid/invalid
+        nb_bits."""
         d, nlist = 128, 16
         # Valid nb_bits
         for nb_bits in [1, 2, 4, 8]:
@@ -711,7 +723,7 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
     def test_recall_monotonic_improvement(self):
         """Test that recall improves with more bits."""
         for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
-            metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+            metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
             ds = datasets.SyntheticDataset(
                 128, 500, 1000, 50, metric=metric_str
             )
@@ -728,9 +740,9 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                         index.train(ds.get_train())
                         index.add(ds.get_database())
                         _, I = index.search(ds.get_queries(), 10)
-                        recalls[nb_bits] = faiss.eval_intersection(
-                            I, I_gt
-                        ) / (ds.nq * 10)
+                        recalls[nb_bits] = faiss.eval_intersection(I, I_gt) / (
+                            ds.nq * 10
+                        )
 
                     tolerance = 0.03
                     self.assertGreaterEqual(recalls[2], recalls[1] - tolerance)
@@ -754,9 +766,7 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
             index.train(ds.get_train())
             index.add(ds.get_database())
             _, I = index.search(ds.get_queries(), 10)
-            recalls[nb_bits] = faiss.eval_intersection(
-                I, I_gt
-            ) / (ds.nq * 10)
+            recalls[nb_bits] = faiss.eval_intersection(I, I_gt) / (ds.nq * 10)
 
         self.assertGreater(recalls[2], recalls[1])
         self.assertGreater(recalls[4], recalls[2])
@@ -808,8 +818,7 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
         d, nlist, nprobe, k = 128, 16, 4, 10
         ds = datasets.SyntheticDataset(d, 1000, 1000, 50)
 
-        if not faiss.SIMDConfig.is_simd_level_available(
-                faiss.SIMDLevel_NONE):
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
             self.skipTest("SIMDLevel.NONE not available")
 
         for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
@@ -834,10 +843,8 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                     _, I_fs_simd = index_fs.search(ds.get_queries(), k)
 
                     with NoneSIMDLevel():
-                        _, I_rbq_none = index_rbq.search(
-                            ds.get_queries(), k)
-                        _, I_fs_none = index_fs.search(
-                            ds.get_queries(), k)
+                        _, I_rbq_none = index_rbq.search(ds.get_queries(), k)
+                        _, I_fs_none = index_fs.search(ds.get_queries(), k)
 
                     np.testing.assert_array_equal(I_rbq_simd, I_rbq_none)
                     np.testing.assert_array_equal(I_fs_simd, I_fs_none)
@@ -928,9 +935,7 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                     index.add(test_vectors)
 
                     reconstructed = index.reconstruct_n(0, len(test_vectors))
-                    errors = np.sum(
-                        (test_vectors - reconstructed) ** 2, axis=1
-                    )
+                    errors = np.sum((test_vectors - reconstructed) ** 2, axis=1)
                     avg_error = np.mean(errors)
 
                     self.assertTrue(np.all(np.isfinite(reconstructed)))
@@ -946,16 +951,17 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                     with self.subTest(
                         use_ivf=use_ivf, nb_bits=nb_bits, metric=metric
                     ):
-                        metric_str = (
-                            "L2" if metric == faiss.METRIC_L2 else "IP"
-                        )
+                        metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
                         ds = datasets.SyntheticDataset(
                             d, 500, 100, 10, metric=metric_str
                         )
 
                         index = _create_fastscan_index(
-                            d, metric, use_ivf=use_ivf,
-                            nlist=nlist, nb_bits=nb_bits,
+                            d,
+                            metric,
+                            use_ivf=use_ivf,
+                            nlist=nlist,
+                            nb_bits=nb_bits,
                         )
                         if use_ivf:
                             index.nprobe = nlist
@@ -1108,19 +1114,18 @@ class TestRaBitQFastScanSearchParams(unittest.TestCase):
         _, I_qb4 = index.search(ds.get_queries(), k, params=params_qb4)
 
         # Compute recall@k
-        recall_qb1 = np.mean([
-            len(np.intersect1d(I_qb1[i], I_gt[i])) / k
-            for i in range(ds.nq)
-        ])
-        recall_qb4 = np.mean([
-            len(np.intersect1d(I_qb4[i], I_gt[i])) / k
-            for i in range(ds.nq)
-        ])
+        recall_qb1 = np.mean(
+            [len(np.intersect1d(I_qb1[i], I_gt[i])) / k for i in range(ds.nq)]
+        )
+        recall_qb4 = np.mean(
+            [len(np.intersect1d(I_qb4[i], I_gt[i])) / k for i in range(ds.nq)]
+        )
 
         self.assertGreater(
-            recall_qb4, recall_qb1,
+            recall_qb4,
+            recall_qb1,
             f"qb=4 recall ({recall_qb4:.3f}) should be higher "
-            f"than qb=1 recall ({recall_qb1:.3f})"
+            f"than qb=1 recall ({recall_qb1:.3f})",
         )
 
 

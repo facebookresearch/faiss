@@ -22,7 +22,6 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/impl/AuxIndexStructures.h>

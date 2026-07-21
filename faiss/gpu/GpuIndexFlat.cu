@@ -18,7 +18,7 @@
 #include <faiss/gpu/utils/Float16.cuh>
 #include <limits>
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_FLAT)
 #include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #endif
 
@@ -93,7 +93,7 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_FLAT)
 
     if (should_use_cuvs(config_)) {
         data_.reset(new CuvsFlatIndex(
@@ -102,12 +102,17 @@ void GpuIndexFlat::resetIndex_(int dims) {
                 flatConfig_.useFloat16,
                 config_.memorySpace));
     } else
-#else
+#elif !defined(USE_NVIDIA_CUVS)
     if (should_use_cuvs(config_)) {
         FAISS_THROW_MSG(
                 "cuVS has not been compiled into the current version so it cannot be used.");
     } else
 #endif
+    // When cuVS is compiled in but the cuVS flat backend is pruned
+    // (FAISS_CUVS_NO_FLAT — e.g. the cuVS 26.02 IVF-PQ-only build on aarch64,
+    // whose cuvs-ivfpq-2602 dep omits neighbors/brute_force), should_use_cuvs
+    // may still be true; fall back to the classic GPU FlatIndex
+    // (bfKnnOnDevice), which is functionally equivalent for brute-force search.
     {
         data_.reset(new FlatIndex(
                 resources_.get(),

@@ -77,7 +77,8 @@ void IndexFlat::range_search(
             range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         default:
-            FAISS_THROW_MSG("metric type not supported");
+            IndexFlatCodes::range_search(n, x, radius, result, params);
+            break;
     }
 }
 

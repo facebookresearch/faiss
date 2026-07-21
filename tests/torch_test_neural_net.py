@@ -11,18 +11,20 @@ import numpy as np  # usort: skip
 import faiss  # usort: skip
 
 from faiss.contrib import datasets  # usort: skip
-from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks  # usort: skip
+from faiss.contrib.inspect_tools import (
+    get_additive_quantizer_codebooks,
+)  # usort: skip
 
 
 class TestLayer(unittest.TestCase):
 
     @torch.no_grad()
     def test_Embedding(self):
-        """ verify that the Faiss Embedding works the same as in Pytorch """
+        """verify that the Faiss Embedding works the same as in Pytorch"""
         torch.manual_seed(123)
 
         emb = nn.Embedding(40, 50)
-        idx = torch.randint(40, (25, ))
+        idx = torch.randint(40, (25,))
         ref_batch = emb(idx)
 
         emb2 = faiss.Embedding(emb)
@@ -34,7 +36,7 @@ class TestLayer(unittest.TestCase):
 
     @torch.no_grad()
     def do_test_Linear(self, bias):
-        """ verify that the Faiss Linear works the same as in Pytorch """
+        """verify that the Faiss Linear works the same as in Pytorch"""
         torch.manual_seed(123)
         linear = nn.Linear(50, 40, bias=bias)
         x = torch.randn(25, 50)
@@ -50,6 +52,7 @@ class TestLayer(unittest.TestCase):
 
     def test_Linear_nobias(self):
         self.do_test_Linear(False)
+
 
 ######################################################
 # QINCo Pytorch implementation copied from
@@ -70,7 +73,9 @@ def compute_batch_distances(a, b):
     anorms = (a**2).sum(-1)
     bnorms = (b**2).sum(-1)
     return (
-        anorms.unsqueeze(-1) + bnorms.unsqueeze(1) - 2 * torch.bmm(a, b.transpose(2, 1))
+        anorms.unsqueeze(-1)
+        + bnorms.unsqueeze(1)
+        - 2 * torch.bmm(a, b.transpose(2, 1))
     )
 
 
@@ -78,9 +83,13 @@ def assign_batch_multiple(x, zqs):
     bs, d = x.shape
     bs, K, d = zqs.shape
 
-    L2distances = compute_batch_distances(x.unsqueeze(1), zqs).squeeze(1)  # [bs x ksq]
+    L2distances = compute_batch_distances(x.unsqueeze(1), zqs).squeeze(
+        1
+    )  # [bs x ksq]
     idx = torch.argmin(L2distances, dim=1).unsqueeze(1)  # [bsx1]
-    quantized = torch.gather(zqs, dim=1, index=idx.unsqueeze(-1).repeat(1, 1, d))
+    quantized = torch.gather(
+        zqs, dim=1, index=idx.unsqueeze(-1).repeat(1, 1, d)
+    )
     return idx.squeeze(1), quantized.squeeze(1)
 
 
@@ -99,7 +108,11 @@ def assign_to_codebook(x, c, bs=16384):
     for i in range(0, nq, bs):
         xnorms = (x[i : i + bs] ** 2).sum(1, keepdim=True)
         for j in range(0, nb, bs):
-            dis = xnorms + cnorms[j : j + bs] - 2 * x[i : i + bs] @ c[j : j + bs].T
+            dis = (
+                xnorms
+                + cnorms[j : j + bs]
+                - 2 * x[i : i + bs] @ c[j : j + bs].T
+            )
             dmini, imini = dis.min(1)
             if j == 0:
                 dmin = dmini
@@ -129,7 +142,9 @@ class QINCoStep(nn.Module):
         self.residual_blocks = []
         for l in range(L):
             residual_block = nn.Sequential(
-                nn.Linear(d, h, bias=False), nn.ReLU(), nn.Linear(h, d, bias=False)
+                nn.Linear(d, h, bias=False),
+                nn.ReLU(),
+                nn.Linear(h, d, bias=False),
             )
             self.add_module(f"residual_block{l}", residual_block)
             self.residual_blocks.append(residual_block)
@@ -196,7 +211,8 @@ class QINCo(nn.Module):
         """
         Encode a batch of vectors x to codes of length M.
         If this function is called from IVF-QINCo, codes are 1 index longer,
-        due to the first index being the IVF index, and codebook0 is the IVF codebook.
+        due to the first index being the IVF index, and codebook0 is the
+        IVF codebook.
         """
         M = len(self.steps) + 1
         bs, d = x.shape
@@ -220,6 +236,7 @@ class QINCo(nn.Module):
 # QINCo tests
 ######################################################
 
+
 def copy_QINCoStep(step):
     step2 = faiss.QINCoStep(step.d, step.K, step.L, step.h)
     step2.codebook.from_torch(step.codebook)
@@ -239,7 +256,7 @@ class TestQINCoStep(unittest.TestCase):
         torch.manual_seed(123)
         step = QINCoStep(d=16, K=20, L=2, h=8)
 
-        codes = torch.randint(0, 20, (10, ))
+        codes = torch.randint(0, 20, (10,))
         xhat = torch.randn(10, 16)
         ref_decode = step.decode(xhat, codes)
 
@@ -248,8 +265,7 @@ class TestQINCoStep(unittest.TestCase):
         codes2 = faiss.Int32Tensor2D(codes[:, None].to(dtype=torch.int32))
 
         np.testing.assert_array_equal(
-            step.codebook(codes).numpy(),
-            step2.codebook(codes2).numpy()
+            step.codebook(codes).numpy(), step2.codebook(codes2).numpy()
         )
 
         xhat2 = faiss.Tensor2D(xhat)
@@ -258,9 +274,7 @@ class TestQINCoStep(unittest.TestCase):
         new_decode = step2.decode(xhat2, codes2)
 
         np.testing.assert_allclose(
-            ref_decode.numpy(),
-            new_decode.numpy(),
-            atol=2e-6
+            ref_decode.numpy(), new_decode.numpy(), atol=2e-6
         )
 
     @torch.no_grad()
@@ -269,7 +283,7 @@ class TestQINCoStep(unittest.TestCase):
         step = QINCoStep(d=16, K=20, L=2, h=8)
 
         # create plausible x for testing starting from actual codes
-        codes = torch.randint(0, 20, (10, ))
+        codes = torch.randint(0, 20, (10,))
         xhat = torch.zeros(10, 16)
         x = step.decode(xhat, codes)
         del codes
@@ -283,12 +297,9 @@ class TestQINCoStep(unittest.TestCase):
         new_codes = step2.encode(xhat2, x2, toadd2)
 
         np.testing.assert_allclose(
-            ref_codes.numpy(),
-            new_codes.numpy().ravel(),
-            atol=2e-6
+            ref_codes.numpy(), new_codes.numpy().ravel(), atol=2e-6
         )
         np.testing.assert_allclose(toadd.numpy(), toadd2.numpy(), atol=2e-6)
-
 
 
 class TestQINCo(unittest.TestCase):
@@ -321,18 +332,21 @@ class TestQINCo(unittest.TestCase):
 
         new_codes = qinco2.encode(x2)
 
-        np.testing.assert_allclose(ref_codes.numpy(), new_codes.numpy(), atol=2e-6)
+        np.testing.assert_allclose(
+            ref_codes.numpy(), new_codes.numpy(), atol=2e-6
+        )
 
 
 ######################################################
 # Test index
 ######################################################
 
+
 class TestIndexQINCo(unittest.TestCase):
 
     def test_search(self):
         """
-        We can't train qinco with just Faiss so we just train a RQ and use the 
+        We can't train qinco with just Faiss so we just train a RQ and use the
         codebooks in QINCo with L = 0 residual blocks
         """
         ds = datasets.SyntheticDataset(32, 1000, 100, 0)
@@ -343,7 +357,7 @@ class TestIndexQINCo(unittest.TestCase):
         rq = index_ref.rq
         # rq = faiss.ResidualQuantizer(ds.d, M, 4)
         rq.train_type = faiss.ResidualQuantizer.Train_default
-        rq.max_beam_size = 1    # beam search not implemented for QINCo (yet)
+        rq.max_beam_size = 1  # beam search not implemented for QINCo (yet)
         index_ref.train(ds.get_train())
         codebooks = get_additive_quantizer_codebooks(rq)
 

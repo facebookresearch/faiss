@@ -21,11 +21,13 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
@@ -315,8 +317,8 @@ Index* parse_coarse_quantizer(
         SVSStorageKind storage = SVSStorageKind::SVS_FP32;
         if (sm[3].matched) {
             std::string s = sm[3].str().substr(1);
-            if (s == "SQI8") {
-                storage = SVSStorageKind::SVS_SQI8;
+            if (s == "SQ8") {
+                storage = SVSStorageKind::SVS_SQ8;
             } else if (s == "FP16") {
                 storage = SVSStorageKind::SVS_FP16;
             } else if (s == "FP32") {
@@ -514,6 +516,18 @@ IndexIVF* parse_IndexIVF(
         uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
         return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il, nb_bits);
     }
+    // IndexIVFEDEN with optional nb_bits (1-8) and scale type.
+    // Accepts: "EDEN" (default 1-bit), "EDEN{nb_bits}" (e.g., "EDEN4"),
+    //          or "EDEN{nb_bits}BIASED" for the MSE-minimizing scale.
+    if (match("EDEN([1-8])?(BIASED|BIAS)?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        EDENScaleType scale_type =
+                sm[2].str() == "BIASED" || sm[2].str() == "BIAS"
+                ? EDENScaleType_BIASED
+                : EDENScaleType_UNBIASED;
+        return new IndexIVFEDEN(
+                get_q(), d, nlist, mt, own_il, nb_bits, scale_type);
+    }
     // Accepts: "RaBitQfs" (default 1-bit, batch size 32)
     //          "RaBitQfs{nb_bits}" (e.g., "RaBitQfs4")
     //          "RaBitQfs_64" (1-bit, batch size 64)
@@ -681,16 +695,16 @@ Index* parse_svs_datatype(
         }
         FAISS_ASSERT(false && "Unsupported SVS index type for Float16");
     }
-    if (re_match(datatype_string, "SQI8", sm)) {
+    if (re_match(datatype_string, "SQ8", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
         if (index_type == "IVF") {
             return new IndexSVSIVF(
-                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQ8);
         }
-        FAISS_ASSERT(false && "Unsupported SVS index type for SQI8");
+        FAISS_ASSERT(false && "Unsupported SVS index type for SQ8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana") {
@@ -915,6 +929,18 @@ Index* parse_other_indexes(
     if (match("RaBitQ([1-9])?")) {
         uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
         return new IndexRaBitQ(d, metric, nb_bits);
+    }
+
+    // IndexEDEN with optional nb_bits (1-8) and scale type.
+    // Accepts: "EDEN" (default 1-bit), "EDEN{nb_bits}" (e.g., "EDEN4"),
+    //          or "EDEN{nb_bits}BIASED" for the MSE-minimizing scale.
+    if (match("EDEN([1-8])?(BIASED|BIAS)?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        EDENScaleType scale_type =
+                sm[2].str() == "BIASED" || sm[2].str() == "BIAS"
+                ? EDENScaleType_BIASED
+                : EDENScaleType_UNBIASED;
+        return new IndexEDEN(d, metric, nb_bits, scale_type);
     }
 
     if (match("RaBitQfs([1-9])?(_[0-9]+)?")) {

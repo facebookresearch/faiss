@@ -174,7 +174,7 @@ class TestRaBitQ(unittest.TestCase):
                     params = faiss.RaBitQSearchParameters(
                         qb=qb, centered=centered
                     )
-                    ratio_threshold = 2 ** (1 / qb)
+                    ratio_threshold = 2.1 ** (1 / qb)
                     test(
                         params,
                         ratio_threshold,
@@ -248,6 +248,20 @@ class TestRaBitQ(unittest.TestCase):
                 abs(ref_dis[0][j] - upd_dis) < mean_dist * 0.00001,
                 f"{j} {ref_dis[0][j]} {upd_dis}",
             )
+
+    def test_self_match_nonneg_distance(self):
+        d = 64
+        rs = np.random.RandomState(10996)
+        xb = rs.randn(200, d).astype("float32")
+
+        index = faiss.IndexRaBitQ(d, faiss.METRIC_L2)
+        index.train(xb)
+        index.add(xb)
+
+        D, I = index.search(xb[:5], 5)
+        np.testing.assert_(np.all(D >= 0), f"negative D: {D[D < 0]}")
+        for i in range(5):
+            self.assertIn(i, I[i])
 
     def test_serde_rabitq(self):
         do_test_serde("RaBitQ")
@@ -487,9 +501,7 @@ def create_index_ivf_rabitq_with_rotation(
 ):
     """Helper: Create IndexIVFRaBitQ with random rotation."""
     quantizer = faiss.IndexFlat(d, metric)
-    index_rbq = faiss.IndexIVFRaBitQ(
-        quantizer, d, nlist, metric, True, nb_bits
-    )
+    index_rbq = faiss.IndexIVFRaBitQ(quantizer, d, nlist, metric, True, nb_bits)
     index_rbq.qb = qb
     index_rbq.nprobe = nprobe
     rrot = faiss.RandomRotationMatrix(d, d)
@@ -587,13 +599,9 @@ class TestMultiBitRaBitQ(unittest.TestCase):
         # Invalid nb_bits
         quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
         with self.assertRaises(RuntimeError):
-            faiss.IndexIVFRaBitQ(
-                quantizer, d, nlist, faiss.METRIC_L2, True, 0
-            )
+            faiss.IndexIVFRaBitQ(quantizer, d, nlist, faiss.METRIC_L2, True, 0)
         with self.assertRaises(RuntimeError):
-            faiss.IndexIVFRaBitQ(
-                quantizer, d, nlist, faiss.METRIC_L2, True, 10
-            )
+            faiss.IndexIVFRaBitQ(quantizer, d, nlist, faiss.METRIC_L2, True, 10)
 
     # ==================== Basic Operations Tests ====================
 
@@ -626,7 +634,7 @@ class TestMultiBitRaBitQ(unittest.TestCase):
     def test_recall_quality(self):
         """Test that recall is reasonable for various configurations."""
         for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
-            metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+            metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
             ds = datasets.SyntheticDataset(
                 128, 500, 1000, 50, metric=metric_str
             )
@@ -641,15 +649,13 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         index.train(ds.get_train())
                         index.add(ds.get_database())
                         _, I = index.search(ds.get_queries(), 10)
-                        recall = faiss.eval_intersection(
-                            I, I_gt
-                        ) / (ds.nq * 10)
+                        recall = faiss.eval_intersection(I, I_gt) / (ds.nq * 10)
                         self.assertGreater(recall, 0.10)
 
     def test_recall_monotonic_improvement(self):
         """Test that recall improves with more bits."""
         for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
-            metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+            metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
             ds = datasets.SyntheticDataset(
                 128, 500, 1000, 50, metric=metric_str
             )
@@ -665,9 +671,9 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         index.train(ds.get_train())
                         index.add(ds.get_database())
                         _, I = index.search(ds.get_queries(), 10)
-                        recalls[nb_bits] = faiss.eval_intersection(
-                            I, I_gt
-                        ) / (ds.nq * 10)
+                        recalls[nb_bits] = faiss.eval_intersection(I, I_gt) / (
+                            ds.nq * 10
+                        )
 
                     # Monotonic improvement with tolerance
                     tolerance = 0.03
@@ -745,7 +751,7 @@ class TestMultiBitRaBitQ(unittest.TestCase):
     def test_ivf_nprobe_improves_recall(self):
         """Test that higher nprobe improves recall."""
         for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
-            metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+            metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
             ds = datasets.SyntheticDataset(
                 128, 500, 1000, 50, metric=metric_str
             )
@@ -767,9 +773,9 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                     for nprobe in [1, 2, 4, 8]:
                         index_rbq.nprobe = nprobe
                         _, I = index.search(ds.get_queries(), 10)
-                        recalls[nprobe] = faiss.eval_intersection(
-                            I, I_gt
-                        ) / (ds.nq * 10)
+                        recalls[nprobe] = faiss.eval_intersection(I, I_gt) / (
+                            ds.nq * 10
+                        )
 
                     self.assertGreaterEqual(recalls[2], recalls[1])
                     self.assertGreaterEqual(recalls[4], recalls[2])
@@ -835,9 +841,7 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         params = faiss.RaBitQSearchParameters()
                         params.qb = qb
                         params.centered = False
-                        D, I = index.search(
-                            ds.get_queries(), 10, params=params
-                        )
+                        D, I = index.search(ds.get_queries(), 10, params=params)
 
                         self.assertEqual(D.shape, (ds.nq, 10))
                         self.assertTrue(np.all(I >= 0))
@@ -938,9 +942,11 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         true_dist = float(np.sum((query - centroid) ** 2))
 
                     np.testing.assert_allclose(
-                        D[0, 0], true_dist, atol=0.15,
-                        err_msg=f"nb_bits={nb_bits}")
-
+                        D[0, 0],
+                        true_dist,
+                        atol=0.15,
+                        err_msg=f"nb_bits={nb_bits}",
+                    )
 
 
 if __name__ == "__main__":

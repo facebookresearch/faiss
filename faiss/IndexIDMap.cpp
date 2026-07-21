@@ -138,7 +138,8 @@ void IndexIDMapTemplate<IndexT>::add_sa_codes(
         idx_t n,
         const uint8_t* codes,
         const idx_t* xids) {
-    index->add_sa_codes(n, codes, xids);
+    // don't pass the ids to the sub-index, they are kept in id_map
+    index->add_sa_codes(n, codes, nullptr);
     for (idx_t i = 0; i < n; i++) {
         id_map.push_back(xids[i]);
     }
@@ -228,14 +229,14 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    if (params) {
+    if (params && params->sel) {
         SearchParameters internal_search_parameters;
         IDSelectorTranslated id_selector_translated(id_map, params->sel);
         internal_search_parameters.sel = &id_selector_translated;
 
         index->range_search(n, x, radius, result, &internal_search_parameters);
     } else {
-        index->range_search(n, x, radius, result);
+        index->range_search(n, x, radius, result, params);
     }
 
     const idx_t id_map_size = static_cast<idx_t>(id_map.size());
@@ -327,6 +328,18 @@ void IndexIDMap2Template<IndexT>::add_with_ids(
             static_cast<const void*>(x),
             component_t_to_numeric<typename IndexT::component_t>(),
             xids);
+}
+
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* xids) {
+    idx_t prev_ntotal = this->ntotal;
+    IndexIDMapTemplate<IndexT>::add_sa_codes(n, codes, xids);
+    for (idx_t i = prev_ntotal; i < this->ntotal; i++) {
+        rev_map[this->id_map[i]] = i;
+    }
 }
 
 template <typename IndexT>

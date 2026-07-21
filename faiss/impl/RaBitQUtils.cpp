@@ -209,7 +209,13 @@ QueryFactorsData compute_query_factors(
     // Quantize the query
     const uint8_t max_code = (1 << qb) - 1;
     const float delta = (v_max - v_min) / max_code;
-    const float inv_delta = 1.0f / delta;
+    // A constant (or zero-norm) query has v_max == v_min, so delta == 0.
+    // Without this guard inv_delta would be +inf and (v_q - v_min) * inv_delta
+    // == NaN, which then float-casts to uint8_t below -- undefined behavior
+    // (UBSan float-cast-overflow) and garbage codes. A constant query carries
+    // no directional signal, so quantizing every component to 0 is correct;
+    // inv_delta = 0 achieves that.
+    const float inv_delta = (delta > 0.0f) ? (1.0f / delta) : 0.0f;
 
     rotated_qq.resize(d);
     size_t sum_qq = 0;
@@ -218,8 +224,8 @@ QueryFactorsData compute_query_factors(
     uint8_t* rqq = rotated_qq.data();
     for (size_t i = 0; i < d; i++) {
         const float v_q = rq[i];
-        const uint8_t v_qq = std::clamp<float>(
-                std::round((v_q - v_min) * inv_delta), 0, max_code);
+        const uint8_t v_qq =
+                round_clamped_to_uint8((v_q - v_min) * inv_delta, max_code);
         rqq[i] = v_qq;
         sum_qq += v_qq;
 
