@@ -62,6 +62,23 @@ inline void upload_bitset_if_needed(
             stream));
 }
 
+// Convert the uint64_t neighbor ids produced by the search kernel into
+// faiss idx_t labels directly on the device, mapping the UINT64_MAX "empty
+// slot" sentinel to -1. This lets the standard search() path (searchImpl_)
+// write labels straight into the caller's device buffer without a
+// D2H -> host convert -> H2D round-trip.
+__global__ void convert_labels_kernel(
+        const uint64_t* __restrict__ in,
+        idx_t* __restrict__ out,
+        size_t count) {
+    size_t i = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (i < count) {
+        uint64_t v = in[i];
+        out[i] = (v == UINT64_MAX) ? static_cast<idx_t>(-1)
+                                   : static_cast<idx_t>(v);
+    }
+}
+
 } // namespace
 
 GpuIndexHNSW::GpuIndexHNSW(
@@ -241,27 +258,22 @@ void GpuIndexHNSW::searchImpl_(
             cudaMemcpyDeviceToDevice,
             stream));
 
-    // Labels: D2H stage (uint64_t→idx_t conversion), then H2D back
-    auto tmp = std::make_unique<uint64_t[]>(nq * k);
-    GPU_HNSW_CUDA_CHECK(cudaMemcpyAsync(
-            tmp.get(),
-            sc.d_neighbors,
-            static_cast<size_t>(nq) * k * sizeof(uint64_t),
-            cudaMemcpyDeviceToHost,
-            stream));
-    GPU_HNSW_CUDA_CHECK(cudaStreamSynchronize(stream));
-
-    auto h_labels = std::make_unique<idx_t[]>(nq * k);
-    for (int i = 0; i < nq * k; i++) {
-        h_labels[i] = (tmp[i] == UINT64_MAX) ? -1 : static_cast<idx_t>(tmp[i]);
+    // Labels: convert uint64_t neighbor ids to idx_t on-device, writing
+    // straight into the caller's device output. This replaces the previous
+    // D2H -> host uint64->idx_t convert -> H2D round-trip; the whole path
+    // now stays on the slot stream.
+    size_t label_count = static_cast<size_t>(nq) * k;
+    if (label_count > 0) {
+        constexpr int kBlock = 256;
+        size_t grid = (label_count + kBlock - 1) / kBlock;
+        convert_labels_kernel<<<grid, kBlock, 0, stream>>>(
+                sc.d_neighbors, labels, label_count);
+        GPU_HNSW_CUDA_CHECK(cudaGetLastError());
     }
 
-    GPU_HNSW_CUDA_CHECK(cudaMemcpyAsync(
-            labels,
-            h_labels.get(),
-            static_cast<size_t>(nq) * k * sizeof(idx_t),
-            cudaMemcpyHostToDevice,
-            stream));
+    // Synchronize the slot stream before returning: the parent
+    // GpuIndex::search copies distances/labels back on the default stream
+    // once we return, and our work ran on this private stream.
     GPU_HNSW_CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 

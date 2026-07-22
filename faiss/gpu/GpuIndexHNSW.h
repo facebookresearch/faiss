@@ -72,13 +72,14 @@ struct SearchParametersGpuHNSW : SearchParameters {
 ///
 /// Two search entry points exist:
 ///   - searchHost(): host in/out pointers with a single device sync at the
-///     end. Lower latency than the search() override (no label round-trip).
-///     Optional bitset filtering (deletes/TTL/partitions) is supported here.
-///   - searchImpl_(): the faiss-standard GpuIndex::search() override. It does a
-///     D2H copy of labels, a CPU uint64->idx_t conversion, then an H2D copy
-///     back, with a stream sync on each side. Correct but not latency-optimal;
-///     a GPU-side label-conversion kernel to avoid the round-trip is a
-///     documented follow-up.
+///     end. Optional bitset filtering (deletes/TTL/partitions) is supported
+///     here.
+///   - searchImpl_(): the faiss-standard GpuIndex::search() override, taking
+///     device pointers. Distances are copied D2D and the uint64 neighbor ids
+///     are converted to idx_t labels on-device (convert_labels_kernel),
+///     writing straight into the caller's device output — no D2H/H2D label
+///     round-trip. A single stream sync at the end orders the private slot
+///     stream before the parent copies outputs back.
 struct GpuIndexHNSW : public GpuIndex {
    public:
     GpuIndexHNSW(
