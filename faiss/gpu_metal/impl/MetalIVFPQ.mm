@@ -52,6 +52,11 @@ MetalIVFPQImpl::MetalIVFPQImpl(
 
 MetalIVFPQImpl::~MetalIVFPQImpl() {
     reset();
+    if (pqCentroidsBuf_ != nil) {
+        resources_->deallocBuffer(
+                pqCentroidsBuf_, MetalAllocType::IVFLists);
+        pqCentroidsBuf_ = nil;
+    }
 }
 
 void MetalIVFPQImpl::reset() {
