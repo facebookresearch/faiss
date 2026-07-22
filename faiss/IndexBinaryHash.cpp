@@ -27,7 +27,7 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryHash_impl.h>
-#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
+#include <faiss/utils/hamming_distance/hamming_computer-generic.h> // IWYU pragma: keep
 #undef THE_SIMD_LEVEL
 
 namespace faiss {
