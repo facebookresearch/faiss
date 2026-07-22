@@ -97,6 +97,14 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>indices);</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Encode/add<sp/>vectors<sp/>to<sp/>precomputed<sp/>IVF<sp/>lists.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>input<sp/>data,<sp/>indices,<sp/>and<sp/>precomputed<sp/>list<sp/>ids<sp/>must<sp/>be<sp/>on<sp/>our<sp/>current</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>device.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>idx_t<sp/>addVectorsPreassigned(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>indices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>precomputedIndices);</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Find<sp/>the<sp/>approximate<sp/>k<sp/>nearest<sp/>neighbors<sp/>for<sp/>`queries`<sp/>against</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>our<sp/>database</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>search(</highlight></codeline>
@@ -208,6 +216,15 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Shared<sp/>function<sp/>to<sp/>copy<sp/>indices<sp/>from<sp/>CPU<sp/>to<sp/>GPU</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>addIndicesFromCpu_(idx_t<sp/>listId,<sp/>const<sp/>idx_t*<sp/>indices,<sp/>idx_t<sp/>numVecs);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Shared<sp/>implementation<sp/>after<sp/>IVF<sp/>list<sp/>ids<sp/>and<sp/>residuals<sp/>have<sp/>been</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>computed.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>addVectorsToLists_(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>3,<sp/>true&gt;&amp;<sp/>residuals,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>indices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>ivfIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>std::vector&lt;idx_t&gt;&amp;<sp/>ivfIndicesHost);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Collection<sp/>of<sp/>GPU<sp/>resources<sp/>that<sp/>we<sp/>use</highlight></codeline>

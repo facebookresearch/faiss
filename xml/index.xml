@@ -1379,12 +1379,14 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a358cad8f80a9c4b3aff45f3f7c131d03" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a65a58cacb67105435b5c65c32477cbae" kind="function"><name>addImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a8bcbf4c62cc39503d143b3757dfef65e" kind="function"><name>addImplPrecomputed_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a4ac48a0e615826e28748c8ac5c4bb6dc" kind="function"><name>searchImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
-    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1aea00584ef9e27d29206de0d416de3923" kind="function"><name>addPaged_</name></member>
-    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a27259796051f9d54b0f540f847abd542" kind="function"><name>addPaged_ex_</name></member>
-    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e7ec437f143a5efcaf3e3ec4f35f26b" kind="function"><name>addPage_</name></member>
-    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ad3ba055471ec962a9dbcbce513f1ac01" kind="function"><name>addPage_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a8c4364433a5e2c96584721a019c38f44" kind="function"><name>addPage_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9f8b2ff62592b40f568ee1d67ebd18bd" kind="function"><name>addPage_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1acf802eff7e36a8f77f6ce4fdcf5d01a9" kind="function"><name>searchNonPaged_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a688af9d22c8f7c09dfd0725ff3430cb4" kind="function"><name>searchNonPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a57aff3a07419205bd285c42a452d6a31" kind="function"><name>searchFromCpuPaged_</name></member>
@@ -1549,6 +1551,10 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a8bcbf4c62cc39503d143b3757dfef65e" kind="function"><name>addImplPrecomputed_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -1633,6 +1639,10 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a8bcbf4c62cc39503d143b3757dfef65e" kind="function"><name>addImplPrecomputed_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -1707,6 +1717,10 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a8bcbf4c62cc39503d143b3757dfef65e" kind="function"><name>addImplPrecomputed_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -1774,6 +1788,10 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a8bcbf4c62cc39503d143b3757dfef65e" kind="function"><name>addImplPrecomputed_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -1800,6 +1818,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ad1409460d5e0684ce2ea2191308f2ee1" kind="function"><name>getListLength</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6529b6f82a2e6a0ccd6e3d8dfeb359c1" kind="function"><name>getListVectorData</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aade665c480024948e1701cb3dc03661e" kind="function"><name>getListIndices</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae74bbc8747e65cd41968ed048ad6ac5" kind="function"><name>add_core</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68" kind="function"><name>search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6e2f09e05deee4195a49ed81333a97e2" kind="function"><name>range_search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" kind="function"><name>getDevice</name></member>
@@ -1844,12 +1863,16 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ab22c31f717f03a091aafa1b61ad4e8be" kind="function"><name>trainQuantizer_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a4ee966b45a15731bae209004e5a126b9" kind="function"><name>addImpl_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ade00fb7e00c1e1661d443c88880374f2" kind="function"><name>addImplPrecomputed_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c" kind="function"><name>searchImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -1903,6 +1926,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ad1409460d5e0684ce2ea2191308f2ee1" kind="function"><name>getListLength</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6529b6f82a2e6a0ccd6e3d8dfeb359c1" kind="function"><name>getListVectorData</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aade665c480024948e1701cb3dc03661e" kind="function"><name>getListIndices</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae74bbc8747e65cd41968ed048ad6ac5" kind="function"><name>add_core</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68" kind="function"><name>search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6e2f09e05deee4195a49ed81333a97e2" kind="function"><name>range_search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" kind="function"><name>getDevice</name></member>
@@ -1946,10 +1970,14 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ab22c31f717f03a091aafa1b61ad4e8be" kind="function"><name>trainQuantizer_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a4ee966b45a15731bae209004e5a126b9" kind="function"><name>addImpl_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ade00fb7e00c1e1661d443c88880374f2" kind="function"><name>addImplPrecomputed_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c" kind="function"><name>searchImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -2026,6 +2054,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ad1409460d5e0684ce2ea2191308f2ee1" kind="function"><name>getListLength</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6529b6f82a2e6a0ccd6e3d8dfeb359c1" kind="function"><name>getListVectorData</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aade665c480024948e1701cb3dc03661e" kind="function"><name>getListIndices</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae74bbc8747e65cd41968ed048ad6ac5" kind="function"><name>add_core</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68" kind="function"><name>search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6e2f09e05deee4195a49ed81333a97e2" kind="function"><name>range_search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" kind="function"><name>getDevice</name></member>
@@ -2072,10 +2101,14 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ab22c31f717f03a091aafa1b61ad4e8be" kind="function"><name>trainQuantizer_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a4ee966b45a15731bae209004e5a126b9" kind="function"><name>addImpl_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ade00fb7e00c1e1661d443c88880374f2" kind="function"><name>addImplPrecomputed_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c" kind="function"><name>searchImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -2134,6 +2167,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ad1409460d5e0684ce2ea2191308f2ee1" kind="function"><name>getListLength</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6529b6f82a2e6a0ccd6e3d8dfeb359c1" kind="function"><name>getListVectorData</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aade665c480024948e1701cb3dc03661e" kind="function"><name>getListIndices</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae74bbc8747e65cd41968ed048ad6ac5" kind="function"><name>add_core</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68" kind="function"><name>search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6e2f09e05deee4195a49ed81333a97e2" kind="function"><name>range_search_preassigned</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" kind="function"><name>getDevice</name></member>
@@ -2181,10 +2215,14 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ab22c31f717f03a091aafa1b61ad4e8be" kind="function"><name>trainQuantizer_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a4ee966b45a15731bae209004e5a126b9" kind="function"><name>addImpl_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ade00fb7e00c1e1661d443c88880374f2" kind="function"><name>addImplPrecomputed_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c" kind="function"><name>searchImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" kind="function"><name>copyFrom_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" kind="function"><name>copyTo_ex</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" kind="function"><name>addImpl_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0166ced3083d5e2a3ead6cea967aa056" kind="function"><name>addImplPrecomputed_ex_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a86714122d60ec6bd91b1988bbd178f6d" kind="function"><name>addPaged_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5e749b8cc0d3c125984a50fc326b1b9f" kind="function"><name>addPaged_ex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" kind="function"><name>searchImpl_ex_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
