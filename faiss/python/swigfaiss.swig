@@ -372,6 +372,7 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexHNSW.h>
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
@@ -796,6 +797,13 @@ typedef int cudaDataType_t;
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
 %include  <faiss/gpu/GpuIndexFlat.h>
+// The host-pointer / bitset-filtered entry points take GpuHnswSearchParams
+// (declared in GpuHnswTypes.h, which SWIG does not parse). They are internal
+// fast paths; Python uses the standard search() with SearchParametersGpuHNSW.
+%ignore faiss::gpu::GpuIndexHNSW::searchHost;
+%ignore faiss::gpu::GpuIndexHNSW::searchHostInt8;
+%ignore faiss::gpu::GpuIndexHNSW::setSearchParams;
+%include  <faiss/gpu/GpuIndexHNSW.h>
 %include  <faiss/gpu/GpuIndexIVF.h>
 %include  <faiss/gpu/GpuIndexIVFPQ.h>
 %include  <faiss/gpu/GpuIndexIVFFlat.h>
@@ -937,6 +945,7 @@ typedef int cudaDataType_t;
     DOWNCAST_GPU ( GpuIndexIVFFlat )
     DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
     DOWNCAST_GPU ( GpuIndexFlat )
+    DOWNCAST_GPU ( GpuIndexHNSW )
 #endif
     // default for non-recognized classes
     DOWNCAST ( Index )

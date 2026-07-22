@@ -29,9 +29,11 @@ set(FAISS_GPU_SRC
   GpuIndexIVF.cu
   GpuIndexIVFFlat.cu
   GpuIndexIVFPQ.cu
+  GpuIndexHNSW.cu
   GpuIndexIVFScalarQuantizer.cu
   GpuResources.cpp
   StandardGpuResources.cpp
+  impl/GpuHnswTypes.cu
   impl/BinaryDistance.cu
   impl/BinaryFlatIndex.cu
   impl/BroadcastSum.cu
@@ -96,10 +98,17 @@ set(FAISS_GPU_HEADERS
   GpuIndexIVF.h
   GpuIndexIVFFlat.h
   GpuIndexIVFPQ.h
+  GpuIndexHNSW.h
   GpuIndexIVFScalarQuantizer.h
   GpuIndicesOptions.h
   GpuResources.h
   StandardGpuResources.h
+  impl/GpuHnswBruteForce.cuh
+  impl/GpuHnswBuildCommon.cuh
+  impl/GpuHnswBuildVanilla.cuh
+  impl/GpuHnswSearch.cuh
+  impl/GpuHnswSearchKernel.cuh
+  impl/GpuHnswTypes.h
   impl/BinaryDistance.cuh
   impl/BinaryFlatIndex.cuh
   impl/BroadcastSum.cuh
