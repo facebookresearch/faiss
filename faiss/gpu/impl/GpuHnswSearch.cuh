@@ -119,7 +119,8 @@ inline void gpu_hnsw_search(
 
     // Layer-0 is templated on the dataset type (DataT), the layer-0 query type
     // (QueryT: float generic, int8_t for the native DP4A path) and USE_DP4A.
-    // The upper-layer greedy descent always uses the fp32 queries (sc.d_queries).
+    // The upper-layer greedy descent always uses the fp32 queries
+    // (sc.d_queries).
     auto launch_kernels = [&]<typename DataT, typename QueryT, bool USE_DP4A>(
                                   const DataT* d_data,
                                   const float* d_inv_norms,
@@ -129,7 +130,8 @@ inline void gpu_hnsw_search(
         // Brute-force launcher (shares the current dtype specialization). It
         // operates on a chunk of `num_items` queries whose scratch pointers
         // (q0/nb0/ds0) are already offset by the caller; when non-null the
-        // worklist holds chunk-local query indices, matching the offset outputs.
+        // worklist holds chunk-local query indices, matching the offset
+        // outputs.
         // Grid is num_items: the up-front path uses the identity mapping, the
         // per-query fallback reads its worklist length from d_num on the device
         // (no host sync between graph and BF). Block must be a power of two <=
@@ -167,7 +169,8 @@ inline void gpu_hnsw_search(
 
         // Per-block dynamic shared-memory budget for this device. The default
         // limit is 48 KiB, but Volta+ GPUs can opt into more via
-        // cudaFuncSetAttribute; query the real limit instead of assuming 48 KiB.
+        // cudaFuncSetAttribute; query the real limit instead of assuming
+        // 48 KiB.
         int smem_max = 49152;
         {
             int device = 0;
@@ -286,7 +289,8 @@ inline void gpu_hnsw_search(
             // *after* a larger one, downgrading the kernel's global attribute
             // below what a recorded high-water mark implies, and a later
             // intermediate search then skips the set (thinks it's configured)
-            // and fails to launch. Under the lock the attribute only ever grows,
+            // and fails to launch. Under the lock the attribute only ever
+            // grows,
             // and is always >= the current launch's requirement before we
             // proceed.
             if (smem_size > 49152) {
@@ -365,8 +369,9 @@ inline void gpu_hnsw_search(
         };
 
         // --- Query chunking to bound the visited-bitmap VRAM ---
-        // Process the batch in chunks of at most chunk_nq queries so the visited
-        // bitmap (sized in GpuHnswSearchScratch::ensure with the same chunk)
+        // Process the batch in chunks of at most chunk_nq queries so the
+        // visited bitmap (sized in GpuHnswSearchScratch::ensure with the same
+        // chunk)
         // stays within the VRAM cap regardless of nq / search concurrency. For
         // small segments chunk_nq == num_queries -> a single pass, identical to
         // the pre-chunk behavior.
@@ -444,10 +449,12 @@ inline void gpu_hnsw_search(
 
     switch (idx.dataset_type) {
         case GpuHnswDatasetType::INT8:
-            // Native DP4A path: requires int8 queries staged on device, an
+            // Native DP4A path: requires int8 queries staged on device *this*
+            // search (i8_queries_staged, not merely a leftover d_queries_i8
+            // buffer from a prior int8 search on this pooled slot), an
             // inner-product/cosine metric (DP4A only computes dot products) and
             // dim % 4 == 0. Otherwise fall back to the generic fp32-query path.
-            if (sc.d_queries_i8 != nullptr && idx.use_ip && (dim % 4 == 0)) {
+            if (sc.i8_queries_staged && idx.use_ip && (dim % 4 == 0)) {
                 launch_kernels.template operator()<int8_t, int8_t, true>(
                         static_cast<const int8_t*>(idx.d_dataset),
                         idx.d_inv_norms,

@@ -38,13 +38,15 @@ namespace faiss {
 namespace gpu {
 
 // Test-only fault injection for the device-upload path (consulted by
-// GPU_HNSW_BUILD_CUDA_CHECK in GpuHnswBuildCommon.cuh). Production code never arms it
-// (the countdown stays 0), so the check is a single relaxed atomic load per
-// wrapped CUDA call with no runtime effect. Unit tests call arm(n) so the n-th
+// GPU_HNSW_BUILD_CUDA_CHECK in GpuHnswBuildCommon.cuh). Production code never
+// arms it (the countdown stays 0), so the check is a single relaxed atomic
+// load per wrapped CUDA call with no runtime effect. Unit tests call arm(n)
+// so the n-th
 // subsequent wrapped CUDA call reports a simulated failure, exercising
 // Deserialize()'s upload error / partial-allocation cleanup / retry path
-// without a real OOM. Defined here (host-safe header) rather than in the .cuh so
-// host-compiled tests can arm it without pulling in device kernels. The static
+// without a real OOM. Defined here (host-safe header) rather than in the
+// .cuh so host-compiled tests can arm it without pulling in device kernels.
+// The static
 // lives in an inline function, so all translation units share one instance.
 struct GpuHnswUploadFaultInjection {
     static std::atomic<int>& countdown() {
@@ -178,6 +180,12 @@ struct GpuHnswSearchScratch {
     uint32_t* d_entry_points = nullptr;
     uint32_t* d_visited_bitmaps = nullptr;
     int8_t* d_queries_i8 = nullptr; // int8 queries for the native DP4A path
+    // True only when int8 queries were staged into d_queries_i8 *this* search
+    // (set in ensure() from use_i8_queries). Scratch slots are pooled and
+    // reused, so d_queries_i8 stays allocated after an int8 search; gate the
+    // DP4A path on this flag, not on d_queries_i8 != nullptr, or a later
+    // fp32-query search on the same slot would score against stale int8 data.
+    bool i8_queries_staged = false;
 
     // Filtered-search scratch. d_bitset holds the uploaded BitsetView bytes
     // (ceil(nbits/8)); d_needs_bf is the device-side worklist of query indices
@@ -228,7 +236,8 @@ struct GpuHnswScratchSlot {
     GpuHnswScratchSlot& operator=(const GpuHnswScratchSlot&) = delete;
 };
 
-/// Pool of scratch buffers allowing concurrent GPU searches on the same segment.
+/// Pool of scratch buffers allowing concurrent GPU searches on the same
+/// segment.
 /// Each acquire() returns a slot with its own scratch + CUDA stream.
 /// Callers block if all slots are in use.
 class GpuHnswScratchPool {
@@ -259,7 +268,8 @@ class GpuHnswScratchPool {
     std::vector<GpuHnswScratchSlot*> available_;
 };
 
-/// RAII guard: acquires a scratch slot on construction, releases on destruction.
+/// RAII guard: acquires a scratch slot on construction, releases on
+/// destruction.
 class ScratchPoolGuard {
  public:
     ScratchPoolGuard(GpuHnswScratchPool& pool)

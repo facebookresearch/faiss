@@ -337,7 +337,8 @@ void GpuIndexHNSW::searchHostInt8(
     FAISS_THROW_IF_NOT_MSG(n > 0, "n must be > 0");
 
     auto& idx = *deviceIndex_;
-    // If dim is not divisible by 4, DP4A cannot be used; fall back to fp32 path.
+    // If dim is not divisible by 4, DP4A cannot be used; fall back to fp32
+    // path.
     if (idx.dim % 4 != 0) {
         auto fp32_fallback = std::make_unique<float[]>(
                 static_cast<size_t>(n) * idx.dim);
@@ -360,7 +361,8 @@ void GpuIndexHNSW::searchHostInt8(
     int dim = static_cast<int>(idx.dim);
     int64_t nelem = static_cast<int64_t>(nq) * dim;
 
-    sc.ensure(nq, k, dim, static_cast<int>(idx.n_rows), /*use_i8_queries=*/true);
+    sc.ensure(
+            nq, k, dim, static_cast<int>(idx.n_rows), /*use_i8_queries=*/true);
 
     // Upload int8 queries directly — dataset on GPU is already in signed int8
     // (upload_int8_dataset applies codes[i]-128, reversing FAISS's +128 bias,

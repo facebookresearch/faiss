@@ -363,10 +363,11 @@ __device__ __forceinline__ void bitonic_sort_staging(
             // partner is in a different warp (j >= warpSize) the read and that
             // write are unsynchronized -> a shared-memory hazard (racecheck
             // flagged ~1.6M in the half kernel). So: (1) every thread reads its
-            // pair into registers and decides whether to swap, (2) __syncthreads
-            // so all reads complete before any write, (3) threads that must swap
-            // write their own slot, (4) __syncthreads before the next phase's
-            // reads. Loop bounds (k, j) are uniform across the block, so every
+            // pair into registers and decides whether to swap, (2)
+            // __syncthreads so all reads complete before any write, (3) threads
+            // that must swap write their own slot, (4) __syncthreads before the
+            // next phase's reads. Loop bounds (k, j) are uniform across the
+            // block, so every
             // thread — including i >= capacity — reaches every barrier.
             float dp = 0.0f;
             uint32_t ip = 0u;
@@ -377,7 +378,7 @@ __device__ __forceinline__ void bitonic_sort_staging(
                 uint32_t ii = ids[i];
                 ip = ids[partner];
                 // Ascending sort when the direction bit (i & k) is 0.
-                // In ascending order: lower index should hold the smaller value.
+                // In ascending order: lower index holds the smaller value.
                 bool ascending = ((i & k) == 0);
                 bool i_is_lower = (i < partner);
                 // i should hold the smaller value iff: ascending and i<partner,
@@ -442,7 +443,8 @@ __device__ __forceinline__ void parallel_merge_into_result(
             uint32_t ri_id;
             if (ri_mid < 0) {
                 // No result element precedes this split: staging[mid] must not
-                // be taken ahead of it -> compare against -inf (predicate false).
+                // be taken ahead of it -> compare against -inf (predicate
+                // false).
                 rv = -FLT_MAX;
                 ri_id = 0u;
             } else if (ri_mid_valid) {
@@ -973,8 +975,9 @@ __global__ void layer0_beam_search_kernel(
             if (lane == 0) {
                 // Defensive: a parent id must be a real node (< N). result_ids
                 // only ever holds the entry point or graph neighbors (both < N)
-                // once the merge is correct, so this never fires on the healthy
-                // path; it caps a stray/garbage id at O(N) instead of letting it
+                // once the merge is correct, so this never fires on the
+                // healthy path; it caps a stray/garbage id at O(N) instead of
+                // letting it
                 // index the graph at parent*max_degree0 and fault far out of
                 // bounds. Mirrors the neighbor guard below.
                 if (parent < static_cast<uint32_t>(N)) {

@@ -176,8 +176,8 @@ TEST(TestGpuIndexHNSW, Flat_Cosine) {
 }
 
 // INT8 storage via QT_8bit_direct_signed (native DP4A path). dim % 4 == 0 so
-// the DP4A kernel is exercised; quantization lowers the recall bar. The input is
-// int8-range integer data (int8Range=true) so the direct-signed codec is
+// the DP4A kernel is exercised; quantization lowers the recall bar. The input
+// is int8-range integer data (int8Range=true) so the direct-signed codec is
 // exercised on representable values instead of collapsing sub-1.0 floats to ~0.
 TEST(TestGpuIndexHNSW, SQ_Int8_L2) {
     int dim = 64;

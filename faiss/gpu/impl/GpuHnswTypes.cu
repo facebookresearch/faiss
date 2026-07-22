@@ -104,6 +104,10 @@ void GpuHnswSearchScratch::ensure(
             queries_i8_bytes = need_i8;
         }
     }
+    // Record whether int8 queries are being staged for this search so the
+    // DP4A path selection does not fire on a stale buffer from a prior int8
+    // search on this pooled slot.
+    i8_queries_staged = use_i8_queries;
 }
 
 void GpuHnswSearchScratch::ensure_filter(int nq, size_t bitset_bytes_needed) {
@@ -180,8 +184,8 @@ void GpuHnswScratchPool::init_once() {
         auto slot = std::make_unique<GpuHnswScratchSlot>();
         slot->scratch.device = device_;
         SCRATCH_CUDA_CHECK(cudaSetDevice(device_));
-        SCRATCH_CUDA_CHECK(
-                cudaStreamCreateWithFlags(&slot->stream, cudaStreamNonBlocking));
+        SCRATCH_CUDA_CHECK(cudaStreamCreateWithFlags(
+                &slot->stream, cudaStreamNonBlocking));
         available_.push_back(slot.get());
         slots_.push_back(std::move(slot));
     }

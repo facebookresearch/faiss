@@ -258,8 +258,8 @@ inline void upload_fp32_dataset(
     int64_t dim = idx.dim;
     // Flat cosine (stored_inv_norms == nullptr): the stored vectors are the
     // exact originals, so normalizing them in place yields cosine via plain
-    // inner product. Lossy-SQ cosine decoded to fp32 (stored_inv_norms != null):
-    // keep the decoded vectors un-normalized and apply the CPU index's original
+    // inner product. Lossy-SQ cosine decoded to fp32 (stored_inv_norms !=
+    // null): keep the decoded vectors un-normalized and apply the CPU index's
     // inverse norms at search time, matching CPU semantics for lossy codes.
     if (is_cosine && stored_inv_norms == nullptr)
         normalize_vectors(h_vectors, n_rows, dim);
