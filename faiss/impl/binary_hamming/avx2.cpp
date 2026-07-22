@@ -15,7 +15,7 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h> // IWYU pragma: keep
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/impl/binary_hamming/IndexBinaryHash_impl.h>
+#include <faiss/impl/binary_hamming/IndexBinaryHash_impl.h> // IWYU pragma: keep
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexBinaryIVF_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
