@@ -628,13 +628,7 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::ARM_SVE>(
         svfloat32_t acc = svdup_n_f32(0.0f);
 
         for (size_t j = 0; j < d; ++j) {
-            int32_t start_offset = static_cast<int32_t>(j * d_offset);
-            int32_t stride = 1;
-            svint32_t offset_vec = svindex_s32(start_offset, stride);
-
-            const float *ybase = &y[k];
-            svfloat32_t ychunk = svld1_gather_index(pg, ybase, offset_vec);
-
+            svfloat32_t ychunk = svld1_f32(pg, y + j * d_offset + k);
             svfloat32_t xj = svdup_n_f32(x[j]);
             acc = svmla_f32_x(pg, acc, xj, ychunk);
         }
