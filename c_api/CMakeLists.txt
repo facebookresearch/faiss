@@ -33,6 +33,7 @@ set(FAISS_C_SRC
   index_io_c.cpp
   impl/AuxIndexStructures_c.cpp
   impl/io_c.cpp
+  invlists/DirectMap_c.cpp
   utils/distances_c.cpp
   utils/utils_c.cpp
 )
@@ -120,6 +121,7 @@ file(GLOB FAISS_C_API_HEADERS
      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
      "*.h"
      "impl/*.h"
+     "invlists/*.h"
      "utils/*.h")
 
 faiss_install_headers("${FAISS_C_API_HEADERS}" c_api)
