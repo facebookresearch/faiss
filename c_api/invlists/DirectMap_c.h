@@ -15,9 +15,9 @@ extern "C" {
 #endif
 
 typedef enum FaissDirectMapType {
-    DIRECT_MAP_NO_MAP = 0, 	// default
-    DIRECT_MAP_ARRAY = 1,  	// sequential ids (only for add, no add_with_ids)
-    DIRECT_MAP_HASHTABLE = 2, 	// arbitrary ids
+    DIRECT_MAP_NO_MAP = 0,    // default
+    DIRECT_MAP_ARRAY = 1,     // sequential ids (only for add, no add_with_ids)
+    DIRECT_MAP_HASHTABLE = 2, // arbitrary ids
 } FaissDirectMapType;
 
 #ifdef __cplusplus

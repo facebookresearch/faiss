@@ -110,8 +110,8 @@ int faiss_IndexBinaryIVF_make_direct_map(
  * @return
  */
 int faiss_IndexBinaryIVF_set_direct_map_type(
-    	FaissIndexBinaryIVF* index,
-    	FaissDirectMapType direct_map_type);
+        FaissIndexBinaryIVF* index,
+        FaissDirectMapType direct_map_type);
 
 /** Check the inverted lists' imbalance factor.
  *
