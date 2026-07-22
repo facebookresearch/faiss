@@ -40,6 +40,9 @@ class TestGpuIndexHNSW(unittest.TestCase):
             faiss.normalize_L2(xq)
 
         cpu_index = faiss.index_factory(dim, factory_str, metric)
+        # SQ storage (e.g. SQ8) needs the quantizer trained before add();
+        # train() is a no-op for Flat / fp16 / bf16 but keeps this generic.
+        cpu_index.train(xb)
         cpu_index.add(xb)
         cpu_index.hnsw.efSearch = ef
         Dref, Iref = cpu_index.search(xq, k)
