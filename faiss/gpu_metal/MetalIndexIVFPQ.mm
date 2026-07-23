@@ -352,12 +352,7 @@ void MetalIndexIVFPQ::search(
         !gpuIvf_->idsBuffer() || !gpuIvf_->listOffsetGpuBuffer() ||
         !gpuIvf_->listLengthGpuBuffer() || !gpuIvf_->pqCentroidsBuffer() ||
         k > maxK) {
-        if (auto* ivfParams =
-                    dynamic_cast<const IVFSearchParameters*>(params)) {
-            if (ivfParams->nprobe > 0)
-                cpuIndex_->nprobe = ivfParams->nprobe;
-        }
-        cpuIndex_->search(n, x, k, distances, labels);
+        cpuIndex_->search(n, x, k, distances, labels, params);
         return;
     }
 
@@ -402,7 +397,7 @@ void MetalIndexIVFPQ::search(
 
     if (!searchQueriesBuf_ || !searchOutDistBuf_ || !searchOutIdxBuf_ ||
         !searchPerListDistBuf_ || !searchPerListIdxBuf_ || !searchCoarseBuf_) {
-        cpuIndex_->search(n, x, k, distances, labels);
+        cpuIndex_->search(n, x, k, distances, labels, params);
         return;
     }
     std::memcpy([searchQueriesBuf_ contents], x, queryBytes);
@@ -526,7 +521,7 @@ void MetalIndexIVFPQ::search(
     }
 
     if (!ok) {
-        cpuIndex_->search(n, x, k, distances, labels);
+        cpuIndex_->search(n, x, k, distances, labels, params);
         return;
     }
 
