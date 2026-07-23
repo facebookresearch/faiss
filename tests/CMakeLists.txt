@@ -44,6 +44,7 @@ set(FAISS_TEST_SRC
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
+  test_rabitq_fastscan.cpp
   test_super_kmeans_foundations.cpp
 )
 
