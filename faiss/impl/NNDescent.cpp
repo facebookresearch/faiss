@@ -273,29 +273,32 @@ void NNDescent::update() {
                     nn_new.push_back(nn.id);
                     // push itself into other.rnn_new if it is not in
                     // the candidate pool of the other side
-                    if (nn.distance > other.pool.back().distance) {
+                    {
                         LockGuard guard(other.lock);
-                        if (other.rnn_new.size() < static_cast<size_t>(R)) {
-                            other.rnn_new.push_back(n);
-                        } else {
-                            int pos = rng() % R;
-                            other.rnn_new[pos] = n;
+                        if (nn.distance > other.pool.back().distance) {
+                            if (other.rnn_new.size() < static_cast<size_t>(R)) {
+                                other.rnn_new.push_back(n);
+                            } else {
+                                int pos = rng() % R;
+                                other.rnn_new[pos] = n;
+                            }
                         }
                     }
                     nn.flag = false;
-
                 } else { // the node is old
                     // push the neighbor into nn_old
                     nn_old.push_back(nn.id);
                     // push itself into other.rnn_old if it is not in
                     // the candidate pool of the other side
-                    if (nn.distance > other.pool.back().distance) {
+                    {
                         LockGuard guard(other.lock);
-                        if (other.rnn_old.size() < static_cast<size_t>(R)) {
-                            other.rnn_old.push_back(n);
-                        } else {
-                            int pos = rng() % R;
-                            other.rnn_old[pos] = n;
+                        if (nn.distance > other.pool.back().distance) {
+                            if (other.rnn_old.size() < static_cast<size_t>(R)) {
+                                other.rnn_old.push_back(n);
+                            } else {
+                                int pos = rng() % R;
+                                other.rnn_old[pos] = n;
+                            }
                         }
                     }
                 }
