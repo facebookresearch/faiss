@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="143" column="21" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="143" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="139" column="21" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="139" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a5d7a5313e747d34a76e6c7d874b8164f" prot="private" static="no" mutable="no">
         <type>std::unique_ptr&lt; <ref refid="classfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl" kindref="compound">MetalIVFFlatImpl</ref> &gt;</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="144" column="21" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="144" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="140" column="21" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="140" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a1501a4532cf23e4826b2a6608066c8cc" prot="private" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">faiss::gpu::IndicesOptions</ref></type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="145" column="32" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="145" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="141" column="32" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="141" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a8f69827947d400e0e105155d008ce0a6" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="146" column="10" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="146" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="142" column="10" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="142" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a5be334fdbd987249d5147a1a87555361" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="150" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="150" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="146" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="146" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a6827cbf3aa3685cd566af3e53368e253" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="151" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="151" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="147" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="147" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a560d9d2978de4b11b459118e0336a058" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -105,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="152" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="152" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="148" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ae2181b70f875eba81aaf10d10ee2d520" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="153" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="149" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="149" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a0fa714cb9c9b5b6db1221f289cd285f4" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="154" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="154" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="150" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="150" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1afda9ccad56735fb0608031fd0a10fea4" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -150,7 +150,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="155" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="155" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="151" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1adb17533f7b342103ec6f512d444d821d" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="156" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="156" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="152" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="152" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1af57840e4fd3b6a06448a45ad485662b7" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="157" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="153" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="153" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1aed0e315f7ba8606f089b02e4f25bc421" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="158" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="158" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="154" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="154" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1aa4db373da4e52c925336790d1a87afa8" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="159" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="159" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="155" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="155" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ae0293c9c6b04c034bc2192153795f029" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -225,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="160" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="160" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="156" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="156" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ab1da8917eb759fbf0e1d18c5743c239e" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -240,7 +240,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="161" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="161" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="157" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="157" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1afbffeadd28a2d62dc9780ba8955323de" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -255,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="164" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="164" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="160" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="160" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a197aaa76a0bbba54a3d4c93b9e9657f5" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -270,7 +270,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="165" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="165" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="161" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="161" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ac39275a33e51671dcc642b20a922204d" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -285,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="166" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="166" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="162" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="162" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a248fdafbe5b85bf87e184470581ef431" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -300,7 +300,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="167" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="167" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="163" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="163" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a63df07397b4d398c2e81225e4ac17988" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -315,7 +315,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="168" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="168" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="164" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="164" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a18b3cb37f94319f0e3dfd3f0d2f5c94a" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -330,7 +330,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="169" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="169" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="165" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="165" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1aef2330e1d5bfbf97da629d1093cee110" prot="private" static="no" mutable="yes">
         <type>id&lt; MTLBuffer &gt;</type>
@@ -345,7 +345,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="170" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="170" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="166" column="16" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="166" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a925fb9268e20bda601319bd09eb728e9" prot="private" static="no" mutable="yes">
         <type>size_t</type>
@@ -360,7 +360,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="171" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="171" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="167" column="20" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="167" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -403,7 +403,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="49" column="5"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="45" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a1b15526f22dfc3d37a2799110d59fff1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -453,7 +453,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="59" column="5"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="55" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a8f7a4bde2d83cdacb36ff92a2e44d491" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -481,7 +481,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="70" column="5"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="66" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a9e0513a6d53e2cd3a15bb42acfc03746" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -495,7 +495,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="75" column="5"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="71" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a853d377eb4752612b80dced3d2fb9822" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -537,7 +537,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="77" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="73" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a86c62e543b47c4e7321e7f2e9cdd9a15" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -579,7 +579,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="78" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="74" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ab7e4e10d58122944ce80c9878b2ee605" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -634,7 +634,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="79" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="75" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a3726a334201ca4b113c32822a176523b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -650,7 +650,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="80" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="76" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a7142a8636f96b0cd4bb0e3c7d26be70f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -734,7 +734,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="82" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="78" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1af160e8a8c3fbcd5bba9d06e9a58e52f2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -816,7 +816,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="95" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="91" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a12d423b62dcfbde81ee41c2745f5f63f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -835,7 +835,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="108" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="104" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1acc6fc0513a840126283a6eabcbc364f1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -854,7 +854,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="111" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="107" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a723c86d3cd66b3b3e47ea0324f8751dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -878,7 +878,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="114" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="110" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a05d437f53c2d761c6c860ef961ba8126" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -906,7 +906,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="117" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="113" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a09bcc7de783cd354b94cf4e397941e5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -921,7 +921,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="120" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="116" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ade7be07888e5510f2d8c8f25994fcdb7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> &gt;</type>
@@ -940,7 +940,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="123" column="17"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="119" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a39af12175e6d963df0ed75b958c564b3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; float &gt;</type>
@@ -959,7 +959,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="126" column="17"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="122" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a0be517adc4f32dee0a0400f95bd62616" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -974,7 +974,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="129" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="125" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1ae20ed168b74b8610f93c44ea161d4ff1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -993,7 +993,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="132" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="128" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a6e5ca06d82c887ff89bd017fc8c16d63" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -1008,7 +1008,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="135" column="11"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="131" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1af4df109815f202946faf8469dbe911a8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1022,7 +1022,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="136" column="12"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="132" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a1990370ecda55a42e8bab011012020dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1036,7 +1036,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="137" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="133" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a0829fb40e379a7950aecad7c563f5eab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">faiss::gpu::IndicesOptions</ref></type>
@@ -1050,7 +1050,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="138" column="32"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="134" column="32"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a8035bd94fd43f5abbf4fc6871b49c9bd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1_1AppendDebugStats" kindref="compound">AppendDebugStats</ref></type>
@@ -1064,7 +1064,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="139" column="22"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="135" column="22"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a8a090dc2ed3b93a61cf430e3c28aba48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1078,7 +1078,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="140" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="136" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndex_1acc05f76293ffcbde258cbccf44d7f840" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -2230,7 +2230,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="174" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="170" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1aa551de3f9268530eca377c5d7d5fa374" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2245,7 +2245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="177" column="10"/>
+        <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="173" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="protected-attrib">
@@ -2448,7 +2448,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="34" column="1" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="34" bodyend="178"/>
+    <location file="faiss/gpu_metal/MetalIndexIVFFlat.h" line="30" column="1" bodyfile="faiss/gpu_metal/MetalIndexIVFFlat.h" bodystart="30" bodyend="174"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat_1a86c62e543b47c4e7321e7f2e9cdd9a15" prot="public" virt="virtual"><scope>faiss::gpu_metal::MetalIndexIVFFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::gpu_metal::MetalIndexIVFFlat</scope><name>add_ex</name></member>

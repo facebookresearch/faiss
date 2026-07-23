@@ -6,7 +6,9 @@
     <innerclass refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" prot="public">faiss::gpu_metal::MetalIndexConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexFlat" prot="public">faiss::gpu_metal::MetalIndexFlat</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" prot="public">faiss::gpu_metal::MetalIndexIVFFlat</innerclass>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ" prot="public">faiss::gpu_metal::MetalIndexIVFPQ</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIVFFlatImpl" prot="public">faiss::gpu_metal::MetalIVFFlatImpl</innerclass>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl" prot="public">faiss::gpu_metal::MetalIVFPQImpl</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalKernels" prot="public">faiss::gpu_metal::MetalKernels</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalResources" prot="public">faiss::gpu_metal::MetalResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1StandardMetalResources" prot="public">faiss::gpu_metal::StandardMetalResources</innerclass>

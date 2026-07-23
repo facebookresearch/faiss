@@ -10,6 +10,7 @@
     <innerfile refid="MetalIndex_8h">MetalIndex.h</innerfile>
     <innerfile refid="MetalIndexFlat_8h">MetalIndexFlat.h</innerfile>
     <innerfile refid="MetalIndexIVFFlat_8h">MetalIndexIVFFlat.h</innerfile>
+    <innerfile refid="MetalIndexIVFPQ_8h">MetalIndexIVFPQ.h</innerfile>
     <innerfile refid="MetalKernels_8h">MetalKernels.h</innerfile>
     <innerfile refid="MetalPythonBridge_8h">MetalPythonBridge.h</innerfile>
     <innerfile refid="MetalResources_8h">MetalResources.h</innerfile>

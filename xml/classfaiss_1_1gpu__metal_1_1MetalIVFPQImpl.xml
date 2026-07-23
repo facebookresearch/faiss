@@ -1,0 +1,703 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl" kind="class" language="C++" prot="public">
+    <compoundname>faiss::gpu_metal::MetalIVFPQImpl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab1b5c03825c9b6abf189d357f7bdce4d" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu__metal_1_1MetalResources" kindref="compound">MetalResources</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;MetalResources&gt; faiss::gpu_metal::MetalIVFPQImpl::resources_</definition>
+        <argsstring></argsstring>
+        <name>resources_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::resources_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="107" column="21" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a1656c8d797a3f587689b908a3f97bdbb" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::dim_</definition>
+        <argsstring></argsstring>
+        <name>dim_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::dim_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="109" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a4febc855b2cd02aa9a1a0db67708679b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::gpu_metal::MetalIVFPQImpl::nlist_</definition>
+        <argsstring></argsstring>
+        <name>nlist_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::nlist_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="110" column="11" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a0c95862246bc096768e5c172cb28a2b3" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::M_</definition>
+        <argsstring></argsstring>
+        <name>M_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::M_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="111" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a2f9019829388827dc5e45e70cccba375" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::bitsPerCode_</definition>
+        <argsstring></argsstring>
+        <name>bitsPerCode_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::bitsPerCode_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="112" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae78e4db5ba15c001803e5e44aaaa7e2f" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::ksub_</definition>
+        <argsstring></argsstring>
+        <name>ksub_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::ksub_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="113" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a7ea574318c5d7e0cfbb1ecf0a60de0c3" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::dsub_</definition>
+        <argsstring></argsstring>
+        <name>dsub_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::dsub_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="114" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a0a2d2b3a712bd837f0b25ed3393b06c8" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu_metal::MetalIVFPQImpl::codeSize_</definition>
+        <argsstring></argsstring>
+        <name>codeSize_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::codeSize_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="115" column="12" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a457bd05d966883356b12ced71173a7b0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
+        <definition>faiss::MetricType faiss::gpu_metal::MetalIVFPQImpl::metric_type_</definition>
+        <argsstring></argsstring>
+        <name>metric_type_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::metric_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="116" column="23" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a437aa36a10e805233929813e12eb76d5" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::gpu_metal::MetalIVFPQImpl::metric_arg_</definition>
+        <argsstring></argsstring>
+        <name>metric_arg_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::metric_arg_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="117" column="11" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a364e6b1010c068eb130c33f04b708767" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; size_t &gt;</type>
+        <definition>std::vector&lt;size_t&gt; faiss::gpu_metal::MetalIVFPQImpl::listLength_</definition>
+        <argsstring></argsstring>
+        <name>listLength_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listLength_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="119" column="17" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a2d021254abdc6acb34413a0501fce790" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; size_t &gt;</type>
+        <definition>std::vector&lt;size_t&gt; faiss::gpu_metal::MetalIVFPQImpl::listOffset_</definition>
+        <argsstring></argsstring>
+        <name>listOffset_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listOffset_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="120" column="17" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a2bb9a8282088fff871ec4a4b8ebaf806" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu_metal::MetalIVFPQImpl::hostCodes_</definition>
+        <argsstring></argsstring>
+        <name>hostCodes_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::hostCodes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="122" column="17" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab0285c258ee6eeb3d456faa979d8d265" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> &gt;</type>
+        <definition>std::vector&lt;idx_t&gt; faiss::gpu_metal::MetalIVFPQImpl::hostIds_</definition>
+        <argsstring></argsstring>
+        <name>hostIds_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::hostIds_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="123" column="17" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a85a3ba6617b7cb94c4292d3fd70c759e" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu_metal::MetalIVFPQImpl::totalVecs_</definition>
+        <argsstring></argsstring>
+        <name>totalVecs_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::totalVecs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="124" column="12" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a1819e94d8c33b180a0aaf122ba6e5d1b" prot="private" static="no" mutable="no">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt;MTLBuffer&gt; faiss::gpu_metal::MetalIVFPQImpl::codesBuffer_</definition>
+        <argsstring></argsstring>
+        <name>codesBuffer_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::codesBuffer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="126" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="126" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ad931a798b03a05032411f155aeb805f4" prot="private" static="no" mutable="no">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt;MTLBuffer&gt; faiss::gpu_metal::MetalIVFPQImpl::idsBuffer_</definition>
+        <argsstring></argsstring>
+        <name>idsBuffer_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::idsBuffer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="127" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae6112a8231b6aa79c071d6eb4c47fde2" prot="private" static="no" mutable="no">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt;MTLBuffer&gt; faiss::gpu_metal::MetalIVFPQImpl::listOffsetBuf_</definition>
+        <argsstring></argsstring>
+        <name>listOffsetBuf_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listOffsetBuf_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="128" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1aeee610c24e8c81b7a0b0f1a4e2a401ec" prot="private" static="no" mutable="no">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt;MTLBuffer&gt; faiss::gpu_metal::MetalIVFPQImpl::listLengthBuf_</definition>
+        <argsstring></argsstring>
+        <name>listLengthBuf_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listLengthBuf_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="129" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae9a0deb78442530fe6e784ad1f084a4b" prot="private" static="no" mutable="no">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt;MTLBuffer&gt; faiss::gpu_metal::MetalIVFPQImpl::pqCentroidsBuf_</definition>
+        <argsstring></argsstring>
+        <name>pqCentroidsBuf_</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::pqCentroidsBuf_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="130" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab4d0e29c0f47de2ebf0a46620485c19f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu_metal::MetalIVFPQImpl::MetalIVFPQImpl</definition>
+        <argsstring>(std::shared_ptr&lt; MetalResources &gt; resources, int dim, idx_t nlist, int numSubQuantizers, int bitsPerCode, faiss::MetricType metric, float metricArg)</argsstring>
+        <name>MetalIVFPQImpl</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::MetalIVFPQImpl</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu__metal_1_1MetalResources" kindref="compound">MetalResources</ref> &gt;</type>
+          <declname>resources</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numSubQuantizers</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bitsPerCode</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>metricArg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="31" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae1eabf230beb8d8498498ec3a776a22b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu_metal::MetalIVFPQImpl::~MetalIVFPQImpl</definition>
+        <argsstring>()</argsstring>
+        <name>~MetalIVFPQImpl</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::~MetalIVFPQImpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="40" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a440e57e961a087993f63058e1e92cf3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalIVFPQImpl::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="42" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab308171a2dd25f93007efccbf5a6e50a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalIVFPQImpl::reserveMemory</definition>
+        <argsstring>(idx_t totalVecs)</argsstring>
+        <name>reserveMemory</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::reserveMemory</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>totalVecs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="43" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a669e3d8aae066bd23befb6c94473b49b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalIVFPQImpl::appendCodes</definition>
+        <argsstring>(idx_t n, const uint8_t *codes, const idx_t *list_nos, const idx_t *xids)</argsstring>
+        <name>appendCodes</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::appendCodes</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>list_nos</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>xids</declname>
+        </param>
+        <briefdescription>
+<para>Append PQ-encoded vectors. codes: n * codeSize bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="46" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1aa29470441d41abc6793ffd1c9b1ee3d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalIVFPQImpl::setPQCentroids</definition>
+        <argsstring>(const float *centroids)</argsstring>
+        <name>setPQCentroids</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::setPQCentroids</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>centroids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Upload PQ centroids: M * ksub * dsub floats, row-major. Layout: pqCentroids[m][c][dsub_dim] </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="54" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a30c592a32aea2f80609b394b65dd23e3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::dim</definition>
+        <argsstring>() const</argsstring>
+        <name>dim</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::dim</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="56" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="56" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a830ab5cc102a4b5039baee92fe5c775d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::gpu_metal::MetalIVFPQImpl::nlist</definition>
+        <argsstring>() const</argsstring>
+        <name>nlist</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::nlist</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="59" column="11" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="59" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a1d46b1e62361d7cb127af166d9d9444d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::numSubQuantizers</definition>
+        <argsstring>() const</argsstring>
+        <name>numSubQuantizers</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::numSubQuantizers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="62" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="62" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a49e8cd52230eeccca44e7e03af165f98" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::bitsPerCode</definition>
+        <argsstring>() const</argsstring>
+        <name>bitsPerCode</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::bitsPerCode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="65" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="65" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a547168f424cb76367f2c0774527699bb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::ksub</definition>
+        <argsstring>() const</argsstring>
+        <name>ksub</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::ksub</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="68" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="68" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a83db8933c58957494fba88ee1948c958" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu_metal::MetalIVFPQImpl::dsub</definition>
+        <argsstring>() const</argsstring>
+        <name>dsub</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::dsub</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="71" column="9" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="71" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab24eda2d4a223fa113a15fe00f0fd5ef" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu_metal::MetalIVFPQImpl::codeSize</definition>
+        <argsstring>() const</argsstring>
+        <name>codeSize</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::codeSize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="74" column="12" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="74" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a0279d69e8a366799994351283d87c25c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; size_t &gt; &amp;</type>
+        <definition>const std::vector&lt; size_t &gt; &amp; faiss::gpu_metal::MetalIVFPQImpl::listLength</definition>
+        <argsstring>() const</argsstring>
+        <name>listLength</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listLength</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="78" column="23" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="78" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a96635c5d7474983f7e90d3e0aad98b47" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; size_t &gt; &amp;</type>
+        <definition>const std::vector&lt; size_t &gt; &amp; faiss::gpu_metal::MetalIVFPQImpl::listOffset</definition>
+        <argsstring>() const</argsstring>
+        <name>listOffset</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listOffset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="81" column="23" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="81" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a96fa5532d8ac38ccd448bf63127e9429" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt; MTLBuffer &gt; faiss::gpu_metal::MetalIVFPQImpl::codesBuffer</definition>
+        <argsstring>() const</argsstring>
+        <name>codesBuffer</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::codesBuffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="85" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="85" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1aebfd94d61dc934b8ab53f56346fda2f8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt; MTLBuffer &gt; faiss::gpu_metal::MetalIVFPQImpl::idsBuffer</definition>
+        <argsstring>() const</argsstring>
+        <name>idsBuffer</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::idsBuffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="88" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="88" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1adf9f2c9379d3c92b69b18583c48f13a0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt; MTLBuffer &gt; faiss::gpu_metal::MetalIVFPQImpl::listOffsetGpuBuffer</definition>
+        <argsstring>() const</argsstring>
+        <name>listOffsetGpuBuffer</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listOffsetGpuBuffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="91" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="91" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a3d79cc10a9f1d098dc240510e9a21412" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt; MTLBuffer &gt; faiss::gpu_metal::MetalIVFPQImpl::listLengthGpuBuffer</definition>
+        <argsstring>() const</argsstring>
+        <name>listLengthGpuBuffer</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::listLengthGpuBuffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="94" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="94" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1af658b6ac03b4c2c08c4eb8e84955b1aa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>id&lt; MTLBuffer &gt;</type>
+        <definition>id&lt; MTLBuffer &gt; faiss::gpu_metal::MetalIVFPQImpl::pqCentroidsBuffer</definition>
+        <argsstring>() const</argsstring>
+        <name>pqCentroidsBuffer</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::pqCentroidsBuffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="97" column="8" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="97" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a408c9f3337f2e681708275db61082c7e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu_metal::MetalIVFPQImpl::totalVecs</definition>
+        <argsstring>() const</argsstring>
+        <name>totalVecs</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::totalVecs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="100" column="12" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="100" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a20c80ed77aea9644b1af325151ba4bcc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalIVFPQImpl::uploadToGpu</definition>
+        <argsstring>()</argsstring>
+        <name>uploadToGpu</name>
+        <qualifiedname>faiss::gpu_metal::MetalIVFPQImpl::uploadToGpu</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="105" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu_metal/impl/MetalIVFPQ.h" line="29" column="1" bodyfile="faiss/gpu_metal/impl/MetalIVFPQ.h" bodystart="29" bodyend="131"/>
+    <listofallmembers>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a669e3d8aae066bd23befb6c94473b49b" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>appendCodes</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a49e8cd52230eeccca44e7e03af165f98" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>bitsPerCode</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a2f9019829388827dc5e45e70cccba375" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>bitsPerCode_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a96fa5532d8ac38ccd448bf63127e9429" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>codesBuffer</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a1819e94d8c33b180a0aaf122ba6e5d1b" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>codesBuffer_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab24eda2d4a223fa113a15fe00f0fd5ef" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>codeSize</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a0a2d2b3a712bd837f0b25ed3393b06c8" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>codeSize_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a30c592a32aea2f80609b394b65dd23e3" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>dim</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a1656c8d797a3f587689b908a3f97bdbb" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>dim_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a83db8933c58957494fba88ee1948c958" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>dsub</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a7ea574318c5d7e0cfbb1ecf0a60de0c3" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>dsub_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a2bb9a8282088fff871ec4a4b8ebaf806" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>hostCodes_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab0285c258ee6eeb3d456faa979d8d265" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>hostIds_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1aebfd94d61dc934b8ab53f56346fda2f8" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>idsBuffer</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ad931a798b03a05032411f155aeb805f4" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>idsBuffer_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a547168f424cb76367f2c0774527699bb" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>ksub</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae78e4db5ba15c001803e5e44aaaa7e2f" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>ksub_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a0279d69e8a366799994351283d87c25c" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listLength</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a364e6b1010c068eb130c33f04b708767" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listLength_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1aeee610c24e8c81b7a0b0f1a4e2a401ec" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listLengthBuf_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a3d79cc10a9f1d098dc240510e9a21412" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listLengthGpuBuffer</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a96635c5d7474983f7e90d3e0aad98b47" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listOffset</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a2d021254abdc6acb34413a0501fce790" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listOffset_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae6112a8231b6aa79c071d6eb4c47fde2" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listOffsetBuf_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1adf9f2c9379d3c92b69b18583c48f13a0" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>listOffsetGpuBuffer</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a0c95862246bc096768e5c172cb28a2b3" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>M_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab4d0e29c0f47de2ebf0a46620485c19f" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>MetalIVFPQImpl</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a437aa36a10e805233929813e12eb76d5" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>metric_arg_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a457bd05d966883356b12ced71173a7b0" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>metric_type_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a830ab5cc102a4b5039baee92fe5c775d" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>nlist</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a4febc855b2cd02aa9a1a0db67708679b" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>nlist_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a1d46b1e62361d7cb127af166d9d9444d" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>numSubQuantizers</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae9a0deb78442530fe6e784ad1f084a4b" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>pqCentroidsBuf_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1af658b6ac03b4c2c08c4eb8e84955b1aa" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>pqCentroidsBuffer</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab308171a2dd25f93007efccbf5a6e50a" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>reserveMemory</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a440e57e961a087993f63058e1e92cf3d" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>reset</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ab1b5c03825c9b6abf189d357f7bdce4d" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>resources_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1aa29470441d41abc6793ffd1c9b1ee3d7" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>setPQCentroids</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a408c9f3337f2e681708275db61082c7e" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>totalVecs</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a85a3ba6617b7cb94c4292d3fd70c759e" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>totalVecs_</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1a20c80ed77aea9644b1af325151ba4bcc" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>uploadToGpu</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalIVFPQImpl_1ae1eabf230beb8d8498498ec3a776a22b" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIVFPQImpl</scope><name>~MetalIVFPQImpl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

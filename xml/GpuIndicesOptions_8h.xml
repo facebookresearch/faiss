@@ -66,7 +66,7 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -80,6 +80,8 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
       </node>
       <node id="11">
         <label>faiss/gpu_metal/MetalIndexFlat.h</label>
@@ -92,6 +94,10 @@
         <link refid="MetalIndexIVFFlat_8h_source"/>
       </node>
       <node id="14">
+        <label>faiss/gpu_metal/MetalIndexIVFPQ.h</label>
+        <link refid="MetalIndexIVFPQ_8h_source"/>
+      </node>
+      <node id="15">
         <label>faiss/gpu_metal/impl/MetalIVFFlat.h</label>
         <link refid="MetalIVFFlat_8h_source"/>
       </node>
