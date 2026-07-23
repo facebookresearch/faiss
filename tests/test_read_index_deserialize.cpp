@@ -2175,19 +2175,24 @@ TEST(ReadIndexDeserialize, ITQTransformMeanTooSmall) {
 // RaBitQ qb deserialization validation tests
 // -----------------------------------------------------------------------
 
+/// Single-bit RaBitQ code_size == compute_code_size(d, 1): (d+7)/8 + 8.
+static size_t rabitq_single_bit_code_size(size_t d) {
+    return (d + 7) / 8 + 8;
+}
+
 /// Helper: push a minimal RaBitQuantizer (single-bit format, multi_bit=false).
 static void push_rabitq(std::vector<uint8_t>& buf, size_t d) {
-    push_val<size_t>(buf, d); // d
-    push_val<size_t>(buf, 1); // code_size
-    push_val<int>(buf, 1);    // metric_type (L2)
+    push_val<size_t>(buf, d);                              // d
+    push_val<size_t>(buf, rabitq_single_bit_code_size(d)); // code_size
+    push_val<int>(buf, 1);                                 // metric_type (L2)
 }
 
 /// Helper: push a minimal RaBitQuantizer (multi-bit format, multi_bit=true).
 static void push_rabitq_multibit(std::vector<uint8_t>& buf, size_t d) {
-    push_val<size_t>(buf, d); // d
-    push_val<size_t>(buf, 1); // code_size
-    push_val<int>(buf, 1);    // metric_type (L2)
-    push_val<size_t>(buf, 1); // nb_bits
+    push_val<size_t>(buf, d);                              // d
+    push_val<size_t>(buf, rabitq_single_bit_code_size(d)); // code_size (nb_bits=1)
+    push_val<int>(buf, 1);                                 // metric_type (L2)
+    push_val<size_t>(buf, 1);                              // nb_bits
 }
 
 /// Helper: push an IVF header (index_header + nlist + nprobe + flat quantizer
@@ -2285,6 +2290,46 @@ TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Ixrr) {
     VectorIOReader reader;
     reader.data = buf;
     EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexRaBitQ code_size field mismatch. The flat readers take
+// rabitq.code_size straight from the file. If it does not match
+// compute_code_size(d, nb_bits), decode_core still reads the per-code
+// factor block at offset (d+7)/8 -- derived from d, not code_size -- so a
+// too-small code_size makes search()/sa_decode() read past the codes
+// buffer (heap OOB), even when codes.size() == ntotal * code_size holds.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, RaBitQCodeSizeFieldMismatch_Ixrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrq");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    // RaBitQuantizer with a code_size that does not match
+    // compute_code_size(8, 1) == (8+7)/8 + 8 == 9.
+    push_val<size_t>(buf, (size_t)8); // d
+    push_val<size_t>(buf, (size_t)1); // code_size = 1 (forged; real = 9)
+    push_val<int>(buf, 1);            // metric_type (L2)
+    push_vector<uint8_t>(buf, {});    // codes
+    push_vector<float>(buf, std::vector<float>(8, 0.0f)); // center
+    push_val<uint8_t>(buf, 0);        // qb = 0
+
+    expect_read_throws_with(buf, "code_size mismatch");
+}
+
+TEST(ReadIndexDeserialize, RaBitQCodeSizeFieldMismatch_Ixrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrr");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    // Multi-bit form: code_size must match compute_code_size(8, nb_bits).
+    push_val<size_t>(buf, (size_t)8); // d
+    push_val<size_t>(buf, (size_t)1); // code_size = 1 (forged; real = 9 for nb_bits=1)
+    push_val<int>(buf, 1);            // metric_type (L2)
+    push_val<size_t>(buf, 1);         // nb_bits = 1
+    push_vector<uint8_t>(buf, {});    // codes
+    push_vector<float>(buf, std::vector<float>(8, 0.0f)); // center
+    push_val<uint8_t>(buf, 0);        // qb = 0
+
+    expect_read_throws_with(buf, "code_size mismatch");
 }
 
 // -- Irfn (IndexRaBitQFastScan, new format) --
