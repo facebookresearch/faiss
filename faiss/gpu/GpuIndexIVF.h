@@ -98,6 +98,17 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
     /// debugging purposes.
     virtual std::vector<idx_t> getListIndices(idx_t listId) const;
 
+    /// Add vectors with precomputed IVF list assignments.
+    /// Same naming and argument order as IndexIVF::add_core.
+    /// `x`, `xids`, and `precomputed_idx` can be resident on the CPU or any
+    /// GPU; copies are performed as needed.
+    void add_core(
+            idx_t n,
+            const float* x,
+            const idx_t* xids,
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr);
+
     void search_preassigned(
             idx_t n,
             const float* x,
@@ -132,6 +143,12 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
 
     /// Called from GpuIndex for add/add_with_ids
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+
+    void addImplPrecomputed_(
+            idx_t n,
+            const float* x,
+            const idx_t* xids,
+            const idx_t* precomputed_idx) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(

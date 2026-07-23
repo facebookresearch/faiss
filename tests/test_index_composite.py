@@ -456,7 +456,8 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         index_new.verbose = True
         # should display
-        # IndexIVFFlatDedup::train: train on 350 points after dedup (was 500 points)
+        # IndexIVFFlatDedup::train: train on 350 points after dedup
+        # (was 500 points)
         index_new.train(xt)
 
         index_ref = faiss.IndexIVFFlat(quantizer, d, 20)
@@ -840,8 +841,8 @@ class TestIndependentQuantizer(unittest.TestCase):
         self.assertLess(perf_ref, perf_new)
 
     def test_precomputed_tables(self):
-        """see how precomputed tables behave with centroid distance estimates from a mismatching
-        coarse quantizer"""
+        """see how precomputed tables behave with centroid distance
+        estimates from a mismatching coarse quantizer"""
         ds = SyntheticDataset(48, 2000, 500, 250)
         gt = ds.get_groundtruth(10)
 

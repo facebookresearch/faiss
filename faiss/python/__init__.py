@@ -20,8 +20,8 @@ def _preload_gpu_libs():
     These libs ship in nvidia-*-cuNN / libcuvs-cuNN wheels, off ld.so's search
     path, so we dlopen them before the SWIG extension loads libfaiss.so. Gated
     on the `faiss._gpu_build` marker (CMake writes it only for GPU builds); the
-    `_cuvs_build` marker selects the CUDA 13 cuVS variant (else CUDA 12) and adds
-    the cuVS stack. Missing wheels raise a fix-it.
+    `_cuvs_build` marker selects the CUDA 13 cuVS variant (else CUDA 12) and
+    adds the cuVS stack. Missing wheels raise a fix-it.
     """
     try:
         from . import _gpu_build  # noqa: F401
@@ -37,8 +37,8 @@ def _preload_gpu_libs():
             ctypes.CDLL(path, mode=ctypes.RTLD_GLOBAL)
         except OSError as e:
             raise RuntimeError(
-                f"faiss-gpu: failed to load {os.path.basename(path)} from {path} "
-                f"— corrupt or incomplete nvidia CUDA wheel?"
+                f"faiss-gpu: failed to load {os.path.basename(path)} from "
+                f"{path} — corrupt or incomplete nvidia CUDA wheel?"
             ) from e
 
     # faiss-gpu-cuvs wheels carry the `_cuvs_build` marker and are built against
@@ -82,19 +82,25 @@ def _preload_gpu_libs():
         # CUDA 12 per-component layout: each nvidia-*-cu12 wheel exposes an
         # importable module whose lib/ dir holds the .so.
         def _nvidia_lib_dir(import_name, pip_spec):
-            """Return the lib/ dir of an nvidia-*-cu12 wheel, or raise a fix-it."""
+            """Return the lib/ dir of an nvidia-*-cu12 wheel, or raise a
+            fix-it."""
             try:
-                mod = __import__("nvidia." + import_name, fromlist=[import_name])
+                mod = __import__(
+                    "nvidia." + import_name, fromlist=[import_name]
+                )
             except ImportError as e:
                 pip_name = pip_spec.split(">")[0].split("<")[0].split("=")[0]
                 raise RuntimeError(
                     f"faiss-gpu installed but {pip_name} is missing — "
                     f"pip install '{pip_spec}'"
                 ) from e
-            # __path__[0] not __file__: PEP 420 namespace pkgs have __file__ = None.
+            # __path__[0] not __file__: PEP 420 namespace pkgs have
+            # __file__ = None.
             return os.path.join(mod.__path__[0], "lib")
 
-        _cudart = _nvidia_lib_dir("cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13")
+        _cudart = _nvidia_lib_dir(
+            "cuda_runtime", "nvidia-cuda-runtime-cu12>=12.6,<13"
+        )
         _cublas = _nvidia_lib_dir("cublas", "nvidia-cublas-cu12>=12.6,<13")
         _curand = _nvidia_lib_dir("curand", "nvidia-curand-cu12>=10.3.7,<11")
         _load(os.path.join(_cudart, "libcudart.so.12"))
@@ -105,14 +111,16 @@ def _preload_gpu_libs():
 
     # faiss-gpu-cuvs wheels also need the cuVS stack. Delegate to RAPIDS'
     # load_library() (loads each .so RTLD_GLOBAL + its CUDA deps); order
-    # rmm -> raft -> cuvs makes every symbol global before the SWIG extension loads.
+    # rmm -> raft -> cuvs makes every symbol global before the SWIG extension
+    # loads.
     try:
         import libcuvs
         import libraft
         import librmm
     except ImportError as e:
         raise RuntimeError(
-            "faiss-gpu-cuvs installed but the cuVS runtime wheels are missing — "
+            "faiss-gpu-cuvs installed but the cuVS runtime wheels are "
+            "missing — "
             "pip install 'libcuvs-cu13>=26.06,<27' "
             "--extra-index-url https://pypi.nvidia.com"
         ) from e
@@ -462,6 +470,80 @@ def range_search_with_parameters(
             "invlist_scan_ms": ms_per_stage[2],
         }
         return lims, Dout, Iout, stats
+
+
+super_kmeans_assign_iteration_c = super_kmeans_assign_iteration
+
+
+def super_kmeans_assign_iteration(
+    X_tilde, Y_tilde, tau, assignments, d_prime, ad_coeff, cp,
+):
+    """Run one SuperKMeans iter-1+ pruned assignment pass on caller-managed state.
+
+    All arrays must be C-contiguous. `X_tilde`, `Y_tilde`, `tau`, and `ad_coeff`
+    must be float32; `assignments` must be int32. These mirror the C++ pointer
+    contract, and passing another dtype (e.g. int64 assignments, numpy's default
+    integer type) would otherwise reinterpret the buffer and corrupt results.
+
+    Shapes: `X_tilde` is (n, d), `Y_tilde` is (k, d), `tau` and `assignments`
+    have length n, and `ad_coeff` has length d + 1.
+
+    Returns (total_pairs, pruned_at_gemm) for a d_prime controller.
+    Mutates `tau` and `assignments` in place.
+    """
+    for name, arr, dtype in (
+        ("X_tilde", X_tilde, "float32"),
+        ("Y_tilde", Y_tilde, "float32"),
+        ("tau", tau, "float32"),
+        ("ad_coeff", ad_coeff, "float32"),
+        ("assignments", assignments, "int32"),
+    ):
+        if arr.dtype != dtype:
+            raise TypeError(
+                f"super_kmeans_assign_iteration: {name} must be {dtype}, "
+                f"got {arr.dtype}"
+            )
+        if not arr.flags["C_CONTIGUOUS"]:
+            raise ValueError(
+                f"super_kmeans_assign_iteration: {name} must be C-contiguous"
+            )
+    if X_tilde.ndim != 2:
+        raise ValueError(
+            f"super_kmeans_assign_iteration: X_tilde must be 2D (n, d), "
+            f"got shape {X_tilde.shape}"
+        )
+    n, d = X_tilde.shape
+    if Y_tilde.ndim != 2 or Y_tilde.shape[1] != d:
+        raise ValueError(
+            f"super_kmeans_assign_iteration: Y_tilde must have shape (k, {d}), "
+            f"got {Y_tilde.shape}"
+        )
+    k = Y_tilde.shape[0]
+    if tau.shape != (n,):
+        raise ValueError(
+            f"super_kmeans_assign_iteration: tau must have shape ({n},), "
+            f"got {tau.shape}"
+        )
+    if assignments.shape != (n,):
+        raise ValueError(
+            f"super_kmeans_assign_iteration: assignments must have shape ({n},), "
+            f"got {assignments.shape}"
+        )
+    if ad_coeff.shape != (d + 1,):
+        raise ValueError(
+            f"super_kmeans_assign_iteration: ad_coeff must have shape ({d + 1},), "
+            f"got {ad_coeff.shape}"
+        )
+    total = np.zeros(1, dtype=np.int64)
+    pruned = np.zeros(1, dtype=np.int64)
+    super_kmeans_assign_iteration_c(
+        swig_ptr(X_tilde), n, d,
+        swig_ptr(Y_tilde), k,
+        swig_ptr(tau), swig_ptr(assignments),
+        d_prime, swig_ptr(ad_coeff), cp,
+        swig_ptr(total), swig_ptr(pruned),
+    )
+    return int(total[0]), int(pruned[0])
 
 
 # IndexProxy was renamed to IndexReplicas, remap the old name for any old code

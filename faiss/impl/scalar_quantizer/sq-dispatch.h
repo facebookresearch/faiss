@@ -546,6 +546,16 @@ SQDistanceComputer* select_distance_computer_body(
                     return new DistanceComputerByteSigned<Sim, SL2>(
                             static_cast<int>(d), trained);
                 }
+            } else if constexpr (SL2 == SIMDLevel::AVX512) {
+                if (d % 32 == 0) {
+                    return new DistanceComputerByteSigned<Sim, SL2>(
+                            static_cast<int>(d), trained);
+                }
+            } else if constexpr (SL2 == SIMDLevel::AVX2) {
+                if (d % 16 == 0) {
+                    return new DistanceComputerByteSigned<Sim, SL2>(
+                            static_cast<int>(d), trained);
+                }
             }
             return new DCTemplate<Quantizer8bitDirectSigned<SL2>, Sim, SL2>(
                     d, trained);
@@ -747,6 +757,16 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
             case ScalarQuantizer::QT_8bit_direct_signed:
                 if constexpr (SL2 == SIMDLevel::AVX512_SPR) {
                     if (d % 64 == 0) {
+                        return scan.template operator()<
+                                DistanceComputerByteSigned<Similarity, SL2>>();
+                    }
+                } else if constexpr (SL2 == SIMDLevel::AVX512) {
+                    if (d % 32 == 0) {
+                        return scan.template operator()<
+                                DistanceComputerByteSigned<Similarity, SL2>>();
+                    }
+                } else if constexpr (SL2 == SIMDLevel::AVX2) {
+                    if (d % 16 == 0) {
                         return scan.template operator()<
                                 DistanceComputerByteSigned<Similarity, SL2>>();
                     }

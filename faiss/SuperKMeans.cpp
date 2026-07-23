@@ -65,22 +65,13 @@ struct TrainState {
     int n = 0;
     std::vector<float> Y_tilde; // (k, d) row-major
 
-    std::vector<int> assignments;  // size n
-    std::vector<float> best_dists; // size n; tau per vector
-
-    /// ||X_tilde[i, 0:d_prime]||^2; recomputed when d_prime changes.
-    std::vector<float> x_norms_partial;
+    std::vector<int32_t> assignments; // size n
+    std::vector<float> best_dists;    // size n; tau per vector
 
     int d_prime = 0;
 
     /// ADSampling threshold table; size d+1.
     std::vector<float> ad_coeff;
-
-    /// PDX block layout for the trailing pruning sweep: block b covers
-    /// original dims [true_block_end[b] - block_dim[b], true_block_end[b]).
-    /// Recomputed when d_prime changes.
-    std::vector<int> block_dim;
-    std::vector<int> true_block_end;
 
     /// Counter for the verbose-mode "low pruning" warning.
     int low_pruning_streak = 0;
@@ -89,37 +80,33 @@ struct TrainState {
     explicit TrainState(int d) : R(d, d) {}
 };
 
-/// Rebuild state.block_dim and state.true_block_end from the current
-/// state.d_prime and pdx_block_size. Call after any change to d_prime.
-void rebuild_pdx_block_layout(int d, int pdx_block_size, TrainState& state) {
-    const int dp = state.d_prime;
-    const int d_trail = d - dp;
+/// PDX block layout for the trailing pruning sweep: block b covers original
+/// dims [true_block_end[b] - block_dim[b], true_block_end[b]).
+struct LocalBlockLayout {
+    std::vector<int> block_dim;
+    std::vector<int> true_block_end;
+};
+
+LocalBlockLayout build_pdx_block_layout(
+        int d,
+        int d_prime,
+        int pdx_block_size) {
+    LocalBlockLayout layout;
+    const int d_trail = d - d_prime;
     const int n_full_blocks = d_trail / pdx_block_size;
     const int tail = d_trail % pdx_block_size;
     const int n_blocks = n_full_blocks + (tail > 0 ? 1 : 0);
-    state.block_dim.assign(n_blocks, pdx_block_size);
-    state.true_block_end.resize(n_blocks);
-    if (n_blocks > 0) {
-        assert(!state.block_dim.empty());
-        assert(!state.true_block_end.empty());
-        for (int b = 0; b < n_full_blocks; ++b) {
-            state.true_block_end[b] = dp + (b + 1) * pdx_block_size;
-        }
-        if (tail > 0) {
-            state.block_dim[n_full_blocks] = tail;
-            state.true_block_end[n_full_blocks] = d;
-        }
+    layout.block_dim.assign(n_blocks, pdx_block_size);
+    layout.true_block_end.resize(n_blocks);
+    for (int b = 0; b < n_full_blocks; ++b) {
+        layout.true_block_end[b] = d_prime + (b + 1) * pdx_block_size;
     }
+    if (tail > 0) {
+        layout.block_dim[n_full_blocks] = tail;
+        layout.true_block_end[n_full_blocks] = d;
+    }
+    return layout;
 }
-
-struct IterScratch {
-    std::vector<float> partial_ip; // (bx_max, by_max) for the GEMM tile
-    std::vector<float> Y_pdx;      // PDX-laid-out trailing block
-    std::vector<float> Y_trail;    // row-major (k, d_trail) input to pdxify
-    std::vector<float> y_norms_partial; // ||Y_tilde[j, 0:dp]||^2
-    std::vector<int64_t> labels64;      // size n; widened state.assignments
-    int prev_d_trail = -1;
-};
 
 /// Iter 0: full GEMM via knn_L2sqr (vanilla Lloyd's). Fills
 /// state.assignments and state.best_dists. Returns objective.
@@ -148,182 +135,55 @@ double run_iter0_full_gemm(int d, int k, TrainState& state) {
     return objective;
 }
 
-/// Iter 1+: partial GEMM over [0, d_prime) + ADSampling progressive
-/// pruning over the PDX-laid-out trailing block. Updates
-/// state.assignments and state.best_dists. Writes total_pairs and
-/// pruned_at_gemm. Returns objective.
+/// Iter 1+: refresh tau, then run one shared super_kmeans_assign_iteration
+/// pass (partial GEMM + ADSampling progressive pruning). Updates
+/// state.assignments and state.best_dists, writes total_pairs and
+/// pruned_at_gemm, and returns the objective.
 double run_iter_pruned(
         int d,
         int k,
         const SuperKMeansParameters& cp,
         TrainState& state,
-        IterScratch& scratch,
+        SuperKMeansAssignScratch& assign_scratch,
         int64_t& total_pairs,
         int64_t& pruned_at_gemm) {
-    const int dp = state.d_prime;
-    assert(dp >= 1);
-    assert(!state.ad_coeff.empty());
-    assert(!scratch.partial_ip.empty());
-    assert(!scratch.y_norms_partial.empty());
-    const int d_trail = d - dp;
     const int n_train = state.n;
+    assert(state.d_prime >= 1);
+    assert(!state.ad_coeff.empty());
     assert(static_cast<int>(state.best_dists.size()) >= n_train);
-    assert(static_cast<int>(state.x_norms_partial.size()) >= n_train);
     assert(static_cast<int>(state.assignments.size()) >= n_train);
 
-    if (d_trail != scratch.prev_d_trail) {
-        scratch.Y_pdx.resize(static_cast<size_t>(k) * d_trail);
-        scratch.Y_trail.resize(static_cast<size_t>(k) * d_trail);
-        scratch.prev_d_trail = d_trail;
-    }
-    for (int j = 0; j < k; ++j) {
-        std::memcpy(
-                scratch.Y_trail.data() + static_cast<size_t>(j) * d_trail,
-                state.Y_tilde.data() + static_cast<size_t>(j) * d + dp,
-                d_trail * sizeof(float));
-    }
-    detail::pdxify(
-            scratch.Y_trail.data(),
-            k,
-            d_trail,
-            cp.pdx_block_size,
-            scratch.Y_pdx.data());
-
-    detail::compute_partial_norms(
-            state.Y_tilde.data(), k, d, dp, scratch.y_norms_partial.data());
-
-    const int n_blocks = static_cast<int>(state.block_dim.size());
-
-    for (int xi = 0; xi < n_train; xi += cp.x_batch) {
-        const int bx = std::min(cp.x_batch, n_train - xi);
-
-        // Refresh tau: recompute full-d L2 distance to the previously
-        // assigned centroid. This is intentionally over all d dims (not
-        // just d_prime) because tau must be an exact distance for the
-        // chi-squared pruning bound to be valid. Cost is O(bx * d) per
-        // x-batch, amortized across the y-batch tiles that follow.
+    // Refresh tau: exact full-d L2 distance to the currently assigned centroid.
+    // super_kmeans_assign_iteration requires an exact tau (the chi-squared
+    // bound assumes it), and centroids moved since the previous assignment.
 #pragma omp parallel for
-        for (int i = 0; i < bx; ++i) {
-            const int j_prev = state.assignments[xi + i];
-            const float* xrow =
-                    state.X_tilde.data() + static_cast<size_t>(xi + i) * d;
-            const float* yrow =
-                    state.Y_tilde.data() + static_cast<size_t>(j_prev) * d;
-            float tau = 0.0f;
-            for (int m = 0; m < d; ++m) {
-                const float diff = xrow[m] - yrow[m];
-                tau += diff * diff;
-            }
-            state.best_dists[xi + i] = tau;
+    for (int i = 0; i < n_train; ++i) {
+        const int j_prev = state.assignments[i];
+        const float* xrow = state.X_tilde.data() + static_cast<size_t>(i) * d;
+        const float* yrow =
+                state.Y_tilde.data() + static_cast<size_t>(j_prev) * d;
+        float tau = 0.0f;
+        for (int m = 0; m < d; ++m) {
+            const float diff = xrow[m] - yrow[m];
+            tau += diff * diff;
         }
-
-        for (int yj = 0; yj < k; yj += cp.y_batch) {
-            const int by = std::min(cp.y_batch, k - yj);
-
-            // GEMM phase: column-major sgemm computes
-            //   partial_ip[i*by + j] = <X[xi+i, 0:dp], Y[yj+j, 0:dp]>.
-            {
-                FINTEGER M = by;
-                FINTEGER N_ = bx;
-                FINTEGER K_ = dp;
-                float alpha = 1.0f;
-                float beta = 0.0f;
-                FINTEGER lda_y = d;
-                FINTEGER lda_x = d;
-                FINTEGER ldc = by;
-                sgemm_("Transpose",
-                       "Not transpose",
-                       &M,
-                       &N_,
-                       &K_,
-                       &alpha,
-                       state.Y_tilde.data() + static_cast<size_t>(yj) * d,
-                       &lda_y,
-                       state.X_tilde.data() + static_cast<size_t>(xi) * d,
-                       &lda_x,
-                       &beta,
-                       scratch.partial_ip.data(),
-                       &ldc);
-            }
-
-            // One SIMD dispatch per (xi, yj) tile — block_l2<SL> below is
-            // a direct call (no per-call switch on SIMDConfig::level).
-            with_simd_level([&]<SIMDLevel SL>() {
-                [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
-                int64_t total_pairs_local = 0;
-                int64_t pruned_at_gemm_local = 0;
-#pragma omp parallel for schedule(dynamic, omp_chunk_local) \
-        reduction(+ : total_pairs_local) reduction(+ : pruned_at_gemm_local)
-                for (int i = 0; i < bx; ++i) {
-                    // tau is the best full-d distance found so far for this
-                    // point; tightened as closer centroids are found.
-                    float tau = state.best_dists[xi + i];
-                    int best_j = state.assignments[xi + i];
-                    const float xnp_i = state.x_norms_partial[xi + i];
-                    const float* xrow = state.X_tilde.data() +
-                            static_cast<size_t>(xi + i) * d;
-
-                    for (int j = 0; j < by; ++j) {
-                        ++total_pairs_local;
-
-                        // L2-from-IP; clamp to handle catastrophic
-                        // cancellation when the true distance is ~0.
-                        float pd = xnp_i + scratch.y_norms_partial[yj + j] -
-                                2.0f *
-                                        scratch.partial_ip
-                                                [static_cast<size_t>(i) * by +
-                                                 j];
-                        if (pd < 0.0f) {
-                            pd = 0.0f;
-                        }
-
-                        if (pd > state.ad_coeff[dp] * tau) {
-                            ++pruned_at_gemm_local;
-                            continue;
-                        }
-
-                        // double accumulator mitigates float drift over many
-                        // block additions.
-                        double dist = pd;
-                        bool keep = true;
-
-                        // Progressive pruning across PDX blocks. Per block:
-                        // stride = k * block_dim[b] floats, column-major
-                        // across centroids.
-                        size_t pdx_offset = 0;
-                        for (int b = 0; b < n_blocks; ++b) {
-                            const int n_in_block = state.block_dim.at(b);
-                            const int true_end = state.true_block_end.at(b);
-                            const float* xblk = xrow + (true_end - n_in_block);
-                            const float* yblk = scratch.Y_pdx.data() +
-                                    pdx_offset +
-                                    static_cast<size_t>(yj + j) * n_in_block;
-                            dist += faiss::detail::block_l2<SL>(
-                                    xblk, yblk, n_in_block);
-                            pdx_offset += static_cast<size_t>(k) * n_in_block;
-
-                            if (dist >
-                                static_cast<double>(state.ad_coeff[true_end]) *
-                                        tau) {
-                                keep = false;
-                                break;
-                            }
-                        }
-
-                        if (keep && dist < tau) {
-                            tau = static_cast<float>(dist);
-                            best_j = yj + j;
-                        }
-                    }
-
-                    state.best_dists[xi + i] = tau;
-                    state.assignments[xi + i] = best_j;
-                }
-                total_pairs += total_pairs_local;
-                pruned_at_gemm += pruned_at_gemm_local;
-            });
-        }
+        state.best_dists[i] = tau;
     }
+
+    super_kmeans_assign_iteration(
+            state.X_tilde.data(),
+            n_train,
+            d,
+            state.Y_tilde.data(),
+            k,
+            state.best_dists.data(),
+            state.assignments.data(),
+            state.d_prime,
+            state.ad_coeff.data(),
+            cp,
+            &total_pairs,
+            &pruned_at_gemm,
+            &assign_scratch);
 
     double objective = 0.0;
     for (int i = 0; i < n_train; ++i) {
@@ -337,13 +197,13 @@ int update_centroids_and_split(
         int d,
         int k,
         TrainState& state,
-        IterScratch& scratch,
+        std::vector<int64_t>& labels64,
         std::vector<float>& hassign) {
     std::fill(hassign.begin(), hassign.end(), 0.0f);
-    assert(!scratch.labels64.empty());
+    assert(!labels64.empty());
     assert(!state.assignments.empty());
     for (int i = 0; i < state.n; ++i) {
-        scratch.labels64[i] = static_cast<int64_t>(state.assignments[i]);
+        labels64[i] = static_cast<int64_t>(state.assignments[i]);
     }
     detail::compute_centroids(
             d,
@@ -352,7 +212,7 @@ int update_centroids_and_split(
             /*k_frozen=*/0,
             reinterpret_cast<const uint8_t*>(state.X_tilde.data()),
             /*codec=*/nullptr,
-            scratch.labels64.data(),
+            labels64.data(),
             /*weights=*/nullptr,
             hassign.data(),
             state.Y_tilde.data());
@@ -368,9 +228,8 @@ int update_centroids_and_split(
             state.Y_tilde.data());
 }
 
-/// Stay-in-band controller: nudge state.d_prime based on observed
-/// pruning rate. Recomputes x_norms_partial if d_prime changed. Returns
-/// the observed pruning rate (0 when there were no pairs).
+/// Stay-in-band controller: nudge state.d_prime based on observed pruning
+/// rate. Returns the observed pruning rate (0 when there were no pairs).
 float adapt_d_prime(
         int d,
         const SuperKMeansParameters& cp,
@@ -392,25 +251,16 @@ float adapt_d_prime(
     }
     new_dp = std::max(cp.d_prime_min, new_dp);
     new_dp = std::min(d / 2, new_dp);
-    if (new_dp != state.d_prime) {
-        state.d_prime = new_dp;
-        detail::compute_partial_norms(
-                state.X_tilde.data(),
-                state.n,
-                d,
-                state.d_prime,
-                state.x_norms_partial.data());
-        rebuild_pdx_block_layout(d, cp.pdx_block_size, state);
-    }
+    state.d_prime = new_dp;
     return pruning_rate;
 }
 
 /// Pre-loop setup: subsample, rotate, Forgy init, build ADSampling table,
-/// allocate scratch. Returned `sampled_x_owner` keeps the subsampled buffer
-/// alive when subsampling occurred (otherwise empty).
+/// size the label scratch. Returned `sampled_x_owner` keeps the subsampled
+/// buffer alive when subsampling occurred (otherwise empty).
 std::unique_ptr<uint8_t[]> setup_train_state(
         TrainState& state,
-        IterScratch& scratch,
+        std::vector<int64_t>& labels64,
         std::vector<float>& hassign,
         const SuperKMeansParameters& cp,
         int d,
@@ -468,17 +318,6 @@ std::unique_ptr<uint8_t[]> setup_train_state(
     state.d_prime =
             std::max(cp.d_prime_min, static_cast<int>(d * cp.d_prime_fraction));
     state.d_prime = std::min(state.d_prime, d / 2);
-    rebuild_pdx_block_layout(d, cp.pdx_block_size, state);
-
-    // Iter 1+ uses L2-from-IP only over [0, d_prime), so full ||X[i]||^2 is
-    // never read; iter 0 routes through knn_L2sqr which carries its own.
-    state.x_norms_partial.resize(state.n);
-    detail::compute_partial_norms(
-            state.X_tilde.data(),
-            state.n,
-            d,
-            state.d_prime,
-            state.x_norms_partial.data());
 
     const double epsilon = static_cast<double>(cp.ad_epsilon_factor) / d;
     state.ad_coeff = detail::precompute_ad_thresholds(d, epsilon);
@@ -491,11 +330,7 @@ std::unique_ptr<uint8_t[]> setup_train_state(
 
     hassign.assign(k, 0.0f);
 
-    const int by_max = std::min(cp.y_batch, k);
-    const int bx_max = std::min(cp.x_batch, state.n);
-    scratch.partial_ip.resize(static_cast<size_t>(bx_max) * by_max);
-    scratch.y_norms_partial.resize(k);
-    scratch.labels64.resize(state.n);
+    labels64.resize(state.n);
 
     return sampled_x_owner;
 }
@@ -577,10 +412,11 @@ void SuperKMeans::train(idx_t n, const float* x) {
     }
 
     TrainState state(d);
-    IterScratch scratch;
+    std::vector<int64_t> labels64;
+    SuperKMeansAssignScratch assign_scratch;
     std::vector<float> hassign;
     [[maybe_unused]] auto sampled_x_owner =
-            setup_train_state(state, scratch, hassign, cp, d, k, n, x);
+            setup_train_state(state, labels64, hassign, cp, d, k, n, x);
 
     iteration_stats.clear();
     iteration_stats.reserve(cp.niter);
@@ -599,11 +435,17 @@ void SuperKMeans::train(idx_t n, const float* x) {
             objective = run_iter0_full_gemm(d, k, state);
         } else {
             objective = run_iter_pruned(
-                    d, k, cp, state, scratch, total_pairs, pruned_at_gemm);
+                    d,
+                    k,
+                    cp,
+                    state,
+                    assign_scratch,
+                    total_pairs,
+                    pruned_at_gemm);
         }
 
         const int nsplit =
-                update_centroids_and_split(d, k, state, scratch, hassign);
+                update_centroids_and_split(d, k, state, labels64, hassign);
         const float pruning_rate = (iter == 0)
                 ? 0.0f
                 : adapt_d_prime(d, cp, state, total_pairs, pruned_at_gemm);
@@ -651,6 +493,180 @@ void SuperKMeans::train(idx_t n, const float* x) {
     }
 
     untransform_centroids(centroids, state.R, d, k, state.Y_tilde.data());
+}
+
+void super_kmeans_assign_iteration(
+        const float* X_tilde,
+        int n,
+        int d,
+        const float* Y_tilde,
+        int k,
+        float* tau,
+        int32_t* assignments,
+        int d_prime,
+        const float* ad_coeff,
+        const SuperKMeansParameters& cp,
+        int64_t* total_pairs_out,
+        int64_t* pruned_at_gemm_out,
+        SuperKMeansAssignScratch* scratch_in) {
+    FAISS_THROW_IF_NOT_MSG(
+            d_prime >= 1,
+            "super_kmeans_assign_iteration: d_prime must be >= 1");
+    FAISS_THROW_IF_NOT_MSG(
+            d_prime < d, "super_kmeans_assign_iteration: d_prime must be < d");
+    FAISS_THROW_IF_NOT_MSG(
+            ad_coeff != nullptr,
+            "super_kmeans_assign_iteration: ad_coeff must not be null");
+    FAISS_THROW_IF_NOT_MSG(
+            tau != nullptr,
+            "super_kmeans_assign_iteration: tau must not be null");
+    FAISS_THROW_IF_NOT_MSG(
+            assignments != nullptr,
+            "super_kmeans_assign_iteration: assignments must not be null");
+
+    const int d_trail = d - d_prime;
+    const auto layout = build_pdx_block_layout(d, d_prime, cp.pdx_block_size);
+    const int n_blocks = static_cast<int>(layout.block_dim.size());
+
+    // Reuse the caller's scratch when provided (grow-only buffers, so a caller
+    // looping over iterations allocates nothing in steady state); otherwise use
+    // a local instance for one-shot callers.
+    SuperKMeansAssignScratch local_scratch;
+    SuperKMeansAssignScratch& s = scratch_in ? *scratch_in : local_scratch;
+
+    // PDX-lay out the centroid trailing block once per call.
+    auto& Y_trail = s.Y_trail;
+    auto& Y_pdx = s.Y_pdx;
+    Y_trail.resize(static_cast<size_t>(k) * d_trail);
+    Y_pdx.resize(static_cast<size_t>(k) * d_trail);
+    for (int j = 0; j < k; ++j) {
+        std::memcpy(
+                Y_trail.data() + static_cast<size_t>(j) * d_trail,
+                Y_tilde + static_cast<size_t>(j) * d + d_prime,
+                d_trail * sizeof(float));
+    }
+    detail::pdxify(Y_trail.data(), k, d_trail, cp.pdx_block_size, Y_pdx.data());
+
+    auto& x_norms_partial = s.x_norms_partial;
+    auto& y_norms_partial = s.y_norms_partial;
+    x_norms_partial.resize(n);
+    detail::compute_partial_norms(
+            X_tilde, n, d, d_prime, x_norms_partial.data());
+    y_norms_partial.resize(k);
+    detail::compute_partial_norms(
+            Y_tilde, k, d, d_prime, y_norms_partial.data());
+
+    int64_t total_pairs = 0;
+    int64_t pruned_at_gemm = 0;
+
+    // Size the GEMM tile buffer to the actual max tile, not cp.x_batch *
+    // cp.y_batch, which over-allocates when n < x_batch or k < y_batch.
+    const int bx_max = std::min(cp.x_batch, n);
+    const int by_max = std::min(cp.y_batch, k);
+    auto& partial_ip = s.partial_ip;
+    partial_ip.resize(static_cast<size_t>(bx_max) * by_max);
+
+    for (int xi = 0; xi < n; xi += cp.x_batch) {
+        const int bx = std::min(cp.x_batch, n - xi);
+        for (int yj = 0; yj < k; yj += cp.y_batch) {
+            const int by = std::min(cp.y_batch, k - yj);
+
+            // Partial GEMM over [0, d_prime): partial_ip[i*by + j] =
+            //   <X[xi+i, 0:d_prime], Y[yj+j, 0:d_prime]>.
+            {
+                FINTEGER M = by;
+                FINTEGER N_ = bx;
+                FINTEGER K_ = d_prime;
+                float alpha = 1.0f;
+                float beta = 0.0f;
+                FINTEGER lda_y = d;
+                FINTEGER lda_x = d;
+                FINTEGER ldc = by;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &M,
+                       &N_,
+                       &K_,
+                       &alpha,
+                       Y_tilde + static_cast<size_t>(yj) * d,
+                       &lda_y,
+                       X_tilde + static_cast<size_t>(xi) * d,
+                       &lda_x,
+                       &beta,
+                       partial_ip.data(),
+                       &ldc);
+            }
+
+            // One SIMD dispatch per (xi, yj) tile.
+            with_simd_level([&]<SIMDLevel SL>() {
+                [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
+                int64_t tile_total = 0;
+                int64_t tile_pruned = 0;
+#pragma omp parallel for schedule(dynamic, omp_chunk_local) \
+        reduction(+ : tile_total) reduction(+ : tile_pruned)
+                for (int i = 0; i < bx; ++i) {
+                    const float xnp_i = x_norms_partial[xi + i];
+                    float tau_i = tau[xi + i];
+                    int32_t best_j = assignments[xi + i];
+                    const float* xrow =
+                            X_tilde + static_cast<size_t>(xi + i) * d;
+                    for (int j = 0; j < by; ++j) {
+                        ++tile_total;
+                        // L2-from-IP; clamp against catastrophic cancellation
+                        // when the true distance is ~0.
+                        float pd = xnp_i + y_norms_partial[yj + j] -
+                                2.0f *
+                                        partial_ip
+                                                [static_cast<size_t>(i) * by +
+                                                 j];
+                        if (pd < 0.0f) {
+                            pd = 0.0f;
+                        }
+                        // ADSampling chi-squared bound at the d_prime boundary.
+                        if (pd > ad_coeff[d_prime] * tau_i) {
+                            ++tile_pruned;
+                            continue;
+                        }
+                        // Progressive pruning across PDX blocks; double
+                        // accumulator mitigates float drift over many block
+                        // additions.
+                        double dist = pd;
+                        bool keep = true;
+                        size_t pdx_offset = 0;
+                        for (int b = 0; b < n_blocks; ++b) {
+                            const int n_in_block = layout.block_dim[b];
+                            const int true_end = layout.true_block_end[b];
+                            const float* xblk = xrow + (true_end - n_in_block);
+                            const float* yblk = Y_pdx.data() + pdx_offset +
+                                    static_cast<size_t>(yj + j) * n_in_block;
+                            dist += faiss::detail::block_l2<SL>(
+                                    xblk, yblk, n_in_block);
+                            pdx_offset += static_cast<size_t>(k) * n_in_block;
+                            if (dist > static_cast<double>(ad_coeff[true_end]) *
+                                        tau_i) {
+                                keep = false;
+                                break;
+                            }
+                        }
+                        if (keep && dist < tau_i) {
+                            tau_i = static_cast<float>(dist);
+                            best_j = static_cast<int32_t>(yj + j);
+                        }
+                    }
+                    tau[xi + i] = tau_i;
+                    assignments[xi + i] = best_j;
+                }
+                total_pairs += tile_total;
+                pruned_at_gemm += tile_pruned;
+            });
+        }
+    }
+    if (total_pairs_out) {
+        *total_pairs_out = total_pairs;
+    }
+    if (pruned_at_gemm_out) {
+        *pruned_at_gemm_out = pruned_at_gemm;
+    }
 }
 
 } // namespace faiss

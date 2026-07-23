@@ -197,7 +197,8 @@ class TestCompositeClustering(unittest.TestCase):
         self.assertGreater(obj1, obj10)
 
     def test_redo_cosine(self):
-        # test redo with cosine distance (inner prod, so objectives are reversed)
+        # test redo with cosine distance (inner prod, so objectives are
+        # reversed)
         d = 64
         n = 1000
 
