@@ -28,6 +28,7 @@ jobs:
   linux-x86_64-GPU-CUDA-13-2-nightly:
     name: Linux x86_64 GPU nightlies (CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
+    timeout-minutes: 300
     env:
       CUDA_ARCHS: "75-real;80;86-real;90;100;120"
     steps:
@@ -45,6 +46,7 @@ jobs:
   linux-x86_64-GPU-CUVS-CUDA13-2-0-nightly:
     name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 13.2)
     runs-on: 4-core-ubuntu-gpu-t4
+    timeout-minutes: 300
     env:
       CUDA_ARCHS: "75-real;80;90;100;120"
     steps:
