@@ -145,6 +145,31 @@
         </inbodydescription>
         <location file="faiss/impl/VisitedTable.h" line="48" column="28"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VisitedTable_1a657db51f828b9cad6bfc48cf56c477b8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+        <definition>static VisitedTable &amp; faiss::VisitedTable::get_reusable</definition>
+        <argsstring>(size_t size, std::optional&lt; bool &gt; use_hashset=std::nullopt)</argsstring>
+        <name>get_reusable</name>
+        <qualifiedname>faiss::VisitedTable::get_reusable</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; bool &gt;</type>
+          <declname>use_hashset</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a thread-local, reusable table sized for at least <computeroutput>size</computeroutput> and reset to a clean state. Unlike <ref refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" kindref="member">create()</ref>, it does not allocate on each call: the O(size) versioned array is allocated once per thread and reused across searches, avoiding a per-search alloc+zero of the whole array when a static index is searched repeatedly.</para>
+<para>The returned reference is owned by thread-local storage: do not delete it and do not use it beyond the current search on the calling thread. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="60" column="25"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -165,11 +190,12 @@
         <link refid="structfaiss_1_1VisitedTable"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/impl/VisitedTable.h" line="27" column="1" bodyfile="faiss/impl/VisitedTable.h" bodystart="27" bodyend="51"/>
+    <location file="faiss/impl/VisitedTable.h" line="27" column="1" bodyfile="faiss/impl/VisitedTable.h" bodystart="27" bodyend="63"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VisitedTable_1a2ed7c3421829bf16a2127f6353f38ded" prot="public" virt="pure-virtual"><scope>faiss::VisitedTable</scope><name>advance</name></member>
       <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>create</name></member>
       <member refid="structfaiss_1_1VisitedTable_1a485a45c53af2254a2c971e54460eb4e1" prot="public" virt="pure-virtual"><scope>faiss::VisitedTable</scope><name>get</name></member>
+      <member refid="structfaiss_1_1VisitedTable_1a657db51f828b9cad6bfc48cf56c477b8" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>get_reusable</name></member>
       <member refid="structfaiss_1_1VisitedTable_1a1bdadd9c5d57e9cd57c4756244d8db8a" prot="public" virt="pure-virtual"><scope>faiss::VisitedTable</scope><name>prefetch</name></member>
       <member refid="structfaiss_1_1VisitedTable_1a593fdd665f96ed35c70eee8735cef5f1" prot="public" virt="virtual"><scope>faiss::VisitedTable</scope><name>reserve</name></member>
       <member refid="structfaiss_1_1VisitedTable_1a57cd14352e07c7aecf027131dc321896" prot="public" virt="pure-virtual"><scope>faiss::VisitedTable</scope><name>set</name></member>

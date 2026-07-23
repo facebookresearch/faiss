@@ -1087,11 +1087,13 @@
     <member refid="structfaiss_1_1FAISS__FINAL_1adf297c1e5bdb411b6d8911bb1d76840f" kind="function"><name>reserve</name></member>
     <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" kind="function"><name>advance</name></member>
     <member refid="structfaiss_1_1FAISS__FINAL_1a1e3850e2905a3e8c4c7f068ab663739e" kind="function"><name>VisitedTableVector</name></member>
+    <member refid="structfaiss_1_1FAISS__FINAL_1a308f060fe82afedbd0d75bed72315340" kind="function"><name>ensure_size</name></member>
     <member refid="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" kind="function"><name>get</name></member>
     <member refid="structfaiss_1_1FAISS__FINAL_1a784a78872664a21e6973edffeb61923e" kind="function"><name>prefetch</name></member>
     <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" kind="function"><name>advance</name></member>
     <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" kind="function"><name>create</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a657db51f828b9cad6bfc48cf56c477b8" kind="function"><name>get_reusable</name></member>
   </compound>
   <compound refid="classfaiss_1_1FaissException" kind="class"><name>faiss::FaissException</name>
     <member refid="classfaiss_1_1FaissException_1a1b84d206c53a24cd8126dbfa30f5523e" kind="variable"><name>msg</name></member>
@@ -13385,6 +13387,7 @@
     <member refid="structfaiss_1_1VisitedTable_1a593fdd665f96ed35c70eee8735cef5f1" kind="function"><name>reserve</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a2ed7c3421829bf16a2127f6353f38ded" kind="function"><name>advance</name></member>
     <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" kind="function"><name>create</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a657db51f828b9cad6bfc48cf56c477b8" kind="function"><name>get_reusable</name></member>
   </compound>
   <compound refid="structfaiss_1_1VStackInvertedLists" kind="struct"><name>faiss::VStackInvertedLists</name>
     <member refid="structfaiss_1_1VStackInvertedLists_1a656f22a259d1aa602b6efde620cb4300" kind="variable"><name>ils</name></member>

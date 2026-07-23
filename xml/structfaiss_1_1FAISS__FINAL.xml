@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="56" column="24" bodyfile="faiss/impl/VisitedTable.h" bodystart="56" bodyend="-1"/>
+        <location file="faiss/impl/VisitedTable.h" line="68" column="24" bodyfile="faiss/impl/VisitedTable.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FAISS__FINAL_1a27dadab3fa96499ad6c0527455b6f546" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="85" column="17" bodyfile="faiss/impl/VisitedTable.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/impl/VisitedTable.h" line="97" column="17" bodyfile="faiss/impl/VisitedTable.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FAISS__FINAL_1ae1fdfc67e5469017ba607daab1ecd160" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="86" column="13" bodyfile="faiss/impl/VisitedTable.h" bodystart="86" bodyend="86"/>
+        <location file="faiss/impl/VisitedTable.h" line="98" column="13" bodyfile="faiss/impl/VisitedTable.h" bodystart="98" bodyend="98"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="58" column="5"/>
+        <location file="faiss/impl/VisitedTable.h" line="70" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
@@ -83,7 +83,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="60" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="60" bodyend="62"/>
+        <location file="faiss/impl/VisitedTable.h" line="72" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="72" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="64" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="64" bodyend="66"/>
+        <location file="faiss/impl/VisitedTable.h" line="76" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="76" bodyend="78"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a56fbff56b3bc1ab15feb068b6f44962c" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -123,7 +123,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="68" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="68" bodyend="70"/>
+        <location file="faiss/impl/VisitedTable.h" line="80" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="80" bodyend="82"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1adf297c1e5bdb411b6d8911bb1d76840f" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -142,7 +142,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="72" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="72" bodyend="74"/>
+        <location file="faiss/impl/VisitedTable.h" line="84" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="84" bodyend="86"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -158,7 +158,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="76" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="76" bodyend="78"/>
+        <location file="faiss/impl/VisitedTable.h" line="88" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="88" bodyend="90"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a1e3850e2905a3e8c4c7f068ab663739e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
@@ -176,7 +176,26 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="88" column="14" bodyfile="faiss/impl/VisitedTable.h" bodystart="88" bodyend="88"/>
+        <location file="faiss/impl/VisitedTable.h" line="100" column="14" bodyfile="faiss/impl/VisitedTable.h" bodystart="100" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a308f060fe82afedbd0d75bed72315340" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::FAISS_FINAL::ensure_size</definition>
+        <argsstring>(size_t size)</argsstring>
+        <name>ensure_size</name>
+        <qualifiedname>faiss::FAISS_FINAL::ensure_size</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Grow so indices in [0, size) are valid; new slots read as unvisited. Never shrinks, so capacity is retained when the table is reused. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="104" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="104" bodyend="108"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a54266642ddfa83ba7cceabcb07b0acda" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
@@ -196,7 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="90" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="90" bodyend="96"/>
+        <location file="faiss/impl/VisitedTable.h" line="110" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="110" bodyend="116"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
@@ -216,7 +235,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="98" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="98" bodyend="100"/>
+        <location file="faiss/impl/VisitedTable.h" line="118" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="118" bodyend="120"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1a784a78872664a21e6973edffeb61923e" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -236,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="102" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="102" bodyend="104"/>
+        <location file="faiss/impl/VisitedTable.h" line="122" column="10" bodyfile="faiss/impl/VisitedTable.h" bodystart="122" bodyend="124"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
@@ -252,7 +271,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/VisitedTable.h" line="106" column="10"/>
+        <location file="faiss/impl/VisitedTable.h" line="126" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -279,6 +298,31 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/VisitedTable.h" line="48" column="28"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VisitedTable_1a657db51f828b9cad6bfc48cf56c477b8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+        <definition>static VisitedTable &amp; faiss::VisitedTable::get_reusable</definition>
+        <argsstring>(size_t size, std::optional&lt; bool &gt; use_hashset=std::nullopt)</argsstring>
+        <name>get_reusable</name>
+        <qualifiedname>faiss::VisitedTable::get_reusable</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; bool &gt;</type>
+          <declname>use_hashset</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a thread-local, reusable table sized for at least <computeroutput>size</computeroutput> and reset to a clean state. Unlike <ref refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" kindref="member">create()</ref>, it does not allocate on each call: the O(size) versioned array is allocated once per thread and reused across searches, avoiding a per-search alloc+zero of the whole array when a static index is searched repeatedly.</para>
+<para>The returned reference is owned by thread-local storage: do not delete it and do not use it beyond the current search on the calling thread. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/VisitedTable.h" line="60" column="25"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -315,13 +359,15 @@
         <link refid="structfaiss_1_1VisitedTable"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/VisitedTable.h" line="55" column="1" bodyfile="faiss/impl/VisitedTable.h" bodystart="55" bodyend="79"/>
+    <location file="faiss/impl/VisitedTable.h" line="67" column="1" bodyfile="faiss/impl/VisitedTable.h" bodystart="67" bodyend="91"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>advance</name></member>
       <member refid="structfaiss_1_1FAISS__FINAL_1ae8a9f65e7b9663f08ddbdf7d818493ea" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>advance</name></member>
       <member refid="structfaiss_1_1VisitedTable_1aedd88d3cd94a5a45743489c6abd64486" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>create</name></member>
+      <member refid="structfaiss_1_1FAISS__FINAL_1a308f060fe82afedbd0d75bed72315340" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>ensure_size</name></member>
       <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>get</name></member>
       <member refid="structfaiss_1_1FAISS__FINAL_1a98d84ffe67f14cb991ea206a04e9d90d" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>get</name></member>
+      <member refid="structfaiss_1_1VisitedTable_1a657db51f828b9cad6bfc48cf56c477b8" prot="public" virt="non-virtual"><scope>faiss::FAISS_FINAL</scope><name>get_reusable</name></member>
       <member refid="structfaiss_1_1FAISS__FINAL_1a56fbff56b3bc1ab15feb068b6f44962c" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>prefetch</name></member>
       <member refid="structfaiss_1_1FAISS__FINAL_1a784a78872664a21e6973edffeb61923e" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>prefetch</name></member>
       <member refid="structfaiss_1_1FAISS__FINAL_1adf297c1e5bdb411b6d8911bb1d76840f" prot="public" virt="virtual"><scope>faiss::FAISS_FINAL</scope><name>reserve</name></member>
