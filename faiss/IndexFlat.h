@@ -17,6 +17,14 @@
 
 namespace faiss {
 
+/// Query-block size for IndexFlatPanorama search (default 32). When > 1,
+/// queries are processed in blocks so each DB level-block is loaded from memory
+/// once and reused across the block (raising cache-bandwidth efficiency). 0 or
+/// 1 selects the original query-at-a-time path. Results are identical for any
+/// value; this only trades off cache behavior. Set before searching; changing
+/// it concurrently with in-flight searches is not thread-safe.
+FAISS_API extern size_t panorama_query_block_size;
+
 /** Index that stores the full vectors and performs exhaustive search */
 struct IndexFlat : IndexFlatCodes {
     explicit IndexFlat(
