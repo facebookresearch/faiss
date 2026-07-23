@@ -556,6 +556,16 @@ void MetalIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* src) {
             src->polysemous_ht == 0,
             "copyFrom: polysemous codes are not supported");
     FAISS_THROW_IF_NOT_FMT(
+            src->d == d,
+            "copyFrom: dimension mismatch (%zd vs %zd)",
+            (size_t)src->d,
+            (size_t)d);
+    FAISS_THROW_IF_NOT_FMT(
+            src->pq.M == cpuIndex_->pq.M,
+            "copyFrom: PQ sub-quantizer mismatch (%zd vs %zd)",
+            (size_t)src->pq.M,
+            (size_t)cpuIndex_->pq.M);
+    FAISS_THROW_IF_NOT_FMT(
             src->nlist == cpuIndex_->nlist,
             "copyFrom: nlist mismatch (%zd vs %zd)",
             (size_t)src->nlist,
