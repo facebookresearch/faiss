@@ -89,8 +89,7 @@ GpuIndexHNSW::GpuIndexHNSW(
         : GpuIndex(provider->getResources(), dims, metric, 0.0f, config),
           hnswConfig_(config) {
     FAISS_THROW_IF_NOT_MSG(
-            metric == faiss::METRIC_L2 ||
-                    metric == faiss::METRIC_INNER_PRODUCT,
+            metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
             "GpuIndexHNSW supports METRIC_L2 and METRIC_INNER_PRODUCT only "
             "(cosine = normalize + inner product)");
     this->is_trained = false;
@@ -352,8 +351,8 @@ void GpuIndexHNSW::searchHostInt8(
     // If dim is not divisible by 4, DP4A cannot be used; fall back to fp32
     // path.
     if (idx.dim % 4 != 0) {
-        auto fp32_fallback = std::make_unique<float[]>(
-                static_cast<size_t>(n) * idx.dim);
+        auto fp32_fallback =
+                std::make_unique<float[]>(static_cast<size_t>(n) * idx.dim);
         for (int64_t i = 0; i < static_cast<int64_t>(n) * idx.dim; i++) {
             fp32_fallback[i] = static_cast<float>(x_host[i]);
         }

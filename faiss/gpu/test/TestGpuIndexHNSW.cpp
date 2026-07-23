@@ -112,8 +112,7 @@ void testHnswRecall(
     EXPECT_EQ(gpuHnsw->d, dim);
     EXPECT_EQ(gpuHnsw->ntotal, numVecs);
     EXPECT_EQ(
-            gpuHnsw->useInnerProduct(),
-            metric == faiss::METRIC_INNER_PRODUCT);
+            gpuHnsw->useInnerProduct(), metric == faiss::METRIC_INNER_PRODUCT);
 
     faiss::gpu::SearchParametersGpuHNSW params;
     params.ef = 256;
@@ -139,11 +138,9 @@ void testHnswRecall(
     for (int q = 0; q < numQuery; q++) {
         for (int i = 1; i < k; i++) {
             if (metric == faiss::METRIC_INNER_PRODUCT) {
-                EXPECT_GE(
-                        gpuDist[q * k + i - 1] + 1e-4f, gpuDist[q * k + i]);
+                EXPECT_GE(gpuDist[q * k + i - 1] + 1e-4f, gpuDist[q * k + i]);
             } else {
-                EXPECT_LE(
-                        gpuDist[q * k + i - 1] - 1e-4f, gpuDist[q * k + i]);
+                EXPECT_LE(gpuDist[q * k + i - 1] - 1e-4f, gpuDist[q * k + i]);
             }
         }
     }

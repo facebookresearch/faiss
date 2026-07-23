@@ -180,8 +180,7 @@ __device__ __forceinline__ float layer0_distance_warp(
     if constexpr (USE_DP4A) {
         const int32_t* vec_packed = reinterpret_cast<const int32_t*>(
                 d_dataset + static_cast<int64_t>(id) * dim);
-        const int32_t* query_packed =
-                reinterpret_cast<const int32_t*>(query);
+        const int32_t* query_packed = reinterpret_cast<const int32_t*>(query);
         int sum = 0;
         for (int d = lane; d < dim4; d += 32) {
             sum = __dp4a(query_packed[d], vec_packed[d], sum);
@@ -294,9 +293,9 @@ __global__ void upper_layer_search_kernel(
 
             for (uint32_t j = lane; j < lp.max_degree; j += 32) {
                 uint32_t nbr = lp.d_neighbors
-                                              [static_cast<int64_t>(local_idx) *
-                                                       lp.max_degree +
-                                               j];
+                                       [static_cast<int64_t>(local_idx) *
+                                                lp.max_degree +
+                                        j];
                 float dist = FLT_MAX;
                 if (nbr != UINT32_MAX) {
                     const DataT* nbr_vec =
@@ -346,7 +345,10 @@ __global__ void upper_layer_search_kernel(
 // ============================================================================
 
 __device__ __forceinline__ void bitonic_sort_staging(
-        uint32_t* ids, float* dists, int active_count, int capacity) {
+        uint32_t* ids,
+        float* dists,
+        int active_count,
+        int capacity) {
     int i = threadIdx.x;
     if (i < capacity && i >= active_count) {
         ids[i] = UINT32_MAX;
@@ -781,7 +783,12 @@ __global__ void layer0_beam_search_kernel(
     if (threadIdx.x == 0) {
         if (ep_valid) {
             float ep_dist = layer0_distance<DataT, QueryT, USE_DP4A>(
-                    query, d_dataset, d_inv_norms, ep, dim, dim4,
+                    query,
+                    d_dataset,
+                    d_inv_norms,
+                    ep,
+                    dim,
+                    dim4,
                     use_inner_product);
             if constexpr (HAS_FILTER) {
                 // A filtered entry point is a waypoint only: seed it into the
@@ -839,8 +846,14 @@ __global__ void layer0_beam_search_kernel(
         nbr = __shfl_sync(0xffffffff, nbr, 0);
 
         float dist = layer0_distance_warp<DataT, QueryT, USE_DP4A>(
-                query, d_dataset, d_inv_norms, nbr, dim, dim4,
-                use_inner_product, lane);
+                query,
+                d_dataset,
+                d_inv_norms,
+                nbr,
+                dim,
+                dim4,
+                use_inner_product,
+                lane);
 
         if (lane == 0) {
             int slot = atomicAdd(&meta[1], 1);
@@ -997,8 +1010,14 @@ __global__ void layer0_beam_search_kernel(
             nbr = __shfl_sync(0xffffffff, nbr, 0);
 
             float dist = layer0_distance_warp<DataT, QueryT, USE_DP4A>(
-                    query, d_dataset, d_inv_norms, nbr, dim, dim4,
-                    use_inner_product, lane);
+                    query,
+                    d_dataset,
+                    d_inv_norms,
+                    nbr,
+                    dim,
+                    dim4,
+                    use_inner_product,
+                    lane);
 
             if (lane == 0) {
                 int slot = atomicAdd(&meta[1], 1);

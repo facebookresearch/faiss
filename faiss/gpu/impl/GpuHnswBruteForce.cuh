@@ -78,9 +78,8 @@ __global__ void brute_force_topk_kernel(
     int item = blockIdx.x;
     if (item >= count)
         return;
-    int query_idx = (d_worklist != nullptr)
-            ? static_cast<int>(d_worklist[item])
-            : item;
+    int query_idx =
+            (d_worklist != nullptr) ? static_cast<int>(d_worklist[item]) : item;
 
     const QueryT* query = d_queries + static_cast<int64_t>(query_idx) * dim;
     int dim4 = dim / 4;
@@ -104,7 +103,12 @@ __global__ void brute_force_topk_kernel(
             if (is_bitset_filtered(d_bitset, r))
                 continue;
             float d = layer0_distance<DataT, QueryT, USE_DP4A>(
-                    query, d_dataset, d_inv_norms, r, dim, dim4,
+                    query,
+                    d_dataset,
+                    d_inv_norms,
+                    r,
+                    dim,
+                    dim4,
                     use_inner_product);
             bool after = (d > prev_dist) || (d == prev_dist && r > prev_id);
             if (!after)
@@ -121,8 +125,7 @@ __global__ void brute_force_topk_kernel(
             if (tid < stride) {
                 float od = s_dist[tid + stride];
                 uint32_t oi = s_id[tid + stride];
-                if (od < s_dist[tid] ||
-                    (od == s_dist[tid] && oi < s_id[tid])) {
+                if (od < s_dist[tid] || (od == s_dist[tid] && oi < s_id[tid])) {
                     s_dist[tid] = od;
                     s_id[tid] = oi;
                 }

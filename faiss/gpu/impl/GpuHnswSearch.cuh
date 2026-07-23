@@ -38,15 +38,14 @@
 #include <faiss/gpu/impl/GpuHnswBruteForce.cuh>
 #include <faiss/gpu/impl/GpuHnswSearchKernel.cuh>
 
-#define GPU_HNSW_CUDA_CHECK(expr)                                     \
-    do {                                                              \
-        cudaError_t _e = (expr);                                      \
-        if (_e != cudaSuccess) {                                      \
-            throw std::runtime_error(                                 \
-                    std::string("CUDA error: ") +                     \
-                    cudaGetErrorString(_e) + " at " + __FILE__ + ":" + \
-                    std::to_string(__LINE__));                         \
-        }                                                             \
+#define GPU_HNSW_CUDA_CHECK(expr)                                          \
+    do {                                                                   \
+        cudaError_t _e = (expr);                                           \
+        if (_e != cudaSuccess) {                                           \
+            throw std::runtime_error(                                      \
+                    std::string("CUDA error: ") + cudaGetErrorString(_e) + \
+                    " at " + __FILE__ + ":" + std::to_string(__LINE__));   \
+        }                                                                  \
     } while (0)
 
 namespace faiss {
@@ -59,7 +58,6 @@ inline void gpu_hnsw_search(
         GpuHnswSearchScratch& sc,
         int num_queries,
         int k) {
-
     int ef = params.ef;
     int sw = params.search_width;
     // Reject degenerate params up front: ef and search_width feed the
@@ -80,9 +78,8 @@ inline void gpu_hnsw_search(
     if (k > ef) {
         ef = k;
     }
-    int max_iter = params.max_iterations > 0
-            ? params.max_iterations
-            : 2 * ef / sw + 10;
+    int max_iter = params.max_iterations > 0 ? params.max_iterations
+                                             : 2 * ef / sw + 10;
     int dim = static_cast<int>(idx.dim);
     int num_upper_layers = idx.num_upper_layers_built;
 
@@ -246,7 +243,9 @@ inline void gpu_hnsw_search(
                         "shared-memory budget (%d bytes); clamping ef to %d. "
                         "Recall may be reduced; raise thread_block_size or "
                         "lower search_width to restore the requested ef.\n",
-                        ef, smem_max, max_ef);
+                        ef,
+                        smem_max,
+                        max_ef);
                 ef = max_ef;
             }
         }
@@ -362,8 +361,13 @@ inline void gpu_hnsw_search(
             // kernels.
             if constexpr (HAS_FILTER) {
                 if (!disable_bf) {
-                    launch_bf(q0, nb0, ds0, sc.d_needs_bf,
-                              sc.d_needs_bf_count, cnq);
+                    launch_bf(
+                            q0,
+                            nb0,
+                            ds0,
+                            sc.d_needs_bf,
+                            sc.d_needs_bf_count,
+                            cnq);
                 }
             }
         };
@@ -403,8 +407,7 @@ inline void gpu_hnsw_search(
 
                 int warps_per_block = 4;
                 int threads_per_block = warps_per_block * 32;
-                int num_blocks =
-                        (cnq + warps_per_block - 1) / warps_per_block;
+                int num_blocks = (cnq + warps_per_block - 1) / warps_per_block;
 
                 hnsw_kernel::upper_layer_search_kernel<DataT>
                         <<<num_blocks, threads_per_block, 0, stream>>>(

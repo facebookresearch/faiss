@@ -52,8 +52,8 @@
 #include <stdexcept>
 #include <vector>
 
-#include <faiss/gpu/impl/GpuHnswBuildCommon.cuh>
 #include <faiss/gpu/impl/GpuHnswTypes.h>
+#include <faiss/gpu/impl/GpuHnswBuildCommon.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -96,9 +96,8 @@ inline std::unique_ptr<GpuHnswDeviceIndex> from_index_hnsw_sq(
         const faiss::IndexHNSW& hnsw_index,
         bool use_ip,
         int device = 0) {
-    const auto* sq_storage =
-            dynamic_cast<const faiss::IndexScalarQuantizer*>(
-                    hnsw_index.storage);
+    const auto* sq_storage = dynamic_cast<const faiss::IndexScalarQuantizer*>(
+            hnsw_index.storage);
     if (!sq_storage)
         throw std::runtime_error(
                 "gpu_hnsw: storage is not IndexScalarQuantizer");
@@ -125,10 +124,9 @@ inline std::unique_ptr<GpuHnswDeviceIndex> from_index_hnsw_sq(
     } else if (
             qtype == faiss::ScalarQuantizer::QT_fp16 ||
             qtype == faiss::ScalarQuantizer::QT_bf16) {
-        GpuHnswDatasetType dtype =
-                (qtype == faiss::ScalarQuantizer::QT_fp16)
-                        ? GpuHnswDatasetType::FP16
-                        : GpuHnswDatasetType::BF16;
+        GpuHnswDatasetType dtype = (qtype == faiss::ScalarQuantizer::QT_fp16)
+                ? GpuHnswDatasetType::FP16
+                : GpuHnswDatasetType::BF16;
         upload_halfwidth_dataset(
                 *idx,
                 sq_storage->codes.data(),

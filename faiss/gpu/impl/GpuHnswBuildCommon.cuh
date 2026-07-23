@@ -42,26 +42,25 @@
 #include <string>
 #include <vector>
 
-#include <faiss/gpu/impl/GpuHnswSearchKernel.cuh>
 #include <faiss/gpu/impl/GpuHnswTypes.h>
+#include <faiss/gpu/impl/GpuHnswSearchKernel.cuh>
 
 // GpuHnswUploadFaultInjection (used below) lives in GpuHnswTypes.h so it is
 // reachable from host-compiled unit tests without pulling in device kernels.
-#define GPU_HNSW_BUILD_CUDA_CHECK(expr)                                  \
-    do {                                                                 \
-        if (faiss::gpu::GpuHnswUploadFaultInjection::should_fail()) {    \
-            throw std::runtime_error(                                    \
-                    std::string("CUDA error (injected): simulated ") +   \
-                    "upload failure at " + __FILE__ + ":" +              \
-                    std::to_string(__LINE__));                           \
-        }                                                                \
-        cudaError_t _e = (expr);                                         \
-        if (_e != cudaSuccess) {                                         \
-            throw std::runtime_error(                                    \
-                    std::string("CUDA error: ") +                        \
-                    cudaGetErrorString(_e) + " at " + __FILE__ + ":" +   \
-                    std::to_string(__LINE__));                           \
-        }                                                                \
+#define GPU_HNSW_BUILD_CUDA_CHECK(expr)                                    \
+    do {                                                                   \
+        if (faiss::gpu::GpuHnswUploadFaultInjection::should_fail()) {      \
+            throw std::runtime_error(                                      \
+                    std::string("CUDA error (injected): simulated ") +     \
+                    "upload failure at " + __FILE__ + ":" +                \
+                    std::to_string(__LINE__));                             \
+        }                                                                  \
+        cudaError_t _e = (expr);                                           \
+        if (_e != cudaSuccess) {                                           \
+            throw std::runtime_error(                                      \
+                    std::string("CUDA error: ") + cudaGetErrorString(_e) + \
+                    " at " + __FILE__ + ":" + std::to_string(__LINE__));   \
+        }                                                                  \
     } while (0)
 
 namespace faiss {
@@ -162,8 +161,7 @@ inline void extract_hnsw_layers(
                 cudaMemcpyHostToDevice));
 
         GPU_HNSW_BUILD_CUDA_CHECK(cudaMalloc(
-                &ul.d_neighbors,
-                ul.num_nodes * maxM * sizeof(uint32_t)));
+                &ul.d_neighbors, ul.num_nodes * maxM * sizeof(uint32_t)));
         GPU_HNSW_BUILD_CUDA_CHECK(cudaMemcpy(
                 ul.d_neighbors,
                 h_neighbors.data(),
@@ -313,8 +311,7 @@ inline void upload_int8_dataset(
 
     std::vector<int8_t> signed_codes(dataset_bytes);
     for (size_t i = 0; i < dataset_bytes; i++) {
-        signed_codes[i] =
-                static_cast<int8_t>(static_cast<int>(codes[i]) - 128);
+        signed_codes[i] = static_cast<int8_t>(static_cast<int>(codes[i]) - 128);
     }
 
     GPU_HNSW_BUILD_CUDA_CHECK(cudaMalloc(&idx.d_dataset, dataset_bytes));

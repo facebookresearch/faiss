@@ -75,8 +75,7 @@ void GpuHnswSearchScratch::ensure(
         if (d_entry_points)
             cudaFree(d_entry_points);
         SCRATCH_CUDA_CHECK(cudaMalloc(
-                &d_entry_points,
-                static_cast<size_t>(nq) * sizeof(uint32_t)));
+                &d_entry_points, static_cast<size_t>(nq) * sizeof(uint32_t)));
         entry_cap = nq;
     }
     // The visited bitmap is only ever indexed by the chunk-local query index

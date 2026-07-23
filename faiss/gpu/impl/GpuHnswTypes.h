@@ -121,8 +121,7 @@ inline int gpu_hnsw_bitmap_chunk(int nq, int N) {
     if (nq <= 0) {
         return nq;
     }
-    size_t per_query =
-            static_cast<size_t>((N + 31) / 32) * sizeof(uint32_t);
+    size_t per_query = static_cast<size_t>((N + 31) / 32) * sizeof(uint32_t);
     if (per_query == 0) {
         return nq;
     }
@@ -130,8 +129,7 @@ inline int gpu_hnsw_bitmap_chunk(int nq, int N) {
     if (cap_q < 1) {
         cap_q = 1;
     }
-    return (cap_q >= static_cast<size_t>(nq)) ? nq
-                                              : static_cast<int>(cap_q);
+    return (cap_q >= static_cast<size_t>(nq)) ? nq : static_cast<int>(cap_q);
 }
 
 struct GpuHnswSearchParams {
@@ -241,7 +239,7 @@ struct GpuHnswScratchSlot {
 /// Each acquire() returns a slot with its own scratch + CUDA stream.
 /// Callers block if all slots are in use.
 class GpuHnswScratchPool {
- public:
+   public:
     /// Create a pool. CUDA streams are allocated lazily on first acquire().
     explicit GpuHnswScratchPool(int pool_size = 4, int device = 0);
     ~GpuHnswScratchPool() = default;
@@ -254,9 +252,11 @@ class GpuHnswScratchPool {
     /// Release a previously acquired scratch slot back to the pool.
     void release(GpuHnswScratchSlot* slot);
 
-    int pool_size() const { return pool_size_; }
+    int pool_size() const {
+        return pool_size_;
+    }
 
- private:
+   private:
     void init_once();
 
     std::mutex mutex_;
@@ -271,16 +271,20 @@ class GpuHnswScratchPool {
 /// RAII guard: acquires a scratch slot on construction, releases on
 /// destruction.
 class ScratchPoolGuard {
- public:
+   public:
     ScratchPoolGuard(GpuHnswScratchPool& pool)
             : pool_(pool), slot_(pool.acquire()) {}
-    ~ScratchPoolGuard() { pool_.release(slot_); }
-    GpuHnswScratchSlot* get() const { return slot_; }
+    ~ScratchPoolGuard() {
+        pool_.release(slot_);
+    }
+    GpuHnswScratchSlot* get() const {
+        return slot_;
+    }
 
     ScratchPoolGuard(const ScratchPoolGuard&) = delete;
     ScratchPoolGuard& operator=(const ScratchPoolGuard&) = delete;
 
- private:
+   private:
     GpuHnswScratchPool& pool_;
     GpuHnswScratchSlot* slot_;
 };
