@@ -163,6 +163,14 @@ struct FAISS_API SIMDConfig {
 
     static SIMDLevel auto_detect_simd_level();
 
+    static constexpr bool has_dynamic_dispatch() {
+#ifdef FAISS_ENABLE_DD
+        return true;
+#else
+        return false;
+#endif
+    }
+
     SIMDConfig(const char** faiss_simd_level_env = nullptr);
 
     /// Set the SIMD level. Throws FaissException if level is not supported.
