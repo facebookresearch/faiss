@@ -1608,7 +1608,29 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
 
 int read_old_fmt_hack = 0;
 
+namespace {
+
+constexpr int kMaxIndexNestingDepth = 50;
+thread_local int index_read_nesting_depth = 0;
+
+struct IndexNestingGuard {
+    IndexNestingGuard() {
+        FAISS_THROW_IF_NOT_FMT(
+                index_read_nesting_depth < kMaxIndexNestingDepth,
+                "faiss index nesting depth exceeds limit of %d; "
+                "input may be corrupt or malicious",
+                kMaxIndexNestingDepth);
+        ++index_read_nesting_depth;
+    }
+    ~IndexNestingGuard() {
+        --index_read_nesting_depth;
+    }
+};
+
+} // namespace
+
 std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
+    IndexNestingGuard nesting_guard;
     std::unique_ptr<Index> idx;
     uint32_t h;
     READ1(h);
@@ -3273,6 +3295,7 @@ static void read_binary_multi_hash_map(
 }
 
 std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
+    IndexNestingGuard nesting_guard;
     std::unique_ptr<IndexBinary> idx;
     uint32_t h;
     READ1(h);
