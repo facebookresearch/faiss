@@ -254,9 +254,16 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 #endif
     else if (
             dynamic_cast<const faiss::IndexHNSW*>(index) &&
-            !dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
-        // Vanilla HNSW (Flat / SQ storage). IndexHNSWCagra is excluded: it is
-        // handled by the cuVS GpuIndexCagra branch above when cuVS is enabled.
+            !dynamic_cast<const faiss::IndexHNSWCagra*>(index) &&
+            index->ntotal > 0) {
+        // Vanilla HNSW (Flat / SQ storage) with a populated graph.
+        // IndexHNSWCagra is excluded: it is handled by the cuVS GpuIndexCagra
+        // branch above when cuVS is enabled. An empty HNSW (ntotal == 0) is
+        // deliberately left to the fall-through below so it reports "not
+        // implemented on GPU": that is the signal GpuIndexIVF::copyFrom keys
+        // on to fall back to a CPU coarse quantizer (allowCpuCoarseQuantizer)
+        // when an untrained IVF_HNSW is cloned to the GPU. GpuIndexHNSW is
+        // search-only, so an empty graph has nothing to upload anyway.
         auto ihnsw = static_cast<const faiss::IndexHNSW*>(index);
         GpuIndexHNSWConfig config;
         config.device = device;
