@@ -395,6 +395,137 @@ struct Panorama {
 
         return num_active;
     }
+
+    /// Query-blocked variant of progressive_filter_batch: processes a block of
+    /// `block_size` queries against a single DB batch, iterating level-outer /
+    /// query-inner so that each level's storage block is loaded from memory
+    /// once and reused across all queries while still resident in a faster
+    /// cache level. This is a pure loop-order
+    /// transform of progressive_filter_batch: each query keeps its own active
+    /// set, threshold, and pruning decisions, so per-query results are
+    /// identical to calling progressive_filter_batch once per query.
+    ///
+    /// Per-query buffers are flat arrays with row stride `batch_size` (or
+    /// `n_levels + 1` for query_cum_sums, `d` for queries, 1 for
+    /// `first_level_full`). `num_active` is
+    /// both scratch and output: on return, num_active[qb] is the survivor count
+    /// for query qb, whose survivor positions are in
+    /// active_indices[qb*batch_size..].
+    template <typename C, MetricType M>
+    void progressive_filter_block(
+            const uint8_t* codes_base,
+            const float* cum_sums,
+            const float* queries,
+            const float* query_cum_sums,
+            size_t block_size,
+            size_t batch_no,
+            size_t list_size,
+            const IDSelector* sel,
+            const idx_t* ids,
+            bool use_sel,
+            uint32_t* active_indices,
+            uint8_t* active_byteset,
+            uint8_t* first_level_full,
+            float* exact_distances,
+            float* dot_buffer,
+            const float* thresholds,
+            size_t* num_active,
+            PanoramaStats& local_stats) const {
+        size_t batch_start = batch_no * batch_size;
+        size_t curr_batch_size = std::min(list_size - batch_start, batch_size);
+
+        size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
+        const float* batch_cum_sums = cum_sums + cumsum_batch_offset;
+        const float* level_cum_sums_base = batch_cum_sums + batch_size;
+
+        size_t batch_offset = batch_no * batch_size * code_size;
+        const uint8_t* storage_base = codes_base + batch_offset;
+
+        // Per-query init of the active set (identical to the scalar path).
+        for (size_t qb = 0; qb < block_size; qb++) {
+            const float* qcs = query_cum_sums + qb * (n_levels + 1);
+            float q_norm = qcs[0] * qcs[0];
+            uint32_t* ai = active_indices + qb * batch_size;
+            float* ed = exact_distances + qb * batch_size;
+
+            size_t na = 0;
+            for (size_t i = 0; i < curr_batch_size; i++) {
+                size_t global_idx = batch_start + i;
+                idx_t id = (ids == nullptr) ? global_idx : ids[global_idx];
+                bool include = !use_sel || sel->is_member(id);
+
+                ai[na] = i;
+                float cum_sum = batch_cum_sums[i];
+                if constexpr (M == METRIC_INNER_PRODUCT) {
+                    ed[i] = 0.0f;
+                } else {
+                    ed[i] = cum_sum * cum_sum + q_norm;
+                }
+                na += include;
+            }
+            num_active[qb] = na;
+            first_level_full[qb] = (na == curr_batch_size);
+            local_stats.total_dims += na * n_levels;
+        }
+
+        // Level-outer, query-inner: level_storage is loaded once per level and
+        // reused across the query block while resident in a faster cache level.
+        for (size_t level = 0; level < n_levels; level++) {
+            size_t level_offset = level * level_width * batch_size;
+            const float* level_storage =
+                    (const float*)(storage_base + level_offset);
+            const float* level_cum_sums =
+                    level_cum_sums_base + level * batch_size;
+            size_t actual_level_width = std::min(
+                    level_width_floats, d - level * level_width_floats);
+
+            for (size_t qb = 0; qb < block_size; qb++) {
+                if (num_active[qb] == 0) {
+                    continue;
+                }
+                local_stats.total_dims_scanned += num_active[qb];
+
+                const float* query = queries + qb * d;
+                const float* qcs = query_cum_sums + qb * (n_levels + 1);
+                const float* query_level = query + level * level_width_floats;
+                float query_cum_norm = qcs[level + 1];
+                uint32_t* ai = active_indices + qb * batch_size;
+                uint8_t* abs = active_byteset + qb * batch_size;
+                float* ed = exact_distances + qb * batch_size;
+
+                num_active[qb] = with_bool(
+                        level == 0 && first_level_full[qb],
+                        [&]<bool AllActive>() {
+                            with_level_width(
+                                    actual_level_width,
+                                    [&]<size_t LevelWidth>() {
+                                        compute_level_dot_kernel<
+                                                AllActive,
+                                                LevelWidth>(
+                                                query_level,
+                                                level_storage,
+                                                ai,
+                                                num_active[qb],
+                                                actual_level_width,
+                                                dot_buffer);
+                                    });
+
+                            prune_kernel<AllActive, C, M>(
+                                    ed,
+                                    dot_buffer,
+                                    level_cum_sums,
+                                    abs,
+                                    ai,
+                                    (uint32_t)num_active[qb],
+                                    query_cum_norm,
+                                    thresholds[qb]);
+
+                            return compact_active_kernel(
+                                    ai, abs, num_active[qb]);
+                        });
+            }
+        }
+    }
 #endif // SWIG
 
     void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;

@@ -23,6 +23,8 @@
 
 namespace faiss {
 
+size_t panorama_query_block_size = 32;
+
 IndexFlat::IndexFlat(idx_t d_, MetricType metric)
         : IndexFlatCodes(sizeof(float) * d_, d_, metric) {}
 
@@ -571,6 +573,130 @@ inline auto dispatch_metric_compare(MetricType metric, Fn&& fn) {
     return fn.template operator()<C>();
 }
 
+/// Query-blocked search core. For each block of up to `qbs` queries, iterates
+/// DB batches in order (preserving each query's threshold evolution), and
+/// within each batch iterates level-outer / query-inner so the level storage
+/// block is streamed from memory once and reused across the block while
+/// resident in a faster cache level. Produces results identical to
+/// flat_pano_search_core.
+template <bool use_radius, typename C, typename BlockHandler>
+inline void flat_pano_search_core_blocked(
+        const IndexFlatPanorama& index,
+        BlockHandler& handler,
+        idx_t n,
+        const float* x,
+        float radius,
+        const SearchParameters* params,
+        size_t qbs) {
+    using SingleResultHandler = typename BlockHandler::SingleResultHandler;
+
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
+
+    const size_t d = index.d;
+    const size_t bs = index.batch_size;
+    const size_t n_lp1 = index.pano.n_levels + 1;
+    size_t n_batches = (index.ntotal + bs - 1) / bs;
+
+    // qbs is a maximum: when queries are scarce, shrink the effective block
+    // size so the thread count matches the unblocked path
+    // (min(n, max_threads)) rather than dropping to one thread per full
+    // block.
+    int max_nt = omp_get_max_threads();
+    size_t qbs_eff = std::min(qbs, (size_t(n) + max_nt - 1) / max_nt);
+    size_t n_blocks = (size_t(n) + qbs_eff - 1) / qbs_eff;
+    // Cap threads at n_blocks: every spawned thread allocates the scratch
+    // buffers below, even if it gets no loop iterations.
+    [[maybe_unused]] int nt = std::min(int(n_blocks), max_nt);
+
+#pragma omp parallel num_threads(nt)
+    {
+        // One persistent SingleResultHandler per query slot so each heap and
+        // threshold survive across DB batches (begin() re-heapifies, so it must
+        // be called exactly once per query, not once per batch).
+        std::vector<SingleResultHandler> ress;
+        ress.reserve(qbs_eff);
+        for (size_t qb = 0; qb < qbs_eff; qb++) {
+            ress.emplace_back(handler);
+        }
+
+        std::vector<float> query_cum_norms(qbs_eff * n_lp1);
+        std::vector<uint32_t> active_indices(qbs_eff * bs);
+        std::vector<uint8_t> active_byteset(qbs_eff * bs);
+        std::vector<uint8_t> first_level_full(qbs_eff);
+        std::vector<float> exact_distances(qbs_eff * bs);
+        std::vector<float> dot_buffer(bs);
+        std::vector<float> thresholds(qbs_eff);
+        std::vector<size_t> num_active(qbs_eff);
+
+#pragma omp for
+        for (int64_t blk = 0; blk < int64_t(n_blocks); blk++) {
+            size_t q0 = size_t(blk) * qbs_eff;
+            size_t block_size = std::min(qbs_eff, size_t(n) - q0);
+
+            PanoramaStats local_stats;
+            local_stats.reset();
+
+            // Per-query: compute cum sums and open the result heap (once).
+            for (size_t qb = 0; qb < block_size; qb++) {
+                const float* xi = x + (q0 + qb) * d;
+                index.pano.compute_query_cum_sums(
+                        xi, query_cum_norms.data() + qb * n_lp1);
+                ress[qb].begin(q0 + qb);
+            }
+
+            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                size_t batch_start = batch_no * bs;
+
+                // Snapshot each query's current threshold for this batch.
+                for (size_t qb = 0; qb < block_size; qb++) {
+                    if constexpr (use_radius) {
+                        thresholds[qb] = radius;
+                    } else {
+                        thresholds[qb] = ress[qb].threshold;
+                    }
+                }
+
+                with_metric_type(index.metric_type, [&]<MetricType M>() {
+                    index.pano.progressive_filter_block<C, M>(
+                            index.codes.data(),
+                            index.cum_sums.data(),
+                            x + q0 * d,
+                            query_cum_norms.data(),
+                            block_size,
+                            batch_no,
+                            index.ntotal,
+                            sel,
+                            nullptr,
+                            use_sel,
+                            active_indices.data(),
+                            active_byteset.data(),
+                            first_level_full.data(),
+                            exact_distances.data(),
+                            dot_buffer.data(),
+                            thresholds.data(),
+                            num_active.data(),
+                            local_stats);
+                });
+
+                // Push survivors into each query's heap (updates threshold).
+                for (size_t qb = 0; qb < block_size; qb++) {
+                    const uint32_t* ai = active_indices.data() + qb * bs;
+                    const float* ed = exact_distances.data() + qb * bs;
+                    for (size_t j = 0; j < num_active[qb]; j++) {
+                        ress[qb].add_result(ed[ai[j]], batch_start + ai[j]);
+                    }
+                }
+            }
+
+            for (size_t qb = 0; qb < block_size; qb++) {
+                ress[qb].end();
+            }
+            indexPanorama_stats.add(local_stats);
+        }
+    }
+}
+
 template <bool use_radius, typename C, typename BlockHandler>
 inline void flat_pano_search_core(
         const IndexFlatPanorama& index,
@@ -579,6 +705,17 @@ inline void flat_pano_search_core(
         const float* x,
         float radius,
         const SearchParameters* params) {
+    // Query blocking is implemented for top-k search only. Range search uses a
+    // RangeSearchPartialResult that finalizes once per handler and requires
+    // per-query-contiguous appends, which is incompatible with the interleaved
+    // block schedule; it falls through to the original path.
+    size_t qbs = panorama_query_block_size;
+    if (qbs > 1 && !use_radius) {
+        flat_pano_search_core_blocked<use_radius, C>(
+                index, handler, n, x, radius, params, qbs);
+        return;
+    }
+
     using SingleResultHandler = typename BlockHandler::SingleResultHandler;
 
     IDSelector* sel = params ? params->sel : nullptr;
