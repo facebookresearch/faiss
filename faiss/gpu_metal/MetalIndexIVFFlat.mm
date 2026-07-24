@@ -462,8 +462,8 @@ MetalIndexIVFFlat::MetalIndexIVFFlat(
         : MetalIndex(resources, dims, metric, metricArg, config),
           indicesOptions_(config.indicesOptions),
           interleavedLayout_(config.interleavedLayout) {
-    FAISS_THROW_IF_NOT_MSG(
-            coarseQuantizer != nullptr,
+    FAISS_THROW_IF_MSG(
+            coarseQuantizer == nullptr,
             "MetalIndexIVFFlat: coarseQuantizer must be non-null");
     cpuIndex_ = std::make_unique<faiss::IndexIVFFlat>(
             coarseQuantizer, (size_t)d, (size_t)nlist, metric);
@@ -629,7 +629,7 @@ void MetalIndexIVFFlat::add_with_ids(
     if (n == 0) {
         return;
     }
-    FAISS_THROW_IF_NOT(xids != nullptr);
+    FAISS_THROW_IF_NOT(xids);
 
     idx_t oldNt = cpuIndex_->ntotal;
     const idx_t autoReserveMinBatch = getIvfAutoReserveMinBatch();
@@ -1487,8 +1487,8 @@ void MetalIndexIVFFlat::search_preassigned(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(assign);
     FAISS_THROW_IF_NOT_MSG(stats == nullptr, "IVF stats not supported");
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs,
+    FAISS_THROW_IF_MSG(
+            store_pairs,
             "MetalIndexIVFFlat::search_preassigned does not currently support store_pairs");
     if (params) {
         FAISS_THROW_IF_NOT_FMT(

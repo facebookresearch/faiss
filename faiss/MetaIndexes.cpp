@@ -63,8 +63,7 @@ void IndexSplitVectors::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT_MSG(k == 1, "search implemented only for k=1");
     FAISS_THROW_IF_NOT_MSG(
             sum_d == d, "not enough indexes compared to # dimensions");
@@ -187,8 +186,7 @@ void IndexRandom::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k <= ntotal);
 #pragma omp parallel for if (n > 1000)
     for (idx_t i = 0; i < n; i++) {

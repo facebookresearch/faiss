@@ -340,7 +340,9 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
         READVECTOR(lt->b);
         FAISS_THROW_IF_NOT(
                 lt->A.size() >= size_t(lt->d_in) * size_t(lt->d_out));
-        FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= size_t(lt->d_out));
+        FAISS_THROW_IF_MSG(
+                lt->have_bias && lt->b.size() < size_t(lt->d_out),
+                "bias vector smaller than d_out");
         lt->set_is_orthonormal();
         vt = std::move(lt);
     } else if (h == fourcc("RmDT")) {

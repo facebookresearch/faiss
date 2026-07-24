@@ -292,7 +292,7 @@ void search_knn_hamming_per_invlist(
     nprobe = std::min((idx_t)ivf->nlist, nprobe);
     idx_t max_codes = params ? params->max_codes : ivf->max_codes;
     FAISS_THROW_IF_NOT(max_codes == 0);
-    FAISS_THROW_IF_NOT(!store_pairs);
+    FAISS_THROW_IF_MSG(store_pairs, "store_pairs is not supported here");
 
     // reorder buckets
     std::vector<int64_t> lims(n + 1);

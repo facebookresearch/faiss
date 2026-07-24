@@ -47,7 +47,7 @@ struct MockIndex : public faiss::Index {
             float* distances,
             idx_t* labels,
             const faiss::SearchParameters* params) const override {
-        FAISS_THROW_IF_NOT(!params);
+        FAISS_THROW_IF_MSG(params, "search params not supported");
         nCalled = n;
         xCalled = x;
         kCalled = k;

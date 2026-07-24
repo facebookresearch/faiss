@@ -207,7 +207,7 @@ void GpuIndexFlat::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     FAISS_ASSERT(n > 0);
 
     // We do not support add_with_ids
-    FAISS_THROW_IF_NOT_MSG(!ids, "add_with_ids not supported");
+    FAISS_THROW_IF_MSG(ids, "add_with_ids not supported");
 
     data_->add(x, n, resources_->getDefaultStream(config_.device));
     this->ntotal += n;

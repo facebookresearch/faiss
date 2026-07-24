@@ -376,9 +376,8 @@ void IndexIVFFastScan::search_preassigned(
         cur_nprobe = params->nprobe;
     }
 
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs, "store_pairs not supported for this index");
-    FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
+    FAISS_THROW_IF_MSG(store_pairs, "store_pairs not supported for this index");
+    FAISS_THROW_IF_MSG(stats, "stats not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FastScanDistancePostProcessing empty_context{};
 
@@ -404,8 +403,8 @@ void IndexIVFFastScan::range_search(
                 params->max_lists_num == 0,
                 "max_lists_num is a knn knob and is not honored by "
                 "fastscan range search");
-        FAISS_THROW_IF_NOT_MSG(
-                !params->ensure_topk_full,
+        FAISS_THROW_IF_MSG(
+                params->ensure_topk_full,
                 "ensure_topk_full is a knn knob and is not honored by "
                 "fastscan range search");
         FAISS_THROW_IF_NOT_MSG(
@@ -1592,7 +1591,7 @@ void IndexIVFFastScan::reconstruct_from_offset(
 }
 
 void IndexIVFFastScan::reconstruct_orig_invlists() {
-    FAISS_THROW_IF_NOT(orig_invlists != nullptr);
+    FAISS_THROW_IF_NOT(orig_invlists);
     FAISS_THROW_IF_NOT(orig_invlists->list_size(0) == 0);
 
 #pragma omp parallel for if (nlist > 100)

@@ -65,7 +65,7 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
             "RaBitQ only supports L2 and Inner Product metrics");
     FAISS_THROW_IF_NOT_MSG(
             bbs_in % 32 == 0, "Batch size must be multiple of 32");
-    FAISS_THROW_IF_NOT_MSG(quantizer_in != nullptr, "Quantizer cannot be null");
+    FAISS_THROW_IF_MSG(quantizer_in == nullptr, "Quantizer cannot be null");
 
     by_residual = true;
     qb = 8; // RaBitQ quantization bits
@@ -163,8 +163,10 @@ void IndexIVFRaBitQFastScan::train_encoder(
         const float* x,
         const idx_t* assign) {
     FAISS_THROW_IF_NOT(n > 0);
-    FAISS_THROW_IF_NOT(x != nullptr);
-    FAISS_THROW_IF_NOT(assign != nullptr || !by_residual);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_MSG(
+            assign == nullptr && by_residual,
+            "assign is required when by_residual is set");
 
     rabitq.train(n, x);
     is_trained = true;
@@ -178,9 +180,9 @@ void IndexIVFRaBitQFastScan::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     FAISS_THROW_IF_NOT(n > 0);
-    FAISS_THROW_IF_NOT(x != nullptr);
-    FAISS_THROW_IF_NOT(list_nos != nullptr);
-    FAISS_THROW_IF_NOT(codes != nullptr);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_NOT(list_nos);
+    FAISS_THROW_IF_NOT(codes);
     FAISS_THROW_IF_NOT(is_trained);
 
     size_t coarse_size = include_listnos ? coarse_code_size() : 0;
@@ -418,9 +420,9 @@ void IndexIVFRaBitQFastScan::search_preassigned(
         IndexIVFStats* stats) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs, "store_pairs not supported for RaBitQFastScan");
-    FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
+    FAISS_THROW_IF_MSG(
+            store_pairs, "store_pairs not supported for RaBitQFastScan");
+    FAISS_THROW_IF_MSG(stats, "stats not supported for this index");
 
     size_t cur_nprobe = this->nprobe;
     uint8_t used_qb = qb;
@@ -677,8 +679,8 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(n > 0);
-    FAISS_THROW_IF_NOT(bytes != nullptr);
-    FAISS_THROW_IF_NOT(x != nullptr);
+    FAISS_THROW_IF_NOT(bytes);
+    FAISS_THROW_IF_NOT(x);
 
     size_t coarse_size = coarse_code_size();
     size_t total_code_size = code_size + coarse_size;

@@ -25,7 +25,7 @@ MetalIndex::MetalIndex(
     FAISS_THROW_IF_NOT_MSG(
             config_.device >= 0 && config_.device < 1,
             "Metal backend supports only device 0 (single GPU).");
-    FAISS_THROW_IF_NOT(resources_ != nullptr);
+    FAISS_THROW_IF_NOT(resources_);
     FAISS_THROW_IF_NOT(resources_->isAvailable());
 }
 

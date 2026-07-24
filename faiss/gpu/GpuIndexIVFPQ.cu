@@ -93,8 +93,8 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
     // instance
     this->is_trained = false;
 
-    FAISS_THROW_IF_NOT_MSG(
-            !config.use_cuvs,
+    FAISS_THROW_IF_MSG(
+            config.use_cuvs,
             "GpuIndexIVFPQ: cuVS does not support separate coarseQuantizer");
 
     verifyPQSettings_();
@@ -171,8 +171,8 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
     DeviceScope scope(config_.device);
 
     // We must have the indices in order to copy to ourselves
-    FAISS_THROW_IF_NOT_MSG(
-            ivfpqConfig_.indicesOptions != INDICES_IVF,
+    FAISS_THROW_IF_MSG(
+            ivfpqConfig_.indicesOptions == INDICES_IVF,
             "Cannot copy to CPU as GPU index doesn't retain "
             "indices (INDICES_IVF)");
 

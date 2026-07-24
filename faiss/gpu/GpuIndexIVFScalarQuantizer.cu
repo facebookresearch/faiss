@@ -244,8 +244,8 @@ void GpuIndexIVFScalarQuantizer::copyTo(
     DeviceScope scope(config_.device);
 
     // We must have the indices in order to copy to ourselves
-    FAISS_THROW_IF_NOT_MSG(
-            ivfSQConfig_.indicesOptions != INDICES_IVF,
+    FAISS_THROW_IF_MSG(
+            ivfSQConfig_.indicesOptions == INDICES_IVF,
             "Cannot copy to CPU as GPU index doesn't retain "
             "indices (INDICES_IVF)");
 

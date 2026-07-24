@@ -1097,8 +1097,8 @@ int hnsw_detail::search_from_candidates_panorama(
         const SearchParameters* params) {
     // Panorama's progressive-bound math is L2-specific: refuse to run in
     // similarity mode.
-    FAISS_THROW_IF_NOT_MSG(
-            !hnsw.is_similarity,
+    FAISS_THROW_IF_MSG(
+            hnsw.is_similarity,
             "search_from_candidates_panorama does not support is_similarity=true");
 
     using C = HNSW::C_distance;
