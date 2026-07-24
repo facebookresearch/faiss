@@ -30,6 +30,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
 #include <faiss/impl/pq_code_distance/pq_code_distance-generic.h>
 #include <faiss/impl/simd_dispatch.h>
 
