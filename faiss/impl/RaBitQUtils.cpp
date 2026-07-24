@@ -188,52 +188,54 @@ QueryFactorsData compute_query_factors(
 
     const float inv_d_sqrt = 1.0f / std::sqrt(static_cast<float>(d));
 
-    // Compute quantization range
-    float v_min = std::numeric_limits<float>::max();
-    float v_max = std::numeric_limits<float>::lowest();
-
     const float* rq = rotated_q.data();
-    if (centered) {
-        float z_max = Z_MAX_BY_QB[qb - 1];
-        float v_radius = z_max * std::sqrt(query_factors.qr_to_c_L2sqr / d);
-        v_min = -v_radius;
-        v_max = v_radius;
-    } else {
-        for (size_t i = 0; i < d; i++) {
-            const float v_q = rq[i];
-            v_min = std::min(v_min, v_q);
-            v_max = std::max(v_max, v_q);
-        }
-    }
-
-    // Quantize the query
-    const uint8_t max_code = (1 << qb) - 1;
-    const float delta = (v_max - v_min) / max_code;
-    // A constant (or zero-norm) query has v_max == v_min, so delta == 0.
-    // Without this guard inv_delta would be +inf and (v_q - v_min) * inv_delta
-    // == NaN, which then float-casts to uint8_t below -- undefined behavior
-    // (UBSan float-cast-overflow) and garbage codes. A constant query carries
-    // no directional signal, so quantizing every component to 0 is correct;
-    // inv_delta = 0 achieves that.
-    const float inv_delta = (delta > 0.0f) ? (1.0f / delta) : 0.0f;
-
-    rotated_qq.resize(d);
+    float v_min;
+    float v_max;
+    float delta;
     size_t sum_qq = 0;
     int64_t sum2_signed_odd_int = 0;
-
+    const uint8_t max_code = (1 << qb) - 1;
+    rotated_qq.resize(d);
     uint8_t* rqq = rotated_qq.data();
-    for (size_t i = 0; i < d; i++) {
-        const float v_q = rq[i];
-        const uint8_t v_qq =
-                round_clamped_to_uint8((v_q - v_min) * inv_delta, max_code);
-        rqq[i] = v_qq;
-        sum_qq += v_qq;
 
-        if (centered) {
-            int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
-            sum2_signed_odd_int += signed_odd_int * signed_odd_int;
-        }
-    }
+    // Select the SIMD implementation once for both range computation and
+    // quantization. This function runs once per query/probe pair.
+    with_selected_simd_levels<rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS>(
+            [&]<SIMDLevel SL>() {
+                if (centered) {
+                    const float z_max = Z_MAX_BY_QB[qb - 1];
+                    const float v_radius =
+                            z_max * std::sqrt(query_factors.qr_to_c_L2sqr / d);
+                    v_min = -v_radius;
+                    v_max = v_radius;
+                } else {
+                    v_min = std::numeric_limits<float>::max();
+                    v_max = std::numeric_limits<float>::lowest();
+                    rabitq::minmax_values<SL>(rq, d, v_min, v_max);
+                }
+
+                delta = (v_max - v_min) / max_code;
+                // A constant (or zero-norm) query has delta == 0. Preserve the
+                // scalar path's centered correction terms while avoiding
+                // 0 * inf during quantization.
+                if (delta <= 0.0f) {
+                    memset(rqq, 0, d * sizeof(uint8_t));
+                    if (centered) {
+                        sum2_signed_odd_int = int64_t(d) * max_code * max_code;
+                    }
+                } else {
+                    rabitq::quantize_query_values<SL>(
+                            rq,
+                            d,
+                            v_min,
+                            1.0f / delta,
+                            max_code,
+                            centered,
+                            rqq,
+                            sum_qq,
+                            sum2_signed_odd_int);
+                }
+            });
 
     // Compute query factors
     query_factors.c1 = 2 * delta * inv_d_sqrt;
