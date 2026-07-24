@@ -11,7 +11,6 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/utils/distances_fused/distances_fused.h>
 #include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
 
 #ifndef FINTEGER

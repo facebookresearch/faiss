@@ -48,6 +48,18 @@ struct VisitedTable {
     static std::unique_ptr<VisitedTable> create(
             size_t size,
             std::optional<bool> use_hashset = std::nullopt);
+
+    /// Returns a thread-local, reusable table sized for at least `size` and
+    /// reset to a clean state. Unlike create(), it does not allocate on each
+    /// call: the O(size) versioned array is allocated once per thread and
+    /// reused across searches, avoiding a per-search alloc+zero of the whole
+    /// array when a static index is searched repeatedly.
+    ///
+    /// The returned reference is owned by thread-local storage: do not delete
+    /// it and do not use it beyond the current search on the calling thread.
+    static VisitedTable& get_reusable(
+            size_t size,
+            std::optional<bool> use_hashset = std::nullopt);
 };
 
 /// Set-based implementation using unordered_set.
@@ -86,6 +98,14 @@ struct VisitedTableVector FAISS_FINAL : VisitedTable {
     uint8_t visno{1}; // Version number, 1..254
 
     explicit VisitedTableVector(size_t size) : visited(size, 0) {}
+
+    /// Grow so indices in [0, size) are valid; new slots read as unvisited.
+    /// Never shrinks, so capacity is retained when the table is reused.
+    void ensure_size(size_t size) {
+        if (visited.size() < size) {
+            visited.resize(size, 0);
+        }
+    }
 
     bool set(size_t no) final {
         if (visited[no] == visno) {

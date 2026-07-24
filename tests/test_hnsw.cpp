@@ -750,3 +750,73 @@ TEST_F(HNSWTest, TEST_search_level_0) {
     EXPECT_GT(stats1.n1, stats2.n1);
     EXPECT_GT(stats1.n2, stats2.n2);
 }
+
+TEST(VisitedTableReuse, ReusesGrowsAndResets) {
+    // get_reusable() hands back the same thread-local object across calls
+    // (no per-call allocation) ...
+    faiss::VisitedTable& t1 = faiss::VisitedTable::get_reusable(100);
+    faiss::VisitedTable& t2 = faiss::VisitedTable::get_reusable(100);
+    EXPECT_EQ(&t1, &t2);
+
+    // ... and hands it back clean: a mark set before re-acquiring must not
+    // survive, since a reused table may carry stamps from a prior search.
+    t2.set(42);
+    EXPECT_TRUE(t2.get(42));
+    faiss::VisitedTable& t3 = faiss::VisitedTable::get_reusable(100);
+    EXPECT_EQ(&t2, &t3);
+    EXPECT_FALSE(t3.get(42));
+
+    // Growing to a larger size keeps the same object and exposes the new range.
+    faiss::VisitedTable& t4 = faiss::VisitedTable::get_reusable(1000);
+    EXPECT_EQ(&t3, &t4);
+    EXPECT_FALSE(t4.get(900));
+    EXPECT_TRUE(t4.set(900));
+    EXPECT_TRUE(t4.get(900));
+}
+
+// Restores the process-global OpenMP thread count on scope exit, so a test that
+// changes it via omp_set_num_threads does not leak the setting into later
+// tests.
+struct ScopedOmpThreads {
+    int saved = omp_get_max_threads();
+    ~ScopedOmpThreads() {
+        omp_set_num_threads(saved);
+    }
+};
+
+TEST_F(HNSWTest, TEST_search_reuse_correctness) {
+    ScopedOmpThreads omp_guard;
+
+    std::vector<faiss::idx_t> I1(k * nq), I2(k * nq);
+    std::vector<float> D1(k * nq), D2(k * nq);
+
+    // Two back-to-back searches must be identical: the reused visited table
+    // must not carry state across search() calls.
+    omp_set_num_threads(1);
+    index->search(nq, xq->data(), k, D1.data(), I1.data());
+    index->search(nq, xq->data(), k, D2.data(), I2.data());
+    EXPECT_EQ(I1, I2);
+    EXPECT_EQ(D1, D2);
+
+    // The reused versioned-array path must match a hash-set reference.
+    std::vector<faiss::idx_t> Iref(k * nq);
+    std::vector<float> Dref(k * nq);
+    index->hnsw.use_visited_hashset = true;
+    index->search(nq, xq->data(), k, Dref.data(), Iref.data());
+    index->hnsw.use_visited_hashset = false;
+    std::vector<faiss::idx_t> Iarr(k * nq);
+    std::vector<float> Darr(k * nq);
+    index->search(nq, xq->data(), k, Darr.data(), Iarr.data());
+    EXPECT_EQ(Iref, Iarr);
+    EXPECT_EQ(Dref, Darr);
+
+    // Multi-threaded search must match single-threaded: each thread reuses its
+    // own thread-local table.
+    index->hnsw.use_visited_hashset = std::nullopt;
+    omp_set_num_threads(4);
+    std::vector<faiss::idx_t> Imt(k * nq);
+    std::vector<float> Dmt(k * nq);
+    index->search(nq, xq->data(), k, Dmt.data(), Imt.data());
+    EXPECT_EQ(I1, Imt);
+    EXPECT_EQ(D1, Dmt);
+}
