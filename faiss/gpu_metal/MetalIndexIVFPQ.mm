@@ -182,7 +182,7 @@ void MetalIndexIVFPQ::add(idx_t n, const float* x) {
 
 void MetalIndexIVFPQ::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
     FAISS_THROW_IF_NOT(cpuIndex_);
-    FAISS_THROW_IF_NOT(xids != nullptr);
+    FAISS_THROW_IF_NOT(xids);
     if (n == 0)
         return;
 

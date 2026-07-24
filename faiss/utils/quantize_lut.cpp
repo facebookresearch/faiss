@@ -143,7 +143,8 @@ void quantize_LUT_and_bias(
         float* b_out) {
     float a, b;
     if (!bias) {
-        FAISS_THROW_IF_NOT(!lut_is_3d);
+        FAISS_THROW_IF_MSG(
+                lut_is_3d, "3d LUT is not supported when bias is null");
         std::vector<float> mins(M);
         float max_span_LUT = -HUGE_VAL, max_span_dis = 0;
         b = 0;

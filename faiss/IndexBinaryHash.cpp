@@ -83,8 +83,7 @@ void IndexBinaryHash::range_search(
         int radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     size_t nlist = 0, ndis = 0, n0 = 0;
 
 #pragma omp parallel if (n > 100) reduction(+ : ndis, n0, nlist)
@@ -116,8 +115,7 @@ void IndexBinaryHash::search(
         int32_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     using HeapForL2 = CMax<int32_t, idx_t>;
@@ -216,8 +214,7 @@ void IndexBinaryMultiHash::range_search(
         int radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     size_t nlist = 0, ndis = 0, n0 = 0;
 
 #pragma omp parallel if (n > 100) reduction(+ : ndis, n0, nlist)
@@ -249,8 +246,7 @@ void IndexBinaryMultiHash::search(
         int32_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     using HeapForL2 = CMax<int32_t, idx_t>;

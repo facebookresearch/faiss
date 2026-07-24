@@ -1096,8 +1096,7 @@ ITQTransform::ITQTransform(int din, int dout, bool do_pca_in)
 }
 
 void ITQTransform::train(idx_t n, const float* x_in) {
-    FAISS_THROW_IF_NOT_MSG(
-            !is_trained, "ITQTransform has already been trained");
+    FAISS_THROW_IF_MSG(is_trained, "ITQTransform has already been trained");
 
     size_t max_train_points = std::max(d_in * max_train_per_dim, 32768);
     const float* x =

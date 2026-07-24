@@ -921,7 +921,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexNSGPQ*>(idx)      ? fourcc("INSp")
                 : dynamic_cast<const IndexNSGSQ*>(idx)      ? fourcc("INSs")
                                                             : 0;
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_MSG(
+                h == 0, "don't know how to serialize this IndexNSG subtype");
         WRITE1(h);
         write_index_header(idxnsg, f);
         WRITE1(idxnsg->GK);
@@ -936,9 +937,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             const IndexNNDescent* idxnnd =
                     dynamic_cast<const IndexNNDescent*>(idx)) {
         auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
-        FAISS_THROW_IF_NOT(idxnndflat != nullptr);
+        FAISS_THROW_IF_NOT(idxnndflat);
         uint32_t h = fourcc("INNf");
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_MSG(
+                h == 0,
+                "don't know how to serialize this IndexNNDescent subtype");
         WRITE1(h);
         write_index_header(idxnnd, f);
         write_NNDescent(&idxnnd->nndescent, f);

@@ -405,7 +405,8 @@ void OnDiskInvertedLists::update_entries(
         size_t n_entry,
         const idx_t* ids_in,
         const uint8_t* codes_in) {
-    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_MSG(
+            read_only, "cannot modify a read-only OnDiskInvertedLists");
     if (n_entry == 0) {
         return;
     }
@@ -422,7 +423,8 @@ size_t OnDiskInvertedLists::add_entries(
         size_t n_entry,
         const idx_t* ids,
         const uint8_t* code) {
-    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_MSG(
+            read_only, "cannot modify a read-only OnDiskInvertedLists");
     locks->lock_1(list_no);
     size_t o = list_size(list_no);
     resize_locked(list_no, n_entry + o);
@@ -432,7 +434,8 @@ size_t OnDiskInvertedLists::add_entries(
 }
 
 void OnDiskInvertedLists::resize(size_t list_no, size_t new_size) {
-    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_MSG(
+            read_only, "cannot modify a read-only OnDiskInvertedLists");
     locks->lock_1(list_no);
     resize_locked(list_no, new_size);
     locks->unlock_1(list_no);

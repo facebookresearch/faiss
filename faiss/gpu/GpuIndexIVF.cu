@@ -420,8 +420,8 @@ void GpuIndexIVF::search_preassigned(
     DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
 
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs,
+    FAISS_THROW_IF_MSG(
+            store_pairs,
             "GpuIndexIVF::search_preassigned does not "
             "currently support store_pairs");
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "GpuIndexIVF not trained");

@@ -157,8 +157,8 @@ void ClusteringInitialization::init_centroids(
             n,
             k);
     FAISS_THROW_IF_NOT(d > 0);
-    FAISS_THROW_IF_NOT(x != nullptr);
-    FAISS_THROW_IF_NOT(centroids != nullptr);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_NOT(centroids);
     FAISS_THROW_IF_NOT(
             n_existing_centroids == 0 || existing_centroids != nullptr);
 

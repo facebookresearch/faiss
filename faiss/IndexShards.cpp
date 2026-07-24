@@ -143,8 +143,8 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
             "request them to be shifted");
 
     if (successive_ids) {
-        FAISS_THROW_IF_NOT_MSG(
-                !xids,
+        FAISS_THROW_IF_MSG(
+                xids,
                 "It makes no sense to pass in ids and "
                 "request them to be shifted");
         FAISS_THROW_IF_NOT_MSG(

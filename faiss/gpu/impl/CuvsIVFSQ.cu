@@ -796,8 +796,8 @@ idx_t CuvsIVFSQ::getBitsetSizeForFiltering_() const {
 
     // maxVectorId_ / hasNegativeVectorId_ are maintained incrementally as
     // vectors are added, so no per-search readback of the index is needed.
-    FAISS_THROW_IF_NOT_MSG(
-            !hasNegativeVectorId_,
+    FAISS_THROW_IF_MSG(
+            hasNegativeVectorId_,
             "cuVS IVF-SQ IDSelector filtering does not support "
             "negative vector ids");
 

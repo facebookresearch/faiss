@@ -142,7 +142,9 @@ void NSG::build(
         idx_t n,
         const nsg::Graph<idx_t>& knn_graph,
         bool verbose) {
-    FAISS_THROW_IF_NOT(!is_built && ntotal == 0);
+    FAISS_THROW_IF_MSG(
+            is_built || ntotal != 0,
+            "NSG graph must be empty and not yet built");
 
     if (verbose) {
         printf("NSG::build R=%d, L=%d, C=%d\n", R, L, C);
