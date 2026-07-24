@@ -28,6 +28,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -3976,6 +3977,217 @@ TEST(ReadIndexDeserialize,
                     /*by_residual=*/true,
                     /*verbose=*/false),
             faiss::FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: read_ivfpq bounds the derived (not-stored) IVFPQ precomputed table
+// by the deserialization vector byte limit before recomputing it. The table
+// is quantizer->ntotal * pq.M * pq.ksub floats and is taken from
+// attacker-controlled header fields, so a small crafted index can drive a
+// large allocation (memory-amplification DoS reachable from read_index and
+// the binary index fuzzer). With a low limit the read must throw rather than
+// allocate.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFPQPrecomputedTableExceedsByteLimit) {
+    const int d = 16;
+    const int nlist = 256;
+    const int M = 8;
+    const int nbits = 8; // ksub = 256
+
+    IndexFlatL2 quantizer(d);
+    IndexIVFPQ index(&quantizer, d, nlist, M, nbits);
+    ASSERT_TRUE(index.by_residual); // precompute_table() runs on read
+
+    const int nt = 10000;
+    std::vector<float> xt(size_t(nt) * d);
+    std::mt19937 rng(12345);
+    std::uniform_real_distribution<float> u(-1.0f, 1.0f);
+    for (auto& v : xt) {
+        v = u(rng);
+    }
+    index.train(nt, xt.data());
+    index.add(nt, xt.data());
+
+    VectorIOWriter writer;
+    write_index(&index, &writer);
+
+    // Recomputed table = ntotal(256) * M(8) * ksub(256) = 524288 floats (2 MB).
+    const size_t table_elems = size_t(nlist) * M * (size_t{1} << nbits);
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    // Cap the limit at 256 KB (65536 floats) so the precompute table is over
+    // the limit while the smaller derived reads (PQ centroids ~16 KB, inverted
+    // lists) stay under it. Pin the message so the throw can only come from the
+    // precompute-table guard, not some other byte-limit check.
+    set_deserialization_vector_byte_limit(size_t{1} << 18); // 256 KB
+    {
+        VectorIOReader reader;
+        reader.data = writer.data;
+        try {
+            read_index(&reader);
+            FAIL() << "expected FaissException";
+        } catch (const faiss::FaissException& e) {
+            EXPECT_NE(
+                    std::string(e.what()).find("precomputed_table"),
+                    std::string::npos)
+                    << "expected precompute-table guard, got: " << e.what();
+        }
+    }
+
+    // Just above the table size the index still loads (positive control).
+    set_deserialization_vector_byte_limit((table_elems + 1) * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = writer.data;
+        EXPECT_NO_THROW(read_index_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: the same precompute-table bound guards the IVFPQFastScan (IwPf) read
+// path, whose precompute_table() call is unconditional. nbits=4 -> ksub=16, so
+// the recomputed table = ntotal(256) * M(8) * ksub(16) = 32768 floats (128 KB).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFPQFastScanPrecomputedTableExceedsByteLimit) {
+    const int d = 16;
+    const int nlist = 256;
+    const int M = 8;
+    const int nbits = 4; // ksub = 16
+
+    IndexFlatL2 quantizer(d);
+    IndexIVFPQFastScan index(&quantizer, d, nlist, M, nbits);
+
+    const int nt = 10000;
+    std::vector<float> xt(size_t(nt) * d);
+    std::mt19937 rng(12345);
+    std::uniform_real_distribution<float> u(-1.0f, 1.0f);
+    for (auto& v : xt) {
+        v = u(rng);
+    }
+    index.train(nt, xt.data());
+    index.add(nt, xt.data());
+
+    VectorIOWriter writer;
+    write_index(&index, &writer);
+
+    const size_t table_elems = size_t(nlist) * M * (size_t{1} << nbits);
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    // 64 KB (16384 floats) is below the 32768-float table but above the smaller
+    // derived reads. Pin the message so only the precompute-table guard
+    // matches.
+    set_deserialization_vector_byte_limit(size_t{1} << 16); // 64 KB
+    {
+        VectorIOReader reader;
+        reader.data = writer.data;
+        try {
+            read_index(&reader);
+            FAIL() << "expected FaissException";
+        } catch (const faiss::FaissException& e) {
+            EXPECT_NE(
+                    std::string(e.what()).find("precomputed_table"),
+                    std::string::npos)
+                    << "expected precompute-table guard, got: " << e.what();
+        }
+    }
+
+    // Just above the table size the index still loads (positive control).
+    set_deserialization_vector_byte_limit((table_elems + 1) * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = writer.data;
+        EXPECT_NO_THROW(read_index_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: read_ivfpq rejects a null coarse quantizer rather than dereferencing
+// it. read_ivf_header deserializes the coarse quantizer via read_index, which
+// returns nullptr for a crafted "null" fourcc. The explicit null check right
+// after read_ivf_header must throw cleanly, before the precompute-table guard
+// (or precompute_table itself) dereferences quantizer->ntotal.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFPQNullQuantizerReadRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwPQ");
+    // read_ivf_header: index_header (is_trained=true), nlist, nprobe,
+    // coarse quantizer, direct_map.
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0, /*is_trained=*/true);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    push_fourcc(buf, "null"); // coarse quantizer -> read_index returns nullptr
+    push_empty_direct_map(buf);
+    // IVFPQ body: by_residual, code_size, ProductQuantizer, inverted lists.
+    push_val<bool>(buf, true); // by_residual
+    push_val<size_t>(buf, 1);  // code_size
+    // Valid PQ: d=4, M=1, nbits=8 -> ksub=256, centroids = d*ksub = 1024.
+    push_pq(buf,
+            /*d=*/4,
+            /*M=*/1,
+            /*nbits=*/8,
+            std::vector<float>(4 * 256, 0.0f));
+    push_null_invlists(buf);
+
+    expect_read_throws_with(buf, "IVFPQ coarse quantizer is null");
+}
+
+// -----------------------------------------------------------------------
+// Test: the precompute-table bound also covers the type-2 table used when the
+// coarse quantizer is a MultiIndexQuantizer. That table is
+// cpq.ksub * pq.M * pq.ksub floats, driven by the coarse PQ's ksub, which is
+// decoupled from quantizer->ntotal. A crafted MultiIndexQuantizer with a tiny
+// ntotal but a large ksub passes an ntotal-only bound yet forces a huge
+// allocation, so the guard must reject it.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize,
+     IVFPQMultiIndexQuantizerPrecomputedTableExceedsByteLimit) {
+    const int d = 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwPQ");
+    push_index_header(buf, d, /*ntotal=*/0, /*is_trained=*/true);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    // Coarse quantizer = MultiIndexQuantizer ("Imiq") with a crafted tiny
+    // ntotal(1) but cpq.nbits=10 -> cpq.ksub=1024, decoupling the type-2 table
+    // size from ntotal.
+    push_fourcc(buf, "Imiq");
+    push_index_header(buf, d, /*ntotal=*/1, /*is_trained=*/true);
+    push_pq(buf, d, /*M=*/1, /*nbits=*/10, std::vector<float>(d * 1024, 0.0f));
+    push_empty_direct_map(buf);
+    push_val<bool>(buf, true); // by_residual
+    push_val<size_t>(buf, 1);  // code_size
+    // Outer PQ: M=2, nbits=8 -> ksub=256, m_ksub=512, and pq.M % cpq.M == 0.
+    push_pq(buf, d, /*M=*/2, /*nbits=*/8, std::vector<float>(d * 256, 0.0f));
+    push_null_invlists(buf);
+
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(size_t{1} << 16); // 64 KB
+    // type-1 bound: ntotal(1) * 2 * 256 = 512 floats -- an ntotal-only guard
+    // would pass. type-2 table: cpq.ksub(1024) * 2 * 256 = 524288 floats --
+    // must be rejected.
+    expect_read_throws_with(buf, "precomputed_table");
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: the IVFPQFastScan (IwPf) read path also rejects a null coarse quantizer
+// at the explicit check right after read_ivf_header, before any
+// quantizer->ntotal dereference.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFPQFastScanNullQuantizerReadRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwPf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0, /*is_trained=*/true);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    push_fourcc(buf, "null"); // coarse quantizer -> read_index returns nullptr
+    push_empty_direct_map(buf);
+
+    expect_read_throws_with(buf, "IVFPQFastScan coarse quantizer is null");
 }
 
 // ============================================================
