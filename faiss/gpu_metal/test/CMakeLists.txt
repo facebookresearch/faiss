@@ -41,3 +41,19 @@ set_target_properties(TestMetalIndexIVFFlat PROPERTIES
     OBJCXX_STANDARD_REQUIRED ON
 )
 gtest_discover_tests(TestMetalIndexIVFFlat)
+
+add_executable(TestMetalIndexIVFPQ TestMetalIndexIVFPQ.mm)
+target_link_libraries(TestMetalIndexIVFPQ PRIVATE
+    faiss_metal
+    faiss
+    GTest::gtest_main
+)
+target_include_directories(TestMetalIndexIVFPQ PRIVATE
+    ${PROJECT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../..
+)
+set_target_properties(TestMetalIndexIVFPQ PROPERTIES
+    OBJCXX_STANDARD 17
+    OBJCXX_STANDARD_REQUIRED ON
+)
+gtest_discover_tests(TestMetalIndexIVFPQ)
