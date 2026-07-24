@@ -12568,6 +12568,7 @@
     <member refid="structfaiss_1_1SIMDConfig_1a6e8453c8b55b793d1c00ae6ec5f3a753" kind="variable"><name>level</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kind="variable"><name>supported_simd_levels</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1a37dc9382bb32ae1da760d67807a930a5" kind="function"><name>auto_detect_simd_level</name></member>
+    <member refid="structfaiss_1_1SIMDConfig_1a3fe4544138b7135807bee37750cb0b1f" kind="function"><name>has_dynamic_dispatch</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kind="function"><name>set_level</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1a90c13d194c6ce46da285958431f95088" kind="function"><name>get_level</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1af84f73c7ca9fb6657c270d2743da3e07" kind="function"><name>get_level_name</name></member>
