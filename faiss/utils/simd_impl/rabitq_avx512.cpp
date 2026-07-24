@@ -238,6 +238,87 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
 }
 
 template <>
+BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
+        SIMDLevel::AVX512>(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb) {
+    uint64_t dot_product = 0;
+    uint64_t popcount_sum = 0;
+    size_t offset = 0;
+    if (size_t step = 512 / 8; offset + step <= size) {
+        __m512i dot_512 = _mm512_setzero_si512();
+        __m512i pop_512 = _mm512_setzero_si512();
+        for (; offset + step <= size; offset += step) {
+            __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
+            pop_512 = _mm512_add_epi64(pop_512, popcount_512(v_x));
+            for (int j = 0; j < qb; j++) {
+                __m512i v_q = _mm512_loadu_si512(
+                        (const __m512i*)(query + j * size + offset));
+                __m512i v_and = _mm512_and_si512(v_q, v_x);
+                __m512i v_popcnt = popcount_512(v_and);
+                __m512i v_shifted = _mm512_slli_epi64(v_popcnt, j);
+                dot_512 = _mm512_add_epi64(dot_512, v_shifted);
+            }
+        }
+        dot_product += _mm512_reduce_add_epi64(dot_512);
+        popcount_sum += _mm512_reduce_add_epi64(pop_512);
+    }
+    if (size_t step = 256 / 8; offset + step <= size) {
+        __m256i dot_256 = _mm256_setzero_si256();
+        __m256i pop_256 = _mm256_setzero_si256();
+        for (; offset + step <= size; offset += step) {
+            __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
+            pop_256 = _mm256_add_epi64(pop_256, popcount_256(v_x));
+            for (int j = 0; j < qb; j++) {
+                __m256i v_q = _mm256_loadu_si256(
+                        (const __m256i*)(query + j * size + offset));
+                __m256i v_and = _mm256_and_si256(v_q, v_x);
+                __m256i v_popcnt = popcount_256(v_and);
+                __m256i v_shifted = _mm256_slli_epi64(v_popcnt, j);
+                dot_256 = _mm256_add_epi64(dot_256, v_shifted);
+            }
+        }
+        dot_product += reduce_add_256(dot_256);
+        popcount_sum += reduce_add_256(pop_256);
+    }
+    __m128i dot_128 = _mm_setzero_si128();
+    __m128i pop_128 = _mm_setzero_si128();
+    for (size_t step = 128 / 8; offset + step <= size; offset += step) {
+        __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
+        pop_128 = _mm_add_epi64(pop_128, popcount_128(v_x));
+        for (int j = 0; j < qb; j++) {
+            __m128i v_q = _mm_loadu_si128(
+                    (const __m128i*)(query + j * size + offset));
+            __m128i v_and = _mm_and_si128(v_q, v_x);
+            __m128i v_popcnt = popcount_128(v_and);
+            __m128i v_shifted = _mm_slli_epi64(v_popcnt, j);
+            dot_128 = _mm_add_epi64(dot_128, v_shifted);
+        }
+    }
+    dot_product += reduce_add_128(dot_128);
+    popcount_sum += reduce_add_128(pop_128);
+    for (size_t step = 64 / 8; offset + step <= size; offset += step) {
+        const auto yv = *(const uint64_t*)(data + offset);
+        popcount_sum += popcount64(yv);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(const uint64_t*)(query + j * size + offset);
+            dot_product += popcount64(qv & yv) << j;
+        }
+    }
+    for (; offset < size; ++offset) {
+        const auto yv = *(data + offset);
+        popcount_sum += popcount32(yv);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(query + j * size + offset);
+            dot_product += popcount32(qv & yv) << j;
+        }
+    }
+    return {dot_product, popcount_sum};
+}
+
+template <>
 uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
         const uint8_t* query,
         const uint8_t* data,

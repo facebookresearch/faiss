@@ -466,17 +466,16 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
                                qb);
             final_dot += int_dot * query_fac.int_dot_scale;
         } else {
-            auto dot_qo = rabitq::bitwise_and_dot_product<SL>(
-                    rearranged_rotated_qq.data(), binary_data, size, qb);
-            // It was a willful decision (after the discussion) to not to
-            // pre-cache the sum of all bits, just in order to reduce the
-            // overhead per vector.
-            // process 64-bit popcounts
-            auto sum_q = rabitq::popcount<SL>(binary_data, size);
+            auto bitwise_result =
+                    rabitq::bitwise_and_dot_product_with_popcount<SL>(
+                            rearranged_rotated_qq.data(),
+                            binary_data,
+                            size,
+                            qb);
             // dot-product itself
-            final_dot += query_fac.c1 * dot_qo;
+            final_dot += query_fac.c1 * bitwise_result.dot_product;
             // normalizer coefficients
-            final_dot += query_fac.c2 * sum_q;
+            final_dot += query_fac.c2 * bitwise_result.popcount;
             // normalizer coefficients
             final_dot -= query_fac.c34;
         }
