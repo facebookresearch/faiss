@@ -17,10 +17,22 @@
 # =============================================================================
 set(RAPIDS_VERSION "26.06")
 set(rapids-cmake-version ${RAPIDS_VERSION})
-set(rapids-cmake-branch "release/${RAPIDS_VERSION}")
+# For ROCm, leave rapids-cmake-branch unset so ROCmDS-CMake's RAPIDS.cmake
+# resolves the rapids-cmake fork repo/branch from the RAPIDS_CMAKE_* env vars
+# (rapids-cmake-version above satisfies its version guard).
+if(NOT FAISS_ENABLE_ROCM)
+  set(rapids-cmake-branch "release/${RAPIDS_VERSION}")
+endif()
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
-    file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/${rapids-cmake-branch}/RAPIDS.cmake
+    if(FAISS_ENABLE_ROCM)
+        # hipVS / ROCmDS ships its own rapids-cmake fork (ROCmDS-cmake).
+        file(DOWNLOAD
+            https://raw.githubusercontent.com/AMD-Ecosystem/ROCmDS-cmake/release/rocmds-26.03/RAPIDS.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
+    else()
+        file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/${rapids-cmake-branch}/RAPIDS.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
+    endif()
 endif()
 include(${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)

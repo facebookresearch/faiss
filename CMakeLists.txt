@@ -68,9 +68,15 @@ if(FAISS_ENABLE_CUVS)
   include(rapids-export)
   include(rapids-find)
 
-  rapids_cuda_init_architectures(faiss)
-  rapids_cuda_init_architectures(pyfaiss)
-  rapids_cuda_init_architectures(faiss_c_library)
+  # ROCm/HIP arch is auto-detected natively by CMake when the HIP language is
+  # enabled (e.g. gfx942). The rapids CUDA arch init is CUDA-only, and the HIP
+  # equivalent routes through a RAPIDS sentinel that collides with ROCm's
+  # hip-config (AMDGPU_TARGETS), so we skip arch init on ROCm.
+  if(NOT FAISS_ENABLE_ROCM)
+    rapids_cuda_init_architectures(faiss)
+    rapids_cuda_init_architectures(pyfaiss)
+    rapids_cuda_init_architectures(faiss_c_library)
+  endif()
 endif()
 
 project(faiss
@@ -119,6 +125,14 @@ if(FAISS_ENABLE_GPU)
     enable_language(CUDA)
     set(GPU_EXT_PREFIX "cu")
   endif()
+endif()
+
+if(FAISS_ENABLE_CUVS AND FAISS_ENABLE_ROCM)
+  # cuvs-dependencies.cmake calls find_dependency(OpenMP) before FAISS resolves
+  # OpenMP itself. Under hipcc that first probe fails unless OpenMP is already
+  # found, which silently aborts cuvs' dependency script (skipping raft/rmm).
+  # Resolve OpenMP up front so the cuVS dependency chain completes.
+  find_package(OpenMP REQUIRED)
 endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)

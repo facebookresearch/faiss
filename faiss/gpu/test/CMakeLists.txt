@@ -22,7 +22,7 @@
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
 if(FAISS_ENABLE_ROCM)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)

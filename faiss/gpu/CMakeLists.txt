@@ -275,6 +275,10 @@ if(FAISS_ENABLE_CUVS)
           utils/CuvsUtils.cu)
 endif()
 
+if (FAISS_ENABLE_ROCM)
+  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+endif()
+
 add_library(faiss_gpu_objs OBJECT ${FAISS_GPU_SRC})
 set_target_properties(faiss_gpu_objs PROPERTIES
   POSITION_INDEPENDENT_CODE ON
@@ -320,10 +324,6 @@ if(FAISS_ENABLE_CUVS)
   target_compile_definitions(faiss_gpu_objs PUBLIC USE_NVIDIA_CUVS=1)
 endif()
 
-if (FAISS_ENABLE_ROCM)
-  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
-endif()
-
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
@@ -343,7 +343,7 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 if (FAISS_ENABLE_ROCM)
-  target_link_libraries(faiss_gpu_objs PRIVATE hip::host roc::hipblas)
+  target_link_libraries(faiss_gpu_objs PRIVATE hip::host roc::hipblas $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
   target_compile_options(faiss_gpu_objs PRIVATE)
 else()
   # Prepares a host linker script and enables host linker to support
