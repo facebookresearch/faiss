@@ -33,8 +33,14 @@
 
 #if defined USE_NVIDIA_CUVS
 #include <raft/core/device_resources.hpp>
+#if defined USE_AMD_ROCM
+// hipVS is based on an older cuVS/rmm (pre-26.06) that predates the
+// cuda::mr::any_resource memory-resource API, so use the legacy rmm API.
+#include <rmm/mr/device/device_memory_resource.hpp>
+#else
 #include <cuda/memory_resource>
 #include <optional>
+#endif
 #endif
 
 namespace faiss {
@@ -164,7 +170,11 @@ struct AllocRequest : public AllocInfo {
     size_t size = 0;
 
 #if defined USE_NVIDIA_CUVS
+#if defined USE_AMD_ROCM
+    rmm::mr::device_memory_resource* mr = nullptr;
+#else
     std::optional<cuda::mr::any_resource<cuda::mr::device_accessible>> mr;
+#endif
 #endif
 };
 
