@@ -50,9 +50,11 @@ faiss_gpu_test(TestGpuResidualQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.${GPU_EXT_PREFIX})
 faiss_gpu_test(TestGpuSelect.${GPU_EXT_PREFIX})
 if(FAISS_ENABLE_CUVS)
-  faiss_gpu_test(TestGpuFilterConvert.cu)
-  faiss_gpu_test(TestGpuIndexBinaryCagra.cu)
-  faiss_gpu_test(TestGpuIndexCagra.cu)
+  # Use GPU_EXT_PREFIX so these hipify to .hip on ROCm (as with the .cu tests
+  # above); hardcoding .cu leaves them uncompiled under HIP (undefined main).
+  faiss_gpu_test(TestGpuFilterConvert.${GPU_EXT_PREFIX})
+  faiss_gpu_test(TestGpuIndexBinaryCagra.${GPU_EXT_PREFIX})
+  faiss_gpu_test(TestGpuIndexCagra.${GPU_EXT_PREFIX})
 endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL

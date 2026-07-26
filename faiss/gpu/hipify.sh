@@ -83,6 +83,8 @@ function hipify_dir()
             sed -i 's@thrust::cuda::par@thrust::hip::par@' "$src"
             sed -i 's@#include <hipblas.h>@#include <hipblas/hipblas.h>@' "$src"
             sed -i 's@#include <hiprand_kernel.h>@#include <hiprand/hiprand_kernel.h>@' "$src"
+            # raft keeps the cuVS header name; undo hipify's cuda->hip rename
+            sed -i 's@raft/core/resource/hip_stream.hpp@raft/core/resource/cuda_stream.hpp@' "$src"
         done <   <(find ./gpu -name "*.$ext.tmp" -print0)
     done
 
