@@ -435,6 +435,21 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 %}
 
+// CAGRA bindings are wrapped below (outside this #ifdef) whenever cuVS is on,
+// so the C++ headers must be included on the ROCm path too (they are only
+// included in the #else/CUDA branch otherwise).
+#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+%shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
+%shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
+
+%{
+
+#include <faiss/gpu/GpuIndexCagra.h>
+#include <faiss/gpu/GpuIndexBinaryCagra.h>
+
+%}
+#endif // FAISS_ENABLE_CUVS && !FAISS_CUVS_NO_CAGRA
+
 #else // FAISS_ENABLE_ROCM
 
 // CAGRA is absent from the aarch64 cuVS build (cuvs-ivfpq subset), so gate the
