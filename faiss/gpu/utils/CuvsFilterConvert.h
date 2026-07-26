@@ -21,6 +21,12 @@
  * limitations under the License.
  */
 
+#if defined USE_AMD_ROCM
+// Must precede any raft/cuVS header: hipVS's bundled mdspan aligned_accessor
+// uses std::assume_aligned without including <memory>, which fails under hipcc.
+#include <memory>
+#endif
+
 #include <cuvs/core/bitset.hpp>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/impl/IDSelector.h>
