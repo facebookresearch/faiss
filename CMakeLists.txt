@@ -116,6 +116,11 @@ if(FAISS_ENABLE_GPU)
   if(FAISS_ENABLE_ROCM)
     enable_language(HIP)
     add_definitions(-DUSE_AMD_ROCM)
+    if(FAISS_ENABLE_CUVS)
+      # hipVS ships an older cuVS without IVF-SQ; disable that path on ROCm.
+      # GpuIndexIVFScalarQuantizer falls back to the classic GPU impl.
+      add_definitions(-DFAISS_CUVS_NO_IVFSQ)
+    endif()
     find_package(HIP REQUIRED)
     find_package(hipBLAS REQUIRED)
     set(GPU_EXT_PREFIX "hip")

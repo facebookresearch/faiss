@@ -1,3 +1,4 @@
+#include "hip/hip_runtime.h"
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -227,7 +228,7 @@ TEST(TestGpuIndexIVFScalarQuantizer, CopyFrom_4bit_uniform) {
     runCopyFromTest(faiss::ScalarQuantizer::QuantizerType::QT_4bit_uniform);
 }
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFSQ)
 void runCuvsSQ8Test(faiss::MetricType metricType) {
     using namespace faiss;
     using namespace faiss::gpu;
