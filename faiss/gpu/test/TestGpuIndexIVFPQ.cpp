@@ -1,3 +1,4 @@
+#include "hip/hip_runtime.h"
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -682,7 +683,7 @@ TEST(TestGpuIndexIVFPQ, AddNaN) {
     addNaNTest(opt);
 }
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFPQ)
 TEST(TestGpuIndexIVFPQ, Query_L2_Cuvs) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
@@ -869,7 +870,7 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.1f,
             0.015f);
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFPQ)
     config.interleavedLayout = true;
     config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
@@ -944,7 +945,7 @@ void testIDSelectorIVFPQ(faiss::MetricType metricType) {
     }
 }
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFPQ)
 TEST(TestCuvsGpuIndexIVFPQ, IDSelector_L2) {
     testIDSelectorIVFPQ(faiss::METRIC_L2);
 }

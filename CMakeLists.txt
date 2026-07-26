@@ -117,12 +117,20 @@ if(FAISS_ENABLE_GPU)
     enable_language(HIP)
     add_definitions(-DUSE_AMD_ROCM)
     if(FAISS_ENABLE_CUVS)
-      # hipVS ships an older cuVS without IVF-SQ; disable that path on ROCm.
-      # GpuIndexIVFScalarQuantizer falls back to the classic GPU impl.
+      # hipVS ships an older cuVS whose IVF-SQ/IVF-PQ APIs differ from 26.06;
+      # disable those cuVS paths on ROCm and fall back to the classic GPU impls.
       add_definitions(-DFAISS_CUVS_NO_IVFSQ)
+      add_definitions(-DFAISS_CUVS_NO_IVFPQ)
     endif()
     find_package(HIP REQUIRED)
     find_package(hipBLAS REQUIRED)
+    if(FAISS_ENABLE_CUVS)
+      # cuVS exports hipblas/hipsolver/hipsparse/hiprand/hipblaslt as plain
+      # link names (-lhipblas ...). link_directories() isn't consumed by the
+      # HIP link rule, so add the ROCm lib search dir directly as a link option
+      # (clang++ forwards -L to clang-linker-wrapper).
+      add_link_options(-L/opt/rocm/lib)
+    endif()
     set(GPU_EXT_PREFIX "hip")
     execute_process(COMMAND ${PROJECT_SOURCE_DIR}/faiss/gpu/hipify.sh)
   else ()

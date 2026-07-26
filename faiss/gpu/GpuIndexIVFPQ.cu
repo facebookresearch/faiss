@@ -15,7 +15,7 @@
 #include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFPQ)
 #include <cuvs/neighbors/ivf_pq.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
@@ -25,6 +25,19 @@
 
 namespace faiss {
 namespace gpu {
+
+namespace {
+// hipVS ships an older cuVS whose ivf_pq helper API differs from 26.06, so the
+// cuVS IVF-PQ backend is compiled out on ROCm (FAISS_CUVS_NO_IVFPQ). Force the
+// classic GPU IVF-PQ path everywhere in this file in that case.
+inline bool ivfpqUseCuvs(const GpuIndexConfig& config) {
+#if defined(FAISS_CUVS_NO_IVFPQ)
+    return false;
+#else
+    return should_use_cuvs(config);
+#endif
+}
+} // namespace
 
 GpuIndexIVFPQ::GpuIndexIVFPQ(
         GpuResourcesProvider* provider,
@@ -112,7 +125,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     index_.reset();
 
     // skip base class allocations if cuVS is enabled
-    if (!should_use_cuvs(config_)) {
+    if (!ivfpqUseCuvs(config_)) {
         baseIndex_.reset();
     }
 
@@ -348,7 +361,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     if (this->is_trained) {
         FAISS_ASSERT(index_);
-        if (should_use_cuvs(config_)) {
+        if (ivfpqUseCuvs(config_)) {
             // if cuVS is enabled, copy the IVF centroids to the cuVS index in
             // case it has been reset. This is because reset clears the cuVS
             // index and its centroids.
@@ -363,8 +376,8 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     // cuVS does not support using an external index for assignment. Fall back
     // to the classical GPU impl
-    if (should_use_cuvs(config_)) {
-#if defined USE_NVIDIA_CUVS
+    if (ivfpqUseCuvs(config_)) {
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFPQ)
         if (pq.assign_index) {
             fprintf(stderr,
                     "WARN: The Product Quantizer's assign_index will be ignored with cuVS enabled.\n");
@@ -503,8 +516,8 @@ void GpuIndexIVFPQ::setIndex_(
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-    if (should_use_cuvs(config_)) {
-#if defined USE_NVIDIA_CUVS
+    if (ivfpqUseCuvs(config_)) {
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFPQ)
         index_.reset(new CuvsIVFPQ(
                 resources,
                 dim,
@@ -548,7 +561,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
     FAISS_THROW_IF_NOT_MSG(nlist > 0, "nlist must be >0");
 
     // up to a single byte per code
-    if (should_use_cuvs(config_)) {
+    if (ivfpqUseCuvs(config_)) {
         if (!ivfpqConfig_.interleavedLayout) {
             fprintf(stderr,
                     "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");

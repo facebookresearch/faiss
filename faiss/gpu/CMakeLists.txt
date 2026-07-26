@@ -276,10 +276,10 @@ if(FAISS_ENABLE_CUVS)
 endif()
 
 if (FAISS_ENABLE_ROCM AND FAISS_ENABLE_CUVS)
-  # hipVS's older cuVS has no IVF-SQ; drop the cuVS IVF-SQ sources on ROCm
-  # (see FAISS_CUVS_NO_IVFSQ).
-  list(REMOVE_ITEM FAISS_GPU_HEADERS impl/CuvsIVFSQ.cuh)
-  list(REMOVE_ITEM FAISS_GPU_SRC impl/CuvsIVFSQ.cu)
+  # hipVS's older cuVS lacks the 26.06 IVF-SQ/IVF-PQ APIs; drop those cuVS
+  # sources on ROCm (see FAISS_CUVS_NO_IVFSQ / FAISS_CUVS_NO_IVFPQ).
+  list(REMOVE_ITEM FAISS_GPU_HEADERS impl/CuvsIVFSQ.cuh impl/CuvsIVFPQ.cuh)
+  list(REMOVE_ITEM FAISS_GPU_SRC impl/CuvsIVFSQ.cu impl/CuvsIVFPQ.cu)
 endif()
 
 if (FAISS_ENABLE_ROCM)
