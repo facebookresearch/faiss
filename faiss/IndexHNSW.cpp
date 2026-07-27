@@ -280,12 +280,12 @@ void hnsw_search(
 
 #pragma omp parallel if (i1 - i0 > 1)
         {
-            std::unique_ptr<VisitedTable> vt;
+            VisitedTable* vt = nullptr;
             std::unique_ptr<typename BlockResultHandler::SingleResultHandler>
                     res;
             std::unique_ptr<DistanceComputer> dis;
             try {
-                vt = VisitedTable::create(
+                vt = &VisitedTable::get_reusable(
                         index->ntotal, hnsw.use_visited_hashset);
                 res = std::make_unique<
                         typename BlockResultHandler::SingleResultHandler>(bres);
@@ -479,11 +479,11 @@ void IndexHNSW::search_level_0(
         {
             std::unique_ptr<DistanceComputer> qdis;
             HNSWStats search_stats;
-            std::unique_ptr<VisitedTable> vt;
+            VisitedTable* vt = nullptr;
             std::unique_ptr<typename RH::SingleResultHandler> res;
             try {
                 qdis.reset(storage_distance_computer(storage));
-                vt = VisitedTable::create(
+                vt = &VisitedTable::get_reusable(
                         hnsw_ntotal, hnsw.use_visited_hashset);
                 res = std::make_unique<typename RH::SingleResultHandler>(bres);
             } catch (...) {
@@ -903,8 +903,7 @@ void IndexHNSW2Level::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     if (dynamic_cast<const Index2Layer*>(storage)) {
         IndexHNSW::search(n, x, k, distances, labels);
@@ -1084,8 +1083,8 @@ IndexHNSWCagra::IndexHNSWCagra(
 }
 
 void IndexHNSWCagra::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !base_level_only,
+    FAISS_THROW_IF_MSG(
+            base_level_only,
             "Cannot add vectors when base_level_only is set to True");
 
     IndexHNSW::add(n, x);
@@ -1208,11 +1207,11 @@ void IndexHNSWCagra::range_search(
 
             RangeQueryResult& qres = pres.new_result(i);
             RangeResultHandler<C> res(&qres, radius);
-            std::unique_ptr<VisitedTable> vt =
-                    VisitedTable::create(ntotal, hnsw.use_visited_hashset);
+            VisitedTable& vt = VisitedTable::get_reusable(
+                    ntotal, hnsw.use_visited_hashset);
             HNSWStats stats;
             hnsw.search_level_0(
-                    *dis, res, 1, &nearest, &nearest_d, 1, stats, *vt, params);
+                    *dis, res, 1, &nearest, &nearest_d, 1, stats, vt, params);
             n1 += stats.n1;
             n2 += stats.n2;
             ndis += stats.ndis;

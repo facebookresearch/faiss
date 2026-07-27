@@ -29,8 +29,8 @@ faiss::Index* index_cpu_to_metal_gpu(
         StandardMetalResources* res,
         int device,
         const faiss::Index* index) {
-    FAISS_THROW_IF_NOT(res != nullptr);
-    FAISS_THROW_IF_NOT(res->getResources() != nullptr);
+    FAISS_THROW_IF_NOT(res);
+    FAISS_THROW_IF_NOT(res->getResources());
     FAISS_THROW_IF_NOT(res->getResources()->isAvailable());
     FAISS_THROW_IF_NOT_MSG(device == 0, "Metal backend supports only device 0");
 

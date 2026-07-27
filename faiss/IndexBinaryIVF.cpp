@@ -206,8 +206,7 @@ void IndexBinaryIVF::search_and_reconstruct(
         idx_t* __restrict labels,
         uint8_t* __restrict recons,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     const size_t nprobe_2 = std::min(nlist, this->nprobe);
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe_2 > 0);
@@ -524,8 +523,7 @@ void IndexBinaryIVF::range_search(
         int radius,
         RangeSearchResult* __restrict res,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     const size_t nprobe_2 = std::min(nlist, this->nprobe);
     std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe_2]);
     std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe_2]);

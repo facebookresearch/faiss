@@ -340,7 +340,9 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
         READVECTOR(lt->b);
         FAISS_THROW_IF_NOT(
                 lt->A.size() >= size_t(lt->d_in) * size_t(lt->d_out));
-        FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= size_t(lt->d_out));
+        FAISS_THROW_IF_MSG(
+                lt->have_bias && lt->b.size() < size_t(lt->d_out),
+                "bias vector smaller than d_out");
         lt->set_is_orthonormal();
         vt = std::move(lt);
     } else if (h == fourcc("RmDT")) {
@@ -1608,7 +1610,29 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
 
 int read_old_fmt_hack = 0;
 
+namespace {
+
+constexpr int kMaxIndexNestingDepth = 50;
+thread_local int index_read_nesting_depth = 0;
+
+struct IndexNestingGuard {
+    IndexNestingGuard() {
+        FAISS_THROW_IF_NOT_FMT(
+                index_read_nesting_depth < kMaxIndexNestingDepth,
+                "faiss index nesting depth exceeds limit of %d; "
+                "input may be corrupt or malicious",
+                kMaxIndexNestingDepth);
+        ++index_read_nesting_depth;
+    }
+    ~IndexNestingGuard() {
+        --index_read_nesting_depth;
+    }
+};
+
+} // namespace
+
 std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
+    IndexNestingGuard nesting_guard;
     std::unique_ptr<Index> idx;
     uint32_t h;
     READ1(h);
@@ -2333,6 +2357,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_index_header(*idxrf, f);
         auto base = read_index_up(f, io_flags);
         auto refine = read_index_up(f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(base, "IndexRefine base index is null");
+        FAISS_THROW_IF_NOT_MSG(refine, "IndexRefine refine index is null");
         READ1(idxrf->k_factor);
         // Same rationale as IndexIVFPQR k_factor above.
         FAISS_THROW_IF_NOT_FMT(
@@ -3273,6 +3299,7 @@ static void read_binary_multi_hash_map(
 }
 
 std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
+    IndexNestingGuard nesting_guard;
     std::unique_ptr<IndexBinary> idx;
     uint32_t h;
     READ1(h);
