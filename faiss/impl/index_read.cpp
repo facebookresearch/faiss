@@ -2333,6 +2333,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_index_header(*idxrf, f);
         auto base = read_index_up(f, io_flags);
         auto refine = read_index_up(f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(base, "IndexRefine base index is null");
+        FAISS_THROW_IF_NOT_MSG(refine, "IndexRefine refine index is null");
         READ1(idxrf->k_factor);
         // Same rationale as IndexIVFPQR k_factor above.
         FAISS_THROW_IF_NOT_FMT(
