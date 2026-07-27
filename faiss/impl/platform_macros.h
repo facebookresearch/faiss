@@ -25,7 +25,9 @@
 
 #define strtok_r strtok_s
 
-#ifdef _MSC_VER
+// clang-cl defines _MSC_VER but provides __PRETTY_FUNCTION__ itself, in
+// clang's format. Redefining it there breaks code that parses it.
+#if defined(_MSC_VER) && !defined(__clang__)
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif // _MSC_VER
 
