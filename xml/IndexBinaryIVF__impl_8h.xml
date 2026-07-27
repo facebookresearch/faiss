@@ -919,7 +919,7 @@
 <codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/>nprobe<sp/>=<sp/>std::min((<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref>)ivf-&gt;nlist,<sp/>nprobe);</highlight></codeline>
 <codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>max_codes<sp/>=<sp/>params<sp/>?<sp/>params-&gt;max_codes<sp/>:<sp/>ivf-&gt;max_codes;</highlight></codeline>
 <codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_THROW_IF_NOT(max_codes<sp/>==<sp/>0);</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_THROW_IF_NOT(!store_pairs);</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_THROW_IF_MSG(store_pairs,<sp/></highlight><highlight class="stringliteral">&quot;store_pairs<sp/>is<sp/>not<sp/>supported<sp/>here&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="296"><highlight class="normal"></highlight></codeline>
 <codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>reorder<sp/>buckets</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/>lims(n<sp/>+<sp/>1);</highlight></codeline>
