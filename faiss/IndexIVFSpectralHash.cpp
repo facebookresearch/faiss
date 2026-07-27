@@ -87,7 +87,7 @@ void IndexIVFSpectralHash::train_encoder(
     if (!vt->is_trained) {
         vt->train(n, x);
     }
-    FAISS_THROW_IF_NOT(!by_residual);
+    FAISS_THROW_IF_MSG(by_residual, "by_residual not supported for this index");
 
     if (threshold_type == Thresh_global) {
         // nothing to do
@@ -184,7 +184,7 @@ void IndexIVFSpectralHash::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     FAISS_THROW_IF_NOT(is_trained);
-    FAISS_THROW_IF_NOT(!by_residual);
+    FAISS_THROW_IF_MSG(by_residual, "by_residual not supported for this index");
     float freq = 2.0 / period;
     size_t coarse_size = include_listnos ? coarse_code_size() : 0;
 
@@ -221,7 +221,7 @@ InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
-    FAISS_THROW_IF_NOT(!sel);
+    FAISS_THROW_IF_MSG(sel, "id selector not supported for this index");
     return with_simd_level([&]<SIMDLevel SL>() {
         return make_spectral_hash_scanner_fixSL<SL>(
                 code_size, this, store_pairs);
@@ -253,8 +253,11 @@ void IndexIVFSpectralHash::replace_vt(IndexPreTransform* encoder, bool own) {
     auto sub_index = dynamic_cast<IndexLSH*>(encoder->index);
     FAISS_THROW_IF_NOT_MSG(sub_index, "final index should be LSH");
     FAISS_THROW_IF_NOT(sub_index->nbits == nbit);
-    FAISS_THROW_IF_NOT(!sub_index->rotate_data);
-    FAISS_THROW_IF_NOT(!sub_index->train_thresholds);
+    FAISS_THROW_IF_MSG(
+            sub_index->rotate_data, "LSH sub-index must not rotate data");
+    FAISS_THROW_IF_MSG(
+            sub_index->train_thresholds,
+            "LSH sub-index thresholds must already be trained");
     replace_vt(encoder->chain[0], own);
 }
 

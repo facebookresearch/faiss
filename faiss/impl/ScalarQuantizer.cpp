@@ -427,7 +427,7 @@ const LloydMaxTable kLloydMaxTables[] = {
 
 void populate_lloyd_max_trained(size_t mse_bits, std::vector<float>& trained) {
     FAISS_THROW_IF_NOT(mse_bits >= 1 && mse_bits <= 8);
-    FAISS_THROW_IF_NOT(kLloydMaxTables[mse_bits].centroids != nullptr);
+    FAISS_THROW_IF_NOT(kLloydMaxTables[mse_bits].centroids);
     size_t k = size_t(1) << mse_bits;
     const auto& t = kLloydMaxTables[mse_bits];
     trained.resize(k + (k - 1));
@@ -548,7 +548,7 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_4bit_uniform:
         case QT_8bit_uniform:
             FAISS_THROW_IF_NOT(n > 0);
-            FAISS_THROW_IF_NOT(x != nullptr);
+            FAISS_THROW_IF_NOT(x);
             train_Uniform(
                     rangestat,
                     rangestat_arg,
@@ -561,7 +561,7 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_8bit:
         case QT_6bit:
             FAISS_THROW_IF_NOT(n > 0);
-            FAISS_THROW_IF_NOT(x != nullptr);
+            FAISS_THROW_IF_NOT(x);
             train_NonUniform(
                     rangestat,
                     rangestat_arg,
