@@ -42,7 +42,7 @@ void compareSearchLabels(
 } // namespace
 
 class TestMetalIndexIVFPQ : public ::testing::Test {
-protected:
+   protected:
     void SetUp() override {
         resources_ = std::make_shared<faiss::gpu_metal::MetalResources>();
         if (!resources_->isAvailable()) {
@@ -103,8 +103,8 @@ TEST_F(TestMetalIndexIVFPQ, IP_TrainAddSearch) {
     faiss::float_rand(queries.data(), queries.size(), 5678);
 
     faiss::IndexFlatIP quantizer(dim);
-    faiss::IndexIVFPQ cpuIndex(&quantizer, dim, nlist, M, nbits,
-                               faiss::METRIC_INNER_PRODUCT);
+    faiss::IndexIVFPQ cpuIndex(
+            &quantizer, dim, nlist, M, nbits, faiss::METRIC_INNER_PRODUCT);
     cpuIndex.nprobe = nprobe;
     cpuIndex.train(nb, vecs.data());
     cpuIndex.add(nb, vecs.data());
@@ -160,8 +160,7 @@ TEST_F(TestMetalIndexIVFPQ, CpuToGpuRoundTrip) {
 
     faiss::gpu_metal::StandardMetalResources stdRes;
     auto* metalRaw = dynamic_cast<faiss::gpu_metal::MetalIndexIVFPQ*>(
-            faiss::gpu_metal::index_cpu_to_metal_gpu(
-                    &stdRes, 0, &cpuIndex));
+            faiss::gpu_metal::index_cpu_to_metal_gpu(&stdRes, 0, &cpuIndex));
     ASSERT_NE(metalRaw, nullptr);
     std::unique_ptr<faiss::gpu_metal::MetalIndexIVFPQ> metalIndex(metalRaw);
     ASSERT_EQ(metalIndex->ntotal, nb);

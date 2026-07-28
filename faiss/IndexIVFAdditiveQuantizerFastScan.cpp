@@ -48,8 +48,8 @@ void IndexIVFAdditiveQuantizerFastScan::init(
         MetricType metric,
         int bbs_,
         bool own_invlists_) {
-    FAISS_THROW_IF_NOT(aq_ != nullptr);
-    FAISS_THROW_IF_NOT(!aq_->nbits.empty());
+    FAISS_THROW_IF_NOT(aq_);
+    FAISS_THROW_IF_MSG(aq_->nbits.empty(), "quantizer nbits must not be empty");
     FAISS_THROW_IF_NOT(aq_->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
@@ -310,8 +310,7 @@ void IndexIVFAdditiveQuantizerFastScan::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     FAISS_THROW_IF_NOT(k > 0);
     bool rescale = (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2);

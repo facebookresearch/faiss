@@ -787,6 +787,68 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
     }
 };
 
+template <class Similarity>
+struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX2>
+        : SQDistanceComputer {
+    using Sim = Similarity;
+
+    int d;
+    std::vector<uint8_t> tmp;
+
+    DistanceComputerByteSigned(int d, const std::vector<float>&)
+            : d(d), tmp(d) {}
+
+    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        // codes store value + 128. madd_epi16 is signed, so IP unbiases the
+        // bytes before multiplying; for L2 the +128 cancels in the difference.
+        // Only dispatched for d % 16 == 0, so the loop needs no tail.
+        __m256i accu = _mm256_setzero_si256();
+        for (int i = 0; i < d; i += 16) {
+            __m256i c1 = _mm256_cvtepu8_epi16(
+                    _mm_loadu_si128((const __m128i*)(code1 + i)));
+            __m256i c2 = _mm256_cvtepu8_epi16(
+                    _mm_loadu_si128((const __m128i*)(code2 + i)));
+            __m256i prod32;
+            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
+                const __m256i bias = _mm256_set1_epi16(128);
+                c1 = _mm256_sub_epi16(c1, bias);
+                c2 = _mm256_sub_epi16(c2, bias);
+                prod32 = _mm256_madd_epi16(c1, c2);
+            } else {
+                __m256i diff = _mm256_sub_epi16(c1, c2);
+                prod32 = _mm256_madd_epi16(diff, diff);
+            }
+            accu = _mm256_add_epi32(accu, prod32);
+        }
+        __m128i sum = _mm256_extractf128_si256(accu, 0);
+        sum = _mm_add_epi32(sum, _mm256_extractf128_si256(accu, 1));
+        sum = _mm_hadd_epi32(sum, sum);
+        sum = _mm_hadd_epi32(sum, sum);
+        return _mm_cvtsi128_si32(sum);
+    }
+
+    void set_query(const float* x) final {
+        for (int i = 0; i < d; i++) {
+            tmp[i] = uint8_t(int(x[i]) + 128);
+        }
+    }
+
+    int compute_distance(const float* x, const uint8_t* code) {
+        set_query(x);
+        return compute_code_distance(tmp.data(), code);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_code_distance(tmp.data(), code);
+    }
+};
+
 /**********************************************************
  * TurboQuant masked_sum AVX2 specialization
  **********************************************************/

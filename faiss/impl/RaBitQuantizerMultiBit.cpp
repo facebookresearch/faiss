@@ -257,8 +257,8 @@ void quantize_ex_bits(
     const size_t ex_bits = nb_bits - 1;
     FAISS_THROW_IF_NOT_MSG(
             ex_bits >= 1 && ex_bits <= 8, "ex_bits must be in range [1, 8]");
-    FAISS_THROW_IF_NOT_MSG(residual != nullptr, "residual cannot be null");
-    FAISS_THROW_IF_NOT_MSG(ex_code != nullptr, "ex_code cannot be null");
+    FAISS_THROW_IF_MSG(residual == nullptr, "residual cannot be null");
+    FAISS_THROW_IF_MSG(ex_code == nullptr, "ex_code cannot be null");
 
     // Step 1: Compute L2 norm of residual
     float norm_sqr = fvec_norm_L2sqr(residual, d);

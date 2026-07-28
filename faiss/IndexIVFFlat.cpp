@@ -65,7 +65,7 @@ void IndexIVFFlat::add_core(
         void* inverted_list_context) {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
-    FAISS_THROW_IF_NOT(!by_residual);
+    FAISS_THROW_IF_MSG(by_residual, "by_residual not supported for this index");
     FAISS_THROW_IF_NOT_MSG(invlists, "invlists not initialized");
     direct_map.check_can_add(xids);
 
@@ -110,7 +110,7 @@ void IndexIVFFlat::encode_vectors(
         const idx_t* list_nos,
         uint8_t* codes,
         bool include_listnos) const {
-    FAISS_THROW_IF_NOT(!by_residual);
+    FAISS_THROW_IF_MSG(by_residual, "by_residual not supported for this index");
     if (!include_listnos) {
         memcpy(codes, x, code_size * n);
     } else {
@@ -291,8 +291,7 @@ void IndexIVFFlatDedup::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params,
         IndexIVFStats* /*stats*/) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs, "store_pairs not supported in IVFDedup");
+    FAISS_THROW_IF_MSG(store_pairs, "store_pairs not supported in IVFDedup");
 
     IndexIVFFlat::search_preassigned(
             n, x, k, assign, centroid_dis, distances, labels, false, params);
