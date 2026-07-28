@@ -3,6 +3,25 @@
   <compounddef id="namespacefaiss_1_1rabitq" kind="namespace" language="C++">
     <compoundname>faiss::rabitq</compoundname>
     <innernamespace refid="namespacefaiss_1_1rabitq_1_1multibit">faiss::rabitq::multibit</innernamespace>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="rabitq__simd_8h_1a118df7fcf4a81315cc4f1244b95a0c30" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS</definition>
+        <argsstring></argsstring>
+        <name>RABITQ_QUANTIZATION_SIMD_LEVELS</name>
+        <qualifiedname>faiss::rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS</qualifiedname>
+        <initializer>= (1 &lt;&lt; int(SIMDLevel::NONE)) |
+        (1 &lt;&lt; int(SIMDLevel::AVX2)) | (1 &lt;&lt; int(SIMDLevel::AVX512))</initializer>
+        <briefdescription>
+<para>SIMD levels with RaBitQ query/LUT quantization implementations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="21" column="15" bodyfile="faiss/utils/rabitq_simd.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="func">
       <memberdef kind="function" id="rabitq__simd_8h_1afeb79d98edbdd4b10dcbf414c6b33a06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -77,7 +96,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="29" column="10" declfile="faiss/utils/rabitq_simd.h" declline="29" declcolumn="10"/>
+        <location file="faiss/utils/rabitq_simd.h" line="34" column="10" declfile="faiss/utils/rabitq_simd.h" declline="34" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1aa369a4ff0088baa248147660f15980d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -152,7 +171,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="45" column="10" declfile="faiss/utils/rabitq_simd.h" declline="45" declcolumn="10"/>
+        <location file="faiss/utils/rabitq_simd.h" line="50" column="10" declfile="faiss/utils/rabitq_simd.h" declline="50" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1af659144f46f1e1972f1283b537778619" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -203,7 +222,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="59" column="10" declfile="faiss/utils/rabitq_simd.h" declline="59" declcolumn="10"/>
+        <location file="faiss/utils/rabitq_simd.h" line="64" column="10" declfile="faiss/utils/rabitq_simd.h" declline="64" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a6d8a5bc919e7415ab435c0d88ba021c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -277,7 +296,179 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="75" column="6" declfile="faiss/utils/rabitq_simd.h" declline="75" declcolumn="6"/>
+        <location file="faiss/utils/rabitq_simd.h" line="80" column="6" declfile="faiss/utils/rabitq_simd.h" declline="80" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1ac49c671f3e8b64c40faa7498d886ee0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::lut_minmax_16</definition>
+        <argsstring>(const float *tab, float &amp;mn, float &amp;mx)</argsstring>
+        <name>lut_minmax_16</name>
+        <qualifiedname>faiss::rabitq::lut_minmax_16</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>tab</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mn</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mx</declname>
+        </param>
+        <briefdescription>
+<para>Find min/max of one 16-entry FastScan LUT row. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="88" column="6" declfile="faiss/utils/rabitq_simd.h" declline="88" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1ae46378896c8b5c8765a78f15bc4aef61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::minmax_values</definition>
+        <argsstring>(const float *values, size_t n, float &amp;mn, float &amp;mx)</argsstring>
+        <name>minmax_values</name>
+        <qualifiedname>faiss::rabitq::minmax_values</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mn</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Find min/max of an arbitrary-length float vector. For n == 0, mn and mx are left unchanged. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="93" column="6" declfile="faiss/utils/rabitq_simd.h" declline="93" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a45c198aaf4d2d4c579719734e38ca541" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::lut_quantize_16_to_uint8</definition>
+        <argsstring>(const float *tab, float mn, float a, uint8_t *out)</argsstring>
+        <name>lut_quantize_16_to_uint8</name>
+        <qualifiedname>faiss::rabitq::lut_quantize_16_to_uint8</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>tab</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>mn</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Quantize one 16-entry FastScan LUT row with non-negative half-up rounding. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="97" column="6" declfile="faiss/utils/rabitq_simd.h" declline="97" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a71892d20a16ee1dc022f21ffe00683e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::quantize_query_values</definition>
+        <argsstring>(const float *rq, size_t d, float v_min, float inv_delta, uint8_t max_code, bool centered, uint8_t *rqq, size_t &amp;sum_qq, int64_t &amp;sum2_signed_odd_int)</argsstring>
+        <name>quantize_query_values</name>
+        <qualifiedname>faiss::rabitq::quantize_query_values</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>rq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>v_min</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>inv_delta</declname>
+        </param>
+        <param>
+          <type>uint8_t</type>
+          <declname>max_code</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>centered</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>rqq</declname>
+        </param>
+        <param>
+          <type>size_t &amp;</type>
+          <declname>sum_qq</declname>
+        </param>
+        <param>
+          <type>int64_t &amp;</type>
+          <declname>sum2_signed_odd_int</declname>
+        </param>
+        <briefdescription>
+<para>Quantize rotated query values and accumulate query correction terms. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="105" column="6" declfile="faiss/utils/rabitq_simd.h" declline="105" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a5745fa8520d0e2fb3e6aba23d168c6cc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -309,7 +500,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="84" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="84" bodyend="106"/>
+        <location file="faiss/utils/rabitq_simd.h" line="119" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="119" bodyend="141"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a290007a2ca46073a49129d7d73f0768a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -341,7 +532,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="109" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="109" bodyend="131"/>
+        <location file="faiss/utils/rabitq_simd.h" line="144" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="144" bodyend="166"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ac0999cb30c3f92f1dda521134802811c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -365,7 +556,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="134" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="134" bodyend="146"/>
+        <location file="faiss/utils/rabitq_simd.h" line="169" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="169" bodyend="181"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a01e0454f0fcdb6ba34c6473e7857bbd7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -397,13 +588,197 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="149" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="149" bodyend="162"/>
+        <location file="faiss/utils/rabitq_simd.h" line="184" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="184" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1aa09e68ccc53e807225e891908baac33d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::rabitq::round_clamped_byte_scalar</definition>
+        <argsstring>(float x, uint8_t max_code)</argsstring>
+        <name>round_clamped_byte_scalar</name>
+        <qualifiedname>faiss::rabitq::round_clamped_byte_scalar</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t</type>
+          <declname>max_code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="199" column="16" bodyfile="faiss/utils/rabitq_simd.h" bodystart="199" bodyend="207"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1acee2e8ac9e6aebcfc260b257b3ba26a4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::rabitq::round_nonnegative_byte_scalar</definition>
+        <argsstring>(float x)</argsstring>
+        <name>round_nonnegative_byte_scalar</name>
+        <qualifiedname>faiss::rabitq::round_nonnegative_byte_scalar</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="209" column="16" bodyfile="faiss/utils/rabitq_simd.h" bodystart="209" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a3ed184fb77525863d65007de4fc8ecbf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::lut_minmax_16&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const float *tab, float &amp;mn, float &amp;mx)</argsstring>
+        <name>lut_minmax_16&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::rabitq::lut_minmax_16&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>tab</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mn</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="214" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="214" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1afddf04a7933c2645e4dd5f9b2aabf038" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::minmax_values&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const float *values, size_t n, float &amp;mn, float &amp;mx)</argsstring>
+        <name>minmax_values&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::rabitq::minmax_values&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mn</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>mx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="227" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="227" bodyend="241"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1abae8d9869b100c40824eff42cce922d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::lut_quantize_16_to_uint8&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const float *tab, float mn, float a, uint8_t *out)</argsstring>
+        <name>lut_quantize_16_to_uint8&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::rabitq::lut_quantize_16_to_uint8&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>tab</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>mn</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="244" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="244" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a155318c732eb70ac09830ca16cae36e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::quantize_query_values&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const float *rq, size_t d, float v_min, float inv_delta, uint8_t max_code, bool centered, uint8_t *rqq, size_t &amp;sum_qq, int64_t &amp;sum2_signed_odd_int)</argsstring>
+        <name>quantize_query_values&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::rabitq::quantize_query_values&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>rq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>v_min</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>inv_delta</declname>
+        </param>
+        <param>
+          <type>uint8_t</type>
+          <declname>max_code</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>centered</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>rqq</declname>
+        </param>
+        <param>
+          <type>size_t &amp;</type>
+          <declname>sum_qq</declname>
+        </param>
+        <param>
+          <type>int64_t &amp;</type>
+          <declname>sum2_signed_odd_int</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="255" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="255" bodyend="283"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/rabitq_simd.h" line="17" column="1"/>
+    <location file="faiss/utils/rabitq_simd.h" line="18" column="1"/>
   </compounddef>
 </doxygen>
