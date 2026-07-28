@@ -110,7 +110,7 @@ namespace {
 
 #endif // defined(__x86_64__) || defined(_M_X64)
 
-}
+} // namespace
 
 // Static initializer to run constructor at load time
 // NOLINTNEXTLINE(facebook-avoid-non-const-global-variables)
