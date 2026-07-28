@@ -140,8 +140,7 @@ DEFINE_GETTER(ScalarQuantizer, float, rangestat_arg)
 DEFINE_SETTER(ScalarQuantizer, float, rangestat_arg)
 
 size_t faiss_ScalarQuantizer_trained_size(const FaissScalarQuantizer* sq) {
-    return reinterpret_cast<const faiss::ScalarQuantizer*>(sq)
-            ->trained.size();
+    return reinterpret_cast<const faiss::ScalarQuantizer*>(sq)->trained.size();
 }
 
 void faiss_ScalarQuantizer_trained(const FaissScalarQuantizer* sq, float* out) {
