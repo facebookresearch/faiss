@@ -641,17 +641,14 @@ void ScalarQuantizer::TurboQuantRefine::init_projection(size_t d) {
 }
 
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
-    return with_simd_level_spr([&]<SIMDLevel SL>() -> SQuantizer* {
-        if constexpr (SL != SIMDLevel::NONE) {
-            auto* q = scalar_quantizer::sq_select_quantizer<SL>(
-                    qtype, d, trained);
-            if (q) {
-                return q;
-            }
-        }
-        return scalar_quantizer::sq_select_quantizer<SIMDLevel::NONE>(
-                qtype, d, trained);
-    });
+    // A SIMD level's factory returns nullptr when the dimension is
+    // incompatible (e.g. AVX-512 needs d % 16 == 0); the dispatcher then falls
+    // back to the next-lower level (AVX-512 -> AVX2 -> scalar).
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            [&]<SIMDLevel SL>() -> SQuantizer* {
+                return scalar_quantizer::sq_select_quantizer<SL>(
+                        qtype, d, trained);
+            });
 }
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
@@ -684,17 +681,11 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-    return with_simd_level_spr([&]<SIMDLevel SL>() -> SQDistanceComputer* {
-        if constexpr (SL != SIMDLevel::NONE) {
-            auto* dc = scalar_quantizer::sq_select_distance_computer<SL>(
-                    metric, qtype, d, trained);
-            if (dc) {
-                return dc;
-            }
-        }
-        return scalar_quantizer::sq_select_distance_computer<SIMDLevel::NONE>(
-                metric, qtype, d, trained);
-    });
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            [&]<SIMDLevel SL>() -> SQDistanceComputer* {
+                return scalar_quantizer::sq_select_distance_computer<SL>(
+                        metric, qtype, d, trained);
+            });
 }
 
 InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
@@ -703,33 +694,19 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-    return with_simd_level_spr([&]<SIMDLevel SL>() -> InvertedListScanner* {
-        if constexpr (SL != SIMDLevel::NONE) {
-            auto* s = scalar_quantizer::sq_select_InvertedListScanner<SL>(
-                    qtype,
-                    mt,
-                    d,
-                    code_size,
-                    trained,
-                    quantizer,
-                    store_pairs,
-                    sel,
-                    by_residual);
-            if (s) {
-                return s;
-            }
-        }
-        return scalar_quantizer::sq_select_InvertedListScanner<SIMDLevel::NONE>(
-                qtype,
-                mt,
-                d,
-                code_size,
-                trained,
-                quantizer,
-                store_pairs,
-                sel,
-                by_residual);
-    });
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+            [&]<SIMDLevel SL>() -> InvertedListScanner* {
+                return scalar_quantizer::sq_select_InvertedListScanner<SL>(
+                        qtype,
+                        mt,
+                        d,
+                        code_size,
+                        trained,
+                        quantizer,
+                        store_pairs,
+                        sel,
+                        by_residual);
+            });
 }
 
 } // namespace faiss
