@@ -53,6 +53,24 @@ struct DistanceComputer {
         dis3 = d3;
     }
 
+    /// compute distances of current query to 16 stored vectors.
+    /// The default groups the work into 4 distances_batch_4 calls, so any
+    /// DistanceComputer with a batch_4 specialization benefits automatically.
+    /// AMX-specialized computers override this with a single tile batch.
+    virtual void distances_batch_16(const idx_t* idx, float* dis) {
+        for (int b = 0; b < 16; b += 4) {
+            distances_batch_4(
+                    idx[b],
+                    idx[b + 1],
+                    idx[b + 2],
+                    idx[b + 3],
+                    dis[b],
+                    dis[b + 1],
+                    dis[b + 2],
+                    dis[b + 3]);
+        }
+    }
+
     /// compute distance between two stored vectors
     virtual float symmetric_dis(idx_t i, idx_t j) = 0;
 
@@ -93,6 +111,13 @@ struct NegativeDistanceComputer : DistanceComputer {
         dis1 = -dis1;
         dis2 = -dis2;
         dis3 = -dis3;
+    }
+
+    void distances_batch_16(const idx_t* idx, float* dis) override {
+        basedis->distances_batch_16(idx, dis);
+        for (int b = 0; b < 16; b++) {
+            dis[b] = -dis[b];
+        }
     }
 
     /// compute distance between two stored vectors
