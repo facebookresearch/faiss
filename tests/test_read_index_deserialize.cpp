@@ -2821,8 +2821,8 @@ TEST(ReadIndexDeserialize, AdditiveQuantizerMZero) {
 }
 
 // -----------------------------------------------------------------------
-// Test: ResidualCoarseQuantizer with ntotal=0 deserializes successfully
-// (empty index is valid).
+// Test: ResidualCoarseQuantizer with ntotal inconsistent with its codebooks
+// is rejected before centroid norms are computed.
 // -----------------------------------------------------------------------
 TEST(ReadIndexDeserialize, ResidualCoarseQuantizerNtotalZero) {
     std::vector<uint8_t> buf;
@@ -2831,10 +2831,7 @@ TEST(ReadIndexDeserialize, ResidualCoarseQuantizerNtotalZero) {
     push_residual_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
     push_val<float>(buf, -1.0f); // beam_factor = -1 (skip tables)
 
-    VectorIOReader reader;
-    reader.data = buf;
-    auto idx = read_index_up(&reader);
-    EXPECT_EQ(idx->ntotal, 0);
+    expect_read_throws_with(buf, "inconsistent with 2^tot_bits");
 }
 
 // ---- IndexBinaryIVF runtime safety checks ----
