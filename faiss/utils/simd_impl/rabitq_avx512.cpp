@@ -9,6 +9,7 @@
 
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
+#include <limits>
 
 namespace faiss::rabitq {
 
@@ -167,7 +168,163 @@ inline uint64_t reduce_add_128(__m128i v) {
     return lanes[0] + lanes[1];
 }
 
+inline __m512i round_nonnegative_ps_to_i32(__m512 x) {
+    return _mm512_cvttps_epi32(_mm512_add_ps(x, _mm512_set1_ps(0.5f)));
+}
+
+inline void store_i32_as_u8_16(__m512i values, uint8_t* out) {
+    const __m128i packed = _mm512_cvtusepi32_epi8(values);
+    _mm_storeu_si128(reinterpret_cast<__m128i*>(out), packed);
+}
+
 } // namespace
+
+template <>
+void lut_minmax_16<SIMDLevel::AVX512>(const float* tab, float& mn, float& mx) {
+    const __m512 v = _mm512_loadu_ps(tab);
+    mn = _mm512_reduce_min_ps(v);
+    mx = _mm512_reduce_max_ps(v);
+}
+
+template <>
+void minmax_values<SIMDLevel::AVX512>(
+        const float* values,
+        size_t n,
+        float& mn,
+        float& mx) {
+    if (n == 0) {
+        return;
+    }
+
+    size_t i = 0;
+    __m512 mn_vec = _mm512_set1_ps(std::numeric_limits<float>::max());
+    __m512 mx_vec = _mm512_set1_ps(std::numeric_limits<float>::lowest());
+    for (; i + 16 <= n; i += 16) {
+        const __m512 v = _mm512_loadu_ps(values + i);
+        mn_vec = _mm512_min_ps(mn_vec, v);
+        mx_vec = _mm512_max_ps(mx_vec, v);
+    }
+
+    if (i < n) {
+        const __mmask16 mask =
+                static_cast<__mmask16>((uint32_t(1) << (n - i)) - 1);
+        const __m512 v = _mm512_maskz_loadu_ps(mask, values + i);
+        mn_vec = _mm512_mask_min_ps(mn_vec, mask, mn_vec, v);
+        mx_vec = _mm512_mask_max_ps(mx_vec, mask, mx_vec, v);
+    }
+
+    mn = _mm512_reduce_min_ps(mn_vec);
+    mx = _mm512_reduce_max_ps(mx_vec);
+}
+
+template <>
+void lut_quantize_16_to_uint8<SIMDLevel::AVX512>(
+        const float* tab,
+        float mn,
+        float a,
+        uint8_t* out) {
+    const __m512 values = _mm512_loadu_ps(tab);
+    const __m512 a_vec = _mm512_set1_ps(a);
+    const __m512 scaled =
+            _mm512_fmsub_ps(values, a_vec, _mm512_set1_ps(mn * a));
+    __m512i rounded = round_nonnegative_ps_to_i32(scaled);
+    rounded = _mm512_max_epi32(rounded, _mm512_setzero_si512());
+    store_i32_as_u8_16(rounded, out);
+}
+
+template <>
+void quantize_query_values<SIMDLevel::AVX512>(
+        const float* rq,
+        size_t d,
+        float v_min,
+        float inv_delta,
+        uint8_t max_code,
+        bool centered,
+        uint8_t* rqq,
+        size_t& sum_qq,
+        int64_t& sum2_signed_odd_int) {
+    const __m512 inv_delta_vec = _mm512_set1_ps(inv_delta);
+    const __m512 v_min_times_inv_delta_vec = _mm512_set1_ps(v_min * inv_delta);
+    const __m512 zero = _mm512_setzero_ps();
+    const __m512 max_code_ps = _mm512_set1_ps(static_cast<float>(max_code));
+    const __m512i max_code_i32 = _mm512_set1_epi32(max_code);
+    const __m512i two = _mm512_set1_epi32(2);
+
+    size_t i = 0;
+    if (centered) {
+        __m512i sum_acc_lo = _mm512_setzero_si512();
+        __m512i sum_acc_hi = _mm512_setzero_si512();
+        __m512i sq_acc_lo = _mm512_setzero_si512();
+        __m512i sq_acc_hi = _mm512_setzero_si512();
+        for (; i + 16 <= d; i += 16) {
+            const __m512 values = _mm512_loadu_ps(rq + i);
+            __m512 scaled = _mm512_fmsub_ps(
+                    values, inv_delta_vec, v_min_times_inv_delta_vec);
+            scaled = _mm512_min_ps(_mm512_max_ps(scaled, zero), max_code_ps);
+            __m512i rounded = round_nonnegative_ps_to_i32(scaled);
+
+            sum_acc_lo = _mm512_add_epi64(
+                    sum_acc_lo,
+                    _mm512_cvtepi32_epi64(_mm512_castsi512_si256(rounded)));
+            sum_acc_hi = _mm512_add_epi64(
+                    sum_acc_hi,
+                    _mm512_cvtepi32_epi64(
+                            _mm512_extracti64x4_epi64(rounded, 1)));
+            const __m512i signed_odd = _mm512_sub_epi32(
+                    _mm512_mullo_epi32(rounded, two), max_code_i32);
+            const __m512i signed_odd_sqr =
+                    _mm512_mullo_epi32(signed_odd, signed_odd);
+            sq_acc_lo = _mm512_add_epi64(
+                    sq_acc_lo,
+                    _mm512_cvtepi32_epi64(
+                            _mm512_castsi512_si256(signed_odd_sqr)));
+            sq_acc_hi = _mm512_add_epi64(
+                    sq_acc_hi,
+                    _mm512_cvtepi32_epi64(
+                            _mm512_extracti64x4_epi64(signed_odd_sqr, 1)));
+            store_i32_as_u8_16(rounded, rqq + i);
+        }
+        sum_qq += static_cast<uint64_t>(
+                _mm512_reduce_add_epi64(sum_acc_lo) +
+                _mm512_reduce_add_epi64(sum_acc_hi));
+        sum2_signed_odd_int += _mm512_reduce_add_epi64(sq_acc_lo);
+        sum2_signed_odd_int += _mm512_reduce_add_epi64(sq_acc_hi);
+    } else {
+        __m512i sum_acc_lo = _mm512_setzero_si512();
+        __m512i sum_acc_hi = _mm512_setzero_si512();
+        for (; i + 16 <= d; i += 16) {
+            const __m512 values = _mm512_loadu_ps(rq + i);
+            __m512 scaled = _mm512_fmsub_ps(
+                    values, inv_delta_vec, v_min_times_inv_delta_vec);
+            scaled = _mm512_min_ps(_mm512_max_ps(scaled, zero), max_code_ps);
+            __m512i rounded = round_nonnegative_ps_to_i32(scaled);
+
+            sum_acc_lo = _mm512_add_epi64(
+                    sum_acc_lo,
+                    _mm512_cvtepi32_epi64(_mm512_castsi512_si256(rounded)));
+            sum_acc_hi = _mm512_add_epi64(
+                    sum_acc_hi,
+                    _mm512_cvtepi32_epi64(
+                            _mm512_extracti64x4_epi64(rounded, 1)));
+            store_i32_as_u8_16(rounded, rqq + i);
+        }
+        sum_qq += static_cast<uint64_t>(
+                _mm512_reduce_add_epi64(sum_acc_lo) +
+                _mm512_reduce_add_epi64(sum_acc_hi));
+    }
+
+    for (; i < d; i++) {
+        const uint8_t v_qq = round_clamped_byte_scalar(
+                (rq[i] - v_min) * inv_delta, max_code);
+        rqq[i] = v_qq;
+        sum_qq += v_qq;
+
+        if (centered) {
+            const int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
+            sum2_signed_odd_int += signed_odd_int * signed_odd_int;
+        }
+    }
+}
 
 template <>
 uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
