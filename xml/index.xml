@@ -13765,9 +13765,10 @@
     <member refid="namespacefaiss_1ab13c17c79eb8e68e28b06ec4566fb305" kind="function"><name>reservoir_add_results_tpl</name></member>
     <member refid="namespacefaiss_1a959d72ca7b23268325bad5696725b683" kind="function"><name>get_simd_fallback</name></member>
     <member refid="namespacefaiss_1ac312cf29fbd655341d6464550c4bee72" kind="function"><name>dispatch_with_fallback</name></member>
+    <member refid="namespacefaiss_1a7b124cf970fa405a96ea3ea99df74662" kind="function"><name>dispatch_simd_level_or_lower</name></member>
     <member refid="namespacefaiss_1af531ac2f72724e9abcc311a12a71b1db" kind="function"><name>with_selected_simd_levels</name></member>
+    <member refid="namespacefaiss_1a100aea00ff7b9a235f6ecb517b889138" kind="function"><name>with_simd_level_fallback</name></member>
     <member refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kind="function"><name>with_simd_level</name></member>
-    <member refid="namespacefaiss_1a71e666142d6f1a153968a8f99545acba" kind="function"><name>with_simd_level_spr</name></member>
     <member refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" kind="function"><name>with_simd_level_256bit</name></member>
     <member refid="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" kind="function"><name>with_simd_level_a0_spr</name></member>
     <member refid="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" kind="function"><name>min</name></member>
