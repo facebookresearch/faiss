@@ -33,7 +33,8 @@ class TestSelector(unittest.TestCase):
     ):
         """Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
-        Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
+        Supports id_selector_type="batch", "bitmap", "range",
+        "range_sorted", "and", "or", "xor"
         """
         d = 32  # make sure dimension is multiple of 8 for binary
         ds = datasets.SyntheticDataset(d, 1000, 100, 20)
@@ -336,6 +337,32 @@ class TestSelector(unittest.TestCase):
         )
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+
+    def test_idmap_range_empty_params(self):
+        # This test crashes without checking both params && params->sel
+        # are non null in IndexIDMap::range_search().
+        index = faiss.IndexIDMap(faiss.IndexFlatL2(2))
+
+        xb = np.array(
+            [
+                [0, 0],
+                [1, 0],
+                [0, 2],
+            ],
+            dtype="float32",
+        )
+        ids = np.array([10, 20, 30], dtype="int64")
+        index.add_with_ids(xb, ids)
+        xq = np.array([[0, 0]], dtype="float32")
+
+        lims_ref, D_ref, I_ref = index.range_search(xq, 5.0)
+        lims, D, I = index.range_search(
+            xq, 5.0, params=faiss.SearchParameters()
+        )
+
+        np.testing.assert_array_equal(lims_ref, lims)
+        np.testing.assert_array_equal(sorted(I_ref), sorted(I))
+        np.testing.assert_array_equal(sorted(D_ref), sorted(D))
 
     def test_bounds(self):
         # https://github.com/facebookresearch/faiss/issues/3156

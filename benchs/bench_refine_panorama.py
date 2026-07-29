@@ -73,7 +73,8 @@ kfactor_list = [1, 8, 64, 256, 1024]
 
 print(f"Benchmark on GIST1M with base '{factory}', k={k}, nq={nq}")
 print(
-    "nprobe  k_factor   recall_flat   qps_flat   recall_pano   qps_pano   dims_scanned(%)  speedup(x)"
+    "nprobe  k_factor   recall_flat   qps_flat   recall_pano   qps_pano   "
+    "dims_scanned(%)  speedup(x)"
 )
 
 faiss.omp_set_num_threads(1)

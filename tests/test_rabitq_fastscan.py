@@ -645,7 +645,8 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
             self.assertEqual(index.code_size, expected_size)
 
     def test_ivf_construction(self):
-        """Test IndexIVFRaBitQFastScan construction with valid/invalid nb_bits."""
+        """Test IndexIVFRaBitQFastScan construction with valid/invalid
+        nb_bits."""
         d, nlist = 128, 16
         # Valid nb_bits
         for nb_bits in [1, 2, 4, 8]:

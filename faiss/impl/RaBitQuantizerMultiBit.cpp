@@ -257,8 +257,8 @@ void quantize_ex_bits(
     const size_t ex_bits = nb_bits - 1;
     FAISS_THROW_IF_NOT_MSG(
             ex_bits >= 1 && ex_bits <= 8, "ex_bits must be in range [1, 8]");
-    FAISS_THROW_IF_NOT_MSG(residual != nullptr, "residual cannot be null");
-    FAISS_THROW_IF_NOT_MSG(ex_code != nullptr, "ex_code cannot be null");
+    FAISS_THROW_IF_MSG(residual == nullptr, "residual cannot be null");
+    FAISS_THROW_IF_MSG(ex_code == nullptr, "ex_code cannot be null");
 
     // Step 1: Compute L2 norm of residual
     float norm_sqr = fvec_norm_L2sqr(residual, d);
@@ -311,15 +311,6 @@ void quantize_ex_bits(
 
     // Step 7: Pack codes into byte array
     pack_multibit_codes(tmp_code.data(), ex_code, d, nb_bits);
-
-    // Step 8: Compute factors for distance computation
-    // Reconstruct total_code for factor computation
-    std::vector<int> total_code(d);
-    for (size_t i = 0; i < d; i++) {
-        // Form total_code = (sign << ex_bits) + ex_code
-        bool sign_bit = (residual[i] >= 0);
-        total_code[i] = tmp_code[i] + ((sign_bit ? 1 : 0) << ex_bits);
-    }
 
     // Compute ex-factors; centroid is needed for IP metric correction
     compute_ex_factors(

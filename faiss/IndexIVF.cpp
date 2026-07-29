@@ -500,7 +500,7 @@ void IndexIVF::search_preassigned(
                 if (!do_heap_init) {
                     return;
                 }
-                if (metric_type == METRIC_INNER_PRODUCT) {
+                if (is_similarity_metric(metric_type)) {
                     heap_heapify<HeapForIP>(k, simi, idxi);
                 } else {
                     heap_heapify<HeapForL2>(k, simi, idxi);
@@ -511,7 +511,7 @@ void IndexIVF::search_preassigned(
                                          const idx_t* local_idx,
                                          float* simi,
                                          idx_t* idxi) {
-                if (metric_type == METRIC_INNER_PRODUCT) {
+                if (is_similarity_metric(metric_type)) {
                     heap_addn<HeapForIP>(
                             k, simi, idxi, local_dis, local_idx, k);
                 } else {
@@ -524,7 +524,7 @@ void IndexIVF::search_preassigned(
                 if (!do_heap_init) {
                     return;
                 }
-                if (metric_type == METRIC_INNER_PRODUCT) {
+                if (is_similarity_metric(metric_type)) {
                     heap_reorder<HeapForIP>(k, simi, idxi);
                 } else {
                     heap_reorder<HeapForL2>(k, simi, idxi);
@@ -598,7 +598,7 @@ void IndexIVF::search_preassigned(
 
                     size_t old_scan_cnt = 0;
                     size_t old_heap_updates = 0;
-                    if (metric_type == METRIC_INNER_PRODUCT) {
+                    if (is_similarity_metric(metric_type)) {
                         HeapResultHandler<HeapForIP, false> handler(
                                 k, simi, idxi);
                         old_scan_cnt = handler.stats.scan_cnt;
@@ -1055,7 +1055,19 @@ InvertedListScanner* IndexIVF::get_InvertedListScanner(
 
 void IndexIVF::reconstruct(idx_t key, float* recons) const {
     idx_t lo = direct_map.get(key);
-    reconstruct_from_offset(lo_listno(lo), lo_offset(lo), recons);
+    const size_t list_no = lo_listno(lo);
+    const size_t offset = lo_offset(lo);
+    FAISS_THROW_IF_NOT_FMT(
+            list_no < nlist,
+            "IndexIVF::reconstruct: list_no %zd out of range (nlist=%zd)",
+            list_no,
+            nlist);
+    FAISS_THROW_IF_NOT_FMT(
+            offset < invlists->list_size(list_no),
+            "IndexIVF::reconstruct: offset %zd out of range (list_size=%zd)",
+            offset,
+            invlists->list_size(list_no));
+    reconstruct_from_offset(list_no, offset, recons);
 }
 
 void IndexIVF::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {

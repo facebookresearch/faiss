@@ -77,7 +77,8 @@ void IndexFlat::range_search(
             range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         default:
-            FAISS_THROW_MSG("metric type not supported");
+            IndexFlatCodes::range_search(n, x, radius, result, params);
+            break;
     }
 }
 
@@ -450,8 +451,7 @@ void IndexFlat1D::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(
             perm.size() == static_cast<size_t>(ntotal),

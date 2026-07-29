@@ -241,41 +241,41 @@ struct QuantizerTemplate<
 };
 
 /**********************************************************
- * TurboQuant MSE quantizer
+ * Lloyd-Max scalar quantizer
  **********************************************************/
 
-#define DEFINE_TQMSE_AVX512_SPECIALIZATION(NBITS, INDEX_EXPR)               \
-    template <>                                                             \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                 \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
-                                                                            \
-        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
-                : Base(d, trained) {                                        \
-            assert(d % 16 == 0);                                            \
-        }                                                                   \
-                                                                            \
-        FAISS_ALWAYS_INLINE simd16float32                                   \
-        reconstruct_16_components(const uint8_t* code, int i) const {       \
-            const __m512i indices = (INDEX_EXPR);                           \
-            return simd16float32(_mm512_i32gather_ps(                       \
-                    indices, this->centroids, sizeof(float)));              \
-        }                                                                   \
+#define DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(NBITS, INDEX_EXPR)      \
+    template <>                                                        \
+    struct QuantizerLloydMax<NBITS, SIMDLevel::AVX512>                 \
+            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {              \
+        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;        \
+                                                                       \
+        QuantizerLloydMax(size_t d, const std::vector<float>& trained) \
+                : Base(d, trained) {                                   \
+            assert(d % 16 == 0);                                       \
+        }                                                              \
+                                                                       \
+        FAISS_ALWAYS_INLINE simd16float32                              \
+        reconstruct_16_components(const uint8_t* code, int i) const {  \
+            const __m512i indices = (INDEX_EXPR);                      \
+            return simd16float32(_mm512_i32gather_ps(                  \
+                    indices, this->centroids, sizeof(float)));         \
+        }                                                              \
     }
 
-DEFINE_TQMSE_AVX512_SPECIALIZATION(1, unpack_16x1bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_SPECIALIZATION(2, unpack_16x2bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_SPECIALIZATION(3, unpack_16x3bit_to_u32(code, i));
-DEFINE_TQMSE_AVX512_SPECIALIZATION(4, unpack_16x4bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(1, unpack_16x1bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(2, unpack_16x2bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(3, unpack_16x3bit_to_u32(code, i));
+DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION(4, unpack_16x4bit_to_u32(code, i));
 
-#undef DEFINE_TQMSE_AVX512_SPECIALIZATION
+#undef DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION
 
 template <>
-struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX512>
-        : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
-    using Base = QuantizerTurboQuantMSE<8, SIMDLevel::NONE>;
+struct QuantizerLloydMax<8, SIMDLevel::AVX512>
+        : QuantizerLloydMax<8, SIMDLevel::NONE> {
+    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
 
-    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
         assert(d % 16 == 0);
     }

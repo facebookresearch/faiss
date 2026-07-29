@@ -14,8 +14,10 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIDMap.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -33,11 +35,17 @@ namespace {
 const std::map<faiss::ScalarQuantizer::QuantizerType, std::string> sq_types = {
         {faiss::ScalarQuantizer::QT_8bit, "SQ8"},
         {faiss::ScalarQuantizer::QT_4bit, "SQ4"},
+        // QT_8bit_uniform and QT_4bit_uniform have no round-trippable
+        // index_factory string; the names below are synthetic identifiers used
+        // for telemetry logging only.
+        {faiss::ScalarQuantizer::QT_8bit_uniform, "SQ8u"},
+        {faiss::ScalarQuantizer::QT_4bit_uniform, "SQ4u"},
         {faiss::ScalarQuantizer::QT_6bit, "SQ6"},
         {faiss::ScalarQuantizer::QT_fp16, "SQfp16"},
         {faiss::ScalarQuantizer::QT_bf16, "SQbf16"},
         {faiss::ScalarQuantizer::QT_8bit_direct_signed, "SQ8_direct_signed"},
         {faiss::ScalarQuantizer::QT_8bit_direct, "SQ8_direct"},
+        {faiss::ScalarQuantizer::QT_0bit, "SQ0"},
         {faiss::ScalarQuantizer::QT_1bit_tqmse, "SQtqmse1"},
         {faiss::ScalarQuantizer::QT_2bit_tqmse, "SQtqmse2"},
         {faiss::ScalarQuantizer::QT_3bit_tqmse, "SQtqmse3"},
@@ -63,6 +71,19 @@ int get_hnsw_M(const faiss::IndexBinaryHNSW* index) {
     }
     // Avoid runtime error, just return 0.
     return 0;
+}
+
+std::string eden_factory_string(
+        const faiss::ScalarQuantizer& sq,
+        faiss::EDENScaleType scale_type) {
+    std::string result = "EDEN";
+    if (sq.bits != 1) {
+        result += std::to_string(sq.bits);
+    }
+    if (scale_type == faiss::EDENScaleType_BIASED) {
+        result += "BIASED";
+    }
+    return result;
 }
 
 } // namespace
@@ -114,8 +135,17 @@ std::string reverse_index_factory(const faiss::Index* index) {
                                 ivf_index)) {
             return prefix + ",PQ" + std::to_string(ivfpqfs_index->pq.M) + "x" +
                     std::to_string(ivfpqfs_index->pq.nbits) + "fs";
-        } else if (dynamic_cast<const faiss::IndexIVFRaBitQ*>(ivf_index)) {
-            return prefix + ",RaBitQ";
+        } else if (
+                const faiss::IndexIVFRaBitQ* ivfrabitq_index =
+                        dynamic_cast<const faiss::IndexIVFRaBitQ*>(ivf_index)) {
+            size_t nb_bits = ivfrabitq_index->rabitq.nb_bits;
+            return prefix + ",RaBitQ" +
+                    (nb_bits == 1 ? "" : std::to_string(nb_bits));
+        } else if (
+                const faiss::IndexIVFEDEN* ivf_eden =
+                        dynamic_cast<const faiss::IndexIVFEDEN*>(ivf_index)) {
+            return prefix + "," +
+                    eden_factory_string(ivf_eden->sq, ivf_eden->scale_type);
         }
     } else if (
             const faiss::IndexPreTransform* pretransform_index =
@@ -185,11 +215,24 @@ std::string reverse_index_factory(const faiss::Index* index) {
                     dynamic_cast<const faiss::IndexScalarQuantizer*>(index)) {
         return sq_types.at(sq_index->sq.qtype);
     } else if (
+            // IndexIDMap2 inherits IndexIDMap — check subclass first.
+            const faiss::IndexIDMap2* idmap2 =
+                    dynamic_cast<const faiss::IndexIDMap2*>(index)) {
+        return std::string("IDMap2,") + reverse_index_factory(idmap2->index);
+    } else if (
             const faiss::IndexIDMap* idmap =
                     dynamic_cast<const faiss::IndexIDMap*>(index)) {
         return std::string("IDMap,") + reverse_index_factory(idmap->index);
-    } else if (dynamic_cast<const faiss::IndexRaBitQ*>(index)) {
-        return "RaBitQ";
+    } else if (
+            const faiss::IndexRaBitQ* rabitq_index =
+                    dynamic_cast<const faiss::IndexRaBitQ*>(index)) {
+        size_t nb_bits = rabitq_index->rabitq.nb_bits;
+        return "RaBitQ" +
+                (nb_bits == 1 ? std::string() : std::to_string(nb_bits));
+    } else if (
+            const faiss::IndexEDEN* eden =
+                    dynamic_cast<const faiss::IndexEDEN*>(index)) {
+        return eden_factory_string(eden->sq, eden->scale_type);
     }
     // Avoid runtime error, just return empty string for logging.
     return "";

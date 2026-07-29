@@ -6,13 +6,19 @@
  */
 
 #include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <limits>
 #include <random>
 #include <vector>
 
 #include <gtest/gtest.h>
 
+#include <faiss/SuperKMeans.h>
 #include <faiss/impl/AdSampling.h>
 #include <faiss/impl/PdxLayout.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/random.h>
 #include <faiss/utils/simd_impl/super_kmeans_dispatch.h>
 #include <faiss/utils/simd_impl/super_kmeans_kernels.h>
 #include <faiss/utils/simd_levels.h>
@@ -193,4 +199,299 @@ TEST(BlockL2, DispatchMatchesScalar) {
         const float d = faiss::detail::block_l2_dispatch(x.data(), y.data(), n);
         EXPECT_NEAR(d, s, 1e-4f) << "n=" << n;
     }
+}
+
+// =====================================================================
+// super_kmeans_assign_iteration tests
+// =====================================================================
+
+TEST(SuperKMeansAssignIteration, GemmBoundaryPrunesAllWithTightTau) {
+    // With tau seeded to ~0, every pair exceeds the chi-squared bound at the
+    // GEMM boundary, so all pairs prune there and the progressive-pruning path
+    // below the `continue` is never entered. Assignments must stay at their
+    // input values and pruned_at_gemm must equal total_pairs.
+    constexpr int n = 50, d = 32, k = 8, d_prime = 8;
+    std::vector<float> X(n * d), Y(k * d);
+    faiss::float_rand(X.data(), X.size(), 19);
+    faiss::float_rand(Y.data(), Y.size(), 23);
+    std::vector<int32_t> A(n);
+    for (int i = 0; i < n; ++i) {
+        A[i] = static_cast<int32_t>(i % k);
+    }
+    std::vector<int32_t> A_in = A;
+    std::vector<float> T(n, 1e-30f); // tight tau forces GEMM-boundary prune
+    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
+    faiss::SuperKMeansParameters cp;
+    int64_t tot = 0, pr = 0;
+
+    faiss::super_kmeans_assign_iteration(
+            X.data(),
+            n,
+            d,
+            Y.data(),
+            k,
+            T.data(),
+            A.data(),
+            d_prime,
+            coeff.data(),
+            cp,
+            &tot,
+            &pr);
+
+    EXPECT_GT(tot, 0);
+    EXPECT_EQ(tot, pr); // tight tau -> everything prunes at GEMM
+    EXPECT_EQ(A, A_in); // no survivor refinement -> assignments unchanged
+}
+
+TEST(SuperKMeansAssignIteration, ProgressivePruningRefinesSurvivors) {
+    // With +inf tau, every pair survives the GEMM boundary, so the
+    // progressive-pruning inner block must refine tau and assignments.
+    // Compare against the brute-force baseline.
+    constexpr int n = 80, d = 32, k = 16, d_prime = 8;
+    std::vector<float> X(n * d), Y(k * d);
+    faiss::float_rand(X.data(), X.size(), 31);
+    faiss::float_rand(Y.data(), Y.size(), 37);
+
+    std::vector<int64_t> bf_idx(n);
+    std::vector<float> bf_dist(n);
+    faiss::knn_L2sqr(
+            X.data(),
+            Y.data(),
+            d,
+            n,
+            k,
+            /*k=*/1,
+            bf_dist.data(),
+            bf_idx.data(),
+            nullptr);
+
+    std::vector<int32_t> A(n, 0);
+    std::vector<float> T(n, std::numeric_limits<float>::max());
+    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
+    faiss::SuperKMeansParameters cp;
+    int64_t tot = 0, pr = 0;
+    faiss::super_kmeans_assign_iteration(
+            X.data(),
+            n,
+            d,
+            Y.data(),
+            k,
+            T.data(),
+            A.data(),
+            d_prime,
+            coeff.data(),
+            cp,
+            &tot,
+            &pr);
+
+    int matches = 0;
+    for (int i = 0; i < n; ++i) {
+        // The assigned distance can never beat the brute-force minimum (modulo
+        // float rounding between the two distance computations). A false-prune
+        // shows up as a mismatch below, not as beating this bound.
+        EXPECT_GE(T[i], bf_dist[i] - 1e-4f);
+        if (A[i] == static_cast<int32_t>(bf_idx[i])) {
+            ++matches;
+        }
+    }
+    EXPECT_GE(matches, n - 5); // <= 5% ADSampling false-prune tolerance
+}
+
+TEST(SuperKMeansAssignIteration, Determinism) {
+    constexpr int n = 200, d = 64, k = 32, d_prime = 8;
+    std::vector<float> X(n * d), Y(k * d);
+    faiss::float_rand(X.data(), X.size(), 7);
+    faiss::float_rand(Y.data(), Y.size(), 11);
+    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
+    faiss::SuperKMeansParameters cp;
+
+    auto run = [&](std::vector<int32_t>& A,
+                   std::vector<float>& T,
+                   int64_t& tot,
+                   int64_t& pr) {
+        for (int i = 0; i < n; ++i) {
+            A[i] = 0;
+            T[i] = 1e30f;
+        }
+        faiss::super_kmeans_assign_iteration(
+                X.data(),
+                n,
+                d,
+                Y.data(),
+                k,
+                T.data(),
+                A.data(),
+                d_prime,
+                coeff.data(),
+                cp,
+                &tot,
+                &pr);
+    };
+
+    std::vector<int32_t> A1(n), A2(n);
+    std::vector<float> T1(n), T2(n);
+    int64_t tot1 = 0, pr1 = 0, tot2 = 0, pr2 = 0;
+    run(A1, T1, tot1, pr1);
+    run(A2, T2, tot2, pr2);
+    EXPECT_EQ(A1, A2);
+    EXPECT_EQ(0, std::memcmp(T1.data(), T2.data(), n * sizeof(float)));
+    EXPECT_EQ(tot1, tot2);
+    EXPECT_EQ(pr1, pr2);
+}
+
+TEST(SuperKMeansAssignIteration, MaxDPrimeMatchesBruteForce) {
+    // d_prime = d - 1 is the extreme split: the trailing block is a single
+    // dimension, exercising the smallest possible PDX block layout.
+    constexpr int n = 80, d = 32, k = 16;
+    const int d_prime = d - 1;
+    std::vector<float> X(n * d), Y(k * d);
+    faiss::float_rand(X.data(), X.size(), 23);
+    faiss::float_rand(Y.data(), Y.size(), 29);
+
+    std::vector<int64_t> bf_idx(n);
+    std::vector<float> bf_dist(n);
+    faiss::knn_L2sqr(
+            X.data(),
+            Y.data(),
+            d,
+            n,
+            k,
+            1,
+            bf_dist.data(),
+            bf_idx.data(),
+            nullptr);
+
+    std::vector<int32_t> A(n, 0);
+    std::vector<float> T(n, std::numeric_limits<float>::max());
+    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
+    faiss::SuperKMeansParameters cp;
+    int64_t tot = 0, pr = 0;
+    faiss::super_kmeans_assign_iteration(
+            X.data(),
+            n,
+            d,
+            Y.data(),
+            k,
+            T.data(),
+            A.data(),
+            d_prime,
+            coeff.data(),
+            cp,
+            &tot,
+            &pr);
+    int matches = 0;
+    for (int i = 0; i < n; ++i) {
+        if (A[i] == static_cast<int32_t>(bf_idx[i])) {
+            ++matches;
+        }
+    }
+    EXPECT_GE(matches, n - 5);
+}
+
+TEST(SuperKMeansAssignIteration, ScratchReuseMatchesFreshScratch) {
+    // A persistent scratch reused across calls with a changed d_prime must give
+    // the same result as a fresh (scratch-less) call. The scratch buffers are
+    // grow-only, so this guards against a call reading stale data left over
+    // from a previous call that used a larger trailing block.
+    constexpr int n = 120, d = 48, k = 20;
+    std::vector<float> X(n * d), Y(k * d);
+    faiss::float_rand(X.data(), X.size(), 41);
+    faiss::float_rand(Y.data(), Y.size(), 43);
+    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
+    faiss::SuperKMeansParameters cp;
+    cp.pdx_block_size = 16; // multiple trailing blocks at the warm-up d_prime
+
+    auto assign = [&](int d_prime,
+                      faiss::SuperKMeansAssignScratch* scratch,
+                      std::vector<int32_t>& A,
+                      std::vector<float>& T) {
+        A.assign(n, 0);
+        T.assign(n, std::numeric_limits<float>::max());
+        faiss::super_kmeans_assign_iteration(
+                X.data(),
+                n,
+                d,
+                Y.data(),
+                k,
+                T.data(),
+                A.data(),
+                d_prime,
+                coeff.data(),
+                cp,
+                nullptr,
+                nullptr,
+                scratch);
+    };
+
+    // Warm the shared scratch on a small d_prime (large trailing block), then
+    // reuse it on a large d_prime (small trailing block) so its buffers retain
+    // capacity beyond the logical size the reuse call needs.
+    faiss::SuperKMeansAssignScratch scratch;
+    std::vector<int32_t> A_warm(n);
+    std::vector<float> T_warm(n);
+    assign(8, &scratch, A_warm, T_warm);
+
+    std::vector<int32_t> A_reuse(n), A_fresh(n);
+    std::vector<float> T_reuse(n), T_fresh(n);
+    assign(d - 8, &scratch, A_reuse, T_reuse); // reuse the warmed scratch
+    assign(d - 8, nullptr, A_fresh, T_fresh);  // fresh local scratch
+
+    EXPECT_EQ(A_reuse, A_fresh);
+    EXPECT_EQ(
+            0, std::memcmp(T_reuse.data(), T_fresh.data(), n * sizeof(float)));
+}
+
+TEST(SuperKMeansAssignIteration, MultipleTilesMatchBruteForce) {
+    // Force multiple x-tiles and y-tiles (n > x_batch, k > y_batch) plus
+    // multiple PDX blocks, so the tile-boundary bookkeeping (partial_ip reuse,
+    // pdx_offset walk, xi/yj indexing) is exercised directly rather than only
+    // through the single-tile default batches.
+    constexpr int n = 200, d = 64, k = 64, d_prime = 16;
+    std::vector<float> X(n * d), Y(k * d);
+    faiss::float_rand(X.data(), X.size(), 51);
+    faiss::float_rand(Y.data(), Y.size(), 57);
+
+    std::vector<int64_t> bf_idx(n);
+    std::vector<float> bf_dist(n);
+    faiss::knn_L2sqr(
+            X.data(),
+            Y.data(),
+            d,
+            n,
+            k,
+            /*k=*/1,
+            bf_dist.data(),
+            bf_idx.data(),
+            nullptr);
+
+    std::vector<int32_t> A(n, 0);
+    std::vector<float> T(n, std::numeric_limits<float>::max());
+    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
+    faiss::SuperKMeansParameters cp;
+    cp.x_batch = 32;        // n=200 -> 7 x-tiles
+    cp.y_batch = 16;        // k=64  -> 4 y-tiles
+    cp.pdx_block_size = 16; // d_trail=48 -> 3 PDX blocks
+    int64_t tot = 0, pr = 0;
+    faiss::super_kmeans_assign_iteration(
+            X.data(),
+            n,
+            d,
+            Y.data(),
+            k,
+            T.data(),
+            A.data(),
+            d_prime,
+            coeff.data(),
+            cp,
+            &tot,
+            &pr);
+
+    int matches = 0;
+    for (int i = 0; i < n; ++i) {
+        EXPECT_GE(T[i], bf_dist[i] - 1e-4f);
+        if (A[i] == static_cast<int32_t>(bf_idx[i])) {
+            ++matches;
+        }
+    }
+    EXPECT_GE(matches, n - 10); // <= 5% ADSampling false-prune tolerance
 }

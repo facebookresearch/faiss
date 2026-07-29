@@ -21,8 +21,6 @@
  * limitations under the License.
  */
 
-#include <omp.h>
-
 #include <faiss/Index.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>

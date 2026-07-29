@@ -46,7 +46,8 @@ def test_bigann10m(index_file, index_parameters):
     index_ivf, vec_transform = unwind_index_ivf(index)
 
     print(
-        "params                                                                      regular    transp_centroids   regular   R@1    R@10   R@100"
+        "params                                                              "
+        "        regular    transp_centroids   regular   R@1    R@10   R@100"
     )
     for index_parameter in index_parameters:
         ps.set_index_parameters(index, index_parameter)
@@ -92,7 +93,10 @@ if __name__ == "__main__":
     faiss.contrib.datasets.dataset_basedir = "/home/aguzhva/ANN_SIFT1B/"
 
     # represents OPQ32_128,IVF65536_HNSW32,PQ32 index
-    index_file_1 = "/home/aguzhva/ANN_SIFT1B/run_tests/bench_ivf/indexes/hnsw32/.faissindex"
+    index_file_1 = (
+        "/home/aguzhva/ANN_SIFT1B/run_tests/bench_ivf/indexes/"
+        "hnsw32/.faissindex"
+    )
 
     nprobe_values = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
     quantizer_efsearch_values = [4, 8, 16, 32, 64, 128, 256, 512]
@@ -194,9 +198,9 @@ if __name__ == "__main__":
         quantizer_nprobe = random.choice(quantizer_nprobe_values)
         ht = random.choice(ht_values)
         index_parameters_2.append(
-            "nprobe={},quantizer_k_factor_rf={},quantizer_nprobe={},ht={}".format(
-                nprobe, quantizer_k_factor_rf, quantizer_nprobe, ht
-            )
+            (
+                "nprobe={},quantizer_k_factor_rf={},quantizer_nprobe={},ht={}"
+            ).format(nprobe, quantizer_k_factor_rf, quantizer_nprobe, ht)
         )
 
     test_bigann10m(index_file_2, index_parameters_2)

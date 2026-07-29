@@ -438,7 +438,10 @@ def main():
         default=["check_files"],
         choices=["train", "add", "search", "check_files"],
         nargs="+",
-        help="what to do (check_files means decide depending on which index files exist)",
+        help=(
+            "what to do (check_files means decide depending on which "
+            "index files exist)"
+        ),
     )
 
     group = parser.add_argument_group("dataset options")
@@ -567,7 +570,10 @@ def main():
         "--autotune_max",
         default=[],
         nargs="*",
-        help='set max value for autotune variables format "var:val" (exclusive)',
+        help=(
+            'set max value for autotune variables format "var:val" '
+            "(exclusive)"
+        ),
     )
     aa(
         "--autotune_range",

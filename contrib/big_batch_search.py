@@ -284,7 +284,8 @@ def big_batch_search(
 
     checkpointing (only for threaded > 1):
     checkpoint: file where the checkpoints are stored
-    checkpoint_freq: when to perform checkpointing. Should be a multiple of threaded
+    checkpoint_freq: when to perform checkpointing. Should be a multiple of
+        threaded
 
     start_list, end_list: process only a subset of invlists
     """

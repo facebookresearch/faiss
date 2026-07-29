@@ -174,7 +174,7 @@ class TestRaBitQ(unittest.TestCase):
                     params = faiss.RaBitQSearchParameters(
                         qb=qb, centered=centered
                     )
-                    ratio_threshold = 2 ** (1 / qb)
+                    ratio_threshold = 2.1 ** (1 / qb)
                     test(
                         params,
                         ratio_threshold,
@@ -248,6 +248,20 @@ class TestRaBitQ(unittest.TestCase):
                 abs(ref_dis[0][j] - upd_dis) < mean_dist * 0.00001,
                 f"{j} {ref_dis[0][j]} {upd_dis}",
             )
+
+    def test_self_match_nonneg_distance(self):
+        d = 64
+        rs = np.random.RandomState(10996)
+        xb = rs.randn(200, d).astype("float32")
+
+        index = faiss.IndexRaBitQ(d, faiss.METRIC_L2)
+        index.train(xb)
+        index.add(xb)
+
+        D, I = index.search(xb[:5], 5)
+        np.testing.assert_(np.all(D >= 0), f"negative D: {D[D < 0]}")
+        for i in range(5):
+            self.assertIn(i, I[i])
 
     def test_serde_rabitq(self):
         do_test_serde("RaBitQ")

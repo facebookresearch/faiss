@@ -244,10 +244,10 @@ def _cluster_tables_with_tolerance(tab1, tab2, thr):
     return idx1, idx2
 
 
-def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
+def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5, atol=0):
     """test that knn search results are identical, with possible ties.
     Raise if not."""
-    np.testing.assert_allclose(Dref, Dnew, rtol=rtol)
+    np.testing.assert_allclose(Dref, Dnew, rtol=rtol, atol=atol)
     # here we have to be careful because of draws
     testcase = unittest.TestCase()  # because it makes nice error messages
     for i in range(len(Iref)):
@@ -255,7 +255,7 @@ def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
             continue
 
         # otherwise collect elements per distance
-        r = rtol * Dref[i].max()
+        r = rtol * Dref[i].max() + atol
 
         DrefC, DnewC = _cluster_tables_with_tolerance(Dref[i], Dnew[i], r)
 
@@ -312,11 +312,12 @@ class OperatingPoints:
 
     def compare_keys(self, k1, k2):
         """return -1 if k1 > k2, 1 if k2 > k1, 0 otherwise"""
-        raise NotImplemented
+        raise NotImplementedError
 
     def do_nothing_key(self):
-        """parameters to say we do nothing, takes 0 time and has 0 performance"""
-        raise NotImplemented
+        """parameters to say we do nothing, takes 0 time and has 0
+        performance"""
+        raise NotImplementedError
 
     def is_pareto_optimal(self, perf_new, t_new):
         for _, perf, t in self.operating_points:
@@ -496,5 +497,6 @@ class RepeatTimer:
         return np.std(self.times) * 1000 if len(self.times) > 1 else 0.0
 
     def nruns(self):
-        """effective number of runs (may be lower than runs - warmup due to timeout)"""
+        """effective number of runs (may be lower than runs - warmup due
+        to timeout)"""
         return len(self.times)

@@ -226,8 +226,8 @@ class TestResidualQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        # in practice RQ is often better than PQ but it is not the case here, so just check
-        # that we are within some factor.
+        # in practice RQ is often better than PQ but it is not the case
+        # here, so just check that we are within some factor.
         self.assertLess(err_rq, err_pq * 1.2)
 
     def test_beam_size(self):
@@ -382,7 +382,8 @@ def retrain_AQ_codebook(index, xt):
         )
 
     # replace codebook
-    # faiss.copy_array_to_vector(B.astype('float32').ravel(), index.rq.codebooks)
+    # faiss.copy_array_to_vector(
+    #     B.astype('float32').ravel(), index.rq.codebooks)
     # update codebook tables
     # index.rq.compute_codebook_tables()
 

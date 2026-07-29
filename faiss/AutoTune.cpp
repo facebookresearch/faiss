@@ -150,7 +150,7 @@ bool OperatingPoints::add(
     }
     // remove non-optimal points from array
     for (size_t i = a.size() - 1; i > 0; --i) {
-        if (a[i].t < a[i - 1].t) {
+        if (a[i].t <= a[i - 1].t) {
             a.erase(a.begin() + (i - 1));
         }
     }

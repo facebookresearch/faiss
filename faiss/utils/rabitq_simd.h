@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -15,6 +16,10 @@
 #include <faiss/utils/simd_levels.h>
 
 namespace faiss::rabitq {
+
+/// SIMD levels with RaBitQ query/LUT quantization implementations.
+constexpr int RABITQ_QUANTIZATION_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
 
 /**
  * Compute dot product between query and binary data using popcount on AND.
@@ -57,6 +62,56 @@ uint64_t bitwise_xor_dot_product(
  */
 template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
 uint64_t popcount(const uint8_t* data, size_t size);
+
+/**
+ * Rearrange per-dimension quantized query codes into bit-plane layout.
+ *
+ * @p rotated_qq holds one qb-bit code per dimension (one byte each, value in
+ * [0, 2^qb)). @p out receives qb bit-planes of ((d + 7) / 8) bytes each:
+ * bit-plane j packs bit j of code i into bit (i % 8) of byte (i / 8). @p out
+ * must have room for qb * ((d + 7) / 8) bytes and is fully overwritten.
+ *
+ * @param rotated_qq  per-dimension codes (d bytes)
+ * @param d           dimensionality
+ * @param qb          quantization bits per dimension (1..8)
+ * @param out         bit-plane output buffer (qb * ((d + 7) / 8) bytes)
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+void rearrange_bit_planes(
+        const uint8_t* rotated_qq,
+        size_t d,
+        size_t qb,
+        uint8_t* out);
+
+/// Find min/max of one 16-entry FastScan LUT row.
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+void lut_minmax_16(const float* tab, float& mn, float& mx);
+
+/// Find min/max of an arbitrary-length float vector. For n == 0, mn and mx
+/// are left unchanged.
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+void minmax_values(const float* values, size_t n, float& mn, float& mx);
+
+/// Quantize one 16-entry FastScan LUT row with non-negative half-up rounding.
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+void lut_quantize_16_to_uint8(
+        const float* tab,
+        float mn,
+        float a,
+        uint8_t* out);
+
+/// Quantize rotated query values and accumulate query correction terms.
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+void quantize_query_values(
+        const float* rq,
+        size_t d,
+        float v_min,
+        float inv_delta,
+        uint8_t max_code,
+        bool centered,
+        uint8_t* rqq,
+        size_t& sum_qq,
+        int64_t& sum2_signed_odd_int);
 
 // NONE specializations — scalar fallbacks
 
@@ -123,6 +178,108 @@ inline uint64_t popcount<SIMDLevel::NONE>(const uint8_t* data, size_t size) {
         sum += popcount32(yv);
     }
     return sum;
+}
+
+template <>
+inline void rearrange_bit_planes<SIMDLevel::NONE>(
+        const uint8_t* rotated_qq,
+        size_t d,
+        size_t qb,
+        uint8_t* out) {
+    const size_t offset = (d + 7) / 8;
+    memset(out, 0, offset * qb);
+    for (size_t idim = 0; idim < d; idim++) {
+        for (size_t iv = 0; iv < qb; iv++) {
+            const bool bit = ((rotated_qq[idim] & (1 << iv)) != 0);
+            out[iv * offset + idim / 8] |= bit ? (1 << (idim % 8)) : 0;
+        }
+    }
+}
+
+inline uint8_t round_clamped_byte_scalar(float x, uint8_t max_code) {
+    if (x <= 0.0f) {
+        return 0;
+    }
+    if (x >= max_code) {
+        return max_code;
+    }
+    return static_cast<uint8_t>(static_cast<int>(x + 0.5f));
+}
+
+inline uint8_t round_nonnegative_byte_scalar(float x) {
+    return round_clamped_byte_scalar(x, 255);
+}
+
+template <>
+inline void lut_minmax_16<SIMDLevel::NONE>(
+        const float* tab,
+        float& mn,
+        float& mx) {
+    mn = tab[0];
+    mx = tab[0];
+    for (size_t s = 1; s < 16; s++) {
+        mn = std::min(mn, tab[s]);
+        mx = std::max(mx, tab[s]);
+    }
+}
+
+template <>
+inline void minmax_values<SIMDLevel::NONE>(
+        const float* values,
+        size_t n,
+        float& mn,
+        float& mx) {
+    if (n == 0) {
+        return;
+    }
+    mn = values[0];
+    mx = values[0];
+    for (size_t i = 1; i < n; i++) {
+        mn = std::min(mn, values[i]);
+        mx = std::max(mx, values[i]);
+    }
+}
+
+template <>
+inline void lut_quantize_16_to_uint8<SIMDLevel::NONE>(
+        const float* tab,
+        float mn,
+        float a,
+        uint8_t* out) {
+    for (size_t s = 0; s < 16; s++) {
+        out[s] = round_nonnegative_byte_scalar(a * (tab[s] - mn));
+    }
+}
+
+template <>
+inline void quantize_query_values<SIMDLevel::NONE>(
+        const float* rq,
+        size_t d,
+        float v_min,
+        float inv_delta,
+        uint8_t max_code,
+        bool centered,
+        uint8_t* rqq,
+        size_t& sum_qq,
+        int64_t& sum2_signed_odd_int) {
+    if (centered) {
+        for (size_t i = 0; i < d; i++) {
+            const uint8_t v_qq = round_clamped_byte_scalar(
+                    (rq[i] - v_min) * inv_delta, max_code);
+            rqq[i] = v_qq;
+            sum_qq += v_qq;
+
+            const int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
+            sum2_signed_odd_int += signed_odd_int * signed_odd_int;
+        }
+    } else {
+        for (size_t i = 0; i < d; i++) {
+            const uint8_t v_qq = round_clamped_byte_scalar(
+                    (rq[i] - v_min) * inv_delta, max_code);
+            rqq[i] = v_qq;
+            sum_qq += v_qq;
+        }
+    }
 }
 
 } // namespace faiss::rabitq

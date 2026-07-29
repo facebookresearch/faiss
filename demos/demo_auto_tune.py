@@ -118,9 +118,10 @@ use_gpu = False
 
 if use_gpu:
     # if this fails, it means that the GPU version was not compiled
-    assert (
-        faiss.StandardGpuResources
-    ), "Faiss was not compiled with GPU support, or loading _swigfaiss_gpu.so failed"
+    assert faiss.StandardGpuResources, (
+        "Faiss was not compiled with GPU support, "
+        "or loading _swigfaiss_gpu.so failed"
+    )
     res = faiss.StandardGpuResources()
     dev_no = 0
 
@@ -178,7 +179,9 @@ for index_key in keys_to_test:
         pyplot.grid()
         for i2, opi2 in op_per_key:
             plot_OperatingPoints(opi2, crit.nq, label=i2, marker="o")
-        # plot_OperatingPoints(op, crit.nq, label = 'best', marker = 'o', color = 'r')
+        # plot_OperatingPoints(
+        #     op, crit.nq, label = 'best', marker = 'o', color = 'r'
+        # )
         pyplot.legend(loc=2)
         fig.savefig("tmp/demo_auto_tune.png")
 

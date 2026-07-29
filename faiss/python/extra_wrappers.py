@@ -168,7 +168,8 @@ def bucket_sort(tab, nbucket=None, nt=0):
     lims : array_like
         cumulative sum of bucket sizes (size vmax + 1)
     perm : array_like
-        perm[lims[i] : lims[i + 1]] contains the indices of bucket #i (size tab.size)
+        perm[lims[i] : lims[i + 1]] contains the indices of bucket #i
+        (size tab.size)
     """
     tab = np.ascontiguousarray(tab, dtype="int64")
     if nbucket is None:
@@ -292,7 +293,8 @@ class ResultHeap:
 
 def merge_knn_results(Dall, Iall, keep_max=False):
     """
-    Merge a set of sorted knn-results obtained from different shards in a dataset
+    Merge a set of sorted knn-results obtained from different shards in a
+    dataset
     Dall and Iall are of size (nshard, nq, k) each D[i, j] should be sorted
     returns D, I of size (nq, k) as the merged result set
     """
@@ -419,7 +421,8 @@ def knn(xq, xb, k, metric=METRIC_L2, metric_arg=0.0):
 
 def knn_hamming(xq, xb, k, variant="hc"):
     """
-    Compute the k nearest neighbors of a set of vectors without constructing an index.
+    Compute the k nearest neighbors of a set of vectors without constructing
+    an index.
 
     Parameters
     ----------
@@ -480,7 +483,8 @@ def knn_hamming(xq, xb, k, variant="hc"):
 
 class Kmeans:
     """Object that performs k-means clustering and manages the centroids.
-    The `Kmeans` class is essentially a wrapper around the C++ `Clustering` object.
+    The `Kmeans` class is essentially a wrapper around the C++ `Clustering`
+    object.
 
     Parameters
     ----------
@@ -495,7 +499,8 @@ class Kmeans:
     progressive_dim_steps:
         use a progressive dimension clustering (with that number of steps)
 
-    Subsequent parameters are fields of the Clustring object. The most important are:
+    Subsequent parameters are fields of the Clustring object. The most
+    important are:
 
     niter: int, optional
        clustering iterations
@@ -541,7 +546,8 @@ class Kmeans:
                     v = get_num_gpus()
                 self.gpu = v
             else:
-                # if this raises an exception, it means that it is a non-existent field
+                # if this raises an exception, it means that
+                # it is a non-existent field
                 getattr(self.cp, k)
                 setattr(self.cp, k, v)
         self.set_index()
@@ -579,7 +585,8 @@ class Kmeans:
 
         - the centroids are in the centroids field of size (`k`, `d`).
 
-        - the objective value at each iteration is in the array obj (size `niter`)
+        - the objective value at each iteration is in the array obj (size
+          `niter`)
 
         - detailed optimization statistics are in the array iteration_stats.
 

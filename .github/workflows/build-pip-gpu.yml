@@ -16,8 +16,38 @@ concurrency:
   cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
 
 jobs:
+  changes:
+    name: Detect GPU-relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_gpu_changes: ${{ steps.filter.outputs.gpu }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # A miss here silently drops GPU wheel coverage on a PR that needed
+          # it, so the globs stay deliberately broad: any GPU/cuVS/ROCm source,
+          # any build-system file, the GPU pyproject files, and this workflow.
+          filters: |
+            gpu:
+              - 'faiss/gpu/**'
+              - 'faiss/gpu_metal/**'
+              - 'c_api/gpu/**'
+              - 'cmake/**'
+              - '**/CMakeLists.txt'
+              - 'pyproject-gpu.toml'
+              - 'pyproject-gpu-cuvs.toml'
+              - 'conda/faiss-gpu/**'
+              - 'conda/faiss-gpu-cuvs/**'
+              - '.github/workflows/build-pip-gpu.yml'
+
   build-faiss-gpu:
     name: Build & test faiss-gpu
+    needs: changes
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     timeout-minutes: 90
     steps:
@@ -98,6 +128,8 @@ jobs:
 
   build-faiss-gpu-cuvs:
     name: Build & test faiss-gpu-cuvs
+    needs: changes
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     timeout-minutes: 120
     steps:

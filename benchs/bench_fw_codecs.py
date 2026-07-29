@@ -147,9 +147,12 @@ def run_local(rp):
                 training_size=training_size,
                 search_params=search_params,
             )
-            for factory, construction_params, training_size, search_params in factory_factory(
-                d
-            )
+            for (
+                factory,
+                construction_params,
+                training_size,
+                search_params,
+            ) in factory_factory(d)
         ],
         k=1,
         distance_metric=distance_metric,
