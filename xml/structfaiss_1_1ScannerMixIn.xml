@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="55" column="13" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="56" column="13" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="56" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="58" column="14" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="58" bodyend="59"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="59" column="14" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="59" bodyend="60"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScannerMixIn_1a845401d12c7b8f1319dc3ece990c1f55" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="structfaiss_1_1SIMDResultHandlerToFloat" kindref="compound">SIMDResultHandlerToFloat</ref> *</type>
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="61" column="30" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="61" bodyend="63"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="62" column="30" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="62" bodyend="64"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScannerMixIn_1a71dea2c0711aa373b1e060e9d5da3e22" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="65" column="10" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="65" bodyend="99"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="66" column="10" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="66" bodyend="100"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScannerMixIn_1a6cef6f862cf777bfbec80bdc340b575e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -162,7 +162,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="101" column="10" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="101" bodyend="166"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="102" column="10" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="102" bodyend="199"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -193,7 +193,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/fast_scan/dispatching.h" line="54" column="1" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="54" bodyend="167"/>
+    <location file="faiss/impl/fast_scan/dispatching.h" line="55" column="1" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="55" bodyend="200"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ScannerMixIn_1a71dea2c0711aa373b1e060e9d5da3e22" prot="public" virt="virtual"><scope>faiss::ScannerMixIn</scope><name>accumulate_loop</name></member>
       <member refid="structfaiss_1_1ScannerMixIn_1a6cef6f862cf777bfbec80bdc340b575e" prot="public" virt="virtual"><scope>faiss::ScannerMixIn</scope><name>accumulate_loop_qbs</name></member>

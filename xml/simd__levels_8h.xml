@@ -11,6 +11,7 @@
     <includedby refid="rq__beam__search__tab_8h" local="no">faiss/impl/approx_topk/rq_beam_search_tab.h</includedby>
     <includedby refid="simdlib256-inl_8h" local="no">faiss/impl/approx_topk/simdlib256-inl.h</includedby>
     <includedby refid="binary__hamming_2dispatch_8h" local="no">faiss/impl/binary_hamming/dispatch.h</includedby>
+    <includedby refid="dispatching_8h" local="no">faiss/impl/fast_scan/dispatching.h</includedby>
     <includedby refid="fast__scan_8h" local="no">faiss/impl/fast_scan/fast_scan.h</includedby>
     <includedby refid="MinimaxHeap_8h" local="no">faiss/impl/hnsw/MinimaxHeap.h</includedby>
     <includedby refid="polysemous__training_2dispatch_8h" local="no">faiss/impl/polysemous_training/dispatch.h</includedby>
@@ -1038,6 +1039,8 @@
         </childnode>
         <childnode refid="46" relation="include">
         </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="47" relation="include">
         </childnode>
         <childnode refid="52" relation="include">
@@ -1263,35 +1266,41 @@
 <codeline lineno="160"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="161"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>bitmask<sp/>of<sp/>supported<sp/>SIMD<sp/>levels<sp/>(1<sp/>&lt;&lt;<sp/>SIMDLevel).</highlight></codeline>
 <codeline lineno="162" refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>uint64_t<sp/><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels</ref>;</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>auto_detect_simd_level();</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"></highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>has_dynamic_dispatch()<sp/>{</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"></highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>faiss_simd_level_env<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="176"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Set<sp/>the<sp/>SIMD<sp/>level.<sp/>Throws<sp/>FaissException<sp/>if<sp/>level<sp/>is<sp/>not<sp/>supported.</highlight></codeline>
-<codeline lineno="177" refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>get_level();</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/>get_level_name();</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="181"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>a<sp/>SIMD<sp/>level<sp/>is<sp/>available<sp/>(compiled<sp/>in).</highlight></codeline>
-<codeline lineno="182" refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" kindref="member">is_simd_level_available</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="184"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>SIMD<sp/>level<sp/>via<sp/>the<sp/>dispatch<sp/>mechanism.</highlight></codeline>
-<codeline lineno="185"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>DD<sp/>mode,<sp/>uses<sp/>with_simd_level<sp/>internally.</highlight></codeline>
-<codeline lineno="186"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>static<sp/>mode,<sp/>returns<sp/>the<sp/>compiled-in<sp/>level.</highlight></codeline>
-<codeline lineno="187"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Useful<sp/>for<sp/>verification:<sp/>get_level()<sp/>==<sp/>get_dispatched_level()</highlight></codeline>
-<codeline lineno="188" refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level</ref>();</highlight></codeline>
-<codeline lineno="189"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"></highlight></codeline>
-<codeline lineno="191"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="164"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>CPU<sp/>implements<sp/>AVX-512<sp/>by<sp/>splitting<sp/>over<sp/>a<sp/>256-bit<sp/>datapath</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>(AMD<sp/>Zen<sp/>4<sp/>/<sp/>Zen<sp/>4c<sp/>&quot;Bergamo&quot;,<sp/>family<sp/>0x19).<sp/>On<sp/>such<sp/>CPUs<sp/>512-bit</highlight></codeline>
+<codeline lineno="166"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ops<sp/>give<sp/>no<sp/>throughput<sp/>gain,<sp/>so<sp/>the<sp/>fast-scan<sp/>QBS<sp/>path<sp/>prefers<sp/>the</highlight></codeline>
+<codeline lineno="167"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>256-bit<sp/>kernel.</highlight></codeline>
+<codeline lineno="168" refid="structfaiss_1_1SIMDConfig_1afe75eb1264aea8745fe15c9d211d4bfb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1afe75eb1264aea8745fe15c9d211d4bfb" kindref="member">avx512_split</ref>;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>auto_detect_simd_level();</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>has_dynamic_dispatch()<sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>faiss_simd_level_env<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="182"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Set<sp/>the<sp/>SIMD<sp/>level.<sp/>Throws<sp/>FaissException<sp/>if<sp/>level<sp/>is<sp/>not<sp/>supported.</highlight></codeline>
+<codeline lineno="183" refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>get_level();</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/>get_level_name();</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="187"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>a<sp/>SIMD<sp/>level<sp/>is<sp/>available<sp/>(compiled<sp/>in).</highlight></codeline>
+<codeline lineno="188" refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" kindref="member">is_simd_level_available</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="190"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>SIMD<sp/>level<sp/>via<sp/>the<sp/>dispatch<sp/>mechanism.</highlight></codeline>
+<codeline lineno="191"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>DD<sp/>mode,<sp/>uses<sp/>with_simd_level<sp/>internally.</highlight></codeline>
+<codeline lineno="192"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>static<sp/>mode,<sp/>returns<sp/>the<sp/>compiled-in<sp/>level.</highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Useful<sp/>for<sp/>verification:<sp/>get_level()<sp/>==<sp/>get_dispatched_level()</highlight></codeline>
+<codeline lineno="194" refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level</ref>();</highlight></codeline>
+<codeline lineno="195"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simd_levels.h"/>
   </compounddef>
