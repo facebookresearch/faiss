@@ -1550,10 +1550,13 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
         uint32_t h,
         int io_flags) {
     bool legacy = h == fourcc("IvQR") || h == fourcc("IvPQ");
+    // "IwPh"/"IwQh" are the only formats that store the polysemous
+    // training parameters (see GH issue #2120).
+    bool has_polysemous = h == fourcc("IwPh") || h == fourcc("IwQh");
 
     IndexIVFPQR* ivfpqr = nullptr;
     std::unique_ptr<IndexIVFPQ> ivpq;
-    if (h == fourcc("IvQR") || h == fourcc("IwQR")) {
+    if (h == fourcc("IvQR") || h == fourcc("IwQR") || h == fourcc("IwQh")) {
         ivpq = std::make_unique<IndexIVFPQR>();
         ivfpqr = static_cast<IndexIVFPQR*>(ivpq.get());
     } else {
@@ -1565,6 +1568,11 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
     READ1_BOOL(ivpq->by_residual);
     READ1(ivpq->code_size);
     read_ProductQuantizer(&ivpq->pq, f);
+
+    if (has_polysemous) {
+        READ1_BOOL(ivpq->do_polysemous_training);
+        READ1(ivpq->polysemous_ht);
+    }
 
     if (legacy) {
         ArrayInvertedLists* ail = set_array_invlist(ivpq.get(), ids);
@@ -2240,7 +2248,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idx = std::move(ivsp);
     } else if (
             h == fourcc("IvPQ") || h == fourcc("IvQR") || h == fourcc("IwPQ") ||
-            h == fourcc("IwQR")) {
+            h == fourcc("IwQR") || h == fourcc("IwPh") || h == fourcc("IwQh")) {
         idx = read_ivfpq(f, h, io_flags);
     } else if (h == fourcc("IwIQ")) {
         auto indep = std::make_unique<IndexIVFIndependentQuantizer>();
