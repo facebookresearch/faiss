@@ -30,7 +30,7 @@ void LockVector::prepare(size_t new_size) {
         // Just destroy old and init fresh; omp_lock_t is not copyable.
         clear();
         data_ = static_cast<omp_lock_t*>(malloc(new_cap * sizeof(omp_lock_t)));
-        FAISS_THROW_IF_NOT(data_ != nullptr);
+        FAISS_THROW_IF_NOT(data_);
         capacity_ = new_cap;
     }
     for (size_t i = size_; i < new_size; i++) {

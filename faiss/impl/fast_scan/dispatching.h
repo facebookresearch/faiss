@@ -33,6 +33,7 @@
 
 #include <faiss/impl/fast_scan/accumulate_loops.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/utils/simd_levels.h>
 
 #if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 #include <faiss/impl/fast_scan/accumulate_loops_512.h>
@@ -114,8 +115,40 @@ struct ScannerMixIn : FastScanCodeScanner {
         constexpr bool use_avx512_qbs = false;
 #endif
         if constexpr (use_avx512_qbs) {
-            // Use 512-bit QBS kernels with properly-leveled scalers.
-            if (pq2x4_scale) {
+            // AMD Zen 4 / Zen 4c ("Bergamo", family 0x19) split 512-bit
+            // ops over a 256-bit datapath, so the 512-bit QBS kernel yields no
+            // throughput gain but pays extra per-block LUT-assembly and
+            // cross-lane reduction overhead (measured ~14% search regression
+            // for PQ8x4fs / PQ16x4fs). Route those CPUs to the 256-bit (AVX2)
+            // QBS kernel instead -- same output, no downside on Zen 4. This is
+            // a process-constant runtime branch, hoisted out of the inner
+            // accumulate loop. Intel AVX-512 keeps the 512-bit kernel.
+            if (SIMDConfig::avx512_split) {
+                if (pq2x4_scale) {
+                    NormTableScaler<SIMDLevel::AVX2> scaler(pq2x4_scale);
+                    pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                            qbs,
+                            nb,
+                            nsq,
+                            codes,
+                            LUT,
+                            handler_,
+                            scaler,
+                            block_stride);
+                } else {
+                    DummyScaler<SIMDLevel::AVX2> dummy;
+                    pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                            qbs,
+                            nb,
+                            nsq,
+                            codes,
+                            LUT,
+                            handler_,
+                            dummy,
+                            block_stride);
+                }
+            } else if (pq2x4_scale) {
+                // Use 512-bit QBS kernels with properly-leveled scalers.
                 NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
                 pq4_accumulate_loop_qbs_fixed_scaler_512(
                         qbs,

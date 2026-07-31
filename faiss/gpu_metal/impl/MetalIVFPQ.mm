@@ -94,8 +94,8 @@ void MetalIVFPQImpl::appendCodes(
         const idx_t* xids) {
     if (n == 0)
         return;
-    FAISS_THROW_IF_NOT(list_nos != nullptr);
-    FAISS_THROW_IF_NOT(codes != nullptr);
+    FAISS_THROW_IF_NOT(list_nos);
+    FAISS_THROW_IF_NOT(codes);
 
     std::vector<size_t> addPerList(nlist_, 0);
     for (idx_t i = 0; i < n; ++i) {
@@ -170,7 +170,7 @@ void MetalIVFPQImpl::appendCodes(
 }
 
 void MetalIVFPQImpl::setPQCentroids(const float* centroids) {
-    FAISS_THROW_IF_NOT(centroids != nullptr);
+    FAISS_THROW_IF_NOT(centroids);
     size_t bytes = (size_t)M_ * (size_t)ksub_ * (size_t)dsub_ * sizeof(float);
     if (pqCentroidsBuf_ != nil) {
         resources_->deallocBuffer(pqCentroidsBuf_, MetalAllocType::IVFLists);
