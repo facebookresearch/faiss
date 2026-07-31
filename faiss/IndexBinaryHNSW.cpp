@@ -292,8 +292,8 @@ void IndexBinaryHNSW::reconstruct(idx_t key, uint8_t* recons) const {
 
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
-    FAISS_THROW_IF_NOT_MSG(
-            flat_storage != nullptr,
+    FAISS_THROW_IF_MSG(
+            flat_storage == nullptr,
             "IndexBinaryHNSW requires IndexBinaryFlat storage");
     return with_simd_level([&]<SIMDLevel SL>() {
         return make_binary_hnsw_distance_computer_fixSL<SL>(
@@ -316,8 +316,8 @@ IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d_, int M)
 }
 
 void IndexBinaryHNSWCagra::add(idx_t n, const uint8_t* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !base_level_only,
+    FAISS_THROW_IF_MSG(
+            base_level_only,
             "Cannot add vectors when base_level_only is set to True");
 
     IndexBinaryHNSW::add(n, x);

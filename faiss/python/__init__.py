@@ -472,6 +472,80 @@ def range_search_with_parameters(
         return lims, Dout, Iout, stats
 
 
+super_kmeans_assign_iteration_c = super_kmeans_assign_iteration
+
+
+def super_kmeans_assign_iteration(
+    X_tilde, Y_tilde, tau, assignments, d_prime, ad_coeff, cp,
+):
+    """Run one SuperKMeans iter-1+ pruned assignment pass on caller-managed state.
+
+    All arrays must be C-contiguous. `X_tilde`, `Y_tilde`, `tau`, and `ad_coeff`
+    must be float32; `assignments` must be int32. These mirror the C++ pointer
+    contract, and passing another dtype (e.g. int64 assignments, numpy's default
+    integer type) would otherwise reinterpret the buffer and corrupt results.
+
+    Shapes: `X_tilde` is (n, d), `Y_tilde` is (k, d), `tau` and `assignments`
+    have length n, and `ad_coeff` has length d + 1.
+
+    Returns (total_pairs, pruned_at_gemm) for a d_prime controller.
+    Mutates `tau` and `assignments` in place.
+    """
+    for name, arr, dtype in (
+        ("X_tilde", X_tilde, "float32"),
+        ("Y_tilde", Y_tilde, "float32"),
+        ("tau", tau, "float32"),
+        ("ad_coeff", ad_coeff, "float32"),
+        ("assignments", assignments, "int32"),
+    ):
+        if arr.dtype != dtype:
+            raise TypeError(
+                f"super_kmeans_assign_iteration: {name} must be {dtype}, "
+                f"got {arr.dtype}"
+            )
+        if not arr.flags["C_CONTIGUOUS"]:
+            raise ValueError(
+                f"super_kmeans_assign_iteration: {name} must be C-contiguous"
+            )
+    if X_tilde.ndim != 2:
+        raise ValueError(
+            f"super_kmeans_assign_iteration: X_tilde must be 2D (n, d), "
+            f"got shape {X_tilde.shape}"
+        )
+    n, d = X_tilde.shape
+    if Y_tilde.ndim != 2 or Y_tilde.shape[1] != d:
+        raise ValueError(
+            f"super_kmeans_assign_iteration: Y_tilde must have shape (k, {d}), "
+            f"got {Y_tilde.shape}"
+        )
+    k = Y_tilde.shape[0]
+    if tau.shape != (n,):
+        raise ValueError(
+            f"super_kmeans_assign_iteration: tau must have shape ({n},), "
+            f"got {tau.shape}"
+        )
+    if assignments.shape != (n,):
+        raise ValueError(
+            f"super_kmeans_assign_iteration: assignments must have shape ({n},), "
+            f"got {assignments.shape}"
+        )
+    if ad_coeff.shape != (d + 1,):
+        raise ValueError(
+            f"super_kmeans_assign_iteration: ad_coeff must have shape ({d + 1},), "
+            f"got {ad_coeff.shape}"
+        )
+    total = np.zeros(1, dtype=np.int64)
+    pruned = np.zeros(1, dtype=np.int64)
+    super_kmeans_assign_iteration_c(
+        swig_ptr(X_tilde), n, d,
+        swig_ptr(Y_tilde), k,
+        swig_ptr(tau), swig_ptr(assignments),
+        d_prime, swig_ptr(ad_coeff), cp,
+        swig_ptr(total), swig_ptr(pruned),
+    )
+    return int(total[0]), int(pruned[0])
+
+
 # IndexProxy was renamed to IndexReplicas, remap the old name for any old code
 # people may have
 IndexProxy = IndexReplicas

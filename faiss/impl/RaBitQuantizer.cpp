@@ -185,8 +185,10 @@ void RaBitQuantizer::decode_core(
         float* x,
         size_t n,
         const float* centroid_in) const {
-    FAISS_ASSERT(codes != nullptr);
-    FAISS_ASSERT(x != nullptr);
+    FAISS_THROW_IF_MSG(
+            codes == nullptr, "RaBitQuantizer::decode_core: null codes buffer");
+    FAISS_THROW_IF_MSG(
+            x == nullptr, "RaBitQuantizer::decode_core: null output buffer");
 
     const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
     const size_t ex_bits = nb_bits - 1;

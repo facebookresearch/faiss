@@ -9,6 +9,7 @@
 
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
+#include <limits>
 
 namespace faiss::rabitq {
 
@@ -82,7 +83,160 @@ inline uint64_t reduce_add_128(__m128i v) {
     return lanes[0] + lanes[1];
 }
 
+inline float reduce_min_256(__m256 v) {
+    __m128 x =
+            _mm_min_ps(_mm256_castps256_ps128(v), _mm256_extractf128_ps(v, 1));
+    x = _mm_min_ps(x, _mm_movehl_ps(x, x));
+    x = _mm_min_ss(x, _mm_shuffle_ps(x, x, 1));
+    return _mm_cvtss_f32(x);
+}
+
+inline float reduce_max_256(__m256 v) {
+    __m128 x =
+            _mm_max_ps(_mm256_castps256_ps128(v), _mm256_extractf128_ps(v, 1));
+    x = _mm_max_ps(x, _mm_movehl_ps(x, x));
+    x = _mm_max_ss(x, _mm_shuffle_ps(x, x, 1));
+    return _mm_cvtss_f32(x);
+}
+
+inline __m256i round_nonnegative_ps_to_i32(__m256 x) {
+    return _mm256_cvttps_epi32(_mm256_add_ps(x, _mm256_set1_ps(0.5f)));
+}
+
+inline void store_i32_as_u8_8(__m256i values, uint8_t* out) {
+    const __m128i packed16 = _mm_packus_epi32(
+            _mm256_castsi256_si128(values),
+            _mm256_extracti128_si256(values, 1));
+    const __m128i packed8 = _mm_packus_epi16(packed16, _mm_setzero_si128());
+    _mm_storel_epi64(reinterpret_cast<__m128i*>(out), packed8);
+}
+
+inline void accumulate_i32_as_i64(
+        __m256i values,
+        __m256i& low_acc,
+        __m256i& high_acc) {
+    low_acc = _mm256_add_epi64(
+            low_acc, _mm256_cvtepi32_epi64(_mm256_castsi256_si128(values)));
+    high_acc = _mm256_add_epi64(
+            high_acc,
+            _mm256_cvtepi32_epi64(_mm256_extracti128_si256(values, 1)));
+}
+
 } // namespace
+
+template <>
+void lut_minmax_16<SIMDLevel::AVX2>(const float* tab, float& mn, float& mx) {
+    const __m256 lo = _mm256_loadu_ps(tab);
+    const __m256 hi = _mm256_loadu_ps(tab + 8);
+    const __m256 min_vec = _mm256_min_ps(lo, hi);
+    const __m256 max_vec = _mm256_max_ps(lo, hi);
+    mn = reduce_min_256(min_vec);
+    mx = reduce_max_256(max_vec);
+}
+
+template <>
+void minmax_values<SIMDLevel::AVX2>(
+        const float* values,
+        size_t n,
+        float& mn,
+        float& mx) {
+    if (n == 0) {
+        return;
+    }
+
+    size_t i = 0;
+    __m256 min_vec = _mm256_set1_ps(std::numeric_limits<float>::max());
+    __m256 max_vec = _mm256_set1_ps(std::numeric_limits<float>::lowest());
+    for (; i + 8 <= n; i += 8) {
+        const __m256 values_vec = _mm256_loadu_ps(values + i);
+        min_vec = _mm256_min_ps(min_vec, values_vec);
+        max_vec = _mm256_max_ps(max_vec, values_vec);
+    }
+
+    mn = reduce_min_256(min_vec);
+    mx = reduce_max_256(max_vec);
+    for (; i < n; i++) {
+        mn = std::min(mn, values[i]);
+        mx = std::max(mx, values[i]);
+    }
+}
+
+template <>
+void lut_quantize_16_to_uint8<SIMDLevel::AVX2>(
+        const float* tab,
+        float mn,
+        float a,
+        uint8_t* out) {
+    const __m256 a_vec = _mm256_set1_ps(a);
+    const __m256 mn_times_a_vec = _mm256_set1_ps(mn * a);
+    const __m256i zero = _mm256_setzero_si256();
+    for (size_t i = 0; i < 16; i += 8) {
+        const __m256 values = _mm256_loadu_ps(tab + i);
+        const __m256 scaled = _mm256_fmsub_ps(values, a_vec, mn_times_a_vec);
+        const __m256i rounded =
+                _mm256_max_epi32(round_nonnegative_ps_to_i32(scaled), zero);
+        store_i32_as_u8_8(rounded, out + i);
+    }
+}
+
+template <>
+void quantize_query_values<SIMDLevel::AVX2>(
+        const float* rq,
+        size_t d,
+        float v_min,
+        float inv_delta,
+        uint8_t max_code,
+        bool centered,
+        uint8_t* rqq,
+        size_t& sum_qq,
+        int64_t& sum2_signed_odd_int) {
+    const __m256 inv_delta_vec = _mm256_set1_ps(inv_delta);
+    const __m256 v_min_times_inv_delta_vec = _mm256_set1_ps(v_min * inv_delta);
+    const __m256 zero = _mm256_setzero_ps();
+    const __m256 max_code_ps = _mm256_set1_ps(max_code);
+    const __m256i max_code_i32 = _mm256_set1_epi32(max_code);
+    const __m256i two = _mm256_set1_epi32(2);
+    __m256i sum_acc_lo = _mm256_setzero_si256();
+    __m256i sum_acc_hi = _mm256_setzero_si256();
+    __m256i sq_acc_lo = _mm256_setzero_si256();
+    __m256i sq_acc_hi = _mm256_setzero_si256();
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 values = _mm256_loadu_ps(rq + i);
+        __m256 scaled = _mm256_fmsub_ps(
+                values, inv_delta_vec, v_min_times_inv_delta_vec);
+        scaled = _mm256_min_ps(_mm256_max_ps(scaled, zero), max_code_ps);
+        const __m256i rounded = round_nonnegative_ps_to_i32(scaled);
+        accumulate_i32_as_i64(rounded, sum_acc_lo, sum_acc_hi);
+
+        if (centered) {
+            const __m256i signed_odd = _mm256_sub_epi32(
+                    _mm256_mullo_epi32(rounded, two), max_code_i32);
+            const __m256i signed_odd_sqr =
+                    _mm256_mullo_epi32(signed_odd, signed_odd);
+            accumulate_i32_as_i64(signed_odd_sqr, sq_acc_lo, sq_acc_hi);
+        }
+        store_i32_as_u8_8(rounded, rqq + i);
+    }
+
+    sum_qq += reduce_add_256(sum_acc_lo) + reduce_add_256(sum_acc_hi);
+    if (centered) {
+        sum2_signed_odd_int +=
+                reduce_add_256(sq_acc_lo) + reduce_add_256(sq_acc_hi);
+    }
+
+    for (; i < d; i++) {
+        const uint8_t v_qq = round_clamped_byte_scalar(
+                (rq[i] - v_min) * inv_delta, max_code);
+        rqq[i] = v_qq;
+        sum_qq += v_qq;
+        if (centered) {
+            const int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
+            sum2_signed_odd_int += signed_odd_int * signed_odd_int;
+        }
+    }
+}
 
 template <>
 uint64_t bitwise_and_dot_product<SIMDLevel::AVX2>(
