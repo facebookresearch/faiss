@@ -849,6 +849,52 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                     np.testing.assert_array_equal(I_rbq_simd, I_rbq_none)
                     np.testing.assert_array_equal(I_fs_simd, I_fs_none)
 
+    def test_ivf_conversion_constructor_matches_direct_fastscan(self):
+        """Converting IndexIVFRaBitQ must build a usable FastScan index."""
+        d, nlist, nprobe, k = 64, 16, 4, 10
+        ds = datasets.SyntheticDataset(d, 700, 300, 20)
+
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 4]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    quantizer = faiss.IndexFlat(d, metric)
+                    index_rbq = faiss.IndexIVFRaBitQ(
+                        quantizer, d, nlist, metric, True, nb_bits
+                    )
+                    index_rbq.nprobe = nprobe
+                    index_rbq.train(ds.get_train())
+                    index_rbq.add(ds.get_database())
+
+                    index_converted = faiss.IndexIVFRaBitQFastScan(
+                        index_rbq, 32
+                    )
+
+                    direct_quantizer = faiss.clone_index(index_rbq.quantizer)
+                    index_direct = faiss.IndexIVFRaBitQFastScan(
+                        direct_quantizer, d, nlist, metric, 32, True, nb_bits
+                    )
+                    index_direct.nprobe = nprobe
+                    index_direct.qb = index_rbq.qb
+                    index_direct.centered = index_converted.centered
+                    index_direct.train(ds.get_train())
+                    index_direct.add(ds.get_database())
+
+                    D_converted, I_converted = index_converted.search(
+                        ds.get_queries(), k
+                    )
+                    D_direct, I_direct = index_direct.search(
+                        ds.get_queries(), k
+                    )
+
+                    self.assertEqual(index_converted.ntotal, index_rbq.ntotal)
+                    self.assertEqual(index_converted.bbs, 32)
+                    self.assertEqual(index_converted.nprobe, index_rbq.nprobe)
+                    self.assertTrue(index_converted.by_residual)
+                    np.testing.assert_array_equal(I_converted, I_direct)
+                    np.testing.assert_allclose(
+                        D_converted, D_direct, rtol=0, atol=1e-5
+                    )
+
     # ==================== Serialization Tests ====================
 
     def test_serialization(self):

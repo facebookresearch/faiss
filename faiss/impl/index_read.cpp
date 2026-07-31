@@ -737,7 +737,9 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     FAISS_THROW_IF_NOT_FMT(
             pq->M > 0, "invalid ProductQuantizer M=%zd (must be > 0)", pq->M);
     FAISS_THROW_IF_NOT_FMT(
-            pq->nbits <= 24, "invalid ProductQuantizer nbits=%zd", pq->nbits);
+            pq->nbits >= 1 && pq->nbits <= 24,
+            "invalid ProductQuantizer nbits=%zd (must be in [1, 24])",
+            pq->nbits);
     {
         size_t ksub = size_t{1} << pq->nbits;
         size_t n = mul_no_overflow(pq->d, ksub, "PQ centroids");
@@ -1933,6 +1935,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxr->ntotal,
                     idxr->rq.M);
         }
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->rq.tot_bits <= 63,
+                "ResidualCoarseQuantizer tot_bits too large (max 63)");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(idxr->ntotal) ==
+                        (((size_t)1) << idxr->rq.tot_bits),
+                "ResidualCoarseQuantizer ntotal %" PRId64
+                " inconsistent with 2^tot_bits (tot_bits=%zu)",
+                idxr->ntotal,
+                idxr->rq.tot_bits);
         idxr->set_beam_factor(idxr->beam_factor);
         idx = std::move(idxr);
     } else if (
