@@ -510,6 +510,40 @@ class TestRaBitQFastScan(unittest.TestCase):
         recall = faiss.eval_intersection(I, I_gt) / (nq * k)
         self.assertGreater(recall, 0.4)
 
+    def test_ivf_large_bbs_aux_offsets(self):
+        """Regression for aux-factor offsets when bbs > 32 (IVF path).
+
+        A bbs block holds bbs/32 SIMD sub-blocks. With nlist=1 every vector
+        lands in a single list that spans many bbs=64 blocks, so the b>=1
+        sub-blocks exercise ``idx_base % bbs != 0`` in IVFRaBitQHeapHandler.
+        If the per-element aux offset drops the ``idx_base % bbs`` term, roughly
+        half the vectors read another sub-block's factors and recall collapses,
+        so bbs=64 must match the bbs=32 baseline, which is always block-aligned.
+        """
+        d, nlist, nprobe, k = 64, 1, 1, 10
+        ds = datasets.SyntheticDataset(d, 2000, 2000, 100)
+        I_gt = ds.get_groundtruth(k)
+
+        def recall_for_bbs(bbs):
+            quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+            index = faiss.IndexIVFRaBitQFastScan(
+                quantizer, d, nlist, faiss.METRIC_L2, bbs, True, 1
+            )
+            index.qb = 8
+            index.nprobe = nprobe
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            _, I = index.search(ds.get_queries(), k)
+            return faiss.eval_intersection(I[:, :k], I_gt[:, :k]) / (ds.nq * k)
+
+        recall_bbs32 = recall_for_bbs(32)
+        recall_bbs64 = recall_for_bbs(64)
+        np.testing.assert_(
+            abs(recall_bbs32 - recall_bbs64) < 0.02,
+            f"bbs=64 recall ({recall_bbs64:.3f}) diverged from bbs=32 "
+            f"({recall_bbs32:.3f}); aux offsets likely wrong for bbs>32",
+        )
+
 
 @for_all_simd_levels
 class TestIVFRaBitQFastScanFiltering(unittest.TestCase):
