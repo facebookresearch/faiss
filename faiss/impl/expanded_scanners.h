@@ -35,12 +35,25 @@ size_t run_scan_codes1(
     size_t list_no = scanner.list_no;
     size_t code_size = scanner.code_size;
     const IDSelector* sel = scanner.sel;
+    // If the selector implements IDSelectorWithContext, hand it the scan
+    // context (ids, list_size, j) so it can exploit scan-order locality. Detect
+    // it once per list via RTTI (cf. the IDSelectorRange dynamic_cast in
+    // IndexIVF.cpp) so the per-candidate cost is a single predicted branch.
+    // store_pairs never coexists with a selector, and ids[] is only valid when
+    // !store_pairs.
+    const IDSelectorWithContext* ctx_sel = (use_sel && !store_pairs)
+            ? dynamic_cast<const IDSelectorWithContext*>(sel)
+            : nullptr;
     float threshold = handler.threshold;
     for (size_t j = 0; j < list_size; j++) {
         if (use_sel) {
             int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
             // skip code without computing distance
-            if (!sel->is_member(id)) {
+            const bool member = ctx_sel
+                    ? ctx_sel->is_member_with_context(
+                              id, IDScanContext{ids, list_size, j})
+                    : sel->is_member(id);
+            if (!member) {
                 codes += code_size;
                 continue;
             }
