@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::rabitq::BitwiseAndDotProductResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult_1a4053771c02dbe0ce1e80b28f2f7b8c47" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::rabitq::BitwiseAndDotProductResult::dot_product</definition>
+        <argsstring></argsstring>
+        <name>dot_product</name>
+        <qualifiedname>faiss::rabitq::BitwiseAndDotProductResult::dot_product</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="25" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult_1a0d4d06c36d9da3e097b77ab1fa22db25" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::rabitq::BitwiseAndDotProductResult::popcount</definition>
+        <argsstring></argsstring>
+        <name>popcount</name>
+        <qualifiedname>faiss::rabitq::BitwiseAndDotProductResult::popcount</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="26" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/rabitq_simd.h" line="24" column="1" bodyfile="faiss/utils/rabitq_simd.h" bodystart="24" bodyend="27"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult_1a4053771c02dbe0ce1e80b28f2f7b8c47" prot="public" virt="non-virtual"><scope>faiss::rabitq::BitwiseAndDotProductResult</scope><name>dot_product</name></member>
+      <member refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult_1a0d4d06c36d9da3e097b77ab1fa22db25" prot="public" virt="non-virtual"><scope>faiss::rabitq::BitwiseAndDotProductResult</scope><name>popcount</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

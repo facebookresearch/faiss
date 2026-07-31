@@ -296,6 +296,10 @@
     <member refid="structfaiss_1_1BitstringWriter_1a56261b182f76de9984d586477b5649c6" kind="function"><name>BitstringWriter</name></member>
     <member refid="structfaiss_1_1BitstringWriter_1af8f527858ffdcc241a02408d2e791817" kind="function"><name>write</name></member>
   </compound>
+  <compound refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult" kind="struct"><name>faiss::rabitq::BitwiseAndDotProductResult</name>
+    <member refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult_1a4053771c02dbe0ce1e80b28f2f7b8c47" kind="variable"><name>dot_product</name></member>
+    <member refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult_1a0d4d06c36d9da3e097b77ab1fa22db25" kind="variable"><name>popcount</name></member>
+  </compound>
   <compound refid="structfaiss_1_1BlockInvertedLists" kind="struct"><name>faiss::BlockInvertedLists</name>
     <member refid="structfaiss_1_1BlockInvertedLists_1ab807eb1b53484c62cf60a3ec5ebfdb33" kind="variable"><name>n_per_block</name></member>
     <member refid="structfaiss_1_1BlockInvertedLists_1aa3783d3cc54f9e7884ed5f0b043b1fd2" kind="variable"><name>block_size</name></member>
@@ -14511,6 +14515,7 @@
   <compound refid="namespacefaiss_1_1rabitq" kind="namespace"><name>faiss::rabitq</name>
     <member refid="rabitq__simd_8h_1a118df7fcf4a81315cc4f1244b95a0c30" kind="variable"><name>RABITQ_QUANTIZATION_SIMD_LEVELS</name></member>
     <member refid="rabitq__simd_8h_1afeb79d98edbdd4b10dcbf414c6b33a06" kind="function"><name>bitwise_and_dot_product</name></member>
+    <member refid="rabitq__simd_8h_1ab4e0fc899aae9b0cff9b7ec3522c5b6e" kind="function"><name>bitwise_and_dot_product_with_popcount</name></member>
     <member refid="rabitq__simd_8h_1aa369a4ff0088baa248147660f15980d6" kind="function"><name>bitwise_xor_dot_product</name></member>
     <member refid="rabitq__simd_8h_1af659144f46f1e1972f1283b537778619" kind="function"><name>popcount</name></member>
     <member refid="rabitq__simd_8h_1a6d8a5bc919e7415ab435c0d88ba021c7" kind="function"><name>rearrange_bit_planes</name></member>
@@ -14519,6 +14524,7 @@
     <member refid="rabitq__simd_8h_1a45c198aaf4d2d4c579719734e38ca541" kind="function"><name>lut_quantize_16_to_uint8</name></member>
     <member refid="rabitq__simd_8h_1a71892d20a16ee1dc022f21ffe00683e3" kind="function"><name>quantize_query_values</name></member>
     <member refid="rabitq__simd_8h_1a5745fa8520d0e2fb3e6aba23d168c6cc" kind="function"><name>bitwise_and_dot_product&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="rabitq__simd_8h_1a31d16783ab69cc9abe91f808435719ae" kind="function"><name>bitwise_and_dot_product_with_popcount&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="rabitq__simd_8h_1a290007a2ca46073a49129d7d73f0768a" kind="function"><name>bitwise_xor_dot_product&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="rabitq__simd_8h_1ac0999cb30c3f92f1dda521134802811c" kind="function"><name>popcount&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="rabitq__simd_8h_1a01e0454f0fcdb6ba34c6473e7857bbd7" kind="function"><name>rearrange_bit_planes&lt; SIMDLevel::NONE &gt;</name></member>
