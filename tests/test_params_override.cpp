@@ -17,7 +17,9 @@
 #include <faiss/AutoTune.h>
 #include <faiss/IVFlib.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/clone_index.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
@@ -186,11 +188,13 @@ int test_defaults_preserve_baseline(const char* index_key, MetricType metric) {
 }
 
 // IDSelectorWithContext that delegates the verdict to an inner IDSelector while
-// exercising the context parameters — used to prove the scan's
-// is_member_with_context path returns results identical to the plain is_member
-// path.
+// exercising the context parameters. Used to prove that a scanner (a) returns
+// results identical to the plain is_member path and (b) actually routes through
+// is_member_with_context — n_context_calls counts how often the context path
+// fired, so a scanner that silently dropped the hook is detectable.
 struct ContextSelector : IDSelectorWithContext {
     const IDSelector& inner;
+    mutable size_t n_context_calls = 0;
     explicit ContextSelector(const IDSelector& inner) : inner(inner) {}
     bool is_member(idx_t id) const override {
         return inner.is_member(id);
@@ -198,6 +202,7 @@ struct ContextSelector : IDSelectorWithContext {
     bool is_member_with_context(idx_t id, const IDScanContext& ctx)
             const override {
         (void)ctx;
+        ++n_context_calls;
         return inner.is_member(id);
     }
 };
@@ -242,13 +247,15 @@ int test_selector(const char* index_key) {
     return 0;
 }
 
-// Same membership set as test_selector, but driven through an
-// IDSelectorWithContext to prove the context scan path is functionally
-// identical to the plain IDSelector path.
-int test_selector_with_context(const char* index_key) {
-    std::vector<float> xb = make_data(nb);
+// Runs the same membership set (every id where i % 10 == 2) through a plain
+// IDSelectorBatch and through a ContextSelector wrapping it, on an
+// already-trained index. Returns:
+//   0 if the context path fired AND labels are byte-identical to the plain
+//   path, 1 if the results diverged (a correctness regression), 2 if the
+//   scanner never routed through is_member_with_context (the hook was
+//     silently dropped for this index type).
+int check_ctx_matches_plain(Index& index) {
     std::vector<float> xq = make_data(nq);
-    ParameterSpace ps;
 
     std::vector<idx_t> kept;
     for (size_t i = 0; i < nb; i++) {
@@ -256,10 +263,6 @@ int test_selector_with_context(const char* index_key) {
             kept.push_back(i);
         }
     }
-
-    auto index = make_index(index_key, METRIC_L2, xb);
-    ps.set_index_parameter(index.get(), "nprobe", 3);
-
     IDSelectorBatch batch(kept.size(), kept.data());
 
     // Plain IDSelector path.
@@ -268,7 +271,7 @@ int test_selector_with_context(const char* index_key) {
     plain_params.nprobe = 3;
     plain_params.sel = &batch;
     auto plain_result =
-            search_index_with_params(index.get(), xq.data(), &plain_params);
+            search_index_with_params(&index, xq.data(), &plain_params);
 
     // IDSelectorWithContext path over the same membership set.
     ContextSelector ctx_sel(batch);
@@ -276,14 +279,40 @@ int test_selector_with_context(const char* index_key) {
     ctx_params.max_codes = 0;
     ctx_params.nprobe = 3;
     ctx_params.sel = &ctx_sel;
-    auto ctx_result =
-            search_index_with_params(index.get(), xq.data(), &ctx_params);
+    auto ctx_result = search_index_with_params(&index, xq.data(), &ctx_params);
 
     if (plain_result != ctx_result) {
         return 1;
     }
-
+    if (ctx_sel.n_context_calls == 0) {
+        return 2;
+    }
     return 0;
+}
+
+// Same membership set as test_selector, but driven through an
+// IDSelectorWithContext to prove the context scan path is functionally
+// identical to — and actually exercised by — the given index type.
+int test_selector_with_context(const char* index_key) {
+    std::vector<float> xb = make_data(nb);
+    auto index = make_index(index_key, METRIC_L2, xb);
+    // nprobe is set explicitly in the IVFSearchParameters inside
+    // check_ctx_matches_plain, so no need to set it on the index here.
+    return check_ctx_matches_plain(*index);
+}
+
+// Multibit RaBitQ (nb_bits >= 2) scans through the two hand-written loops in
+// RaBitQuantizer.cpp rather than run_scan_codes1, so it needs the context hook
+// wired separately. nb_bits=3 => ex_bits=2 => scan_codes_multibit; the default
+// qb keeps a real quantized-query distance computer (no 1-bit fallback).
+int test_selector_with_context_rabitq_multibit() {
+    std::vector<float> xb = make_data(nb);
+    IndexFlatL2 quantizer(d);
+    IndexIVFRaBitQ index(
+            &quantizer, d, 32, METRIC_L2, /*own_invlists=*/true, /*nb_bits=*/3);
+    index.train(nb, xb.data());
+    index.add(nb, xb.data());
+    return check_ctx_matches_plain(index);
 }
 
 } // namespace
@@ -362,10 +391,11 @@ TEST(TSEL, IVFFSQ) {
     EXPECT_EQ(err, 0);
 }
 
-// IDSelectorWithContext must be functionally identical to a plain IDSelector.
-// IVFFlat and IVFSQ route through run_scan_codes1 (which dispatches to
-// is_member_with_context); IVFPQ uses its own scanner (plain is_member) — all
-// must return identical results.
+// An IDSelectorWithContext must be functionally identical to a plain
+// IDSelector AND actually exercised (results must not silently fall back to
+// is_member) on every applicable IVF scanner. IVFFlat/IVFSQ route through
+// run_scan_codes1; IVFPQ through WrappedSearchResult::skip_entry; multibit
+// RaBitQ through its two hand-written scan loops.
 TEST(TSELCtx, IVFFlat) {
     EXPECT_EQ(test_selector_with_context("PCA16,IVF32,Flat"), 0);
 }
@@ -376,6 +406,14 @@ TEST(TSELCtx, IVFFPQ) {
 
 TEST(TSELCtx, IVFFSQ) {
     EXPECT_EQ(test_selector_with_context("PCA16,IVF32,SQ8"), 0);
+}
+
+TEST(TSELCtx, RaBitQMultibit) {
+    EXPECT_EQ(test_selector_with_context_rabitq_multibit(), 0);
+}
+
+TEST(TSELCtx, Panorama) {
+    EXPECT_EQ(test_selector_with_context("IVF32,FlatPanorama"), 0);
 }
 
 /*************************************************************
