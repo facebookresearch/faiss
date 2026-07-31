@@ -267,8 +267,7 @@ void IndexFastScan::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     FastScanDistancePostProcessing empty_context{};
@@ -317,7 +316,7 @@ void IndexFastScan::search_dispatch_implem(
     if (implem == 1) {
         FAISS_THROW_MSG("not implemented");
     } else if (implem == 2 || implem == 3 || implem == 4) {
-        FAISS_THROW_IF_NOT(orig_codes != nullptr);
+        FAISS_THROW_IF_NOT(orig_codes);
         search_implem_234<Cfloat>(n, x, k, distances, labels, context);
     } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);

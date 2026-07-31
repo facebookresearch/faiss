@@ -371,8 +371,8 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
           pano(code_size_in, n_levels_in, batch_size) {
     FAISS_THROW_IF_NOT(n_levels_in > 0);
     FAISS_THROW_IF_NOT(code_size_in % sizeof(float) == 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !use_iterator,
+    FAISS_THROW_IF_MSG(
+            use_iterator,
             "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
     FAISS_ASSERT(level_width % sizeof(float) == 0);
 

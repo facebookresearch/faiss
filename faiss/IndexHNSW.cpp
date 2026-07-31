@@ -903,8 +903,7 @@ void IndexHNSW2Level::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     if (dynamic_cast<const Index2Layer*>(storage)) {
         IndexHNSW::search(n, x, k, distances, labels);
@@ -1084,8 +1083,8 @@ IndexHNSWCagra::IndexHNSWCagra(
 }
 
 void IndexHNSWCagra::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !base_level_only,
+    FAISS_THROW_IF_MSG(
+            base_level_only,
             "Cannot add vectors when base_level_only is set to True");
 
     IndexHNSW::add(n, x);

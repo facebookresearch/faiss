@@ -340,7 +340,9 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
         READVECTOR(lt->b);
         FAISS_THROW_IF_NOT(
                 lt->A.size() >= size_t(lt->d_in) * size_t(lt->d_out));
-        FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= size_t(lt->d_out));
+        FAISS_THROW_IF_MSG(
+                lt->have_bias && lt->b.size() < size_t(lt->d_out),
+                "bias vector smaller than d_out");
         lt->set_is_orthonormal();
         vt = std::move(lt);
     } else if (h == fourcc("RmDT")) {
@@ -735,7 +737,9 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     FAISS_THROW_IF_NOT_FMT(
             pq->M > 0, "invalid ProductQuantizer M=%zd (must be > 0)", pq->M);
     FAISS_THROW_IF_NOT_FMT(
-            pq->nbits <= 24, "invalid ProductQuantizer nbits=%zd", pq->nbits);
+            pq->nbits >= 1 && pq->nbits <= 24,
+            "invalid ProductQuantizer nbits=%zd (must be in [1, 24])",
+            pq->nbits);
     {
         size_t ksub = size_t{1} << pq->nbits;
         size_t n = mul_no_overflow(pq->d, ksub, "PQ centroids");
@@ -1545,6 +1549,45 @@ ArrayInvertedLists* set_array_invlist(
     return result;
 }
 
+static void validate_ivfpq_precomputed_table_size(
+        const Index* quantizer,
+        const ProductQuantizer& pq) {
+    // The precomputed table is not stored; precompute_table() rebuilds it on
+    // load at a size derived from attacker-controlled header fields. Bound
+    // every table initialize_IVFPQ_precomputed_table() may allocate.
+    const size_t m_ksub =
+            mul_no_overflow(pq.M, pq.ksub, "IVFPQ precomputed_table");
+    // type 1: nlist (== quantizer->ntotal) * pq.M * pq.ksub.
+    size_t precompute_elems = mul_no_overflow(
+            static_cast<size_t>(quantizer->ntotal),
+            m_ksub,
+            "IVFPQ precomputed_table");
+    // type 2 (MultiIndexQuantizer coarse quantizer): cpq.ksub * pq.M * pq.ksub,
+    // plus a temporary quantizer->d * cpq.ksub centroid table. Both derive from
+    // the coarse PQ's ksub, which is independent of quantizer->ntotal, so the
+    // type-1 bound above does not cover them.
+    if (const auto* miq = dynamic_cast<const MultiIndexQuantizer*>(quantizer)) {
+        const size_t cpq_ksub = miq->pq.ksub;
+        const size_t type2_table =
+                mul_no_overflow(cpq_ksub, m_ksub, "IVFPQ precomputed_table");
+        const size_t type2_centroids = mul_no_overflow(
+                static_cast<size_t>(quantizer->d),
+                cpq_ksub,
+                "IVFPQ precomputed_table");
+        if (type2_table > precompute_elems) {
+            precompute_elems = type2_table;
+        }
+        if (type2_centroids > precompute_elems) {
+            precompute_elems = type2_centroids;
+        }
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            precompute_elems <
+                    get_deserialization_vector_byte_limit() / sizeof(float),
+            "IVFPQ precomputed_table allocation would exceed deserialization "
+            "byte limit");
+}
+
 static std::unique_ptr<IndexIVFPQ> read_ivfpq(
         IOReader* f,
         uint32_t h,
@@ -1562,6 +1605,8 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
 
     std::vector<std::vector<idx_t>> ids;
     read_ivf_header(ivpq.get(), f, legacy ? &ids : nullptr);
+    FAISS_THROW_IF_NOT_MSG(
+            ivpq->quantizer != nullptr, "IVFPQ coarse quantizer is null");
     READ1_BOOL(ivpq->by_residual);
     READ1(ivpq->code_size);
     read_ProductQuantizer(&ivpq->pq, f);
@@ -1580,6 +1625,8 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
         ivpq->use_precomputed_table = 0;
         if (ivpq->by_residual) {
             if ((io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) == 0) {
+                validate_ivfpq_precomputed_table_size(
+                        ivpq->quantizer, ivpq->pq);
                 ivpq->precompute_table();
             }
         }
@@ -1608,7 +1655,29 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
 
 int read_old_fmt_hack = 0;
 
+namespace {
+
+constexpr int kMaxIndexNestingDepth = 50;
+thread_local int index_read_nesting_depth = 0;
+
+struct IndexNestingGuard {
+    IndexNestingGuard() {
+        FAISS_THROW_IF_NOT_FMT(
+                index_read_nesting_depth < kMaxIndexNestingDepth,
+                "faiss index nesting depth exceeds limit of %d; "
+                "input may be corrupt or malicious",
+                kMaxIndexNestingDepth);
+        ++index_read_nesting_depth;
+    }
+    ~IndexNestingGuard() {
+        --index_read_nesting_depth;
+    }
+};
+
+} // namespace
+
 std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
+    IndexNestingGuard nesting_guard;
     std::unique_ptr<Index> idx;
     uint32_t h;
     READ1(h);
@@ -1866,6 +1935,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxr->ntotal,
                     idxr->rq.M);
         }
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->rq.tot_bits <= 63,
+                "ResidualCoarseQuantizer tot_bits too large (max 63)");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(idxr->ntotal) ==
+                        (((size_t)1) << idxr->rq.tot_bits),
+                "ResidualCoarseQuantizer ntotal %" PRId64
+                " inconsistent with 2^tot_bits (tot_bits=%zu)",
+                idxr->ntotal,
+                idxr->rq.tot_bits);
         idxr->set_beam_factor(idxr->beam_factor);
         idx = std::move(idxr);
     } else if (
@@ -2612,6 +2691,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IwPf")) {
         auto ivpq = std::make_unique<IndexIVFPQFastScan>();
         read_ivf_header(ivpq.get(), f);
+        FAISS_THROW_IF_NOT_MSG(
+                ivpq->quantizer != nullptr,
+                "IVFPQFastScan coarse quantizer is null");
         READ1_BOOL(ivpq->by_residual);
         READ1(ivpq->code_size);
         READ1(ivpq->bbs);
@@ -2620,6 +2702,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivpq->qbs2);
         read_ProductQuantizer(&ivpq->pq, f);
         read_InvertedLists(*ivpq, f, io_flags);
+        validate_ivfpq_precomputed_table_size(ivpq->quantizer, ivpq->pq);
         ivpq->precompute_table();
 
         const auto& pq = ivpq->pq;
@@ -3275,6 +3358,7 @@ static void read_binary_multi_hash_map(
 }
 
 std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
+    IndexNestingGuard nesting_guard;
     std::unique_ptr<IndexBinary> idx;
     uint32_t h;
     READ1(h);
