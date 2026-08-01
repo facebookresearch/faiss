@@ -70,8 +70,8 @@ void ThreadedIndex<IndexT>::addIndex(IndexT* index) {
 
         // Make sure this index is not duplicated
         for (auto& p : indices_) {
-            FAISS_THROW_IF_NOT_MSG(
-                    p.first != index,
+            FAISS_THROW_IF_MSG(
+                    p.first == index,
                     "addIndex: attempting to add index "
                     "that is already in the collection");
         }

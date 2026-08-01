@@ -39,6 +39,20 @@ ClusteringInitMethod_RANDOM: int
 ClusteringInitMethod_KMEANS_PLUS_PLUS: int
 ClusteringInitMethod_AFK_MC2: int
 
+# Storage kind for SVS (Intel Scalable Vector Search) indexes
+SVSStorageKind = int
+SVS_FP32: int
+SVS_FP16: int
+SVS_SQ8: int
+SVS_LVQ4x0: int
+SVS_LVQ4x4: int
+SVS_LVQ4x8: int
+SVS_LVQ8x0: int
+SVS_LeanVec4x4: int
+SVS_LeanVec4x8: int
+SVS_LeanVec8x8: int
+SVS_count: int
+
 # I/O flag constants for reading/writing indexes
 IO_FLAG_SKIP_STORAGE: int  # skip the storage for graph-based indexes
 IO_FLAG_READ_ONLY: int  # read-only mode
@@ -277,6 +291,16 @@ class SearchParametersPreTransform(SearchParameters):
     index_params: SearchParameters | None
     def __init__(self) -> None: ...
 
+class SearchParametersSVSVamana(SearchParameters):
+    search_window_size: int
+    search_buffer_capacity: int
+    def __init__(self) -> None: ...
+
+class SearchParametersSVSIVF(SearchParameters):
+    n_probes: int
+    k_reorder: float
+    def __init__(self) -> None: ...
+
 # Base Index class
 class Index:
     d: int  # vector dimension
@@ -366,16 +390,23 @@ class Index:
         keys: npt.NDArray[np.int64],
         x: npt.NDArray[np.float32] | None = None,
     ) -> npt.NDArray[np.float32]: ...
+    # Without an `x` buffer the return type is not statically knowable: importing
+    # faiss.contrib.torch_utils replaces this method with one that allocates a
+    # torch.Tensor, while the default numpy implementation allocates an ndarray.
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: torch.Tensor | None = None
+        self, n0: int = ..., ni: int = ..., x: None = ...
+    ) -> Any: ...
+    @overload
+    def reconstruct_n(
+        self, n0: int = ..., ni: int = ..., x: torch.Tensor = ...
     ) -> torch.Tensor: ...
     @overload
     def reconstruct_n(
         self,
-        n0: int = 0,
-        ni: int = -1,
-        x: npt.NDArray[np.float32] | None = None,
+        n0: int = ...,
+        ni: int = ...,
+        x: npt.NDArray[np.float32] = ...,
     ) -> npt.NDArray[np.float32]: ...
     @overload
     def search_and_reconstruct(
@@ -803,16 +834,23 @@ class IndexPreTransform(Index):
     def reconstruct(
         self, key: int, x: npt.NDArray[np.float32] | None = None
     ) -> npt.NDArray[np.float32]: ...
+    # Without an `x` buffer the return type is not statically knowable: importing
+    # faiss.contrib.torch_utils replaces this method with one that allocates a
+    # torch.Tensor, while the default numpy implementation allocates an ndarray.
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: torch.Tensor | None = None
+        self, n0: int = ..., ni: int = ..., x: None = ...
+    ) -> Any: ...
+    @overload
+    def reconstruct_n(
+        self, n0: int = ..., ni: int = ..., x: torch.Tensor = ...
     ) -> torch.Tensor: ...
     @overload
     def reconstruct_n(
         self,
-        n0: int = 0,
-        ni: int = -1,
-        x: npt.NDArray[np.float32] | None = None,
+        n0: int = ...,
+        ni: int = ...,
+        x: npt.NDArray[np.float32] = ...,
     ) -> npt.NDArray[np.float32]: ...
     @overload
     def search_and_reconstruct(
@@ -1789,6 +1827,7 @@ class IndexIVFFlatPanorama(IndexIVFFlat):
     """Panorama adaptation of IndexIVFFlat following https://arxiv.org/abs/2510.00566"""
 
     n_levels: int
+    batch_size: int
 
     def __init__(
         self,
@@ -1798,6 +1837,7 @@ class IndexIVFFlatPanorama(IndexIVFFlat):
         n_levels: int,
         metric: MetricType = METRIC_L2,
         own_invlists: bool = True,
+        batch_size: int = ...,
     ) -> None: ...
 
 class IndexIVFPQ(IndexIVF):
@@ -2039,13 +2079,20 @@ class IndexBinary:
     def reconstruct(self, key: int) -> torch.Tensor: ...
     @overload
     def reconstruct(self, key: int) -> npt.NDArray[np.uint8]: ...
+    # Without an `x` buffer the return type is not statically knowable: importing
+    # faiss.contrib.torch_utils replaces this method with one that allocates a
+    # torch.Tensor, while the default numpy implementation allocates an ndarray.
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: torch.Tensor | None = None
+        self, n0: int = ..., ni: int = ..., x: None = ...
+    ) -> Any: ...
+    @overload
+    def reconstruct_n(
+        self, n0: int = ..., ni: int = ..., x: torch.Tensor = ...
     ) -> torch.Tensor: ...
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: npt.NDArray[np.uint8] | None = None
+        self, n0: int = ..., ni: int = ..., x: npt.NDArray[np.uint8] = ...
     ) -> npt.NDArray[np.uint8]: ...
     def reset(self) -> None: ...
     @overload
@@ -3811,6 +3858,106 @@ class IndexIVFRaBitQFastScan(IndexIVFFastScan):
     ) -> None: ...
     @overload
     def __init__(self, orig: IndexIVFRaBitQ, bbs: int = 32) -> None: ...
+
+# SVS (Intel Scalable Vector Search) indexes
+class IndexSVSFlat(Index):
+    nlabels: int
+    def __init__(self, d: int, metric: MetricType = METRIC_L2) -> None: ...
+
+class IndexSVSVamana(Index):
+    graph_max_degree: int
+    prune_to: int
+    alpha: float
+    search_window_size: int
+    search_buffer_capacity: int
+    construction_window_size: int
+    max_candidate_pool_size: int
+    use_full_search_history: bool
+    is_static: bool
+    storage_kind: SVSStorageKind
+
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_FP32,
+        is_static: bool = False,
+    ) -> None: ...
+    @staticmethod
+    def is_lvq_leanvec_enabled() -> bool: ...
+
+class IndexSVSVamanaLVQ(IndexSVSVamana):
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_LVQ4x0,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSVamanaLeanVec(IndexSVSVamana):
+    leanvec_d: int
+
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        leanvec_dims: int = 0,
+        storage: SVSStorageKind = SVS_LeanVec4x4,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSIVF(Index):
+    num_centroids: int
+    minibatch_size: int
+    num_iterations: int
+    is_hierarchical: bool
+    training_fraction: float
+    hierarchical_level1_clusters: int
+    seed: int
+    n_probes: int
+    k_reorder: float
+    num_threads: int
+    intra_query_threads: int
+    is_static: bool
+    storage_kind: SVSStorageKind
+
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_FP32,
+        is_static: bool = False,
+    ) -> None: ...
+    @staticmethod
+    def is_lvq_leanvec_enabled() -> bool: ...
+
+class IndexSVSIVFLVQ(IndexSVSIVF):
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_LVQ4x0,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSIVFLeanVec(IndexSVSIVF):
+    leanvec_d: int
+
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        leanvec_dims: int = 0,
+        storage: SVSStorageKind = SVS_LeanVec4x4,
+        is_static: bool = False,
+    ) -> None: ...
 
 # Independent quantizer
 class IndexIVFIndependentQuantizer(Index):
