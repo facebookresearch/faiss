@@ -100,7 +100,6 @@ def build_index(name):
 
 
 nlevels = 16 if args.dataset == "gist1m" else 8
-batch_size = 512
 
 pano_name = f"PCA{d},FlatL2Panorama{nlevels}_{batch_size}"
 
