@@ -592,8 +592,12 @@ void handle_ivf(
                 static_cast<faiss::IndexIVF*>(faiss::clone_index(clone));
         if (generate_ids) {
             // Assume the quantizer does not natively support add_with_ids.
-            sharded_index->quantizer =
-                    new IndexIDMap2(sharded_index->quantizer);
+            // The IDMap wraps the cloned quantizer; own_fields makes it delete
+            // that quantizer when sharded_index (which owns the IDMap) is
+            // freed.
+            auto* id_quantizer = new IndexIDMap2(sharded_index->quantizer);
+            id_quantizer->own_fields = true;
+            sharded_index->quantizer = id_quantizer;
             sharded_index->quantizer->add_with_ids(
                     sharded_centroids[i].size() / index->quantizer->d,
                     sharded_centroids[i].data(),
@@ -615,6 +619,7 @@ void handle_ivf(
         faiss::write_index(sharded_index, fname);
         delete sharded_index;
     }
+    delete clone;
 }
 
 void handle_binary_ivf(
@@ -650,8 +655,13 @@ void handle_binary_ivf(
                 faiss::clone_binary_index(clone));
         if (generate_ids) {
             // Assume the quantizer does not natively support add_with_ids.
-            sharded_index->quantizer =
+            // The IDMap wraps the cloned quantizer; own_fields makes it delete
+            // that quantizer when sharded_index (which owns the IDMap) is
+            // freed.
+            auto* id_quantizer =
                     new IndexBinaryIDMap2(sharded_index->quantizer);
+            id_quantizer->own_fields = true;
+            sharded_index->quantizer = id_quantizer;
             sharded_index->quantizer->add_with_ids(
                     sharded_centroids[i].size() / reconstruction_size,
                     sharded_centroids[i].data(),
@@ -673,6 +683,7 @@ void handle_binary_ivf(
         faiss::write_index_binary(sharded_index, fname);
         delete sharded_index;
     }
+    delete clone;
 }
 
 template <typename IndexType>
