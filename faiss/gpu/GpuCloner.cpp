@@ -14,9 +14,9 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
 #if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
 #include <faiss/IndexBinaryHNSW.h>
-#include <faiss/IndexHNSW.h>
 #endif
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
@@ -33,6 +33,7 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #endif
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexHNSW.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
@@ -86,6 +87,14 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
         IndexIVFPQ* res = new IndexIVFPQ();
         ipq->copyTo(res);
         return res;
+    } else if (dynamic_cast<const GpuIndexHNSW*>(index)) {
+        // GpuIndexHNSW is search-only: it uploads a CPU-built graph and cannot
+        // reconstruct a CPU faiss::IndexHNSW. Fail explicitly rather than
+        // falling through to the generic "not implemented" assert.
+        FAISS_THROW_MSG(
+                "GpuIndexHNSW is search-only; index_gpu_to_cpu() is not "
+                "supported. Keep the source faiss::IndexHNSW to obtain a CPU "
+                "index.");
 
         // for IndexShards and IndexReplicas we assume that the
         // objective is to make a single component out of them
@@ -243,7 +252,23 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         return res;
     }
 #endif
-    else {
+    else if (
+            dynamic_cast<const faiss::IndexHNSW*>(index) &&
+            !dynamic_cast<const faiss::IndexHNSWCagra*>(index) &&
+            index->ntotal > 0) {
+        // Vanilla HNSW (Flat / SQ storage) with a populated graph.
+        // IndexHNSWCagra is excluded: it is handled by the cuVS GpuIndexCagra
+        // branch above when cuVS is enabled. An empty HNSW (ntotal == 0) is
+        // deliberately left to the fall-through below so it reports "not
+        // implemented on GPU": that is the signal GpuIndexIVF::copyFrom keys
+        // on to fall back to a CPU coarse quantizer (allowCpuCoarseQuantizer)
+        // when an untrained IVF_HNSW is cloned to the GPU. GpuIndexHNSW is
+        // search-only, so an empty graph has nothing to upload anyway.
+        auto ihnsw = static_cast<const faiss::IndexHNSW*>(index);
+        GpuIndexHNSWConfig config;
+        config.device = device;
+        return new GpuIndexHNSW(provider, ihnsw, config);
+    } else {
         // use CPU cloner for IDMap and PreTransform
         auto index_idmap = dynamic_cast<const IndexIDMap*>(index);
         auto index_pt = dynamic_cast<const IndexPreTransform*>(index);

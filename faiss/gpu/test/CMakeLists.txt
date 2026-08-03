@@ -40,6 +40,7 @@ endmacro()
 
 faiss_gpu_test(TestCodePacking.cpp)
 faiss_gpu_test(TestGpuIndexFlat.cpp)
+faiss_gpu_test(TestGpuIndexHNSW.cpp)
 faiss_gpu_test(TestGpuIndexIVFFlat.cpp)
 faiss_gpu_test(TestGpuIndexBinaryFlat.cpp)
 faiss_gpu_test(TestGpuMemoryException.cpp)

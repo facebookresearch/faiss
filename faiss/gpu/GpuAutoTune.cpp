@@ -15,6 +15,7 @@
 
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexHNSW.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/impl/IndexUtils.h>
@@ -71,6 +72,13 @@ void GpuParameterSpace::initialize(const Index* index) {
             pr.values = p.values;
         }
     }
+    if (DC(GpuIndexHNSW)) {
+        // Mirror the CPU IndexHNSW "efSearch" sweep.
+        ParameterRange& pr = add_range("efSearch");
+        for (int i = 2; i <= 9; i++) {
+            pr.values.push_back(1 << i);
+        }
+    }
     // not sure we should call the parent initializer
 }
 
@@ -97,6 +105,14 @@ void GpuParameterSpace::set_index_parameter(
     if (name == "use_precomputed_table") {
         if (DC(GpuIndexIVFPQ)) {
             ix->setPrecomputedCodes(bool(val));
+            return;
+        }
+    }
+    if (name == "efSearch") {
+        if (DC(GpuIndexHNSW)) {
+            GpuHnswSearchParams sp;
+            sp.ef = int(val);
+            ix->setSearchParams(sp);
             return;
         }
     }

@@ -31,6 +31,49 @@ Faiss is built around an index type that stores a set of vectors, and provides a
 
 The optional GPU implementation provides what is likely (as of March 2017) the fastest exact and approximate (compressed-domain) nearest neighbor search implementation for high-dimensional vectors, fastest Lloyd's k-means, and fastest small k-selection algorithm known. [The implementation is detailed here](https://arxiv.org/abs/1702.08734).
 
+## GPU HNSW (`GpuIndexHNSW`)
+
+`GpuIndexHNSW` runs HNSW graph search on the GPU using a graph that was **built
+on the CPU**. There is no GPU build path: you construct a regular
+`faiss::IndexHNSW` (Flat or ScalarQuantizer storage) on the CPU as usual, then
+move it to the GPU with the standard `index_cpu_to_gpu` cloner, which uploads
+the graph and vectors to the device and returns a `GpuIndexHNSW` for search.
+
+```python
+import faiss
+
+# Build a normal CPU HNSW index (SQ8 storage shown; also HNSW32,Flat /
+# HNSW32,SQfp16 / HNSW32,SQbf16). SQ storage must be trained before add().
+cpu_index = faiss.index_factory(d, "HNSW32,SQ8", faiss.METRIC_L2)
+cpu_index.train(xb)
+cpu_index.add(xb)
+
+# Move it to the GPU for search (the cloner routes HNSW to GpuIndexHNSW).
+res = faiss.StandardGpuResources()
+gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
+
+params = faiss.SearchParametersGpuHNSW()
+params.ef = 256
+D, I = gpu_index.search(xq, k, params=params)
+```
+
+Supported configurations:
+
+- **Storage / precision** — kept in its native layout on the device (no
+  decode-to-fp32), so the memory footprint matches the source type:
+  `IndexHNSWFlat` (fp32), and `IndexHNSWSQ` with `QT_8bit_direct_signed` (int8,
+  DP4A distance), `QT_fp16`, or `QT_bf16`. Other SQ types are decoded to fp32.
+- **Metrics** — `METRIC_L2` and `METRIC_INNER_PRODUCT`. Cosine follows the
+  standard faiss idiom (L2-normalize the vectors, then use inner product).
+- **Search params** — `SearchParametersGpuHNSW` exposes per-search `ef` (and
+  `search_width`), mirroring the CPU HNSW `efSearch` tuning.
+
+Notes:
+
+- The index is **search-only**: it holds a CPU-built graph and does not retain a
+  reconstructable CPU copy, so `copyTo` / `index_gpu_to_cpu` throw.
+- `IndexHNSWCagra` is **not** routed here; it keeps its own cuVS/CAGRA GPU path.
+
 ## Full documentation of Faiss
 
 The following are entry points for documentation:

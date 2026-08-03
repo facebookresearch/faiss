@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+Added
+- GpuIndexHNSW: GPU search over a CPU-built HNSW graph, bridged by the standard
+  index_cpu_to_gpu cloner. Native fp32 / int8 (DP4A) / fp16 / bf16 storage,
+  METRIC_L2 and METRIC_INNER_PRODUCT (cosine via normalize+IP), and
+  SearchParametersGpuHNSW (ef). Search-only (copyTo / index_gpu_to_cpu throw);
+  IndexHNSWCagra keeps its cuVS/CAGRA path. (#5458)
+
 ## [1.14.3] - 2026-06-12
 
 Added
