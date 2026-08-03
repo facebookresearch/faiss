@@ -156,7 +156,7 @@ class TestEDENScalarQuantizer(unittest.TestCase):
         xb = rs.randn(40, 32).astype("float32")
         xq = rs.randn(1, 32).astype("float32")
 
-        for bits in [1, 2, 4]:
+        for bits in [1, 2, 4, 8]:
             with self.subTest(bits=bits):
                 index = faiss.IndexEDEN(32, faiss.METRIC_L2, bits)
                 index.train(xt)
@@ -227,7 +227,7 @@ class TestEDENScalarQuantizer(unittest.TestCase):
         rs = np.random.RandomState(2468)
         previous = faiss.SIMDConfig.get_level()
         try:
-            for bits, d in [(1, 256), (2, 64), (4, 256)]:
+            for bits, d in [(1, 256), (2, 64), (4, 256), (8, 128)]:
                 xt = rs.randn(400, d).astype("float32")
                 xb = rs.randn(128, d).astype("float32")
                 xq = rs.randn(5, d).astype("float32")
@@ -256,7 +256,7 @@ class TestEDENScalarQuantizer(unittest.TestCase):
         xb = rs.randn(nb, d).astype("float32")
         xq = rs.randn(nq, d).astype("float32")
 
-        for bits in [1, 2, 4]:
+        for bits in [1, 2, 4, 8]:
             with self.subTest(bits=bits):
                 index = faiss.IndexEDEN(d, faiss.METRIC_L2, bits)
                 index.train(xt)
