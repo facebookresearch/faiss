@@ -43,7 +43,8 @@ int64_t RandomGenerator::rand_int64() {
 }
 
 int RandomGenerator::rand_int(int max) {
-    return mt() % max;
+    // Lemire's fast-range: single multiply, no division, bias < 1/2^32.
+    return int((uint64_t(mt()) * uint64_t(max)) >> 32);
 }
 
 float RandomGenerator::rand_float() {
@@ -67,7 +68,8 @@ int64_t SplitMix64RandomGenerator::rand_int64() {
 }
 
 int SplitMix64RandomGenerator::rand_int(int max) {
-    return next() % max;
+    // Lemire's fast-range: single multiply, no division, bias < 1/2^32.
+    return int((next() * uint64_t(max)) >> 32);
 }
 
 float SplitMix64RandomGenerator::rand_float() {
