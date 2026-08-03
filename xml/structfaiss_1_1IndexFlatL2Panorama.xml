@@ -4,10 +4,10 @@
     <compoundname>faiss::IndexFlatL2Panorama</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexFlatPanorama" prot="public" virt="non-virtual">faiss::IndexFlatPanorama</basecompoundref>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexFlatL2Panorama_1a5589d80c5d45692b246359966b9fcdf1" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFlatL2Panorama_1a701ae01c29010f2c10e28b4762b37c73" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexFlatL2Panorama::IndexFlatL2Panorama</definition>
-        <argsstring>(idx_t d_in, size_t n_levels_in, size_t batch_size_in=512)</argsstring>
+        <argsstring>(idx_t d_in, size_t n_levels_in, size_t batch_size_in=Panorama::kDefaultBatchSize)</argsstring>
         <name>IndexFlatL2Panorama</name>
         <qualifiedname>faiss::IndexFlatL2Panorama::IndexFlatL2Panorama</qualifiedname>
         <param>
@@ -21,7 +21,7 @@
         <param>
           <type>size_t</type>
           <declname>batch_size_in</declname>
-          <defval>512</defval>
+          <defval>Panorama::kDefaultBatchSize</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -1872,7 +1872,7 @@
       <member refid="structfaiss_1_1IndexFlat_1a75a158c47a9710c9c268b22d2c6730fa" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlat</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatCodes</name></member>
-      <member refid="structfaiss_1_1IndexFlatL2Panorama_1a5589d80c5d45692b246359966b9fcdf1" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatL2Panorama</name></member>
+      <member refid="structfaiss_1_1IndexFlatL2Panorama_1a701ae01c29010f2c10e28b4762b37c73" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatL2Panorama</name></member>
       <member refid="structfaiss_1_1IndexFlatPanorama_1aaa9cce9e21082188de96fda66010af5d" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatPanorama</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1IndexFlatPanorama_1a854b0837cf6044aacc1345c562fa42d5" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>merge_from</name></member>

@@ -3680,7 +3680,7 @@
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexFlatIPPanorama" kind="struct"><name>faiss::IndexFlatIPPanorama</name>
-    <member refid="structfaiss_1_1IndexFlatIPPanorama_1a3e8638f703327c15f4c41d9813ddf752" kind="function"><name>IndexFlatIPPanorama</name></member>
+    <member refid="structfaiss_1_1IndexFlatIPPanorama_1aad2c2ce734bb30a59657f895099a68b4" kind="function"><name>IndexFlatIPPanorama</name></member>
     <member refid="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFlatPanorama_1a639dbd957c39b9060ac3dfd8ee05563b" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60" kind="function"><name>range_search</name></member>
@@ -3782,7 +3782,7 @@
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexFlatL2Panorama" kind="struct"><name>faiss::IndexFlatL2Panorama</name>
-    <member refid="structfaiss_1_1IndexFlatL2Panorama_1a5589d80c5d45692b246359966b9fcdf1" kind="function"><name>IndexFlatL2Panorama</name></member>
+    <member refid="structfaiss_1_1IndexFlatL2Panorama_1a701ae01c29010f2c10e28b4762b37c73" kind="function"><name>IndexFlatL2Panorama</name></member>
     <member refid="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFlatPanorama_1a639dbd957c39b9060ac3dfd8ee05563b" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60" kind="function"><name>range_search</name></member>
@@ -10387,6 +10387,7 @@
   </compound>
   <compound refid="structfaiss_1_1Panorama" kind="struct"><name>faiss::Panorama</name>
     <member refid="structfaiss_1_1Panorama_1a03b9727771332834277dc56aaf1f35bc" kind="variable"><name>kDefaultBatchSize</name></member>
+    <member refid="structfaiss_1_1Panorama_1aba5e9914d2c03740cc7236c83226ef86" kind="variable"><name>kLegacyBatchSize</name></member>
     <member refid="structfaiss_1_1Panorama_1a0628ed744f5bc804f87e7e9f03b53604" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1Panorama_1ac885ad39deed6034073c8d839fcd113e" kind="variable"><name>n_levels</name></member>
