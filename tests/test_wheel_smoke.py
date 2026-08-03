@@ -195,6 +195,6 @@ class TestSIMD(unittest.TestCase):
         if "DD" not in opts:
             raise unittest.SkipTest("Not a Dynamic Dispatch build")
         # DD builds should select at least AVX2 on modern x86_64
-        assert "AVX2" in opts or "AVX512" in opts, (
-            f"DD build did not select a SIMD path: {opts}"
-        )
+        assert (
+            "AVX2" in opts or "AVX512" in opts
+        ), f"DD build did not select a SIMD path: {opts}"

@@ -80,7 +80,8 @@ class TestSIMDDispatch(unittest.TestCase):
         self.assertIsNotNone(result)
 
     def test_get_level_equals_get_dispatched_level(self):
-        """Verify get_level() and get_dispatched_level() return the same value."""
+        """Verify get_level() and get_dispatched_level() return the same
+        value."""
         try:
             import faiss
         except ImportError:
@@ -102,7 +103,9 @@ class TestSIMDDispatch(unittest.TestCase):
             import faiss
 
             if "DD" not in faiss.get_compile_options():
-                self.skipTest("Not a DD build - SIMD level is fixed at compile time")
+                self.skipTest(
+                    "Not a DD build - SIMD level is fixed at compile time"
+                )
         except ImportError:
             self.skipTest("faiss not available")
 
@@ -161,7 +164,9 @@ print(f"OK: SIMD level {level_name} dispatched correctly")
             import faiss
 
             if "DD" not in faiss.get_compile_options():
-                self.skipTest("Not a DD build - SIMD level is fixed at compile time")
+                self.skipTest(
+                    "Not a DD build - SIMD level is fixed at compile time"
+                )
         except ImportError:
             self.skipTest("faiss not available")
 
@@ -227,7 +232,9 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             import faiss
 
             if "DD" not in faiss.get_compile_options():
-                self.skipTest("Not a DD build - SIMD level is fixed at compile time")
+                self.skipTest(
+                    "Not a DD build - SIMD level is fixed at compile time"
+                )
         except ImportError:
             self.skipTest("faiss not available")
 
@@ -239,9 +246,17 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             self.skipTest("/proc/cpuinfo not available")
 
         # The exact feature set faiss requires before selecting AVX512_SPR.
-        avx512_core = {"avx512f", "avx512cd", "avx512vl", "avx512dq", "avx512bw"}
+        avx512_core = {
+            "avx512f",
+            "avx512cd",
+            "avx512vl",
+            "avx512dq",
+            "avx512bw",
+        }
         spr_capable = (
-            avx512_core <= flags and "avx512_bf16" in flags and "avx512_fp16" in flags
+            avx512_core <= flags
+            and "avx512_bf16" in flags
+            and "avx512_fp16" in flags
         )
 
         spr_detected = faiss.SIMDConfig.is_simd_level_available(

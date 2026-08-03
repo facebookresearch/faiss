@@ -11,11 +11,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 try:
-    from faiss.contrib.datasets_fb import \
-        DatasetSIFT1M
+    from faiss.contrib.datasets_fb import DatasetSIFT1M
 except ImportError:
-    from faiss.contrib.datasets import \
-        DatasetSIFT1M
+    from faiss.contrib.datasets import DatasetSIFT1M
 
 
 # ds = DatasetDeep1B(10**6)
@@ -46,8 +44,8 @@ def eval_recall(index, name):
     corrects = (gt == I).sum()
     recall = corrects / nq
     print(
-        f'\tnprobe {index.nprobe:3d}, Recall@{k}: '
-        f'{recall:.6f}, speed: {speed:.6f} ms/query'
+        f"\tnprobe {index.nprobe:3d}, Recall@{k}: "
+        f"{recall:.6f}, speed: {speed:.6f} ms/query"
     )
 
     return recall, qps
@@ -66,7 +64,7 @@ def eval_and_plot(name, rescale_norm=True, plot=True):
         faiss.write_index(index, index_path)
 
     # search params
-    if hasattr(index, 'rescale_norm'):
+    if hasattr(index, "rescale_norm"):
         index.rescale_norm = rescale_norm
         name += f"(rescale_norm={rescale_norm})"
     faiss.omp_set_num_threads(1)
@@ -108,5 +106,5 @@ eval_and_plot(f"IVF{nlist},RQ{M-2}x4fs_Nrq2x4")
 plt.title("Indices on SIFT1M")
 plt.xlabel("Recall@1")
 plt.ylabel("QPS")
-plt.legend(bbox_to_anchor=(1.02, 0.1), loc='upper left', borderaxespad=0)
-plt.savefig("bench_ivf_fastscan.png", bbox_inches='tight')
+plt.legend(bbox_to_anchor=(1.02, 0.1), loc="upper left", borderaxespad=0)
+plt.savefig("bench_ivf_fastscan.png", bbox_inches="tight")

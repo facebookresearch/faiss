@@ -150,11 +150,40 @@ void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
     add_with_ids_ex(n, static_cast<const void*>(x), NumericType::Float32, ids);
 }
 
+void GpuIndex::addImplPrecomputed_(
+        idx_t n,
+        const float* x,
+        const idx_t* ids,
+        const idx_t* precomputed_idx) {
+    FAISS_THROW_IF_NOT_MSG(
+            precomputed_idx == nullptr,
+            "precomputed add assignments are not supported for this index");
+    addImpl_(n, x, ids);
+}
+
+void GpuIndex::addImplPrecomputed_ex_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids,
+        const idx_t* precomputed_idx) {
+    if (precomputed_idx == nullptr) {
+        addImpl_ex_(n, x, numeric_type, ids);
+    } else if (numeric_type == NumericType::Float32) {
+        addImplPrecomputed_(
+                n, static_cast<const float*>(x), ids, precomputed_idx);
+    } else {
+        FAISS_THROW_MSG(
+                "GpuIndex::addImplPrecomputed_: unsupported numeric type");
+    }
+}
+
 void GpuIndex::addPaged_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
-        const idx_t* ids) {
+        const idx_t* ids,
+        const idx_t* precomputed_idx) {
     if (n <= 0) {
         return;
     }
@@ -183,11 +212,16 @@ void GpuIndex::addPaged_ex_(
                         curNum,
                         static_cast<const void*>(typed_x + i * this->d),
                         numeric_type,
-                        ids ? ids + i : nullptr);
+                        ids ? ids + i : nullptr,
+                        precomputed_idx ? precomputed_idx + i : nullptr);
             }
         } else {
             addPage_ex_(
-                    n, static_cast<const void*>(typed_x), numeric_type, ids);
+                    n,
+                    static_cast<const void*>(typed_x),
+                    numeric_type,
+                    ids,
+                    precomputed_idx);
         }
     };
 
@@ -202,17 +236,27 @@ void GpuIndex::addPaged_ex_(
     }
 }
 
-void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
-    addPaged_ex_(n, static_cast<const void*>(x), NumericType::Float32, ids);
+void GpuIndex::addPaged_(
+        idx_t n,
+        const float* x,
+        const idx_t* ids,
+        const idx_t* precomputed_idx) {
+    addPaged_ex_(
+            n,
+            static_cast<const void*>(x),
+            NumericType::Float32,
+            ids,
+            precomputed_idx);
 }
 
 void GpuIndex::addPage_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
-        const idx_t* ids) {
-    // At this point, `x` can be resident on CPU or GPU, and `ids` may be
-    // resident on CPU, GPU or may be null.
+        const idx_t* ids,
+        const idx_t* precomputed_idx) {
+    // At this point, `x` can be resident on CPU or GPU, and `ids` and
+    // `precomputed_idx` may be resident on CPU, GPU or may be null.
     //
     // Before continuing, we guarantee that all data will be resident on the
     // GPU.
@@ -228,7 +272,28 @@ void GpuIndex::addPage_ex_(
                 stream,
                 {n, this->d});
 
-        if (ids) {
+        if (ids && precomputed_idx) {
+            auto indices = toDeviceTemporary<idx_t, 1>(
+                    resources_.get(),
+                    config_.device,
+                    const_cast<idx_t*>(ids),
+                    stream,
+                    {n});
+
+            auto precomputed = toDeviceTemporary<idx_t, 1>(
+                    resources_.get(),
+                    config_.device,
+                    const_cast<idx_t*>(precomputed_idx),
+                    stream,
+                    {n});
+
+            addImplPrecomputed_ex_(
+                    n,
+                    static_cast<const void*>(vecs.data()),
+                    numeric_type,
+                    indices.data(),
+                    precomputed.data());
+        } else if (ids) {
             auto indices = toDeviceTemporary<idx_t, 1>(
                     resources_.get(),
                     config_.device,
@@ -240,7 +305,21 @@ void GpuIndex::addPage_ex_(
                     n,
                     static_cast<const void*>(vecs.data()),
                     numeric_type,
-                    ids ? indices.data() : nullptr);
+                    indices.data());
+        } else if (precomputed_idx) {
+            auto precomputed = toDeviceTemporary<idx_t, 1>(
+                    resources_.get(),
+                    config_.device,
+                    const_cast<idx_t*>(precomputed_idx),
+                    stream,
+                    {n});
+
+            addImplPrecomputed_ex_(
+                    n,
+                    static_cast<const void*>(vecs.data()),
+                    numeric_type,
+                    nullptr,
+                    precomputed.data());
         } else {
             addImpl_ex_(
                     n,
@@ -261,8 +340,17 @@ void GpuIndex::addPage_ex_(
     }
 }
 
-void GpuIndex::addPage_(idx_t n, const float* x, const idx_t* ids) {
-    addPage_ex_(n, static_cast<const void*>(x), NumericType::Float32, ids);
+void GpuIndex::addPage_(
+        idx_t n,
+        const float* x,
+        const idx_t* ids,
+        const idx_t* precomputed_idx) {
+    addPage_ex_(
+            n,
+            static_cast<const void*>(x),
+            NumericType::Float32,
+            ids,
+            precomputed_idx);
 }
 
 void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {

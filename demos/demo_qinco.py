@@ -5,7 +5,7 @@
 
 """
 This demonstrates how to reproduce the QINCo paper results using the Faiss
-QINCo implementation. The code loads the reference model because training 
+QINCo implementation. The code loads the reference model because training
 is not implemented in Faiss.
 
 Prepare the data with
@@ -41,7 +41,7 @@ with torch.no_grad():
         torch.set_num_threads(1)
         faiss.omp_set_num_threads(1)
 
-    x_base = bvecs_mmap("/tmp/bigann1M.bvecs")[:1000].astype('float32')
+    x_base = bvecs_mmap("/tmp/bigann1M.bvecs")[:1000].astype("float32")
     x_scaled = torch.from_numpy(x_base) / qinco.db_scale
 
     t0 = time.time()

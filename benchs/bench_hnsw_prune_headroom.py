@@ -108,7 +108,8 @@ def run_benchmark(
     for headroom in headroom_values:
         for rep in range(reps):
             index, build_time = build_hnsw_index(
-                d, m, xb, ef_construction, headroom)
+                d, m, xb, ef_construction, headroom
+            )
             results["build_times"][headroom] = build_time
 
             faiss.cvar.hnsw_stats.reset()

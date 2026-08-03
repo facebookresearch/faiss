@@ -11,16 +11,17 @@ import unittest
 import faiss
 
 from common_faiss_tests import (
-    compare_binary_result_lists, for_all_simd_levels, make_binary_dataset
+    compare_binary_result_lists,
+    for_all_simd_levels,
+    make_binary_dataset,
 )
-
 
 
 def binary_to_float(x):
     n, d = x.shape
     x8 = x.reshape(n * d, -1)
-    c8 = 2 * ((x8 >> np.arange(8)) & 1).astype('int8') - 1
-    return c8.astype('float32').reshape(n, d * 8)
+    c8 = 2 * ((x8 >> np.arange(8)) & 1).astype("int8") - 1
+    return c8.astype("float32").reshape(n, d * 8)
 
 
 def binary_dis(x, y):
@@ -29,7 +30,7 @@ def binary_dis(x, y):
 
 @for_all_simd_levels
 class TestBinaryPQ(unittest.TestCase):
-    """ Use a PQ that mimicks a binary encoder """
+    """Use a PQ that mimicks a binary encoder"""
 
     def test_encode_to_binary(self):
         d = 256
@@ -40,7 +41,8 @@ class TestBinaryPQ(unittest.TestCase):
         pq = faiss.ProductQuantizer(d, int(d / 8), 8)
 
         centroids = binary_to_float(
-            np.tile(np.arange(256), int(d / 8)).astype('uint8').reshape(-1, 1))
+            np.tile(np.arange(256), int(d / 8)).astype("uint8").reshape(-1, 1)
+        )
 
         faiss.copy_array_to_vector(centroids.ravel(), pq.centroids)
         pq.is_trained = True
@@ -124,8 +126,8 @@ class TestBinaryFlat(unittest.TestCase):
             index.use_heap = use_heap
             Dflat, Iflat = index.search(self.xq, 10)
 
-            assert(np.all(Iflat == -1))
-            assert(np.all(Dflat == 2147483647)) # NOTE(hoss): int32_t max
+            assert np.all(Iflat == -1)
+            assert np.all(Dflat == 2147483647)  # NOTE(hoss): int32_t max
 
     def test_range_search(self):
         d = self.xq.shape[1] * 8
@@ -138,7 +140,7 @@ class TestBinaryFlat(unittest.TestCase):
         lims, D2, I2 = index.range_search(self.xq, thresh)
         nt1 = nt2 = 0
         for i in range(len(self.xq)):
-            range_res = I2[lims[i]:lims[i + 1]]
+            range_res = I2[lims[i] : lims[i + 1]]
             if thresh > D[i, -1]:
                 self.assertTrue(set(I[i]) <= set(range_res))
                 nt1 += 1
@@ -151,7 +153,9 @@ class TestBinaryFlat(unittest.TestCase):
 
     def test_reconstruct(self):
         index = faiss.IndexBinaryFlat(64)
-        input_vector = np.random.randint(0, 255, size=(10, index.code_size)).astype("uint8")
+        input_vector = np.random.randint(
+            0, 255, size=(10, index.code_size)
+        ).astype("uint8")
         index.add(input_vector)
 
         reconstructed_vector = index.reconstruct_n(0, 4)
@@ -180,7 +184,7 @@ class TestBinaryIVF(unittest.TestCase):
 
         quantizer = faiss.IndexBinaryFlat(d)
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.nprobe = 8
         index.train(self.xt)
         index.add(self.xb)
@@ -193,7 +197,7 @@ class TestBinaryIVF(unittest.TestCase):
 
         quantizer = faiss.IndexBinaryFlat(d)
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.nprobe = 4
         index.train(self.xt)
         index.add(self.xb)
@@ -208,7 +212,7 @@ class TestBinaryIVF(unittest.TestCase):
 
         quantizer = faiss.IndexBinaryFlat(d)
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.nprobe = 4
         index.train(self.xt)
         index.add(self.xb)
@@ -218,13 +222,12 @@ class TestBinaryIVF(unittest.TestCase):
         Lr, Dr, Ir = index.range_search(self.xq, radius)
 
         for i in range(len(self.xq)):
-            res = Ir[Lr[i]:Lr[i + 1]]
+            res = Ir[Lr[i] : Lr[i + 1]]
             if D[i, -1] < radius:
                 self.assertTrue(set(I[i]) <= set(res))
             else:
                 subset = I[i, D[i, :] < radius]
                 self.assertTrue(set(subset) == set(res))
-
 
     def test_ivf_flat_empty(self):
         d = self.xq.shape[1] * 8
@@ -236,14 +239,14 @@ class TestBinaryIVF(unittest.TestCase):
             index.use_heap = use_heap
             Divfflat, Iivfflat = index.search(self.xq, 10)
 
-            assert(np.all(Iivfflat == -1))
-            assert(np.all(Divfflat == 2147483647)) # NOTE(hoss): int32_t max
+            assert np.all(Iivfflat == -1)
+            assert np.all(Divfflat == 2147483647)  # NOTE(hoss): int32_t max
 
     def test_ivf_reconstruction(self):
         d = self.xq.shape[1] * 8
         quantizer = faiss.IndexBinaryFlat(d)
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.nprobe = 4
         index.train(self.xt)
 
@@ -251,22 +254,20 @@ class TestBinaryIVF(unittest.TestCase):
         index.set_direct_map_type(faiss.DirectMap.Array)
 
         for i in range(0, len(self.xb), 13):
-            np.testing.assert_array_equal(
-                index.reconstruct(i),
-                self.xb[i]
-            )
+            np.testing.assert_array_equal(index.reconstruct(i), self.xb[i])
 
         # try w/ hashtable
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
         rs = np.random.RandomState(123)
-        ids = rs.choice(10000, size=len(self.xb), replace=False).astype(np.int64)
+        ids = rs.choice(10000, size=len(self.xb), replace=False).astype(
+            np.int64
+        )
         index.add_with_ids(self.xb, ids)
         index.set_direct_map_type(faiss.DirectMap.Hashtable)
 
         for i in range(0, len(self.xb), 13):
             np.testing.assert_array_equal(
-                index.reconstruct(int(ids[i])),
-                self.xb[i]
+                index.reconstruct(int(ids[i])), self.xb[i]
             )
 
     def test_ivf_nprobe(self):
@@ -295,7 +296,7 @@ class TestBinaryIVF(unittest.TestCase):
         # assert np.all(I == ref_I)  # id may be different
 
         # test range search
-        thresh = 5   # *squared* distance
+        thresh = 5  # *squared* distance
         lims, D, I = index.range_search(xq, thresh)
         ref_lims, ref_D, ref_I = ref_index.range_search(xq, thresh)
         assert np.all(lims == ref_lims)
@@ -307,7 +308,7 @@ class TestBinaryIVF(unittest.TestCase):
 
         quantizer = faiss.IndexBinaryFlat(d)
         index = faiss.IndexBinaryIVF(quantizer, d, 10)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.train(self.xt)
         index.add(self.xb)
         index.nprobe = 3
@@ -369,8 +370,10 @@ class TestHNSW(unittest.TestCase):
 @for_all_simd_levels
 class TestReplicasAndShards(unittest.TestCase):
 
-    @unittest.skipIf(os.name == "posix" and os.uname().sysname == "Darwin",
-                     "There is a bug in the OpenMP implementation on OSX.")
+    @unittest.skipIf(
+        os.name == "posix" and os.uname().sysname == "Darwin",
+        "There is a bug in the OpenMP implementation on OSX.",
+    )
     def test_replicas(self):
         d = 32
         nq = 100
@@ -443,5 +446,5 @@ class TestReplicasAndShards(unittest.TestCase):
         compare_binary_result_lists(Dref, Iref, D2, I2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

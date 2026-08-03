@@ -29,11 +29,9 @@ namespace {
 template <class VD>
 struct ExtraDistanceComputer : FlatCodesDistanceComputer {
     VD vd;
-    idx_t nb;
-    const float* q;
-    const float* b;
 
     float symmetric_dis(idx_t i, idx_t j) final {
+        const float* b = (const float*)codes;
         return vd(b + j * vd.d, b + i * vd.d);
     }
 
@@ -41,16 +39,9 @@ struct ExtraDistanceComputer : FlatCodesDistanceComputer {
         return vd(q, (float*)code);
     }
 
-    ExtraDistanceComputer(
-            const VD& vd_in,
-            const float* xb,
-            size_t nb_in,
-            const float* q_in = nullptr)
+    ExtraDistanceComputer(const VD& vd_in, const float* xb)
             : FlatCodesDistanceComputer((uint8_t*)xb, vd_in.d * sizeof(float)),
-              vd(vd_in),
-              nb(nb_in),
-              q(q_in),
-              b(xb) {}
+              vd(vd_in) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -149,11 +140,10 @@ FlatCodesDistanceComputer* get_extra_distance_computer(
         size_t d,
         MetricType mt,
         float metric_arg,
-        size_t nb,
         const float* xb) {
     return with_VectorDistance(
             d, mt, metric_arg, [&](auto vd) -> FlatCodesDistanceComputer* {
-                return new ExtraDistanceComputer<decltype(vd)>(vd, xb, nb);
+                return new ExtraDistanceComputer<decltype(vd)>(vd, xb);
             });
 }
 

@@ -7,7 +7,6 @@
 
 #include <faiss/impl/pq_code_distance/IVFPQ_QueryTables.h>
 
-#include <faiss/Clustering.h>
 #include <faiss/utils/distances_dispatch.h>
 
 namespace faiss {

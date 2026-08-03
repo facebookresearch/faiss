@@ -59,10 +59,12 @@ class TestFastScanFiltering(unittest.TestCase):
             allowed = set(range(lo, hi))
         elif id_selector_type == "not_batch":
             # Exclude entire 32-vector blocks to test block-skip
-            excluded = np.concatenate([
-                np.arange(0, 32, dtype="int64"),
-                np.arange(64, 96, dtype="int64"),
-            ])
+            excluded = np.concatenate(
+                [
+                    np.arange(0, 32, dtype="int64"),
+                    np.arange(64, 96, dtype="int64"),
+                ]
+            )
             inner_sel = faiss.IDSelectorBatch(excluded)
             sel = faiss.IDSelectorNot(inner_sel)
             allowed = {i for i in range(nb) if i not in excluded}
@@ -87,16 +89,15 @@ class TestFastScanFiltering(unittest.TestCase):
                 idx = int(Ifs[q, j])
                 if idx >= 0:
                     self.assertIn(
-                        idx, allowed,
-                        f"Query {q}, rank {j}: got id {idx} not in allowed set"
+                        idx,
+                        allowed,
+                        f"Query {q}, rank {j}: got id {idx} not in allowed set",
                     )
 
         # If allowed set is large enough, expect some valid results
         if len(allowed) > k:
             valid = np.sum(Ifs >= 0)
-            self.assertGreater(
-                valid, 0, "Expected some valid results"
-            )
+            self.assertGreater(valid, 0, "Expected some valid results")
 
         return Ifs
 
@@ -207,10 +208,12 @@ class TestBlockSkipConsistency(unittest.TestCase):
         ds = datasets.SyntheticDataset(d, 2000, nb, 20)
 
         # Exclude entire blocks: IDs 0-31 and 64-95
-        excluded = np.concatenate([
-            np.arange(0, 32, dtype="int64"),
-            np.arange(64, 96, dtype="int64"),
-        ])
+        excluded = np.concatenate(
+            [
+                np.arange(0, 32, dtype="int64"),
+                np.arange(64, 96, dtype="int64"),
+            ]
+        )
         inner_sel = faiss.IDSelectorBatch(excluded)
         sel = faiss.IDSelectorNot(inner_sel)
         allowed = {i for i in range(nb) if i not in excluded}
@@ -235,11 +238,17 @@ class TestBlockSkipConsistency(unittest.TestCase):
         for q in range(ds.nq):
             for j in range(k):
                 if Ifs[q, j] >= 0:
-                    self.assertIn(int(Ifs[q, j]), allowed,
-                        f"FastScan q={q} j={j}: id {Ifs[q, j]} is excluded")
+                    self.assertIn(
+                        int(Ifs[q, j]),
+                        allowed,
+                        f"FastScan q={q} j={j}: id {Ifs[q, j]} is excluded",
+                    )
                 if Ipq[q, j] >= 0:
-                    self.assertIn(int(Ipq[q, j]), allowed,
-                        f"IVFPQ q={q} j={j}: id {Ipq[q, j]} is excluded")
+                    self.assertIn(
+                        int(Ipq[q, j]),
+                        allowed,
+                        f"IVFPQ q={q} j={j}: id {Ipq[q, j]} is excluded",
+                    )
 
     def test_partial_vs_whole_block_filter(self):
         """
@@ -332,8 +341,9 @@ class TestFastScanRangeSearchFilter(unittest.TestCase):
             for idx in I:
                 if idx >= 0:
                     self.assertIn(
-                        int(idx), allowed,
-                        f"Range search returned id {idx} not in allowed set"
+                        int(idx),
+                        allowed,
+                        f"Range search returned id {idx} not in allowed set",
                     )
         except RuntimeError:
             # range_search may not be supported for all fastscan variants

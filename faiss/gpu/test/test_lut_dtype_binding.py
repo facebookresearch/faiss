@@ -9,8 +9,8 @@ import faiss
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if cuVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+)
 class TestIVFPQSearchCagraConfigDtypes(unittest.TestCase):
     """Regression tests for the SWIG int typemap on cudaDataType_t.
 

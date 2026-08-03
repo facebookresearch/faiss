@@ -23,7 +23,9 @@ def print_nop(*arg, **kwargs):
     pass
 
 
-def two_level_clustering(xt, nc1, nc2, rebalance=True, clustering_niter=25, **args):
+def two_level_clustering(
+    xt, nc1, nc2, rebalance=True, clustering_niter=25, **args
+):
     """
     perform 2-level clustering on a training set xt
     nc1 and nc2 are the number of clusters at each level, the final number of
@@ -38,27 +40,28 @@ def two_level_clustering(xt, nc1, nc2, rebalance=True, clustering_niter=25, **ar
 
     log = print if verbose else print_nop
 
-    log(f"2-level clustering of {xt.shape} nb 1st level clusters = {nc1} total {nc2}")
+    log(
+        f"2-level clustering of {xt.shape} nb 1st level clusters = {nc1} "
+        f"total {nc2}"
+    )
     log("perform coarse training")
 
     km = faiss.Kmeans(
-        d, nc1, niter=clustering_niter,
-        max_points_per_centroid=2000,
-        **args
+        d, nc1, niter=clustering_niter, max_points_per_centroid=2000, **args
     )
     km.train(xt)
 
     iteration_stats = [km.iteration_stats]
     log()
 
-    # coarse centroids
-    centroids1 = km.centroids
-
     log("assigning the training set")
     t0 = time.time()
     _, assign1 = km.assign(xt)
     bc = np.bincount(assign1, minlength=nc1)
-    log(f"done in {time.time() - t0:.2f} s. Sizes of clusters {min(bc)}-{max(bc)}")
+    log(
+        f"done in {time.time() - t0:.2f} s. "
+        f"Sizes of clusters {min(bc)}-{max(bc)}"
+    )
     o = assign1.argsort()
     del km
 
@@ -79,7 +82,12 @@ def two_level_clustering(xt, nc1, nc2, rebalance=True, clustering_niter=25, **ar
     t0 = time.time()
     for c1 in range(nc1):
         nc2 = int(all_nc2[c1])
-        log(f"[{time.time() - t0:.2f} s] training sub-cluster {c1}/{nc1} nc2={nc2}\r", end="", flush=True)
+        log(
+            f"[{time.time() - t0:.2f} s] training sub-cluster "
+            f"{c1}/{nc1} nc2={nc2}\r",
+            end="",
+            flush=True,
+        )
         i1 = i0 + bc[c1]
         subset = o[i0:i1]
         assert np.all(assign1[subset] == c1)
@@ -121,7 +129,9 @@ def train_ivf_index_with_2level(index, xt, **args):
     index.train(xt)
 
 
-def balanced_assignment_with_penalties(x, centroids, alpha = 0.03, num_iter = 20, maxk = 100): 
+def balanced_assignment_with_penalties(
+    x, centroids, alpha=0.03, num_iter=20, maxk=100
+):
     """
     Assign vectors x to centroids with a balance constraint.
 
@@ -164,32 +174,34 @@ def balanced_assignment_with_penalties(x, centroids, alpha = 0.03, num_iter = 20
     n = len(x)
     nopt = n / nc  # targed bin sizes
 
-    # we assign to the top-maxk clusters. The final assignment will pick among these clusters. 
+    # we assign to the top-maxk clusters. The final assignment will pick
+    # among these clusters.
     full_d2, full_assign = faiss.knn(x, centroids, maxk)
 
     # scalar penalty for each cluster
     penalties = np.ones(nc, dtype=np.float32)
 
     for it in range(num_iter):
-        # compute penalized assignment 
-        penalties2 = penalties ** 2
+        # compute penalized assignment
+        penalties2 = penalties**2
         full_d2_penalized = full_d2 + penalties2[full_assign]
         a0 = full_d2_penalized.argmin(axis=1)
         assign = np.take_along_axis(full_assign, a0[:, None], axis=1).ravel()
         binsizes = np.bincount(assign, minlength=nc)
-        # print(imbalance_factor(nc, assign), mse, int(binsizes.min()), int(binsizes.max()))
+        # print(imbalance_factor(nc, assign), mse, int(binsizes.min()),
+        #       int(binsizes.max()))
         penalties *= (binsizes / nopt) ** alpha
 
     stats = dict(
         alpha=alpha,
         imf=imbalance_factor(nc, assign),
-        mse = ((x - centroids[assign]) ** 2).sum(1).mean(),  # recompute MSE 
+        mse=((x - centroids[assign]) ** 2).sum(1).mean(),  # recompute MSE
         binsize_min=int(binsizes.min()),
         binsize_max=int(binsizes.max()),
         penalty_min=penalties.min(),
         penalty_max=penalties.max(),
     )
-    
+
     return assign, stats
 
 
@@ -206,7 +218,7 @@ class DatasetAssign:
     to centroids. All other implementations offer the same interface"""
 
     def __init__(self, x):
-        self.x = np.ascontiguousarray(x, dtype='float32')
+        self.x = np.ascontiguousarray(x, dtype="float32")
 
     def count(self):
         return self.x.shape[0]
@@ -226,7 +238,7 @@ class DatasetAssign:
         I = I.ravel()
         D = D.ravel()
         nc, d = centroids.shape
-        sum_per_centroid = np.zeros((nc, d), dtype='float32')
+        sum_per_centroid = np.zeros((nc, d), dtype="float32")
         if weights is None:
             np.add.at(sum_per_centroid, I, self.x)
         else:
@@ -236,15 +248,15 @@ class DatasetAssign:
 
 
 class DatasetAssignGPU(DatasetAssign):
-    """ GPU version of the previous """
+    """GPU version of the previous"""
 
     def __init__(self, x, gpu_id, verbose=False):
         DatasetAssign.__init__(self, x)
         index = faiss.IndexFlatL2(x.shape[1])
         if gpu_id >= 0:
             self.index = faiss.index_cpu_to_gpu(
-                faiss.StandardGpuResources(),
-                gpu_id, index)
+                faiss.StandardGpuResources(), gpu_id, index
+            )
         else:
             # -1 -> assign to all GPUs
             self.index = faiss.index_cpu_to_all_gpus(index)
@@ -256,14 +268,14 @@ class DatasetAssignGPU(DatasetAssign):
 
 
 def sparse_assign_to_dense(xq, xb, xq_norms=None, xb_norms=None):
-    """ assignment function for xq is sparse, xb is dense
+    """assignment function for xq is sparse, xb is dense
     uses a matrix multiplication. The squared norms can be provided if
     available.
     """
     nq = xq.shape[0]
     nb = xb.shape[0]
     if xb_norms is None:
-        xb_norms = (xb ** 2).sum(1)
+        xb_norms = (xb**2).sum(1)
     if xq_norms is None:
         xq_norms = np.array(xq.power(2).sum(1))
     d2 = xb_norms - 2 * xq @ xb.T
@@ -273,7 +285,8 @@ def sparse_assign_to_dense(xq, xb, xq_norms=None, xb_norms=None):
 
 
 def sparse_assign_to_dense_blocks(
-        xq, xb, xq_norms=None, xb_norms=None, qbs=16384, bbs=16384, nt=None):
+    xq, xb, xq_norms=None, xb_norms=None, qbs=16384, bbs=16384, nt=None
+):
     """
     decomposes the sparse_assign_to_dense function into blocks to avoid a
     possible memory blow up. Can be run in multithreaded mode, because scipy's
@@ -286,7 +299,7 @@ def sparse_assign_to_dense_blocks(
     I = -np.ones(nq, dtype=int)
 
     if xb_norms is None:
-        xb_norms = (xb ** 2).sum(1)
+        xb_norms = (xb**2).sum(1)
 
     def handle_query_block(i):
         xq_block = xq[i : i + qbs]
@@ -334,7 +347,8 @@ class DatasetAssignSparse(DatasetAssign):
 
     def perform_search(self, centroids):
         return sparse_assign_to_dense_blocks(
-            self.x, centroids, xq_norms=self.squared_norms)
+            self.x, centroids, xq_norms=self.squared_norms
+        )
 
     def assign_to(self, centroids, weights=None):
         D, I = self.perform_search(centroids)
@@ -343,19 +357,19 @@ class DatasetAssignSparse(DatasetAssign):
         D = D.ravel()
         n = self.x.shape[0]
         if weights is None:
-            weights = np.ones(n, dtype='float32')
+            weights = np.ones(n, dtype="float32")
         nc = len(centroids)
 
         m = scipy.sparse.csc_matrix(
-            (weights, I, np.arange(n + 1)),
-            shape=(nc, n))
+            (weights, I, np.arange(n + 1)), shape=(nc, n)
+        )
         sum_per_centroid = np.array((m * self.x).todense())
 
         return I, D, sum_per_centroid
 
 
 def imbalance_factor(k, assign):
-    assign = np.ascontiguousarray(assign, dtype='int64')
+    assign = np.ascontiguousarray(assign, dtype="int64")
     return faiss.imbalance_factor(len(assign), k, faiss.swig_ptr(assign))
 
 
@@ -363,13 +377,14 @@ def check_if_torch(x):
     if x.__class__ == np.ndarray:
         return False
     import torch
+
     if isinstance(x, torch.Tensor):
         return True
     raise NotImplementedError(f"Unknown tensor type {type(x)}")
 
 
 def reassign_centroids(hassign, centroids, rs=None):
-    """ reassign centroids when some of them collapse """
+    """reassign centroids when some of them collapse"""
     if rs is None:
         rs = np.random
     k, d = centroids.shape
@@ -383,17 +398,18 @@ def reassign_centroids(hassign, centroids, rs=None):
 
     if is_torch:
         import torch
+
         fac = torch.ones_like(centroids[0])
     else:
         fac = np.ones_like(centroids[0])
-    fac[::2] += 1 / 1024.
-    fac[1::2] -= 1 / 1024.
+    fac[::2] += 1 / 1024.0
+    fac[1::2] -= 1 / 1024.0
 
     # this is a single pass unless there are more than k/2
     # empty centroids
     while len(empty_cents) > 0:
         # choose which centroids to split (numpy)
-        probas = hassign.astype('float') - 1
+        probas = hassign.astype("float") - 1
         probas[probas < 0] = 0
         probas /= probas.sum()
         nnz = (probas > 0).sum()
@@ -416,9 +432,15 @@ def reassign_centroids(hassign, centroids, rs=None):
     return nsplit
 
 
-
-def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
-           return_stats=False):
+def kmeans(
+    k,
+    data,
+    niter=25,
+    seed=1234,
+    checkpoint=None,
+    verbose=True,
+    return_stats=False,
+):
     """Pure python kmeans implementation. Follows the Faiss C++ version
     quite closely, but takes a DatasetAssign instead of a training data
     matrix. Also redo is not implemented.
@@ -429,8 +451,13 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
     n, d = data.count(), data.dim()
     log = print if verbose else print_nop
 
-    log(("Clustering %d points in %dD to %d clusters, " +
-            "%d iterations seed %d") % (n, d, k, niter, seed))
+    log(
+        (
+            "Clustering %d points in %dD to %d clusters, "
+            + "%d iterations seed %d"
+        )
+        % (n, d, k, niter, seed)
+    )
 
     rs = np.random.RandomState(seed)
     print("preproc...")
@@ -448,10 +475,10 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
     for i in range(niter):
         t0s = time.time()
 
-        log('assigning', end='\r', flush=True)
+        log("assigning", end="\r", flush=True)
         assign, D, sums = data.assign_to(centroids)
 
-        log('compute centroids', end='\r', flush=True)
+        log("compute centroids", end="\r", flush=True)
 
         t_search_tot += time.time() - t0s
 
@@ -462,10 +489,11 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
 
         hassign = np.bincount(assign, minlength=k)
 
-        fac = hassign.reshape(-1, 1).astype('float32')
+        fac = hassign.reshape(-1, 1).astype("float32")
         fac[fac == 0] = 1  # quiet warning
         if is_torch:
             import torch
+
             fac = torch.from_numpy(fac).to(sums.device)
 
         centroids = sums / fac
@@ -477,21 +505,30 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
             "time": (time.time() - t0),
             "time_search": t_search_tot,
             "imbalance_factor": imbalance_factor(k, assign),
-            "nsplit": nsplit
+            "nsplit": nsplit,
         }
 
-        log(("  Iteration %d (%.2f s, search %.2f s): "
-             "objective=%g imbalance=%.3f nsplit=%d") % (
-                   i, s["time"], s["time_search"],
-                   err, s["imbalance_factor"],
-                   nsplit)
+        log(
+            (
+                "  Iteration %d (%.2f s, search %.2f s): "
+                "objective=%g imbalance=%.3f nsplit=%d"
+            )
+            % (
+                i,
+                s["time"],
+                s["time_search"],
+                err,
+                s["imbalance_factor"],
+                nsplit,
+            )
         )
         iteration_stats.append(s)
 
         if checkpoint is not None:
-            log('storing centroids in', checkpoint)
+            log("storing centroids in", checkpoint)
             if is_torch:
                 import torch
+
                 torch.save(centroids, checkpoint)
             else:
                 np.save(checkpoint, centroids)

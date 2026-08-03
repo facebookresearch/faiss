@@ -47,6 +47,19 @@ int sgemm_(
         float* c,
         FINTEGER* ldc);
 
+int sgemv_(
+        const char* trans,
+        FINTEGER* m,
+        FINTEGER* n,
+        float* alpha,
+        const float* a,
+        FINTEGER* lda,
+        const float* x,
+        FINTEGER* incx,
+        float* beta,
+        float* y,
+        FINTEGER* incy);
+
 int dgemm_(
         const char* transa,
         const char* transb,
@@ -192,6 +205,25 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
     float one = 1;
     FINTEGER nbiti = d_out, ni = static_cast<FINTEGER>(n), di = d_in;
+    if (n == 1) {
+        FINTEGER onei = 1;
+        // Avoid GEMM packing overhead for single-vector transforms. GEMV is
+        // mathematically equivalent but may not be bit-exact with GEMM because
+        // BLAS implementations can use different accumulation orders.
+        sgemv_("Transposed",
+               &di,
+               &nbiti,
+               &one,
+               A.data(),
+               &di,
+               x,
+               &onei,
+               &c_factor,
+               xt,
+               &onei);
+        return;
+    }
+
     sgemm_("Transposed",
            "Not transposed",
            &nbiti,
@@ -1064,8 +1096,7 @@ ITQTransform::ITQTransform(int din, int dout, bool do_pca_in)
 }
 
 void ITQTransform::train(idx_t n, const float* x_in) {
-    FAISS_THROW_IF_NOT_MSG(
-            !is_trained, "ITQTransform has already been trained");
+    FAISS_THROW_IF_MSG(is_trained, "ITQTransform has already been trained");
 
     size_t max_train_points = std::max(d_in * max_train_per_dim, 32768);
     const float* x =

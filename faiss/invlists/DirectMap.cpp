@@ -80,7 +80,7 @@ idx_t DirectMap::get(idx_t key) const {
         return lo;
     } else if (type == Hashtable) {
         auto res = hashtable.find(key);
-        FAISS_THROW_IF_NOT_MSG(res != hashtable.end(), "key not found");
+        FAISS_THROW_IF_MSG(res == hashtable.end(), "key not found");
         return res->second;
     } else {
         FAISS_THROW_MSG("direct map not initialized");

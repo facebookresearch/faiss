@@ -33,7 +33,7 @@
 // Scalar (NONE) fallback — only needs the generic specializations.
 #define THE_SIMD_LEVEL SIMDLevel::NONE
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
+#include <faiss/utils/hamming_distance/hamming_computer-generic.h> // IWYU pragma: keep
 #include <faiss/utils/hamming_distance/hamming_impl.h>
 #undef THE_SIMD_LEVEL
 

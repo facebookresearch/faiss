@@ -9,7 +9,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, overload
+from typing import Any, Callable, Literal, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -21,6 +21,7 @@ except ImportError:
 
 idx_t = int
 MetricType = int
+EDENScaleType = Literal[1, 2]
 METRIC_INNER_PRODUCT: int
 METRIC_L2: int
 METRIC_L1: int
@@ -33,15 +34,42 @@ METRIC_Jaccard: int
 METRIC_NaNEuclidean: int
 METRIC_GOWER: int
 
+ClusteringInitMethod = int
+ClusteringInitMethod_RANDOM: int
+ClusteringInitMethod_KMEANS_PLUS_PLUS: int
+ClusteringInitMethod_AFK_MC2: int
+
+# Storage kind for SVS (Intel Scalable Vector Search) indexes
+SVSStorageKind = int
+SVS_FP32: int
+SVS_FP16: int
+SVS_SQ8: int
+SVS_LVQ4x0: int
+SVS_LVQ4x4: int
+SVS_LVQ4x8: int
+SVS_LVQ8x0: int
+SVS_LeanVec4x4: int
+SVS_LeanVec4x8: int
+SVS_LeanVec8x8: int
+SVS_count: int
+
 # I/O flag constants for reading/writing indexes
 IO_FLAG_SKIP_STORAGE: int  # skip the storage for graph-based indexes
 IO_FLAG_READ_ONLY: int  # read-only mode
 IO_FLAG_ONDISK_SAME_DIR: int  # strip directory component from ondisk filename
 IO_FLAG_SKIP_IVF_DATA: int  # don't load IVF data to RAM, only list sizes
-IO_FLAG_SKIP_PRECOMPUTE_TABLE: int  # don't initialize precomputed table after loading
-IO_FLAG_PQ_SKIP_SDC_TABLE: int  # don't compute the sdc table for PQ-based indices
+IO_FLAG_SKIP_PRECOMPUTE_TABLE: (
+    int  # don't initialize precomputed table after loading
+)
+IO_FLAG_PQ_SKIP_SDC_TABLE: (
+    int  # don't compute the sdc table for PQ-based indices
+)
 IO_FLAG_MMAP: int  # try to memmap data (useful to load as OnDiskInvertedLists)
 IO_FLAG_MMAP_IFC: int  # mmap for IndexFlatCodes-derived indices and HNSW
+
+# EDEN scale type enum
+EDENScaleType_UNBIASED: Literal[1]
+EDENScaleType_BIASED: Literal[2]
 
 # Numeric type enum
 Float32: int
@@ -56,15 +84,21 @@ def bucket_sort(
     tab: npt.NDArray[np.int64], nbucket: int | None = None, nt: int = 0
 ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]]: ...
 def matrix_bucket_sort_inplace(
-    tab: npt.NDArray[np.int32 | np.int64], nbucket: int | None = None, nt: int = 0
+    tab: npt.NDArray[np.int32 | np.int64],
+    nbucket: int | None = None,
+    nt: int = 0,
 ) -> npt.NDArray[np.int64]: ...
-def eval_intersection(I1: npt.NDArray[np.int64], I2: npt.NDArray[np.int64]) -> int: ...
+def eval_intersection(
+    I1: npt.NDArray[np.int64], I2: npt.NDArray[np.int64]
+) -> int: ...
 def checksum(a: npt.NDArray[np.uint8]) -> int | npt.NDArray[np.uint64]: ...
 def rand_smooth_vectors(
     n: int, d: int, seed: int = 1234
 ) -> npt.NDArray[np.float32]: ...
 def merge_knn_results(
-    Dall: npt.NDArray[np.float32], Iall: npt.NDArray[np.int64], keep_max: bool = False
+    Dall: npt.NDArray[np.float32],
+    Iall: npt.NDArray[np.int64],
+    keep_max: bool = False,
 ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
 @overload
 def knn(
@@ -257,6 +291,16 @@ class SearchParametersPreTransform(SearchParameters):
     index_params: SearchParameters | None
     def __init__(self) -> None: ...
 
+class SearchParametersSVSVamana(SearchParameters):
+    search_window_size: int
+    search_buffer_capacity: int
+    def __init__(self) -> None: ...
+
+class SearchParametersSVSIVF(SearchParameters):
+    n_probes: int
+    k_reorder: float
+    def __init__(self) -> None: ...
+
 # Base Index class
 class Index:
     d: int  # vector dimension
@@ -329,7 +373,9 @@ class Index:
     def reset(self) -> None: ...
     def remove_ids(self, sel: IDSelector) -> int: ...
     @overload
-    def reconstruct(self, key: int, x: torch.Tensor | None = None) -> torch.Tensor: ...
+    def reconstruct(
+        self, key: int, x: torch.Tensor | None = None
+    ) -> torch.Tensor: ...
     @overload
     def reconstruct(
         self, key: int, x: npt.NDArray[np.float32] | None = None
@@ -344,13 +390,23 @@ class Index:
         keys: npt.NDArray[np.int64],
         x: npt.NDArray[np.float32] | None = None,
     ) -> npt.NDArray[np.float32]: ...
+    # Without an `x` buffer the return type is not statically knowable: importing
+    # faiss.contrib.torch_utils replaces this method with one that allocates a
+    # torch.Tensor, while the default numpy implementation allocates an ndarray.
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: torch.Tensor | None = None
+        self, n0: int = ..., ni: int = ..., x: None = ...
+    ) -> Any: ...
+    @overload
+    def reconstruct_n(
+        self, n0: int = ..., ni: int = ..., x: torch.Tensor = ...
     ) -> torch.Tensor: ...
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: npt.NDArray[np.float32] | None = None
+        self,
+        n0: int = ...,
+        ni: int = ...,
+        x: npt.NDArray[np.float32] = ...,
     ) -> npt.NDArray[np.float32]: ...
     @overload
     def search_and_reconstruct(
@@ -377,7 +433,10 @@ class Index:
         npt.NDArray[np.float32], npt.NDArray[np.int64], npt.NDArray[np.float32]
     ]: ...
     def compute_residual(
-        self, x: npt.NDArray[np.float32], residual: npt.NDArray[np.float32], key: int
+        self,
+        x: npt.NDArray[np.float32],
+        residual: npt.NDArray[np.float32],
+        key: int,
     ) -> None: ...
     def compute_residual_n(
         self,
@@ -416,7 +475,9 @@ class Index:
     ) -> None: ...
     @overload
     def add_sa_codes(
-        self, codes: npt.NDArray[np.uint8], ids: npt.NDArray[np.int64] | None = None
+        self,
+        codes: npt.NDArray[np.uint8],
+        ids: npt.NDArray[np.int64] | None = None,
     ) -> None: ...
     def merge_from(self, other_index: Index, add_id: int = 0) -> None: ...
     def check_compatible_for_merge(self, other_index: Index) -> None: ...
@@ -473,7 +534,9 @@ class VectorTransform:
     @overload
     def apply_py(self, x: torch.Tensor) -> torch.Tensor: ...
     @overload
-    def apply_py(self, x: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]: ...
+    def apply_py(
+        self, x: npt.NDArray[np.float32]
+    ) -> npt.NDArray[np.float32]: ...
     @overload
     def reverse_transform(
         self, xt: torch.Tensor, x: torch.Tensor | None = None
@@ -553,7 +616,9 @@ class ITQTransform(VectorTransform):
     max_train_per_dim: int
     pca_then_itq: LinearTransform
 
-    def __init__(self, d_in: int = 0, d_out: int = 0, do_pca: bool = False) -> None: ...
+    def __init__(
+        self, d_in: int = 0, d_out: int = 0, do_pca: bool = False
+    ) -> None: ...
     def check_identical(self, other: VectorTransform) -> None: ...
 
 class OPQMatrix(LinearTransform):
@@ -596,7 +661,9 @@ class IndexFlatCodes(Index):
     code_size: int
     codes: Any  # MaybeOwnedVector<uint8_t>
 
-    def __init__(self, code_size: int = 0, d: int = 0, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, code_size: int = 0, d: int = 0, metric: MetricType = METRIC_L2
+    ) -> None: ...
     def sa_code_size(self) -> int: ...
     def permute_entries(self, perm: npt.NDArray[np.int64]) -> None: ...
 
@@ -760,18 +827,30 @@ class IndexPreTransform(Index):
         npt.NDArray[np.int64], npt.NDArray[np.float32], npt.NDArray[np.int64]
     ]: ...
     @overload
-    def reconstruct(self, key: int, x: torch.Tensor | None = None) -> torch.Tensor: ...
+    def reconstruct(
+        self, key: int, x: torch.Tensor | None = None
+    ) -> torch.Tensor: ...
     @overload
     def reconstruct(
         self, key: int, x: npt.NDArray[np.float32] | None = None
     ) -> npt.NDArray[np.float32]: ...
+    # Without an `x` buffer the return type is not statically knowable: importing
+    # faiss.contrib.torch_utils replaces this method with one that allocates a
+    # torch.Tensor, while the default numpy implementation allocates an ndarray.
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: torch.Tensor | None = None
+        self, n0: int = ..., ni: int = ..., x: None = ...
+    ) -> Any: ...
+    @overload
+    def reconstruct_n(
+        self, n0: int = ..., ni: int = ..., x: torch.Tensor = ...
     ) -> torch.Tensor: ...
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: npt.NDArray[np.float32] | None = None
+        self,
+        n0: int = ...,
+        ni: int = ...,
+        x: npt.NDArray[np.float32] = ...,
     ) -> npt.NDArray[np.float32]: ...
     @overload
     def search_and_reconstruct(
@@ -797,7 +876,9 @@ class IndexPreTransform(Index):
     ) -> tuple[
         npt.NDArray[np.float32], npt.NDArray[np.int64], npt.NDArray[np.float32]
     ]: ...
-    def apply_chain(self, x: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]: ...
+    def apply_chain(
+        self, x: npt.NDArray[np.float32]
+    ) -> npt.NDArray[np.float32]: ...
     def reverse_chain(
         self, xt: npt.NDArray[np.float32], x: npt.NDArray[np.float32]
     ) -> None: ...
@@ -840,11 +921,15 @@ class Quantizer:
     @overload
     def compute_codes(self, x: torch.Tensor) -> torch.Tensor: ...
     @overload
-    def compute_codes(self, x: npt.NDArray[np.float32]) -> npt.NDArray[np.uint8]: ...
+    def compute_codes(
+        self, x: npt.NDArray[np.float32]
+    ) -> npt.NDArray[np.uint8]: ...
     @overload
     def decode(self, codes: torch.Tensor) -> torch.Tensor: ...
     @overload
-    def decode(self, codes: npt.NDArray[np.uint8]) -> npt.NDArray[np.float32]: ...
+    def decode(
+        self, codes: npt.NDArray[np.uint8]
+    ) -> npt.NDArray[np.float32]: ...
 
 class ProductQuantizer(Quantizer):
     # Core attributes from C++ struct
@@ -897,10 +982,16 @@ class ProductQuantizer(Quantizer):
         self, x: npt.NDArray[np.float32], dis_table: npt.NDArray[np.float32]
     ) -> None: ...
     def compute_distance_tables(
-        self, nx: int, x: npt.NDArray[np.float32], dis_tables: npt.NDArray[np.float32]
+        self,
+        nx: int,
+        x: npt.NDArray[np.float32],
+        dis_tables: npt.NDArray[np.float32],
     ) -> None: ...
     def compute_inner_prod_tables(
-        self, nx: int, x: npt.NDArray[np.float32], dis_tables: npt.NDArray[np.float32]
+        self,
+        nx: int,
+        x: npt.NDArray[np.float32],
+        dis_tables: npt.NDArray[np.float32],
     ) -> None: ...
 
     # Advanced encoding methods
@@ -939,7 +1030,9 @@ class ProductQuantizer(Quantizer):
 
     # Centroid management
     def set_derived_values(self) -> None: ...
-    def set_params(self, centroids: npt.NDArray[np.float32], m: int) -> None: ...
+    def set_params(
+        self, centroids: npt.NDArray[np.float32], m: int
+    ) -> None: ...
     def get_centroids(self, m: int, i: int) -> npt.NDArray[np.float32]: ...
     def sync_transposed_centroids(self) -> None: ...
     def clear_transposed_centroids(self) -> None: ...
@@ -965,7 +1058,9 @@ class AdditiveQuantizer(Quantizer):
     norm_tabs: Float32Vector  # norms of codebook entries for 4-bit fastscan
     qnorm: IndexFlat1D  # store and search norms
     centroid_norms: Float32Vector  # norms of all codebook entries
-    codebook_cross_products: Float32Vector  # dot products with previous codebooks
+    codebook_cross_products: (
+        Float32Vector  # dot products with previous codebooks
+    )
     max_mem_distances: int  # memory limit for beam search
 
     # Search type configuration
@@ -986,7 +1081,9 @@ class AdditiveQuantizer(Quantizer):
     ST_norm_rq2x4: int
 
     @overload
-    def __init__(self, d: int, nbits: list[int], search_type: int = 0) -> None: ...
+    def __init__(
+        self, d: int, nbits: list[int], search_type: int = 0
+    ) -> None: ...
     @overload
     def __init__(self) -> None: ...
     def set_derived_values(self) -> None: ...
@@ -1045,7 +1142,9 @@ class AdditiveQuantizer(Quantizer):
         distances: npt.NDArray[np.float32],
         labels: npt.NDArray[np.int64],
     ) -> None: ...
-    def compute_centroid_norms(self, norms: npt.NDArray[np.float32]) -> None: ...
+    def compute_centroid_norms(
+        self, norms: npt.NDArray[np.float32]
+    ) -> None: ...
     def knn_centroids_L2(
         self,
         n: int,
@@ -1080,16 +1179,24 @@ class ResidualQuantizer(AdditiveQuantizer):
     assign_index_factory: ProgressiveDimIndexFactory
 
     @overload
-    def __init__(self, d: int, nbits: list[int], search_type: int = 0) -> None: ...
+    def __init__(
+        self, d: int, nbits: list[int], search_type: int = 0
+    ) -> None: ...
     @overload
-    def __init__(self, d: int, M: int, nbits: int, search_type: int = 0) -> None: ...
+    def __init__(
+        self, d: int, M: int, nbits: int, search_type: int = 0
+    ) -> None: ...
     @overload
     def __init__(self) -> None: ...
-    def initialize_from(self, other: ResidualQuantizer, skip_M: int = 0) -> None: ...
+    def initialize_from(
+        self, other: ResidualQuantizer, skip_M: int = 0
+    ) -> None: ...
     @overload
     def retrain_AQ_codebook(self, n: int, x: torch.Tensor) -> float: ...
     @overload
-    def retrain_AQ_codebook(self, n: int, x: npt.NDArray[np.float32]) -> float: ...
+    def retrain_AQ_codebook(
+        self, n: int, x: npt.NDArray[np.float32]
+    ) -> float: ...
     def refine_beam(
         self,
         n: int,
@@ -1114,10 +1221,12 @@ class ResidualQuantizer(AdditiveQuantizer):
 
 class IcmEncoder:
     """ICM (Iterated Conditional Modes) encoder for LSQ"""
+
     def __init__(self, lsq: LocalSearchQuantizer) -> None: ...
 
 class IcmEncoderFactory:
     """Factory class for ICM (Iterated Conditional Modes) encoders in LSQ"""
+
     def __init__(self) -> None: ...
     def get(self, lsq: LocalSearchQuantizer) -> IcmEncoder: ...
 
@@ -1144,7 +1253,9 @@ class LocalSearchQuantizer(AdditiveQuantizer):
     update_codebooks_with_double: bool
 
     @overload
-    def __init__(self, d: int, M: int, nbits: int, search_type: int = 0) -> None: ...
+    def __init__(
+        self, d: int, M: int, nbits: int, search_type: int = 0
+    ) -> None: ...
     @overload
     def __init__(self) -> None: ...
     @overload
@@ -1193,14 +1304,19 @@ class LocalSearchQuantizer(AdditiveQuantizer):
         stddev: list[float],
         gen: Any,  # std::mt19937&
     ) -> None: ...
-    def compute_binary_terms(self, binaries: npt.NDArray[np.float32]) -> None: ...
+    def compute_binary_terms(
+        self, binaries: npt.NDArray[np.float32]
+    ) -> None: ...
     @overload
     def compute_unary_terms(
         self, x: torch.Tensor, unaries: npt.NDArray[np.float32], n: int
     ) -> None: ...
     @overload
     def compute_unary_terms(
-        self, x: npt.NDArray[np.float32], unaries: npt.NDArray[np.float32], n: int
+        self,
+        x: npt.NDArray[np.float32],
+        unaries: npt.NDArray[np.float32],
+        n: int,
     ) -> None: ...
     @overload
     def evaluate(
@@ -1346,11 +1462,24 @@ class ScalarQuantizer(Quantizer):
     QT_6bit: int
     QT_bf16: int
     QT_8bit_direct_signed: int
+    QT_0bit: int
     QT_1bit_tqmse: int
     QT_2bit_tqmse: int
     QT_3bit_tqmse: int
     QT_4bit_tqmse: int
     QT_8bit_tqmse: int
+    QT_2bit_tq: int
+    QT_3bit_tq: int
+    QT_4bit_tq: int
+    QT_5bit_tq: int
+    QT_1bit_eden: int
+    QT_2bit_eden: int
+    QT_3bit_eden: int
+    QT_4bit_eden: int
+    QT_5bit_eden: int
+    QT_6bit_eden: int
+    QT_7bit_eden: int
+    QT_8bit_eden: int
 
     # RangeStat constants (as class attributes)
     RS_minmax: int
@@ -1389,7 +1518,9 @@ class IndexScalarQuantizer(IndexFlatCodes):
     sq: ScalarQuantizer
     codes: UInt8Vector
 
-    def __init__(self, d: int, qtype: int, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, d: int, qtype: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 # IVF classes
 class InvertedLists:
@@ -1515,7 +1646,9 @@ class OnDiskInvertedLists(InvertedLists):
     ) -> int: ...
     def merge_from_1(self, il: InvertedLists, verbose: bool = False) -> int: ...
     def crop_invlists(self, l0: int, l1: int) -> None: ...
-    def prefetch_lists(self, list_nos: npt.NDArray[np.int64], nlist: int) -> None: ...
+    def prefetch_lists(
+        self, list_nos: npt.NDArray[np.int64], nlist: int
+    ) -> None: ...
 
     # Memory management methods
     def do_mmap(self) -> None: ...
@@ -1553,14 +1686,20 @@ class IndexIVF(Index):
     quantizer: Index
     nprobe: int
     nlist: int
-    quantizer_trains_alone: str  # char in C++ -> single character string in Python
+    quantizer_trains_alone: (
+        str  # char in C++ -> single character string in Python
+    )
     own_fields: bool
     cp: ClusteringParameters
     clustering_index: Index
     max_codes: int
 
     def __init__(
-        self, quantizer: Index, d: int, nlist: int, metric: MetricType = METRIC_L2
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
     ) -> None: ...
 
     # Core IndexIVF methods from C++
@@ -1647,7 +1786,9 @@ class IndexIVF(Index):
     def check_ids_sorted(self) -> bool: ...
     def make_direct_map(self, new_maintain_direct_map: bool = True) -> None: ...
     def set_direct_map_type(self, type: int) -> None: ...  # DirectMap::Type
-    def replace_invlists(self, invlists: InvertedLists, own: bool = False) -> None: ...
+    def replace_invlists(
+        self, invlists: InvertedLists, own: bool = False
+    ) -> None: ...
     @overload
     def search_preassigned(
         self,
@@ -1675,13 +1816,18 @@ class IndexIVF(Index):
 
 class IndexIVFFlat(IndexIVF):
     def __init__(
-        self, quantizer: Index, d: int, nlist: int, metric: MetricType = METRIC_L2
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
     ) -> None: ...
 
 class IndexIVFFlatPanorama(IndexIVFFlat):
     """Panorama adaptation of IndexIVFFlat following https://arxiv.org/abs/2510.00566"""
 
     n_levels: int
+    batch_size: int
 
     def __init__(
         self,
@@ -1691,6 +1837,7 @@ class IndexIVFFlatPanorama(IndexIVFFlat):
         n_levels: int,
         metric: MetricType = METRIC_L2,
         own_invlists: bool = True,
+        batch_size: int = ...,
     ) -> None: ...
 
 class IndexIVFPQ(IndexIVF):
@@ -1815,10 +1962,14 @@ class IndexHNSW(Index):
         [int, npt.NDArray[np.float32], npt.NDArray[np.float32]], None
     ]
 
-    def __init__(self, d: int, M: int, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, d: int, M: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 class IndexHNSWFlat(IndexHNSW):
-    def __init__(self, d: int, M: int, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, d: int, M: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 class IndexHNSWFlatPanorama(IndexHNSWFlat):
     """Panorama implementation of IndexHNSWFlat.
@@ -1839,14 +1990,22 @@ class IndexHNSWPQ(IndexHNSW):
     pq: ProductQuantizer
 
     def __init__(
-        self, d: int, pq: ProductQuantizer, M: int, metric: MetricType = METRIC_L2
+        self,
+        d: int,
+        pq: ProductQuantizer,
+        M: int,
+        metric: MetricType = METRIC_L2,
     ) -> None: ...
 
 class IndexHNSWSQ(IndexHNSW):
     sq: ScalarQuantizer
 
     def __init__(
-        self, d: int, sq: ScalarQuantizer, M: int, metric: MetricType = METRIC_L2
+        self,
+        d: int,
+        sq: ScalarQuantizer,
+        M: int,
+        metric: MetricType = METRIC_L2,
     ) -> None: ...
 
 class IndexHNSW2Level(IndexHNSW):
@@ -1913,18 +2072,27 @@ class IndexBinary:
         x: npt.NDArray[np.uint8],
         thresh: int,
         params: SearchParameters | None = None,
-    ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]]: ...
+    ) -> tuple[
+        npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]
+    ]: ...
     @overload
     def reconstruct(self, key: int) -> torch.Tensor: ...
     @overload
     def reconstruct(self, key: int) -> npt.NDArray[np.uint8]: ...
+    # Without an `x` buffer the return type is not statically knowable: importing
+    # faiss.contrib.torch_utils replaces this method with one that allocates a
+    # torch.Tensor, while the default numpy implementation allocates an ndarray.
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: torch.Tensor | None = None
+        self, n0: int = ..., ni: int = ..., x: None = ...
+    ) -> Any: ...
+    @overload
+    def reconstruct_n(
+        self, n0: int = ..., ni: int = ..., x: torch.Tensor = ...
     ) -> torch.Tensor: ...
     @overload
     def reconstruct_n(
-        self, n0: int = 0, ni: int = -1, x: npt.NDArray[np.uint8] | None = None
+        self, n0: int = ..., ni: int = ..., x: npt.NDArray[np.uint8] = ...
     ) -> npt.NDArray[np.uint8]: ...
     def reset(self) -> None: ...
     @overload
@@ -1936,7 +2104,9 @@ class IndexBinary:
     @overload
     def assign(self, x: torch.Tensor, k: int = 1) -> torch.Tensor: ...
     @overload
-    def assign(self, x: npt.NDArray[np.uint8], k: int = 1) -> npt.NDArray[np.int64]: ...
+    def assign(
+        self, x: npt.NDArray[np.uint8], k: int = 1
+    ) -> npt.NDArray[np.int64]: ...
     @overload
     def search_preassigned(
         self,
@@ -1970,7 +2140,9 @@ class IndexBinary:
         Iq: npt.NDArray[np.int64],
         Dq: npt.NDArray[np.int32] | None,
         params: SearchParameters | None = None,
-    ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]]: ...
+    ) -> tuple[
+        npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]
+    ]: ...
 
 class IndexBinaryFlat(IndexBinary):
     def __init__(self, d: int) -> None: ...
@@ -2032,13 +2204,20 @@ class IndexBinaryIVF(IndexBinary):
         Dq: npt.NDArray[np.int32] | None = None,
         *,
         params: SearchParameters | None = None,
-    ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]]: ...
+    ) -> tuple[
+        npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]
+    ]: ...
     def reconstruct_from_offset(
-        self, list_no: int, offset: int, key: npt.NDArray[np.uint8] | None = None
+        self,
+        list_no: int,
+        offset: int,
+        key: npt.NDArray[np.uint8] | None = None,
     ) -> npt.NDArray[np.uint8]: ...
     def make_direct_map(self, new_maintain_direct_map: bool = True) -> None: ...
     def set_direct_map_type(self, type: int) -> None: ...
-    def replace_invlists(self, invlists: InvertedLists, own: bool = False) -> None: ...
+    def replace_invlists(
+        self, invlists: InvertedLists, own: bool = False
+    ) -> None: ...
     def get_list_size(self, list_no: int) -> int: ...
     def merge_from(self, other: IndexBinaryIVF, add_id: int = 0) -> None: ...
     def check_compatible_for_merge(self, other: IndexBinaryIVF) -> None: ...
@@ -2085,7 +2264,9 @@ class IndexRefine(Index):
 
 class IndexRefineFlat(IndexRefine):
     def __init__(
-        self, base_index: Index | None = None, xb: npt.NDArray[np.float32] | None = None
+        self,
+        base_index: Index | None = None,
+        xb: npt.NDArray[np.float32] | None = None,
     ) -> None: ...
 
 class IndexRefinePanorama(IndexRefine):
@@ -2139,8 +2320,12 @@ class IndexResidualQuantizerFastScan(IndexAdditiveQuantizerFastScan):
 
     @overload
     def __init__(
-        self, d: int, M: int, nbits: int,
-        metric: MetricType = METRIC_L2, bbs: int = 32,
+        self,
+        d: int,
+        M: int,
+        nbits: int,
+        metric: MetricType = METRIC_L2,
+        bbs: int = 32,
     ) -> None: ...
     @overload
     def __init__(self) -> None: ...
@@ -2150,8 +2335,12 @@ class IndexLocalSearchQuantizerFastScan(IndexAdditiveQuantizerFastScan):
 
     @overload
     def __init__(
-        self, d: int, M: int, nbits: int,
-        metric: MetricType = METRIC_L2, bbs: int = 32,
+        self,
+        d: int,
+        M: int,
+        nbits: int,
+        metric: MetricType = METRIC_L2,
+        bbs: int = 32,
     ) -> None: ...
     @overload
     def __init__(self) -> None: ...
@@ -2190,8 +2379,12 @@ class FileIOReader(IOReader):
     def __init__(self, fname: str) -> None: ...
 
 # Index serialization functions (THE MAIN ONES FROM __init__.py)
-def serialize_index(index: Index, io_flags: int = 0) -> npt.NDArray[np.uint8]: ...
-def deserialize_index(data: npt.NDArray[np.uint8], io_flags: int = 0) -> Index: ...
+def serialize_index(
+    index: Index, io_flags: int = 0
+) -> npt.NDArray[np.uint8]: ...
+def deserialize_index(
+    data: npt.NDArray[np.uint8], io_flags: int = 0
+) -> Index: ...
 def serialize_index_binary(index: IndexBinary) -> npt.NDArray[np.uint8]: ...
 def deserialize_index_binary(data: npt.NDArray[np.uint8]) -> IndexBinary: ...
 
@@ -2217,7 +2410,9 @@ def read_VectorTransform(fname: str) -> VectorTransform: ...
 
 # InvertedLists I/O functions
 def write_InvertedLists(invlists: InvertedLists, writer: IOWriter) -> None: ...
-def read_InvertedLists(reader: IOReader, io_flags: int = 0) -> InvertedLists: ...
+def read_InvertedLists(
+    reader: IOReader, io_flags: int = 0
+) -> InvertedLists: ...
 
 # Deserialization safety limits
 def get_deserialization_loop_limit() -> int: ...
@@ -2320,7 +2515,9 @@ class TimeoutGuard:
     timeout: float
     def __init__(self, timeout_in_seconds: float) -> None: ...
     def __enter__(self) -> None: ...
-    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None: ...
+    def __exit__(
+        self, exc_type: Any, exc_value: Any, traceback: Any
+    ) -> None: ...
 
 # Callback classes for timeout handling
 class TimeoutCallback:
@@ -2428,7 +2625,7 @@ class ClusteringParameters:
     decode_block_size: int
     check_input_data_for_NaNs: bool
     use_faster_subsampling: bool
-    init_method: int  # ClusteringInitMethod enum (RANDOM=0, KMEANS_PLUS_PLUS=1, AFK_MC2=2)
+    init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
 
@@ -2537,7 +2734,9 @@ class ProgressiveDimClustering(ProgressiveDimClusteringParameters):
         self, d: int, k: int, cp: ProgressiveDimClusteringParameters
     ) -> None: ...
     @overload
-    def train(self, x: torch.Tensor, factory: ProgressiveDimIndexFactory) -> None: ...
+    def train(
+        self, x: torch.Tensor, factory: ProgressiveDimIndexFactory
+    ) -> None: ...
     @overload
     def train(
         self, x: npt.NDArray[np.float32], factory: ProgressiveDimIndexFactory
@@ -2756,7 +2955,9 @@ class IDSelectorRange(IDSelector):
     imax: int
     assume_sorted: bool
 
-    def __init__(self, imin: int, imax: int, assume_sorted: bool = False) -> None: ...
+    def __init__(
+        self, imin: int, imax: int, assume_sorted: bool = False
+    ) -> None: ...
     def is_member(self, id: int) -> bool: ...
     def find_sorted_ids_bounds(
         self,
@@ -3075,7 +3276,9 @@ class IndexBinaryIDMap(IndexBinary):
         thresh: int,
         *,
         params: SearchParameters | None = None,
-    ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]]: ...
+    ) -> tuple[
+        npt.NDArray[np.int64], npt.NDArray[np.int32], npt.NDArray[np.int64]
+    ]: ...
     @overload
     def reconstruct(self, key: int) -> torch.Tensor: ...
     @overload
@@ -3096,7 +3299,9 @@ class IndexIDMap2(IndexIDMap):
     def merge_from(self, other_index: Index, add_id: int = 0) -> None: ...
     def remove_ids(self, sel: IDSelector) -> int: ...
     @overload
-    def reconstruct(self, key: int, x: torch.Tensor | None = None) -> torch.Tensor: ...
+    def reconstruct(
+        self, key: int, x: torch.Tensor | None = None
+    ) -> torch.Tensor: ...
     @overload
     def reconstruct(
         self, key: int, x: npt.NDArray[np.float32] | None = None
@@ -3129,7 +3334,9 @@ class IndexNSG(Index):
     build_type: int
     verbose: bool
 
-    def __init__(self, d: int, R: int, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, d: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
     @overload
     def build(self, x: torch.Tensor, graph: torch.Tensor) -> None: ...
     @overload
@@ -3156,10 +3363,14 @@ class IndexNNDescent(Index):
     storage: Index
     own_fields: bool
 
-    def __init__(self, d: int, K: int, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, d: int, K: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 class IndexNNDescentFlat(IndexNNDescent):
-    def __init__(self, d: int, K: int, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self, d: int, K: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 # Index2Layer
 class Index2Layer(Index):
@@ -3263,7 +3474,10 @@ class IndexResidualQuantizer(IndexAdditiveQuantizer):
 
     @overload
     def __init__(
-        self, d: int, M: int, nbits: int,
+        self,
+        d: int,
+        M: int,
+        nbits: int,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
     @overload
@@ -3274,7 +3488,10 @@ class IndexLocalSearchQuantizer(IndexAdditiveQuantizer):
 
     @overload
     def __init__(
-        self, d: int, M: int, nbits: int,
+        self,
+        d: int,
+        M: int,
+        nbits: int,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
     @overload
@@ -3430,7 +3647,9 @@ class IndexProductLocalSearchQuantizerFastScan(IndexAdditiveQuantizerFastScan):
         bbs: int = 32,
     ) -> None: ...
 
-class IndexIVFProductResidualQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan):
+class IndexIVFProductResidualQuantizerFastScan(
+    IndexIVFAdditiveQuantizerFastScan
+):
     prq: ProductResidualQuantizer
 
     def __init__(
@@ -3445,7 +3664,9 @@ class IndexIVFProductResidualQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan
         bbs: int = 32,
     ) -> None: ...
 
-class IndexIVFProductLocalSearchQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan):
+class IndexIVFProductLocalSearchQuantizerFastScan(
+    IndexIVFAdditiveQuantizerFastScan
+):
     plsq: ProductLocalSearchQuantizer
 
     def __init__(
@@ -3471,7 +3692,12 @@ class AdditiveCoarseQuantizer(Index):
     aq: AdditiveQuantizer
     centroid_norms: Float32Vector
 
-    def __init__(self, d: int = 0, aq: AdditiveQuantizer | None = None, metric: MetricType = METRIC_L2) -> None: ...
+    def __init__(
+        self,
+        d: int = 0,
+        aq: AdditiveQuantizer | None = None,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
 
 class SearchParametersResidualCoarseQuantizer(SearchParameters):
     beam_factor: float
@@ -3564,6 +3790,35 @@ class IndexIVFRaBitQ(IndexIVF):
         nb_bits: int = 1,
     ) -> None: ...
 
+# EDEN indices
+class IndexEDEN(IndexFlatCodes):
+    sq: ScalarQuantizer
+    scale_type: EDENScaleType
+    center: Float32Vector
+
+    def __init__(
+        self,
+        d: int,
+        metric: MetricType = METRIC_L2,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
+    ) -> None: ...
+
+class IndexIVFEDEN(IndexIVF):
+    sq: ScalarQuantizer
+    scale_type: EDENScaleType
+
+    def __init__(
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        own_invlists: bool = True,
+        nb_bits: int = 1,
+        scale_type: EDENScaleType = EDENScaleType_UNBIASED,
+    ) -> None: ...
+
 class IndexRaBitQFastScan(IndexFastScan):
     """Fast-scan version of RaBitQ that processes 32 database vectors at a time using SIMD."""
 
@@ -3603,6 +3858,106 @@ class IndexIVFRaBitQFastScan(IndexIVFFastScan):
     ) -> None: ...
     @overload
     def __init__(self, orig: IndexIVFRaBitQ, bbs: int = 32) -> None: ...
+
+# SVS (Intel Scalable Vector Search) indexes
+class IndexSVSFlat(Index):
+    nlabels: int
+    def __init__(self, d: int, metric: MetricType = METRIC_L2) -> None: ...
+
+class IndexSVSVamana(Index):
+    graph_max_degree: int
+    prune_to: int
+    alpha: float
+    search_window_size: int
+    search_buffer_capacity: int
+    construction_window_size: int
+    max_candidate_pool_size: int
+    use_full_search_history: bool
+    is_static: bool
+    storage_kind: SVSStorageKind
+
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_FP32,
+        is_static: bool = False,
+    ) -> None: ...
+    @staticmethod
+    def is_lvq_leanvec_enabled() -> bool: ...
+
+class IndexSVSVamanaLVQ(IndexSVSVamana):
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_LVQ4x0,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSVamanaLeanVec(IndexSVSVamana):
+    leanvec_d: int
+
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        leanvec_dims: int = 0,
+        storage: SVSStorageKind = SVS_LeanVec4x4,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSIVF(Index):
+    num_centroids: int
+    minibatch_size: int
+    num_iterations: int
+    is_hierarchical: bool
+    training_fraction: float
+    hierarchical_level1_clusters: int
+    seed: int
+    n_probes: int
+    k_reorder: float
+    num_threads: int
+    intra_query_threads: int
+    is_static: bool
+    storage_kind: SVSStorageKind
+
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_FP32,
+        is_static: bool = False,
+    ) -> None: ...
+    @staticmethod
+    def is_lvq_leanvec_enabled() -> bool: ...
+
+class IndexSVSIVFLVQ(IndexSVSIVF):
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_LVQ4x0,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSIVFLeanVec(IndexSVSIVF):
+    leanvec_d: int
+
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        leanvec_dims: int = 0,
+        storage: SVSStorageKind = SVS_LeanVec4x4,
+        is_static: bool = False,
+    ) -> None: ...
 
 # Independent quantizer
 class IndexIVFIndependentQuantizer(Index):
@@ -3655,7 +4010,9 @@ class IndexIVFInterface:
     nprobe: int  # number of probes at query time
     max_codes: int  # max nb of codes to visit to do a query
 
-    def __init__(self, quantizer: Index | None = None, nlist: int = 0) -> None: ...
+    def __init__(
+        self, quantizer: Index | None = None, nlist: int = 0
+    ) -> None: ...
     def search_preassigned(
         self,
         n: int,
@@ -3699,7 +4056,9 @@ class ParameterSpace:
     def initialize(self, index: Index) -> None: ...
     def set_index_parameters(self, index: Index, cno: int) -> None: ...
     def set_index_parameters(self, index: Index, param_string: str) -> None: ...
-    def set_index_parameter(self, index: Index, name: str, val: float) -> None: ...
+    def set_index_parameter(
+        self, index: Index, name: str, val: float
+    ) -> None: ...
     def update_bounds(
         self,
         cno: int,
@@ -3739,6 +4098,7 @@ class GpuIndexIVF(GpuIndex, IndexIVFInterface): ...
 
 class GpuIndexIVFConfig(GpuIndexConfig):
     """Configuration for GPU IVF indices"""
+
     def __init__(self) -> None: ...
 
 class GpuIndexIVFPQConfig(GpuIndexIVFConfig):
@@ -3808,7 +4168,9 @@ class GpuParameterSpace(ParameterSpace):
     """GPU-specific parameter space for auto-tuning"""
 
     def initialize(self, index: Index) -> None: ...
-    def set_index_parameter(self, index: Index, name: str, val: float) -> None: ...
+    def set_index_parameter(
+        self, index: Index, name: str, val: float
+    ) -> None: ...
 
 class OperatingPoints:
     all_pts: OperatingPointVector
@@ -3899,7 +4261,6 @@ def range_search_inner_product(
     result: RangeSearchResult,
     sel: IDSelector | None = None,
 ) -> None: ...
-
 @overload
 def imbalance_factor(k: int, hist: int) -> float: ...
 @overload
@@ -3907,7 +4268,10 @@ def imbalance_factor(n: int, k: int, assign: int) -> float: ...
 
 # Index factory functions
 def index_factory(
-    d: int, description: str, metric: MetricType = METRIC_L2, own_invlists: bool = True
+    d: int,
+    description: str,
+    metric: MetricType = METRIC_L2,
+    own_invlists: bool = True,
 ) -> Index: ...
 def index_binary_factory(
     d: int, description: str, own_invlists: bool = True
@@ -3935,7 +4299,9 @@ class MapLong2Long:
     def __init__(self) -> None: ...
     def add(self, n: int, keys: np.ndarray, vals: np.ndarray) -> None: ...
     def search(self, key: int) -> int: ...
-    def search_multiple(self, n: int, keys: np.ndarray, vals: np.ndarray) -> None: ...
+    def search_multiple(
+        self, n: int, keys: np.ndarray, vals: np.ndarray
+    ) -> None: ...
 
 # Additional utilities
 def get_num_gpus() -> int: ...
@@ -3981,14 +4347,18 @@ class StandardGpuResourcesImpl:
     def noTempMemory(self) -> None: ...
     def setTempMemory(self, size: int) -> None: ...
     def setPinnedMemory(self, size: int) -> None: ...
-    def setDefaultStream(self, device: int, stream: Any) -> None: ...  # cudaStream_t
+    def setDefaultStream(
+        self, device: int, stream: Any
+    ) -> None: ...  # cudaStream_t
     def revertDefaultStream(self, device: int) -> None: ...
     def getDefaultStream(self, device: int) -> Any: ...  # cudaStream_t
     def setDefaultNullStreamAllDevices(self) -> None: ...
     def setLogMemoryAllocations(self, enable: bool) -> None: ...
     def initializeForDevice(self, device: int) -> None: ...
     def getBlasHandle(self, device: int) -> Any: ...  # cublasHandle_t
-    def getAlternateStreams(self, device: int) -> list[Any]: ...  # vector<cudaStream_t>
+    def getAlternateStreams(
+        self, device: int
+    ) -> list[Any]: ...  # vector<cudaStream_t>
     def allocMemory(self, req: Any) -> Any: ...  # AllocRequest -> void*
     def deallocMemory(self, device: int, ptr: Any) -> None: ...
     def getTempMemoryAvailable(self, device: int) -> int: ...
@@ -4006,7 +4376,9 @@ class StandardGpuResources:
     def noTempMemory(self) -> None: ...
     def setTempMemory(self, size: int) -> None: ...
     def setPinnedMemory(self, size: int) -> None: ...
-    def setDefaultStream(self, device: int, stream: Any) -> None: ...  # cudaStream_t
+    def setDefaultStream(
+        self, device: int, stream: Any
+    ) -> None: ...  # cudaStream_t
     def revertDefaultStream(self, device: int) -> None: ...
     def setDefaultNullStreamAllDevices(self) -> None: ...
     def getMemoryInfo(self) -> dict[int, dict[str, tuple[int, int]]]: ...
@@ -4091,7 +4463,9 @@ class GpuMultipleClonerOptions(GpuClonerOptions):
 
 # GPU Cloner classes (from gpu/GpuCloner.h)
 class ToCPUCloner(Cloner):
-    def merge_index(self, dst: Index, src: Index, successive_ids: bool) -> None: ...
+    def merge_index(
+        self, dst: Index, src: Index, successive_ids: bool
+    ) -> None: ...
     def clone_Index(self, index: Index) -> Index: ...
 
 class ToGpuCloner(Cloner, GpuClonerOptions):
@@ -4404,7 +4778,9 @@ def rand_smooth_vectors(
 @overload
 def eval_intersection(I1: torch.Tensor, I2: torch.Tensor) -> int: ...
 @overload
-def eval_intersection(I1: npt.NDArray[np.int64], I2: npt.NDArray[np.int64]) -> int: ...
+def eval_intersection(
+    I1: npt.NDArray[np.int64], I2: npt.NDArray[np.int64]
+) -> int: ...
 @overload
 def normalize_L2(x: torch.Tensor) -> None: ...
 @overload
@@ -4449,7 +4825,10 @@ def knn_hamming(
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 @overload
 def knn_hamming(
-    xq: npt.NDArray[np.uint8], xb: npt.NDArray[np.uint8], k: int, variant: str = "hc"
+    xq: npt.NDArray[np.uint8],
+    xb: npt.NDArray[np.uint8],
+    k: int,
+    variant: str = "hc",
 ) -> tuple[npt.NDArray[np.int32], npt.NDArray[np.int64]]: ...
 @overload
 def merge_knn_results(
@@ -4457,12 +4836,16 @@ def merge_knn_results(
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 @overload
 def merge_knn_results(
-    Dall: npt.NDArray[np.float32], Iall: npt.NDArray[np.int64], keep_max: bool = False
+    Dall: npt.NDArray[np.float32],
+    Iall: npt.NDArray[np.int64],
+    keep_max: bool = False,
 ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
 
 # Pack/unpack bitstring functions from extra_wrappers.py
 @overload
-def pack_bitstrings(a: npt.NDArray[np.int32], nbit: int) -> npt.NDArray[np.uint8]: ...
+def pack_bitstrings(
+    a: npt.NDArray[np.int32], nbit: int
+) -> npt.NDArray[np.uint8]: ...
 @overload
 def pack_bitstrings(
     a: npt.NDArray[np.int32], nbit: npt.NDArray[np.int32]
@@ -4559,9 +4942,17 @@ class float_minheap_array_t:
     def __init__(self) -> None: ...
     def heapify(self) -> None: ...
     def addn(self, n: int, vals: Any) -> None: ...
-    def addn_with_ids(self, n: int, vals: Any, ids: Any, id_stride: int) -> None: ...
+    def addn_with_ids(
+        self, n: int, vals: Any, ids: Any, id_stride: int
+    ) -> None: ...
     def addn_query_subset_with_ids(
-        self, nsubset: int, subset: Any, n: int, vals: Any, ids: Any, id_stride: int
+        self,
+        nsubset: int,
+        subset: Any,
+        n: int,
+        vals: Any,
+        ids: Any,
+        id_stride: int,
     ) -> None: ...
     def reorder(self) -> None: ...
 
@@ -4574,9 +4965,17 @@ class float_maxheap_array_t:
     def __init__(self) -> None: ...
     def heapify(self) -> None: ...
     def addn(self, n: int, vals: Any) -> None: ...
-    def addn_with_ids(self, n: int, vals: Any, ids: Any, id_stride: int) -> None: ...
+    def addn_with_ids(
+        self, n: int, vals: Any, ids: Any, id_stride: int
+    ) -> None: ...
     def addn_query_subset_with_ids(
-        self, nsubset: int, subset: Any, n: int, vals: Any, ids: Any, id_stride: int
+        self,
+        nsubset: int,
+        subset: Any,
+        n: int,
+        vals: Any,
+        ids: Any,
+        id_stride: int,
     ) -> None: ...
     def reorder(self) -> None: ...
 
@@ -4652,7 +5051,9 @@ class MapInt64ToInt64:
     tab: npt.NDArray[np.int64]
 
     def __init__(self, capacity: int) -> None: ...
-    def add(self, keys: npt.NDArray[np.int64], vals: npt.NDArray[np.int64]) -> None: ...
+    def add(
+        self, keys: npt.NDArray[np.int64], vals: npt.NDArray[np.int64]
+    ) -> None: ...
     def lookup(self, keys: npt.NDArray[np.int64]) -> npt.NDArray[np.int64]: ...
 
 # Additional hash table functions

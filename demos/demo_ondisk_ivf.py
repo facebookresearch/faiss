@@ -15,13 +15,13 @@ from faiss.contrib.ondisk import merge_ondisk
 
 
 def ivecs_read(fname):
-    a = np.fromfile(fname, dtype='int32')
+    a = np.fromfile(fname, dtype="int32")
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy()
 
 
 def fvecs_read(fname):
-    return ivecs_read(fname).view('float32')
+    return ivecs_read(fname).view("float32")
 
 
 #################################################################
@@ -30,7 +30,7 @@ def fvecs_read(fname):
 
 stage = int(sys.argv[1])
 
-tmpdir = '/tmp/'
+tmpdir = "/tmp/"
 
 if stage == 0:
     # train the index
@@ -55,14 +55,11 @@ if 1 <= stage <= 4:
 
 if stage == 5:
 
-    print('loading trained index')
+    print("loading trained index")
     # construct the output index
     index = faiss.read_index(tmpdir + "trained.index")
 
-    block_fnames = [
-        tmpdir + "block_%d.index" % bno
-        for bno in range(4)
-    ]
+    block_fnames = [tmpdir + "block_%d.index" % bno for bno in range(4)]
 
     merge_ondisk(index, block_fnames, tmpdir + "merged_index.ivfdata")
 

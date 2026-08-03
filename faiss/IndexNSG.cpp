@@ -62,8 +62,7 @@ void IndexNSG::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
@@ -245,12 +244,18 @@ void IndexNSG::add(idx_t n, const float* x) {
 
 void IndexNSG::reset() {
     nsg.reset();
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
     storage->reset();
     ntotal = 0;
     is_built = false;
 }
 
 void IndexNSG::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
     storage->reconstruct(key, recons);
 }
 

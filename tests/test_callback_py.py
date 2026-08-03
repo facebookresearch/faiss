@@ -18,7 +18,7 @@ class TestCallbackPy(unittest.TestCase):
         d = 128
         niter = 1_000_000_000
 
-        x = np.random.rand(n, d).astype('float32')
+        x = np.random.rand(n, d).astype("float32")
         index = faiss.IndexFlat(d)
 
         cp = faiss.ClusteringParameters()

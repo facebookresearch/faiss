@@ -15,10 +15,16 @@ import random
 class TestIVFlib(unittest.TestCase):
 
     def test_methods_exported(self):
-        methods = ['check_compatible_for_merge', 'extract_index_ivf',
-                   'merge_into', 'search_centroid',
-                   'search_and_return_centroids', 'get_invlist_range',
-                   'set_invlist_range', 'search_with_parameters']
+        methods = [
+            "check_compatible_for_merge",
+            "extract_index_ivf",
+            "merge_into",
+            "search_centroid",
+            "search_and_return_centroids",
+            "get_invlist_range",
+            "set_invlist_range",
+            "search_with_parameters",
+        ]
 
         for method in methods:
             assert callable(getattr(faiss, method, None))
@@ -49,10 +55,7 @@ def search_single_scan(index, xq, k, bs=128):
         sub_assign = assign.copy()
         sub_assign[skip_rows, skip_cols] = -1
 
-        index.search_preassigned(
-            xq, k, sub_assign, coarse_dis,
-            D=rh.D, I=rh.I
-        )
+        index.search_preassigned(xq, k, sub_assign, coarse_dis, D=rh.D, I=rh.I)
 
     rh.finalize()
 
@@ -63,15 +66,15 @@ class TestSequentialScan(unittest.TestCase):
 
     def test_sequential_scan(self):
         d = 20
-        index = faiss.index_factory(d, 'IVF100,SQ8')
+        index = faiss.index_factory(d, "IVF100,SQ8")
 
         rs = np.random.RandomState(123)
-        xt = rs.rand(5000, d).astype('float32')
-        xb = rs.rand(10000, d).astype('float32')
+        xt = rs.rand(5000, d).astype("float32")
+        xb = rs.rand(10000, d).astype("float32")
         index.train(xt)
         index.add(xb)
         k = 15
-        xq = rs.rand(200, d).astype('float32')
+        xq = rs.rand(200, d).astype("float32")
 
         ref_D, ref_I = index.search(xq, k)
         D, I = search_single_scan(index, xq, k, bs=10)
@@ -84,16 +87,16 @@ class TestSearchWithParameters(unittest.TestCase):
 
     def test_search_with_parameters(self):
         d = 20
-        index = faiss.index_factory(d, 'IVF100,SQ8')
+        index = faiss.index_factory(d, "IVF100,SQ8")
 
         rs = np.random.RandomState(123)
-        xt = rs.rand(5000, d).astype('float32')
-        xb = rs.rand(10000, d).astype('float32')
+        xt = rs.rand(5000, d).astype("float32")
+        xb = rs.rand(10000, d).astype("float32")
         index.train(xt)
         index.nprobe = 3
         index.add(xb)
         k = 15
-        xq = rs.rand(200, d).astype('float32')
+        xq = rs.rand(200, d).astype("float32")
 
         stats = faiss.cvar.indexIVF_stats
         stats.reset()
@@ -107,7 +110,8 @@ class TestSearchWithParameters(unittest.TestCase):
         params.nprobe = 3
 
         Dnew, Inew, stats2 = faiss.search_with_parameters(
-            index, xq, k, params, output_stats=True)
+            index, xq, k, params, output_stats=True
+        )
 
         np.testing.assert_array_equal(Inew, Iref)
         np.testing.assert_array_equal(Dnew, Dref)
@@ -116,15 +120,15 @@ class TestSearchWithParameters(unittest.TestCase):
 
     def test_range_search_with_parameters(self):
         d = 20
-        index = faiss.index_factory(d, 'IVF100,SQ8')
+        index = faiss.index_factory(d, "IVF100,SQ8")
 
         rs = np.random.RandomState(123)
-        xt = rs.rand(5000, d).astype('float32')
-        xb = rs.rand(10000, d).astype('float32')
+        xt = rs.rand(5000, d).astype("float32")
+        xb = rs.rand(10000, d).astype("float32")
         index.train(xt)
         index.nprobe = 3
         index.add(xb)
-        xq = rs.rand(200, d).astype('float32')
+        xq = rs.rand(200, d).astype("float32")
 
         Dpre, _ = index.search(xq, 15)
         radius = float(np.median(Dpre[:, -1]))
@@ -140,7 +144,8 @@ class TestSearchWithParameters(unittest.TestCase):
         params.nprobe = 3
 
         Lnew, Dnew, Inew, stats2 = faiss.range_search_with_parameters(
-            index, xq, radius, params, output_stats=True)
+            index, xq, radius, params, output_stats=True
+        )
 
         np.testing.assert_array_equal(Lnew, Lref)
         np.testing.assert_array_equal(Inew, Iref)
@@ -155,18 +160,18 @@ class TestSmallData(unittest.TestCase):
     def test_small_data(self):
         d = 20
         # nlist = (2^4)^2 = 256
-        index = faiss.index_factory(d, 'IMI2x4,Flat')
+        index = faiss.index_factory(d, "IMI2x4,Flat")
 
         # When nprobe >= nlist, it is equivalent to an IndexFlat.
         rs = np.random.RandomState(123)
-        xt = rs.rand(100, d).astype('float32')
-        xb = rs.rand(1000, d).astype('float32')
+        xt = rs.rand(100, d).astype("float32")
+        xb = rs.rand(1000, d).astype("float32")
 
         index.train(xt)
         index.add(xb)
         index.nprobe = 2048
         k = 5
-        xq = rs.rand(10, d).astype('float32')
+        xq = rs.rand(10, d).astype("float32")
 
         # test kNN search
         D, I = index.search(xq, k)
@@ -175,7 +180,7 @@ class TestSmallData(unittest.TestCase):
         assert np.all(I == ref_I)
 
         # test range search
-        thresh = 0.1   # *squared* distance
+        thresh = 0.1  # *squared* distance
         lims, D, I = index.range_search(xq, thresh)
         ref_index = faiss.IndexFlat(d)
         ref_index.add(xb)
@@ -199,11 +204,12 @@ class TestIvfSharding(unittest.TestCase):
         return i % shard_count
 
     def verify_sharded_ivf_indexes(
-            self, template, xb, shard_count, sharding_function, generate_ids=True):
+        self, template, xb, shard_count, sharding_function, generate_ids=True
+    ):
         sharded_indexes_counters = [0] * shard_count
         sharded_indexes = []
         for i in range(shard_count):
-            if xb[0].dtype.name == 'uint8':
+            if xb[0].dtype.name == "uint8":
                 index = faiss.read_index_binary(template % i)
             else:
                 index = faiss.read_index(template % i)
@@ -213,13 +219,16 @@ class TestIvfSharding(unittest.TestCase):
         if generate_ids:
             for i in range(len(xb)):
                 shard_id = sharding_function(i, shard_count)
-                reconstructed = sharded_indexes[shard_id].quantizer.reconstruct(i)
+                reconstructed = sharded_indexes[shard_id].quantizer.reconstruct(
+                    i
+                )
                 np.testing.assert_array_equal(reconstructed, xb[i])
         else:
             for i in range(len(xb)):
                 shard_id = sharding_function(i, shard_count)
                 reconstructed = sharded_indexes[shard_id].quantizer.reconstruct(
-                    sharded_indexes_counters[shard_id])
+                    sharded_indexes_counters[shard_id]
+                )
                 sharded_indexes_counters[shard_id] += 1
                 np.testing.assert_array_equal(reconstructed, xb[i])
 
@@ -231,16 +240,12 @@ class TestIvfSharding(unittest.TestCase):
         quantizer = faiss.IndexFlatL2(self.d)
         index = faiss.IndexIVFFlat(quantizer, self.d, self.nlist)
         with self.assertRaises(RuntimeError):
-            faiss.shard_ivf_index_centroids(
-                index,
-                10,
-                "shard.%d.index",
-                None
-            )
+            faiss.shard_ivf_index_centroids(index, 10, "shard.%d.index", None)
 
     def test_save_index_shards_by_centroids_flat_quantizer_default_sharding(
-            self):
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        self,
+    ):
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexFlatL2(self.d)
         index = faiss.IndexIVFFlat(quantizer, self.d, self.nlist)
         shard_count = 3
@@ -249,18 +254,16 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_flat_quantizer_custom_sharding(
-            self):
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        self,
+    ):
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexFlatL2(self.d)
         index = faiss.IndexIVFFlat(quantizer, self.d, self.nlist)
         shard_count = 20
@@ -269,17 +272,14 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            self.custom_sharding_function,
-            True
+            index, shard_count, template, self.custom_sharding_function, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.custom_sharding_function)
+            template, xb, shard_count, self.custom_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_hnsw_quantizer(self):
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexHNSWFlat(self.d, 32)
         index = faiss.IndexIVFFlat(quantizer, self.d, self.nlist)
         shard_count = 17
@@ -288,17 +288,16 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_binary_flat_quantizer(self):
-        xb = np.random.randint(256, size=(self.nb, int(self.d / 8))).astype('uint8')
+        xb = np.random.randint(256, size=(self.nb, int(self.d / 8))).astype(
+            "uint8"
+        )
         quantizer = faiss.IndexBinaryFlat(self.d)
         index = faiss.IndexBinaryIVF(quantizer, self.d, self.nlist)
         shard_count = 11
@@ -307,17 +306,16 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_binary_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_binary_hnsw_quantizer(self):
-        xb = np.random.randint(256, size=(self.nb, int(self.d / 8))).astype('uint8')
+        xb = np.random.randint(256, size=(self.nb, int(self.d / 8))).astype(
+            "uint8"
+        )
         quantizer = faiss.IndexBinaryHNSW(self.d, 32)
         index = faiss.IndexBinaryIVF(quantizer, self.d, self.nlist)
         shard_count = 13
@@ -326,17 +324,16 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_binary_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )
 
     def test_save_index_shards_without_id_generation(self):
-        xb = np.random.randint(256, size=(self.nb, int(self.d / 8))).astype('uint8')
+        xb = np.random.randint(256, size=(self.nb, int(self.d / 8))).astype(
+            "uint8"
+        )
         quantizer = faiss.IndexBinaryHNSW(self.d, 32)
         index = faiss.IndexBinaryIVF(quantizer, self.d, self.nlist)
         shard_count = 5
@@ -345,16 +342,13 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_binary_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            False
+            index, shard_count, template, None, False
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function, False)
+            template, xb, shard_count, self.default_sharding_function, False
+        )
 
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexHNSWFlat(self.d, 32)
         index = faiss.IndexIVFFlat(quantizer, self.d, self.nlist)
         shard_count = 23
@@ -363,18 +357,15 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            False
+            index, shard_count, template, None, False
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function, False)
+            template, xb, shard_count, self.default_sharding_function, False
+        )
 
     def test_save_index_shards_by_centroids_rabitq(self):
         """Test sharding for IndexIVFRaBitQ."""
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexFlatL2(self.d)
         index = faiss.IndexIVFRaBitQ(quantizer, self.d, self.nlist)
         shard_count = 7
@@ -386,18 +377,15 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.rabitq.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_rabitq_fastscan(self):
         """Test sharding for IndexIVFRaBitQFastScan."""
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexFlatL2(self.d)
         index = faiss.IndexIVFRaBitQFastScan(quantizer, self.d, self.nlist)
         shard_count = 5
@@ -409,18 +397,15 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.rabitqfs.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_rabitq_custom_sharding(self):
         """Test sharding for IndexIVFRaBitQ with custom sharding function."""
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexFlatL2(self.d)
         index = faiss.IndexIVFRaBitQ(quantizer, self.d, self.nlist)
         shard_count = 20
@@ -432,33 +417,27 @@ class TestIvfSharding(unittest.TestCase):
 
         template = str(random.randint(0, 100000)) + "shard.%d.rabitq.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            self.custom_sharding_function,
-            True
+            index, shard_count, template, self.custom_sharding_function, True
         )
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.custom_sharding_function)
+            template, xb, shard_count, self.custom_sharding_function
+        )
 
     def test_save_index_shards_by_centroids_panorama(self):
         """Test sharding for IndexIVFFlatPanorama."""
-        xb = np.random.rand(self.nb, self.d).astype('float32')
+        xb = np.random.rand(self.nb, self.d).astype("float32")
         quantizer = faiss.IndexFlatL2(self.d)
         n_levels = 4
         index = faiss.IndexIVFFlatPanorama(
-            quantizer, self.d, self.nlist, n_levels)
+            quantizer, self.d, self.nlist, n_levels
+        )
         shard_count = 5
 
         index.quantizer.add(xb)
 
         template = str(random.randint(0, 100000)) + "shard.%d.panorama.index"
         faiss.shard_ivf_index_centroids(
-            index,
-            shard_count,
-            template,
-            None,
-            True
+            index, shard_count, template, None, True
         )
 
         # Verify shards are IndexIVFFlatPanorama after read-back
@@ -468,4 +447,5 @@ class TestIvfSharding(unittest.TestCase):
             self.assertIsInstance(shard, faiss.IndexIVFFlatPanorama)
 
         self.verify_sharded_ivf_indexes(
-            template, xb, shard_count, self.default_sharding_function)
+            template, xb, shard_count, self.default_sharding_function
+        )

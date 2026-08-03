@@ -88,6 +88,14 @@ class IVFBase {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices);
 
+    /// Encode/add vectors to precomputed IVF lists.
+    /// The input data, indices, and precomputed list ids must be on our current
+    /// device.
+    virtual idx_t addVectorsPreassigned(
+            Tensor<float, 2, true>& vecs,
+            Tensor<idx_t, 1, true>& indices,
+            Tensor<idx_t, 1, true>& precomputedIndices);
+
     /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     virtual void search(
@@ -199,6 +207,15 @@ class IVFBase {
 
     /// Shared function to copy indices from CPU to GPU
     void addIndicesFromCpu_(idx_t listId, const idx_t* indices, idx_t numVecs);
+
+    /// Shared implementation after IVF list ids and residuals have been
+    /// computed.
+    idx_t addVectorsToLists_(
+            Tensor<float, 2, true>& vecs,
+            Tensor<float, 3, true>& residuals,
+            Tensor<idx_t, 1, true>& indices,
+            Tensor<idx_t, 2, true>& ivfIndices,
+            const std::vector<idx_t>& ivfIndicesHost);
 
    protected:
     /// Collection of GPU resources that we use

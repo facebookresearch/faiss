@@ -11,9 +11,13 @@ import numpy as np
 from common_faiss_tests import get_dataset_2
 
 from faiss.contrib import datasets, evaluation, big_batch_search
-from faiss.contrib.exhaustive_search import knn_ground_truth, \
-    range_ground_truth, range_search_gpu, \
-    range_search_max_results, exponential_query_iterator
+from faiss.contrib.exhaustive_search import (
+    knn_ground_truth,
+    range_ground_truth,
+    range_search_gpu,
+    range_search_max_results,
+    exponential_query_iterator,
+)
 
 
 class TestComputeGT(unittest.TestCase):
@@ -30,7 +34,7 @@ class TestComputeGT(unittest.TestCase):
 
         def matrix_iterator(xb, bs):
             for i0 in range(0, xb.shape[0], bs):
-                yield xb[i0:i0 + bs]
+                yield xb[i0 : i0 + bs]
 
         Dnew, Inew = knn_ground_truth(xq, matrix_iterator(xb, 1000), 10)
 
@@ -49,12 +53,11 @@ class TestComputeGT(unittest.TestCase):
         ref_lims, ref_D, ref_I = index.range_search(xq, threshold)
 
         new_lims, new_D, new_I = range_ground_truth(
-            xq, ds.database_iterator(bs=100), threshold,
-            metric_type=metric)
+            xq, ds.database_iterator(bs=100), threshold, metric_type=metric
+        )
 
         evaluation.check_ref_range_results(
-            ref_lims, ref_D, ref_I,
-            new_lims, new_D, new_I
+            ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
     def test_range_L2(self):
@@ -84,14 +87,16 @@ class TestComputeGT(unittest.TestCase):
         query_iterator = exponential_query_iterator(xq)
 
         radius1, lims_new, Dnew, Inew = range_search_max_results(
-            index, query_iterator, ds.d // 2,
-            min_results=Dref.size, clip_to_min=True,
-            ngpu=1
+            index,
+            query_iterator,
+            ds.d // 2,
+            min_results=Dref.size,
+            clip_to_min=True,
+            ngpu=1,
         )
 
         evaluation.check_ref_range_results(
-            lims_ref, Dref, Iref,
-            lims_new, Dnew, Inew
+            lims_ref, Dref, Iref, lims_new, Dnew, Inew
         )
 
     @unittest.skipIf(faiss.get_num_gpus() < 2, "multiple GPU only test")
@@ -113,17 +118,20 @@ class TestBigBatchSearch(unittest.TestCase):
 
         def pairwise_distances(xq, xb, metric=faiss.METRIC_L2):
             return faiss.pairwise_distance_gpu(
-                res, xq, xb, metric=faiss.METRIC_L2)
+                res, xq, xb, metric=faiss.METRIC_L2
+            )
 
         def knn_function(xq, xb, k, metric=faiss.METRIC_L2):
             return faiss.knn_gpu(res, xq, xb, k, metric=faiss.METRIC_L2)
 
         for method in "pairwise_distances", "knn_function":
             Dnew, Inew = big_batch_search.big_batch_search(
-                index, ds.get_queries(),
-                k, method=method,
+                index,
+                ds.get_queries(),
+                k,
+                method=method,
                 pairwise_distances=pairwise_distances,
-                knn=knn_function
+                knn=knn_function,
             )
             self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
             np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
@@ -151,16 +159,22 @@ class TestBigBatchSearchMultiGPU(unittest.TestCase):
 
         def knn_function(xq, xb, k, metric=faiss.METRIC_L2, thread_id=None):
             return faiss.knn_gpu(
-                res[thread_id], xq, xb, k,
-                metric=faiss.METRIC_L2, device=thread_id
+                res[thread_id],
+                xq,
+                xb,
+                k,
+                metric=faiss.METRIC_L2,
+                device=thread_id,
             )
 
         Dnew, Inew = big_batch_search.big_batch_search(
-            index, ds.get_queries(),
-            k, method="knn_function",
+            index,
+            ds.get_queries(),
+            k,
+            method="knn_function",
             knn=knn_function,
             threaded=8,
-            computation_threads=ngpu
+            computation_threads=ngpu,
         )
         self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
         np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
@@ -192,18 +206,17 @@ class TestRangeSearchGpu(unittest.TestCase):
 
         # mixed GPU / CPU run
         Lnew, Dnew, Inew = range_search_gpu(
-            ds.get_queries(), threshold, index_gpu, index_cpu, gpu_k=4)
-        evaluation.check_ref_range_results(
-            Lref, Dref, Iref,
-            Lnew, Dnew, Inew
+            ds.get_queries(), threshold, index_gpu, index_cpu, gpu_k=4
         )
+        evaluation.check_ref_range_results(Lref, Dref, Iref, Lnew, Dnew, Inew)
 
         # also test the version without CPU search
         Lnew2, Dnew2, Inew2 = range_search_gpu(
-            ds.get_queries(), threshold, index_gpu, None, gpu_k=4)
+            ds.get_queries(), threshold, index_gpu, None, gpu_k=4
+        )
         for q in range(ds.nq):
-            ref = Iref[Lref[q]:Lref[q+1]]
-            new = Inew2[Lnew2[q]:Lnew2[q+1]]
+            ref = Iref[Lref[q] : Lref[q + 1]]
+            new = Inew2[Lnew2[q] : Lnew2[q + 1]]
             if nres_per_query[q] <= 4:
                 self.assertEqual(set(ref), set(new))
             else:
