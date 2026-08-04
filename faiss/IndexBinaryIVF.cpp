@@ -192,7 +192,7 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const {
                 continue;
             }
 
-            uint8_t* reconstructed = recons + (id - i0) * d;
+            uint8_t* reconstructed = recons + (id - i0) * code_size;
             reconstruct_from_offset(list_no, offset, reconstructed);
         }
     }
