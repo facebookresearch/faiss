@@ -378,8 +378,8 @@ void GpuIndexCagra::trainMultiGpu(
         idx_t stitch_per_shard,
         int stitch_k,
         int stitch_mode) {
-    FAISS_THROW_IF_NOT_MSG(!is_trained, "index is already trained");
-    FAISS_THROW_IF_NOT_MSG(!devices.empty(), "must provide at least one GPU");
+    FAISS_THROW_IF_MSG(is_trained, "index is already trained");
+    FAISS_THROW_IF_MSG(devices.empty(), "must provide at least one GPU");
     FAISS_THROW_IF_NOT_MSG(stitch_k >= 1, "stitch_k must be >= 1");
 
     numeric_type_ = NumericType::Float32;
@@ -763,8 +763,8 @@ void GpuIndexCagra::trainAllNeighbors(
         int build_algo,
         float refinement_rate,
         int ivfpq_search_batch) {
-    FAISS_THROW_IF_NOT_MSG(!is_trained, "index is already trained");
-    FAISS_THROW_IF_NOT_MSG(!devices.empty(), "must provide at least one GPU");
+    FAISS_THROW_IF_MSG(is_trained, "index is already trained");
+    FAISS_THROW_IF_MSG(devices.empty(), "must provide at least one GPU");
 
     numeric_type_ = NumericType::Float32;
     idx_t graph_degree = static_cast<idx_t>(cagraConfig_.graph_degree);

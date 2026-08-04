@@ -371,8 +371,8 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
           pano(code_size_in, n_levels_in, batch_size) {
     FAISS_THROW_IF_NOT(n_levels_in > 0);
     FAISS_THROW_IF_NOT(code_size_in % sizeof(float) == 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !use_iterator,
+    FAISS_THROW_IF_MSG(
+            use_iterator,
             "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
     FAISS_ASSERT(level_width % sizeof(float) == 0);
 
@@ -669,10 +669,10 @@ namespace {
 int translate_list_no(const VStackInvertedLists* vil, idx_t list_no) {
     FAISS_THROW_IF_NOT(
             list_no >= 0 && static_cast<size_t>(list_no) < vil->nlist);
-    int i0 = 0, i1 = vil->ils.size();
+    size_t i0 = 0, i1 = vil->ils.size();
     const idx_t* cumsz = vil->cumsz.data();
     while (i0 + 1 < i1) {
-        int imed = (i0 + i1) / 2;
+        size_t imed = i0 + (i1 - i0) / 2;
         if (list_no >= cumsz[imed]) {
             i0 = imed;
         } else {
