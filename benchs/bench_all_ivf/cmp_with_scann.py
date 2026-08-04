@@ -47,31 +47,38 @@ def main():
     def aa(*args, **kwargs):
         group.add_argument(*args, **kwargs)
 
-    group = parser.add_argument_group('dataset options')
+    group = parser.add_argument_group("dataset options")
 
-    aa('--db', default='deep1M', help='dataset')
-    aa('--measure', default="1-recall",
-        help="perf measure to use: 1-recall or inter")
-    aa('--download', default=False, action="store_true")
-    aa('--lib', default='faiss', help='library to use (faiss or scann)')
-    aa('--thenscann', default=False, action="store_true")
-    aa('--base_dir',
-       default='/checkpoint/matthijs/faiss_improvements/cmp_ivf_scan_2')
+    aa("--db", default="deep1M", help="dataset")
+    aa(
+        "--measure",
+        default="1-recall",
+        help="perf measure to use: 1-recall or inter",
+    )
+    aa("--download", default=False, action="store_true")
+    aa("--lib", default="faiss", help="library to use (faiss or scann)")
+    aa("--thenscann", default=False, action="store_true")
+    aa(
+        "--base_dir",
+        default="/checkpoint/matthijs/faiss_improvements/cmp_ivf_scan_2",
+    )
 
-    group = parser.add_argument_group('searching')
-    aa('--k', default=10, type=int, help='nb of nearest neighbors')
-    aa('--pre_reorder_k', default="0,10,100,1000", help='values for reorder_k')
-    aa('--nprobe', default="1,2,5,10,20,50,100,200", help='values for nprobe')
-    aa('--nrun', default=5, type=int, help='nb of runs to perform')
+    group = parser.add_argument_group("searching")
+    aa("--k", default=10, type=int, help="nb of nearest neighbors")
+    aa("--pre_reorder_k", default="0,10,100,1000", help="values for reorder_k")
+    aa("--nprobe", default="1,2,5,10,20,50,100,200", help="values for nprobe")
+    aa("--nrun", default=5, type=int, help="nb of runs to perform")
     args = parser.parse_args()
 
     print("args:", args)
-    pre_reorder_k_tab = [int(x) for x in args.pre_reorder_k.split(',')]
-    nprobe_tab = [int(x) for x in args.nprobe.split(',')]
+    pre_reorder_k_tab = [int(x) for x in args.pre_reorder_k.split(",")]
+    nprobe_tab = [int(x) for x in args.nprobe.split(",")]
 
-    os.system('echo -n "nb processors "; '
-            'cat /proc/cpuinfo | grep ^processor | wc -l; '
-            'cat /proc/cpuinfo | grep ^"model name" | tail -1')
+    os.system(
+        'echo -n "nb processors "; '
+        "cat /proc/cpuinfo | grep ^processor | wc -l; "
+        'cat /proc/cpuinfo | grep ^"model name" | tail -1'
+    )
 
     cache_dir = args.base_dir + "/" + args.db + "/"
     k = args.k
@@ -80,6 +87,7 @@ def main():
     if not os.path.exists(cache_dir + "xb.npy"):
         # prepare cache
         from datasets import load_dataset
+
         ds = load_dataset(args.db, download=args.download)
         print(ds)
         # store for SCANN
@@ -95,7 +103,7 @@ def main():
             np.save(fname, v)
 
         open(cache_dir + "metric", "w").write(ds.metric)
-        
+
     dataset = {}
     for kn in "xb xq gt".split():
         fname = cache_dir + "/" + kn + ".npy"
@@ -103,55 +111,69 @@ def main():
         dataset[kn] = np.load(fname)
     xb = dataset["xb"]
     xq = dataset["xq"]
-    gt = dataset["gt"] 
+    gt = dataset["gt"]
     distance_measure = open(cache_dir + "metric").read()
-    
+
     if args.lib == "faiss":
         import faiss
 
         name1_to_metric = {
             "IP": faiss.METRIC_INNER_PRODUCT,
-            "L2": faiss.METRIC_L2
+            "L2": faiss.METRIC_L2,
         }
 
         index_fname = cache_dir + "index.faiss"
         if not os.path.exists(index_fname):
             index = faiss_make_index(
-                xb, name1_to_metric[distance_measure], index_fname)
+                xb, name1_to_metric[distance_measure], index_fname
+            )
         else:
             index = faiss.read_index(index_fname)
 
         faiss_eval_search(
-                index, xq, xb, nprobe_tab, pre_reorder_k_tab, k, gt,
-                nrun, args.measure
+            index,
+            xq,
+            xb,
+            nprobe_tab,
+            pre_reorder_k_tab,
+            k,
+            gt,
+            nrun,
+            args.measure,
         )
 
     if args.lib == "scann":
         from scann.scann_ops.py import scann_ops_pybind
 
-        name1_to_name2 = {
-            "IP": "dot_product",
-            "L2": "squared_l2"
-        }
+        name1_to_name2 = {"IP": "dot_product", "L2": "squared_l2"}
 
         scann_dir = cache_dir + "/scann1.1.1_serialized"
         if os.path.exists(scann_dir + "/scann_config.pb"):
             searcher = scann_ops_pybind.load_searcher(scann_dir)
         else:
             searcher = scann_make_index(
-                xb, name1_to_name2[distance_measure], scann_dir, 0)
+                xb, name1_to_name2[distance_measure], scann_dir, 0
+            )
 
         scann_dir = cache_dir + "/scann1.1.1_serialized_reorder"
         if os.path.exists(scann_dir + "/scann_config.pb"):
             searcher_reo = scann_ops_pybind.load_searcher(scann_dir)
         else:
             searcher_reo = scann_make_index(
-                xb, name1_to_name2[distance_measure], scann_dir, 100)
+                xb, name1_to_name2[distance_measure], scann_dir, 100
+            )
 
         scann_eval_search(
-            searcher, searcher_reo,
-            xq, xb, nprobe_tab, pre_reorder_k_tab, k, gt,
-            nrun, args.measure
+            searcher,
+            searcher_reo,
+            xq,
+            xb,
+            nprobe_tab,
+            pre_reorder_k_tab,
+            k,
+            gt,
+            nrun,
+            args.measure,
         )
 
     if args.lib != "scann" and args.thenscann:
@@ -159,9 +181,10 @@ def main():
         # options
         cmdline = " ".join(sys.argv) + " --lib scann"
         cmdline = (
-            ". ~/anaconda3/etc/profile.d/conda.sh ; " +
-            "conda activate scann_1.1.1; "
-            "python -u " + cmdline)
+            ". ~/anaconda3/etc/profile.d/conda.sh ; "
+            + "conda activate scann_1.1.1; "
+            "python -u " + cmdline
+        )
 
         print("running", cmdline)
 
@@ -183,10 +206,10 @@ def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
     else:
         thr = 0
     k = 10
-    sb = scann.scann_ops_pybind.builder(
-        xb, k, distance_measure)
+    sb = scann.scann_ops_pybind.builder(xb, k, distance_measure)
     sb = sb.tree(
-        num_leaves=2000, num_leaves_to_search=100, training_sample_size=250000)
+        num_leaves=2000, num_leaves_to_search=100, training_sample_size=250000
+    )
     sb = sb.score_ah(2, anisotropic_quantization_threshold=thr)
 
     if reorder_k > 0:
@@ -205,9 +228,17 @@ def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
 
 
 def scann_eval_search(
-        searcher, searcher_reo,
-        xq, xb, nprobe_tab, pre_reorder_k_tab, k, gt,
-        nrun, measure):
+    searcher,
+    searcher_reo,
+    xq,
+    xb,
+    nprobe_tab,
+    pre_reorder_k_tab,
+    k,
+    gt,
+    nrun,
+    measure,
+):
 
     # warmup
     for _run in range(5):
@@ -228,8 +259,10 @@ def scann_eval_search(
                 else:
                     t0 = time.time()
                     I, D = searcher_reo.search_batched(
-                        xq, leaves_to_search=nprobe, final_num_neighbors=k,
-                        pre_reorder_num_neighbors=pre_reorder_k
+                        xq,
+                        leaves_to_search=nprobe,
+                        final_num_neighbors=k,
+                        pre_reorder_num_neighbors=pre_reorder_k,
                     )
                     t1 = time.time()
 
@@ -267,13 +300,16 @@ def faiss_make_index(xb, metric_type, fname):
 
 
 def faiss_eval_search(
-            index, xq, xb, nprobe_tab, pre_reorder_k_tab,
-            k, gt, nrun, measure
-    ):
+    index, xq, xb, nprobe_tab, pre_reorder_k_tab, k, gt, nrun, measure
+):
     import faiss
 
-    print("use precomputed table=", index.use_precomputed_table,
-          "by residual=", index.by_residual)
+    print(
+        "use precomputed table=",
+        index.use_precomputed_table,
+        "by residual=",
+        index.by_residual,
+    )
 
     print("adding a refine index")
     index_refine = faiss.IndexRefineFlat(index, faiss.swig_ptr(xb))

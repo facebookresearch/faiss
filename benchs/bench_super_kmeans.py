@@ -87,9 +87,7 @@ def main():
         n, d = args.n, args.d
         x = gaussian_mixture(n, d, args.k, args.seed)
         print("=== bench_super_kmeans ===")
-        print(
-            f"n={n} d={d} k={args.k} niter={args.niter} seed={args.seed}"
-        )
+        print(f"n={n} d={d} k={args.k} niter={args.niter} seed={args.seed}")
 
     print("\n--- faiss.Clustering ---")
     v_dt, v_obj, v_iters = run_vanilla(x, d, args.k, args.niter, args.seed)

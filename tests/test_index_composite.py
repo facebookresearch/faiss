@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-""" more elaborate that test_index.py """
+"""more elaborate that test_index.py"""
 
 import numpy as np
 import unittest
@@ -23,7 +23,7 @@ class TestRemoveFastScan(unittest.TestCase):
     def do_test(self, ntotal, removed):
         d = 20
         xt, xb, _ = get_dataset_2(d, ntotal, ntotal, 0)
-        index = faiss.index_factory(20, 'IDMap2,PQ5x4fs')
+        index = faiss.index_factory(20, "IDMap2,PQ5x4fs")
         index.train(xt)
         index.add_with_ids(xb, np.arange(ntotal).astype("int64"))
         before = index.reconstruct_n(0, ntotal)
@@ -33,7 +33,7 @@ class TestRemoveFastScan(unittest.TestCase):
                 # should throw RuntimeError as this vector should be removed
                 try:
                     after = index.reconstruct(i)
-                    assert False
+                    raise AssertionError()
                 except RuntimeError:
                     pass
             else:
@@ -75,15 +75,15 @@ class TestRemove(unittest.TestCase):
         if ondisk:
             filename = tempfile.mkstemp()[1]
             invlists = faiss.OnDiskInvertedLists(
-                index1.nlist, index1.code_size,
-                filename)
+                index1.nlist, index1.code_size, filename
+            )
             index1.replace_invlists(invlists)
 
-        index1.add(xb[:int(nb / 2)])
+        index1.add(xb[: int(nb / 2)])
 
         index2 = faiss.IndexIVFFlat(quantizer, d, 20)
         assert index2.is_trained
-        index2.add(xb[int(nb / 2):])
+        index2.add(xb[int(nb / 2) :])
 
         Dref, Iref = index1.search(xq, 10)
         index1.merge_from(index2, int(nb / 2))
@@ -104,8 +104,10 @@ class TestRemove(unittest.TestCase):
     def test_remove_regular(self):
         self.do_merge_then_remove(False)
 
-    @unittest.skipIf(platform.system() == 'Windows',
-                     'OnDiskInvertedLists is unsupported on Windows.')
+    @unittest.skipIf(
+        platform.system() == "Windows",
+        "OnDiskInvertedLists is unsupported on Windows.",
+    )
     def test_remove_ondisk(self):
         self.do_merge_then_remove(True)
 
@@ -113,48 +115,48 @@ class TestRemove(unittest.TestCase):
         # only tests the python interface
 
         index = faiss.IndexFlat(5)
-        xb = np.zeros((10, 5), dtype='float32')
-        xb[:, 0] = np.arange(10, dtype='int64') + 1000
+        xb = np.zeros((10, 5), dtype="float32")
+        xb[:, 0] = np.arange(10, dtype="int64") + 1000
         index.add(xb)
-        index.remove_ids(np.arange(5, dtype='int64') * 2)
+        index.remove_ids(np.arange(5, dtype="int64") * 2)
         xb2 = faiss.vector_float_to_array(index.codes)
         xb2 = xb2.view("float32").reshape(5, 5)
         assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
 
     def test_remove_id_map(self):
         sub_index = faiss.IndexFlat(5)
-        xb = np.zeros((10, 5), dtype='float32')
+        xb = np.zeros((10, 5), dtype="float32")
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10, dtype='int64') + 100)
+        index.add_with_ids(xb, np.arange(10, dtype="int64") + 100)
         assert index.reconstruct(104)[0] == 1004
-        index.remove_ids(np.array([103], dtype='int64'))
+        index.remove_ids(np.array([103], dtype="int64"))
         assert index.reconstruct(104)[0] == 1004
         try:
             index.reconstruct(103)
         except RuntimeError:
             pass
         else:
-            assert False, 'should have raised an exception'
+            raise AssertionError("should have raised an exception")
 
     def test_factory_idmap2_suffix(self):
-        xb = np.zeros((10, 5), dtype='float32')
+        xb = np.zeros((10, 5), dtype="float32")
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.index_factory(5, "Flat,IDMap2")
-        ids = np.arange(10, dtype='int64') + 100
+        ids = np.arange(10, dtype="int64") + 100
         index.add_with_ids(xb, ids)
         assert index.reconstruct(104)[0] == 1004
-        index.remove_ids(np.array([103], dtype='int64'))
+        index.remove_ids(np.array([103], dtype="int64"))
         assert index.reconstruct(104)[0] == 1004
 
     def test_factory_idmap2_prefix(self):
-        xb = np.zeros((10, 5), dtype='float32')
+        xb = np.zeros((10, 5), dtype="float32")
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.index_factory(5, "IDMap2,Flat")
-        ids = np.arange(10, dtype='int64') + 100
+        ids = np.arange(10, dtype="int64") + 100
         index.add_with_ids(xb, ids)
         assert index.reconstruct(109)[0] == 1009
-        index.remove_ids(np.array([100], dtype='int64'))
+        index.remove_ids(np.array([100], dtype="int64"))
         assert index.reconstruct(109)[0] == 1009
 
     def test_remove_id_map_2(self):
@@ -163,13 +165,13 @@ class TestRemove(unittest.TestCase):
         X = rs.randn(10, 10).astype(np.float32)
         idx = np.array([0, 10, 20, 30, 40, 5, 15, 25, 35, 45], np.int64)
         remove_set = np.array([10, 30], dtype=np.int64)
-        index = faiss.index_factory(10, 'IDMap,Flat')
+        index = faiss.index_factory(10, "IDMap,Flat")
         index.add_with_ids(X[:5, :], idx[:5])
         index.remove_ids(remove_set)
         index.add_with_ids(X[5:, :], idx[5:])
 
         for i in range(10):
-            _, searchres = index.search(X[i:i + 1, :], 1)
+            _, searchres = index.search(X[i : i + 1, :], 1)
             if idx[i] in remove_set:
                 assert searchres[0] != idx[i]
             else:
@@ -177,22 +179,24 @@ class TestRemove(unittest.TestCase):
 
     def test_remove_id_map_binary(self):
         sub_index = faiss.IndexBinaryFlat(40)
-        xb = np.zeros((10, 5), dtype='uint8')
+        xb = np.zeros((10, 5), dtype="uint8")
         xb[:, 0] = np.arange(10) + 100
         index = faiss.IndexBinaryIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10, dtype='int64') + 1000)
+        index.add_with_ids(xb, np.arange(10, dtype="int64") + 1000)
         assert index.reconstruct(1004)[0] == 104
-        index.remove_ids(np.array([1003], dtype='int64'))
+        index.remove_ids(np.array([1003], dtype="int64"))
         assert index.reconstruct(1004)[0] == 104
         try:
             index.reconstruct(1003)
         except RuntimeError:
             pass
         else:
-            assert False, 'should have raised an exception'
+            raise AssertionError("should have raised an exception")
 
         # while we are there, let's test I/O as well...
-        index = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
+        index = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index)
+        )
 
         assert index.reconstruct(1004)[0] == 104
         try:
@@ -200,11 +204,12 @@ class TestRemove(unittest.TestCase):
         except RuntimeError:
             pass
         else:
-            assert False, 'should have raised an exception'
+            raise AssertionError("should have raised an exception")
 
         # Verify deserialized index is serializable again
         index2 = faiss.deserialize_index_binary(
-            faiss.serialize_index_binary(index))
+            faiss.serialize_index_binary(index)
+        )
         assert index2.reconstruct(1004)[0] == 104
 
 
@@ -212,7 +217,7 @@ class TestRangeSearch(unittest.TestCase):
 
     def test_range_search_id_map(self):
         sub_index = faiss.IndexFlat(5, 1)  # L2 search instead of inner product
-        xb = np.zeros((10, 5), dtype='float32')
+        xb = np.zeros((10, 5), dtype="float32")
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
         index.add_with_ids(xb, np.arange(10, dtype=np.int64) + 100)
@@ -231,9 +236,9 @@ class TestUpdate(unittest.TestCase):
         nt = 1500
         nq = 100
         np.random.seed(123)
-        xb = np.random.random(size=(nb, d)).astype('float32')
-        xt = np.random.random(size=(nt, d)).astype('float32')
-        xq = np.random.random(size=(nq, d)).astype('float32')
+        xb = np.random.random(size=(nb, d)).astype("float32")
+        xt = np.random.random(size=(nt, d)).astype("float32")
+        xq = np.random.random(size=(nq, d)).astype("float32")
 
         index = faiss.index_factory(d, "IVF64,Flat")
         index.train(xt)
@@ -246,13 +251,14 @@ class TestUpdate(unittest.TestCase):
 
         # revert order of the 200 first vectors
         nu = 200
-        index.update_vectors(np.arange(nu).astype('int64'),
-                             xb[nu - 1::-1].copy())
+        index.update_vectors(
+            np.arange(nu).astype("int64"), xb[nu - 1 :: -1].copy()
+        )
 
         recons_after = np.vstack([index.reconstruct(i) for i in range(nb)])
 
         # make sure reconstructions remain the same
-        diff_recons = recons_before[:nu] - recons_after[nu - 1::-1]
+        diff_recons = recons_before[:nu] - recons_after[nu - 1 :: -1]
         assert np.abs(diff_recons).max() == 0
 
         D2, I2 = index.search(xq, 5)
@@ -279,7 +285,7 @@ class TestPCAWhite(unittest.TestCase):
         # normal distribition
         x = faiss.randn((nt + nb + nq) * d, 1234).reshape(nt + nb + nq, d)
 
-        index = faiss.index_factory(d, 'Flat')
+        index = faiss.index_factory(d, "Flat")
 
         xt = x[:nt]
         xb = x[nt:-nq]
@@ -292,20 +298,20 @@ class TestPCAWhite(unittest.TestCase):
         # make distribution very skewed
         x *= [10, 4, 1, 0.5]
         rr, _ = np.linalg.qr(faiss.randn(d * d).reshape(d, d))
-        x = np.dot(x, rr).astype('float32')
+        x = np.dot(x, rr).astype("float32")
 
         xt = x[:nt]
         xb = x[nt:-nq]
         xq = x[-nq:]
 
         # L2 search on skewed distribution
-        index = faiss.index_factory(d, 'Flat')
+        index = faiss.index_factory(d, "Flat")
 
         index.add(xb)
         Dl2, Il2 = index.search(xq, 5)
 
         # whiten + L2 search on L2 distribution
-        index = faiss.index_factory(d, 'PCAW%d,Flat' % d)
+        index = faiss.index_factory(d, "PCAW%d,Flat" % d)
 
         index.train(xt)
         index.add(xb)
@@ -314,8 +320,9 @@ class TestPCAWhite(unittest.TestCase):
         # make sure correlation of whitened results with original
         # results is much better than simple L2 distances
         # should be 961 vs. 264
-        assert (faiss.eval_intersection(Io, Iw) >
-                2 * faiss.eval_intersection(Io, Il2))
+        assert faiss.eval_intersection(Io, Iw) > 2 * faiss.eval_intersection(
+            Io, Il2
+        )
 
 
 class TestTransformChain(unittest.TestCase):
@@ -334,7 +341,7 @@ class TestTransformChain(unittest.TestCase):
         # make distribution very skewed
         x *= [10, 4, 1, 0.5]
         rr, _ = np.linalg.qr(faiss.randn(d * d).reshape(d, d))
-        x = np.dot(x, rr).astype('float32')
+        x = np.dot(x, rr).astype("float32")
 
         xt = x[:nt]
         xb = x[nt:-nq]
@@ -368,10 +375,9 @@ class TestTransformChain(unittest.TestCase):
         assert np.all(I == I2)
 
 
-@unittest.skipIf(platform.system() == 'Windows', \
-                 'Mmap not supported on Windows.')
-
-
+@unittest.skipIf(
+    platform.system() == "Windows", "Mmap not supported on Windows."
+)
 class TestRareIO(unittest.TestCase):
 
     def compare_results(self, index1, index2, xq):
@@ -394,7 +400,7 @@ class TestRareIO(unittest.TestCase):
         if sparse:
             # makes the inverted lists sparse because all elements get
             # assigned to the same invlist
-            xt += (np.ones(10) * 1000).astype('float32')
+            xt += (np.ones(10) * 1000).astype("float32")
 
         if in_pretransform:
             # make sure it still works when wrapped in an IndexPreTransform
@@ -450,7 +456,8 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         index_new.verbose = True
         # should display
-        # IndexIVFFlatDedup::train: train on 350 points after dedup (was 500 points)
+        # IndexIVFFlatDedup::train: train on 350 points after dedup
+        # (was 500 points)
         index_new.train(xt)
 
         index_ref = faiss.IndexIVFFlat(quantizer, d, 20)
@@ -527,10 +534,10 @@ class TestSerialize(unittest.TestCase):
         assert np.all(Dnew == Dref) and np.all(Inew == Iref)
 
 
-@unittest.skipIf(platform.system() == 'Windows',
-                 'OnDiskInvertedLists is unsupported on Windows.')
-
-
+@unittest.skipIf(
+    platform.system() == "Windows",
+    "OnDiskInvertedLists is unsupported on Windows.",
+)
 class TestRenameOndisk(unittest.TestCase):
 
     def test_rename(self):
@@ -552,30 +559,30 @@ class TestRenameOndisk(unittest.TestCase):
 
             # make an index with ondisk invlists
             invlists = faiss.OnDiskInvertedLists(
-                index1.nlist, index1.code_size,
-                dirname + '/aa.ondisk')
+                index1.nlist, index1.code_size, dirname + "/aa.ondisk"
+            )
             index1.replace_invlists(invlists)
             index1.add(xb)
             D1, I1 = index1.search(xq, 10)
-            faiss.write_index(index1, dirname + '/aa.ivf')
+            faiss.write_index(index1, dirname + "/aa.ivf")
 
             # move the index elsewhere
-            os.mkdir(dirname + '/1')
-            for fname in 'aa.ondisk', 'aa.ivf':
-                os.rename(dirname + '/' + fname,
-                          dirname + '/1/' + fname)
+            os.mkdir(dirname + "/1")
+            for fname in "aa.ondisk", "aa.ivf":
+                os.rename(dirname + "/" + fname, dirname + "/1/" + fname)
 
             # try to read it: fails!
             try:
-                index2 = faiss.read_index(dirname + '/1/aa.ivf')
+                index2 = faiss.read_index(dirname + "/1/aa.ivf")
             except RuntimeError:
-                pass   # normal
+                pass  # normal
             else:
-                assert False
+                raise AssertionError()
 
             # read it with magic flag
-            index2 = faiss.read_index(dirname + '/1/aa.ivf',
-                                      faiss.IO_FLAG_ONDISK_SAME_DIR)
+            index2 = faiss.read_index(
+                dirname + "/1/aa.ivf", faiss.IO_FLAG_ONDISK_SAME_DIR
+            )
             D2, I2 = index2.search(xq, 10)
             assert np.all(I1 == I2)
 
@@ -729,8 +736,11 @@ class TestSplitMerge(unittest.TestCase):
                 index.copy_subset_to(sub_indexes[i], subset_type, j0, j1)
             elif subset_type == 4:
                 index.copy_subset_to(
-                    sub_indexes[i], subset_type,
-                    i * nlist // nsplit, (i + 1) * nlist // nsplit)
+                    sub_indexes[i],
+                    subset_type,
+                    i * nlist // nsplit,
+                    (i + 1) * nlist // nsplit,
+                )
 
         index_shards = faiss.IndexShards(False, False)
         for i in range(nsplit):
@@ -758,8 +768,8 @@ class TestSplitMerge(unittest.TestCase):
 class TestIndependentQuantizer(unittest.TestCase):
 
     def test_sidebyside(self):
-        """ provide double-sized vectors to the index, where each vector
-        is the concatenation of twice the same vector """
+        """provide double-sized vectors to the index, where each vector
+        is the concatenation of twice the same vector"""
         ds = SyntheticDataset(32, 1000, 500, 50)
 
         index = faiss.index_factory(ds.d, "IVF32,SQ8")
@@ -769,19 +779,17 @@ class TestIndependentQuantizer(unittest.TestCase):
         Dref, Iref = index.search(ds.get_queries(), 10)
 
         select32first = make_LinearTransform_matrix(
-            np.eye(64, dtype='float32')[:32])
-
-        select32last = make_LinearTransform_matrix(
-            np.eye(64, dtype='float32')[32:])
-
-        quantizer = faiss.IndexPreTransform(
-            select32first,
-            index.quantizer
+            np.eye(64, dtype="float32")[:32]
         )
 
+        select32last = make_LinearTransform_matrix(
+            np.eye(64, dtype="float32")[32:]
+        )
+
+        quantizer = faiss.IndexPreTransform(select32first, index.quantizer)
+
         index2 = faiss.IndexIVFIndependentQuantizer(
-            quantizer,
-            index, select32last
+            quantizer, index, select32last
         )
 
         xq2 = np.hstack([ds.get_queries()] * 2)
@@ -801,13 +809,14 @@ class TestIndependentQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(Iref, Inew)
 
     def test_half_store(self):
-        """ the index stores only the first half of each vector
-        but the coarse quantizer sees them entirely """
+        """the index stores only the first half of each vector
+        but the coarse quantizer sees them entirely"""
         ds = SyntheticDataset(32, 1000, 500, 50)
         gt = ds.get_groundtruth(10)
 
         select32first = make_LinearTransform_matrix(
-            np.eye(32, dtype='float32')[:16])
+            np.eye(32, dtype="float32")[:16]
+        )
 
         index_ivf = faiss.index_factory(ds.d // 2, "IVF32,Flat")
         index_ivf.nprobe = 4
@@ -821,8 +830,7 @@ class TestIndependentQuantizer(unittest.TestCase):
         index_ivf = faiss.index_factory(ds.d // 2, "IVF32,Flat")
         index_ivf.nprobe = 4
         index = faiss.IndexIVFIndependentQuantizer(
-            faiss.IndexFlatL2(ds.d),
-            index_ivf, select32first
+            faiss.IndexFlatL2(ds.d), index_ivf, select32first
         )
         index.train(ds.get_train())
         index.add(ds.get_database())
@@ -833,15 +841,15 @@ class TestIndependentQuantizer(unittest.TestCase):
         self.assertLess(perf_ref, perf_new)
 
     def test_precomputed_tables(self):
-        """ see how precomputed tables behave with centroid distance estimates from a mismatching
-        coarse quantizer """
+        """see how precomputed tables behave with centroid distance
+        estimates from a mismatching coarse quantizer"""
         ds = SyntheticDataset(48, 2000, 500, 250)
         gt = ds.get_groundtruth(10)
 
         index = faiss.IndexIVFIndependentQuantizer(
             faiss.IndexFlatL2(48),
             faiss.index_factory(16, "IVF64,PQ4np"),
-            faiss.PCAMatrix(48, 16)
+            faiss.PCAMatrix(48, 16),
         )
         index.train(ds.get_train())
         index.add(ds.get_database())
@@ -875,7 +883,6 @@ class TestIndependentQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(Inew, I3)
 
 
-
 class TestSearchAndReconstruct(unittest.TestCase):
 
     def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
@@ -903,11 +910,11 @@ class TestSearchAndReconstruct(unittest.TestCase):
         self.assertLessEqual(recons_ref_err, 1e-6)
 
         def norm1(x):
-            return np.sqrt((x ** 2).sum(axis=1))
+            return np.sqrt((x**2).sum(axis=1))
 
         recons_err = np.mean(norm1(R_flat - xb[I_flat]))
 
-        print('Reconstruction error = %.3f' % recons_err)
+        print("Reconstruction error = %.3f" % recons_err)
         if eps is not None:
             self.assertLessEqual(recons_err, eps)
 
@@ -936,7 +943,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFFlat(quantizer, d, 32, faiss.METRIC_L2)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.nprobe = 4
         index.train(xt)
         index.add(xb)
@@ -953,7 +960,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFPQ(quantizer, d, 32, 8, 8)
-        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.cp.min_points_per_centroid = 5  # quiet warning
         index.nprobe = 4
         index.train(xt)
         index.add(xb)
@@ -1006,7 +1013,8 @@ class TestSearchAndGetCodes(unittest.TestCase):
         Dref, Iref = index.search(ds.get_queries(), 10)
 
         D, I, codes = index.search_and_return_codes(
-            ds.get_queries(), 10, include_listnos=True)
+            ds.get_queries(), 10, include_listnos=True
+        )
 
         np.testing.assert_array_equal(I, Iref)
         np.testing.assert_array_equal(D, Dref)

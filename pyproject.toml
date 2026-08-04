@@ -119,28 +119,40 @@ cmake.define.FAISS_OPT_LEVEL = "generic"
 
 [tool.cibuildwheel]
 # Build all Python versions on Windows (no abi3); cp310 only on Linux/macOS (abi3).
-# Skip 32-bit, musl, and free-threaded builds.
+# Skip 32-bit and free-threaded builds. musllinux is built (see override below).
 build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
-skip = "*-win32 *-manylinux_i686 *-musllinux_* cp3*t-*"
+skip = "*-win32 *-manylinux_i686 cp3*t-*"
 test-requires = ["numpy", "pytest", "scipy"]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke.py -v"
 
-# On Linux and macOS, only build the cp310 abi3 wheel.
+# On Linux (manylinux + musllinux) and macOS, only build the cp310 abi3 wheel.
+# Without musllinux here, the global build list would rebuild the same abi3 wheel
+# 5x per arch into one wheelhouse (filename clobber).
 [[tool.cibuildwheel.overrides]]
-select = "*-manylinux* *-macosx*"
+select = "*-manylinux* *-musllinux* *-macosx*"
 build = "cp310-*"
 
-# Run abi3audit on Linux and macOS to guarantee Stable ABI compliance.
+# Run abi3audit on Linux (manylinux + musllinux) and macOS to guarantee Stable ABI compliance.
 # We use 'append' so that the default auditwheel/delocate commands still run first.
 [[tool.cibuildwheel.overrides]]
-select = "*-manylinux* *-macosx*"
+select = "*-manylinux* *-musllinux* *-macosx*"
 inherit.repair-wheel-command = "append"
 repair-wheel-command = "pipx run abi3audit --strict --report {wheel}"
 
-# Linux: Install OpenBLAS (threaded variant for multi-threaded BLAS).
+# Linux (manylinux): Install OpenBLAS (threaded variant for multi-threaded BLAS).
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux*"
 before-all = "dnf install -y openblas-devel openblas-openmp"
+
+# Linux (musllinux/Alpine): OpenBLAS via apk (no dnf). Raise the OpenMP worker
+# stack above musl's ~128 KB default to avoid SIGSEGV in HNSW/IVF (glibc parity).
+# Override test-requires to drop scipy: the smoke test does not import it, and a
+# missing aarch64 musllinux scipy wheel would force a failing sdist build.
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux*"
+before-all = "apk add --no-cache openblas-dev"
+test-requires = ["numpy", "pytest"]
+test-command = "OMP_STACKSIZE=8M python -m pytest {project}/tests/test_wheel_smoke.py -v"
 
 [tool.cibuildwheel.macos]
 before-all = "brew install libomp"

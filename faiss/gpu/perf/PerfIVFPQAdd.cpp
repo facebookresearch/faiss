@@ -31,7 +31,7 @@ DEFINE_bool(reserve_memory, false, "whether or not to pre-reserve memory");
 int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-    cudaProfilerStop();
+    CUDA_VERIFY(cudaProfilerStop());
 
     int dim = FLAGS_dim;
     int numCentroids = FLAGS_centroids;
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    cudaDeviceSynchronize();
+    CUDA_VERIFY(cudaDeviceSynchronize());
     CUDA_VERIFY(cudaProfilerStart());
 
     float totalGpuTime = 0.0f;

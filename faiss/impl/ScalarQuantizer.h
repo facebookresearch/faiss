@@ -45,6 +45,14 @@ struct ScalarQuantizer : Quantizer {
         QT_3bit_tq,    ///< Full TurboQuant (2-bit MSE + 1-bit QJL + factors)
         QT_4bit_tq,    ///< Full TurboQuant (3-bit MSE + 1-bit QJL + factors)
         QT_5bit_tq,    ///< Full TurboQuant (4-bit MSE + 1-bit QJL + factors)
+        QT_1bit_eden,  ///< EDEN Lloyd-Max scalar code, 1 bit per component
+        QT_2bit_eden,  ///< EDEN Lloyd-Max scalar code, 2 bits per component
+        QT_3bit_eden,  ///< EDEN Lloyd-Max scalar code, 3 bits per component
+        QT_4bit_eden,  ///< EDEN Lloyd-Max scalar code, 4 bits per component
+        QT_5bit_eden,  ///< EDEN Lloyd-Max scalar code, 5 bits per component
+        QT_6bit_eden,  ///< EDEN Lloyd-Max scalar code, 6 bits per component
+        QT_7bit_eden,  ///< EDEN Lloyd-Max scalar code, 7 bits per component
+        QT_8bit_eden,  ///< EDEN Lloyd-Max scalar code, 8 bits per component
         QT_count
     };
 
@@ -134,6 +142,18 @@ struct ScalarQuantizer : Quantizer {
 
         float distance_to_code(const uint8_t* code) final {
             return query_to_code(code);
+        }
+
+        void distance_to_code_batch_4(
+                const uint8_t* c1,
+                const uint8_t* c2,
+                const uint8_t* c3,
+                const uint8_t* c4,
+                float& d1,
+                float& d2,
+                float& d3,
+                float& d4) override {
+            query_to_codes_batch_4(c1, c2, c3, c4, d1, d2, d3, d4);
         }
     };
 

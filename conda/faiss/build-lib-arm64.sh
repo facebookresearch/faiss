@@ -18,7 +18,11 @@ cmake -B _build \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 
-make -C _build -j$(nproc) faiss faiss_sve faiss_c faiss_c_sve
+if [ "$(uname -s)" = "Darwin" ]; then
+  make -C _build -j"$(nproc)" faiss faiss_sve faiss_c faiss_c_sve faiss_metal metal_shaders
+else
+  make -C _build -j"$(nproc)" faiss faiss_sve faiss_c faiss_c_sve
+fi
 
 cmake --install _build --prefix $PREFIX
 cmake --install _build --prefix _libfaiss_stage/

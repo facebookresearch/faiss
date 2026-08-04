@@ -14,16 +14,14 @@ def add_preassigned(index_ivf, x, a, ids=None):
     Add elements to an IVF index, where the assignment is already computed
     """
     n, d = x.shape
-    assert a.shape == (n, )
+    assert a.shape == (n,)
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
         d *= 8
     assert d == index_ivf.d
     if ids is not None:
-        assert ids.shape == (n, )
+        assert ids.shape == (n,)
         ids = faiss.swig_ptr(ids)
-    index_ivf.add_core(
-        n, faiss.swig_ptr(x), ids, faiss.swig_ptr(a)
-    )
+    index_ivf.add_core(n, faiss.swig_ptr(x), ids, faiss.swig_ptr(a))
 
 
 def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):
@@ -83,9 +81,7 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     sp = faiss.swig_ptr
 
     index_ivf.range_search_preassigned_c(
-        n, sp(x), radius,
-        sp(list_nos), sp(coarse_dis),
-        res
+        n, sp(x), radius, sp(list_nos), sp(coarse_dis), res
     )
     # get pointers and copy them
     lims = faiss.rev_swig_ptr(res.lims, n + 1).copy()
@@ -96,7 +92,7 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
 
 
 def replace_ivf_quantizer(index_ivf, new_quantizer):
-    """ replace the IVF quantizer with a flat quantizer and return the
+    """replace the IVF quantizer with a flat quantizer and return the
     old quantizer"""
     if new_quantizer.ntotal == 0:
         centroids = index_ivf.quantizer.reconstruct_n()
@@ -120,15 +116,15 @@ def replace_ivf_quantizer(index_ivf, new_quantizer):
 
 
 def permute_invlists(index_ivf, perm):
-    """ Apply some permutation to the inverted lists, and modify the quantizer
+    """Apply some permutation to the inverted lists, and modify the quantizer
     entries accordingly.
     Perm is an array of size nlist, where old_index = perm[new_index]
     """
-    nlist, = perm.shape
+    (nlist,) = perm.shape
     assert index_ivf.nlist == nlist
     quantizer = faiss.downcast_index(index_ivf.quantizer)
     assert quantizer.ntotal == index_ivf.nlist
-    perm = np.ascontiguousarray(perm, dtype='int64')
+    perm = np.ascontiguousarray(perm, dtype="int64")
 
     # just make sure it's a permutation...
     bc = np.bincount(perm, minlength=nlist)

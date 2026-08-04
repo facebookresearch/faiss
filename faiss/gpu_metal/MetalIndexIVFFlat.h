@@ -21,12 +21,8 @@
 
 namespace faiss {
 namespace gpu_metal {
-class MetalIVFFlatImpl;
-} // namespace gpu_metal
-} // namespace faiss
 
-namespace faiss {
-namespace gpu_metal {
+class MetalIVFFlatImpl;
 
 /// IVFFlat index wrapper for Metal backend.
 /// Currently delegates to an internal CPU IndexIVFFlat; later phases

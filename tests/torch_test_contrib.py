@@ -13,8 +13,6 @@ from faiss.contrib import datasets
 from faiss.contrib.torch import clustering, quantization
 
 
-
-
 class TestTorchUtilsCPU(unittest.TestCase):
     # tests add, search
     def test_lookup(self):
@@ -147,7 +145,7 @@ class TestTorchUtilsCPU(unittest.TestCase):
         self.assertTrue(np.array_equal(labels, labels_ref))
 
         # Test assign with numpy output provided
-        labels = np.empty((xq.shape[0], 5), dtype='int64')
+        labels = np.empty((xq.shape[0], 5), dtype="int64")
         index.assign(xq.numpy(), 5, labels)
         self.assertTrue(np.array_equal(labels, labels_ref))
 
@@ -303,7 +301,7 @@ class TestTorchUtilsCPU(unittest.TestCase):
 
         # mutilate the index' quantizer
         index.quantizer.reset()
-        index.quantizer.add(np.zeros((20, 32), dtype='float32'))
+        index.quantizer.add(np.zeros((20, 32), dtype="float32"))
 
         # test numpy codepath
         Dq, Iq = quantizer.search(ds.get_queries(), 4)
@@ -339,7 +337,9 @@ class TestTorchUtilsCPU(unittest.TestCase):
         decoded_torch = index.sa_decode(encoded_torch)
         decoded_np = index.sa_decode(encoded_np)
 
-        self.assertTrue(torch.equal(decoded_torch, torch.from_numpy(decoded_np)))
+        self.assertTrue(
+            torch.equal(decoded_torch, torch.from_numpy(decoded_np))
+        )
 
         # torch cpu as output parameter
         encoded_torch_param = torch.zeros(nq, d, dtype=torch.uint8)
@@ -380,7 +380,7 @@ class TestTorchUtilsCPU(unittest.TestCase):
 class TestClustering(unittest.TestCase):
 
     def test_python_kmeans(self):
-        """ Test the python implementation of kmeans """
+        """Test the python implementation of kmeans"""
         ds = datasets.SyntheticDataset(32, 10000, 0, 0)
         x = ds.get_train()
 
@@ -405,23 +405,23 @@ class TestClustering(unittest.TestCase):
 
 class TestQuantization(unittest.TestCase):
     def test_python_product_quantization(self):
-        """ Test the python implementation of product quantization """
+        """Test the python implementation of product quantization"""
         d = 64
         n = 10000
         cs = 4
         nbits = 8
         M = 4
-        x = np.random.random(size=(n, d)).astype('float32')
+        x = np.random.random(size=(n, d)).astype("float32")
         pq = faiss.ProductQuantizer(d, cs, nbits)
         pq.train(x)
         codes = pq.compute_codes(x)
         x2 = pq.decode(codes)
-        diff = ((x - x2)**2).sum()
+        diff = ((x - x2) ** 2).sum()
         # vs pure pytorch impl
         xt = torch.from_numpy(x)
         my_pq = quantization.ProductQuantizer(d, M, nbits)
         my_pq.train(xt)
         my_codes = my_pq.encode(xt)
         xt2 = my_pq.decode(my_codes)
-        my_diff = ((xt - xt2)**2).sum()
+        my_diff = ((xt - xt2) ** 2).sum()
         self.assertLess(abs(diff - my_diff), 100)

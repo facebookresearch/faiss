@@ -58,8 +58,8 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
     }
 
     float symmetric_dis(idx_t i, idx_t j) final {
-        aq.decode(codes + i * d, tmp.data(), 1);
-        aq.decode(codes + j * d, tmp.data() + d, 1);
+        aq.decode(codes + i * code_size, tmp.data(), 1);
+        aq.decode(codes + j * code_size, tmp.data() + d, 1);
         return vd(tmp.data(), tmp.data() + d);
     }
 
@@ -79,7 +79,8 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
 
     explicit AQDistanceComputerLUT(const IndexAdditiveQuantizer& iaq)
             : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
-              LUT(iaq.aq->total_codebook_size + iaq.d * 2),
+              LUT(iaq.aq->total_codebook_size // Storage for LUT.
+                  + size_t(iaq.d) * 2), // tmp storage for symmetric distance.
               aq(*iaq.aq),
               d(iaq.d) {}
 
@@ -96,9 +97,9 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
     }
 
     float symmetric_dis(idx_t i, idx_t j) final {
-        float* tmp = LUT.data();
-        aq.decode(codes + i * d, tmp, 1);
-        aq.decode(codes + j * d, tmp + d, 1);
+        float* tmp = LUT.data() + aq.total_codebook_size;
+        aq.decode(codes + i * code_size, tmp, 1);
+        aq.decode(codes + j * code_size, tmp + d, 1);
         return fvec_L2sqr(tmp, tmp + d, d);
     }
 
@@ -234,8 +235,7 @@ void IndexAdditiveQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     if (aq->search_type == AdditiveQuantizer::ST_decompress) {
         with_VectorDistance(d, metric_type, metric_arg, [&](auto vd) {
@@ -458,8 +458,7 @@ void AdditiveCoarseQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     if (metric_type == METRIC_INNER_PRODUCT) {
         aq->knn_centroids_inner_product(n, x, k, distances, labels);

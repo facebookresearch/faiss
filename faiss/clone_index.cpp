@@ -18,10 +18,12 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
@@ -77,6 +79,7 @@ VectorTransform* Cloner::clone_VectorTransform(const VectorTransform* vt) {
     TRYCLONE(PCAMatrix, vt)
     TRYCLONE(ITQMatrix, vt)
     TRYCLONE(RandomRotationMatrix, vt)
+    TRYCLONE(HadamardRotation, vt)
     TRYCLONE(LinearTransform, vt) {
         FAISS_THROW_MSG("clone not supported for this type of VectorTransform");
     }
@@ -98,6 +101,7 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
     TRYCLONE(IndexIVFResidualQuantizerFastScan, ivf)
     TRYCLONE(IndexIVFPQFastScan, ivf)
 
+    TRYCLONE(IndexIVFEDEN, ivf)
     TRYCLONE(IndexIVFRaBitQFastScan, ivf)
     TRYCLONE(IndexIVFRaBitQ, ivf)
 
@@ -287,6 +291,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexLattice, index)
     TRYCLONE(IndexRandom, index)
     TRYCLONE(IndexPQFastScan, index)
+    TRYCLONE(IndexEDEN, index)
 
     TRYCLONE(IndexScalarQuantizer, index)
     TRYCLONE(MultiIndexQuantizer, index)

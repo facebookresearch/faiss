@@ -105,8 +105,12 @@ class TestClusteringInitialization(unittest.TestCase):
             total_obj = 0.0
             for trial_seed in range(n_trials):
                 centroids = run_init(
-                    faiss.ClusteringInitMethod_AFK_MC2, xt, d, k,
-                    seed=42 + trial_seed, chain_length=chain_length
+                    faiss.ClusteringInitMethod_AFK_MC2,
+                    xt,
+                    d,
+                    k,
+                    seed=42 + trial_seed,
+                    chain_length=chain_length,
                 )
                 D, _ = faiss.knn(xt, centroids, 1)
                 total_obj += np.sum(D)
@@ -116,8 +120,9 @@ class TestClusteringInitialization(unittest.TestCase):
         for i in range(1, len(chain_lengths)):
             prev, curr = chain_lengths[i - 1], chain_lengths[i]
             self.assertLessEqual(
-                results[curr], results[prev] * 1.05,
-                f"Chain {curr} should not be worse than chain {prev}"
+                results[curr],
+                results[prev] * 1.05,
+                f"Chain {curr} should not be worse than chain {prev}",
             )
 
     def test_with_existing_centroids(self):
@@ -160,9 +165,7 @@ class TestClusteringInitialization(unittest.TestCase):
                 D_without, _ = faiss.knn(xt, all_baseline, 1)
                 distortion_without = np.sum(D_without)
 
-                self.assertLessEqual(
-                    distortion_with, distortion_without * 1.05
-                )
+                self.assertLessEqual(distortion_with, distortion_without * 1.05)
 
 
 if __name__ == "__main__":

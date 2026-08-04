@@ -45,6 +45,8 @@ void AutoTuneCriterion::set_groundtruth(
         gt_D.resize(nq * gt_nnn_in);
         memcpy(gt_D.data(), gt_D_in, sizeof(gt_D[0]) * nq * gt_nnn_in);
     }
+    FAISS_THROW_IF_NOT_MSG(
+            gt_I_in != nullptr, "set_groundtruth: gt_I must be non-null");
     gt_I.resize(nq * gt_nnn_in);
     memcpy(gt_I.data(), gt_I_in, sizeof(gt_I[0]) * nq * gt_nnn_in);
 }
@@ -148,7 +150,7 @@ bool OperatingPoints::add(
     }
     // remove non-optimal points from array
     for (size_t i = a.size() - 1; i > 0; --i) {
-        if (a[i].t < a[i - 1].t) {
+        if (a[i].t <= a[i - 1].t) {
             a.erase(a.begin() + (i - 1));
         }
     }

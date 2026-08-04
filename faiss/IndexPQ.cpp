@@ -107,7 +107,7 @@ void IndexPQ::search(
     if (iparams) {
         params = dynamic_cast<const SearchParametersPQ*>(iparams);
         FAISS_THROW_IF_NOT_MSG(params, "invalid search params");
-        FAISS_THROW_IF_NOT_MSG(!params->sel, "selector not supported");
+        FAISS_THROW_IF_MSG(params->sel, "selector not supported");
         param_search_type = params->search_type;
     }
 
@@ -459,7 +459,7 @@ struct SortedArray {
 
     void init(const T* x_2) {
         this->x = x_2;
-        FAISS_THROW_IF_NOT(!perm.empty());
+        FAISS_THROW_IF_MSG(perm.empty(), "permutation array must not be empty");
         for (int n = 0; n < N; n++) {
             perm[n] = n;
         }
@@ -543,7 +543,7 @@ struct SemiSortedArray {
 
     void init(const T* x_2) {
         this->x = x_2;
-        FAISS_THROW_IF_NOT(!perm.empty());
+        FAISS_THROW_IF_MSG(perm.empty(), "permutation array must not be empty");
         for (int n = 0; n < N; n++) {
             perm[n] = n;
         }
@@ -665,7 +665,7 @@ struct MinSumK {
 
     void mark_seen(int64_t i) {
         if (use_seen) {
-            FAISS_THROW_IF_NOT(!seen.empty());
+            FAISS_THROW_IF_MSG(seen.empty(), "seen bitmap must not be empty");
             seen[i >> 3] |= 1 << (i & 7);
         }
     }
@@ -795,8 +795,7 @@ void MultiIndexQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     if (n == 0) {
         return;
     }
@@ -943,8 +942,7 @@ void MultiIndexQuantizer2::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     if (n == 0) {
         return;

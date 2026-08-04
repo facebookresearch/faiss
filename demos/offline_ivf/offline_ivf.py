@@ -80,9 +80,9 @@ class OfflineIVF:
         self.xq_index_shard_prefix = (
             f"{xq_output_dir}/{self.index_factory_fn}.shard_"
         )
-        self.index_file = (  # TODO: added back temporarily for evaluate, handle name of non-sharded index file and remove.
-            f"{xb_output_dir}/{self.index_factory_fn}.faissindex"
-        )
+        # TODO: added back temporarily for evaluate, handle name of
+        # non-sharded index file and remove.
+        self.index_file = f"{xb_output_dir}/{self.index_factory_fn}.faissindex"
         self.xq_index_file = (
             f"{xq_output_dir}/{self.index_factory_fn}.faissindex"
         )
@@ -119,10 +119,6 @@ class OfflineIVF:
             f"{self.index_factory_fn}_np{self.nprobe}.npy"
         )
 
-        fp = 32
-        if self.dt == "float16":
-            fp = 16
-
         self.xq_bs = cfg["query_batch_size"]
         if "metric" in cfg:
             self.metric = eval(f'faiss.{cfg["metric"]}')
@@ -144,7 +140,8 @@ class OfflineIVF:
 
     def input_stats(self):
         """
-        Trains the index using a subsample of the first chunk of data in the database and saves it in the template file (with no vectors added).
+        Trains the index using a subsample of the first chunk of data in the
+        database and saves it in the template file (with no vectors added).
         """
         xb_sample = self.xb_ds.get_first_n(self.training_sample, np.float32)
         logging.info(f"input shape: {xb_sample.shape}")
@@ -179,7 +176,9 @@ class OfflineIVF:
             idxs.append(np.empty((0,), dtype=np.uint32))
         bs = 1_000_000
         i = 0
-        for buffer in tqdm(self._iterate_transformed(self.xb_ds, 0, bs, np.float32)):
+        for buffer in tqdm(
+            self._iterate_transformed(self.xb_ds, 0, bs, np.float32)
+        ):
             for j in range(len(codecs)):
                 codec, codeset, idx = codecs[j], codesets[j], idxs[j]
                 uniq = codeset.insert(codec.sa_encode(buffer))
@@ -195,7 +194,8 @@ class OfflineIVF:
 
     def train_index(self):
         """
-        Trains the index using a subsample of the first chunk of data in the database and saves it in the template file (with no vectors added).
+        Trains the index using a subsample of the first chunk of data in the
+        database and saves it in the template file (with no vectors added).
         """
         assert not os.path.exists(self.index_template_file), (
             "The train command has been ran, the index template file already"
@@ -272,13 +272,17 @@ class OfflineIVF:
                             assert xb_j.shape[1] == index.chain.at(0).d_out
                             index_ivf.add_with_ids(
                                 xb_j,
-                                np.arange(start + jj, start + jj + xb_j.shape[0]),
+                                np.arange(
+                                    start + jj, start + jj + xb_j.shape[0]
+                                ),
                             )
                         else:
                             assert xb_j.shape[1] == index.d
                             index.add_with_ids(
                                 xb_j,
-                                np.arange(start + jj, start + jj + xb_j.shape[0]),
+                                np.arange(
+                                    start + jj, start + jj + xb_j.shape[0]
+                                ),
                             )
                         jj += xb_j.shape[0]
                         logging.info(jj)
@@ -413,7 +417,9 @@ class OfflineIVF:
         D_a_ann_file = (
             f"{self.eval_dir}/D_a_ann_{index_factory_fn}_np{nprobe}.npy"
         )
-        D_a_ann_refined_file = f"{self.eval_dir}/D_a_ann_refined_{index_factory_fn}_np{nprobe}.npy"
+        D_a_ann_refined_file = (
+            f"{self.eval_dir}/D_a_ann_refined_{index_factory_fn}_np{nprobe}.npy"
+        )
         D_b_gt_file = f"{self.eval_dir}/D_b_gt.npy"
         D_b_ann_file = (
             f"{self.eval_dir}/D_b_ann_{index_factory_fn}_np{nprobe}.npy"
@@ -648,7 +654,10 @@ class OfflineIVF:
         # quantizer = faiss.index_cpu_to_all_gpus(index_ivf.quantizer)
         for i in range(0, self.xq_ds.size, self.xq_bs):
             Ifn = f"{self.knn_dir}/I{(i):010}_{self.knn_output_file_suffix}"
-            Dfn = f"{self.knn_dir}/D_approx{(i):010}_{self.knn_output_file_suffix}"
+            Dfn = (
+                f"{self.knn_dir}/D_approx{(i):010}_"
+                f"{self.knn_output_file_suffix}"
+            )
             CPfn = f"{self.knn_dir}/CP{(i):010}_{self.knn_output_file_suffix}"
 
             if slurm_job_id:
@@ -684,26 +693,22 @@ class OfflineIVF:
                 else:
                     d = self.input_d
                 with open(Ifn, "xb") as f, open(Dfn, "xb") as g:
-                    xq_i = np.empty(
-                        shape=(self.xq_bs, d), dtype=np.float16
-                    )
+                    xq_i = np.empty(shape=(self.xq_bs, d), dtype=np.float16)
                     q_assign = np.empty(
                         (self.xq_bs, self.nprobe), dtype=np.int32
                     )
                     j = 0
-                    quantizer = faiss.index_cpu_to_all_gpus(
-                        index_ivf.quantizer
-                    )
+                    quantizer = faiss.index_cpu_to_all_gpus(index_ivf.quantizer)
                     for xq_i_j in tqdm(
                         self._iterate_transformed(
                             self.xq_ds, i, min(100_000, self.xq_bs), np.float16
                         ),
                         file=sys.stdout,
                     ):
-                        xq_i[j:j + xq_i_j.shape[0]] = xq_i_j
+                        xq_i[j : j + xq_i_j.shape[0]] = xq_i_j
                         (
                             _,
-                            q_assign[j:j + xq_i_j.shape[0]],
+                            q_assign[j : j + xq_i_j.shape[0]],
                         ) = quantizer.search(xq_i_j, self.nprobe)
                         j += xq_i_j.shape[0]
                         assert j <= xq_i.shape[0]
@@ -847,12 +852,16 @@ class OfflineIVF:
             for j in range(SMALL_DATA_SAMPLE):
                 assert np.where(I[j] == j + r)[0].size > 0, (
                     f"I[j]: {I[j]}, j: {j}, i: {i}, shard_size:"
-                    f" {self.shard_size}")
+                    f" {self.shard_size}"
+                )
 
         logging.info("search results...")
         index_ivf.nprobe = self.nprobe
         for i in range(0, self.xq_ds.size, self.xq_bs):
-            Ifn = f"{self.knn_dir}/I{i:010}_{self.index_factory_fn}_np{self.nprobe}.npy"
+            Ifn = (
+                f"{self.knn_dir}/I{i:010}_{self.index_factory_fn}_"
+                f"np{self.nprobe}.npy"
+            )
             assert os.path.exists(Ifn)
             assert os.path.getsize(Ifn) > 0, f"The file {Ifn} is empty."
             logging.info(Ifn)
@@ -862,7 +871,10 @@ class OfflineIVF:
             assert I.shape[0] == min(self.xq_bs, self.xq_ds.size - i)
             assert np.all(I[:, 1] >= 0)
 
-            Dfn = f"{self.knn_dir}/D_approx{i:010}_{self.index_factory_fn}_np{self.nprobe}.npy"
+            Dfn = (
+                f"{self.knn_dir}/D_approx{i:010}_{self.index_factory_fn}_"
+                f"np{self.nprobe}.npy"
+            )
             assert os.path.exists(Dfn)
             assert os.path.getsize(Dfn) > 0, f"The file {Dfn} is empty."
             logging.info(Dfn)
@@ -871,14 +883,10 @@ class OfflineIVF:
 
             xq = next(self.xq_ds.iterate(i, SMALL_DATA_SAMPLE, np.float32))
             D_online, I_online = index.search(xq, self.k)
-            assert (
-                np.where(I[:SMALL_DATA_SAMPLE] == I_online)[0].size
-                / (self.k * SMALL_DATA_SAMPLE)
-                > 0.95
-            ), (
-                "the ratio is"
-                f" {np.where(I[:SMALL_DATA_SAMPLE] == I_online)[0].size / (self.k * SMALL_DATA_SAMPLE)}"
+            ratio = np.where(I[:SMALL_DATA_SAMPLE] == I_online)[0].size / (
+                self.k * SMALL_DATA_SAMPLE
             )
+            assert ratio > 0.95, f"the ratio is {ratio}"
             assert np.allclose(
                 D[:SMALL_DATA_SAMPLE].sum(axis=1),
                 D_online.sum(axis=1),

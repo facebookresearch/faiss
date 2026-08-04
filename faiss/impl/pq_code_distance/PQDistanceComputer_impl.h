@@ -20,23 +20,39 @@ namespace faiss {
 namespace pq_code_distance {
 
 template <class PQCodeDist>
-struct PQDistanceComputer : FlatCodesDistanceComputer {
+struct PQDistanceComputer final : FlatCodesDistanceComputer {
     using PQDecoder = typename PQCodeDist::PQDecoder;
-    size_t d;
     MetricType metric;
-    idx_t nb;
     const ProductQuantizer& pq;
     const float* sdc;
     std::vector<float> precomputed_table;
-    size_t ndis;
-    const float* q;
 
     float distance_to_code(const uint8_t* code) final {
-        ndis++;
-
-        float dis = PQCodeDist::distance_single_code(
+        return PQCodeDist::distance_single_code(
                 pq.M, pq.nbits, precomputed_table.data(), code);
-        return dis;
+    }
+
+    void distance_to_code_batch_4(
+            const uint8_t* c1,
+            const uint8_t* c2,
+            const uint8_t* c3,
+            const uint8_t* c4,
+            float& d1,
+            float& d2,
+            float& d3,
+            float& d4) override {
+        PQCodeDist::distance_four_codes(
+                pq.M,
+                pq.nbits,
+                precomputed_table.data(),
+                c1,
+                c2,
+                c3,
+                c4,
+                d1,
+                d2,
+                d3,
+                d4);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -50,7 +66,6 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
             accu += sdci[codei.decode() + (codej.decode() << codei.nbits)];
             sdci += uint64_t(1) << (2 * codei.nbits);
         }
-        ndis++;
         return accu;
     }
 
@@ -58,18 +73,14 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
-              pq(storage.pq),
-              q(nullptr) {
+              pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
-        nb = storage.ntotal;
-        d = storage.d;
         metric = storage.metric_type;
         if (pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M) {
             sdc = pq.sdc_table.data();
         } else {
             sdc = nullptr;
         }
-        ndis = 0;
     }
 
     void set_query(const float* x) override {

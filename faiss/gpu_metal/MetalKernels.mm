@@ -10,11 +10,13 @@
  */
 
 #import "MetalKernels.h"
+#include <dlfcn.h>
+#include <faiss/impl/FaissAssert.h>
 #include <algorithm>
 #include <mutex>
 
-#ifndef FAISS_METALLIB_PATH
-#error "FAISS_METALLIB_PATH must be defined by CMake"
+#ifndef FAISS_METALLIB_BUILD_PATH
+#error "FAISS_METALLIB_BUILD_PATH must be defined by CMake"
 #endif
 
 namespace faiss {
@@ -43,9 +45,48 @@ int MetalKernels::selectTopKVariantIndex(int k) {
     return kNumTopKVariants - 1;
 }
 
+// Locate MetalDistance.metallib at runtime.
+// Search order:
+//   1. FAISS_METALLIB_PATH env var (explicit override)
+//   2. Compiled-in build-tree path (development builds)
+//   3. Next to the library/binary containing this code (dladdr;
+//      works for pip/conda where metallib is in the Python package)
+static NSString* findMetalLibPath() {
+    NSFileManager* fm = [NSFileManager defaultManager];
+
+    const char* envPath = getenv("FAISS_METALLIB_PATH");
+    if (envPath) {
+        NSString* ep = @(envPath);
+        if ([fm fileExistsAtPath:ep])
+            return ep;
+    }
+
+    NSString* buildPath = @(FAISS_METALLIB_BUILD_PATH);
+    if ([fm fileExistsAtPath:buildPath])
+        return buildPath;
+
+    Dl_info info;
+    if (dladdr(reinterpret_cast<void*>(&faiss::gpu_metal::getMetalKernels),
+               &info) &&
+        info.dli_fname) {
+        NSString* libDir =
+                [@(info.dli_fname) stringByDeletingLastPathComponent];
+        NSString* installed = [libDir
+                stringByAppendingPathComponent:@"MetalDistance.metallib"];
+        if ([fm fileExistsAtPath:installed])
+            return installed;
+    }
+
+    return nil;
+}
+
 MetalKernels::MetalKernels(id<MTLDevice> device)
         : device_(device), library_(nil) {
-    NSString* path = @(FAISS_METALLIB_PATH);
+    NSString* path = findMetalLibPath();
+    FAISS_THROW_IF_NOT_MSG(
+            path,
+            "MetalDistance.metallib not found. Set FAISS_METALLIB_PATH or "
+            "reinstall faiss.");
     NSURL* url = [NSURL fileURLWithPath:path];
     NSError* err = nil;
     library_ = [device_ newLibraryWithURL:url error:&err];

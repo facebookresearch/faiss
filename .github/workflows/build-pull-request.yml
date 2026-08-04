@@ -30,6 +30,41 @@ jobs:
               git --no-pager diff --color
               exit 1
             fi
+  changes:
+    name: Detect GPU-relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_gpu_changes: ${{ steps.filter.outputs.gpu }}
+      has_cpu_changes: ${{ steps.filter.outputs.cpu }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # A miss here silently drops GPU coverage on a PR that needed it, so
+          # the globs stay deliberately broad: any GPU/cuVS/ROCm source, any
+          # build-system file, and the CI definitions themselves.
+          filters: |
+            gpu:
+              - 'faiss/gpu/**'
+              - 'faiss/gpu_metal/**'
+              - 'c_api/gpu/**'
+              - 'cmake/**'
+              - '**/CMakeLists.txt'
+              - 'conda/faiss-gpu/**'
+              - 'conda/faiss-gpu-cuvs/**'
+              - '.github/actions/build_cmake/action.yml'
+              - '.github/actions/build_conda/action.yml'
+              - '.github/workflows/build-pull-request.yml'
+            # The CPU-variant matrix (AVX/SVE/DD/SVS/conda/etc.) is pointless on
+            # a GPU-only PR. This single negated glob matches any changed file
+            # that is NOT exclusive to a GPU backend, so shared build files
+            # (cmake, CMakeLists, actions, this workflow) still count as CPU
+            # changes and keep the CPU matrix running.
+            cpu:
+              - '!{faiss/gpu,faiss/gpu_metal,c_api/gpu,conda/faiss-gpu,conda/faiss-gpu-cuvs}/**'
   linux-x86_64-cmake:
     name: Linux x86_64 (cmake)
     runs-on: ubuntu-latest
@@ -43,7 +78,8 @@ jobs:
           make -C build demo_diversity_result_handler
   linux-x86_64-AVX2-cmake:
     name: Linux x86_64 AVX2 (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,7 +90,8 @@ jobs:
           opt_level: avx2
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -65,7 +102,8 @@ jobs:
           opt_level: avx512
   linux-x86_64-AVX512_SPR-cmake:
     name: Linux x86_64 AVX512_SPR (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -76,7 +114,8 @@ jobs:
           opt_level: avx512_spr
   linux-x86_64-DD-cmake:
     name: Linux x86_64 Dynamic Dispatch (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -87,7 +126,8 @@ jobs:
           opt_level: dd
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -98,7 +138,8 @@ jobs:
           gpu: ON
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: linux-amd-rocm-mi325-ubuntu-24
     container:
       image: ubuntu:24.04
@@ -121,7 +162,8 @@ jobs:
           rocm: ON
   linux-x86_64-GPU-w-CUVS-cmake:
     name: Linux x86_64 GPU w/ cuVS (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -133,7 +175,8 @@ jobs:
           cuvs: ON
   macos-arm64-Metal-cmake:
     name: macOS arm64 Metal (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: macos-15
     steps:
       - name: Checkout
@@ -146,7 +189,8 @@ jobs:
           upload_artifacts: 'false'
   linux-arm64-SVE-cmake:
     name: Linux arm64 SVE (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
@@ -160,7 +204,8 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
   linux-arm64-DD-cmake:
     name: Linux arm64 Dynamic Dispatch (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
@@ -173,7 +218,8 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -185,7 +231,8 @@ jobs:
         uses: ./.github/actions/build_conda
   windows-x86_64-DD-cmake:
     name: Windows x86_64 Dynamic Dispatch (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: windows-2022
     steps:
       - name: Checkout
@@ -254,7 +301,8 @@ jobs:
           pytest $tests
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: windows-2022
     steps:
       - name: Checkout
@@ -266,7 +314,8 @@ jobs:
         uses: ./.github/actions/build_conda
   linux-arm64-conda:
     name: Linux arm64 (conda)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 2-core-ubuntu-arm
     steps:
       - name: Checkout
@@ -278,6 +327,8 @@ jobs:
         uses: ./.github/actions/build_conda
   linux-x86_64-GPU-conda:
     name: Linux x86_64 GPU (conda, CUDA 13.2)
+    needs: changes
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "75-real;80;86-real;90;100;120"
@@ -293,7 +344,8 @@ jobs:
           cuda: "13.2"
   linux-x86_64-svs:
     name: Linux x86_64 w/ SVS (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -304,7 +356,8 @@ jobs:
           svs: ON
   linux-riscv64-DD-cmake:
     name: Linux riscv64 Dynamic Dispatch cross-compile (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

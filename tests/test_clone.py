@@ -27,8 +27,9 @@ class TestClone(unittest.TestCase):
         index1 = faiss.index_factory(d, factory)
         index1.train(ds.get_train())
         if with_ids:
-            index1.add_with_ids(ds.get_database(),
-                                np.arange(ds.nb).astype("int64"))
+            index1.add_with_ids(
+                ds.get_database(), np.arange(ds.nb).astype("int64")
+            )
         else:
             index1.add(ds.get_database())
         k = 5

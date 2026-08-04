@@ -229,6 +229,7 @@ size_t IndexPreTransform::remove_ids(const IDSelector& sel) {
 }
 
 void IndexPreTransform::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(index, "IndexPreTransform: null sub-index");
     float* x = chain.empty() ? recons : new float[index->d];
     std::unique_ptr<float[]> del(recons == x ? nullptr : x);
     // Initial reconstruction
@@ -239,6 +240,7 @@ void IndexPreTransform::reconstruct(idx_t key, float* recons) const {
 }
 
 void IndexPreTransform::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(index, "IndexPreTransform: null sub-index");
     float* x = chain.empty() ? recons : new float[ni * index->d];
     std::unique_ptr<float[]> del(recons == x ? nullptr : x);
     // Initial reconstruction
@@ -344,6 +346,19 @@ struct PreTransformDistanceComputer : DistanceComputer {
 
     float operator()(idx_t i) override {
         return (*sub_dc)(i);
+    }
+
+    void distances_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) override {
+        sub_dc->distances_batch_4(
+                idx0, idx1, idx2, idx3, dis0, dis1, dis2, dis3);
     }
 };
 

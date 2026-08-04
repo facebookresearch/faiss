@@ -267,11 +267,12 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
     }
     const size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
 
-    // Hoist aux pointer base out of loop: all 32 elements in this block share
-    // the same block base. Only the per-element offset (j * storage_size)
-    // varies.
+    // Hoist aux pointer base out of loop: it points at this 32-lane sub-block's
+    // factors, i.e. the bbs block base plus the loop-invariant intra-block
+    // offset ((idx_base % bbs)). Only the per-element j term varies below.
     const uint8_t* aux_base = this->list_codes_ptr +
-            (idx_base / index->bbs) * full_block_size + packed_block_size;
+            (idx_base / index->bbs) * full_block_size + packed_block_size +
+            (idx_base % index->bbs) * storage_size;
 
     // Cache index fields used in the inner loop.
     // Use overridden qb/centered from context if provided, else index defaults.

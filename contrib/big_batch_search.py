@@ -27,11 +27,7 @@ class BigBatchSearcher:
     computation (parallel or not)
     """
 
-    def __init__(
-            self,
-            index, xq, k,
-            verbose=0,
-            use_float16=False):
+    def __init__(self, index, xq, k, verbose=0, use_float16=False):
 
         # verbosity
         self.verbose = verbose
@@ -65,9 +61,8 @@ class BigBatchSearcher:
 
     def report(self, l):
         if self.verbose == 1 or (
-            self.verbose == 2 and (
-                l > 1000 and time.time() < self.t_display + 1.0
-            )
+            self.verbose == 2
+            and (l > 1000 and time.time() < self.t_display + 1.0)
         ):
             return
         t = time.time() - self.t0
@@ -79,8 +74,8 @@ class BigBatchSearcher:
             f"wait out {self.t_accu[5]:.3f} "
             f"eta {datetime.timedelta(seconds=t*self.index.nlist/(l+1)-t)} "
             f"mem {faiss.get_mem_usage_kb()}",
-             end="\r" if self.verbose <= 2 else "\n",
-             flush=True,
+            end="\r" if self.verbose <= 2 else "\n",
+            flush=True,
         )
         self.t_display = time.time()
 
@@ -88,11 +83,12 @@ class BigBatchSearcher:
         self.tic("coarse quantization")
         bs = 65536
         nq = len(self.xq)
-        q_assign = np.empty((nq, self.index.nprobe), dtype='int32')
+        q_assign = np.empty((nq, self.index.nprobe), dtype="int32")
         for i0 in range(0, nq, bs):
             i1 = min(nq, i0 + bs)
             q_dis_i, q_assign_i = self.index.quantizer.search(
-                self.xq[i0:i1], self.index.nprobe)
+                self.xq[i0:i1], self.index.nprobe
+            )
             # q_dis[i0:i1] = q_dis_i
             q_assign[i0:i1] = q_assign_i
         self.toc()
@@ -101,18 +97,19 @@ class BigBatchSearcher:
     def reorder_assign(self):
         self.tic("bucket sort")
         q_assign = self.q_assign
-        q_assign += 1   # move -1 -> 0
+        q_assign += 1  # move -1 -> 0
         self.bucket_lims = faiss.matrix_bucket_sort_inplace(
-            self.q_assign, nbucket=self.index.nlist + 1, nt=16)
+            self.q_assign, nbucket=self.index.nlist + 1, nt=16
+        )
         self.query_ids = self.q_assign.ravel()
         if self.verbose > 0:
-            print('  number of -1s:', self.bucket_lims[1])
+            print("  number of -1s:", self.bucket_lims[1])
         self.bucket_lims = self.bucket_lims[1:]  # shift back to ignore -1s
-        del self.q_assign   # inplace so let's forget about the old version...
+        del self.q_assign  # inplace so let's forget about the old version...
         self.toc()
 
     def prepare_bucket(self, l):
-        """ prepare the queries and database items for bucket l"""
+        """prepare the queries and database items for bucket l"""
         t0 = time.time()
         index = self.index
         # prepare queries
@@ -131,8 +128,8 @@ class BigBatchSearcher:
             xb_l = self.decode_func(xb_l)
 
         if self.use_float16:
-            xb_l = xb_l.astype('float16')
-            xq_l = xq_l.astype('float16')
+            xb_l = xb_l.astype("float16")
+            xq_l = xq_l.astype("float16")
 
         t2 = time.time()
         self.t_accu[0] += t1 - t0
@@ -163,7 +160,10 @@ class BigBatchSearcher:
                     "sizes": self.sizes_in_checkpoint(),
                     "completed": completed,
                     "rh": (self.rh.D, self.rh.I),
-                }, f, -1)
+                },
+                f,
+                -1,
+            )
         os.replace(tmpname, fname)
 
     def read_checkpoint(self, fname):
@@ -176,14 +176,15 @@ class BigBatchSearcher:
 
 
 class BlockComputer:
-    """ computation within one bucket """
+    """computation within one bucket"""
 
     def __init__(
-            self,
-            index,
-            method="knn_function",
-            pairwise_distances=faiss.pairwise_distances,
-            knn=faiss.knn):
+        self,
+        index,
+        method="knn_function",
+        pairwise_distances=faiss.pairwise_distances,
+        knn=faiss.knn,
+    ):
 
         self.index = index
         if index.__class__ == faiss.IndexIVFFlat:
@@ -192,14 +193,16 @@ class BlockComputer:
             by_residual = False
         elif index.__class__ == faiss.IndexIVFPQ:
             index_help = faiss.IndexPQ(
-                index.d, index.pq.M, index.pq.nbits, index.metric_type)
+                index.d, index.pq.M, index.pq.nbits, index.metric_type
+            )
             index_help.pq = index.pq
             decode_func = index_help.pq.decode
             index_help.is_trained = True
             by_residual = index.by_residual
         elif index.__class__ == faiss.IndexIVFScalarQuantizer:
             index_help = faiss.IndexScalarQuantizer(
-                index.d, index.sq.qtype, index.metric_type)
+                index.d, index.sq.qtype, index.metric_type
+            )
             index_help.sq = index.sq
             decode_func = index_help.sq.decode
             index_help.is_trained = True
@@ -232,22 +235,24 @@ class BlockComputer:
 
 
 def big_batch_search(
-        index, xq, k,
-        method="knn_function",
-        pairwise_distances=faiss.pairwise_distances,
-        knn=faiss.knn,
-        verbose=0,
-        threaded=0,
-        use_float16=False,
-        prefetch_threads=1,
-        computation_threads=1,
-        q_assign=None,
-        checkpoint=None,
-        checkpoint_freq=7200,
-        start_list=0,
-        end_list=None,
-        crash_at=-1
-        ):
+    index,
+    xq,
+    k,
+    method="knn_function",
+    pairwise_distances=faiss.pairwise_distances,
+    knn=faiss.knn,
+    verbose=0,
+    threaded=0,
+    use_float16=False,
+    prefetch_threads=1,
+    computation_threads=1,
+    q_assign=None,
+    checkpoint=None,
+    checkpoint_freq=7200,
+    start_list=0,
+    end_list=None,
+    crash_at=-1,
+):
     """
     Search queries xq in the IVF index, with a search function that collects
     batches of query vectors per inverted list. This can be faster than the
@@ -279,7 +284,8 @@ def big_batch_search(
 
     checkpointing (only for threaded > 1):
     checkpoint: file where the checkpoints are stored
-    checkpoint_freq: when to perform checkpointing. Should be a multiple of threaded
+    checkpoint_freq: when to perform checkpointing. Should be a multiple of
+        threaded
 
     start_list, end_list: process only a subset of invlists
     """
@@ -288,10 +294,11 @@ def big_batch_search(
     assert method in ("index", "pairwise_distances", "knn_function")
 
     mem_queries = xq.nbytes
-    mem_assign = len(xq) * nprobe * np.dtype('int32').itemsize
-    mem_res = len(xq) * k * (
-        np.dtype('int64').itemsize
-        + np.dtype('float32').itemsize
+    mem_assign = len(xq) * nprobe * np.dtype("int32").itemsize
+    mem_res = (
+        len(xq)
+        * k
+        * (np.dtype("int64").itemsize + np.dtype("float32").itemsize)
     )
     mem_tot = mem_queries + mem_assign + mem_res
     if verbose > 0:
@@ -301,16 +308,11 @@ def big_batch_search(
         )
 
     bbs = BigBatchSearcher(
-        index, xq, k,
-        verbose=verbose,
-        use_float16=use_float16
+        index, xq, k, verbose=verbose, use_float16=use_float16
     )
 
     comp = BlockComputer(
-        index,
-        method=method,
-        pairwise_distances=pairwise_distances,
-        knn=knn
+        index, method=method, pairwise_distances=pairwise_distances, knn=knn
     )
 
     bbs.decode_func = comp.decode_func
@@ -351,8 +353,8 @@ def big_batch_search(
         # parallel version with granularity 1
 
         def add_results_and_prefetch(to_add, l):
-            """ perform the addition for the previous bucket and
-            prefetch the next (if applicable) """
+            """perform the addition for the previous bucket and
+            prefetch the next (if applicable)"""
             if to_add is not None:
                 bbs.add_results_to_heap(*to_add)
             if l < index.nlist:
@@ -365,7 +367,8 @@ def big_batch_search(
         for l in range(start_list, end_list):
             bbs.report(l)
             prefetched_bucket_a = pool.apply_async(
-                add_results_and_prefetch, (to_add, l + 1))
+                add_results_and_prefetch, (to_add, l + 1)
+            )
             q_subset, xq_l, list_ids, xb_l = prefetched_bucket
             bbs.start_t_accu()
             D, I = comp.block_search(xq_l, xb_l, list_ids, k)
@@ -390,11 +393,13 @@ def big_batch_search(
         ):
             try:
                 with ThreadPool(pool_size) as pool:
-                    res = [pool.apply_async(
-                        task,
-                        args=(i, output_queue, input_queue))
+                    res = [
+                        pool.apply_async(
+                            task, args=(i, output_queue, input_queue)
+                        )
                         for i in range(start_task, end_task)
-                        if i not in completed]
+                        if i not in completed
+                    ]
                     for r in res:
                         r.get()
                     pool.close()
@@ -431,7 +436,7 @@ def big_batch_search(
                 t_wait_out = 0
                 while True:
                     t0 = time.time()
-                    logging.info(f'Compute input: task {task_id}')
+                    logging.info(f"Compute input: task {task_id}")
                     input_value = input_queue.get()
                     t_wait_in = time.time() - t0
                     if input_value is None:
@@ -439,7 +444,9 @@ def big_batch_search(
                         input_queue.put(None)
                         break
                     centroid, q_subset, xq_l, list_ids, xb_l = input_value
-                    logging.info(f'Compute work: task {task_id}, centroid {centroid}')
+                    logging.info(
+                        f"Compute work: task {task_id}, centroid {centroid}"
+                    )
                     t0 = time.time()
                     if computation_threads > 1:
                         D, I = comp.block_search(
@@ -448,10 +455,21 @@ def big_batch_search(
                     else:
                         D, I = comp.block_search(xq_l, xb_l, list_ids, k)
                     t_compute = time.time() - t0
-                    logging.info(f'Compute output: task {task_id}, centroid {centroid}')
+                    logging.info(
+                        f"Compute output: task {task_id}, centroid {centroid}"
+                    )
                     t0 = time.time()
                     output_queue.put(
-                        (centroid, t_wait_in, t_wait_out, t_compute, q_subset, D, list_ids, I)
+                        (
+                            centroid,
+                            t_wait_in,
+                            t_wait_out,
+                            t_compute,
+                            q_subset,
+                            D,
+                            list_ids,
+                            I,
+                        )
                     )
                     t_wait_out = time.time() - t0
                 logging.info(f"Compute end: {task_id}")
@@ -487,7 +505,16 @@ def big_batch_search(
             value = compute_to_main_queue.get()
             if not value:
                 break
-            centroid, t_wait_in, t_wait_out, t_compute, q_subset, D, list_ids, I = value
+            (
+                centroid,
+                t_wait_in,
+                t_wait_out,
+                t_compute,
+                q_subset,
+                D,
+                list_ids,
+                I,
+            ) = value
             # to test checkpointing
             if centroid == crash_at:
                 1 / 0
