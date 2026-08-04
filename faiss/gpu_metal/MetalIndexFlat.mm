@@ -167,7 +167,7 @@ void MetalIndexFlat::search(
 }
 
 void MetalIndexFlat::copyTo(faiss::IndexFlat* index) const {
-    FAISS_THROW_IF_NOT(index != nullptr);
+    FAISS_THROW_IF_NOT(index);
     FAISS_THROW_IF_NOT(index->d == d);
     FAISS_THROW_IF_NOT(index->metric_type == metric_type);
     if (ntotal == 0 || vectorsBuffer_ == nil) {

@@ -14,7 +14,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <gtest/gtest.h>
 #include <cmath>
-#include <limits>
+#include <limits> // IWYU pragma: keep
 #include <sstream>
 #include <vector>
 

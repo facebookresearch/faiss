@@ -21,6 +21,17 @@ uint64_t bitwise_and_dot_product<SIMDLevel::ARM_NEON>(
 }
 
 template <>
+BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
+        SIMDLevel::ARM_NEON>(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb) {
+    return bitwise_and_dot_product_with_popcount<SIMDLevel::NONE>(
+            query, data, size, qb);
+}
+
+template <>
 uint64_t bitwise_xor_dot_product<SIMDLevel::ARM_NEON>(
         const uint8_t* query,
         const uint8_t* data,
