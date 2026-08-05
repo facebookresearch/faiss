@@ -192,7 +192,7 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const {
                 continue;
             }
 
-            uint8_t* reconstructed = recons + (id - i0) * d;
+            uint8_t* reconstructed = recons + (id - i0) * code_size;
             reconstruct_from_offset(list_no, offset, reconstructed);
         }
     }
@@ -233,10 +233,10 @@ void IndexBinaryIVF::search_and_reconstruct(
         for (idx_t j = 0; j < k; ++j) {
             idx_t ij = i * k + j;
             idx_t key = labels[ij];
-            uint8_t* reconstructed = recons + ij * d;
+            uint8_t* reconstructed = recons + ij * code_size;
             if (key < 0) {
                 // Fill with NaNs
-                memset(reconstructed, -1, sizeof(*reconstructed) * d);
+                memset(reconstructed, -1, code_size);
             } else {
                 int list_no = key >> 32;
                 int offset = key & 0xffffffff;

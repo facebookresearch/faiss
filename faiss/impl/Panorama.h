@@ -235,7 +235,8 @@ inline auto with_bool(bool value, Lambda&& fn) {
  * accelerating the refinement stage.
  */
 struct Panorama {
-    static constexpr size_t kDefaultBatchSize = 128;
+    static constexpr size_t kDefaultBatchSize = 1024;
+    static constexpr size_t kLegacyBatchSize = 128;
 
     size_t d = 0;
     size_t code_size = 0;
