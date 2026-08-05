@@ -31,6 +31,7 @@
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
+#include <type_traits>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
@@ -39,6 +40,10 @@
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/popcount.h>
+
+#if defined(COMPILE_SIMD_AVX512_SPR)
+#include <faiss/utils/simd_impl/partitioning_avx512_spr.h>
+#endif
 
 namespace faiss {
 
@@ -116,32 +121,46 @@ void count_lt_and_eq(
         uint16_t thresh,
         size_t& n_lt,
         size_t& n_eq) {
-    n_lt = n_eq = 0;
-    simd16uint16 thr16(thresh);
-
-    size_t n1 = n / 16;
-
-    for (size_t i = 0; i < n1; i++) {
-        simd16uint16 v(vals);
-        vals += 16;
-        simd16uint16 eqmask = (v == thr16);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
-        uint32_t bits = get_MSBs(uint16_to_uint8_saturate(eqmask, gemask));
-        int i_eq = popcount32(bits & 0x00ff00ff);
-        int i_ge = popcount32(bits) - i_eq;
-        n_eq += i_eq;
-        n_lt += 16 - i_ge;
-    }
-
-    for (int i = n1 * 16; i < n; i++) {
-        uint16_t v = *vals++;
-        if (C::cmp(thresh, v)) {
-            n_lt++;
-        } else if (v == thresh) {
-            n_eq++;
+#if defined(COMPILE_SIMD_AVX512_SPR)
+    if constexpr (THE_SIMD_LEVEL == SIMDLevel::AVX512_SPR) {
+        if constexpr (C::is_max) {
+            partitioning_avx512_spr::count_lt_and_eq_max_avx512(
+                    vals, n, thresh, n_lt, n_eq);
+        } else {
+            partitioning_avx512_spr::count_lt_and_eq_min_avx512(
+                    vals, n, thresh, n_lt, n_eq);
         }
-    }
+        return;
+    } else
+#endif
+    {
+        n_lt = n_eq = 0;
+        simd16uint16 thr16(thresh);
+
+        size_t n1 = n / 16;
+
+        for (size_t i = 0; i < n1; i++) {
+            simd16uint16 v(vals);
+            vals += 16;
+            simd16uint16 eqmask = (v == thr16);
+            simd16uint16 max2 = max_func<C>(v, thr16);
+            simd16uint16 gemask = (v == max2);
+            uint32_t bits = get_MSBs(uint16_to_uint8_saturate(eqmask, gemask));
+            int i_eq = popcount32(bits & 0x00ff00ff);
+            int i_ge = popcount32(bits) - i_eq;
+            n_eq += i_eq;
+            n_lt += 16 - i_ge;
+        }
+
+        for (int i = n1 * 16; i < n; i++) {
+            uint16_t v = *vals++;
+            if (C::cmp(thresh, v)) {
+                n_lt++;
+            } else if (v == thresh) {
+                n_eq++;
+            }
+        }
+    } // else
 }
 
 /* compress separated values and ids table, keeping all values < thresh and at
@@ -153,79 +172,105 @@ int simd_compress_array(
         size_t n,
         uint16_t thresh,
         int n_eq) {
-    simd16uint16 thr16(thresh);
-    simd16uint16 mixmask(0xff00);
+#if defined(COMPILE_SIMD_AVX512_SPR)
+    if constexpr (THE_SIMD_LEVEL == SIMDLevel::AVX512_SPR) {
+        if constexpr (C::is_max && std::is_same_v<typename C::TI, int>) {
+            return partitioning_avx512_spr::simd_compress_array_max_int_avx512(
+                    vals, ids, n, thresh, n_eq);
+        } else if constexpr (
+                !C::is_max && std::is_same_v<typename C::TI, int>) {
+            return partitioning_avx512_spr::simd_compress_array_min_int_avx512(
+                    vals, ids, n, thresh, n_eq);
+        } else if constexpr (
+                C::is_max && std::is_same_v<typename C::TI, int64_t>) {
+            return partitioning_avx512_spr::
+                    simd_compress_array_max_int64_avx512(
+                            vals, ids, n, thresh, n_eq);
+        } else if constexpr (
+                !C::is_max && std::is_same_v<typename C::TI, int64_t>) {
+            return partitioning_avx512_spr::
+                    simd_compress_array_min_int64_avx512(
+                            vals, ids, n, thresh, n_eq);
+        }
+        // all TI types handled; unreachable fallback
+        return 0;
+    } else
+#endif
+    {
+        simd16uint16 thr16(thresh);
+        simd16uint16 mixmask(0xff00);
 
-    int wp = 0;
-    size_t i0;
+        int wp = 0;
+        size_t i0;
 
-    // loop while there are eqs to collect
-    for (i0 = 0; i0 + 15 < n && n_eq > 0; i0 += 16) {
-        simd16uint16 v(vals + i0);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
-        simd16uint16 eqmask = (v == thr16);
-        uint32_t bits = get_MSBs(
-                blendv(simd32uint8(eqmask),
-                       simd32uint8(gemask),
-                       simd32uint8(mixmask)));
-        bits ^= 0xAAAAAAAA;
-        // bit 2*i     : eq
-        // bit 2*i + 1 : lt
+        // loop while there are eqs to collect
+        for (i0 = 0; i0 + 15 < n && n_eq > 0; i0 += 16) {
+            simd16uint16 v(vals + i0);
+            simd16uint16 max2 = max_func<C>(v, thr16);
+            simd16uint16 gemask = (v == max2);
+            simd16uint16 eqmask = (v == thr16);
+            uint32_t bits = get_MSBs(
+                    blendv(simd32uint8(eqmask),
+                           simd32uint8(gemask),
+                           simd32uint8(mixmask)));
+            bits ^= 0xAAAAAAAA;
+            // bit 2*i     : eq
+            // bit 2*i + 1 : lt
 
-        while (bits) {
-            int j = __builtin_ctz(bits) & (~1);
-            bool is_eq = (bits >> j) & 1;
-            bool is_lt = (bits >> j) & 2;
-            bits &= ~(3 << j);
-            j >>= 1;
+            while (bits) {
+                int j = __builtin_ctz(bits) & (~1);
+                bool is_eq = (bits >> j) & 1;
+                bool is_lt = (bits >> j) & 2;
+                bits &= ~(3 << j);
+                j >>= 1;
 
-            if (is_lt) {
+                if (is_lt) {
+                    vals[wp] = vals[i0 + j];
+                    ids[wp] = ids[i0 + j];
+                    wp++;
+                } else if (is_eq && n_eq > 0) {
+                    vals[wp] = vals[i0 + j];
+                    ids[wp] = ids[i0 + j];
+                    wp++;
+                    n_eq--;
+                }
+            }
+        }
+
+        // handle remaining, only strictly lt ones.
+        for (; i0 + 15 < n; i0 += 16) {
+            simd16uint16 v(vals + i0);
+            simd16uint16 max2 = max_func<C>(v, thr16);
+            simd16uint16 gemask = (v == max2);
+            uint32_t bits = ~get_MSBs(simd32uint8(gemask));
+
+            while (bits) {
+                int j = __builtin_ctz(bits);
+                bits &= ~(3 << j);
+                j >>= 1;
+
                 vals[wp] = vals[i0 + j];
                 ids[wp] = ids[i0 + j];
                 wp++;
-            } else if (is_eq && n_eq > 0) {
-                vals[wp] = vals[i0 + j];
-                ids[wp] = ids[i0 + j];
+            }
+        }
+
+        // end with scalar
+        for (size_t i = (n & ~size_t(15)); i < n; i++) {
+            if (C::cmp(thresh, vals[i])) {
+                vals[wp] = vals[i];
+                ids[wp] = ids[i];
+                wp++;
+            } else if (vals[i] == thresh && n_eq > 0) {
+                vals[wp] = vals[i];
+                ids[wp] = ids[i];
                 wp++;
                 n_eq--;
             }
         }
-    }
-
-    // handle remaining, only strictly lt ones.
-    for (; i0 + 15 < n; i0 += 16) {
-        simd16uint16 v(vals + i0);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
-        uint32_t bits = ~get_MSBs(simd32uint8(gemask));
-
-        while (bits) {
-            int j = __builtin_ctz(bits);
-            bits &= ~(3 << j);
-            j >>= 1;
-
-            vals[wp] = vals[i0 + j];
-            ids[wp] = ids[i0 + j];
-            wp++;
-        }
-    }
-
-    // end with scalar
-    for (size_t i = (n & ~size_t(15)); i < n; i++) {
-        if (C::cmp(thresh, vals[i])) {
-            vals[wp] = vals[i];
-            ids[wp] = ids[i];
-            wp++;
-        } else if (vals[i] == thresh && n_eq > 0) {
-            vals[wp] = vals[i];
-            ids[wp] = ids[i];
-            wp++;
-            n_eq--;
-        }
-    }
-    assert(n_eq == 0);
-    return wp;
+        assert(n_eq == 0);
+        return wp;
+    } // else
 }
 
 // #define MICRO_BENCHMARK
