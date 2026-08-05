@@ -12,6 +12,7 @@
     <derivedcompoundref refid="structfaiss_1_1IDSelectorOr" prot="public" virt="non-virtual">faiss::IDSelectorOr</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IDSelectorRange" prot="public" virt="non-virtual">faiss::IDSelectorRange</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IDSelectorTranslated" prot="public" virt="non-virtual">faiss::IDSelectorTranslated</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorWithContext" prot="public" virt="non-virtual">faiss::IDSelectorWithContext</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IDSelectorXOr" prot="public" virt="non-virtual">faiss::IDSelectorXOr</derivedcompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
     <sectiondef kind="public-func">
@@ -130,6 +131,12 @@
         </childnode>
       </node>
       <node id="12">
+        <label>faiss::IDSelectorWithContext</label>
+        <link refid="structfaiss_1_1IDSelectorWithContext"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
         <label>faiss::IDSelectorXOr</label>
         <link refid="structfaiss_1_1IDSelectorXOr"/>
         <childnode refid="1" relation="public-inheritance">

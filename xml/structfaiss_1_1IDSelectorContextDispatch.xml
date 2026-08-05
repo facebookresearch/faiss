@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IDSelectorContextDispatch" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IDSelectorContextDispatch</compoundname>
+    <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorContextDispatch_1ab237448c7547c65e846c4e45f1f4b104" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>const IDSelector* faiss::IDSelectorContextDispatch::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <qualifiedname>faiss::IDSelectorContextDispatch::sel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="55" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorContextDispatch_1a856ed2ce817128ca7cd2577aa9348099" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelectorWithContext" kindref="compound">IDSelectorWithContext</ref> *</type>
+        <definition>const IDSelectorWithContext* faiss::IDSelectorContextDispatch::ctx_sel</definition>
+        <argsstring></argsstring>
+        <name>ctx_sel</name>
+        <qualifiedname>faiss::IDSelectorContextDispatch::ctx_sel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="56" column="33" bodyfile="faiss/impl/IDSelector.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorContextDispatch_1a00e28d0cbf5a1bae59246b4a55a53d81" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IDSelectorContextDispatch::IDSelectorContextDispatch</definition>
+        <argsstring>(const IDSelector *sel, bool store_pairs)</argsstring>
+        <name>IDSelectorContextDispatch</name>
+        <qualifiedname>faiss::IDSelectorContextDispatch::IDSelectorContextDispatch</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="58" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="58" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorContextDispatch_1a5e506be208fd16564ff12ec068b30a68" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::IDSelectorContextDispatch::is_member</definition>
+        <argsstring>(idx_t id, const IDScanContext &amp;ctx) const</argsstring>
+        <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorContextDispatch::is_member</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDScanContext" kindref="compound">IDScanContext</ref> &amp;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="64" column="10" bodyfile="faiss/impl/IDSelector.h" bodystart="64" bodyend="67"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Routes each per-candidate membership test to is_member_with_context() when the selector implements <ref refid="structfaiss_1_1IDSelectorWithContext" kindref="compound">IDSelectorWithContext</ref>, else to plain is_member(). Construct one per inverted-list scan: the dynamic_cast is the only RTTI cost and the per-candidate cost is a single predicted branch (cf. the <ref refid="structfaiss_1_1IDSelectorRange" kindref="compound">IDSelectorRange</ref> dynamic_cast in IndexIVF.cpp). The scan context is only meaningful when the scan exposes a real id array (i.e. !store_pairs); when store_pairs the context path is disabled and every test falls back to is_member. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::IDSelectorContextDispatch</label>
+        <link refid="structfaiss_1_1IDSelectorContextDispatch"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ctx_sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IDSelectorWithContext</label>
+        <link refid="structfaiss_1_1IDSelectorWithContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/IDSelector.h" line="54" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="54" bodyend="68"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IDSelectorContextDispatch_1a856ed2ce817128ca7cd2577aa9348099" prot="public" virt="non-virtual"><scope>faiss::IDSelectorContextDispatch</scope><name>ctx_sel</name></member>
+      <member refid="structfaiss_1_1IDSelectorContextDispatch_1a00e28d0cbf5a1bae59246b4a55a53d81" prot="public" virt="non-virtual"><scope>faiss::IDSelectorContextDispatch</scope><name>IDSelectorContextDispatch</name></member>
+      <member refid="structfaiss_1_1IDSelectorContextDispatch_1a5e506be208fd16564ff12ec068b30a68" prot="public" virt="non-virtual"><scope>faiss::IDSelectorContextDispatch</scope><name>is_member</name></member>
+      <member refid="structfaiss_1_1IDSelectorContextDispatch_1ab237448c7547c65e846c4e45f1f4b104" prot="public" virt="non-virtual"><scope>faiss::IDSelectorContextDispatch</scope><name>sel</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

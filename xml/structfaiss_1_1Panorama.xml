@@ -387,7 +387,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="299" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="299" bodyend="398"/>
+        <location file="faiss/impl/Panorama.h" line="299" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="299" bodyend="406"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Panorama_1ae8c69dd7c911cf621b7110f4ad576819" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -413,7 +413,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/Panorama.h" line="401" column="10"/>
+        <location file="faiss/impl/Panorama.h" line="409" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -424,7 +424,7 @@
 <para>In order to enable speedups, the dimensions (or codes) of each vector are stored in a batched, level-major manner. Within each batch of b vectors, the dimensions corresponding to level 1 will be stored first (for all elements in that batch), followed by level 2, and so on. This allows for efficient memory access patterns.</para>
 <para>Coupled with the appropriate orthogonal PreTransform (e.g. PCA, Cayley, etc.), <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> can prune the vast majority of dimensions, greatly accelerating the refinement stage. </para>
     </detaileddescription>
-    <location file="faiss/impl/Panorama.h" line="237" column="1" bodyfile="faiss/impl/Panorama.h" bodystart="237" bodyend="402"/>
+    <location file="faiss/impl/Panorama.h" line="237" column="1" bodyfile="faiss/impl/Panorama.h" bodystart="237" bodyend="410"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Panorama_1a2c2df437f13dae47d220b41a6364d99b" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>batch_size</name></member>
       <member refid="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>code_size</name></member>

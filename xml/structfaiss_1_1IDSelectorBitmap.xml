@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="102" column="12" bodyfile="faiss/impl/IDSelector.h" bodystart="102" bodyend="-1"/>
+        <location file="faiss/impl/IDSelector.h" line="146" column="12" bodyfile="faiss/impl/IDSelector.h" bodystart="146" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorBitmap_1a923eabd0cda5a7f26a72651f469941b1" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="103" column="19" bodyfile="faiss/impl/IDSelector.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/impl/IDSelector.h" line="147" column="19" bodyfile="faiss/impl/IDSelector.h" bodystart="147" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="111" column="5"/>
+        <location file="faiss/impl/IDSelector.h" line="155" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorBitmap_1a3c5bdfc7f2377cf569def3bb681b9d0d" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
         <type>bool</type>
@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="112" column="10"/>
+        <location file="faiss/impl/IDSelector.h" line="156" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorBitmap_1a5d5f32287ff1d2318fac1305b375057c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -107,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="113" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="113" bodyend="113"/>
+        <location file="faiss/impl/IDSelector.h" line="157" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="157" bodyend="157"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -139,7 +139,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/IDSelector.h" line="101" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="101" bodyend="114"/>
+    <location file="faiss/impl/IDSelector.h" line="145" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="145" bodyend="158"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IDSelectorBitmap_1a923eabd0cda5a7f26a72651f469941b1" prot="public" virt="non-virtual"><scope>faiss::IDSelectorBitmap</scope><name>bitmap</name></member>
       <member refid="structfaiss_1_1IDSelectorBitmap_1ac18b21efb8b1b39bface352b8772d73c" prot="public" virt="non-virtual"><scope>faiss::IDSelectorBitmap</scope><name>IDSelectorBitmap</name></member>

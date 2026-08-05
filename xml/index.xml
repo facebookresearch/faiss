@@ -2732,6 +2732,11 @@
     <member refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1a2a9953e848c087b9a0aa4dc6a807bba7" kind="function"><name>get</name></member>
     <member refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ab8351263070c0817f97dabf036fa98c3" kind="function"><name>~IcmEncoderFactory</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IDScanContext" kind="struct"><name>faiss::IDScanContext</name>
+    <member refid="structfaiss_1_1IDScanContext_1a54cbb4f328fdbca36cb40d0dcc8c9789" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1IDScanContext_1a0fb0deb2e5f552cd563e4aff13cee8be" kind="variable"><name>list_size</name></member>
+    <member refid="structfaiss_1_1IDScanContext_1aace048a2135967fa57ab81a43e7e10c4" kind="variable"><name>j</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IDSelector" kind="struct"><name>faiss::IDSelector</name>
     <member refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" kind="function"><name>is_member</name></member>
     <member refid="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" kind="function"><name>~IDSelector</name></member>
@@ -2770,6 +2775,12 @@
     <member refid="structfaiss_1_1IDSelectorBitmap_1a3c5bdfc7f2377cf569def3bb681b9d0d" kind="function"><name>is_member</name></member>
     <member refid="structfaiss_1_1IDSelectorBitmap_1a5d5f32287ff1d2318fac1305b375057c" kind="function"><name>~IDSelectorBitmap</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IDSelectorContextDispatch" kind="struct"><name>faiss::IDSelectorContextDispatch</name>
+    <member refid="structfaiss_1_1IDSelectorContextDispatch_1ab237448c7547c65e846c4e45f1f4b104" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1IDSelectorContextDispatch_1a856ed2ce817128ca7cd2577aa9348099" kind="variable"><name>ctx_sel</name></member>
+    <member refid="structfaiss_1_1IDSelectorContextDispatch_1a00e28d0cbf5a1bae59246b4a55a53d81" kind="function"><name>IDSelectorContextDispatch</name></member>
+    <member refid="structfaiss_1_1IDSelectorContextDispatch_1a5e506be208fd16564ff12ec068b30a68" kind="function"><name>is_member</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IDSelectorNot" kind="struct"><name>faiss::IDSelectorNot</name>
     <member refid="structfaiss_1_1IDSelectorNot_1ad1aff9ca7358328c64daf17a595bd2c3" kind="variable"><name>sel</name></member>
     <member refid="structfaiss_1_1IDSelectorNot_1aa1d278311b73d294fa2f3d8e3becd084" kind="function"><name>IDSelectorNot</name></member>
@@ -2799,6 +2810,10 @@
     <member refid="structfaiss_1_1IDSelectorTranslated_1a4be8602f3fc5e43f1305ab3fab984b0e" kind="function"><name>IDSelectorTranslated</name></member>
     <member refid="structfaiss_1_1IDSelectorTranslated_1a2f9aae2c01869c6f700527c1bf8fc88f" kind="function"><name>IDSelectorTranslated</name></member>
     <member refid="structfaiss_1_1IDSelectorTranslated_1ab5638224c8cda6f29a683b1876b65051" kind="function"><name>is_member</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1IDSelectorWithContext" kind="struct"><name>faiss::IDSelectorWithContext</name>
+    <member refid="structfaiss_1_1IDSelectorWithContext_1a36fbc18334567dcbb3faa0584690cc19" kind="function"><name>is_member_with_context</name></member>
+    <member refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" kind="function"><name>is_member</name></member>
   </compound>
   <compound refid="structfaiss_1_1IDSelectorXOr" kind="struct"><name>faiss::IDSelectorXOr</name>
     <member refid="structfaiss_1_1IDSelectorXOr_1ad87c3951bf5764695228ed472423bfcf" kind="variable"><name>lhs</name></member>
@@ -13451,9 +13466,11 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a3cda8b43e6976ad751b88c3dc3fea61c" kind="variable"><name>res</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a7d9b615dc4f97654122471ccb7a42ff4" kind="variable"><name>nup</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a26bb99d81275a2a97807b9e34ac6bdc4" kind="variable"><name>list_no</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a1d3e34d7d66b28f434a4147a27b20371" kind="variable"><name>list_size</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a103c4e5d1c4301d108ed78b47cb49f64" kind="variable"><name>ids</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1aeb0ff1c4375f3cec288f861f27fad9b2" kind="variable"><name>sel</name></member>
-    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1ac1d27d05cb0143296d84f067e37b2d09" kind="function"><name>WrappedSearchResult</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a1633c83241cc682460421ecf56b199a2" kind="variable"><name>dispatch</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a51556d6b2b21e36dd2e6416a25e32b0a" kind="function"><name>WrappedSearchResult</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a15cbab84ac5ba6bfe0f0b20b2483687c" kind="function"><name>skip_entry</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a2642fb8a9ebbd0e45cf8753920571935" kind="function"><name>add</name></member>
   </compound>

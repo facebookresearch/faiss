@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IDScanContext" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IDScanContext</compoundname>
+    <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IDScanContext_1a54cbb4f328fdbca36cb40d0dcc8c9789" prot="public" static="no" mutable="no">
+        <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+        <definition>const idx_t* faiss::IDScanContext::ids</definition>
+        <argsstring></argsstring>
+        <name>ids</name>
+        <qualifiedname>faiss::IDScanContext::ids</qualifiedname>
+        <briefdescription>
+<para>the contiguous block of ids being scanned </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="30" column="17" bodyfile="faiss/impl/IDSelector.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IDScanContext_1a0fb0deb2e5f552cd563e4aff13cee8be" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::IDScanContext::list_size</definition>
+        <argsstring></argsstring>
+        <name>list_size</name>
+        <qualifiedname>faiss::IDScanContext::list_size</qualifiedname>
+        <briefdescription>
+<para>number of entries in <computeroutput>ids</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="32" column="12" bodyfile="faiss/impl/IDSelector.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IDScanContext_1aace048a2135967fa57ab81a43e7e10c4" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::IDScanContext::j</definition>
+        <argsstring></argsstring>
+        <name>j</name>
+        <qualifiedname>faiss::IDScanContext::j</qualifiedname>
+        <briefdescription>
+<para>index of the tested id within <computeroutput>ids</computeroutput> (i.e. ids[j] == id) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="34" column="12" bodyfile="faiss/impl/IDSelector.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Scan context handed to IDSelectorWithContext::is_member_with_context: the contiguous id block being scanned and the position of the id under test. </para>
+    </detaileddescription>
+    <location file="faiss/impl/IDSelector.h" line="28" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="28" bodyend="35"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IDScanContext_1a54cbb4f328fdbca36cb40d0dcc8c9789" prot="public" virt="non-virtual"><scope>faiss::IDScanContext</scope><name>ids</name></member>
+      <member refid="structfaiss_1_1IDScanContext_1aace048a2135967fa57ab81a43e7e10c4" prot="public" virt="non-virtual"><scope>faiss::IDScanContext</scope><name>j</name></member>
+      <member refid="structfaiss_1_1IDScanContext_1a0fb0deb2e5f552cd563e4aff13cee8be" prot="public" virt="non-virtual"><scope>faiss::IDScanContext</scope><name>list_size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

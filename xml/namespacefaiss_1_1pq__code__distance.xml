@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="498" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="498" declcolumn="21"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="511" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="511" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="IVFPQScanner__impl_8h_1af6a7d6a634808cfff4adb38078cb54a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="505" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="505" bodyend="546"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="518" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="518" bodyend="559"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

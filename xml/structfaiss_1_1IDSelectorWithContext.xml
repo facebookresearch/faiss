@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IDSelectorWithContext" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::IDSelectorWithContext</compoundname>
+    <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
+    <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorWithContext_1a36fbc18334567dcbb3faa0584690cc19" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool faiss::IDSelectorWithContext::is_member_with_context</definition>
+        <argsstring>(idx_t id, const IDScanContext &amp;ctx) const =0</argsstring>
+        <name>is_member_with_context</name>
+        <qualifiedname>faiss::IDSelectorWithContext::is_member_with_context</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDScanContext" kindref="compound">IDScanContext</ref> &amp;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="42" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool faiss::IDSelector::is_member</definition>
+        <argsstring>(idx_t id) const =0</argsstring>
+        <name>is_member</name>
+        <qualifiedname>faiss::IDSelector::is_member</qualifiedname>
+        <reimplementedby refid="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorRange_1ad1104c56c1a1266366f677d0c19cbdb4">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorArray_1afe3a7327bf5f0d11bf8f8bf1175caf24">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorBatch_1a78e17b826a9e1947500368ff077c6b12">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorBitmap_1a3c5bdfc7f2377cf569def3bb681b9d0d">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorAnd_1ad4e5d9d8081d268b5f75e38d4bbaac8b">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorOr_1a15f05fe8206da5e1a4aa85e41e02d092">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorXOr_1ac3d059203fdd296721ddb4c2917828ed">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorTranslated_1ab5638224c8cda6f29a683b1876b65051">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorAll_1a7aba6b3da380c20922759faf0dc19cf5">is_member</reimplementedby>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="22" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> that also receives the surrounding scan context on each membership test, letting an implementation exploit locality across a scan (for example, prefetching data for an entry it will be asked about soon). The policy is entirely up to the implementation. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::IDSelectorWithContext</label>
+        <link refid="structfaiss_1_1IDSelectorWithContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::IDSelectorWithContext</label>
+        <link refid="structfaiss_1_1IDSelectorWithContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/IDSelector.h" line="41" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="41" bodyend="44"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" prot="public" virt="pure-virtual"><scope>faiss::IDSelectorWithContext</scope><name>is_member</name></member>
+      <member refid="structfaiss_1_1IDSelectorWithContext_1a36fbc18334567dcbb3faa0584690cc19" prot="public" virt="pure-virtual"><scope>faiss::IDSelectorWithContext</scope><name>is_member_with_context</name></member>
+      <member refid="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" prot="public" virt="virtual"><scope>faiss::IDSelectorWithContext</scope><name>~IDSelector</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

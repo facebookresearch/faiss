@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="118" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="118" bodyend="-1"/>
+        <location file="faiss/impl/IDSelector.h" line="162" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="162" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="119" column="14" bodyfile="faiss/impl/IDSelector.h" bodystart="119" bodyend="119"/>
+        <location file="faiss/impl/IDSelector.h" line="163" column="14" bodyfile="faiss/impl/IDSelector.h" bodystart="163" bodyend="163"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="120" column="10" bodyfile="faiss/impl/IDSelector.h" bodystart="120" bodyend="122"/>
+        <location file="faiss/impl/IDSelector.h" line="164" column="10" bodyfile="faiss/impl/IDSelector.h" bodystart="164" bodyend="166"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1a6d330a83ea4183f8f6e94321f970c67e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="123" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="123" bodyend="123"/>
+        <location file="faiss/impl/IDSelector.h" line="167" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="167" bodyend="167"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -105,7 +105,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/IDSelector.h" line="117" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="117" bodyend="124"/>
+    <location file="faiss/impl/IDSelector.h" line="161" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="161" bodyend="168"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IDSelectorNot_1aa1d278311b73d294fa2f3d8e3becd084" prot="public" virt="non-virtual"><scope>faiss::IDSelectorNot</scope><name>IDSelectorNot</name></member>
       <member refid="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b" prot="public" virt="virtual"><scope>faiss::IDSelectorNot</scope><name>is_member</name></member>

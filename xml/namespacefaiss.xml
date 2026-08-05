@@ -103,16 +103,19 @@
     <innerclass refid="structfaiss_1_1HNSW" prot="public">faiss::HNSW</innerclass>
     <innerclass refid="structfaiss_1_1HNSWStats" prot="public">faiss::HNSWStats</innerclass>
     <innerclass refid="structfaiss_1_1HStackInvertedLists" prot="public">faiss::HStackInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1IDScanContext" prot="public">faiss::IDScanContext</innerclass>
     <innerclass refid="structfaiss_1_1IDSelector" prot="public">faiss::IDSelector</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorAll" prot="public">faiss::IDSelectorAll</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorAnd" prot="public">faiss::IDSelectorAnd</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorArray" prot="public">faiss::IDSelectorArray</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorBatch" prot="public">faiss::IDSelectorBatch</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorBitmap" prot="public">faiss::IDSelectorBitmap</innerclass>
+    <innerclass refid="structfaiss_1_1IDSelectorContextDispatch" prot="public">faiss::IDSelectorContextDispatch</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorNot" prot="public">faiss::IDSelectorNot</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorOr" prot="public">faiss::IDSelectorOr</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorRange" prot="public">faiss::IDSelectorRange</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorTranslated" prot="public">faiss::IDSelectorTranslated</innerclass>
+    <innerclass refid="structfaiss_1_1IDSelectorWithContext" prot="public">faiss::IDSelectorWithContext</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorXOr" prot="public">faiss::IDSelectorXOr</innerclass>
     <innerclass refid="structfaiss_1_1Index" prot="public">faiss::Index</innerclass>
     <innerclass refid="structfaiss_1_1Index2Layer" prot="public">faiss::Index2Layer</innerclass>
