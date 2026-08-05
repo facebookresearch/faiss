@@ -185,6 +185,23 @@ int test_defaults_preserve_baseline(const char* index_key, MetricType metric) {
     return 0;
 }
 
+// IDSelectorWithContext that delegates the verdict to an inner IDSelector while
+// exercising the context parameters — used to prove the scan's
+// is_member_with_context path returns results identical to the plain is_member
+// path.
+struct ContextSelector : IDSelectorWithContext {
+    const IDSelector& inner;
+    explicit ContextSelector(const IDSelector& inner) : inner(inner) {}
+    bool is_member(idx_t id) const override {
+        return inner.is_member(id);
+    }
+    bool is_member_with_context(idx_t id, const IDScanContext& ctx)
+            const override {
+        (void)ctx;
+        return inner.is_member(id);
+    }
+};
+
 int test_selector(const char* index_key) {
     std::vector<float> xb = make_data(nb); // database vectors
     std::vector<float> xq = make_data(nq);
@@ -219,6 +236,50 @@ int test_selector(const char* index_key) {
     auto new_result = search_index_with_params(index.get(), xq.data(), &params);
 
     if (ref_result != new_result) {
+        return 1;
+    }
+
+    return 0;
+}
+
+// Same membership set as test_selector, but driven through an
+// IDSelectorWithContext to prove the context scan path is functionally
+// identical to the plain IDSelector path.
+int test_selector_with_context(const char* index_key) {
+    std::vector<float> xb = make_data(nb);
+    std::vector<float> xq = make_data(nq);
+    ParameterSpace ps;
+
+    std::vector<idx_t> kept;
+    for (size_t i = 0; i < nb; i++) {
+        if (i % 10 == 2) {
+            kept.push_back(i);
+        }
+    }
+
+    auto index = make_index(index_key, METRIC_L2, xb);
+    ps.set_index_parameter(index.get(), "nprobe", 3);
+
+    IDSelectorBatch batch(kept.size(), kept.data());
+
+    // Plain IDSelector path.
+    IVFSearchParameters plain_params;
+    plain_params.max_codes = 0;
+    plain_params.nprobe = 3;
+    plain_params.sel = &batch;
+    auto plain_result =
+            search_index_with_params(index.get(), xq.data(), &plain_params);
+
+    // IDSelectorWithContext path over the same membership set.
+    ContextSelector ctx_sel(batch);
+    IVFSearchParameters ctx_params;
+    ctx_params.max_codes = 0;
+    ctx_params.nprobe = 3;
+    ctx_params.sel = &ctx_sel;
+    auto ctx_result =
+            search_index_with_params(index.get(), xq.data(), &ctx_params);
+
+    if (plain_result != ctx_result) {
         return 1;
     }
 
@@ -299,6 +360,22 @@ TEST(TSEL, IVFFPQ) {
 TEST(TSEL, IVFFSQ) {
     int err = test_selector("PCA16,IVF32,SQ8");
     EXPECT_EQ(err, 0);
+}
+
+// IDSelectorWithContext must be functionally identical to a plain IDSelector.
+// IVFFlat and IVFSQ route through run_scan_codes1 (which dispatches to
+// is_member_with_context); IVFPQ uses its own scanner (plain is_member) — all
+// must return identical results.
+TEST(TSELCtx, IVFFlat) {
+    EXPECT_EQ(test_selector_with_context("PCA16,IVF32,Flat"), 0);
+}
+
+TEST(TSELCtx, IVFFPQ) {
+    EXPECT_EQ(test_selector_with_context("PCA16,IVF32,PQ4x8np"), 0);
+}
+
+TEST(TSELCtx, IVFFSQ) {
+    EXPECT_EQ(test_selector_with_context("PCA16,IVF32,SQ8"), 0);
 }
 
 /*************************************************************
