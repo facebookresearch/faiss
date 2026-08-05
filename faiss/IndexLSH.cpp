@@ -119,8 +119,7 @@ void IndexLSH::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_preprocess(n, x);
@@ -151,7 +150,7 @@ void IndexLSH::transfer_thresholds(LinearTransform* vt) {
         vt->b.resize(nbits, 0);
         vt->have_bias = true;
     }
-    FAISS_THROW_IF_NOT(!vt->b.empty());
+    FAISS_THROW_IF_MSG(vt->b.empty(), "bias vector must not be empty");
     for (int i = 0; i < nbits; i++) {
         vt->b[i] -= thresholds[i];
     }

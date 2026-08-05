@@ -146,7 +146,7 @@ void GpuIndexBinaryFlat::search(
         return;
     }
 
-    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
+    FAISS_THROW_IF_MSG(params, "params not implemented");
 
     validateKSelect(k, binaryFlatConfig_.use_cuvs);
 

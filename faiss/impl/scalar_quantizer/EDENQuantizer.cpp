@@ -59,7 +59,7 @@ float compute_code_dot_reference(
 }
 
 bool supports_byte_lut(size_t nb_bits) {
-    return nb_bits == 1 || nb_bits == 2 || nb_bits == 4;
+    return nb_bits == 1 || nb_bits == 2 || nb_bits == 4 || nb_bits == 8;
 }
 
 bool use_half_byte_lut(size_t nb_bits, size_t num_bytes) {

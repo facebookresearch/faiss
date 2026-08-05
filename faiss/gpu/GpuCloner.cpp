@@ -150,8 +150,8 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         GpuIndexFlatConfig config;
         config.device = device;
         config.useFloat16 = true;
-        FAISS_THROW_IF_NOT_MSG(
-                !use_cuvs, "this type of index is not implemented for cuVS");
+        FAISS_THROW_IF_MSG(
+                use_cuvs, "this type of index is not implemented for cuVS");
         GpuIndexFlat* gif = new GpuIndexFlat(
                 provider, index->d, index->metric_type, config);
         // transfer data by blocks
@@ -549,7 +549,7 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
         GpuResourcesProvider* provider,
         int device,
         const faiss::IndexBinary* index,
-        const GpuClonerOptions* options) {
+        const GpuClonerOptions* /*options*/) {
     if (auto ii = dynamic_cast<const IndexBinaryFlat*>(index)) {
         GpuIndexBinaryFlatConfig config;
         config.device = device;
