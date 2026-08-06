@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <queue>
+#include <utility>
 #include <vector>
 
 #include <omp.h>
@@ -214,6 +216,29 @@ struct HNSW {
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
+    /** Deterministic build, phase A: write pt_id's forward links against an
+     * immutable snapshot, touching only pt_id's own slots. Reciprocal edges
+     * are collected in `pt_reverse_edges` for phase B, not applied. Requires
+     * entry_point set. */
+    void compute_forward_links_deterministic(
+            DistanceComputer& ptdis,
+            int pt_level,
+            storage_idx_t pt_id,
+            VisitedTable& vt,
+            std::vector<std::pair<storage_idx_t, int>>& pt_reverse_edges,
+            bool keep_max_size_level0 = false);
+
+    /** Deterministic build, phase B: merge `incoming` into `node` and
+     * re-prune in a total order (distance, ties by id) so the result is
+     * order-independent. Touches only `node`'s slots; `incoming` is sorted
+     * and deduplicated in place. */
+    void merge_reverse_links_deterministic(
+            DistanceComputer& dis,
+            storage_idx_t node,
+            int level,
+            std::vector<storage_idx_t>& incoming,
+            bool keep_max_size_level0 = false);
+
     /// Search interface for 1 point, single thread
     ///
     /// NOTE: We pass a reference to the index itself to allow for additional
@@ -257,6 +282,23 @@ struct HNSW {
     void permute_entries(const idx_t* map);
 };
 
+/** Deterministic, lock-free HNSW graph build, shared by IndexHNSW and
+ * IndexBinaryHNSW. The callbacks let both share the algorithm:
+ * `make_distance_computer()` returns a fresh DistanceComputer per thread
+ * (caller-owned) and `set_query(dc, pt_id)` points it at pt_id's vector. */
+void hnsw_add_vertices_deterministic(
+        HNSW& hnsw,
+        size_t n0,
+        size_t n,
+        int d,
+        bool init_level0,
+        bool keep_max_size_level0,
+        bool preset_levels,
+        bool verbose,
+        const std::function<DistanceComputer*()>& make_distance_computer,
+        const std::function<void(DistanceComputer&, HNSW::storage_idx_t)>&
+                set_query);
+
 struct HNSWStats {
     size_t n1 = 0; /// number of vectors searched
     size_t n2 =
@@ -280,6 +322,12 @@ struct HNSWStats {
 
 // global var that collects them all
 FAISS_API extern HNSWStats hnsw_stats;
+
+/** Use the lock-free deterministic graph build in add() rather than the
+ * lock-based one. Transitional: it will become the only path.
+ *
+ * NOT thread-safe: set before calling add(). Sampled once per add(). */
+FAISS_API extern bool hnsw_deterministic_build;
 
 /// Internal HNSW algorithm helpers. These are not part of the public API; they
 /// are exposed here only so that unit tests (and a few cross-TU callers such as
