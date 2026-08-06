@@ -132,9 +132,9 @@ outputs:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
 {% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
-        - rc=0; for f in faiss/gpu/test/test_*.py; do echo "=== Running $f ==="; timeout 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
+        - rc=0; for f in faiss/gpu/test/test_*.py; do echo "=== Running $f ==="; timeout --kill-after=60 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
 {% if cuda_major == 12 and cuda_minor >= 9 %}
-        - rc=0; for f in faiss/gpu/test/torch_*.py; do echo "=== Running $f ==="; timeout 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
+        - rc=0; for f in faiss/gpu/test/torch_*.py; do echo "=== Running $f ==="; timeout --kill-after=60 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
 {% endif %}
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
