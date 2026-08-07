@@ -91,6 +91,97 @@ class MetalKernels {
             id<MTLBuffer> paramsBuf,
             int nq);
 
+    // ---- IVF-PQ ----
+
+    void encodeIVFPQBuildLookupTables(
+            id<MTLComputeCommandEncoder> enc,
+            bool isL2,
+            bool outFp16,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> coarseCentroids,
+            id<MTLBuffer> pqCentroids,
+            id<MTLBuffer> outLookup,
+            int nq,
+            int d,
+            int M,
+            int nprobe);
+
+    void encodeIVFPQScanList(
+            id<MTLComputeCommandEncoder> enc,
+            bool useSmall,
+            bool useFp16Lookup,
+            id<MTLBuffer> lookupTable,
+            id<MTLBuffer> codes,
+            id<MTLBuffer> ids,
+            id<MTLBuffer> listOffset,
+            id<MTLBuffer> listLength,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            id<MTLBuffer> paramsBuf,
+            int nq,
+            int nprobe);
+
+    // ---- IVF-PQ precomputed-table path ----
+
+    void encodeIVFPQPrecomputeTerm2(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> coarseCentroids,
+            id<MTLBuffer> pqCentroids,
+            id<MTLBuffer> outTerm2,
+            int nlist,
+            int d,
+            int M);
+
+    void encodeIVFPQBuildQueryTerm(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> pqCentroids,
+            id<MTLBuffer> outQTerm,
+            int nq,
+            int d,
+            int M,
+            bool isL2);
+
+    void encodeIVFPQScanListPrecomp(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> term2, // nil when useTerm2 is false (IP path)
+            id<MTLBuffer> qterm,
+            id<MTLBuffer> coarseDist,
+            id<MTLBuffer> codes,
+            id<MTLBuffer> ids,
+            id<MTLBuffer> listOffset,
+            id<MTLBuffer> listLength,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            int nq,
+            int M,
+            int k,
+            int nprobe,
+            bool wantMin,
+            bool useTerm2,
+            bool useDis0);
+
+    void encodeIVFMergeListsGrouped(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> inDist,
+            id<MTLBuffer> inIdx,
+            id<MTLBuffer> outDist,
+            id<MTLBuffer> outIdx,
+            int nq,
+            int numLists,
+            int groupSize,
+            int k,
+            bool wantMin);
+
+    void encodeConvertF32ToF16(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> src,
+            id<MTLBuffer> dst,
+            size_t numElems);
+
     static int selectTopKVariantIndex(int k);
 
    private:
