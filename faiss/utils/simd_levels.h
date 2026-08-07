@@ -169,13 +169,12 @@ struct FAISS_API SIMDConfig {
 
     static SIMDLevel auto_detect_simd_level();
 
-    static constexpr bool has_dynamic_dispatch() {
-#ifdef FAISS_ENABLE_DD
-        return true;
-#else
-        return false;
-#endif
-    }
+    /// Whether this faiss build dispatches SIMD at runtime.
+    ///
+    /// Defined out-of-line on purpose: FAISS_ENABLE_DD is private to the faiss
+    /// build, so resolving it in this header would make every dependent
+    /// translation unit answer "no" regardless of how faiss was built.
+    static bool has_dynamic_dispatch();
 
     SIMDConfig(const char** faiss_simd_level_env = nullptr);
 
