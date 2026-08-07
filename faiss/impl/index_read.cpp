@@ -821,6 +821,10 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     }
 
     aq.set_derived_values();
+    FAISS_THROW_IF_NOT_FMT(
+            aq.code_size > 0,
+            "invalid AdditiveQuantizer: nbits sum to 0 bits, code_size %zd",
+            aq.code_size);
 
     // Sanity-check codebooks size without knowing the effective dimension.
     // codebooks stores effective_d * total_codebook_size floats, so its
