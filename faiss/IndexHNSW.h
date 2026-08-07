@@ -253,7 +253,11 @@ struct IndexHNSWCagra : IndexHNSW {
     /// searches only the base level knn graph of the HNSW index.
     /// This parameter selects the entry point by randomly selecting
     /// some points and using the best one.
-    int num_base_level_search_entrypoints = 32;
+    ///
+    /// Each sample is a distance computation paid before the search starts,
+    /// so the cost is fixed regardless of efSearch and hurts most when
+    /// efSearch is small. Raising this past a few hundred stops paying off.
+    int num_base_level_search_entrypoints = 256;
 
     void add(idx_t n, const float* x) override;
 

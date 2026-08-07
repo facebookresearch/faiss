@@ -1123,8 +1123,9 @@ void IndexHNSWCagra::search(
                 // first real candidate will always be strictly better.
                 nearest_d[i] = C::neutral();
 
-                std::random_device rd;
-                std::mt19937 gen(rd());
+                // Fixed seed: random_device costs more than the few samples
+                // drawn from it, and made recall irreproducible.
+                std::mt19937 gen(0x9e3779b9u ^ (uint32_t)i);
                 std::uniform_int_distribution<idx_t> distrib(
                         0, this->ntotal - 1);
 
