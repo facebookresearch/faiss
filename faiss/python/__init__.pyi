@@ -4318,6 +4318,18 @@ distance_compute_min_k_reservoir: int
 # Index factory verbose flag
 index_factory_verbose: int
 
+# SWIG exposes mutable C++ globals here rather than as module attributes,
+# which could not write through to C++. Access as `faiss.cvar.<name>`.
+class _SwigGlobals:
+    distance_compute_blas_threshold: int
+    distance_compute_blas_query_bs: int
+    distance_compute_blas_database_bs: int
+    distance_compute_min_k_reservoir: int
+    index_factory_verbose: int
+    hnsw_deterministic_build: bool
+
+cvar: _SwigGlobals
+
 # GPU-specific types and functions
 class GpuDistanceParams:
     metric: MetricType
