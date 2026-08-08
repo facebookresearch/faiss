@@ -870,6 +870,8 @@ void HNSW::add_with_locks(
 
 namespace {
 
+static constexpr size_t kHNSWCodePrefetchAhead = 1;
+
 /** Helper to extract search parameters from HNSW and SearchParameters */
 inline void extract_search_params(
         const HNSW& hnsw,
@@ -981,6 +983,13 @@ int search_from_candidates_fixVT(
         };
 
         for (size_t j = begin; j < jmax; j++) {
+            if (j + kHNSWCodePrefetchAhead < jmax) {
+                int vp = hnsw.neighbors[j + kHNSWCodePrefetchAhead];
+                if (vp >= 0) {
+                    qdis.prefetch(vp);
+                }
+            }
+
             int v1 = hnsw.neighbors[j];
 
             saved_j[counter] = v1;
@@ -1373,6 +1382,13 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         };
 
         for (size_t j = begin; j < jmax; j++) {
+            if (j + kHNSWCodePrefetchAhead < jmax) {
+                int vp = hnsw.neighbors[j + kHNSWCodePrefetchAhead];
+                if (vp >= 0) {
+                    qdis.prefetch(vp);
+                }
+            }
+
             int v1 = hnsw.neighbors[j];
 
             saved_j[counter] = v1;
