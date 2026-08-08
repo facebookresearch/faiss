@@ -13,6 +13,7 @@
 #include "IndexBinary_c.h"
 #include "IndexIVF_c.h"
 #include "faiss_c.h"
+#include "invlists/DirectMap_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,6 +102,16 @@ size_t faiss_IndexBinaryIVF_get_list_size(
 int faiss_IndexBinaryIVF_make_direct_map(
         FaissIndexBinaryIVF* index,
         int new_maintain_direct_map);
+
+/**
+ * Set a direct map type.
+ *
+ * @param direct_map_type           the kind of direct map to build.
+ * @return
+ */
+int faiss_IndexBinaryIVF_set_direct_map_type(
+        FaissIndexBinaryIVF* index,
+        FaissDirectMapType direct_map_type);
 
 /** Check the inverted lists' imbalance factor.
  *
