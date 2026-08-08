@@ -199,7 +199,7 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
 TEST(TestGpuIndexIVFPQ, LargeBatch) {
     // With low-dim vectors, CPU will use non-BLAS. Force the CPU to use
     // the BLAS for consistent comparison.
-    int saved_threshold = faiss::distance_compute_blas_threshold;
+    int64_t saved_threshold = faiss::distance_compute_blas_threshold;
     faiss::distance_compute_blas_threshold = 1;
 
     for (bool usePrecomputed : {false, true}) {
@@ -713,7 +713,7 @@ TEST(TestGpuIndexIVFPQ, Query_IP_Cuvs) {
 TEST(TestGpuIndexIVFPQ, LargeBatch_Cuvs) {
     // See LargeBatch comment: force CPU BLAS path to match GPU GEMM
     // decomposition for consistent L2 distance computation.
-    int saved_threshold = faiss::distance_compute_blas_threshold;
+    int64_t saved_threshold = faiss::distance_compute_blas_threshold;
     faiss::distance_compute_blas_threshold = 1;
 
     Options opt;
