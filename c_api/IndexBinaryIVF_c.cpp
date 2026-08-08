@@ -109,13 +109,15 @@ void faiss_IndexBinaryIVF_print_stats(const FaissIndexBinaryIVF* index) {
 void faiss_IndexBinaryIVF_invlists_get_ids(
         const FaissIndexBinaryIVF* index,
         size_t list_no,
-        idx_t* invlist) {
+        idx_t* invlist,
+        size_t invlist_size) {
     const idx_t* list =
             reinterpret_cast<const IndexBinaryIVF*>(index)->invlists->get_ids(
                     list_no);
     size_t list_size =
             reinterpret_cast<const IndexBinaryIVF*>(index)->get_list_size(
                     list_no);
-    memcpy(invlist, list, list_size * sizeof(idx_t));
+    size_t copy_size = list_size < invlist_size ? list_size : invlist_size;
+    memcpy(invlist, list, copy_size * sizeof(idx_t));
 }
 }
