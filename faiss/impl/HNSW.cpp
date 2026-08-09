@@ -1374,6 +1374,8 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if constexpr (use_selector) {
+                // Check the size before top(): the starting node may be
+                // rejected, leaving result_candidates empty.
                 if (sel->is_member(idx) &&
                     (result_candidates.size() < static_cast<size_t>(ef) ||
                      C::cmp(result_candidates.top().first, dis))) {
