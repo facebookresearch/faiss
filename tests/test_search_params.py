@@ -302,6 +302,48 @@ class TestSelector(unittest.TestCase):
     def test_HSNW(self):
         self.do_test_id_selector_weak("HNSW")
 
+    def test_HNSW_unbounded_queue_id_selector(self):
+        xb = np.array(
+            [
+                [0.0, 0.0],
+                [10.0, 0.0],
+                [20.0, 0.0],
+                [30.0, 0.0],
+            ],
+            dtype=np.float32,
+        )
+        cases = (
+            (faiss.METRIC_L2, [[0.0, 0.0]], 100.0),
+            (faiss.METRIC_INNER_PRODUCT, [[1.0, 0.0]], 10.0),
+        )
+        for metric, query, expected_distance in cases:
+            index = faiss.IndexHNSWFlat(2, 4, metric)
+            index.hnsw.efConstruction = 40
+            index.add(xb)
+            selector = faiss.IDSelectorRange(1, 2)
+            xq = np.array(query, dtype=np.float32)
+
+            for ef_search in (1, 40):
+                with self.subTest(metric=metric, ef_search=ef_search):
+                    params = faiss.SearchParametersHNSW(
+                        efSearch=ef_search,
+                        bounded_queue=False,
+                        sel=selector,
+                    )
+                    D, I = index.search(xq, 1, params=params)
+
+                    np.testing.assert_array_equal(I, [[1]])
+                    np.testing.assert_array_equal(D, [[expected_distance]])
+
+        empty_selector = faiss.IDSelectorRange(4, 4)
+        params = faiss.SearchParametersHNSW(
+            efSearch=40,
+            bounded_queue=False,
+            sel=empty_selector,
+        )
+        _, I = index.search(xq, 1, params=params)
+        np.testing.assert_array_equal(I, [[-1]])
+
     def test_idmap(self):
         ds = datasets.SyntheticDataset(32, 100, 100, 20)
         rs = np.random.RandomState(123)

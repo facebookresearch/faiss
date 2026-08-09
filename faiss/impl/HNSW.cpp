@@ -1310,17 +1310,29 @@ void reservePriorityQueue(
 /// Templated body of `search_from_candidate_unbounded`. The choice of
 /// max-heap vs min-heap for both `top_candidates` and `candidates` is
 /// derived from C via `TopCandidatesQueue` / `CandidatesQueue`.
-template <typename VTType, class C>
+template <typename VTType, class C, bool use_selector>
 TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         const HNSW& hnsw,
         const HNSW::Node& node,
         DistanceComputer& qdis,
         int ef,
         VTType& vt,
-        HNSWStats& stats) {
+        HNSWStats& stats,
+        const IDSelector* sel) {
     int ndis = 0;
     TopCandidatesQueue<C> top_candidates;
     reservePriorityQueue(top_candidates, ef);
+
+    TopCandidatesQueue<C> result_candidates;
+    if constexpr (use_selector) {
+        FAISS_ASSERT(sel);
+        // Keep rejected nodes in top_candidates so they can still be used
+        // for graph traversal, but never return them as search results.
+        reservePriorityQueue(result_candidates, ef);
+        if (sel->is_member(node.second)) {
+            result_candidates.push(node);
+        }
+    }
 
     CandidatesQueue<C> candidates;
     reservePriorityQueue(candidates, ef);
@@ -1361,6 +1373,17 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         size_t saved_j[4];
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
+            if constexpr (use_selector) {
+                if (sel->is_member(idx) &&
+                    (result_candidates.size() < static_cast<size_t>(ef) ||
+                     C::cmp(result_candidates.top().first, dis))) {
+                    result_candidates.emplace(dis, idx);
+                    if (result_candidates.size() > static_cast<size_t>(ef)) {
+                        result_candidates.pop();
+                    }
+                }
+            }
+
             if (C::cmp(top_candidates.top().first, dis) ||
                 top_candidates.size() < static_cast<size_t>(ef)) {
                 candidates.emplace(dis, idx);
@@ -1416,7 +1439,11 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     }
     stats.ndis += ndis;
 
-    return top_candidates;
+    if constexpr (use_selector) {
+        return result_candidates;
+    } else {
+        return top_candidates;
+    }
 }
 
 } // namespace
@@ -1434,8 +1461,8 @@ std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
         HNSWStats& stats) {
     using C = HNSW::C_distance;
     auto call = [&]<typename VTType>(VTType& vt_concrete) {
-        return search_from_candidate_unbounded_fixVT<VTType, C>(
-                hnsw, node, qdis, ef, vt_concrete, stats);
+        return search_from_candidate_unbounded_fixVT<VTType, C, false>(
+                hnsw, node, qdis, ef, vt_concrete, stats, nullptr);
     };
     if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(vt)) {
         return call(*vtv);
@@ -1522,14 +1549,26 @@ HNSWStats search_impl(
             }
         }
     } else {
+        const IDSelector* sel = params ? params->sel : nullptr;
         auto call = [&]<typename VTType>(VTType& vt_concrete) {
-            return search_from_candidate_unbounded_fixVT<VTType, C>(
+            if (sel) {
+                return search_from_candidate_unbounded_fixVT<VTType, C, true>(
+                        hnsw,
+                        HNSW::Node(d_nearest, nearest),
+                        qdis,
+                        ef,
+                        vt_concrete,
+                        stats,
+                        sel);
+            }
+            return search_from_candidate_unbounded_fixVT<VTType, C, false>(
                     hnsw,
                     HNSW::Node(d_nearest, nearest),
                     qdis,
                     ef,
                     vt_concrete,
-                    stats);
+                    stats,
+                    nullptr);
         };
         TopCandidatesQueue<C> top_candidates;
         if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
