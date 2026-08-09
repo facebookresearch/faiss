@@ -145,6 +145,34 @@ class Shards(unittest.TestCase):
             # thousands of the nq*k cells, far above this floor.
             assert ndiff < nq * k / 100.0, f"too many mismatches: {ndiff}"
 
+    def test_shards_distance_metric_ordering(self):
+        # METRIC_L1 returns distances, so the shard merge must rank smaller values first.
+        # Testing only for METRIC_L2 treated every other metric as a similarity, which put the
+        # FARTHEST vectors first as soon as results crossed a shard boundary.
+        k = 10
+        ref_index = faiss.IndexFlat(d, faiss.METRIC_L1)
+        ref_index.add(xb)
+        Dref, _Iref = ref_index.search(xq, k)
+
+        shard_index = faiss.IndexShards(d, False, True)
+        shards = []
+        ni = 3
+        for i in range(ni):
+            i0 = int(i * nb / ni)
+            i1 = int((i + 1) * nb / ni)
+            shard = faiss.IndexFlat(d, faiss.METRIC_L1)
+            shard.add(xb[i0:i1])
+            shards.append(shard)  # keep the shards alive for the duration of the test
+            shard_index.add_shard(shard)
+
+        D, _I = shard_index.search(xq, k)
+
+        # Nearest first within each result row...
+        assert np.all(D[:, :-1] <= D[:, 1:]), "sharded METRIC_L1 results are not sorted by distance"
+        # ...and the same neighbors the unsharded index finds. Distances are compared rather than
+        # labels so that equidistant neighbors may be returned in either order.
+        np.testing.assert_array_almost_equal(D, Dref, decimal=5)
+
     def test_shards_ivf(self):
         ds = SyntheticDataset(32, 1000, 100, 20)
         ref_index = faiss.index_factory(ds.d, "IVF32,SQ8")

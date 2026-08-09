@@ -243,8 +243,11 @@ void IndexShardsTemplate<IndexT>::search(
 
     this->runOnIndex(fn);
 
-    if (this->metric_type == METRIC_L2) {
-        merge_knn_results<idx_t, CMin<distance_t, int>>(
+    // Only similarity metrics rank larger values first. Testing for METRIC_L2 alone merged every
+    // other metric as a similarity, so distance metrics such as METRIC_L1, METRIC_Linf and METRIC_Lp
+    // came back worst-first once results crossed shard boundaries.
+    if (is_similarity_metric(this->metric_type)) {
+        merge_knn_results<idx_t, CMax<distance_t, int>>(
                 n,
                 k,
                 nshard,
@@ -253,7 +256,7 @@ void IndexShardsTemplate<IndexT>::search(
                 distances,
                 labels);
     } else {
-        merge_knn_results<idx_t, CMax<distance_t, int>>(
+        merge_knn_results<idx_t, CMin<distance_t, int>>(
                 n,
                 k,
                 nshard,
