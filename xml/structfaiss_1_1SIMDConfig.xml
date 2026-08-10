@@ -64,19 +64,20 @@
         </inbodydescription>
         <location file="faiss/utils/simd_levels.h" line="170" column="22"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a3fe4544138b7135807bee37750cb0b1f" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>constexpr bool</type>
-        <definition>static constexpr bool faiss::SIMDConfig::has_dynamic_dispatch</definition>
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1af7f78b3cb0f5b34c3d36e7421936725b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool faiss::SIMDConfig::has_dynamic_dispatch</definition>
         <argsstring>()</argsstring>
         <name>has_dynamic_dispatch</name>
         <qualifiedname>faiss::SIMDConfig::has_dynamic_dispatch</qualifiedname>
         <briefdescription>
+<para>Whether this faiss build dispatches SIMD at runtime. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="172" column="27" bodyfile="faiss/utils/simd_levels.h" bodystart="172" bodyend="178"/>
+        <location file="faiss/utils/simd_levels.h" line="173" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -95,7 +96,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="183" column="17"/>
+        <location file="faiss/utils/simd_levels.h" line="178" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a90c13d194c6ce46da285958431f95088" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -109,7 +110,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="184" column="22"/>
+        <location file="faiss/utils/simd_levels.h" line="179" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1af84f73c7ca9fb6657c270d2743da3e07" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -123,7 +124,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="185" column="24"/>
+        <location file="faiss/utils/simd_levels.h" line="180" column="24"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -142,7 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="188" column="17"/>
+        <location file="faiss/utils/simd_levels.h" line="183" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -157,7 +158,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="194" column="22"/>
+        <location file="faiss/utils/simd_levels.h" line="189" column="22"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -178,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="180" column="5"/>
+        <location file="faiss/utils/simd_levels.h" line="175" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -199,14 +200,14 @@
 </listitem></itemizedlist>
 </para>
     </detaileddescription>
-    <location file="faiss/utils/simd_levels.h" line="158" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="158" bodyend="195"/>
+    <location file="faiss/utils/simd_levels.h" line="158" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="158" bodyend="190"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SIMDConfig_1a37dc9382bb32ae1da760d67807a930a5" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>auto_detect_simd_level</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1afe75eb1264aea8745fe15c9d211d4bfb" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>avx512_split</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_dispatched_level</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1a90c13d194c6ce46da285958431f95088" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_level</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1af84f73c7ca9fb6657c270d2743da3e07" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_level_name</name></member>
-      <member refid="structfaiss_1_1SIMDConfig_1a3fe4544138b7135807bee37750cb0b1f" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>has_dynamic_dispatch</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1af7f78b3cb0f5b34c3d36e7421936725b" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>has_dynamic_dispatch</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>is_simd_level_available</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1a6e8453c8b55b793d1c00ae6ec5f3a753" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>level</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>set_level</name></member>
