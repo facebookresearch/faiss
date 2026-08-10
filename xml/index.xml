@@ -2667,6 +2667,8 @@
     <member refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" kind="function"><name>fill_with_random_links</name></member>
     <member refid="structfaiss_1_1HNSW_1a9a4d48d862f771f049d26d984347d170" kind="function"><name>add_links_starting_from</name></member>
     <member refid="structfaiss_1_1HNSW_1a4015f2928d3465decfbeff8835b49954" kind="function"><name>add_with_locks</name></member>
+    <member refid="structfaiss_1_1HNSW_1a367cf77f34df5dcde9fb4938a2ad9f55" kind="function"><name>compute_forward_links_deterministic</name></member>
+    <member refid="structfaiss_1_1HNSW_1a105707ed0eee42e61dc5cba23651783b" kind="function"><name>merge_reverse_links_deterministic</name></member>
     <member refid="structfaiss_1_1HNSW_1a6bcbb9a5f201e8a2514420535c5679ed" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1HNSW_1adce534f6cc99125541497b7f0e861aa6" kind="function"><name>search_level_0</name></member>
     <member refid="structfaiss_1_1HNSW_1a73b4779053c5281298e1e916bb04d42f" kind="function"><name>reset</name></member>
@@ -13645,6 +13647,7 @@
     <member refid="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" kind="typedef"><name>float_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" kind="typedef"><name>int_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" kind="variable"><name>hnsw_stats</name></member>
+    <member refid="namespacefaiss_1a425b13a639db2a4b0a65b7b7b81ab032" kind="variable"><name>hnsw_deterministic_build</name></member>
     <member refid="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" kind="variable"><name>indexPanorama_stats</name></member>
     <member refid="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" kind="variable"><name>product_quantizer_compute_codes_bs</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
@@ -13758,6 +13761,7 @@
     <member refid="namespacefaiss_1a974e303dbe99e9d08b4380cdb421097c" kind="function"><name>pq4_kernel_qbs_256</name></member>
     <member refid="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" kind="function"><name>rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="namespacefaiss_1a2296c34f3219451c88e96e7a951e64c0" kind="function"><name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
+    <member refid="namespacefaiss_1a9e34dffaf9441c2de2ee6ae929de3043" kind="function"><name>hnsw_add_vertices_deterministic</name></member>
     <member refid="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" kind="function"><name>pop_min_tpl</name></member>
     <member refid="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" kind="function"><name>read_direct_map</name></member>
     <member refid="namespacefaiss_1ae748c5ec07a45d0f8d861e231ef67986" kind="function"><name>read_ivf_header</name></member>

@@ -1318,7 +1318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="30" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="32" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a33b1dcce3a5a4c296a1f4553c3299ddd" prot="public" static="no">
         <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandlerUnordered</ref>&lt; float, <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> &gt;</type>
@@ -1558,7 +1558,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="282" column="28" declfile="faiss/impl/HNSW.h" declline="282" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="324" column="28" declfile="faiss/impl/HNSW.h" declline="324" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a425b13a639db2a4b0a65b7b7b81ab032" prot="public" static="no" extern="yes" mutable="no">
+        <type>FAISS_API bool</type>
+        <definition>FAISS_API bool faiss::hnsw_deterministic_build</definition>
+        <argsstring></argsstring>
+        <name>hnsw_deterministic_build</name>
+        <qualifiedname>faiss::hnsw_deterministic_build</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Use the lock-free deterministic graph build in add() rather than the lock-based one. Transitional: it will become the only path.</para>
+<para>NOT thread-safe: set before calling add(). Sampled once per add(). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="330" column="23" declfile="faiss/impl/HNSW.h" declline="330" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -5664,6 +5680,61 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="65" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a9e34dffaf9441c2de2ee6ae929de3043" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::hnsw_add_vertices_deterministic</definition>
+        <argsstring>(HNSW &amp;hnsw, size_t n0, size_t n, int d, bool init_level0, bool keep_max_size_level0, bool preset_levels, bool verbose, const std::function&lt; DistanceComputer *()&gt; &amp;make_distance_computer, const std::function&lt; void(DistanceComputer &amp;, HNSW::storage_idx_t)&gt; &amp;set_query)</argsstring>
+        <name>hnsw_add_vertices_deterministic</name>
+        <qualifiedname>faiss::hnsw_add_vertices_deterministic</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>init_level0</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>keep_max_size_level0</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>preset_levels</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *()&gt; &amp;</type>
+          <declname>make_distance_computer</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; void(<ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;, <ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref>)&gt; &amp;</type>
+          <declname>set_query</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Deterministic, lock-free <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> graph build, shared by <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> and <ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref>. The callbacks let both share the algorithm: <computeroutput>make_distance_computer()</computeroutput> returns a fresh <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> per thread (caller-owned) and <computeroutput>set_query(dc, pt_id)</computeroutput> points it at pt_id&apos;s vector. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="289" column="6" declfile="faiss/impl/HNSW.h" declline="289" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
