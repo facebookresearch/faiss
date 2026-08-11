@@ -56,6 +56,10 @@ int faiss_IndexReplicas_remove_replica(
     CATCH_AND_HANDLE
 }
 
+int faiss_IndexReplicas_count(const FaissIndexReplicas* index) {
+    return reinterpret_cast<const IndexReplicas*>(index)->count();
+}
+
 FaissIndex* faiss_IndexReplicas_at(FaissIndexReplicas* index, int i) {
     auto replica = reinterpret_cast<IndexReplicas*>(index)->at(i);
     return reinterpret_cast<FaissIndex*>(replica);
