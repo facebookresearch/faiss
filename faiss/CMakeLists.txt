@@ -74,6 +74,32 @@ set(FAISS_SIMD_RVV_SRC
   utils/hamming_distance/hamming_rvv.cpp
   utils/simd_impl/rabitq_rvv.cpp
 )
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  include(CheckCXXSourceCompiles)
+  check_cxx_source_compiles([=[
+    #if !defined(__riscv_vector) || !defined(__riscv_zvfhmin)
+    #error "RVV and Zvfhmin are required"
+    #endif
+    #include <riscv_vector.h>
+
+    int main() {
+      const auto vl = __riscv_vsetvl_e32m1(1);
+      const vfloat32m1_t value = __riscv_vfmv_v_f_f32m1(0.0f, vl);
+      (void)value;
+      return 0;
+    }
+  ]=] FAISS_RISCV_RVV_SUPPORTED)
+  if(FAISS_RISCV_RVV_SUPPORTED)
+    message(STATUS "RISC-V RVV and Zvfhmin support detected")
+  else()
+    message(STATUS
+      "RISC-V RVV and Zvfhmin support not detected; using scalar implementations")
+  endif()
+else()
+  set(FAISS_RISCV_RVV_SUPPORTED OFF)
+endif()
+
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   set(FAISS_SIMD_SRC
@@ -82,7 +108,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     ${FAISS_SIMD_AVX512_SPR_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+elseif(FAISS_RISCV_RVV_SUPPORTED)
   set(FAISS_SIMD_SRC ${FAISS_SIMD_RVV_SRC})
 else()
   set(FAISS_SIMD_SRC "")
@@ -590,14 +616,8 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       TARGET_DIRECTORY faiss
       PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
     )
-  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  elseif(FAISS_RISCV_RVV_SUPPORTED)
     target_compile_definitions(faiss PRIVATE COMPILE_SIMD_RISCV_RVV)
-    if(FAISS_SIMD_RVV_SRC)
-      set_source_files_properties(${FAISS_SIMD_RVV_SRC}
-        TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
-      )
-    endif()
   endif()
 endif()
 
@@ -613,20 +633,15 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
 endif()
 
-# RVV is the baseline SIMD on rv64 builds compiled with rv64gcv. Compile RVV
-# sources into the main faiss target, mirroring the ARM NEON story on aarch64.
+# RVV is enabled when the target compiler flags provide both RVV and Zvfhmin.
+# Compile RVV sources into the main faiss target, mirroring the ARM NEON story
+# on aarch64.
 # Guard against DD mode: in dd builds, FAISS_SIMD_SRC already contains
 # FAISS_SIMD_RVV_SRC and is added via target_sources above, so we must not
 # add it a second time or we get duplicate symbol errors at link time.
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)" AND NOT FAISS_OPT_LEVEL STREQUAL "dd")
+if(FAISS_RISCV_RVV_SUPPORTED AND NOT FAISS_OPT_LEVEL STREQUAL "dd")
   target_compile_definitions(faiss PRIVATE COMPILE_SIMD_RISCV_RVV)
   target_sources(faiss PRIVATE ${FAISS_SIMD_RVV_SRC})
-  if(NOT WIN32 AND FAISS_SIMD_RVV_SRC)
-    set_source_files_properties(${FAISS_SIMD_RVV_SRC}
-      TARGET_DIRECTORY faiss
-      PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
-    )
-  endif()
 endif()
 
 if(FAISS_ENABLE_SVS)
