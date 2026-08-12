@@ -67,6 +67,43 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
         faiss.normalize_L2(self.xb)
         self.do_encode_decode(faiss.ScalarQuantizer.QT_8bit_tqmse, 0.1)
 
+    def test_tqmse_preserves_norm(self):
+        """tqmse encodes unit-norm vectors with no per-vector scale factor in
+        the code, so reconstructions must keep unit norm. The Lloyd-Max table
+        is optimal for unit *variance*, so it only lines up with unit-norm
+        input once scaled by 1/sqrt(d) -- without that, every component lands
+        in the innermost cells and the codebook collapses toward a sign
+        quantizer, inflating norms by 15% at d=64 and 258% at d=768."""
+        for qtype, nbits in (
+            (faiss.ScalarQuantizer.QT_1bit_tqmse, 1),
+            (faiss.ScalarQuantizer.QT_2bit_tqmse, 2),
+            (faiss.ScalarQuantizer.QT_3bit_tqmse, 3),
+            (faiss.ScalarQuantizer.QT_4bit_tqmse, 4),
+            (faiss.ScalarQuantizer.QT_8bit_tqmse, 8),
+        ):
+            for d in (32, 64, 768):
+                with self.subTest(nbits=nbits, d=d):
+                    rs = np.random.RandomState(123)
+                    x = rs.randn(200, d).astype("float32")
+                    faiss.normalize_L2(x)
+
+                    sq = faiss.ScalarQuantizer(d, qtype)
+                    sq.train(x)
+                    decoded = sq.decode(sq.compute_codes(x))
+                    norms = np.linalg.norm(decoded, axis=1)
+
+                    # 1-bit cannot resolve magnitude at all (every component
+                    # reconstructs to +/-c), so it gets a looser band.
+                    tol = 0.25 if nbits == 1 else 0.1
+                    self.assertLess(abs(np.median(norms) - 1.0), tol)
+
+                    # Guard the collapse directly: a codebook matched to the
+                    # data reconstructs most of its 2^nbits distinct levels.
+                    # This is what catches 8-bit, whose norm stays near 1 even
+                    # when collapsed (31 of 256 levels used at d=768).
+                    used = len(np.unique(decoded))
+                    self.assertGreaterEqual(used, 2**nbits // 2)
+
     def test_codes_match_none(self):
         """SQ codes are integer; encode dispatch (sq-dispatch.h) must
         produce bit-identical output at every SIMD level. Catches drift in
