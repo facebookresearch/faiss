@@ -45,7 +45,6 @@ dependencies = [
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
   "libcuvs-cu13>=26.06,<27",
-  "librmm-cu13>=26.06,<27",
 ]
 
 [project.urls]
@@ -115,7 +114,6 @@ test-requires = [
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
   "libcuvs-cu13>=26.06,<27",
-  "librmm-cu13>=26.06,<27",
 ]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
 

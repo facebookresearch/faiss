@@ -253,7 +253,7 @@ struct IndexHNSWCagra : IndexHNSW {
     /// searches only the base level knn graph of the HNSW index.
     /// This parameter selects the entry point by randomly selecting
     /// some points and using the best one.
-    int num_base_level_search_entrypoints = 256;
+    int num_base_level_search_entrypoints = 32;
 
     void add(idx_t n, const float* x) override;
 

@@ -5,16 +5,15 @@
 # LICENSE file in the root directory of this source tree.
 
 """
-Benchmark the multi-GPU CAGRA -> HNSW build: cuVS all_neighbors builds a knn
-graph over overlapping clusters across all GPUs, cagra::optimize prunes it into
-a single unified graph, and copyTo produces a CPU IndexHNSWCagra.
-
-Measures build/copyTo/serialize wall-clock, index size, and recall@10 vs
-brute-force ground truth at several efSearch values.
+Benchmark 4 approaches for multi-GPU CAGRA -> HNSW:
+  A. IndexShards (independent HNSW per shard, no stitching)
+  B. Unified + GPU brute-force sampled stitching (exact cross-shard NNs)
+  C. Unified + CPU HNSW stitching (approximate cross-shard NNs)
+  D. all_neighbors + optimize (multi-GPU overlapping clusters, no stitching)
 
 Usage:
   buck run @//mode/opt fbcode//faiss/gpu/test:bench_approaches -- \\
-      --data /path/to/vectors.npy
+      --data /path/to/vectors.npy --approaches D --multi-gpu-optimize
 """
 
 import argparse
@@ -41,9 +40,6 @@ sys.stdout = sys.stderr
 
 
 _t0 = time.time()
-
-
-EF_VALUES = [16, 32, 64, 128, 256, 512]
 
 
 def compute_recall(I_test, I_gt, k):
@@ -102,18 +98,164 @@ def load_from_hive(
     return xb[:i]
 
 
-BUILD_ALGOS = ("ivf_pq", "nn_descent", "brute_force")
+def approach_a_indexshards(xb, d, num_gpus, graph_degree=32, save_dir=None):
+    """Build N independent CAGRA->HNSW, wrap in IndexShards."""
+    n = xb.shape[0]
+    shard_size = (n + num_gpus - 1) // num_gpus
+    timings = {}
+
+    t0 = time.time()
+    shards = []
+    for g in range(num_gpus):
+        start = g * shard_size
+        end = min(start + shard_size, n)
+        shard_data = xb[start:end]
+        if len(shard_data) == 0:
+            continue
+
+        res = faiss.StandardGpuResources()
+        config = faiss.GpuIndexCagraConfig()
+        config.graph_degree = graph_degree
+        config.intermediate_graph_degree = graph_degree * 2
+        config.build_algo = faiss.graph_build_algo_NN_DESCENT
+        idx = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2, config)
+        idx.train(shard_data)
+
+        cpu_idx = faiss.IndexHNSWCagra()
+        idx.copyTo(cpu_idx)
+        shards.append(cpu_idx)
+    timings["build"] = time.time() - t0
+
+    t0 = time.time()
+    index = faiss.IndexShards(d, True, True)
+    for s in shards:
+        index.add_shard(s)
+    timings["assemble"] = time.time() - t0
+
+    out_dir = save_dir or tempfile.mkdtemp()
+    t0 = time.time()
+    total_bytes = 0
+    for i, s in enumerate(shards):
+        path = os.path.join(out_dir, f"A_shard_{i}_{n // 1_000_000}M.faiss")
+        faiss.write_index(s, path)
+        total_bytes += os.path.getsize(path)
+    timings["serialize"] = time.time() - t0
+    timings["file_size_gb"] = total_bytes / 1e9
+
+    return index, shards, timings
 
 
-def cagra_build_algo(name):
-    return getattr(faiss, f"graph_build_algo_{name.upper()}")
+def approach_b_unified_gpu_stitch(
+    xb,
+    d,
+    num_gpus,
+    graph_degree=32,
+    stitch_per_shard=100000,
+    stitch_k=16,
+    save_dir=None,
+):
+    """Unified SNMG build + GPU brute-force sampled stitching (exact NNs)."""
+    n = xb.shape[0]
+    timings = {}
+
+    resources = faiss.GpuResourcesVector()
+    devices = faiss.Int32Vector()
+    res_list = []
+    for i in range(num_gpus):
+        res = faiss.StandardGpuResources()
+        res_list.append(res)
+        resources.push_back(res)
+        devices.push_back(i)
+
+    config = faiss.GpuIndexCagraConfig()
+    config.graph_degree = graph_degree
+    config.intermediate_graph_degree = graph_degree * 2
+    config.build_algo = faiss.graph_build_algo_NN_DESCENT
+    index = faiss.GpuIndexCagra(res_list[0], d, faiss.METRIC_L2, config)
+
+    t0 = time.time()
+    index.trainMultiGpu(
+        n,
+        faiss.swig_ptr(xb),
+        resources,
+        devices,
+        stitch_per_shard,
+        stitch_k,
+        1,
+    )
+    timings["build"] = time.time() - t0
+
+    t0 = time.time()
+    cpu_index = faiss.IndexHNSWCagra()
+    index.copyTo(cpu_index)
+    timings["copyTo"] = time.time() - t0
+
+    out_dir = save_dir or tempfile.mkdtemp()
+    path = os.path.join(out_dir, f"B_unified_{n // 1_000_000}M.faiss")
+    t0 = time.time()
+    faiss.write_index(cpu_index, path)
+    timings["file_size_gb"] = os.path.getsize(path) / 1e9
+    timings["serialize"] = time.time() - t0
+
+    return cpu_index, timings
 
 
-def index_filename(n):
-    return f"cagra_hnsw_{n // 1_000_000}M.faiss"
+def approach_c_unified_cpu_stitch(
+    xb,
+    d,
+    num_gpus,
+    graph_degree=32,
+    stitch_per_shard=0,
+    stitch_k=16,
+    save_dir=None,
+):
+    """Unified SNMG build + CPU HNSW stitching (approximate NNs)."""
+    n = xb.shape[0]
+    timings = {}
+
+    resources = faiss.GpuResourcesVector()
+    devices = faiss.Int32Vector()
+    res_list = []
+    for i in range(num_gpus):
+        res = faiss.StandardGpuResources()
+        res_list.append(res)
+        resources.push_back(res)
+        devices.push_back(i)
+
+    config = faiss.GpuIndexCagraConfig()
+    config.graph_degree = graph_degree
+    config.intermediate_graph_degree = graph_degree * 2
+    config.build_algo = faiss.graph_build_algo_NN_DESCENT
+    index = faiss.GpuIndexCagra(res_list[0], d, faiss.METRIC_L2, config)
+
+    t0 = time.time()
+    index.trainMultiGpu(
+        n,
+        faiss.swig_ptr(xb),
+        resources,
+        devices,
+        stitch_per_shard,
+        stitch_k,
+        0,
+    )
+    timings["build"] = time.time() - t0
+
+    t0 = time.time()
+    cpu_index = faiss.IndexHNSWCagra()
+    index.copyTo(cpu_index)
+    timings["copyTo"] = time.time() - t0
+
+    out_dir = save_dir or tempfile.mkdtemp()
+    path = os.path.join(out_dir, f"C_unified_{n // 1_000_000}M.faiss")
+    t0 = time.time()
+    faiss.write_index(cpu_index, path)
+    timings["file_size_gb"] = os.path.getsize(path) / 1e9
+    timings["serialize"] = time.time() - t0
+
+    return cpu_index, timings
 
 
-def build_cagra_hnsw(
+def approach_d_all_neighbors(
     xb,
     d,
     num_gpus,
@@ -121,68 +263,52 @@ def build_cagra_hnsw(
     save_dir=None,
     n_clusters=0,
     overlap_factor=0,
-    build_algo="ivf_pq",
+    multi_gpu_optimize=False,
+    build_algo=0,
     base_level_only=False,
     intermediate_graph_degree=48,
-    refinement_rate=1.0,
+    refinement_rate=2.0,
     ivfpq_search_batch=0,
-    guarantee_connectivity=False,
-    ivfpq_size_from_cluster=True,
-    gpu_hnsw_upper_levels=False,
-    gpu_hnsw_igd=0,
-    gpu_hnsw_guarantee_connectivity=True,
-    ef_construction=0,
-    entrypoints=0,
 ):
-    """Multi-GPU all_neighbors build -> optimize -> CPU IndexHNSWCagra."""
-    # The multi-GPU build does not copy the dataset, so xb must stay alive and
-    # contiguous until copyTo() below has run.
-    xb = np.ascontiguousarray(xb, dtype=np.float32)
+    """all_neighbors + cagra::optimize → unified CAGRA graph. No stitching."""
     n = xb.shape[0]
     timings = {}
 
-    res_list = [faiss.StandardGpuResources() for _ in range(num_gpus)]
-
     devices = faiss.Int32Vector()
+    res_list = []
     for i in range(num_gpus):
+        res = faiss.StandardGpuResources()
+        res_list.append(res)
         devices.push_back(i)
-
-    all_neighbors = faiss.AllNeighborsCagraConfig()
-    all_neighbors.n_clusters = n_clusters
-    all_neighbors.overlap_factor = overlap_factor
-    all_neighbors.ivf_pq_search_batch_size = ivfpq_search_batch
-    all_neighbors.refinement_rate = refinement_rate
-    all_neighbors.ivf_pq_size_from_cluster = ivfpq_size_from_cluster
 
     config = faiss.GpuIndexCagraConfig()
     config.graph_degree = graph_degree
     config.intermediate_graph_degree = intermediate_graph_degree
-    config.build_algo = cagra_build_algo(build_algo)
-    config.guarantee_connectivity = guarantee_connectivity
-    config.gpu_hnsw_upper_levels = gpu_hnsw_upper_levels
-    config.gpu_hnsw_intermediate_degree = gpu_hnsw_igd
-    config.gpu_hnsw_guarantee_connectivity = gpu_hnsw_guarantee_connectivity
-    config.devices = devices
-    config.all_neighbors_params = all_neighbors
-
+    config.build_algo = faiss.graph_build_algo_NN_DESCENT
     index = faiss.GpuIndexCagra(res_list[0], d, faiss.METRIC_L2, config)
 
     t0 = time.time()
-    index.train(xb)
+    index.trainAllNeighbors(
+        n,
+        faiss.swig_ptr(xb),
+        devices,
+        n_clusters,
+        overlap_factor,
+        multi_gpu_optimize,
+        build_algo,
+        refinement_rate,
+        ivfpq_search_batch,
+    )
     timings["build"] = time.time() - t0
 
     t0 = time.time()
     cpu_index = faiss.IndexHNSWCagra()
     cpu_index.base_level_only = base_level_only
-    if ef_construction > 0:
-        cpu_index.hnsw.efConstruction = ef_construction
-    if entrypoints > 0:
-        cpu_index.num_base_level_search_entrypoints = entrypoints
     index.copyTo(cpu_index)
     timings["copyTo"] = time.time() - t0
 
     out_dir = save_dir or tempfile.mkdtemp()
-    path = os.path.join(out_dir, index_filename(n))
+    path = os.path.join(out_dir, f"D_allneighbors_{n // 1_000_000}M.faiss")
     t0 = time.time()
     faiss.write_index(cpu_index, path)
     timings["file_size_gb"] = os.path.getsize(path) / 1e9
@@ -192,12 +318,18 @@ def build_cagra_hnsw(
 
 
 def _set_ef(index, ef):
-    index.hnsw.efSearch = ef
+    if isinstance(index, faiss.IndexShards):
+        for i in range(index.count()):
+            shard = faiss.downcast_index(index.at(i))
+            if hasattr(shard, "hnsw"):
+                shard.hnsw.efSearch = ef
+    elif hasattr(index, "hnsw"):
+        index.hnsw.efSearch = ef
 
 
 def eval_recall(index, xq, Igt, k=10, ef_values=None):
     if ef_values is None:
-        ef_values = EF_VALUES
+        ef_values = [64, 128, 256]
     results = {}
 
     for ef in ef_values:
@@ -208,30 +340,10 @@ def eval_recall(index, xq, Igt, k=10, ef_values=None):
     return results
 
 
-def eval_qps(index, xq, k=10, ef_values=None, repeat=5):
-    """Full-batch throughput at each efSearch, best of `repeat` runs."""
-    if ef_values is None:
-        ef_values = EF_VALUES
-    nq = xq.shape[0]
-    results = {}
-
-    for ef in ef_values:
-        _set_ef(index, ef)
-        index.search(xq, k)  # warmup
-        best = float("inf")
-        for _ in range(repeat):
-            t0 = time.time()
-            index.search(xq, k)
-            best = min(best, time.time() - t0)
-        results[ef] = nq / best
-
-    return results
-
-
 def eval_kcycles(index, xq, k=10, ef_values=None, warmup=3, repeat=5):
     """Measure kcycles/query using vench CycleCounter."""
     if ef_values is None:
-        ef_values = EF_VALUES
+        ef_values = [64, 128, 256]
 
     try:
         from vector_search.vench.perf_cycles import CycleCounter
@@ -249,15 +361,22 @@ def eval_kcycles(index, xq, k=10, ef_values=None, warmup=3, repeat=5):
     prev_threads = faiss.omp_get_max_threads()
     faiss.omp_set_num_threads(1)
 
+    measure_index = index
+    if isinstance(index, faiss.IndexShards) and index.count() > 0:
+        measure_index = faiss.IndexShards(index.d, False, True)
+        for i in range(index.count()):
+            measure_index.add_shard(index.at(i))
+
     for ef in ef_values:
         _set_ef(index, ef)
+        _set_ef(measure_index, ef)
         for _ in range(warmup):
-            index.search(xq, k)
+            measure_index.search(xq, k)
 
         best_kcycles = float("inf")
         for _ in range(repeat):
             c0 = cc.read()
-            index.search(xq, k)
+            measure_index.search(xq, k)
             c1 = cc.read()
             kc = (c1 - c0) / 1000.0 / nq
             best_kcycles = min(best_kcycles, kc)
@@ -269,7 +388,7 @@ def eval_kcycles(index, xq, k=10, ef_values=None, warmup=3, repeat=5):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Benchmark the multi-GPU CAGRA->HNSW build"
+        description="Benchmark multi-GPU CAGRA->HNSW approaches"
     )
     parser.add_argument(
         "--data",
@@ -286,6 +405,8 @@ def main():
     )
     parser.add_argument("--num-gpus", type=int, default=0)
     parser.add_argument("--graph-degree", type=int, default=32)
+    parser.add_argument("--stitch-k", type=int, default=16)
+    parser.add_argument("--stitch-per-shard", type=int, default=100000)
     parser.add_argument(
         "--n-clusters",
         type=int,
@@ -299,66 +420,15 @@ def main():
         help="all_neighbors overlap_factor (0=default 2)",
     )
     parser.add_argument(
+        "--multi-gpu-optimize",
+        action="store_true",
+        help="Partition detour counting across GPUs",
+    )
+    parser.add_argument(
         "--build-algo",
-        choices=BUILD_ALGOS,
-        default="ivf_pq",
-        help="graph_build_algo used for the kNN graph (brute_force is "
-        "multi-GPU only and O(N^2 D) per cluster)",
-    )
-    parser.add_argument(
-        "--ivfpq-size-from-cluster",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Derive IVF-PQ params from the per-cluster subproblem. "
-        "--no-ivfpq-size-from-cluster sizes them from the full dataset, "
-        "which over-partitions every cluster",
-    )
-    parser.add_argument(
-        "--guarantee-connectivity",
-        action="store_true",
-        help="Run the MST pass in cagra::optimize so the pruned graph is "
-        "guaranteed connected (cuVS default is on; costs build time)",
-    )
-    parser.add_argument(
-        "--entrypoints-sweep",
-        type=str,
-        default="",
-        help="Comma-separated num_base_level_search_entrypoints values to "
-        "sweep at search time (base-level-only only), e.g. 32,256,1024",
-    )
-    parser.add_argument(
-        "--gpu-hnsw-upper-levels",
-        action="store_true",
-        help="Build HNSW levels >=1 as GPU CAGRA subgraphs in copyTo instead "
-        "of incremental CPU insertion (base-level-only off only)",
-    )
-    parser.add_argument(
-        "--gpu-hnsw-igd",
         type=int,
         default=0,
-        help="intermediate_graph_degree for the per-level GPU subgraphs "
-        "(0 = 2x the upper-level degree)",
-    )
-    parser.add_argument(
-        "--gpu-hnsw-guarantee-connectivity",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="MST connectivity pass on the per-level GPU subgraphs "
-        "(on by default; greedy descent needs connectivity)",
-    )
-    parser.add_argument(
-        "--ef-construction",
-        type=int,
-        default=0,
-        help="Override hnsw.efConstruction used when building upper levels "
-        "(0 = faiss default of 40)",
-    )
-    parser.add_argument(
-        "--entrypoints",
-        type=int,
-        default=0,
-        help="Override num_base_level_search_entrypoints (0 = faiss default "
-        "of 256); only affects base-level-only search",
+        help="0=nn_descent, 1=brute_force, 2=ivf_pq",
     )
     parser.add_argument(
         "--base-level-only",
@@ -374,10 +444,9 @@ def main():
     parser.add_argument(
         "--refinement-rate",
         type=float,
-        default=1.0,
-        help="IVF-PQ refinement multiplier (build-algo=2 only). Sets "
-        "candidate_k = k * rate; the refine pass runs on the host so cost is "
-        "linear in this. Measured best at 1.0 (default)",
+        default=2.0,
+        help="IVF-PQ refinement multiplier (build-algo=2 only); "
+        "higher trades build time for recall (cuVS default 2.0)",
     )
     parser.add_argument(
         "--ivfpq-search-batch",
@@ -386,6 +455,15 @@ def main():
         help="Cap IVF-PQ search max_internal_batch_size in the all_neighbors "
         "build (build-algo=2). 0=cuVS default (131072); smaller (e.g. 8192) "
         "bounds GPU search workspace to avoid OOM at 100M (recall-neutral)",
+    )
+    parser.add_argument(
+        "--approaches",
+        type=str,
+        default="A,B,C,D",
+        help=(
+            "A (IndexShards), B (GPU stitch), "
+            "C (CPU stitch), D (all_neighbors)"
+        ),
     )
     parser.add_argument(
         "--index-dir",
@@ -507,101 +585,274 @@ def main():
         f"graph_degree={args.graph_degree}"
     )
     print(
-        f"        n_clusters={args.n_clusters or 'auto'}, "
+        f"        stitch_k={args.stitch_k}, "
+        f"stitch_per_shard={args.stitch_per_shard}"
+    )
+    print(
+        f"        [D] n_clusters={args.n_clusters or 'auto'}, "
         f"overlap_factor={args.overlap_factor or 'auto'}, "
         f"intermediate_graph_degree={args.intermediate_graph_degree}, "
         f"build_algo={args.build_algo}, refinement_rate={args.refinement_rate}"
     )
     print()
 
+    approaches_to_run = [a.strip().upper() for a in args.approaches.split(",")]
+    results_table = []
     save_dir = args.index_dir
     os.makedirs(save_dir, exist_ok=True)
 
     if args.kcycles_only:
-        print(f"Loading persisted index from {save_dir} (kcycles-only mode)")
-        path = os.path.join(save_dir, index_filename(n))
-        if not os.path.exists(path):
-            print(f"ERROR: no index at {path}", file=sys.stderr)
-            sys.exit(1)
-        idx = faiss.read_index(path)
-        recall = eval_recall(idx, xq, Igt, k)
-        qps = eval_qps(idx, xq, k)
-        kcycles = eval_kcycles(idx, xq, k)
-        for ef in sorted(recall.keys()):
-            print(
-                f"  ef={ef:>4d}  recall@{k}={recall[ef]:.4f}  "
-                f"qps={qps[ef]:,.1f}  kcyc/q={kcycles.get(ef, 0):.0f}"
-            )
+        print(f"Loading persisted indices from {save_dir} (kcycles-only mode)")
+        n_tag = f"{n // 1_000_000}M"
+        for approach in approaches_to_run:
+            if approach == "A":
+                pre = "A_shard_"
+                suf = f"_{n_tag}.faiss"
+                shard_files = sorted(
+                    f
+                    for f in os.listdir(save_dir)
+                    if f.startswith(pre) and f.endswith(suf)
+                )
+                if not shard_files:
+                    print(f"  No A files for {n_tag}")
+                    continue
+                shards = [
+                    faiss.read_index(os.path.join(save_dir, f))
+                    for f in shard_files
+                ]
+                idx = faiss.IndexShards(d, True, True)
+                for s in shards:
+                    idx.add_shard(s)
+                label = f"A: IndexShards ({len(shard_files)})"
+            else:
+                prefixes = {
+                    "B": "B_unified",
+                    "C": "C_unified",
+                    "D": "D_allneighbors",
+                }
+                prefix = prefixes.get(approach)
+                if not prefix:
+                    prefix = f"{approach}_unified"
+                path = os.path.join(save_dir, f"{prefix}_{n_tag}.faiss")
+                if not os.path.exists(path):
+                    print(f"  No {prefix} for {n_tag}")
+                    continue
+                idx = faiss.read_index(path)
+                label = f"{approach}: unified"
+
+            recall = eval_recall(idx, xq, Igt, k)
+            kcycles = eval_kcycles(idx, xq, k)
+            for ef in sorted(recall.keys()):
+                kc = kcycles.get(ef, 0)
+                print(
+                    f"  {label:25s} ef={ef:>3d}  recall={recall[ef]:.4f}  "
+                    f"kcyc/q={kc:.0f}"
+                )
+            del idx
         return
 
-    print(f"Index will be saved to: {save_dir}")
+    print(f"Indices will be saved to: {save_dir}")
 
-    index, timings = build_cagra_hnsw(
-        xb,
-        d,
-        num_gpus,
-        args.graph_degree,
-        save_dir=save_dir,
-        n_clusters=args.n_clusters,
-        overlap_factor=args.overlap_factor,
-        build_algo=args.build_algo,
-        base_level_only=args.base_level_only,
-        intermediate_graph_degree=args.intermediate_graph_degree,
-        refinement_rate=args.refinement_rate,
-        ivfpq_search_batch=args.ivfpq_search_batch,
-        guarantee_connectivity=args.guarantee_connectivity,
-        ivfpq_size_from_cluster=args.ivfpq_size_from_cluster,
-        gpu_hnsw_upper_levels=args.gpu_hnsw_upper_levels,
-        gpu_hnsw_igd=args.gpu_hnsw_igd,
-        gpu_hnsw_guarantee_connectivity=args.gpu_hnsw_guarantee_connectivity,
-        ef_construction=args.ef_construction,
-        entrypoints=args.entrypoints,
-    )
-    sweep_eps = [
-        int(v) for v in args.entrypoints_sweep.split(",") if v.strip()
-    ]
-    built_ep = index.num_base_level_search_entrypoints
-    for ep in sweep_eps:
-        index.num_base_level_search_entrypoints = ep
-        r = eval_recall(index, xq, Igt, k)
-        q = eval_qps(index, xq, k)
-        print(f"\n  --- num_base_level_search_entrypoints={ep} ---")
-        print(f"  {'efSearch':>8s} {'recall@' + str(k):>10s} {'QPS':>12s}")
-        for ef in sorted(r.keys()):
-            print(f"  {ef:>8d} {r[ef]:>10.4f} {q[ef]:>12,.1f}")
-    index.num_base_level_search_entrypoints = built_ep
-
-    recall = eval_recall(index, xq, Igt, k)
-    qps = eval_qps(index, xq, k)
-    kcycles = eval_kcycles(index, xq, k)
-
-    print("=" * 60)
-    print("RESULTS")
-    print("=" * 60)
-    print(f"  Build (all_neighbors+optimize): {timings['build']:.1f}s")
-    print(f"  copyTo:                         {timings['copyTo']:.1f}s")
-    print(
-        f"  Serialize:                      {timings['serialize']:.1f}s "
-        f"({timings['file_size_gb']:.2f} GB)"
-    )
-    # Index-build wall-clock, isolated from data load (Koski/Manifold) and
-    # ground-truth: this is the headline build->serialize number.
-    index_total = (
-        timings["build"] + timings["copyTo"] + timings["serialize"]
-    )
-    print(
-        f"  >>> INDEX build->serialize total "
-        f"(excl. data load + ground truth): "
-        f"{index_total:.1f}s ({index_total / 60:.1f} min)"
-    )
-    print(f"  {'efSearch':>8s} {'recall@' + str(k):>10s} {'QPS':>12s} "
-          f"{'us/query':>10s} {'kcyc/q':>9s}")
-    for ef in sorted(recall.keys()):
-        q = qps[ef]
-        print(
-            f"  {ef:>8d} {recall[ef]:>10.4f} {q:>12,.1f} "
-            f"{1e6 / q:>10.1f} {kcycles.get(ef, 0):>9.0f}"
+    if "A" in approaches_to_run:
+        print("=" * 60)
+        print("APPROACH A: IndexShards (independent HNSW per shard)")
+        print("=" * 60)
+        index_a, shards_a, timings_a = approach_a_indexshards(
+            xb,
+            d,
+            num_gpus,
+            args.graph_degree,
+            save_dir=save_dir,
         )
+        recall_a = eval_recall(index_a, xq, Igt, k)
+        kcycles_a = eval_kcycles(index_a, xq, k)
+        total_build_a = timings_a["build"] + timings_a.get("assemble", 0)
+        print(f"  Build:     {timings_a['build']:.1f}s")
+        print(
+            f"  Serialize: {timings_a['serialize']:.1f}s "
+            f"({timings_a['file_size_gb']:.2f} GB, {num_gpus} files)"
+        )
+        for ef in sorted(recall_a.keys()):
+            kc = kcycles_a.get(ef, 0)
+            print(
+                f"  efSearch={ef}: recall@{k}={recall_a[ef]:.4f}  "
+                f"kcycles/q={kc:.0f}"
+            )
+        results_table.append(
+            (
+                "A: IndexShards",
+                total_build_a,
+                timings_a["serialize"],
+                timings_a["file_size_gb"],
+                recall_a,
+                kcycles_a,
+            )
+        )
+        del index_a, shards_a
+        print()
+
+    if "B" in approaches_to_run:
+        print("=" * 60)
+        print(
+            f"APPROACH B: Unified + GPU brute-force stitch "
+            f"(sps={args.stitch_per_shard}, k={args.stitch_k})"
+        )
+        print("=" * 60)
+        index_b, timings_b = approach_b_unified_gpu_stitch(
+            xb,
+            d,
+            num_gpus,
+            args.graph_degree,
+            args.stitch_per_shard,
+            args.stitch_k,
+            save_dir=save_dir,
+        )
+        recall_b = eval_recall(index_b, xq, Igt, k)
+        kcycles_b = eval_kcycles(index_b, xq, k)
+        total_build_b = timings_b["build"] + timings_b["copyTo"]
+        print(f"  Build (SNMG+GPU-stitch): {timings_b['build']:.1f}s")
+        print(f"  copyTo:                  {timings_b['copyTo']:.1f}s")
+        print(
+            f"  Serialize:               {timings_b['serialize']:.1f}s "
+            f"({timings_b['file_size_gb']:.2f} GB)"
+        )
+        for ef in sorted(recall_b.keys()):
+            kc = kcycles_b.get(ef, 0)
+            print(
+                f"  efSearch={ef}: recall@{k}={recall_b[ef]:.4f}  "
+                f"kcycles/q={kc:.0f}"
+            )
+        results_table.append(
+            (
+                "B: GPU-brute",
+                total_build_b,
+                timings_b["serialize"],
+                timings_b["file_size_gb"],
+                recall_b,
+                kcycles_b,
+            )
+        )
+        del index_b
+        print()
+
+    if "C" in approaches_to_run:
+        print("=" * 60)
+        print(f"APPROACH C: Unified + CPU stitch (sps=0, k={args.stitch_k})")
+        print("=" * 60)
+        index_c, timings_c = approach_c_unified_cpu_stitch(
+            xb,
+            d,
+            num_gpus,
+            args.graph_degree,
+            0,
+            args.stitch_k,
+            save_dir=save_dir,
+        )
+        recall_c = eval_recall(index_c, xq, Igt, k)
+        kcycles_c = eval_kcycles(index_c, xq, k)
+        total_build_c = timings_c["build"] + timings_c["copyTo"]
+        print(f"  Build (SNMG+CPU-stitch): {timings_c['build']:.1f}s")
+        print(f"  copyTo:                  {timings_c['copyTo']:.1f}s")
+        print(
+            f"  Serialize:               {timings_c['serialize']:.1f}s "
+            f"({timings_c['file_size_gb']:.2f} GB)"
+        )
+        for ef in sorted(recall_c.keys()):
+            kc = kcycles_c.get(ef, 0)
+            print(
+                f"  efSearch={ef}: recall@{k}={recall_c[ef]:.4f}  "
+                f"kcycles/q={kc:.0f}"
+            )
+        results_table.append(
+            (
+                "C: CPU-stitch",
+                total_build_c,
+                timings_c["serialize"],
+                timings_c["file_size_gb"],
+                recall_c,
+                kcycles_c,
+            )
+        )
+        del index_c
+        print()
+
+    if "D" in approaches_to_run:
+        print("=" * 60)
+        print("APPROACH D: all_neighbors + cagra::optimize (no stitching)")
+        print("=" * 60)
+        index_d, timings_d = approach_d_all_neighbors(
+            xb,
+            d,
+            num_gpus,
+            args.graph_degree,
+            save_dir=save_dir,
+            n_clusters=args.n_clusters,
+            overlap_factor=args.overlap_factor,
+            multi_gpu_optimize=args.multi_gpu_optimize,
+            build_algo=args.build_algo,
+            base_level_only=args.base_level_only,
+            intermediate_graph_degree=args.intermediate_graph_degree,
+            refinement_rate=args.refinement_rate,
+            ivfpq_search_batch=args.ivfpq_search_batch,
+        )
+        recall_d = eval_recall(index_d, xq, Igt, k)
+        kcycles_d = eval_kcycles(index_d, xq, k)
+        total_build_d = timings_d["build"] + timings_d["copyTo"]
+        print(f"  Build (allneighbors+optimize): {timings_d['build']:.1f}s")
+        print(f"  copyTo:                        {timings_d['copyTo']:.1f}s")
+        ser = timings_d["serialize"]
+        gb = timings_d["file_size_gb"]
+        print(f"  Serialize:                     {ser:.1f}s " f"({gb:.2f} GB)")
+        # Index-build wall-clock, isolated from data load (Koski/Manifold) and
+        # ground-truth: this is the headline build->serialize number.
+        index_total_d = (
+            timings_d["build"] + timings_d["copyTo"] + timings_d["serialize"]
+        )
+        print(
+            f"  >>> INDEX build->serialize total "
+            f"(excl. data load + ground truth): "
+            f"{index_total_d:.1f}s ({index_total_d / 60:.1f} min)"
+        )
+        for ef in sorted(recall_d.keys()):
+            kc = kcycles_d.get(ef, 0)
+            print(
+                f"  efSearch={ef}: recall@{k}="
+                f"{recall_d[ef]:.4f}  kcyc/q={kc:.0f}"
+            )
+        results_table.append(
+            (
+                "D: all_neighbors",
+                total_build_d,
+                timings_d["serialize"],
+                timings_d["file_size_gb"],
+                recall_d,
+                kcycles_d,
+            )
+        )
+        del index_d
+        print()
+
+    print("=" * 60)
+    print("SUMMARY")
+    print("=" * 60)
+    header = (
+        f"{'Approach':<20s} {'Build':>7s} {'Ser':>5s} {'GB':>5s}"
+        f" {'ef':>4s} {'recall':>7s} {'kcyc/q':>7s}"
+    )
+    print(header)
+    print("-" * len(header))
+    for name, build, ser, size, recalls, kcycles in results_table:
+        for ef in [64, 128, 256]:
+            r = recalls.get(ef, 0)
+            kc = kcycles.get(ef, 0)
+            bld = f"{build:.0f}" if ef == 64 else ""
+            sr = f"{ser:.0f}" if ef == 64 else ""
+            sz = f"{size:.1f}" if ef == 64 else ""
+            nm = name if ef == 64 else ""
+            print(
+                f"{nm:<20s} {bld:>7s} {sr:>5s} {sz:>5s}"
+                f" {ef:>4d} {r:>7.4f} {kc:>7.0f}"
+            )
 
 
 if __name__ == "__main__":

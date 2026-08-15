@@ -363,7 +363,7 @@ else()
 
 
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_objs PRIVATE ${CUDA_LIBS} $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:rmm::rmm> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
+  target_link_libraries(faiss_gpu_objs PRIVATE ${CUDA_LIBS} $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
   target_compile_options(faiss_gpu_objs PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all
     --expt-extended-lambda --expt-relaxed-constexpr

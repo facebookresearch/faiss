@@ -17,6 +17,7 @@
 #include <limits>
 #include <memory>
 #include <queue>
+#include <random>
 
 #include <cstdint>
 #include "faiss/Index.h"
@@ -1432,11 +1433,13 @@ void IndexHNSWCagra::search(
                 // first real candidate will always be strictly better.
                 nearest_d[i] = C::neutral();
 
-                // Seeded per query so entrypoints are reproducible.
-                SplitMix64RandomGenerator gen(i);
+                std::random_device rd;
+                std::mt19937 gen(rd());
+                std::uniform_int_distribution<idx_t> distrib(
+                        0, this->ntotal - 1);
 
                 for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                    idx_t idx = gen.rand_int64() % this->ntotal;
+                    auto idx = distrib(gen);
                     auto distance = (*dis)(idx);
                     if (C::cmp(nearest_d[i], distance)) {
                         nearest[i] = static_cast<storage_idx_t>(idx);
@@ -1495,11 +1498,12 @@ void IndexHNSWCagra::range_search(
             // real candidate will always be strictly better.
             float nearest_d = C::neutral();
 
-            // For reproducible entrypoint.
-            SplitMix64RandomGenerator gen(i);
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                idx_t idx = gen.rand_int64() % ntotal;
+                auto idx = distrib(gen);
                 auto distance = (*dis)(idx);
                 // C::cmp(nearest_d, distance) is true iff distance is
                 // strictly better than the current nearest_d.
