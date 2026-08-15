@@ -1162,10 +1162,6 @@
         <label>faiss::IndexBinary</label>
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
-      <node id="5">
-        <label>faiss::gpu::AllNeighborsCagraConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig"/>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuIndexBinaryCagra</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra"/>
@@ -1179,9 +1175,6 @@
         <label>faiss::gpu::GpuIndexCagraConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"/>
         <childnode refid="4" relation="public-inheritance">
-        </childnode>
-        <childnode refid="5" relation="usage">
-          <edgelabel>all_neighbors_params</edgelabel>
         </childnode>
       </node>
       <node id="4">
