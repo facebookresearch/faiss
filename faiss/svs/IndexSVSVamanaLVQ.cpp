@@ -36,12 +36,7 @@ IndexSVSVamanaLVQ::IndexSVSVamanaLVQ(
         SVSStorageKind storage,
         bool is_static,
         bool store_vectors)
-        : IndexSVSVamana(
-                  d,
-                  degree,
-                  metric,
-                  storage,
-                  is_static,
-                  store_vectors) {}
+        : IndexSVSVamana(d, degree, metric, storage, is_static, store_vectors) {
+}
 
 } // namespace faiss
