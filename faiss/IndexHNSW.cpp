@@ -17,7 +17,6 @@
 #include <limits>
 #include <memory>
 #include <queue>
-#include <random>
 
 #include <cstdint>
 #include "faiss/Index.h"
@@ -40,6 +39,8 @@ using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
 HNSWStats hnsw_stats;
+
+bool hnsw_deterministic_build = false;
 
 /**************************************************************
  * add / search blocks of descriptors
@@ -214,6 +215,302 @@ void hnsw_add_vertices(
 
 } // namespace
 
+// Deterministic HNSW graph build inspired by ParlayANN: points are bucketed by
+// level and inserted in prefix-doubling batches. Phase A computes forward
+// links against a frozen snapshot and records reverse edges; phase B merges
+// those in a fixed order.
+// https://arxiv.org/abs/2305.04359
+void hnsw_add_vertices_deterministic(
+        HNSW& hnsw,
+        size_t n0,
+        size_t n,
+        int d,
+        bool init_level0,
+        bool keep_max_size_level0,
+        bool preset_levels,
+        bool verbose,
+        const std::function<DistanceComputer*()>& make_distance_computer,
+        const std::function<void(DistanceComputer&, HNSW::storage_idx_t)>&
+                set_query) {
+    size_t ntotal = n0 + n;
+    double t0 = getmillisecs();
+    if (verbose) {
+        printf("hnsw_add_vertices_deterministic: adding %zd elements on top of %zd "
+               "(preset_levels=%d)\n",
+               n,
+               n0,
+               int(preset_levels));
+    }
+
+    if (n == 0) {
+        return;
+    }
+
+    // init_level0=false (CAGRA import) skips the level-0-only bucket; higher-
+    // level points still build their own level-0 links.
+    const int min_bucket_level = init_level0 ? 0 : 1;
+
+    int max_level = hnsw.prepare_level_tab(n, preset_levels);
+    if (verbose) {
+        printf("  max_level = %d\n", max_level);
+    }
+
+    // Bucket the new points by level, highest first.
+    std::vector<int> hist;
+    std::vector<int> order(n);
+
+    { // make buckets with vectors of the same level
+
+        // build histogram
+        for (size_t i = 0; i < n; i++) {
+            storage_idx_t pt_id = static_cast<storage_idx_t>(i + n0);
+            int pt_level = hnsw.levels[pt_id] - 1;
+            while (pt_level >= static_cast<int>(hist.size())) {
+                hist.push_back(0);
+            }
+            hist[pt_level]++;
+        }
+
+        // accumulate
+        std::vector<int> offsets(hist.size() + 1, 0);
+        for (size_t i = 0; i < hist.size() - 1; i++) {
+            offsets[i + 1] = offsets[i] + hist[i];
+        }
+
+        // bucket sort
+        for (size_t i = 0; i < n; i++) {
+            storage_idx_t pt_id = static_cast<storage_idx_t>(i + n0);
+            int pt_level = hnsw.levels[pt_id] - 1;
+            order[offsets[pt_level]++] = pt_id;
+        }
+    }
+
+    // Upper bound on batch size (ParlayANN's theta), 2% of the index.
+    const size_t theta =
+            std::max<size_t>(1, static_cast<size_t>(0.02 * ntotal));
+
+    // Polled inside phase A: a batch can be 2% of ntotal, so cancelling only
+    // at batch boundaries would take minutes on large indexes.
+    const idx_t check_period = InterruptCallback::get_period_hint(
+            max_level * d * hnsw.efConstruction);
+
+    RandomGenerator rng2(789);
+    size_t i1 = n;
+
+    for (int pt_level = static_cast<int>(hist.size()) - 1;
+         pt_level >= min_bucket_level;
+         pt_level--) {
+        size_t i0 = i1 - hist[pt_level];
+        if (i0 == i1) {
+            continue;
+        }
+
+        if (verbose) {
+            printf("Adding %zu elements at level %d\n", i1 - i0, pt_level);
+        }
+
+        // random permutation to get rid of dataset order bias
+        for (size_t j = i0; j < i1; j++) {
+            std::swap(
+                    order[j],
+                    order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
+        }
+
+        // Bootstrap/raise the entry point: the top bucket runs first, so its
+        // first (shuffled) point is a valid max-level entry point.
+        if (hnsw.entry_point == -1 || pt_level > hnsw.max_level) {
+            hnsw.max_level = pt_level;
+            hnsw.entry_point = order[i0];
+        }
+
+        // Prefix-doubling batches within this bucket.
+        size_t s = i0;
+        while (s < i1) {
+            size_t done = s - i0;
+            size_t grow = std::min(done == 0 ? size_t(1) : done, theta);
+            size_t e = std::min(i1, s + grow);
+
+            // Phase A: compute forward links against the snapshot
+            // A reverse edge: `dest` gains an incoming link from `src`.
+            struct Edge {
+                int level;
+                HNSW::storage_idx_t dest;
+                HNSW::storage_idx_t src;
+            };
+
+            // One buffer, sized to an upper bound so it never reallocates.
+            // The fill order is nondeterministic but harmless: phase B
+            // regroups by destination.
+            size_t cap_sum = 0;
+            for (int64_t i = s; i < static_cast<int64_t>(e); i++) {
+                storage_idx_t pid = order[i];
+                cap_sum += hnsw.offsets[pid + 1] - hnsw.offsets[pid];
+            }
+            // Default-initialised to skip a memset per sub-batch; safe because
+            // edge_counter only hands out slots that are written before read.
+            std::unique_ptr<Edge[]> reverse_edges(new Edge[cap_sum]);
+            std::atomic<size_t> edge_counter{0};
+
+            // Thrown after the region (cannot throw out of one); the
+            // unsynchronized write costs at most one extra poll.
+            bool interrupt = false;
+
+#pragma omp parallel if (e - s > 100)
+            {
+                std::unique_ptr<VisitedTable> vt =
+                        VisitedTable::create(ntotal, hnsw.use_visited_hashset);
+
+                std::unique_ptr<DistanceComputer> dis(make_distance_computer());
+                std::vector<std::pair<HNSW::storage_idx_t, int>>
+                        pt_reverse_edges;
+                size_t counter = 0;
+
+#pragma omp for schedule(static)
+                for (int64_t i = s; i < static_cast<int64_t>(e); i++) {
+                    if (interrupt) {
+                        continue; // cannot break out of an OpenMP for loop
+                    }
+                    storage_idx_t pt_id = order[i];
+                    int lvl = hnsw.levels[pt_id] - 1;
+                    set_query(*dis, pt_id);
+
+                    pt_reverse_edges.clear();
+                    hnsw.compute_forward_links_deterministic(
+                            *dis,
+                            lvl,
+                            pt_id,
+                            *vt,
+                            pt_reverse_edges,
+                            keep_max_size_level0);
+
+                    size_t off = edge_counter.fetch_add(
+                            pt_reverse_edges.size(), std::memory_order_relaxed);
+                    for (size_t k = 0; k < pt_reverse_edges.size(); k++) {
+                        reverse_edges[off + k] = {
+                                pt_reverse_edges[k].second,
+                                pt_reverse_edges[k].first,
+                                pt_id};
+                    }
+
+                    if (counter++ % check_period == 0 &&
+                        InterruptCallback::is_interrupted()) {
+                        interrupt = true;
+                    }
+                }
+            }
+            if (interrupt) {
+                FAISS_THROW_MSG("computation interrupted");
+            }
+
+            // Phase B: merge the reverse edges
+            // Group by destination so each node is merged by exactly one
+            // thread: lock-free and thread-count-independent.
+            const size_t total = edge_counter.load();
+
+            constexpr int kBucketBits = 8;
+            constexpr uint32_t kNumBuckets = 1u << kBucketBits;
+            constexpr uint32_t kBucketMask = kNumBuckets - 1;
+
+            // bstart[b]..bstart[b+1] delimits bucket b after partitioning.
+            std::vector<size_t> bstart(kNumBuckets + 1, 0);
+            for (size_t idx = 0; idx < total; idx++) {
+                bstart[(static_cast<uint32_t>(reverse_edges[idx].dest) &
+                        kBucketMask) +
+                       1]++;
+            }
+            for (uint32_t b = 0; b < kNumBuckets; b++) {
+                bstart[b + 1] += bstart[b];
+            }
+
+            // In-place partition (cycle sort): each step lands at least one
+            // edge in its bucket, so O(total) with no auxiliary buffer.
+            {
+                std::vector<size_t> head(bstart.begin(), bstart.end() - 1);
+                for (uint32_t b = 0; b < kNumBuckets; b++) {
+                    size_t end_b = bstart[b + 1];
+                    while (head[b] < end_b) {
+                        Edge cur_e = reverse_edges[head[b]];
+                        if ((static_cast<uint32_t>(cur_e.dest) & kBucketMask) ==
+                            b) {
+                            head[b]++;
+                            continue;
+                        }
+                        while ((static_cast<uint32_t>(cur_e.dest) &
+                                kBucketMask) != b) {
+                            uint32_t tb = static_cast<uint32_t>(cur_e.dest) &
+                                    kBucketMask;
+                            std::swap(cur_e, reverse_edges[head[tb]]);
+                            head[tb]++;
+                        }
+                        reverse_edges[head[b]] = cur_e;
+                        head[b]++;
+                    }
+                }
+            }
+            Edge* base = reverse_edges.get();
+
+#pragma omp parallel if (total > 100)
+            {
+                std::unique_ptr<DistanceComputer> dis(make_distance_computer());
+                // Not schedule(dynamic): the libomp dynamic dispatcher
+                // segfaults in some build configs.
+#pragma omp for schedule(static)
+                for (int64_t b = 0; b < static_cast<int64_t>(kNumBuckets);
+                     b++) {
+                    Edge* p = base + bstart[b];
+                    size_t m = bstart[b + 1] - bstart[b];
+                    if (m == 0) {
+                        continue;
+                    }
+                    // src order does not matter; the merge re-sorts each set.
+                    std::sort(p, p + m, [](const Edge& a, const Edge& c) {
+                        if (a.level != c.level) {
+                            return a.level < c.level;
+                        }
+                        return a.dest < c.dest;
+                    });
+                    std::vector<HNSW::storage_idx_t> incoming;
+                    size_t g = 0;
+                    while (g < m) {
+                        size_t h = g + 1;
+                        while (h < m && p[h].level == p[g].level &&
+                               p[h].dest == p[g].dest) {
+                            h++;
+                        }
+                        incoming.clear();
+                        incoming.reserve(h - g);
+                        for (size_t kk = g; kk < h; kk++) {
+                            incoming.push_back(p[kk].src);
+                        }
+                        hnsw.merge_reverse_links_deterministic(
+                                *dis,
+                                p[g].dest,
+                                p[g].level,
+                                incoming,
+                                keep_max_size_level0 && (p[g].level == 0));
+                        g = h;
+                    }
+                }
+            }
+
+            InterruptCallback::check();
+            s = e;
+        }
+
+        i1 = i0;
+    }
+
+    if (init_level0) {
+        FAISS_ASSERT(i1 == 0);
+    } else {
+        FAISS_ASSERT((i1 - hist[0]) == 0);
+    }
+
+    if (verbose) {
+        printf("Done in %.3f ms\n", getmillisecs() - t0);
+    }
+}
+
 /**************************************************************
  * IndexHNSW implementation
  **************************************************************/
@@ -384,13 +681,25 @@ void IndexHNSW::add(idx_t n, const float* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(
-            *this,
-            n0,
-            n,
-            x,
-            verbose,
-            hnsw.levels.size() == static_cast<size_t>(ntotal));
+    bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    if (hnsw_deterministic_build) {
+        hnsw_add_vertices_deterministic(
+                hnsw,
+                n0,
+                n,
+                d,
+                init_level0,
+                keep_max_size_level0,
+                preset_levels,
+                verbose,
+                [this] { return storage_distance_computer(storage); },
+                [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                    dc.set_query(x + (pt_id - n0) * d);
+                });
+    } else {
+        hnsw_add_vertices(*this, n0, n, x, verbose, preset_levels);
+    }
 }
 
 void IndexHNSW::reset() {
@@ -1123,13 +1432,11 @@ void IndexHNSWCagra::search(
                 // first real candidate will always be strictly better.
                 nearest_d[i] = C::neutral();
 
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<idx_t> distrib(
-                        0, this->ntotal - 1);
+                // Seeded per query so entrypoints are reproducible.
+                SplitMix64RandomGenerator gen(i);
 
                 for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                    auto idx = distrib(gen);
+                    idx_t idx = gen.rand_int64() % this->ntotal;
                     auto distance = (*dis)(idx);
                     if (C::cmp(nearest_d[i], distance)) {
                         nearest[i] = static_cast<storage_idx_t>(idx);
@@ -1188,12 +1495,11 @@ void IndexHNSWCagra::range_search(
             // real candidate will always be strictly better.
             float nearest_d = C::neutral();
 
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
+            // For reproducible entrypoint.
+            SplitMix64RandomGenerator gen(i);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                auto idx = distrib(gen);
+                idx_t idx = gen.rand_int64() % ntotal;
                 auto distance = (*dis)(idx);
                 // C::cmp(nearest_d, distance) is true iff distance is
                 // strictly better than the current nearest_d.

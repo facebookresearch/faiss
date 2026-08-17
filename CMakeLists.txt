@@ -125,6 +125,10 @@ if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
    find_package(cuvs)
  endif()
 
+if(FAISS_ENABLE_CUVS AND NOT TARGET rmm::rmm)
+  find_package(rmm REQUIRED)
+endif()
+
 add_subdirectory(faiss)
 
 if(FAISS_ENABLE_GPU)

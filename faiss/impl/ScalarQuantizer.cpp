@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <cmath>
 #include <cstring>
 #include <memory>
 
@@ -425,14 +426,29 @@ const LloydMaxTable kLloydMaxTables[] = {
         {kLloydMaxCentroids8, kLloydMaxBoundaries8}, // 8
 };
 
-void populate_lloyd_max_trained(size_t mse_bits, std::vector<float>& trained) {
+// The tables are Lloyd-Max optimal for N(0, 1) input. Callers whose input has
+// a different standard deviation pass it as `scale` to stretch the table.
+void populate_lloyd_max_trained(
+        size_t mse_bits,
+        std::vector<float>& trained,
+        float scale = 1.0f) {
     FAISS_THROW_IF_NOT(mse_bits >= 1 && mse_bits <= 8);
     FAISS_THROW_IF_NOT(kLloydMaxTables[mse_bits].centroids);
     size_t k = size_t(1) << mse_bits;
     const auto& t = kLloydMaxTables[mse_bits];
     trained.resize(k + (k - 1));
-    std::copy(t.centroids, t.centroids + k, trained.begin());
-    std::copy(t.boundaries, t.boundaries + k - 1, trained.begin() + k);
+    for (size_t i = 0; i < k; i++) {
+        trained[i] = t.centroids[i] * scale;
+    }
+    for (size_t i = 0; i + 1 < k; i++) {
+        trained[k + i] = t.boundaries[i] * scale;
+    }
+}
+
+// Component scale of a unit-norm vector in R^d.
+float unit_norm_component_scale(size_t d) {
+    FAISS_THROW_IF_NOT(d > 0);
+    return 1.0f / std::sqrt(static_cast<float>(d));
 }
 
 } // namespace
@@ -588,19 +604,24 @@ void ScalarQuantizer::train(size_t n, const float* x) {
             populate_lloyd_max_trained(bits, trained);
             break;
         case QT_1bit_tqmse:
-            populate_lloyd_max_trained(1, trained);
+            populate_lloyd_max_trained(
+                    1, trained, unit_norm_component_scale(d));
             break;
         case QT_2bit_tqmse:
-            populate_lloyd_max_trained(2, trained);
+            populate_lloyd_max_trained(
+                    2, trained, unit_norm_component_scale(d));
             break;
         case QT_3bit_tqmse:
-            populate_lloyd_max_trained(3, trained);
+            populate_lloyd_max_trained(
+                    3, trained, unit_norm_component_scale(d));
             break;
         case QT_4bit_tqmse:
-            populate_lloyd_max_trained(4, trained);
+            populate_lloyd_max_trained(
+                    4, trained, unit_norm_component_scale(d));
             break;
         case QT_8bit_tqmse:
-            populate_lloyd_max_trained(8, trained);
+            populate_lloyd_max_trained(
+                    8, trained, unit_norm_component_scale(d));
             break;
         case QT_2bit_tq:
         case QT_3bit_tq:
