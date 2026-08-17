@@ -26,7 +26,7 @@
         <argsstring></argsstring>
         <name>num_base_level_search_entrypoints</name>
         <qualifiedname>faiss::IndexHNSWCagra::num_base_level_search_entrypoints</qualifiedname>
-        <initializer>= 32</initializer>
+        <initializer>= 256</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
