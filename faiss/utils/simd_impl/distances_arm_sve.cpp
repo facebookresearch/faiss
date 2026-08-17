@@ -558,8 +558,13 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_SVE>(
                 fvec_op_ny_sve_lanes3<ElementOpL2>(dis, x, y, ny);
             else if (d == lanes * 4)
                 fvec_op_ny_sve_lanes4<ElementOpL2>(dis, x, y, ny);
-            else
-                fvec_L2sqr_ny_ref(dis, x, y, d, ny);
+            else {
+                // Fallback: use autovectorized L2sqr
+                for (size_t i = 0; i < ny; i++) {
+                    dis[i] = fvec_L2sqr<SIMDLevel::ARM_SVE>(x, y, d);
+                    y += d;
+                }
+            }
             break;
     }
 }
