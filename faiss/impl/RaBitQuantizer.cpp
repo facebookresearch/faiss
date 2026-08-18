@@ -17,12 +17,15 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <vector>
 
 namespace faiss {
+
+RaBitQStats rabitq_stats;
 
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
@@ -224,6 +227,51 @@ void RaBitQuantizer::decode_core(
     }
 }
 
+template <SIMDLevel SL>
+float symmetric_dis_1bit(const RaBitQDistanceComputer& dc, idx_t i, idx_t j) {
+    FAISS_THROW_IF_NOT_MSG(
+            dc.metric_type == MetricType::METRIC_L2,
+            "RaBitQ symmetric distance supports only L2");
+    FAISS_ASSERT(i >= 0 && j >= 0);
+    FAISS_ASSERT(dc.codes != nullptr);
+
+    const size_t sign_bytes = (dc.d + 7) / 8;
+    const uint8_t* code_i = dc.codes + static_cast<size_t>(i) * dc.code_size;
+    const uint8_t* code_j = dc.codes + static_cast<size_t>(j) * dc.code_size;
+    const auto* factors_i =
+            reinterpret_cast<const SignBitFactors*>(code_i + sign_bytes);
+    const auto* factors_j =
+            reinterpret_cast<const SignBitFactors*>(code_j + sign_bytes);
+
+    const uint64_t xor_popcount =
+            rabitq::bitwise_xor_dot_product<SL>(code_i, code_j, sign_bytes, 1);
+    const float sign_dot =
+            static_cast<float>(dc.d) - 2.0f * static_cast<float>(xor_popcount);
+
+    // The L2-optimal reconstruction of residual r is alpha * sign(r), where
+    // alpha = ||r||_1 / d. The stored factors give
+    // alpha_i * alpha_j = ||r_i||^2 * ||r_j||^2 /
+    //     (d * dp_multiplier_i * dp_multiplier_j).
+    float cross_term = 0.0f;
+    if (factors_i->dp_multiplier != 0.0f && factors_j->dp_multiplier != 0.0f) {
+        // Dividing each norm first avoids overflowing the product of two
+        // squared norms even when the final distance is representable.
+        const float scaled_norm_i =
+                factors_i->or_minus_c_l2sqr / factors_i->dp_multiplier;
+        const float scaled_norm_j =
+                factors_j->or_minus_c_l2sqr / factors_j->dp_multiplier;
+        cross_term = (scaled_norm_i * (sign_dot / static_cast<float>(dc.d))) *
+                scaled_norm_j;
+    }
+    const float distance = factors_i->or_minus_c_l2sqr +
+            factors_j->or_minus_c_l2sqr - 2.0f * cross_term;
+    return std::max(0.0f, distance);
+}
+
+float RaBitQDistanceComputer::symmetric_dis(idx_t i, idx_t j) {
+    return symmetric_dis_1bit<SIMDLevel::NONE>(*this, i, j);
+}
+
 namespace {
 
 // Distance computers templatized on SIMDLevel to avoid per-call dynamic
@@ -239,6 +287,10 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
     QueryFactorsData query_fac;
 
     RaBitQDistanceComputerNotQ() = default;
+
+    float symmetric_dis(idx_t i, idx_t j) final {
+        return symmetric_dis_1bit<SL>(*this, i, j);
+    }
 
     // Compute distance using only 1-bit codes (fast)
     float distance_to_code_1bit_impl(
@@ -454,6 +506,10 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
     size_t popcount_aligned_dim = 0;
 
     RaBitQDistanceComputerQ() = default;
+
+    float symmetric_dis(idx_t i, idx_t j) final {
+        return symmetric_dis_1bit<SL>(*this, i, j);
+    }
 
     // Compute distance using only 1-bit codes (fast)
     float distance_to_code_1bit_impl(

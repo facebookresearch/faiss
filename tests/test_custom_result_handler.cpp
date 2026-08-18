@@ -80,7 +80,27 @@ struct CollectAllResultHandler : ResultHandler {
     }
 };
 
+struct ThresholdUpdatingResultHandler : ResultHandler {
+    bool add_result(float distance, idx_t /* i */) override {
+        threshold = distance;
+        return true;
+    }
+};
+
 namespace {
+
+TEST(TestSingleQueryBlockResultHandler, SynchronizesWrappedThreshold) {
+    ThresholdUpdatingResultHandler handler;
+    handler.threshold = 10.0f;
+    SingleQueryBlockResultHandler<CMax<float, idx_t>, false> block(handler);
+    SingleQueryBlockResultHandler<CMax<float, idx_t>, false>::
+            SingleResultHandler single(block);
+
+    single.begin(0);
+    EXPECT_FLOAT_EQ(single.threshold, 10.0f);
+    single.add_result(4.0f, 0);
+    EXPECT_FLOAT_EQ(single.threshold, 4.0f);
+}
 
 // dimension of the vectors to index
 constexpr int d = 64;
