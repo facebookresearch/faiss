@@ -316,11 +316,16 @@ void hnsw_add_vertices_deterministic(
                     order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
         }
 
-        // Bootstrap/raise the entry point: the top bucket runs first, so its
-        // first (shuffled) point is a valid max-level entry point.
-        if (hnsw.entry_point == -1 || pt_level > hnsw.max_level) {
+        // Bootstrap only when the graph is empty. Raising entry_point to a
+        // point that is not yet linked orphans everything already inserted,
+        // which on an incremental add() is the entire prior graph. order[i0]
+        // is the sole member of the first batch below, so defer until then.
+        bool raise_entry_point = false;
+        if (hnsw.entry_point == -1) {
             hnsw.max_level = pt_level;
             hnsw.entry_point = order[i0];
+        } else if (pt_level > hnsw.max_level) {
+            raise_entry_point = true;
         }
 
         // Prefix-doubling batches within this bucket.
@@ -495,6 +500,12 @@ void hnsw_add_vertices_deterministic(
 
             InterruptCallback::check();
             s = e;
+
+            if (raise_entry_point) {
+                hnsw.max_level = pt_level;
+                hnsw.entry_point = order[i0];
+                raise_entry_point = false;
+            }
         }
 
         i1 = i0;
