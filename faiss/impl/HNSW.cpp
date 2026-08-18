@@ -23,6 +23,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
+#include <faiss/utils/prefetch.h>
 
 namespace faiss {
 
@@ -1337,6 +1338,8 @@ int search_from_candidates_rabitq_fixVT(
     const uint8_t* all_codes = rq->codes;
     const size_t code_size = rq->code_size;
     const size_t sign_bytes = (rq->d + 7) / 8;
+    const size_t filter_bytes =
+            sign_bytes + sizeof(rabitq_utils::SignBitFactorsWithError);
     const bool is_sim = hnsw.is_similarity;
 
     vt.reserve(efSearch);
@@ -1374,7 +1377,23 @@ int search_from_candidates_rabitq_fixVT(
 
         threshold = res.threshold;
 
+        // RaBitQ codes are random accesses during graph traversal. Prefetch
+        // the bytes needed by both the 1-bit estimate and its error bound.
+        constexpr size_t kCacheLineBytes = 64;
+        constexpr size_t kPrefetchDistance = 4;
         for (size_t j = begin; j < end; j++) {
+            if (j + kPrefetchDistance < end) {
+                int next = hnsw.neighbors[j + kPrefetchDistance];
+                if (next >= 0) {
+                    const uint8_t* next_code =
+                            all_codes + static_cast<size_t>(next) * code_size;
+                    for (size_t offset = 0; offset < filter_bytes;
+                         offset += kCacheLineBytes) {
+                        prefetch_L1(next_code + offset);
+                    }
+                }
+            }
+
             int v1 = hnsw.neighbors[j];
             if (v1 < 0) {
                 break;
