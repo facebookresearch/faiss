@@ -157,6 +157,12 @@ struct HNSW {
     /// use Panorama progressive pruning in search
     bool is_panorama = false;
 
+    /// use staged RaBitQ search: a 1-bit estimate for every neighbor, and the
+    /// full multi-bit distance only where the error bound leaves the candidate
+    /// able to enter the result heap. Requires an IndexRaBitQ storage with
+    /// nb_bits >= 2 (1-bit codes carry no f_error, so there is no bound).
+    bool is_rabitq = false;
+
     /// distance comparison semantics: when true, distances are treated as
     /// similarity scores (larger is better). Default false matches the
     /// historical L2/Hamming behavior (smaller is better).
@@ -305,11 +311,15 @@ struct HNSWStats {
             0; /// number of queries for which the candidate list is exhausted
     size_t ndis = 0;  /// number of distances computed
     size_t nhops = 0; /// number of hops aka number of edges traversed
+    size_t n_rabitq_1bit = 0;
+    size_t n_rabitq_refine = 0;
 
     void reset() {
         n1 = n2 = 0;
         ndis = 0;
         nhops = 0;
+        n_rabitq_1bit = 0;
+        n_rabitq_refine = 0;
     }
 
     void combine(const HNSWStats& other) {
@@ -317,6 +327,8 @@ struct HNSWStats {
         n2 += other.n2;
         ndis += other.ndis;
         nhops += other.nhops;
+        n_rabitq_1bit += other.n_rabitq_1bit;
+        n_rabitq_refine += other.n_rabitq_refine;
     }
 };
 
@@ -328,6 +340,30 @@ FAISS_API extern HNSWStats hnsw_stats;
  *
  * NOT thread-safe: set before calling add(). Sampled once per add(). */
 FAISS_API extern bool hnsw_deterministic_build;
+
+/// Instrumentation for the staged RaBitQ search. The refine ratio is the number
+/// that decides whether staged search can pay for itself: every candidate costs
+/// a 1-bit estimate, and only the refined ones additionally cost a full
+/// multi-bit distance.
+struct RaBitQHNSWStats {
+    uint64_t n_1bit = 0;   /// candidates given a 1-bit estimate
+    uint64_t n_refine = 0; /// of those, ones that needed the full distance
+
+    void reset() {
+        n_1bit = n_refine = 0;
+    }
+
+    void add(const RaBitQHNSWStats& other) {
+        n_1bit += other.n_1bit;
+        n_refine += other.n_refine;
+    }
+
+    double refine_ratio() const {
+        return n_1bit ? double(n_refine) / double(n_1bit) : 0.0;
+    }
+};
+
+FAISS_API extern RaBitQHNSWStats rabitq_hnsw_stats;
 
 /// Internal HNSW algorithm helpers. These are not part of the public API; they
 /// are exposed here only so that unit tests (and a few cross-TU callers such as

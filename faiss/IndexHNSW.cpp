@@ -7,6 +7,8 @@
 
 #include <faiss/IndexHNSW.h>
 
+#include <faiss/IndexRaBitQ.h>
+
 #include <omp.h>
 #include <atomic>
 #include <cinttypes>
@@ -39,6 +41,7 @@ using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
 HNSWStats hnsw_stats;
+RaBitQHNSWStats rabitq_hnsw_stats;
 
 bool hnsw_deterministic_build = false;
 
@@ -577,6 +580,7 @@ void hnsw_search(
         }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+    size_t n_rabitq_1bit = 0, n_rabitq_refine = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
@@ -602,7 +606,9 @@ void hnsw_search(
                 omp_capture_exception(ex, [&] { interrupt = true; });
             }
 
-#pragma omp for reduction(+ : n1, n2, ndis, nhops) schedule(guided)
+#pragma omp for reduction(                                               \
+                + : n1, n2, ndis, nhops, n_rabitq_1bit, n_rabitq_refine) \
+        schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 if (interrupt.load(std::memory_order_relaxed)) {
                     continue;
@@ -617,6 +623,8 @@ void hnsw_search(
                     n2 += stats.n2;
                     ndis += stats.ndis;
                     nhops += stats.nhops;
+                    n_rabitq_1bit += stats.n_rabitq_1bit;
+                    n_rabitq_refine += stats.n_rabitq_refine;
                     res->end();
                     vt->advance();
                 } catch (...) {
@@ -629,6 +637,7 @@ void hnsw_search(
     }
 
     hnsw_stats.combine({n1, n2, ndis, nhops});
+    rabitq_hnsw_stats.add({n_rabitq_1bit, n_rabitq_refine});
 }
 
 } // anonymous namespace
@@ -1127,6 +1136,107 @@ IndexHNSWSQ::IndexHNSWSQ(
 }
 
 IndexHNSWSQ::IndexHNSWSQ() = default;
+
+/**************************************************************
+ * IndexHNSWRaBitQ implementation
+ **************************************************************/
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ() = default;
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ(
+        int d,
+        int M,
+        uint8_t nb_bits,
+        MetricType metric)
+        : IndexHNSW(new IndexRaBitQ(d, metric, nb_bits), M),
+          build_storage(
+                  (metric == METRIC_L2) ? new IndexFlatL2(d)
+                                        : new IndexFlat(d, metric)) {
+    own_fields = true;
+    // 1-bit codes store plain SignBitFactors with no f_error, so there is no
+    // bound to prune with and the staged path does not apply.
+    hnsw.is_rabitq = nb_bits >= 2;
+}
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ(const IndexHNSWRaBitQ& other)
+        : IndexHNSW(other), build_storage(nullptr) {
+    // IndexHNSW's implicit copy shares storage. Keep a direct copy non-owning;
+    // clone_index() replaces storage with a deep copy and restores ownership.
+    own_fields = false;
+}
+
+IndexHNSWRaBitQ::~IndexHNSWRaBitQ() {
+    delete build_storage;
+}
+
+void IndexHNSWRaBitQ::train(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(storage, "storage not initialized");
+    FAISS_THROW_IF_NOT_MSG(
+            build_storage, "index is finalized and cannot be trained again");
+    build_storage->train(n, x);
+    storage->train(n, x);
+    is_trained = true;
+}
+
+void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            build_storage,
+            "index is finalized; rebuild it from scratch to add more vectors");
+    FAISS_THROW_IF_NOT(is_trained);
+    size_t n0 = ntotal;
+    storage->add(n, x);
+    build_storage->add(n, x);
+    ntotal = storage->ntotal;
+
+    const bool preset_levels =
+            hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    // The graph must be built from exact distances because RaBitQ has no
+    // symmetric_dis(). The deterministic builder accepts a distance-computer
+    // callback directly, so it can read build_storage without changing the
+    // index's searchable storage.
+    if (hnsw_deterministic_build) {
+        hnsw_add_vertices_deterministic(
+                hnsw,
+                n0,
+                n,
+                d,
+                init_level0,
+                keep_max_size_level0,
+                preset_levels,
+                verbose,
+                [this] { return storage_distance_computer(build_storage); },
+                [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                    dc.set_query(x + (pt_id - n0) * d);
+                });
+        return;
+    }
+
+    // The legacy builder obtains its distance computer from index.storage, so
+    // point that field at the exact vectors only for the duration of the build.
+    Index* compressed = storage;
+    storage = build_storage;
+    try {
+        hnsw_add_vertices(*this, n0, n, x, verbose, preset_levels);
+    } catch (...) {
+        // Never leave search pointing at the temporary FP32 build storage.
+        storage = compressed;
+        throw;
+    }
+    storage = compressed;
+}
+
+void IndexHNSWRaBitQ::reset() {
+    IndexHNSW::reset();
+    if (build_storage) {
+        build_storage->reset();
+    }
+}
+
+void IndexHNSWRaBitQ::finalize() {
+    delete build_storage;
+    build_storage = nullptr;
+}
 
 /**************************************************************
  * IndexHNSW2Level implementation

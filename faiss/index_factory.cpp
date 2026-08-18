@@ -575,6 +575,13 @@ IndexHNSW* parse_IndexHNSW(
     if (match(sq_pattern)) {
         return new IndexHNSWSQ(d, sq_types[sm[1].str()], hnsw_M, mt);
     }
+    // "RaBitQ" defaults to 4 bits (1 sign + 3 extra). Explicit widths from 1
+    // through 9 match RaBitQuantizer's supported range.
+    if (match("RaBitQ([1-9])?")) {
+        // the capture is the bare digit, so no substr offset here
+        int nb_bits = mres_to_int(sm[1], 4);
+        return new IndexHNSWRaBitQ(d, hnsw_M, nb_bits, mt);
+    }
     if (match("([0-9]+)\\+PQ([0-9]+)?")) {
         int ncent = mres_to_int(sm[1]);
         int pq_m = mres_to_int(sm[2]);

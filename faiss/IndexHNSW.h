@@ -216,6 +216,47 @@ struct IndexHNSWSQ : IndexHNSW {
             MetricType metric = METRIC_L2);
 };
 
+/** HNSW index whose storage is RaBitQ-compressed.
+ *
+ * RaBitQ does not implement symmetric_dis(), which HNSW's neighbor-diversity
+ * pruning needs, so the graph cannot be built from the codes. Instead the exact
+ * vectors are kept in `build_storage` for the duration of the build, the graph
+ * is built from them, and finalize() drops them. Search then runs entirely on
+ * the compressed codes.
+ *
+ * With nb_bits >= 2 the codes carry a per-vector error factor, so search uses
+ * the staged path (`HNSW::is_rabitq`): a 1-bit estimate for every neighbor and
+ * the full multi-bit distance only for candidates the error bound cannot rule
+ * out. nb_bits = 1 has no error factor and falls back to plain search.
+ */
+struct IndexHNSWRaBitQ : IndexHNSW {
+    /// exact vectors, needed only to build the graph; null once finalized
+    IndexFlat* build_storage = nullptr;
+
+    IndexHNSWRaBitQ();
+    IndexHNSWRaBitQ(
+            int d,
+            int M,
+            uint8_t nb_bits = 4,
+            MetricType metric = METRIC_L2);
+
+    /// The copy does NOT inherit build_storage: copies are made to be searched,
+    /// and duplicating the exact vectors would silently double peak memory. A
+    /// copied index is therefore finalized and cannot be added to. Defining
+    /// this is also what keeps the default shallow copy from double-freeing
+    /// storage or build_storage via clone_index()'s TRYCLONE.
+    IndexHNSWRaBitQ(const IndexHNSWRaBitQ& other);
+
+    ~IndexHNSWRaBitQ() override;
+
+    void train(idx_t n, const float* x) override;
+    void add(idx_t n, const float* x) override;
+    void reset() override;
+
+    /// release the exact vectors; the index becomes compressed and read-only
+    void finalize();
+};
+
 /** 2-level code structure with fast random access
  */
 struct IndexHNSW2Level : IndexHNSW {
