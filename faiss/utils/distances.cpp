@@ -554,6 +554,16 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
     });
 }
 
+template <class BlockResultHandler>
+void initialize_empty_results(size_t nx, BlockResultHandler& res) {
+    const size_t bs_x = distance_compute_blas_query_bs;
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        const size_t i1 = std::min(i0 + bs_x, nx);
+        res.begin_multiple(i0, i1);
+        res.end_multiple();
+    }
+}
+
 struct Run_search_inner_product {
     using T = void;
     template <class BlockResultHandler>
@@ -563,8 +573,11 @@ struct Run_search_inner_product {
            size_t d,
            size_t nx,
            size_t ny) {
-        if (res.sel ||
-            nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
+        if (ny == 0) {
+            initialize_empty_results(nx, res);
+        } else if (
+                res.sel ||
+                nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
@@ -582,8 +595,11 @@ struct Run_search_L2sqr {
            size_t nx,
            size_t ny,
            const float* y_norm2) {
-        if (res.sel ||
-            nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
+        if (ny == 0) {
+            initialize_empty_results(nx, res);
+        } else if (
+                res.sel ||
+                nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
