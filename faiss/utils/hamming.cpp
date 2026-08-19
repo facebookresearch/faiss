@@ -147,7 +147,13 @@ void hammings(
         size_t ncodes,
         hamdis_t* __restrict dis) {
     with_simd_level_a0_spr([&]<SIMDLevel SL>() {
-        hammings_fixSL<SL>(a, b, na, nb, ncodes, dis);
+        // Ragged sizes have their own kernel; keeping it out of
+        // hammings_fixSL() leaves the word-level paths untouched.
+        if (ncodes % 8 != 0) {
+            hammings_ragged_fixSL<SL>(a, b, na, nb, ncodes, dis);
+        } else {
+            hammings_fixSL<SL>(a, b, na, nb, ncodes, dis);
+        }
     });
 }
 

@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <cstring>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -298,6 +299,132 @@ void generalized_hammings_knn_hc_impl(
     }
 }
 
+/* Both number of words and remainder are constants, so the compiler flattens
+ * the per-chunk loop. The query is copied into qw/qt once, not re-read for
+ * every candidate. */
+template <int NW, int REM>
+void hammings_ragged_fixed(
+        const uint8_t* __restrict a,
+        const uint8_t* __restrict b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* __restrict dis) {
+    for (size_t i = 0; i < na; i++) {
+        const uint8_t* __restrict ai = a + i * ncodes;
+        hamdis_t* __restrict dis_ = dis + i * nb;
+        // Read the query once here, not once per candidate.
+        uint64_t qw[NW == 0 ? 1 : NW];
+        for (int k = 0; k < NW; k++) {
+            memcpy(&qw[k], ai + k * 8, 8);
+        }
+        uint64_t qt = 0;
+        if constexpr (REM > 0) {
+            memcpy(&qt, ai + NW * 8, REM);
+        }
+        for (size_t j = 0; j < nb; j++) {
+            const uint8_t* __restrict bj = b + j * ncodes;
+            hamdis_t h = 0;
+            uint64_t y;
+            for (int k = 0; k < NW; k++) {
+                memcpy(&y, bj + k * 8, 8);
+                h += popcount64(qw[k] ^ y);
+            }
+            if constexpr (REM > 0) {
+                y = 0;
+                memcpy(&y, bj + NW * 8, REM);
+                h += popcount64(qt ^ y);
+            }
+            dis_[j] = h;
+        }
+    }
+}
+
+/* Same loop with the word count read at run time, for codes long enough that
+ * a constant count gives no performance improvement. */
+template <int REM>
+void hammings_ragged_var(
+        const uint8_t* __restrict a,
+        const uint8_t* __restrict b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* __restrict dis) {
+    const size_t nwords = ncodes / 8;
+    for (size_t i = 0; i < na; i++) {
+        const uint8_t* __restrict ai = a + i * ncodes;
+        hamdis_t* __restrict dis_ = dis + i * nb;
+        for (size_t j = 0; j < nb; j++) {
+            const uint8_t* __restrict bj = b + j * ncodes;
+            hamdis_t h = 0;
+            uint64_t x, y;
+            for (size_t k = 0; k < nwords; k++) {
+                memcpy(&x, ai + k * 8, 8);
+                memcpy(&y, bj + k * 8, 8);
+                h += popcount64(x ^ y);
+            }
+            if constexpr (REM > 0) {
+                x = 0;
+                y = 0;
+                memcpy(&x, ai + nwords * 8, REM);
+                memcpy(&y, bj + nwords * 8, REM);
+                h += popcount64(x ^ y);
+            }
+            dis_[j] = h;
+        }
+    }
+}
+
+/* Makes the word count a constant for short codes when calling
+ * hammings_ragged_fixed, worth roughly 2x perf improvement. Longer codes
+ * gain nothing from it, so they share hammings_ragged_var. */
+template <int REM>
+void hammings_ragged_by_nwords(
+        const uint8_t* __restrict a,
+        const uint8_t* __restrict b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* __restrict dis) {
+    switch (ncodes / 8) {
+        case 0:
+            return hammings_ragged_fixed<0, REM>(a, b, na, nb, ncodes, dis);
+        case 1:
+            return hammings_ragged_fixed<1, REM>(a, b, na, nb, ncodes, dis);
+        case 2:
+            return hammings_ragged_fixed<2, REM>(a, b, na, nb, ncodes, dis);
+        case 3:
+            return hammings_ragged_fixed<3, REM>(a, b, na, nb, ncodes, dis);
+        default:
+            return hammings_ragged_var<REM>(a, b, na, nb, ncodes, dis);
+    }
+}
+
+void hammings_ragged_dispatch(
+        const uint8_t* __restrict a,
+        const uint8_t* __restrict b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* __restrict dis) {
+    switch (ncodes % 8) {
+        case 1:
+            return hammings_ragged_by_nwords<1>(a, b, na, nb, ncodes, dis);
+        case 2:
+            return hammings_ragged_by_nwords<2>(a, b, na, nb, ncodes, dis);
+        case 3:
+            return hammings_ragged_by_nwords<3>(a, b, na, nb, ncodes, dis);
+        case 4:
+            return hammings_ragged_by_nwords<4>(a, b, na, nb, ncodes, dis);
+        case 5:
+            return hammings_ragged_by_nwords<5>(a, b, na, nb, ncodes, dis);
+        case 6:
+            return hammings_ragged_by_nwords<6>(a, b, na, nb, ncodes, dis);
+        default:
+            return hammings_ragged_by_nwords<7>(a, b, na, nb, ncodes, dis);
+    }
+}
+
 } // anonymous namespace
 
 /******************************************************************
@@ -354,6 +481,19 @@ void hamming_range_search_fixSL<THE_SIMD_LEVEL>(
                 hamming_range_search_impl<HammingComputer>(
                         a, b, na, nb, radius, code_size, result, sel);
             });
+}
+
+/* Its own entry point, so the word-multiple kernels keep the code the
+ * compiler already generates for them. */
+template <>
+void hammings_ragged_fixSL<THE_SIMD_LEVEL>(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* dis) {
+    hammings_ragged_dispatch(a, b, na, nb, ncodes, dis);
 }
 
 template <>
