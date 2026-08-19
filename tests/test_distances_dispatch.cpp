@@ -299,3 +299,27 @@ TEST(DistancesDispatch, FvecL2sqrNyNearest_AllLevels) {
                 levels);
     }
 }
+
+// The low-dimensional nearest path (d in {2,4,8}, one SIMD lane per
+// centroid) must agree with the generic implementation for any ny, including
+// values that are not multiples of the SIMD width.
+TEST(DistancesDispatch, FvecL2sqrNyNearest_LowDim) {
+    SIMDLevelGuard guard;
+    auto levels = available_levels();
+    SKIP_IF_SINGLE_LEVEL(levels);
+    constexpr size_t kLowDims[] = {2, 4, 8};
+    constexpr size_t kNy[] = {1, 2, 3, 16, 17, 23, 32};
+    for (size_t d : kLowDims) {
+        for (size_t ny : kNy) {
+            auto x = rand_vec(d, 40);
+            auto y = rand_vec(d * ny, 41);
+            check_index_at_levels(
+                    [&]() {
+                        std::vector<float> tmp(ny);
+                        return fvec_L2sqr_ny_nearest(
+                                tmp.data(), x.data(), y.data(), d, ny);
+                    },
+                    levels);
+        }
+    }
+}

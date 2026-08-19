@@ -6,6 +6,7 @@
  */
 
 #include <faiss/IndexIVF.h>
+#include <faiss/SuperKMeans.h>
 
 #include <omp.h>
 #include <atomic>
@@ -78,13 +79,22 @@ void Level1Quantizer::train_q1(
             printf("Training level-1 quantizer on %zd vectors in %zdD\n", n, d);
         }
 
-        Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
         quantizer->reset();
-        if (clustering_index) {
-            clus.train(n, x, *clustering_index);
+        if (cp.use_super_kmeans && clustering_index == nullptr) {
+            SuperKMeansParameters super_cp;
+            static_cast<ClusteringParameters&>(super_cp) = cp;
+            SuperKMeans clus(
+                    static_cast<int>(d), static_cast<int>(nlist), super_cp);
+            clus.train(n, x);
             quantizer->add(nlist, clus.centroids.data());
         } else {
-            clus.train(n, x, *quantizer);
+            Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
+            if (clustering_index) {
+                clus.train(n, x, *clustering_index);
+                quantizer->add(nlist, clus.centroids.data());
+            } else {
+                clus.train(n, x, *quantizer);
+            }
         }
         quantizer->is_trained = true;
     } else if (quantizer_trains_alone == 2) {

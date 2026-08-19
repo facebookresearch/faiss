@@ -39,5 +39,10 @@ template <>
 float block_l2<SIMDLevel::AVX512>(const float* x, const float* y, int n);
 #endif
 
+#ifdef COMPILE_SIMD_ARM_SVE
+template <>
+float block_l2<SIMDLevel::ARM_SVE>(const float* x, const float* y, int n);
+#endif
+
 } // namespace detail
 } // namespace faiss

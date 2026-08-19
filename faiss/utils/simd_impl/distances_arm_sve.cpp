@@ -7,6 +7,9 @@
 
 #include <arm_sve.h>
 
+#include <initializer_list>
+#include <utility>
+
 #include <faiss/utils/distances.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -568,6 +571,112 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_SVE>(
     }
 }
 
+namespace {
+
+/// Low-dimensional L2sqr nearest (D in {2,4,8}). The data is row-major
+/// (centroid c is y[c*D .. c*D+D]); each centroid's D components are loaded
+/// with a single svld1 into one SVE vector and reduced with svaddv. A scalar
+/// loop tracks the global minimum index. This avoids SVE gather/structure
+/// loads, which are not available on all toolchains. The scratch buffer is
+/// not written, matching the AVX2/AVX512 D2/D4/D8 implementations.
+template <int D>
+size_t fvec_L2sqr_ny_nearest_lowdim(
+        float* /*distances_tmp_buffer*/,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    const size_t lanes = svcntw();
+    // When D exceeds the vector width, fall back to the generic path.
+    if (static_cast<size_t>(D) > lanes) {
+        float global_min = HUGE_VALF;
+        size_t global_idx = 0;
+        for (size_t c = 0; c < ny; ++c) {
+            const float* yc = y + c * D;
+            float dis = 0.0f;
+            for (int j = 0; j < D; ++j) {
+                const float df = x[j] - yc[j];
+                dis += df * df;
+            }
+            if (dis < global_min) {
+                global_min = dis;
+                global_idx = c;
+            }
+        }
+        return global_idx;
+    }
+    const svbool_t pg = svwhilelt_b32(size_t(0), size_t(D));
+    // Broadcast x's D components into a vector (padding lanes are unused).
+    svfloat32_t xv = svdup_n_f32(0.0f);
+    svfloat32_t xacc = svld1_f32(pg, x);
+    xv = svsel_f32(pg, xacc, xv);
+    float global_min = HUGE_VALF;
+    size_t global_idx = 0;
+    for (size_t c = 0; c < ny; ++c) {
+        svfloat32_t yv = svld1_f32(pg, y + c * D);
+        svfloat32_t diff = svsub_f32_x(pg, yv, xv);
+        svfloat32_t sq = svmul_f32_x(pg, diff, diff);
+        const float dis = svaddv_f32(pg, sq);
+        if (dis < global_min) {
+            global_min = dis;
+            global_idx = c;
+        }
+    }
+    return global_idx;
+}
+
+} // namespace
+
+// Specializations for low-dimensional L2sqr nearest, mirroring the
+// fvec_L2sqr_ny_nearest_D2/D4/D8 declarations used by the SSE/AVX
+// implementations. One SVE lane covers one D-float centroid.
+template <SIMDLevel>
+size_t fvec_L2sqr_ny_nearest_D2(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t ny);
+
+template <SIMDLevel>
+size_t fvec_L2sqr_ny_nearest_D4(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t ny);
+
+template <SIMDLevel>
+size_t fvec_L2sqr_ny_nearest_D8(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t ny);
+
+template <>
+size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::ARM_SVE>(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    return fvec_L2sqr_ny_nearest_lowdim<2>(distances_tmp_buffer, x, y, ny);
+}
+
+template <>
+size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::ARM_SVE>(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    return fvec_L2sqr_ny_nearest_lowdim<4>(distances_tmp_buffer, x, y, ny);
+}
+
+template <>
+size_t fvec_L2sqr_ny_nearest_D8<SIMDLevel::ARM_SVE>(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    return fvec_L2sqr_ny_nearest_lowdim<8>(distances_tmp_buffer, x, y, ny);
+}
+
 template <>
 size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
         float* distances_tmp_buffer,
@@ -575,6 +684,25 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
         const float* y,
         size_t d,
         size_t ny) {
+    // Low-dimensional L2sqr nearest (d in {2,4,8}): each centroid is a D-float
+    // vector, one SVE lane per centroid via D svld1 loads. d is the SIMD
+    // layout condition; ny is the generic loop bound. The scratch buffer is
+    // not written (matching the x86 D2/D4/D8 implementations); the min index
+    // is tracked entirely in registers.
+    if (d == 2 || d == 4 || d == 8) {
+        switch (d) {
+            case 2:
+                return fvec_L2sqr_ny_nearest_D2<SIMDLevel::ARM_SVE>(
+                        distances_tmp_buffer, x, y, ny);
+            case 4:
+                return fvec_L2sqr_ny_nearest_D4<SIMDLevel::ARM_SVE>(
+                        distances_tmp_buffer, x, y, ny);
+            default:
+                return fvec_L2sqr_ny_nearest_D8<SIMDLevel::ARM_SVE>(
+                        distances_tmp_buffer, x, y, ny);
+        }
+    }
+
     const size_t lanes = static_cast<size_t>(svcntw());
 
     size_t nearest_idx = 0;
