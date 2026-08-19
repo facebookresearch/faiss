@@ -60,9 +60,9 @@
         <qualifiedname>faiss::gpu::GpuIndexConfig::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
-<para>Should the index dispatch down to cuVS? </para>
         </briefdescription>
         <detaileddescription>
+<para>Should the index dispatch down to cuVS? Opt-in: dispatching to cuVS selects a different implementation with its own numerical behaviour, so it must be an explicit choice by the caller rather than a consequence of how the binary happened to be built. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

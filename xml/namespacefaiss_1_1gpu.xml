@@ -616,7 +616,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="120" column="6" declfile="faiss/gpu/GpuDistance.h" declline="120" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="117" column="6" declfile="faiss/gpu/GpuDistance.h" declline="117" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a29928698b9b3bae60ff6f7e7d79e0354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -641,7 +641,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="134" column="6" declfile="faiss/gpu/GpuDistance.h" declline="134" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="131" column="6" declfile="faiss/gpu/GpuDistance.h" declline="131" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1ac7e9ee53cc7034bf2f4b2c1902ca2571" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -671,7 +671,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="148" column="6" declfile="faiss/gpu/GpuDistance.h" declline="148" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="145" column="6" declfile="faiss/gpu/GpuDistance.h" declline="145" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1ae2b4be0946d7ca9dbac7a03dbc6fd908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -734,7 +734,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="155" column="6" declfile="faiss/gpu/GpuDistance.h" declline="155" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="152" column="6" declfile="faiss/gpu/GpuDistance.h" declline="152" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a575dd856231662ae3e06b1fd2147a8a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -753,7 +753,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="51" column="6" declfile="faiss/gpu/GpuIndex.h" declline="51" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="50" column="6" declfile="faiss/gpu/GpuIndex.h" declline="50" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1ade84aeef8931feb5d026c6f5b02070f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> *</type>
@@ -772,7 +772,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="300" column="10" declfile="faiss/gpu/GpuIndex.h" declline="300" declcolumn="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="299" column="10" declfile="faiss/gpu/GpuIndex.h" declline="299" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a0a59a854dc33533d84251c97ce2e16e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -791,7 +791,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="303" column="6" declfile="faiss/gpu/GpuIndex.h" declline="303" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="302" column="6" declfile="faiss/gpu/GpuIndex.h" declline="302" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a9a5eeb989c1d853a58aa65a8af310372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -810,7 +810,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="306" column="6" declfile="faiss/gpu/GpuIndex.h" declline="306" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="305" column="6" declfile="faiss/gpu/GpuIndex.h" declline="305" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>

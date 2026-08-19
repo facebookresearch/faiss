@@ -293,13 +293,13 @@
         <qualifiedname>faiss::gpu::GpuDistanceParams::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
-<para>Should the index dispatch down to cuVS? </para>
         </briefdescription>
         <detaileddescription>
+<para>Should the search dispatch down to cuVS? Opt-in: see <ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1" kindref="member">GpuIndexConfig::use_cuvs</ref>. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="114" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="114" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="112" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="112" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -307,7 +307,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuDistance.h" line="32" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="32" bodyend="116"/>
+    <location file="faiss/gpu/GpuDistance.h" line="32" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="32" bodyend="113"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>dims</name></member>

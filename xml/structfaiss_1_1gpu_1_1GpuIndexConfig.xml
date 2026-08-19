@@ -47,9 +47,9 @@
         <qualifiedname>faiss::gpu::GpuIndexConfig::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
-<para>Should the index dispatch down to cuVS? </para>
         </briefdescription>
         <detaileddescription>
+<para>Should the index dispatch down to cuVS? Opt-in: dispatching to cuVS selects a different implementation with its own numerical behaviour, so it must be an explicit choice by the caller rather than a consequence of how the binary happened to be built. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -108,7 +108,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuIndex.h" line="32" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="32" bodyend="47"/>
+    <location file="faiss/gpu/GpuIndex.h" line="32" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="32" bodyend="46"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexConfig</scope><name>memorySpace</name></member>

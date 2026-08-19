@@ -126,13 +126,13 @@
         <qualifiedname>faiss::gpu::GpuClonerOptions::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
-<para>use the cuVS implementation </para>
+<para>Use the cuVS implementation. Opt-in: see <ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1" kindref="member">GpuIndexConfig::use_cuvs</ref>. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="46" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="43" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -148,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="53" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="49" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="49" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -180,7 +180,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuClonerOptions.h" line="16" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="16" bodyend="54"/>
+    <location file="faiss/gpu/GpuClonerOptions.h" line="16" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="16" bodyend="50"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>allowCpuCoarseQuantizer</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>indicesOptions</name></member>

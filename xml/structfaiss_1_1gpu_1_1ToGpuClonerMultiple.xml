@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="59" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="59" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="55" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="55" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a9548f823297298b0a78109dec7feb45e" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="62" column="9" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="62" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="58" column="9" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a402387f7f754c12fce1b7f553654e215" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="67" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="63" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">IndicesOptions</ref></type>
@@ -188,13 +188,13 @@
         <qualifiedname>faiss::gpu::GpuClonerOptions::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
-<para>use the cuVS implementation </para>
+<para>Use the cuVS implementation. Opt-in: see <ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1" kindref="member">GpuIndexConfig::use_cuvs</ref>. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="46" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="43" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="53" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="49" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="49" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
