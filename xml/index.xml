@@ -14027,6 +14027,7 @@
     <member refid="namespacefaiss_1a39372f49e950292a6ddc481df7167294" kind="function"><name>hammings_knn_hc_fixSL</name></member>
     <member refid="namespacefaiss_1a9c6a1b86714cf87e1380b407f30c6735" kind="function"><name>hammings_knn_mc_fixSL</name></member>
     <member refid="namespacefaiss_1a6e2b27269cfab105e53b37a6b9f02b68" kind="function"><name>hamming_range_search_fixSL</name></member>
+    <member refid="namespacefaiss_1ab94da4ef5be6974cf2e2135ce431de80" kind="function"><name>hammings_ragged_fixSL</name></member>
     <member refid="namespacefaiss_1a66781a9de0ece128347ac8437eb7ed43" kind="function"><name>hammings_fixSL</name></member>
     <member refid="namespacefaiss_1a882b93ec50ca056e6faa1ee8025e1623" kind="function"><name>generalized_hammings_knn_hc_fixSL</name></member>
     <member refid="namespacefaiss_1a621b7d76c4df33ee8cd6620275e79e7d" kind="function"><name>hamming_count_thres_fixSL</name></member>
@@ -14068,6 +14069,7 @@
     <member refid="namespacefaiss_1a7e7970c7b6e78837074358ff5756abcd" kind="function"><name>hammings_knn_hc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1ae22e5a9dc806d1f71c7cad99f0deb9d8" kind="function"><name>hammings_knn_mc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1a71d5671337c8c4749970ebbcfaf64ffa" kind="function"><name>hamming_range_search_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a1dccfb8a25ff5e28723a0a25ddb01de5" kind="function"><name>hammings_ragged_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1a266f0d1f649b46fd7aca59afcdb96d5d" kind="function"><name>hammings_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1adcf203dcbeb99d34bb3ea12b27d52126" kind="function"><name>generalized_hammings_knn_hc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1a99f4eccf995e726436cba10280af60b4" kind="function"><name>hamming_count_thres_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
