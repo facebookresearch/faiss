@@ -202,6 +202,118 @@ uint64_t popcount<SIMDLevel::ARM_NEON>(const uint8_t* data, size_t size) {
 
 namespace faiss::rabitq::multibit {
 
+namespace {
+
+inline float horizontal_sum(float32x4_t low, float32x4_t high) {
+    return vaddvq_f32(vaddq_f32(low, high));
+}
+
+inline float ip_1exbit_neon(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb) {
+    const uint32x4_t low_bit_positions = {1, 2, 4, 8};
+    const uint32x4_t high_bit_positions = {16, 32, 64, 128};
+    const uint32x4_t sign_weight = vdupq_n_u32(2);
+    const uint32x4_t ex_weight = vdupq_n_u32(1);
+    const float32x4_t bias = vdupq_n_f32(cb);
+    float32x4_t low_accumulator = vdupq_n_f32(0.0f);
+    float32x4_t high_accumulator = vdupq_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const uint32x4_t sign = vdupq_n_u32(sign_bits[i / 8]);
+        const uint32x4_t extra = vdupq_n_u32(ex_code[i / 8]);
+
+        const uint32x4_t low_values = vaddq_u32(
+                vandq_u32(vtstq_u32(sign, low_bit_positions), sign_weight),
+                vandq_u32(vtstq_u32(extra, low_bit_positions), ex_weight));
+        const uint32x4_t high_values = vaddq_u32(
+                vandq_u32(vtstq_u32(sign, high_bit_positions), sign_weight),
+                vandq_u32(vtstq_u32(extra, high_bit_positions), ex_weight));
+
+        const float32x4_t low_reconstruction =
+                vaddq_f32(vcvtq_f32_u32(low_values), bias);
+        const float32x4_t high_reconstruction =
+                vaddq_f32(vcvtq_f32_u32(high_values), bias);
+        low_accumulator = vfmaq_f32(
+                low_accumulator, vld1q_f32(rotated_q + i), low_reconstruction);
+        high_accumulator = vfmaq_f32(
+                high_accumulator,
+                vld1q_f32(rotated_q + i + 4),
+                high_reconstruction);
+    }
+
+    float result = horizontal_sum(low_accumulator, high_accumulator);
+    result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, 1, cb);
+    return result;
+}
+
+template <size_t ExBits>
+inline float ip_multibit_neon(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb) {
+    static_assert(ExBits >= 2 && ExBits <= 7);
+    const uint32x4_t low_bit_positions = {1, 2, 4, 8};
+    const uint32x4_t high_bit_positions = {16, 32, 64, 128};
+    const uint32x4_t sign_weight =
+            vdupq_n_u32(static_cast<uint32_t>(1u << ExBits));
+    const uint64x2_t code_mask =
+            vdupq_n_u64(static_cast<uint64_t>((1u << ExBits) - 1));
+    constexpr int64_t bit_width = static_cast<int64_t>(ExBits);
+    const int64x2_t shifts_01 = {0, -bit_width};
+    const int64x2_t shifts_23 = {-2 * bit_width, -3 * bit_width};
+    const int64x2_t shifts_45 = {-4 * bit_width, -5 * bit_width};
+    const int64x2_t shifts_67 = {-6 * bit_width, -7 * bit_width};
+    const float32x4_t bias = vdupq_n_f32(cb);
+    float32x4_t low_accumulator = vdupq_n_f32(0.0f);
+    float32x4_t high_accumulator = vdupq_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        uint64_t packed_codes = 0;
+        memcpy(&packed_codes, ex_code + (i / 8) * ExBits, ExBits);
+        const uint64x2_t packed = vdupq_n_u64(packed_codes);
+
+        const uint32x4_t low_codes = vcombine_u32(
+                vmovn_u64(vandq_u64(vshlq_u64(packed, shifts_01), code_mask)),
+                vmovn_u64(vandq_u64(vshlq_u64(packed, shifts_23), code_mask)));
+        const uint32x4_t high_codes = vcombine_u32(
+                vmovn_u64(vandq_u64(vshlq_u64(packed, shifts_45), code_mask)),
+                vmovn_u64(vandq_u64(vshlq_u64(packed, shifts_67), code_mask)));
+
+        const uint32x4_t sign = vdupq_n_u32(sign_bits[i / 8]);
+        const uint32x4_t low_values = vaddq_u32(
+                low_codes,
+                vandq_u32(vtstq_u32(sign, low_bit_positions), sign_weight));
+        const uint32x4_t high_values = vaddq_u32(
+                high_codes,
+                vandq_u32(vtstq_u32(sign, high_bit_positions), sign_weight));
+
+        const float32x4_t low_reconstruction =
+                vaddq_f32(vcvtq_f32_u32(low_values), bias);
+        const float32x4_t high_reconstruction =
+                vaddq_f32(vcvtq_f32_u32(high_values), bias);
+        low_accumulator = vfmaq_f32(
+                low_accumulator, vld1q_f32(rotated_q + i), low_reconstruction);
+        high_accumulator = vfmaq_f32(
+                high_accumulator,
+                vld1q_f32(rotated_q + i + 4),
+                high_reconstruction);
+    }
+
+    float result = horizontal_sum(low_accumulator, high_accumulator);
+    result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ExBits, cb);
+    return result;
+}
+
+} // namespace
+
 template <>
 float compute_inner_product<SIMDLevel::ARM_NEON>(
         const uint8_t* __restrict sign_bits,
@@ -210,8 +322,25 @@ float compute_inner_product<SIMDLevel::ARM_NEON>(
         size_t d,
         size_t ex_bits,
         float cb) {
-    return compute_inner_product<SIMDLevel::NONE>(
-            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+    if (ex_bits == 1) {
+        return ip_1exbit_neon(sign_bits, ex_code, rotated_q, d, cb);
+    }
+    switch (ex_bits) {
+        case 2:
+            return ip_multibit_neon<2>(sign_bits, ex_code, rotated_q, d, cb);
+        case 3:
+            return ip_multibit_neon<3>(sign_bits, ex_code, rotated_q, d, cb);
+        case 4:
+            return ip_multibit_neon<4>(sign_bits, ex_code, rotated_q, d, cb);
+        case 5:
+            return ip_multibit_neon<5>(sign_bits, ex_code, rotated_q, d, cb);
+        case 6:
+            return ip_multibit_neon<6>(sign_bits, ex_code, rotated_q, d, cb);
+        case 7:
+            return ip_multibit_neon<7>(sign_bits, ex_code, rotated_q, d, cb);
+        default:
+            return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+    }
 }
 
 } // namespace faiss::rabitq::multibit
