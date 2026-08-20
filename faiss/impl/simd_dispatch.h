@@ -36,9 +36,13 @@ constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
 constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
         (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
 
-// A0_SPR: same as A0 + AVX512_SPR (for functions with a dedicated SPR
-// specialization on top of an AVX512 fallback). Currently used by the
-// RaBitQ popcount kernels, which use VPOPCNTDQ on SPR+.
+// A0_VPOPCNT: same as A0 + AVX512_VPOPCNT (for functions with a dedicated
+// VPOPCNTDQ specialization on top of an AVX512 fallback).
+constexpr int AVAILABLE_SIMD_LEVELS_A0_VPOPCNT =
+        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_VPOPCNT));
+
+// A0_SPR: same as A0 + AVX512_SPR (for functions that require the complete
+// SPR feature set rather than VPOPCNTDQ alone).
 constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
         AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_SPR));
 
@@ -56,6 +60,8 @@ constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
     switch (level) {
         case SIMDLevel::AVX512_SPR:
+            return SIMDLevel::AVX512_VPOPCNT;
+        case SIMDLevel::AVX512_VPOPCNT:
             return SIMDLevel::AVX512;
         case SIMDLevel::AVX512:
             return SIMDLevel::AVX2;
@@ -124,6 +130,15 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
             [[fallthrough]];
 #endif
 
+#ifdef COMPILE_SIMD_AVX512_VPOPCNT
+        case SIMDLevel::AVX512_VPOPCNT:
+            if constexpr (
+                    available_levels & (1 << int(SIMDLevel::AVX512_VPOPCNT))) {
+                return action.template operator()<SIMDLevel::AVX512_VPOPCNT>();
+            }
+            [[fallthrough]];
+#endif
+
 #ifdef COMPILE_SIMD_AVX512
         case SIMDLevel::AVX512:
             if constexpr (available_levels & (1 << int(SIMDLevel::AVX512))) {
@@ -171,7 +186,7 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
     // In static mode, SINGLE_SIMD_LEVEL is a constexpr resolved at compile
     // time. We mirror the DD fallthrough behavior at compile time via
     // dispatch_with_fallback, which recursively walks get_simd_fallback:
-    //   x86:   AVX512_SPR -> AVX512 -> AVX2 -> NONE
+    //   x86:   AVX512_SPR -> AVX512_VPOPCNT -> AVX512 -> AVX2 -> NONE
     //   ARM:   ARM_SVE -> ARM_NEON -> NONE
     //   RISCV: RISCV_RVV -> NONE
     // The first level in the chain that appears in available_levels is
@@ -239,12 +254,12 @@ inline auto with_simd_level_256bit(LambdaType&& action) {
 }
 
 /**
- * Use for functions that have A0-level implementations plus an AVX512_SPR
- * specialization (e.g. using VPOPCNTDQ).
+ * Use for functions that have A0-level implementations plus an
+ * AVX512_VPOPCNT specialization.
  */
 template <typename LambdaType>
-inline auto with_simd_level_a0_spr(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+inline auto with_simd_level_a0_vpopcnt(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_VPOPCNT>(
             std::forward<LambdaType>(action));
 }
 

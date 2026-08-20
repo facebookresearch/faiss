@@ -148,6 +148,7 @@ _SIMD_LEVEL_NAMES = {
     faiss.SIMDLevel_ARM_NEON: "ARM_NEON",
     faiss.SIMDLevel_ARM_SVE: "ARM_SVE",
     faiss.SIMDLevel_RISCV_RVV: "RISCV_RVV",
+    faiss.SIMDLevel_AVX512_VPOPCNT: "AVX512_VPOPCNT",
 }
 
 

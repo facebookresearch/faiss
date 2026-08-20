@@ -3066,6 +3066,7 @@ SIMDLevel_AVX512_SPR: int
 SIMDLevel_ARM_NEON: int
 SIMDLevel_ARM_SVE: int
 SIMDLevel_RISCV_RVV: int
+SIMDLevel_AVX512_VPOPCNT: int
 SIMDLevel_COUNT: int
 
 class SIMDConfig:

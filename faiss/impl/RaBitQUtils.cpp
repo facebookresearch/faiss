@@ -329,7 +329,7 @@ float compute_full_multibit_distance(
         size_t d,
         size_t ex_bits,
         MetricType metric_type) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_VPOPCNT>(
             [&]<SIMDLevel SL>() {
                 return compute_full_multibit_distance<SL>(
                         sign_bits,
