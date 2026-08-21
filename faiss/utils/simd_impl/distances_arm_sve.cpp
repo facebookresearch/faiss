@@ -667,7 +667,7 @@ size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::ARM_SVE>(
     float tmp_buf[64];
 
     for (size_t k = 0; k < ny; k += lanes) {
-        svbool_t pg = svwhilelt_b32(k, ny);
+        svbool_t pg = svwhilelt_b32_u64(k, ny);
         svfloat32_t acc = svdup_n_f32(0.0f);
 
         for (size_t j = 0; j < d; ++j) {
