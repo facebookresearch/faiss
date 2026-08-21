@@ -467,14 +467,12 @@ struct SimilarityIP<SIMDLevel::RISCV_RVV> : SimilarityIP<SIMDLevel::NONE> {
 template <class Quantizer>
 inline constexpr bool has_reconstruct_m8_v =
         requires(const Quantizer& q, const uint8_t* code, size_t i, size_t vl) {
-    q.reconstruct_m8_components(code, i, vl);
-};
+            q.reconstruct_m8_components(code, i, vl);
+        };
 
 template <class Quantizer, class Similarity>
-requires(!has_reconstruct_m8_v<Quantizer>) struct DCTemplate<
-        Quantizer,
-        Similarity,
-        SIMDLevel::RISCV_RVV>
+    requires(!has_reconstruct_m8_v<Quantizer>)
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::RISCV_RVV>
         : DCTemplate<Quantizer, Similarity, SIMDLevel::NONE> {
     using Base = DCTemplate<Quantizer, Similarity, SIMDLevel::NONE>;
     using Base::Base;
@@ -488,10 +486,9 @@ struct DistanceComputerByte<Similarity, SIMDLevel::RISCV_RVV>
 };
 
 template <class Quantizer, class Similarity>
-requires(has_reconstruct_m8_v<Quantizer>) struct DCTemplate<
-        Quantizer,
-        Similarity,
-        SIMDLevel::RISCV_RVV> : SQDistanceComputer {
+    requires(has_reconstruct_m8_v<Quantizer>)
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::RISCV_RVV>
+        : SQDistanceComputer {
     using Sim = Similarity;
 
     Quantizer quant;
