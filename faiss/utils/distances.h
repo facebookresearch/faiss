@@ -369,8 +369,12 @@ void pairwise_indexed_inner_product(
  * KNN functions
  ***************************************************************************/
 
-// threshold on nx * d above which we switch to BLAS to compute distances
-FAISS_API extern int distance_compute_blas_threshold;
+// Threshold that controls when BLAS is used for distance computation.
+// BLAS is used when: nx * d >= distance_compute_blas_threshold * omp_threads.
+// With 1 OMP thread, the effective threshold is ~800 (BLAS wins early).
+// With many OMP threads, sequential scan parallelizes well across queries
+// and the effective threshold scales up proportionally.
+FAISS_API extern int64_t distance_compute_blas_threshold;
 
 // block sizes for BLAS distance computations
 FAISS_API extern int distance_compute_blas_query_bs;
