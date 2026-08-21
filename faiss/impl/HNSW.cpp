@@ -419,7 +419,13 @@ void add_link_tpl(
     }
     // they may have shrunk more than just by 1 element
     while (i < end) {
+#ifdef __riscv
+        __atomic_store_n(
+                &hnsw.neighbors[i], (storage_idx_t)-1, __ATOMIC_RELAXED);
+        i++;
+#else
         hnsw.neighbors[i++] = -1;
+#endif
     }
 }
 
@@ -513,9 +519,16 @@ static void search_neighbors_to_add_fixVT(
 
             for (size_t j = begin; j < end; j++) {
                 HNSW::storage_idx_t nodeId = hnsw.neighbors[j];
+#ifdef __riscv
+                if (nodeId < 0 ||
+                    static_cast<size_t>(nodeId) >= hnsw.levels.size()) {
+                    break;
+                }
+#else
                 if (nodeId < 0) {
                     break;
                 }
+#endif
                 if (!vt.set(nodeId)) {
                     continue;
                 }
