@@ -574,11 +574,9 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_SVE>(
 namespace {
 
 /// Low-dimensional L2sqr nearest (D in {2,4,8}). The data is row-major
-/// (centroid c is y[c*D .. c*D+D]); each centroid's D components are loaded
-/// with a single svld1 into one SVE vector and reduced with svaddv. A scalar
-/// loop tracks the global minimum index. This avoids SVE gather/structure
-/// loads, which are not available on all toolchains. The scratch buffer is
-/// not written, matching the AVX2/AVX512 D2/D4/D8 implementations.
+/// (centroid c is y[c*D .. c*D+D]). Each SVE lane tracks one centroid across
+/// batches, keeping the lane-local minimum and index in registers. The scratch
+/// buffer is not written, matching the AVX2/AVX512 D2/D4/D8 implementations.
 template <int D>
 size_t fvec_L2sqr_ny_nearest_lowdim(
         float* /*distances_tmp_buffer*/,
@@ -586,42 +584,31 @@ size_t fvec_L2sqr_ny_nearest_lowdim(
         const float* y,
         size_t ny) {
     const size_t lanes = svcntw();
-    // When D exceeds the vector width, fall back to the generic path.
-    if (static_cast<size_t>(D) > lanes) {
-        float global_min = HUGE_VALF;
-        size_t global_idx = 0;
-        for (size_t c = 0; c < ny; ++c) {
-            const float* yc = y + c * D;
-            float dis = 0.0f;
-            for (int j = 0; j < D; ++j) {
-                const float df = x[j] - yc[j];
-                dis += df * df;
-            }
-            if (dis < global_min) {
-                global_min = dis;
-                global_idx = c;
-            }
+    svfloat32_t global_mins = svdup_n_f32(HUGE_VALF);
+    svuint32_t global_ids = svdup_n_u32(0);
+    svuint32_t current_ids = svindex_u32(0, 1);
+
+    for (size_t c = 0; c < ny; c += lanes) {
+        const svbool_t pg = svwhilelt_b32_u64(c, ny);
+        svfloat32_t distances = svdup_n_f32(0.0f);
+        for (uint32_t j = 0; j < D; ++j) {
+            const svuint32_t offsets = svindex_u32(j, D);
+            const svfloat32_t yv =
+                    svld1_gather_u32index_f32(pg, y + c * D, offsets);
+            const svfloat32_t diff = svsub_n_f32_x(pg, yv, x[j]);
+            distances = svmla_f32_m(pg, distances, diff, diff);
         }
-        return global_idx;
+
+        const svbool_t closer = svcmplt_f32(pg, distances, global_mins);
+        global_mins = svsel_f32(closer, distances, global_mins);
+        global_ids = svsel_u32(closer, current_ids, global_ids);
+        current_ids =
+                svadd_n_u32_x(pg, current_ids, static_cast<uint32_t>(lanes));
     }
-    const svbool_t pg = svwhilelt_b32(size_t(0), size_t(D));
-    // Broadcast x's D components into a vector (padding lanes are unused).
-    svfloat32_t xv = svdup_n_f32(0.0f);
-    svfloat32_t xacc = svld1_f32(pg, x);
-    xv = svsel_f32(pg, xacc, xv);
-    float global_min = HUGE_VALF;
-    size_t global_idx = 0;
-    for (size_t c = 0; c < ny; ++c) {
-        svfloat32_t yv = svld1_f32(pg, y + c * D);
-        svfloat32_t diff = svsub_f32_x(pg, yv, xv);
-        svfloat32_t sq = svmul_f32_x(pg, diff, diff);
-        const float dis = svaddv_f32(pg, sq);
-        if (dis < global_min) {
-            global_min = dis;
-            global_idx = c;
-        }
-    }
-    return global_idx;
+
+    const svbool_t all = svptrue_b32();
+    const float global_min = svminv_f32(all, global_mins);
+    return svminv_u32(svcmpeq_n_f32(all, global_mins, global_min), global_ids);
 }
 
 } // namespace
@@ -684,11 +671,11 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
         const float* y,
         size_t d,
         size_t ny) {
-    // Low-dimensional L2sqr nearest (d in {2,4,8}): each centroid is a D-float
-    // vector, one SVE lane per centroid via D svld1 loads. d is the SIMD
-    // layout condition; ny is the generic loop bound. The scratch buffer is
-    // not written (matching the x86 D2/D4/D8 implementations); the min index
-    // is tracked entirely in registers.
+    // Low-dimensional L2sqr nearest (d in {2,4,8}): each SVE lane tracks one
+    // centroid while D gathers load its components. d is the SIMD layout
+    // condition; ny is the generic loop bound. The scratch buffer is not
+    // written (matching the x86 D2/D4/D8 implementations); minima and indices
+    // remain in registers.
     if (d == 2 || d == 4 || d == 8) {
         switch (d) {
             case 2:

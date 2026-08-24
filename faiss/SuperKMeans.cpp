@@ -57,7 +57,7 @@ namespace faiss {
 namespace {
 
 struct TrainState {
-    /// Fast orthogonal rotation. Train in rotated space;
+    /// Orthogonal rotation. Train in rotated space (X_tilde = X * R);
     /// un-rotate centroids before return.
     std::unique_ptr<faiss::VectorTransform> R;
 
@@ -208,8 +208,7 @@ int update_centroids_and_split(
         int k,
         TrainState& state,
         std::vector<int64_t>& labels64,
-        std::vector<float>& hassign,
-        bool spherical) {
+        std::vector<float>& hassign) {
     std::fill(hassign.begin(), hassign.end(), 0.0f);
     assert(!labels64.empty());
     assert(!state.assignments.empty());
@@ -227,23 +226,16 @@ int update_centroids_and_split(
             /*weights=*/nullptr,
             hassign.data(),
             state.Y_tilde.data());
-    if (spherical) {
-        fvec_renorm_L2(d, k, state.Y_tilde.data());
-    }
     if (state.n <= k) {
         return 0;
     }
-    const int nsplit = detail::split_clusters(
+    return detail::split_clusters(
             d,
             k,
             state.n,
             /*k_frozen=*/0,
             hassign.data(),
             state.Y_tilde.data());
-    if (spherical) {
-        fvec_renorm_L2(d, k, state.Y_tilde.data());
-    }
-    return nsplit;
 }
 
 /// Stay-in-band controller: nudge state.d_prime based on observed pruning
@@ -472,8 +464,11 @@ void SuperKMeans::train(idx_t n, const float* x) {
                     pruned_at_gemm);
         }
 
-        const int nsplit = update_centroids_and_split(
-                d, k, state, labels64, hassign, cp.spherical);
+        const int nsplit =
+                update_centroids_and_split(d, k, state, labels64, hassign);
+        if (cp.spherical) {
+            fvec_renorm_L2(d, k, state.Y_tilde.data());
+        }
         const float pruning_rate = (iter == 0)
                 ? 0.0f
                 : adapt_d_prime(d, cp, state, total_pairs, pruned_at_gemm);
