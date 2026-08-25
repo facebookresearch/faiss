@@ -136,10 +136,10 @@ struct ElementOpL2 {
     }
 
     static svfloat32_t merge(
-        svbool_t pg,
-        svfloat32_t z,
-        svfloat32_t x,
-        svfloat32_t y) {
+            svbool_t pg,
+            svfloat32_t z,
+            svfloat32_t x,
+            svfloat32_t y) {
         const svfloat32_t diff = svsub_f32_x(pg, x, y);
         return svmla_f32_x(pg, z, diff, diff);
     }
@@ -529,7 +529,6 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_SVE>(
         const float* y,
         size_t d,
         size_t ny) {
-
     const size_t lanes = static_cast<size_t>(svcntw());
 
     switch (d) {
@@ -576,7 +575,6 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
         const float* y,
         size_t d,
         size_t ny) {
-
     const size_t lanes = static_cast<size_t>(svcntw());
 
     size_t nearest_idx = 0;
@@ -624,7 +622,6 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::ARM_SVE>(
         size_t d,
         size_t d_offset,
         size_t ny) {
-
     const size_t lanes = static_cast<size_t>(svcntw());
     const float x_sq = fvec_norm_L2sqr(x, d);
 
@@ -655,7 +652,6 @@ size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::ARM_SVE>(
         size_t d,
         size_t d_offset,
         size_t ny) {
-
     const size_t lanes = svcntw();
     const float x_sq = fvec_norm_L2sqr(x, d);
 
@@ -688,11 +684,12 @@ size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::ARM_SVE>(
         if (svptest_any(pg, less_mask)) {
             float vec_min = svminv_f32(pg, res);
 
-            current_min_v = svmin_f32_x(pg, current_min_v, svdup_n_f32(vec_min));
+            current_min_v =
+                    svmin_f32_x(pg, current_min_v, svdup_n_f32(vec_min));
 
             svst1_f32(pg, tmp_buf, res);
 
-            size_t cnt = (size_t) svcntw();
+            size_t cnt = (size_t)svcntw();
             for (size_t lane = 0; lane < cnt && (k + lane) < ny; ++lane) {
                 if (tmp_buf[lane] == vec_min) {
                     current_min = vec_min;
