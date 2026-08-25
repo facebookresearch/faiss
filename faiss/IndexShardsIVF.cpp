@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <functional>
 
+#include <faiss/MetricType.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/WorkerThread.h>
@@ -227,7 +228,7 @@ void IndexShardsIVF::search(
 
     this->runOnIndex(fn);
 
-    if (this->metric_type == METRIC_L2) {
+    if (!is_similarity_metric(metric_type)) {
         merge_knn_results<idx_t, CMin<distance_t, int>>(
                 n,
                 k,
