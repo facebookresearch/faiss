@@ -7144,6 +7144,30 @@
         </inbodydescription>
         <location file="faiss/impl/simd_dispatch.h" line="236" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="236" bodyend="239"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a7afbf9f535275a87b0b3640d516f2995" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename LambdaType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::with_simd_level_a1</definition>
+        <argsstring>(LambdaType &amp;&amp;action)</argsstring>
+        <name>with_simd_level_a1</name>
+        <qualifiedname>faiss::with_simd_level_a1</qualifiedname>
+        <param>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Use for functions that have A0-level implementations plus a dedicated ARM_SVE specialization. Plain <ref refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kindref="member">with_simd_level()</ref> uses A0, which omits the ARM_SVE bit, so on an SVE host the ARM_SVE case falls through to ARM_NEON and the SVE specialization is never instantiated. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="248" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="248" bodyend="251"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -7166,7 +7190,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="246" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="246" bodyend="249"/>
+        <location file="faiss/impl/simd_dispatch.h" line="258" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="258" bodyend="261"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SIMDLevel::AVX2 &gt;</type>

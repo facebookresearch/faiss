@@ -13809,6 +13809,7 @@
     <member refid="namespacefaiss_1a100aea00ff7b9a235f6ecb517b889138" kind="function"><name>with_simd_level_fallback</name></member>
     <member refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kind="function"><name>with_simd_level</name></member>
     <member refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" kind="function"><name>with_simd_level_256bit</name></member>
+    <member refid="namespacefaiss_1a7afbf9f535275a87b0b3640d516f2995" kind="function"><name>with_simd_level_a1</name></member>
     <member refid="namespacefaiss_1aebb459a7f8979c398e92c26bc67390df" kind="function"><name>with_simd_level_a0_spr</name></member>
     <member refid="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" kind="function"><name>min</name></member>
     <member refid="namespacefaiss_1a24831007196ffedd52d8bc1649cf26b0" kind="function"><name>max</name></member>
