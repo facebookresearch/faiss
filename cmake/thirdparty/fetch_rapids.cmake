@@ -15,9 +15,11 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 # =============================================================================
-set(RAPIDS_VERSION "26.06")
+set(RAPIDS_VERSION "26.10")
 set(rapids-cmake-version ${RAPIDS_VERSION})
-set(rapids-cmake-branch "release/${RAPIDS_VERSION}")
+# IVF-RaBitQ is introduced in the cuVS 26.10 nightly line, whose rapids-cmake
+# source is maintained on main until the 26.10 release branch is cut.
+set(rapids-cmake-branch "main")
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
     file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/${rapids-cmake-branch}/RAPIDS.cmake
