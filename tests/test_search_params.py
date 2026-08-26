@@ -364,6 +364,35 @@ class TestSelector(unittest.TestCase):
         np.testing.assert_array_equal(sorted(I_ref), sorted(I))
         np.testing.assert_array_equal(sorted(D_ref), sorted(D))
 
+    def test_idmap_range_ivf_params(self):
+        quantizer = faiss.IndexFlatL2(1)
+        quantizer.add(np.array([[0.0], [100.0]], dtype="float32"))
+        base = faiss.IndexIVFFlat(quantizer, 1, 2, faiss.METRIC_L2)
+        base.nprobe = 1
+        index = faiss.IndexIDMap(base)
+
+        index.add_with_ids(
+            np.array([[0.0], [100.0]], dtype="float32"),
+            np.array([10, 20], dtype="int64"),
+        )
+
+        params = faiss.SearchParametersIVF(nprobe=2)
+        params.sel = faiss.IDSelectorBatch(
+            np.array([10, 20], dtype="int64")
+        )
+        lims, distances, labels = index.range_search(
+            np.array([[0.0]], dtype="float32"),
+            10001.0,
+            params=params,
+        )
+        order = np.argsort(labels)
+        labels = labels[order]
+        distances = distances[order]
+
+        np.testing.assert_array_equal(lims, [0, 2])
+        np.testing.assert_array_equal(distances, [0.0, 10000.0])
+        np.testing.assert_array_equal(labels, [10, 20])
+
     def test_bounds(self):
         # https://github.com/facebookresearch/faiss/issues/3156
         d = 64  # dimension

@@ -3057,6 +3057,36 @@ class CodePacker:
 class CodePackerFlat(CodePacker):
     def __init__(self, code_size: int) -> None: ...
 
+# SIMD dispatch (faiss/utils/simd_levels.h). SWIG exposes the scoped enum
+# SIMDLevel as module-level int constants (EnumName_Value convention).
+SIMDLevel_NONE: int
+SIMDLevel_AVX2: int
+SIMDLevel_AVX512: int
+SIMDLevel_AVX512_SPR: int
+SIMDLevel_ARM_NEON: int
+SIMDLevel_ARM_SVE: int
+SIMDLevel_RISCV_RVV: int
+SIMDLevel_COUNT: int
+
+class SIMDConfig:
+    level: int
+    supported_simd_levels: int
+    avx512_split: bool
+    @staticmethod
+    def auto_detect_simd_level() -> int: ...
+    @staticmethod
+    def has_dynamic_dispatch() -> bool: ...
+    @staticmethod
+    def set_level(level: int) -> None: ...
+    @staticmethod
+    def get_level() -> int: ...
+    @staticmethod
+    def get_level_name() -> str: ...
+    @staticmethod
+    def is_simd_level_available(level: int) -> bool: ...
+    @staticmethod
+    def get_dispatched_level() -> int: ...
+
 # Utility functions
 def get_mem_usage_kb() -> int: ...
 def get_compile_options() -> str: ...
@@ -4317,6 +4347,18 @@ distance_compute_min_k_reservoir: int
 
 # Index factory verbose flag
 index_factory_verbose: int
+
+# SWIG exposes mutable C++ globals here rather than as module attributes,
+# which could not write through to C++. Access as `faiss.cvar.<name>`.
+class _SwigGlobals:
+    distance_compute_blas_threshold: int
+    distance_compute_blas_query_bs: int
+    distance_compute_blas_database_bs: int
+    distance_compute_min_k_reservoir: int
+    index_factory_verbose: int
+    hnsw_deterministic_build: bool
+
+cvar: _SwigGlobals
 
 # GPU-specific types and functions
 class GpuDistanceParams:
