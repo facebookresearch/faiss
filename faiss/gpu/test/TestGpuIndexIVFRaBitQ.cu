@@ -25,6 +25,7 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/FaissAssert.h>
 
 #include <gtest/gtest.h>
 
@@ -70,9 +71,29 @@ TEST(TestGpuIndexIVFRaBitQ, BuildAndSearch) {
     index.search(
             nq, queries.data(), k, distances.data(), labels.data(), &params);
 
+    EXPECT_THROW(index.add(1, database.data()), faiss::FaissException);
+
     index.reset();
     EXPECT_FALSE(index.is_trained);
     EXPECT_EQ(index.ntotal, 0);
+
+    index.add(nb, database.data());
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, nb);
+}
+
+TEST(TestGpuIndexIVFRaBitQ, RequiresL2Metric) {
+    faiss::gpu::StandardGpuResources resources;
+    faiss::gpu::GpuIndexIVFRaBitQConfig config;
+    config.device = 0;
+    config.use_cuvs = true;
+
+    const auto construct_index = [&] {
+        faiss::gpu::GpuIndexIVFRaBitQ index(
+                &resources, 32, 16, faiss::METRIC_INNER_PRODUCT, config);
+    };
+
+    EXPECT_THROW(construct_index(), faiss::FaissException);
 }
 
 } // namespace
