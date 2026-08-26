@@ -44,8 +44,8 @@ dependencies = [
   "nvidia-cublas>=13.2,<14",
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
-  "libcuvs-cu13>=26.06,<27",
-  "librmm-cu13>=26.06,<27",
+  "libcuvs-cu13==26.10.*,>=0.0.0a0",
+  "librmm-cu13==26.10.*,>=0.0.0a0",
 ]
 
 [project.urls]
@@ -93,7 +93,7 @@ BUILD_SHARED_LIBS = "ON"
 # mirroring the conda build — no explicit *_DIR, agnostic to lib/ vs lib64/.
 
 # Stable ABI (abi3): one cp311 wheel covers all 3.11+.
-# Floor is 3.11 because the runtime dep libcuvs-cu13>=26.06 (RAPIDS) requires
+# Floor is 3.11 because the nightly libcuvs-cu13 26.10 dependency (RAPIDS) requires
 # Python >=3.11 — RAPIDS dropped 3.10 in the 26.04 release.
 # GPU is Linux-only; free-threaded Python (cp3*t) cannot use abi3.
 [[tool.scikit-build.overrides]]
@@ -114,8 +114,8 @@ test-requires = [
   "nvidia-cublas>=13.2,<14",
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
-  "libcuvs-cu13>=26.06,<27",
-  "librmm-cu13>=26.06,<27",
+  "libcuvs-cu13==26.10.*,>=0.0.0a0",
+  "librmm-cu13==26.10.*,>=0.0.0a0",
 ]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
 
@@ -131,7 +131,7 @@ test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
 # `pip install --target /opt/cuvs` — ABI-clean, so no libstdc++/libgcc_s/libgomp strip
 # or RMM symlink shim. cp311 interpreter is explicit (manylinux puts no `pip` on PATH).
 manylinux-x86_64-image = "manylinux_2_28"
-before-all = "dnf install -y gcc-toolset-14 epel-release && dnf install -y openblas-devel openblas-openmp swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y --setopt=obsoletes=0 cuda-toolkit-13-2 && /opt/python/cp311-cp311/bin/python -m pip install --target /opt/cuvs --no-deps --only-binary ':all:' --extra-index-url https://pypi.nvidia.com 'libcuvs-cu13==26.06.*' 'libraft-cu13==26.06.*' 'librmm-cu13==26.06.*' 'rapids-logger'"
+before-all = "dnf install -y gcc-toolset-14 epel-release && dnf install -y openblas-devel openblas-openmp swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y --setopt=obsoletes=0 cuda-toolkit-13-2 && /opt/python/cp311-cp311/bin/python -m pip install --target /opt/cuvs --no-deps --only-binary ':all:' --extra-index-url https://pypi.nvidia.com 'libcuvs-cu13==26.10.*' 'libraft-cu13==26.10.*' 'librmm-cu13==26.10.*' 'rapids-logger'"
 # auditwheel excludes (not vendored; supplied at runtime by nvidia-* / libcuvs-cu13
 # wheels): host driver libcuda, CUDA runtime/math libs (cusparse/cusolver are explicit —
 # under the cuda-toolkit RPM, not /opt/cuvs), and every RAPIDS .so found under /opt/cuvs.
