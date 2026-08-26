@@ -390,11 +390,17 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
         const size_t ex_bits = nb_bits - 1;
         FAISS_ASSERT(ex_bits > 0);
 
+        // Honor IDSelectorWithContext on the multibit path too, so a RaBitQ
+        // index does not silently lose the context hook once nb_bits >= 2 (the
+        // 1-bit path already routes through run_scan_codes1).
+        const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
+
         size_t nup = 0;
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel->is_member(id)) {
+                if (!sel_dispatch.is_member(
+                            id, IDScanContext{ids, list_size, j})) {
                     codes += code_size;
                     continue;
                 }
@@ -601,11 +607,17 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
         const size_t ex_bits = nb_bits - 1;
         FAISS_ASSERT(ex_bits > 0);
 
+        // Honor IDSelectorWithContext on the multibit path too, so a RaBitQ
+        // index does not silently lose the context hook once nb_bits >= 2 (the
+        // 1-bit path already routes through run_scan_codes1).
+        const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
+
         size_t nup = 0;
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel->is_member(id)) {
+                if (!sel_dispatch.is_member(
+                            id, IDScanContext{ids, list_size, j})) {
                     codes += code_size;
                     continue;
                 }

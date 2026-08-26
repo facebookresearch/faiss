@@ -239,6 +239,18 @@ inline auto with_simd_level_256bit(LambdaType&& action) {
 }
 
 /**
+ * Use for functions that have A0-level implementations plus a dedicated
+ * ARM_SVE specialization. Plain with_simd_level() uses A0, which omits the
+ * ARM_SVE bit, so on an SVE host the ARM_SVE case falls through to ARM_NEON
+ * and the SVE specialization is never instantiated.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_a1(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            std::forward<LambdaType>(action));
+}
+
+/**
  * Use for functions that have A0-level implementations plus an AVX512_SPR
  * specialization (e.g. using VPOPCNTDQ).
  */
