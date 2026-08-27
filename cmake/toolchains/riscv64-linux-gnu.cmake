@@ -28,8 +28,13 @@ set(CMAKE_SYSTEM_PROCESSOR riscv64)
 set(CMAKE_C_COMPILER   riscv64-linux-gnu-gcc-14)
 set(CMAKE_CXX_COMPILER riscv64-linux-gnu-g++-14)
 
-# GCC-14 provided sysroot
-set(CMAKE_SYSROOT /usr/riscv64-linux-gnu)
+# Do NOT set CMAKE_SYSROOT here. Ubuntu's cross toolchain resolves target
+# libraries through its built-in paths (/usr/riscv64-linux-gnu/lib). Passing
+# --sysroot=/usr/riscv64-linux-gnu makes ld prepend the sysroot to the
+# absolute paths inside libc6-dev-riscv64-cross's libc.so linker script,
+# producing doubled paths such as
+#   /usr/riscv64-linux-gnu/usr/riscv64-linux-gnu/lib/libc.so.6
+# and failing the CMake compiler check at link time.
 
 set(CMAKE_FIND_ROOT_PATH /usr/riscv64-linux-gnu)
 
