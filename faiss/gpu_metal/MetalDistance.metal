@@ -1907,11 +1907,18 @@ kernel void ivf_scan_list_pq8_precomp(
 
     uint qi = tgid / nprobe;
     uint pi = tgid % nprobe;
-    if (qi >= nq || k == 0 || k > PQPRE_MAX_K || M * 256 > PQPRE_LUT_MAX)
+    if (qi >= nq || k == 0)
         return;
 
     float sentinel = want_min ? 1e38f : -1e38f;
     uint outBase = (qi * nprobe + pi) * k;
+    if (k > PQPRE_MAX_K || M > PQPRE_LUT_MAX / 256) {
+        for (uint i = tid; i < k; i += PQPRE_TG) {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+        return;
+    }
 
     int list_no = coarseAssign[qi * nprobe + pi];
     uint lLen = (list_no < 0) ? 0u : listLength[(uint)list_no];
