@@ -17,7 +17,6 @@
 #include <limits>
 #include <memory>
 #include <queue>
-#include <random>
 
 #include <cstdint>
 #include "faiss/Index.h"
@@ -317,11 +316,16 @@ void hnsw_add_vertices_deterministic(
                     order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
         }
 
-        // Bootstrap/raise the entry point: the top bucket runs first, so its
-        // first (shuffled) point is a valid max-level entry point.
-        if (hnsw.entry_point == -1 || pt_level > hnsw.max_level) {
+        // Bootstrap only when the graph is empty. Raising entry_point to a
+        // point that is not yet linked orphans everything already inserted,
+        // which on an incremental add() is the entire prior graph. order[i0]
+        // is the sole member of the first batch below, so defer until then.
+        bool raise_entry_point = false;
+        if (hnsw.entry_point == -1) {
             hnsw.max_level = pt_level;
             hnsw.entry_point = order[i0];
+        } else if (pt_level > hnsw.max_level) {
+            raise_entry_point = true;
         }
 
         // Prefix-doubling batches within this bucket.
@@ -496,6 +500,12 @@ void hnsw_add_vertices_deterministic(
 
             InterruptCallback::check();
             s = e;
+
+            if (raise_entry_point) {
+                hnsw.max_level = pt_level;
+                hnsw.entry_point = order[i0];
+                raise_entry_point = false;
+            }
         }
 
         i1 = i0;
@@ -1433,13 +1443,11 @@ void IndexHNSWCagra::search(
                 // first real candidate will always be strictly better.
                 nearest_d[i] = C::neutral();
 
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<idx_t> distrib(
-                        0, this->ntotal - 1);
+                // Seeded per query so entrypoints are reproducible.
+                SplitMix64RandomGenerator gen(i);
 
                 for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                    auto idx = distrib(gen);
+                    idx_t idx = gen.rand_int64() % this->ntotal;
                     auto distance = (*dis)(idx);
                     if (C::cmp(nearest_d[i], distance)) {
                         nearest[i] = static_cast<storage_idx_t>(idx);
@@ -1498,12 +1506,11 @@ void IndexHNSWCagra::range_search(
             // real candidate will always be strictly better.
             float nearest_d = C::neutral();
 
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
+            // For reproducible entrypoint.
+            SplitMix64RandomGenerator gen(i);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                auto idx = distrib(gen);
+                idx_t idx = gen.rand_int64() % ntotal;
                 auto distance = (*dis)(idx);
                 // C::cmp(nearest_d, distance) is true iff distance is
                 // strictly better than the current nearest_d.

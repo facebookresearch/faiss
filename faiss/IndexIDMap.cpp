@@ -229,15 +229,20 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    if (params && params->sel) {
-        SearchParameters internal_search_parameters;
-        IDSelectorTranslated id_selector_translated(id_map, params->sel);
-        internal_search_parameters.sel = &id_selector_translated;
+    IDSelectorTranslated this_idtrans(this->id_map, nullptr);
+    ScopedSelChange sel_change;
 
-        index->range_search(n, x, radius, result, &internal_search_parameters);
-    } else {
-        index->range_search(n, x, radius, result, params);
+    if (params && params->sel) {
+        auto idtrans = dynamic_cast<const IDSelectorTranslated*>(params->sel);
+
+        if (!idtrans) {
+            // Preserve the concrete params type and its index-specific fields.
+            auto params_non_const = const_cast<SearchParameters*>(params);
+            this_idtrans.sel = params->sel;
+            sel_change.set(params_non_const, &this_idtrans);
+        }
     }
+    index->range_search(n, x, radius, result, params);
 
     const idx_t id_map_size = static_cast<idx_t>(id_map.size());
 #pragma omp parallel for
