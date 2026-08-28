@@ -463,21 +463,6 @@ void MetalKernels::encodeIVFMergeListsGrouped(
             threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
 }
 
-void MetalKernels::encodeConvertF32ToF16(
-        id<MTLComputeCommandEncoder> enc,
-        id<MTLBuffer> src,
-        id<MTLBuffer> dst,
-        size_t numElems) {
-    [enc setComputePipelineState:pipeline("convert_f32_to_f16")];
-    [enc setBuffer:src offset:0 atIndex:0];
-    [enc setBuffer:dst offset:0 atIndex:1];
-    uint32_t n = (uint32_t)numElems;
-    [enc setBytes:&n length:sizeof(n) atIndex:2];
-    const NSUInteger tg = 256;
-    [enc dispatchThreads:MTLSizeMake((NSUInteger)numElems, 1, 1)
-            threadsPerThreadgroup:MTLSizeMake(tg, 1, 1)];
-}
-
 MetalKernels& getMetalKernels(id<MTLDevice> device) {
     static std::mutex mu;
     static std::unordered_map<uintptr_t, std::unique_ptr<MetalKernels>> map;

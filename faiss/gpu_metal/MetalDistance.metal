@@ -1693,16 +1693,6 @@ kernel void ivf_scan_list_pq8_small(
     }
 }
 
-kernel void convert_f32_to_f16(
-    device const float* src [[buffer(0)]],
-    device half* dst [[buffer(1)]],
-    constant uint& n [[buffer(2)]],
-    uint gid [[thread_position_in_grid]]
-) {
-    if (gid >= n) return;
-    dst[gid] = half(src[gid]);
-}
-
 // ============================================================
 //  IVF-PQ precomputed-table search path
 // ============================================================

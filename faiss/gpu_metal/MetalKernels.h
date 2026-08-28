@@ -176,12 +176,6 @@ class MetalKernels {
             int k,
             bool wantMin);
 
-    void encodeConvertF32ToF16(
-            id<MTLComputeCommandEncoder> enc,
-            id<MTLBuffer> src,
-            id<MTLBuffer> dst,
-            size_t numElems);
-
     static int selectTopKVariantIndex(int k);
 
    private:
