@@ -46,7 +46,7 @@ outputs:
         - {{ compiler('cxx') }} =12.4
         - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
-        - cmake >=3.30.4
+        - cmake >=4.0,<5
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl >=2024.2.2,<2026  # [x86_64]
@@ -96,7 +96,7 @@ outputs:
         - {{ compiler('cxx') }} =14.2
         - sysroot_linux-64 =2.34 # [linux64]
         - swig =4.0
-        - cmake >=3.30.4
+        - cmake >=4.0,<5
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl >=2024.2.2,<2026  # [x86_64]

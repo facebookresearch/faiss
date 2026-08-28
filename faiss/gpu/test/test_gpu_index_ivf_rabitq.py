@@ -10,7 +10,8 @@ import numpy as np
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+    "CUVS" not in faiss.get_compile_options() or faiss.get_num_gpus() == 0,
+    "requires cuVS support and a CUDA device",
 )
 class TestGpuIndexIVFRaBitQ(unittest.TestCase):
     def test_build_search_and_reset(self):

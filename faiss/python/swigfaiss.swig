@@ -377,7 +377,7 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#if defined(FAISS_ENABLE_CUVS)
+#if defined(USE_NVIDIA_CUVS)
 #include <faiss/gpu/GpuIndexIVFRaBitQ.h>
 #endif
 #include <faiss/gpu/GpuIndexBinaryFlat.h>

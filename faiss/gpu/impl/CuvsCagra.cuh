@@ -27,6 +27,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <memory>
 #include <optional>
 
 #include <faiss/MetricType.h>
@@ -157,6 +158,11 @@ class CuvsCagra {
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
             nullptr};
+
+    /// CAGRA stores a non-owning dataset view, so retain the padded device
+    /// storage for the complete lifetime of the index.
+    std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
+            dataset_storage_;
 };
 } // namespace gpu
 } // namespace faiss

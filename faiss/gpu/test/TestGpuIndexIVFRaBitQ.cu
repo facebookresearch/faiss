@@ -34,6 +34,10 @@
 namespace {
 
 TEST(TestGpuIndexIVFRaBitQ, BuildAndSearch) {
+    if (faiss::gpu::getNumDevices() == 0) {
+        GTEST_SKIP() << "requires a CUDA device";
+    }
+
     constexpr int d = 32;
     constexpr int nlist = 16;
     constexpr int nb = 2048;
@@ -97,3 +101,11 @@ TEST(TestGpuIndexIVFRaBitQ, RequiresL2Metric) {
 }
 
 } // namespace
+
+int main(int argc, char** argv) {
+    testing::InitGoogleTest(&argc, argv);
+
+    faiss::gpu::setTestSeed(100);
+
+    return RUN_ALL_TESTS();
+}
