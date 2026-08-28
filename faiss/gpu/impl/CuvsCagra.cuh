@@ -29,6 +29,7 @@
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
@@ -155,14 +156,16 @@ class CuvsCagra {
     /// Parameter to use MST optimization to guarantee graph connectivity
     bool guarantee_connectivity_ = false;
 
-    /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
-            nullptr};
+    using PaddedIndex = cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>;
+    using StandardIndex = cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>;
 
-    /// CAGRA stores a non-owning dataset view, so retain the padded device
-    /// storage for the complete lifetime of the index.
-    std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
-            dataset_storage_;
+    /// CAGRA only borrows the dataset. Keep a Faiss allocation for host input;
+    /// device input remains non-owning and is referenced through storage_.
+    GpuMemoryReservation owned_device_storage_;
+
+    /// The index layout follows the source allocation: padded when its row
+    /// stride already satisfies CAGRA's alignment, standard otherwise.
+    std::variant<std::monostate, PaddedIndex, StandardIndex> cuvs_index_;
 };
 } // namespace gpu
 } // namespace faiss
