@@ -119,9 +119,11 @@ cmake.define.FAISS_OPT_LEVEL = "generic"
 
 [tool.cibuildwheel]
 # Build all Python versions on Windows (no abi3); cp310 only on Linux/macOS (abi3).
-# Skip 32-bit and free-threaded builds. musllinux is built (see override below).
+# Skip Windows arm64 for Python 3.10 because Python 3.10 is not available as a
+# supported Windows arm64 target. Also skip 32-bit and free-threaded builds.
+# musllinux is built below.
 build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
-skip = "*-win32 *-manylinux_i686 cp3*t-*"
+skip = "cp310-win_arm64 *-win32 *-manylinux_i686 cp3*t-*"
 test-requires = ["numpy", "pytest", "scipy"]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke.py -v"
 
