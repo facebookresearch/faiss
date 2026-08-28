@@ -168,13 +168,13 @@ select = "*-macosx_x86_64"
 environment = {MACOSX_DEPLOYMENT_TARGET = "15.0"}
 
 [tool.cibuildwheel.windows]
-# Install prebuilt OpenBLAS (statically-linked MinGW runtime, no external deps).
-before-all = "powershell -Command \"Invoke-WebRequest -Uri 'https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.30/OpenBLAS-0.3.30-x64.zip' -OutFile openblas.zip; Expand-Archive openblas.zip -DestinationPath C:/openblas -Force\""
+# Install the native x64 or arm64 OpenBLAS package for the runner.
+before-all = 'powershell -NoProfile -ExecutionPolicy Bypass -File "{package}\.github\scripts\install-openblas.ps1"'
 repair-wheel-command = "pip install delvewheel && delvewheel repair -w {dest_dir} {wheel} --add-path C:/openblas/bin --ignore-in-wheel"
 
 [tool.cibuildwheel.windows.environment]
 # BLAS_ROOT tells CMake's FindBLAS (via CMP0074) where to find OpenBLAS.
-# PATH includes the bin/ dir so delvewheel and tests can find libopenblas.dll.
+# PATH includes the bin/ dir so delvewheel and tests can find the OpenBLAS DLL.
 BLAS_ROOT = "C:/openblas"
 LAPACK_ROOT = "C:/openblas"
 PATH = "C:/openblas/bin;$PATH"
