@@ -17,8 +17,6 @@
 # =============================================================================
 set(RAPIDS_VERSION "26.10")
 set(rapids-cmake-version ${RAPIDS_VERSION})
-# IVF-RaBitQ is introduced in the cuVS 26.10 nightly line, whose rapids-cmake
-# source is maintained on main until the 26.10 release branch is cut.
 set(rapids-cmake-branch "main")
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
