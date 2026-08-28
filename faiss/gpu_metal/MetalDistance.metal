@@ -434,16 +434,13 @@ kernel void l2_with_norms(
 // Shared params layout (device const uint*):
 //   [0] nq   [1] d   [2] k   [3] nprobe   [4] want_min
 
-inline bool ivf_better_int(float aDist, int aIdx, float bDist, int bIdx, uint want_min) {
-    constexpr float tie_eps = 1e-6f;
-    float delta = aDist - bDist;
-    bool strictly = want_min ? (delta < -tie_eps) : (delta > tie_eps);
-    if (strictly) return true;
-    if (fabs(delta) <= tie_eps) return aIdx < bIdx;
-    return false;
-}
-
-inline bool ivf_better_long(float aDist, long aIdx, float bDist, long bIdx, uint want_min) {
+template <typename IndexT>
+inline bool ivf_better(
+        float aDist,
+        IndexT aIdx,
+        float bDist,
+        IndexT bIdx,
+        uint want_min) {
     constexpr float tie_eps = 1e-6f;
     float delta = aDist - bDist;
     bool strictly = want_min ? (delta < -tie_eps) : (delta > tie_eps);
@@ -557,7 +554,7 @@ kernel void ivf_scan_list(
             localDist[pos] = dist;
             localIdx [pos] = vi;
             while (pos > 0) {
-                bool sw = ivf_better_int(
+                bool sw = ivf_better(
                         localDist[pos], localIdx[pos],
                         localDist[pos - 1], localIdx[pos - 1],
                         want_min);
@@ -586,11 +583,11 @@ kernel void ivf_scan_list(
                 uint partner = idx ^ j;
                 if (partner < CAND && partner > idx) {
                     bool ascending = ((idx & k2) == 0);
-                    bool pB = ivf_better_int(
+                    bool pB = ivf_better(
                             tgDist[partner], tgIdx[partner],
                             tgDist[idx], tgIdx[idx],
                             want_min);
-                    bool iB = ivf_better_int(
+                    bool iB = ivf_better(
                             tgDist[idx], tgIdx[idx],
                             tgDist[partner], tgIdx[partner],
                             want_min);
@@ -709,7 +706,7 @@ kernel void ivf_scan_list_small(
 
         int vi = (int)vecIdx;
 
-        bool better = ivf_better_int(dist, vi, bestDist, bestIdx, want_min);
+        bool better = ivf_better(dist, vi, bestDist, bestIdx, want_min);
         if (better) {
             bestDist = dist;
             bestIdx  = vi;
@@ -728,11 +725,11 @@ kernel void ivf_scan_list_small(
             uint partner = tid ^ j;
             if (partner < CAND && partner > tid) {
                 bool ascending = ((tid & k2) == 0);
-                bool pB = ivf_better_int(
+                bool pB = ivf_better(
                         tgDist[partner], tgIdx[partner],
                         tgDist[tid], tgIdx[tid],
                         want_min);
-                bool iB = ivf_better_int(
+                bool iB = ivf_better(
                         tgDist[tid], tgIdx[tid],
                         tgDist[partner], tgIdx[partner],
                         want_min);
@@ -875,7 +872,7 @@ kernel void ivf_scan_list_interleaved(
             localDist[pos] = dist;
             localIdx [pos] = vi;
             while (pos > 0) {
-                bool sw = ivf_better_int(
+                bool sw = ivf_better(
                         localDist[pos], localIdx[pos],
                         localDist[pos - 1], localIdx[pos - 1],
                         want_min);
@@ -904,11 +901,11 @@ kernel void ivf_scan_list_interleaved(
                 uint partner = idx ^ j;
                 if (partner < CAND && partner > idx) {
                     bool ascending = ((idx & k2) == 0);
-                    bool pB = ivf_better_int(
+                    bool pB = ivf_better(
                             tgDist[partner], tgIdx[partner],
                             tgDist[idx], tgIdx[idx],
                             want_min);
-                    bool iB = ivf_better_int(
+                    bool iB = ivf_better(
                             tgDist[idx], tgIdx[idx],
                             tgDist[partner], tgIdx[partner],
                             want_min);
@@ -982,7 +979,7 @@ kernel void ivf_merge_lists(
             localDist[pos] = d;
             localIdx [pos] = v;
             while (pos > 0) {
-                bool sw = ivf_better_long(
+                bool sw = ivf_better(
                         localDist[pos], localIdx[pos],
                         localDist[pos - 1], localIdx[pos - 1],
                         want_min);
@@ -1010,11 +1007,11 @@ kernel void ivf_merge_lists(
                 uint partner = idx ^ j;
                 if (partner < CAND && partner > idx) {
                     bool ascending = ((idx & k2) == 0);
-                    bool pB = ivf_better_long(
+                    bool pB = ivf_better(
                             tgDist[partner], tgIdx[partner],
                             tgDist[idx], tgIdx[idx],
                             want_min);
-                    bool iB = ivf_better_long(
+                    bool iB = ivf_better(
                             tgDist[idx], tgIdx[idx],
                             tgDist[partner], tgIdx[partner],
                             want_min);
@@ -1723,9 +1720,10 @@ constant constexpr uint PQPRE_CAND = PQPRE_MAX_K + PQPRE_SEG; // 1024
 constant constexpr uint PQPRE_LUT_MAX = 16 * 256; // M <= 16
 
 // Bitonic sort over tgDist/tgIdx[0..n), n a power of two. Sorted best-first.
-inline void ivf_tg_bitonic_int(
+template <typename IndexT>
+inline void ivf_tg_bitonic(
     threadgroup float* tgDist,
-    threadgroup int* tgIdx,
+    threadgroup IndexT* tgIdx,
     uint n,
     uint tid,
     uint want_min
@@ -1736,51 +1734,17 @@ inline void ivf_tg_bitonic_int(
                 uint partner = idx ^ j;
                 if (partner < n && partner > idx) {
                     bool ascending = ((idx & k2) == 0);
-                    bool pB = ivf_better_int(
+                    bool pB = ivf_better(
                             tgDist[partner], tgIdx[partner],
                             tgDist[idx], tgIdx[idx], want_min);
-                    bool iB = ivf_better_int(
+                    bool iB = ivf_better(
                             tgDist[idx], tgIdx[idx],
                             tgDist[partner], tgIdx[partner], want_min);
                     if (ascending ? pB : iB) {
                         float td = tgDist[idx];
                         tgDist[idx] = tgDist[partner];
                         tgDist[partner] = td;
-                        int ti = tgIdx[idx];
-                        tgIdx[idx] = tgIdx[partner];
-                        tgIdx[partner] = ti;
-                    }
-                }
-            }
-            threadgroup_barrier(mem_flags::mem_threadgroup);
-        }
-    }
-}
-
-inline void ivf_tg_bitonic_long(
-    threadgroup float* tgDist,
-    threadgroup long* tgIdx,
-    uint n,
-    uint tid,
-    uint want_min
-) {
-    for (uint k2 = 2; k2 <= n; k2 *= 2) {
-        for (uint j = k2 >> 1; j > 0; j >>= 1) {
-            for (uint idx = tid; idx < n; idx += PQPRE_TG) {
-                uint partner = idx ^ j;
-                if (partner < n && partner > idx) {
-                    bool ascending = ((idx & k2) == 0);
-                    bool pB = ivf_better_long(
-                            tgDist[partner], tgIdx[partner],
-                            tgDist[idx], tgIdx[idx], want_min);
-                    bool iB = ivf_better_long(
-                            tgDist[idx], tgIdx[idx],
-                            tgDist[partner], tgIdx[partner], want_min);
-                    if (ascending ? pB : iB) {
-                        float td = tgDist[idx];
-                        tgDist[idx] = tgDist[partner];
-                        tgDist[partner] = td;
-                        long ti = tgIdx[idx];
+                        IndexT ti = tgIdx[idx];
                         tgIdx[idx] = tgIdx[partner];
                         tgIdx[partner] = ti;
                     }
@@ -1985,7 +1949,7 @@ kernel void ivf_scan_list_pq8_precomp(
                 tgIdx [i] = -1;
             }
             threadgroup_barrier(mem_flags::mem_threadgroup);
-            ivf_tg_bitonic_int(tgDist, tgIdx, paddedN, tid, want_min);
+            ivf_tg_bitonic(tgDist, tgIdx, paddedN, tid, want_min);
             kk = min(k, total);
         }
         if (tid == 0) {
@@ -2060,7 +2024,7 @@ kernel void ivf_merge_lists_grouped(
     }
     threadgroup_barrier(mem_flags::mem_threadgroup);
 
-    ivf_tg_bitonic_long(tgDist, tgIdx, paddedN, tid, want_min);
+    ivf_tg_bitonic(tgDist, tgIdx, paddedN, tid, want_min);
 
     uint outBase = (qi * nGroups + g) * k;
     for (uint i = tid; i < k; i += PQPRE_TG) {
