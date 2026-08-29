@@ -27,7 +27,6 @@
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include <memory>
 #include <optional>
 #include <variant>
 
@@ -158,10 +157,6 @@ class CuvsCagra {
 
     using PaddedIndex = cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>;
     using StandardIndex = cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>;
-
-    /// CAGRA only borrows the dataset. Keep a Faiss allocation for host input;
-    /// device input remains non-owning and is referenced through storage_.
-    GpuMemoryReservation owned_device_storage_;
 
     /// The index layout follows the source allocation: padded when its row
     /// stride already satisfies CAGRA's alignment, standard otherwise.

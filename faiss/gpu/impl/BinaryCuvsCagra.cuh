@@ -28,8 +28,8 @@
 #include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include <memory>
 #include <optional>
+#include <variant>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
@@ -118,13 +118,10 @@ class BinaryCuvsCagra {
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
-    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
-            cuvs_index{nullptr};
+    using PaddedIndex = cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>;
+    using StandardIndex = cuvs::neighbors::cagra::device_standard_index<uint8_t, uint32_t>;
 
-    /// CAGRA stores a non-owning dataset view, so retain the padded device
-    /// storage for the complete lifetime of the index.
-    std::unique_ptr<cuvs::neighbors::device_padded_dataset<uint8_t, int64_t>>
-            dataset_storage_;
+    std::variant<std::monostate, PaddedIndex, StandardIndex> cuvs_index_;
 };
 
 } // namespace gpu

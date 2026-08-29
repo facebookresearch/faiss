@@ -42,30 +42,6 @@ namespace gpu {
 
 namespace {
 
-template <typename T>
-const T* ensureDeviceDataset(
-        GpuResources* resources,
-        const raft::device_resources& raft_handle,
-        const T* dataset,
-        idx_t n,
-        int dim,
-        GpuMemoryReservation& owned_storage) {
-    if (getDeviceForAddress(dataset) >= 0) {
-        return dataset;
-    }
-
-    const size_t bytes = static_cast<size_t>(n) * dim * sizeof(T);
-    owned_storage = resources->allocMemoryHandle(
-            AllocRequest(makeDevAlloc(Other, raft_handle.get_stream()), bytes));
-    CUDA_VERIFY(cudaMemcpyAsync(
-            owned_storage.get(),
-            dataset,
-            bytes,
-            cudaMemcpyHostToDevice,
-            raft_handle.get_stream()));
-    return static_cast<const T*>(owned_storage.get());
-}
-
 template <typename T, typename PaddedIndex, typename StandardIndex, typename IndexStorage>
 void makeCagraIndex(
         const raft::device_resources& raft_handle,
@@ -188,8 +164,10 @@ CuvsCagra<data_t>::CuvsCagra(
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    storage_ = ensureDeviceDataset(
-            resources_, raft_handle, dataset, n, dim_, owned_device_storage_);
+    FAISS_THROW_IF_NOT_MSG(
+            dataset_on_gpu,
+            "cuVS CAGRA requires a device-resident dataset when using a non-owning dataset view");
+    storage_ = dataset;
     n_ = n;
 
     if (dataset_on_gpu && knn_graph_on_gpu) {
@@ -238,8 +216,10 @@ template <typename data_t>
 void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    storage_ = ensureDeviceDataset(
-            resources_, raft_handle, x, n, dim_, owned_device_storage_);
+    FAISS_THROW_IF_NOT_MSG(
+            getDeviceForAddress(x) >= 0,
+            "cuVS CAGRA requires device-resident training data when using a non-owning dataset view");
+    storage_ = x;
     n_ = n;
 
     if (!ivf_pq_params_) {
@@ -396,7 +376,6 @@ void CuvsCagra<data_t>::search(
 template <typename data_t>
 void CuvsCagra<data_t>::reset() {
     cuvs_index_ = std::monostate{};
-    owned_device_storage_.release();
 }
 
 template <typename data_t>
