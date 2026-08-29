@@ -34,6 +34,7 @@ set(FAISS_TEST_SRC
   test_callback.cpp
   test_utils.cpp
   test_hamming.cpp
+  test_read_index_deserialize.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
