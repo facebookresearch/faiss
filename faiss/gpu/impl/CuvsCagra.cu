@@ -119,9 +119,6 @@ CuvsCagra<data_t>::CuvsCagra(
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    FAISS_THROW_IF_NOT_MSG(
-            dataset_on_gpu,
-            "cuVS CAGRA requires a device-resident dataset when using a non-owning dataset view");
     storage_ = dataset;
     n_ = n;
 
@@ -153,7 +150,14 @@ CuvsCagra<data_t>::CuvsCagra(
                 knn_graph + (n * graph_degree),
                 knn_graph_copy.data_handle());
 
-        FAISS_THROW_MSG("cuVS CAGRA requires device-resident dataset and graph storage");
+        auto matrix = raft::make_host_matrix_view<const data_t, int64_t>(storage_, n, dim_);
+        dataset_storage_ = cuvs::neighbors::make_device_padded_dataset(raft_handle, matrix);
+        cuvs_padded_index = std::make_shared<
+                cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>(
+                raft_handle,
+                metricFaissToCuvs(metric_, false),
+                dataset_storage_->as_dataset_view(),
+                raft::make_const_mdspan(knn_graph_copy.view()));
     } else {
         FAISS_THROW_MSG(
                 "dataset and knn_graph must both be in device or host memory");
@@ -164,9 +168,6 @@ template <typename data_t>
 void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    FAISS_THROW_IF_NOT_MSG(
-            getDeviceForAddress(x) >= 0,
-            "cuVS CAGRA requires device-resident training data when using a non-owning dataset view");
     storage_ = x;
     n_ = n;
 
@@ -198,11 +199,20 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
         index_params_.graph_build_params = graph_build_params;
     }
 
-    auto matrix = raft::make_device_matrix_view<const data_t, int64_t>(storage_, n, dim_);
-    auto view = cuvs::neighbors::make_device_standard_dataset_view(matrix);
-    cuvs_index = std::make_shared<
-            cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>>(
-            cuvs::neighbors::cagra::build(raft_handle, index_params_, view));
+    if (getDeviceForAddress(x) >= 0) {
+        auto matrix = raft::make_device_matrix_view<const data_t, int64_t>(storage_, n, dim_);
+        auto view = cuvs::neighbors::make_device_standard_dataset_view(matrix);
+        cuvs_index = std::make_shared<
+                cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>>(
+                cuvs::neighbors::cagra::build(raft_handle, index_params_, view));
+    } else {
+        auto matrix = raft::make_host_matrix_view<const data_t, int64_t>(storage_, n, dim_);
+        dataset_storage_ = cuvs::neighbors::make_device_padded_dataset(raft_handle, matrix);
+        cuvs_padded_index = std::make_shared<
+                cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>(
+                cuvs::neighbors::cagra::build(
+                        raft_handle, index_params_, dataset_storage_->as_dataset_view()));
+    }
 }
 
 template <typename data_t>
@@ -231,17 +241,24 @@ void CuvsCagra<data_t>::search(
     idx_t cols = queries.getSize(1);
     idx_t k_ = k;
 
-    FAISS_ASSERT(cuvs_index);
+    FAISS_ASSERT(cuvs_index || cuvs_padded_index);
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
 
     if (!store_dataset_) {
-        auto dataset = raft::make_device_matrix_view<const data_t, int64_t>(
-                storage_, n_, dim_);
-        *cuvs_index = cuvs::neighbors::cagra::update_dataset(
-                raft_handle,
-                std::move(*cuvs_index),
-                cuvs::neighbors::make_device_standard_dataset_view(dataset));
+        if (cuvs_index) {
+            auto dataset = raft::make_device_matrix_view<const data_t, int64_t>(
+                    storage_, n_, dim_);
+            *cuvs_index = cuvs::neighbors::cagra::update_dataset(
+                    raft_handle,
+                    std::move(*cuvs_index),
+                    cuvs::neighbors::make_device_standard_dataset_view(dataset));
+        } else {
+            *cuvs_padded_index = cuvs::neighbors::cagra::update_dataset(
+                    raft_handle,
+                    std::move(*cuvs_padded_index),
+                    dataset_storage_->as_dataset_view());
+        }
         store_dataset_ = true;
     }
 
@@ -289,14 +306,13 @@ void CuvsCagra<data_t>::search(
             : static_cast<const cuvs::neighbors::filtering::base_filter&>(
                       none_filter);
 
-    cuvs::neighbors::cagra::search(
-            raft_handle,
-            search_pams,
-            *cuvs_index,
-            queries_view,
-            indices_copy.view(),
-            distances_view,
-            filter_ref);
+    if (cuvs_index) {
+        cuvs::neighbors::cagra::search(
+                raft_handle, search_pams, *cuvs_index, queries_view, indices_copy.view(), distances_view, filter_ref);
+    } else {
+        cuvs::neighbors::cagra::search(
+                raft_handle, search_pams, *cuvs_padded_index, queries_view, indices_copy.view(), distances_view, filter_ref);
+    }
     faiss::gpu::sanitizeCuvsIndices(
             resources_,
             indices_copy.data_handle(),
@@ -308,22 +324,25 @@ void CuvsCagra<data_t>::search(
 template <typename data_t>
 void CuvsCagra<data_t>::reset() {
     cuvs_index.reset();
+    cuvs_padded_index.reset();
+    dataset_storage_.reset();
 }
 
 template <typename data_t>
 idx_t CuvsCagra<data_t>::get_knngraph_degree() const {
-    FAISS_ASSERT(cuvs_index);
-    return static_cast<idx_t>(cuvs_index->graph_degree());
+    FAISS_ASSERT(cuvs_index || cuvs_padded_index);
+    return static_cast<idx_t>(cuvs_index ? cuvs_index->graph_degree()
+                                         : cuvs_padded_index->graph_degree());
 }
 
 template <typename data_t>
 std::vector<idx_t> CuvsCagra<data_t>::get_knngraph() const {
-    FAISS_ASSERT(cuvs_index);
+    FAISS_ASSERT(cuvs_index || cuvs_padded_index);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     auto stream = raft_handle.get_stream();
 
-    auto device_graph = cuvs_index->graph();
+    auto device_graph = cuvs_index ? cuvs_index->graph() : cuvs_padded_index->graph();
 
     std::vector<idx_t> host_graph(
             device_graph.extent(0) * device_graph.extent(1));

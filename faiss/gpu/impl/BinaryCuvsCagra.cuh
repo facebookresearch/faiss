@@ -120,6 +120,10 @@ class BinaryCuvsCagra {
 
     std::shared_ptr<cuvs::neighbors::cagra::device_standard_index<uint8_t, uint32_t>>
             cuvs_index{nullptr};
+    std::shared_ptr<cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
+            cuvs_padded_index{nullptr};
+    std::unique_ptr<cuvs::neighbors::device_padded_dataset<uint8_t, int64_t>>
+            dataset_storage_;
 };
 
 } // namespace gpu
