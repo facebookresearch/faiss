@@ -141,6 +141,9 @@ BinaryCuvsCagra::BinaryCuvsCagra(
 }
 
 void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
+    cuvs_index.reset();
+    cuvs_padded_index.reset();
+    dataset_storage_.reset();
     storage_ = x;
     n_ = n;
 

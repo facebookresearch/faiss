@@ -168,6 +168,9 @@ template <typename data_t>
 void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
+    cuvs_index.reset();
+    cuvs_padded_index.reset();
+    dataset_storage_.reset();
     storage_ = x;
     n_ = n;
 
