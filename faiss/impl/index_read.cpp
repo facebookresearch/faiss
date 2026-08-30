@@ -2167,6 +2167,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ScalarQuantizer(&idxs->sq, f, *idxs);
         read_vector(idxs->codes, f);
         idxs->code_size = idxs->sq.code_size;
+        FAISS_THROW_IF_NOT(
+                idxs->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxs->ntotal,
+                        idxs->code_size,
+                        "IndexScalarQuantizer codes"));
         idx = std::move(idxs);
     } else if (h == fourcc("IxLa")) {
         int d, nsq, scale_nbit, r2;
