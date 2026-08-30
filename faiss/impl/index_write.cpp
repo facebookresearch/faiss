@@ -370,6 +370,13 @@ static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
     // WRITE1(hnsw->upper_beam);
     constexpr int tmp_upper_beam = 1;
     WRITE1(tmp_upper_beam);
+
+    // tunables that change graph build/search behavior. A previous version
+    // of the format did not store them, so they are read back as their
+    // defaults when loading an old file.
+    WRITE1(hnsw->prune_headroom);
+    WRITE1(hnsw->check_relative_distance);
+    WRITE1(hnsw->search_bounded_queue);
 }
 
 static void write_NSG(const NSG* nsg, IOWriter* f) {
@@ -867,13 +874,13 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITEVECTOR(idxmap->id_map);
     } else if (const IndexHNSW* idxhnsw = dynamic_cast<const IndexHNSW*>(idx)) {
         uint32_t h = dynamic_cast<const IndexHNSWFlatPanorama*>(idx)
-                ? fourcc("IHfP")
-                : dynamic_cast<const IndexHNSWFlat*>(idx)   ? fourcc("IHNf")
-                : dynamic_cast<const IndexHNSWPQ*>(idx)     ? fourcc("IHNp")
-                : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
-                : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
-                : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
-                : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
+                ? fourcc("IH2P")
+                : dynamic_cast<const IndexHNSWFlat*>(idx)   ? fourcc("IH2f")
+                : dynamic_cast<const IndexHNSWPQ*>(idx)     ? fourcc("IH2p")
+                : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IH2s")
+                : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IH22")
+                : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IH2c")
+                : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH20")
                                                             : 0;
         FAISS_THROW_IF_NOT_FMT(
                 h != 0,
@@ -881,13 +888,13 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 typeid(*idx).name());
         WRITE1(h);
         write_index_header(idxhnsw, f);
-        if (h == fourcc("IHfP")) {
+        if (h == fourcc("IH2P")) {
             auto idx_panorama =
                     dynamic_cast<const IndexHNSWFlatPanorama*>(idxhnsw);
             WRITE1(idx_panorama->num_panorama_levels);
             WRITEVECTOR(idx_panorama->cum_sums);
         }
-        if (h == fourcc("IHc2")) {
+        if (h == fourcc("IH2c")) {
             WRITE1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<const IndexHNSWCagra*>(idxhnsw);
             WRITE1(idx_hnsw_cagra->base_level_only);
@@ -1329,12 +1336,12 @@ void write_index_binary(const IndexBinary* idx, IOWriter* f) {
                     dynamic_cast<const IndexBinaryHNSW*>(idx)) {
         // Determine which type of binary HNSW index this is
         uint32_t h = dynamic_cast<const IndexBinaryHNSWCagra*>(idx)
-                ? fourcc("IBHc")
-                : fourcc("IBHf");
+                ? fourcc("IB2c")
+                : fourcc("IB2f");
         WRITE1(h);
         write_index_binary_header(idxhnsw, f);
 
-        if (h == fourcc("IBHc")) {
+        if (h == fourcc("IB2c")) {
             auto idxcagra = dynamic_cast<const IndexBinaryHNSWCagra*>(idxhnsw);
             WRITE1(idxcagra->keep_max_size_level0);
             WRITE1(idxcagra->base_level_only);
