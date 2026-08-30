@@ -1553,6 +1553,64 @@ TEST(ReadIndexDeserialize, HNSWValidNeighborsSearchWorks) {
 }
 
 // -----------------------------------------------------------------------
+// Test: the new HNSW graph format (IH2*) round-trips the graph tunables
+// (prune_headroom, check_relative_distance, search_bounded_queue).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWNewFormatGraphTunables) {
+    int ntotal = 3, npn = 2;
+    std::vector<int32_t> neighbors = {1, -1, 0, -1, 0, -1};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IH2f");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors);
+    // graph tunables, serialized right after the deprecated upper_beam field
+    push_val<float>(buf, 0.3f);
+    push_val<bool>(buf, false);
+    push_val<bool>(buf, false);
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/ntotal);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> idx;
+    ASSERT_NO_THROW(idx = read_index_up(&reader));
+    ASSERT_NE(idx, nullptr);
+
+    auto* idx_flat = dynamic_cast<IndexHNSWFlat*>(idx.get());
+    ASSERT_NE(idx_flat, nullptr);
+    EXPECT_FLOAT_EQ(idx_flat->hnsw.prune_headroom, 0.3f);
+    EXPECT_FALSE(idx_flat->hnsw.check_relative_distance);
+    EXPECT_FALSE(idx_flat->hnsw.search_bounded_queue);
+}
+
+// -----------------------------------------------------------------------
+// Test: files written in the old HNSW graph format (IHNf) still load, and
+// the graph tunables that the old format did not store keep their defaults.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWOldFormatGraphTunableDefaults) {
+    int ntotal = 3, npn = 2;
+    std::vector<int32_t> neighbors = {1, -1, 0, -1, 0, -1};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors);
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/ntotal);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> idx;
+    ASSERT_NO_THROW(idx = read_index_up(&reader));
+    ASSERT_NE(idx, nullptr);
+
+    auto* idx_flat = dynamic_cast<IndexHNSWFlat*>(idx.get());
+    ASSERT_NE(idx_flat, nullptr);
+    EXPECT_FLOAT_EQ(idx_flat->hnsw.prune_headroom, 0.2f);
+    EXPECT_TRUE(idx_flat->hnsw.check_relative_distance);
+    EXPECT_TRUE(idx_flat->hnsw.search_bounded_queue);
+}
+
+// -----------------------------------------------------------------------
 // Test: IndexHNSW2Level with wrong storage type is rejected.
 // Protects against corrupt serialized data where storage is not
 // Index2Layer or IndexIVFPQ, causing null-deref from failed dynamic_cast.
