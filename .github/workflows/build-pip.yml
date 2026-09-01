@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-14, macos-15-intel, windows-2022, 2-core-ubuntu-arm]
+        os: [ubuntu-latest, macos-14, macos-15-intel, windows-2022, windows-11-arm, 2-core-ubuntu-arm]
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2

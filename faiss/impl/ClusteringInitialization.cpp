@@ -157,8 +157,8 @@ void ClusteringInitialization::init_centroids(
             n,
             k);
     FAISS_THROW_IF_NOT(d > 0);
-    FAISS_THROW_IF_NOT(x != nullptr);
-    FAISS_THROW_IF_NOT(centroids != nullptr);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_NOT(centroids);
     FAISS_THROW_IF_NOT(
             n_existing_centroids == 0 || existing_centroids != nullptr);
 
@@ -235,8 +235,11 @@ void ClusteringInitialization::init_kmeans_plus_plus(
             float* new_centroid = centroids + c * d;
             std::memcpy(new_centroid, x + next_idx * d, d * sizeof(float));
 
-            // Update min distances incrementally
-            for (size_t i = 0; i < n; i++) {
+            // Update min distances incrementally. The writes are independent,
+            // so the loop parallelizes without changing the output.
+            const int64_t ni = static_cast<int64_t>(n);
+#pragma omp parallel for
+            for (int64_t i = 0; i < ni; i++) {
                 double dist = fvec_L2sqr<SL>(x + i * d, new_centroid, d);
                 min_distances[i] = std::min(min_distances[i], dist);
             }

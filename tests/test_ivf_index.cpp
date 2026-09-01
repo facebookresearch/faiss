@@ -256,6 +256,28 @@ TEST(IVF, list_context) {
     }
 }
 
+TEST(IVF, jaccard_search_returns_most_similar_vector) {
+    constexpr int d = 3;
+    constexpr int nb = 3;
+    const float xb[nb * d] = {
+            1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f};
+
+    faiss::IndexFlatL2 quantizer(d);
+    quantizer.add(1, xb);
+    faiss::IndexIVFFlat index(&quantizer, d, 1, faiss::METRIC_Jaccard);
+    index.add(nb, xb);
+
+    for (int parallel_mode = 0; parallel_mode < 4; parallel_mode++) {
+        index.parallel_mode = parallel_mode;
+        float distance;
+        faiss::idx_t label;
+        index.search(1, xb, 1, &distance, &label);
+
+        EXPECT_EQ(label, 0) << "parallel mode " << parallel_mode;
+        EXPECT_FLOAT_EQ(distance, 1.0f) << "parallel mode " << parallel_mode;
+    }
+}
+
 // Test: search_preassigned with out-of-range keys throws a catchable
 // FaissException instead of calling std::terminate from an uncaught
 // exception inside the OpenMP parallel region.

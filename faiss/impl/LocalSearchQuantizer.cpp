@@ -597,8 +597,8 @@ void LocalSearchQuantizer::icm_encode_step(
         const float* binaries,
         size_t n,
         size_t n_iters) const {
-    FAISS_THROW_IF_NOT(M != 0 && K != 0);
-    FAISS_THROW_IF_NOT(binaries != nullptr);
+    FAISS_THROW_IF_MSG(M == 0 || K == 0, "M and K must be nonzero");
+    FAISS_THROW_IF_NOT(binaries);
 
     // Resolve SIMD level once, not per iteration of the n × n_iters × M loop.
     with_simd_level_256bit([&]<SIMDLevel SL>() {

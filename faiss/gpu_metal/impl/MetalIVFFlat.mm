@@ -156,7 +156,7 @@ void MetalIVFFlatImpl::appendVectors(
     if (n == 0) {
         return;
     }
-    FAISS_THROW_IF_NOT(list_nos != nullptr);
+    FAISS_THROW_IF_NOT(list_nos);
 
     // Count how many vectors go to each list.
     std::vector<size_t> addPerList(nlist_, 0);

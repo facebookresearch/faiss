@@ -33,6 +33,22 @@ std::unique_ptr<VisitedTable> VisitedTable::create(
     return std::make_unique<VisitedTableVector>(size);
 }
 
+VisitedTable& VisitedTable::get_reusable(
+        size_t size,
+        std::optional<bool> use_hashset) {
+    bool use_set =
+            use_hashset.value_or(size >= visited_table_hashset_threshold);
+    if (use_set) {
+        thread_local VisitedTableSet tls_set;
+        tls_set.advance();
+        return tls_set;
+    }
+    thread_local VisitedTableVector tls_vec(0);
+    tls_vec.ensure_size(size);
+    tls_vec.advance();
+    return tls_vec;
+}
+
 void VisitedTableVector::advance() {
     if (visno < 254) {
         // 254 rather than 255 because sometimes we use visno and visno+1

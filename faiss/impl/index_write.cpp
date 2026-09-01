@@ -275,20 +275,12 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
     } else if (
             const auto& ailp =
                     dynamic_cast<const ArrayInvertedListsPanorama*>(ils)) {
-        if (ailp->pano.batch_size == Panorama::kDefaultBatchSize) {
-            uint32_t h = fourcc("ilpn");
-            WRITE1(h);
-            WRITE1(ailp->nlist);
-            WRITE1(ailp->code_size);
-            WRITE1(ailp->n_levels);
-        } else {
-            uint32_t h = fourcc("ilp2");
-            WRITE1(h);
-            WRITE1(ailp->nlist);
-            WRITE1(ailp->code_size);
-            WRITE1(ailp->n_levels);
-            WRITE1(ailp->pano.batch_size);
-        }
+        uint32_t h = fourcc("ilp2");
+        WRITE1(h);
+        WRITE1(ailp->nlist);
+        WRITE1(ailp->code_size);
+        WRITE1(ailp->n_levels);
+        WRITE1(ailp->pano.batch_size);
         uint32_t list_type = fourcc("full");
         WRITE1(list_type);
         std::vector<size_t> sizes;
@@ -736,18 +728,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexIVFFlatPanorama* ivfp =
                     dynamic_cast<const IndexIVFFlatPanorama*>(idx)) {
-        if (ivfp->batch_size == Panorama::kDefaultBatchSize) {
-            uint32_t h = fourcc("IwPn");
-            WRITE1(h);
-            write_ivf_header(ivfp, f);
-            WRITE1(ivfp->n_levels);
-        } else {
-            uint32_t h = fourcc("IwP2");
-            WRITE1(h);
-            write_ivf_header(ivfp, f);
-            WRITE1(ivfp->n_levels);
-            WRITE1(ivfp->batch_size);
-        }
+        uint32_t h = fourcc("IwP2");
+        WRITE1(h);
+        write_ivf_header(ivfp, f);
+        WRITE1(ivfp->n_levels);
+        WRITE1(ivfp->batch_size);
         write_InvertedLists(ivfp->invlists, f);
     } else if (
             const IndexIVFFlat* ivfl_2 =
@@ -921,7 +906,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexNSGPQ*>(idx)      ? fourcc("INSp")
                 : dynamic_cast<const IndexNSGSQ*>(idx)      ? fourcc("INSs")
                                                             : 0;
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_MSG(
+                h == 0, "don't know how to serialize this IndexNSG subtype");
         WRITE1(h);
         write_index_header(idxnsg, f);
         WRITE1(idxnsg->GK);
@@ -936,9 +922,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             const IndexNNDescent* idxnnd =
                     dynamic_cast<const IndexNNDescent*>(idx)) {
         auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
-        FAISS_THROW_IF_NOT(idxnndflat != nullptr);
+        FAISS_THROW_IF_NOT(idxnndflat);
         uint32_t h = fourcc("INNf");
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_MSG(
+                h == 0,
+                "don't know how to serialize this IndexNNDescent subtype");
         WRITE1(h);
         write_index_header(idxnnd, f);
         write_NNDescent(&idxnnd->nndescent, f);

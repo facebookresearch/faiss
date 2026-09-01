@@ -23,15 +23,12 @@
 
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
-#include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
-#include <numeric>
 #include <optional>
-#include <random>
 #include <type_traits>
 
 #include <cuvs/neighbors/all_neighbors.hpp>
@@ -40,56 +37,31 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <raft/core/device_resources_snmg.hpp>
 #include <raft/core/resource/multi_gpu.hpp>
-#include <thrust/copy.h>
-#include <thrust/device_ptr.h>
+// clang-format off
+#if __has_include(<cuvs/neighbors/cagra_optimize.hpp>)
+// Some cuVS versions put helpers::optimize in its own header.
+#include <cuvs/neighbors/cagra_optimize.hpp>
+#endif
+// TEMPORARY. cuVS has no public API to prune a graph that is already on the
+// device, so we reach into its internals when they happen to be available.
+// Delete this and the branch it guards once that API ships upstream.
+#if defined(FAISS_CAGRA_DEVICE_OPTIMIZE)
+#include <neighbors/detail/cagra/graph_core.cuh>
+#endif
+// clang-format on
 
 namespace {
 
-template <int MAX_DEGREE>
-__global__ void kern_detour_count(
-        const uint32_t* __restrict__ knn_graph,
-        const uint32_t graph_size,
-        const uint32_t graph_degree,
-        const uint32_t output_degree,
-        const uint32_t batch_size,
-        const uint32_t offset,
-        uint8_t* __restrict__ detour_count) {
-    __shared__ uint32_t smem[MAX_DEGREE];
-
-    const uint64_t iA = blockIdx.x + (uint64_t)offset;
-    if (iA >= graph_size)
-        return;
-
-    for (uint32_t k = threadIdx.x; k < graph_degree; k += blockDim.x) {
-        smem[k] = 0;
-        if (knn_graph[k + (uint64_t)graph_degree * iA] == (uint32_t)iA)
-            smem[k] = graph_degree;
-    }
-    __syncthreads();
-
-    for (uint32_t kAD = 0; kAD < graph_degree - 1; kAD++) {
-        const uint64_t iD = knn_graph[kAD + (uint64_t)graph_degree * iA];
-        if (iD >= graph_size)
-            continue;
-        for (uint32_t kDB = threadIdx.x; kDB < graph_degree;
-             kDB += blockDim.x) {
-            const uint64_t iB_cand =
-                    knn_graph[kDB + (uint64_t)graph_degree * iD];
-            for (uint32_t kAB = kAD + 1; kAB < graph_degree; kAB++) {
-                const uint64_t iB =
-                        knn_graph[kAB + (uint64_t)graph_degree * iA];
-                if (iB == iB_cand) {
-                    atomicAdd(smem + kAB, 1);
-                    break;
-                }
-            }
-        }
-        __syncthreads();
-    }
-
-    for (uint32_t k = threadIdx.x; k < graph_degree; k += blockDim.x) {
-        detour_count[k + (uint64_t)graph_degree * iA] =
-                static_cast<uint8_t>(min(smem[k], 255u));
+// all_neighbors emits int64 indices, optimize consumes uint32. Narrowing on
+// device lets the graph stay there.
+__global__ void kern_narrow_indices(
+        const int64_t* __restrict__ src,
+        uint32_t* __restrict__ dst,
+        size_t count) {
+    size_t stride = (size_t)gridDim.x * blockDim.x;
+    for (size_t i = (size_t)blockIdx.x * blockDim.x + threadIdx.x; i < count;
+         i += stride) {
+        dst[i] = static_cast<uint32_t>(src[i]);
     }
 }
 
@@ -109,6 +81,19 @@ GpuIndexCagra::GpuIndexCagra(
 }
 
 void GpuIndexCagra::train_ex(idx_t n, const void* x, NumericType numeric_type) {
+    if (cagraConfig_.devices.size() > 1) {
+        FAISS_THROW_IF_NOT_MSG(
+                numeric_type == NumericType::Float32,
+                "multi-GPU CAGRA build only supports Float32");
+        trainAllNeighbors_(n, static_cast<const float*>(x));
+        return;
+    }
+
+    FAISS_THROW_IF_MSG(
+            cagraConfig_.build_algo == graph_build_algo::BRUTE_FORCE,
+            "graph_build_algo::BRUTE_FORCE is only available on the multi-GPU "
+            "build path (set GpuIndexCagraConfig::devices)");
+
     numeric_type_ = numeric_type;
     bool index_is_initialized = !std::holds_alternative<std::monostate>(index_);
 
@@ -370,461 +355,99 @@ void GpuIndexCagra::searchImpl_(
             search_params);
 }
 
-void GpuIndexCagra::trainMultiGpu(
-        idx_t n,
-        const float* x,
-        std::vector<GpuResourcesProvider*>& providers,
-        std::vector<int>& devices,
-        idx_t stitch_per_shard,
-        int stitch_k,
-        int stitch_mode) {
-    FAISS_THROW_IF_NOT_MSG(!is_trained, "index is already trained");
-    FAISS_THROW_IF_NOT_MSG(!devices.empty(), "must provide at least one GPU");
-    FAISS_THROW_IF_NOT_MSG(stitch_k >= 1, "stitch_k must be >= 1");
+void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
+    FAISS_THROW_IF_MSG(is_trained, "index is already trained");
 
-    numeric_type_ = NumericType::Float32;
-    int num_shards = static_cast<int>(devices.size());
-    idx_t shard_size = (n + num_shards - 1) / num_shards;
-
-    int total_cross = (num_shards > 1) ? stitch_k * (num_shards - 1) : 0;
-
-    auto t_phase = std::chrono::high_resolution_clock::now();
-    auto t_start = t_phase;
-
-    // Use cuVS native multi-GPU CAGRA build via SNMG
-    raft::device_resources_snmg clique(devices);
-
-    cuvs::neighbors::mg_index_params<cuvs::neighbors::cagra::index_params>
-            mg_params;
-    mg_params.mode = cuvs::neighbors::SHARDED;
-    mg_params.intermediate_graph_degree =
-            cagraConfig_.intermediate_graph_degree;
-    mg_params.graph_degree = cagraConfig_.graph_degree;
-    mg_params.guarantee_connectivity = cagraConfig_.guarantee_connectivity;
-    mg_params.metric = metricFaissToCuvs(this->metric_type, false);
-
-    if (cagraConfig_.build_algo == graph_build_algo::IVF_PQ) {
-        cuvs::neighbors::cagra::graph_build_params::ivf_pq_params
-                graph_build_params;
-        if (cagraConfig_.ivf_pq_params) {
-            graph_build_params.build_params.n_lists =
-                    cagraConfig_.ivf_pq_params->n_lists;
-            graph_build_params.build_params.kmeans_n_iters =
-                    cagraConfig_.ivf_pq_params->kmeans_n_iters;
-            graph_build_params.build_params.kmeans_trainset_fraction =
-                    cagraConfig_.ivf_pq_params->kmeans_trainset_fraction;
-            graph_build_params.build_params.pq_bits =
-                    cagraConfig_.ivf_pq_params->pq_bits;
-            graph_build_params.build_params.pq_dim =
-                    cagraConfig_.ivf_pq_params->pq_dim;
-            graph_build_params.build_params.codebook_kind =
-                    static_cast<cuvs::neighbors::ivf_pq::codebook_gen>(
-                            cagraConfig_.ivf_pq_params->codebook_kind);
-            graph_build_params.build_params.force_random_rotation =
-                    cagraConfig_.ivf_pq_params->force_random_rotation;
-            graph_build_params.build_params.conservative_memory_allocation =
-                    cagraConfig_.ivf_pq_params->conservative_memory_allocation;
-        }
-        if (cagraConfig_.ivf_pq_search_params) {
-            graph_build_params.search_params.n_probes =
-                    cagraConfig_.ivf_pq_search_params->n_probes;
-            graph_build_params.search_params.lut_dtype =
-                    cagraConfig_.ivf_pq_search_params->lut_dtype;
-            graph_build_params.search_params.preferred_shmem_carveout =
-                    cagraConfig_.ivf_pq_search_params->preferred_shmem_carveout;
-        }
-        graph_build_params.build_params.metric =
-                metricFaissToCuvs(this->metric_type, false);
-        graph_build_params.refinement_rate = cagraConfig_.refine_rate;
-        mg_params.graph_build_params = graph_build_params;
-        if (mg_params.graph_degree == mg_params.intermediate_graph_degree) {
-            mg_params.intermediate_graph_degree = 1.5 * mg_params.graph_degree;
-        }
-    } else {
-        cuvs::neighbors::cagra::graph_build_params::nn_descent_params
-                graph_build_params(mg_params.intermediate_graph_degree);
-        graph_build_params.max_iterations = cagraConfig_.nn_descent_niter;
-        graph_build_params.metric = metricFaissToCuvs(this->metric_type, false);
-        mg_params.graph_build_params = graph_build_params;
-    }
-
-    auto dataset = raft::make_host_matrix_view<const float, int64_t>(
-            x, n, static_cast<int64_t>(this->d));
-
-    auto mg_idx = cuvs::neighbors::cagra::build(clique, mg_params, dataset);
-
-    auto t_now = std::chrono::high_resolution_clock::now();
-    fprintf(stderr,
-            "  [trainMultiGpu] SNMG CAGRA build: %.2f seconds\n",
-            std::chrono::duration<double>(t_now - t_phase).count());
-    t_phase = t_now;
-
-    // Extract per-shard graphs into expanded layout: [CAGRA neighbors |
-    // cross-shard slots]
-    idx_t graph_degree = static_cast<idx_t>(cagraConfig_.graph_degree);
-    idx_t expanded_degree = graph_degree + total_cross;
-    merged_knngraph_.assign(n * expanded_degree, -1);
-
-    for (int s = 0; s < num_shards; s++) {
-        idx_t offset = static_cast<idx_t>(s) * shard_size;
-        idx_t actual_size = std::min(shard_size, n - offset);
-
-        auto& shard_idx = mg_idx.ann_interfaces_[s].index_.value();
-        auto device_graph = shard_idx.graph();
-
-        const auto& dev_res =
-                raft::resource::set_current_device_to_rank(clique, s);
-        FAISS_THROW_IF_NOT_FMT(
-                device_graph.extent(1) == graph_degree,
-                "Shard %d has graph_degree %ld, expected %ld",
-                s,
-                (long)device_graph.extent(1),
-                (long)graph_degree);
-
-        std::vector<uint32_t> host_graph(actual_size * graph_degree);
-        raft::resource::sync_stream(dev_res);
-        thrust::copy(
-                thrust::device_ptr<const uint32_t>(device_graph.data_handle()),
-                thrust::device_ptr<const uint32_t>(
-                        device_graph.data_handle() +
-                        actual_size * graph_degree),
-                host_graph.data());
-
-#pragma omp parallel for
-        for (idx_t i = 0; i < actual_size; i++) {
-            for (idx_t j = 0; j < graph_degree; j++) {
-                merged_knngraph_[(offset + i) * expanded_degree + j] =
-                        static_cast<idx_t>(host_graph[i * graph_degree + j]) +
-                        offset;
-            }
-        }
-    }
-
-    merged_knngraph_degree_ = expanded_degree;
-
-    t_now = std::chrono::high_resolution_clock::now();
-    fprintf(stderr,
-            "  [trainMultiGpu] Graph extract + merge: %.2f seconds\n",
-            std::chrono::duration<double>(t_now - t_phase).count());
-    t_phase = t_now;
-
-    // Cross-shard stitching: appends cross-shard edges after CAGRA neighbors.
-    // Mode 0: CPU HNSW search (approximate). Mode 1: GPU brute-force (exact).
-    if (num_shards > 1) {
-        if (stitch_mode == 1 && stitch_per_shard == 0) {
-            stitch_per_shard = 100000;
-            fprintf(stderr,
-                    "  [trainMultiGpu] GPU brute-force mode: defaulting "
-                    "stitch_per_shard to %ld (all-vectors is O(N^2))\n",
-                    (long)stitch_per_shard);
-        }
-
-        fprintf(stderr,
-                "  [trainMultiGpu] Stitching: mode=%s, stitch_per_shard=%ld, "
-                "stitch_k=%d, total_cross=%d, expanded_degree=%ld\n",
-                stitch_mode == 1 ? "GPU-brute-force" : "CPU-HNSW",
-                (long)stitch_per_shard,
-                stitch_k,
-                total_cross,
-                (long)expanded_degree);
-
-        if (stitch_mode == 1) {
-            // GPU brute-force stitching: exact cross-shard neighbors
-            for (int j = 0; j < num_shards; j++) {
-                idx_t j_offset = static_cast<idx_t>(j) * shard_size;
-                idx_t j_size = std::min(shard_size, n - j_offset);
-                if (j_size == 0)
-                    continue;
-
-                GpuIndexFlatConfig flat_config;
-                flat_config.device = devices[j];
-                GpuIndexFlatL2 flat_idx(providers[j], this->d, flat_config);
-                flat_idx.add(j_size, x + j_offset * this->d);
-
-                for (int i = 0; i < num_shards; i++) {
-                    if (i == j)
-                        continue;
-                    idx_t i_offset = static_cast<idx_t>(i) * shard_size;
-                    idx_t i_size = std::min(shard_size, n - i_offset);
-                    if (i_size == 0)
-                        continue;
-
-                    int target_pos = (j < i) ? j : j - 1;
-                    idx_t slot_base = graph_degree +
-                            static_cast<idx_t>(target_pos) * stitch_k;
-
-                    idx_t num_queries = i_size;
-                    const float* query_data = x + i_offset * this->d;
-                    std::vector<idx_t> sampled_indices;
-                    std::vector<float> sampled_vectors;
-
-                    if (stitch_per_shard > 0 && stitch_per_shard < i_size) {
-                        num_queries = stitch_per_shard;
-                        sampled_indices.resize(i_size);
-                        std::iota(
-                                sampled_indices.begin(),
-                                sampled_indices.end(),
-                                idx_t(0));
-                        std::mt19937 rng(42 + i * num_shards + j);
-                        for (idx_t s = 0; s < stitch_per_shard; s++) {
-                            std::uniform_int_distribution<idx_t> dist(
-                                    s, i_size - 1);
-                            std::swap(
-                                    sampled_indices[s],
-                                    sampled_indices[dist(rng)]);
-                        }
-                        sampled_indices.resize(stitch_per_shard);
-
-                        sampled_vectors.resize(stitch_per_shard * this->d);
-#pragma omp parallel for
-                        for (idx_t s = 0; s < stitch_per_shard; s++) {
-                            memcpy(sampled_vectors.data() + s * this->d,
-                                   x +
-                                           (i_offset + sampled_indices[s]) *
-                                                   this->d,
-                                   this->d * sizeof(float));
-                        }
-                        query_data = sampled_vectors.data();
-                    }
-
-                    std::vector<float> distances(num_queries * stitch_k);
-                    std::vector<idx_t> labels(num_queries * stitch_k);
-                    flat_idx.search(
-                            num_queries,
-                            query_data,
-                            stitch_k,
-                            distances.data(),
-                            labels.data());
-
-#pragma omp parallel for
-                    for (idx_t s = 0; s < num_queries; s++) {
-                        idx_t orig_idx = (!sampled_indices.empty())
-                                ? sampled_indices[s]
-                                : s;
-                        idx_t global_id = i_offset + orig_idx;
-                        for (int k = 0; k < stitch_k; k++) {
-                            idx_t local_nb = labels[s * stitch_k + k];
-                            merged_knngraph_
-                                    [global_id * expanded_degree + slot_base +
-                                     k] = (local_nb >= 0)
-                                    ? (local_nb + j_offset)
-                                    : local_nb;
-                        }
-                    }
-                }
-                fprintf(stderr,
-                        "    Shard %d/%d GPU-stitched\n",
-                        j + 1,
-                        num_shards);
-            }
-        } else {
-            // CPU HNSW stitching (Approach C)
-            auto M_temp = graph_degree / 2;
-            for (int j = 0; j < num_shards; j++) {
-                idx_t j_offset = static_cast<idx_t>(j) * shard_size;
-                idx_t j_size = std::min(shard_size, n - j_offset);
-                if (j_size == 0)
-                    continue;
-
-                IndexHNSWCagra temp_idx;
-                temp_idx.d = this->d;
-                temp_idx.metric_type = this->metric_type;
-                temp_idx.base_level_only = true;
-                temp_idx.num_base_level_search_entrypoints = 32;
-                if (this->metric_type == METRIC_L2) {
-                    temp_idx.storage = new IndexFlatL2(this->d);
-                } else {
-                    temp_idx.storage = new IndexFlatIP(this->d);
-                }
-                temp_idx.own_fields = true;
-                temp_idx.keep_max_size_level0 = true;
-                temp_idx.hnsw.reset();
-                temp_idx.hnsw.assign_probas.clear();
-                temp_idx.hnsw.cum_nneighbor_per_level.clear();
-                temp_idx.hnsw.set_default_probas(M_temp, 1.0 / log(M_temp));
-                temp_idx.init_level0 = false;
-                temp_idx.hnsw.prepare_level_tab(j_size, false);
-                temp_idx.storage->add(j_size, x + j_offset * this->d);
-                temp_idx.ntotal = j_size;
-
-#pragma omp parallel for
-                for (idx_t i = 0; i < j_size; i++) {
-                    size_t begin, end;
-                    temp_idx.hnsw.neighbor_range(i, 0, &begin, &end);
-                    for (size_t k = begin; k < end; k++) {
-                        idx_t global_nb = merged_knngraph_
-                                [(j_offset + i) * expanded_degree +
-                                 (k - begin)];
-                        temp_idx.hnsw.neighbors[k] = global_nb - j_offset;
-                    }
-                }
-
-                temp_idx.hnsw.efSearch = 64;
-
-                for (int i = 0; i < num_shards; i++) {
-                    if (i == j)
-                        continue;
-                    idx_t i_offset = static_cast<idx_t>(i) * shard_size;
-                    idx_t i_size = std::min(shard_size, n - i_offset);
-                    if (i_size == 0)
-                        continue;
-
-                    int target_pos = (j < i) ? j : j - 1;
-                    idx_t slot_base = graph_degree +
-                            static_cast<idx_t>(target_pos) * stitch_k;
-
-                    idx_t num_queries = i_size;
-                    const float* query_data = x + i_offset * this->d;
-                    std::vector<idx_t> sampled_indices;
-                    std::vector<float> sampled_vectors;
-
-                    if (stitch_per_shard > 0 && stitch_per_shard < i_size) {
-                        num_queries = stitch_per_shard;
-                        sampled_indices.resize(i_size);
-                        std::iota(
-                                sampled_indices.begin(),
-                                sampled_indices.end(),
-                                idx_t(0));
-                        std::mt19937 rng(42 + i * num_shards + j);
-                        for (idx_t s = 0; s < stitch_per_shard; s++) {
-                            std::uniform_int_distribution<idx_t> dist(
-                                    s, i_size - 1);
-                            std::swap(
-                                    sampled_indices[s],
-                                    sampled_indices[dist(rng)]);
-                        }
-                        sampled_indices.resize(stitch_per_shard);
-
-                        sampled_vectors.resize(stitch_per_shard * this->d);
-#pragma omp parallel for
-                        for (idx_t s = 0; s < stitch_per_shard; s++) {
-                            memcpy(sampled_vectors.data() + s * this->d,
-                                   x +
-                                           (i_offset + sampled_indices[s]) *
-                                                   this->d,
-                                   this->d * sizeof(float));
-                        }
-                        query_data = sampled_vectors.data();
-                    }
-
-                    std::vector<float> distances(num_queries * stitch_k);
-                    std::vector<idx_t> labels(num_queries * stitch_k);
-                    temp_idx.search(
-                            num_queries,
-                            query_data,
-                            stitch_k,
-                            distances.data(),
-                            labels.data());
-
-#pragma omp parallel for
-                    for (idx_t s = 0; s < num_queries; s++) {
-                        idx_t orig_idx = (!sampled_indices.empty())
-                                ? sampled_indices[s]
-                                : s;
-                        idx_t global_id = i_offset + orig_idx;
-                        for (int k = 0; k < stitch_k; k++) {
-                            idx_t local_nb = labels[s * stitch_k + k];
-                            merged_knngraph_
-                                    [global_id * expanded_degree + slot_base +
-                                     k] = (local_nb >= 0)
-                                    ? (local_nb + j_offset)
-                                    : local_nb;
-                        }
-                    }
-                }
-                fprintf(stderr,
-                        "    Shard %d/%d stitched\n",
-                        j + 1,
-                        num_shards);
-            }
-        } // end else (CPU HNSW)
-    }
-
-    t_now = std::chrono::high_resolution_clock::now();
-    fprintf(stderr,
-            "  [trainMultiGpu] Stitching: %.2f seconds\n",
-            std::chrono::duration<double>(t_now - t_phase).count());
-    fprintf(stderr,
-            "  [trainMultiGpu] Total: %.2f seconds\n",
-            std::chrono::duration<double>(t_now - t_start).count());
-
-    multi_gpu_dataset_ = x;
-    this->is_trained = true;
-    this->ntotal = n;
-}
-
-void GpuIndexCagra::trainAllNeighbors(
-        idx_t n,
-        const float* x,
-        std::vector<int>& devices,
-        int n_clusters_override,
-        int overlap_factor_override,
-        bool multi_gpu_optimize,
-        int build_algo,
-        float refinement_rate,
-        int ivfpq_search_batch) {
-    FAISS_THROW_IF_NOT_MSG(!is_trained, "index is already trained");
-    FAISS_THROW_IF_NOT_MSG(!devices.empty(), "must provide at least one GPU");
+    const auto& devices = cagraConfig_.devices;
+    const auto& an_config = cagraConfig_.all_neighbors_params;
 
     numeric_type_ = NumericType::Float32;
     idx_t graph_degree = static_cast<idx_t>(cagraConfig_.graph_degree);
     idx_t intermediate_degree =
             static_cast<idx_t>(cagraConfig_.intermediate_graph_degree);
+    const size_t knn_count = (size_t)n * intermediate_degree;
 
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_phase = t_start;
 
-    // Phase 1+2: Build kNN graph (multi-GPU) then D2H + cast.
-    // clique and d_indices are scoped so SNMG resources are fully destroyed
-    // before Phase 3, avoiding CUDA context interference with single-GPU
-    // optimize.
-    auto h_knn =
-            raft::make_host_matrix<uint32_t, int64_t>(n, intermediate_degree);
+    // Allocated off the clique so it survives the clique's destruction below.
+    CUDA_VERIFY(cudaSetDevice(devices[0]));
+    raft::device_resources single_gpu_res;
+    auto d_knn = raft::make_device_matrix<uint32_t, int64_t>(
+            single_gpu_res, n, intermediate_degree);
+
+    // Build the knn graph across all devices. The clique is scoped: optimize
+    // hangs intermittently if multi-GPU state is still alive when it runs.
     {
         raft::device_resources_snmg clique(devices);
 
         cuvs::neighbors::all_neighbors::all_neighbors_params an_params;
         int num_gpus = static_cast<int>(devices.size());
-        an_params.n_clusters = n_clusters_override > 0
-                ? static_cast<size_t>(n_clusters_override)
-                : std::max(num_gpus * 2, 4);
-        an_params.overlap_factor = overlap_factor_override > 0
-                ? static_cast<size_t>(overlap_factor_override)
-                : 2;
+        an_params.n_clusters = an_config.n_clusters > 0
+                ? an_config.n_clusters
+                : static_cast<size_t>(std::max(num_gpus * 2, 4));
+        an_params.overlap_factor = an_config.overlap_factor;
         an_params.metric = metricFaissToCuvs(this->metric_type, false);
 
         const char* algo_name = "nn_descent";
-        if (build_algo == 1) {
-            // Brute-force: exact kNN via tiled GEMM, O(N²D) per cluster
-            cuvs::neighbors::all_neighbors::graph_build_params::
-                    brute_force_params bf_params;
-            an_params.graph_build_params = bf_params;
-            algo_name = "brute_force";
-        } else if (build_algo == 2) {
-            // IVF-PQ: approximate kNN with refinement
-            auto dataset_ext = raft::make_extents<int64_t>(
-                    n, static_cast<int64_t>(this->d));
-            cuvs::neighbors::all_neighbors::graph_build_params::ivf_pq_params
-                    ivfpq_params(dataset_ext);
-            ivfpq_params.refinement_rate = refinement_rate;
-            // Bound the IVF-PQ search workspace to avoid GPU OOM at scale. The
-            // cuVS default max_internal_batch_size is 128*1024, whose search
-            // buffers can exceed H100 memory for dense 100M clusters. Capping
-            // it batches the search into smaller query chunks (results
-            // unchanged).
-            if (ivfpq_search_batch > 0) {
-                ivfpq_params.search_params.max_internal_batch_size =
-                        static_cast<uint32_t>(ivfpq_search_batch);
+        switch (cagraConfig_.build_algo) {
+            case graph_build_algo::BRUTE_FORCE: {
+                // Exact kNN via tiled GEMM, O(N^2 D) per cluster
+                cuvs::neighbors::all_neighbors::graph_build_params::
+                        brute_force_params bf_params;
+                an_params.graph_build_params = bf_params;
+                algo_name = "brute_force";
+                break;
             }
-            an_params.graph_build_params = ivfpq_params;
-            algo_name = "ivf_pq";
-        } else {
-            // Default: NN-descent
-            cuvs::neighbors::all_neighbors::graph_build_params::
-                    nn_descent_params nn_params;
-            nn_params.graph_degree = intermediate_degree;
-            nn_params.max_iterations = cagraConfig_.nn_descent_niter;
-            an_params.graph_build_params = nn_params;
+            case graph_build_algo::IVF_PQ: {
+                // cuVS derives good IVF-PQ params from the dataset shape,
+                // so only override what it cannot infer. See
+                // AllNeighborsCagraConfig::ivf_pq_size_from_cluster.
+                idx_t sizing_rows = n;
+                if (an_config.ivf_pq_size_from_cluster) {
+                    sizing_rows = std::max<idx_t>(
+                            1,
+                            (idx_t)((double)n * an_params.overlap_factor /
+                                    (double)an_params.n_clusters));
+                }
+                auto dataset_ext = raft::make_extents<int64_t>(
+                        sizing_rows, static_cast<int64_t>(this->d));
+                cuvs::neighbors::all_neighbors::graph_build_params::
+                        ivf_pq_params ivfpq_params(dataset_ext);
+                ivfpq_params.refinement_rate = an_config.refinement_rate;
+                // Bounds search memory; batches the search rather than
+                // changing its result.
+                if (an_config.ivf_pq_search_batch_size > 0) {
+                    ivfpq_params.search_params.max_internal_batch_size =
+                            an_config.ivf_pq_search_batch_size;
+                }
+                fprintf(stderr,
+                        "  [trainAllNeighbors] IVF-PQ sized from %s "
+                        "(%ld rows): n_lists=%u n_probes=%u "
+                        "kmeans_trainset_fraction=%.4f refine=%.2f\n",
+                        an_config.ivf_pq_size_from_cluster ? "cluster"
+                                                           : "full dataset",
+                        (long)sizing_rows,
+                        ivfpq_params.build_params.n_lists,
+                        ivfpq_params.search_params.n_probes,
+                        ivfpq_params.build_params.kmeans_trainset_fraction,
+                        ivfpq_params.refinement_rate);
+                an_params.graph_build_params = ivfpq_params;
+                algo_name = "ivf_pq";
+                break;
+            }
+            case graph_build_algo::NN_DESCENT: {
+                cuvs::neighbors::all_neighbors::graph_build_params::
+                        nn_descent_params nn_params;
+                nn_params.graph_degree = intermediate_degree;
+                nn_params.max_iterations = cagraConfig_.nn_descent_niter;
+                an_params.graph_build_params = nn_params;
+                break;
+            }
+            default:
+                FAISS_THROW_MSG(
+                        "multi-GPU CAGRA build supports build_algo IVF_PQ, "
+                        "NN_DESCENT or BRUTE_FORCE");
         }
 
         auto dataset = raft::make_host_matrix_view<const float, int64_t>(
@@ -842,7 +465,9 @@ void GpuIndexCagra::trainAllNeighbors(
                 an_params.n_clusters,
                 an_params.overlap_factor,
                 algo_name,
-                build_algo == 2 ? refinement_rate : 0.0f);
+                cagraConfig_.build_algo == graph_build_algo::IVF_PQ
+                        ? an_config.refinement_rate
+                        : 0.0f);
 
         cuvs::neighbors::all_neighbors::build(
                 clique, an_params, dataset, d_indices.view());
@@ -853,258 +478,76 @@ void GpuIndexCagra::trainAllNeighbors(
                 std::chrono::duration<double>(t_now - t_phase).count());
         t_phase = t_now;
 
-        // D2H + cast int64 -> uint32
-        std::vector<int64_t> h_indices_i64(n * intermediate_degree);
-        raft::copy(
-                h_indices_i64.data(),
-                d_indices.data_handle(),
-                n * intermediate_degree,
-                raft::resource::get_cuda_stream(clique));
-        raft::resource::sync_stream(clique);
-
-#pragma omp parallel for
-        for (idx_t i = 0; i < n * intermediate_degree; i++) {
-            h_knn.data_handle()[i] = static_cast<uint32_t>(h_indices_i64[i]);
-        }
+        CUDA_VERIFY(cudaSetDevice(devices[0]));
+        constexpr int kThreads = 256;
+        const int blocks = (int)std::min<size_t>(
+                (knn_count + kThreads - 1) / kThreads, 65535);
+        kern_narrow_indices<<<blocks, kThreads>>>(
+                d_indices.data_handle(), d_knn.data_handle(), knn_count);
+        CUDA_VERIFY(cudaGetLastError());
+        CUDA_VERIFY(cudaDeviceSynchronize());
     } // clique + d_indices destroyed here, freeing all GPU resources
 
     auto t_now = std::chrono::high_resolution_clock::now();
     fprintf(stderr,
-            "  [trainAllNeighbors] D2H + cast: %.2f seconds\n",
+            "  [trainAllNeighbors] narrow to uint32 (device): %.2f seconds\n",
             std::chrono::duration<double>(t_now - t_phase).count());
     t_phase = t_now;
 
-    // Phase 3: Optimize kNN graph into CAGRA graph
-    auto h_cagra = raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
-    memset(h_cagra.data_handle(), 0xff, n * graph_degree * sizeof(uint32_t));
+    // Phase 3: prune the knn graph into a CAGRA graph.
+    const size_t out_count = (size_t)n * graph_degree;
+    std::vector<uint32_t> h_cagra(out_count);
 
-    if (multi_gpu_optimize && devices.size() > 1) {
-        // S2: Multi-GPU detour counting + CPU pruning/reverse/merge
-        int num_gpus = static_cast<int>(devices.size());
-        fprintf(stderr,
-                "  [trainAllNeighbors] Multi-GPU optimize: %d GPUs, "
-                "n=%ld, %ld->%ld\n",
-                num_gpus,
-                (long)n,
-                (long)intermediate_degree,
-                (long)graph_degree);
+#if !defined(FAISS_CAGRA_DEVICE_OPTIMIZE)
+    // Public API: host matrices only, so the graph makes a round trip it does
+    // not need. Some cuVS versions also read the input as host memory whatever
+    // accessor you hand them, so passing device pointers here is not an option.
+    auto h_knn =
+            raft::make_host_matrix<uint32_t, int64_t>(n, intermediate_degree);
+    raft::copy(
+            h_knn.data_handle(),
+            d_knn.data_handle(),
+            knn_count,
+            raft::resource::get_cuda_stream(single_gpu_res));
+    raft::resource::sync_stream(single_gpu_res);
 
-        // Phase 3a: Multi-GPU detour counting
-        FAISS_THROW_IF_NOT_MSG(
-                intermediate_degree <= 1024,
-                "intermediate_graph_degree must be <= 1024 for "
-                "multi-GPU optimize");
+    auto h_cagra_view = raft::make_host_matrix_view<uint32_t, int64_t>(
+            h_cagra.data(), n, graph_degree);
+    cuvs::neighbors::cagra::helpers::optimize(
+            single_gpu_res, h_knn.view(), h_cagra_view);
+    const char* optimize_where = "host (public API)";
+#else
+    auto d_cagra = raft::make_device_matrix<uint32_t, int64_t>(
+            single_gpu_res, n, graph_degree);
 
-        auto h_detour = raft::make_host_matrix<uint8_t, int64_t>(
-                n, intermediate_degree);
-        memset(h_detour.data_handle(),
-               0xff,
-               n * intermediate_degree * sizeof(uint8_t));
-
-        idx_t chunk = (n + num_gpus - 1) / num_gpus;
-
-#pragma omp parallel for num_threads(num_gpus)
-        for (int g = 0; g < num_gpus; g++) {
-            idx_t my_start = g * chunk;
-            idx_t my_end = std::min(my_start + chunk, n);
-            idx_t my_n = my_end - my_start;
-            if (my_n <= 0)
-                continue;
-
-            CUDA_VERIFY(cudaSetDevice(devices[g]));
-            cudaStream_t stream;
-            CUDA_VERIFY(cudaStreamCreate(&stream));
-
-            uint32_t* d_knn_graph;
-            CUDA_VERIFY(cudaMalloc(
-                    &d_knn_graph,
-                    (size_t)n * intermediate_degree * sizeof(uint32_t)));
-            CUDA_VERIFY(cudaMemcpyAsync(
-                    d_knn_graph,
-                    h_knn.data_handle(),
-                    (size_t)n * intermediate_degree * sizeof(uint32_t),
-                    cudaMemcpyHostToDevice,
-                    stream));
-
-            uint8_t* d_detour;
-            CUDA_VERIFY(cudaMalloc(
-                    &d_detour,
-                    (size_t)n * intermediate_degree * sizeof(uint8_t)));
-            CUDA_VERIFY(cudaMemsetAsync(
-                    d_detour,
-                    0xff,
-                    (size_t)n * intermediate_degree * sizeof(uint8_t),
-                    stream));
-
-            // Launch detour counting for this GPU's node range
-            constexpr uint32_t BATCH = 262144;
-            dim3 threads(32, 1, 1);
-            uint32_t total_batches =
-                    (static_cast<uint32_t>(my_n) + BATCH - 1) / BATCH;
-
-            for (uint32_t ib = 0; ib < total_batches; ib++) {
-                uint32_t batch_start =
-                        static_cast<uint32_t>(my_start) + ib * BATCH;
-                uint32_t batch_n = std::min(
-                        BATCH, static_cast<uint32_t>(my_end) - batch_start);
-                dim3 blocks(batch_n, 1, 1);
-                kern_detour_count<1024><<<blocks, threads, 0, stream>>>(
-                        d_knn_graph,
-                        static_cast<uint32_t>(n),
-                        static_cast<uint32_t>(intermediate_degree),
-                        static_cast<uint32_t>(graph_degree),
-                        BATCH,
-                        batch_start,
-                        d_detour);
-            }
-
-            CUDA_VERIFY(cudaGetLastError());
-            CUDA_VERIFY(cudaMemcpyAsync(
-                    h_detour.data_handle() + my_start * intermediate_degree,
-                    d_detour + my_start * intermediate_degree,
-                    (size_t)my_n * intermediate_degree * sizeof(uint8_t),
-                    cudaMemcpyDeviceToHost,
-                    stream));
-
-            CUDA_VERIFY(cudaStreamSynchronize(stream));
-            CUDA_VERIFY(cudaFree(d_knn_graph));
-            CUDA_VERIFY(cudaFree(d_detour));
-            CUDA_VERIFY(cudaStreamDestroy(stream));
-        }
-
-        auto t_opt1 = std::chrono::high_resolution_clock::now();
-        fprintf(stderr,
-                "  [trainAllNeighbors] multi-GPU detour counting: "
-                "%.2f seconds\n",
-                std::chrono::duration<double>(t_opt1 - t_phase).count());
-
-        // Phase 3b: CPU pruning (select top-graph_degree by lowest detour
-        // count)
-        auto* output_ptr = h_cagra.data_handle();
-#pragma omp parallel for
-        for (idx_t i = 0; i < n; i++) {
-            idx_t pk = 0;
-            uint32_t num_detour = 0;
-            for (uint32_t l = 0;
-                 l < (uint32_t)intermediate_degree && pk < graph_degree;
-                 l++) {
-                uint32_t next_num_detour = std::numeric_limits<uint32_t>::max();
-                for (idx_t k = 0; k < intermediate_degree; k++) {
-                    uint32_t dc =
-                            h_detour.data_handle()[i * intermediate_degree + k];
-                    if (dc > num_detour)
-                        next_num_detour = std::min(dc, next_num_detour);
-                    if (dc != num_detour)
-                        continue;
-
-                    uint32_t candidate =
-                            h_knn.data_handle()[i * intermediate_degree + k];
-                    bool dup = false;
-                    for (idx_t dk = 0; dk < pk; dk++) {
-                        if (candidate == output_ptr[i * graph_degree + dk]) {
-                            dup = true;
-                            break;
-                        }
-                    }
-                    if (!dup && candidate < (uint32_t)n) {
-                        output_ptr[i * graph_degree + pk] = candidate;
-                        pk++;
-                    }
-                    if (pk >= graph_degree)
-                        break;
-                }
-                if (pk >= graph_degree)
-                    break;
-                if (next_num_detour == std::numeric_limits<uint32_t>::max())
-                    break;
-                num_detour = next_num_detour;
-            }
-        }
-
-        auto t_opt2 = std::chrono::high_resolution_clock::now();
-        fprintf(stderr,
-                "  [trainAllNeighbors] CPU pruning: %.2f seconds\n",
-                std::chrono::duration<double>(t_opt2 - t_opt1).count());
-
-        // Phase 3c: Build reverse graph and merge into output
-        // (matches graph_core.cuh Phase 4+5 logic)
-        std::vector<uint32_t> rev_graph(n * graph_degree, UINT32_MAX);
-        std::vector<uint32_t> rev_count(n, 0);
-
-        // Build reverse adjacency: for each edge A→B, record B←A
-        for (idx_t i = 0; i < n; i++) {
-            for (idx_t k = 0; k < graph_degree; k++) {
-                uint32_t dest = output_ptr[i * graph_degree + k];
-                if (dest >= (uint32_t)n)
-                    continue;
-                uint32_t slot = rev_count[dest];
-                if (slot < (uint32_t)graph_degree) {
-                    rev_graph[dest * graph_degree + slot] =
-                            static_cast<uint32_t>(i);
-                    rev_count[dest]++;
-                }
-            }
-        }
-
-        // Merge reverse edges into output graph (replace tail edges)
-#pragma omp parallel for
-        for (idx_t i = 0; i < n; i++) {
-            uint32_t num_protected = std::max<uint32_t>(graph_degree / 2, 1);
-            uint32_t kr =
-                    std::min(rev_count[i], static_cast<uint32_t>(graph_degree));
-            while (kr > 0) {
-                kr--;
-                uint32_t rev_node = rev_graph[i * graph_degree + kr];
-                if (rev_node >= (uint32_t)n)
-                    continue;
-
-                // Check if already in neighbor list
-                bool found = false;
-                for (idx_t j = 0; j < graph_degree; j++) {
-                    if (output_ptr[i * graph_degree + j] == rev_node) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found)
-                    continue;
-
-                // Shift tail edges and insert at protected boundary
-                for (idx_t j = graph_degree - 1; j > (idx_t)num_protected;
-                     j--) {
-                    output_ptr[i * graph_degree + j] =
-                            output_ptr[i * graph_degree + j - 1];
-                }
-                output_ptr[i * graph_degree + num_protected] = rev_node;
-            }
-        }
-
-        auto t_opt3 = std::chrono::high_resolution_clock::now();
-        fprintf(stderr,
-                "  [trainAllNeighbors] reverse graph: %.2f seconds\n",
-                std::chrono::duration<double>(t_opt3 - t_opt2).count());
-    } else {
-        // Single-GPU optimize (original path)
-        cudaSetDevice(devices[0]);
-        cudaDeviceSynchronize();
-        raft::device_resources single_gpu_res;
-        cuvs::neighbors::cagra::helpers::optimize(
-                single_gpu_res, h_knn.view(), h_cagra.view());
-    }
+    cuvs::neighbors::cagra::detail::graph::optimize<uint32_t>(
+            single_gpu_res,
+            d_knn.view(),
+            d_cagra.view(),
+            cagraConfig_.guarantee_connectivity);
+    raft::resource::sync_stream(single_gpu_res);
+    raft::copy(
+            h_cagra.data(),
+            d_cagra.data_handle(),
+            out_count,
+            raft::resource::get_cuda_stream(single_gpu_res));
+    raft::resource::sync_stream(single_gpu_res);
+    const char* optimize_where = "device-resident";
+#endif
 
     t_now = std::chrono::high_resolution_clock::now();
     fprintf(stderr,
-            "  [trainAllNeighbors] optimize: %.2f seconds\n",
+            "  [trainAllNeighbors] optimize (%s): %.2f seconds\n",
+            optimize_where,
             std::chrono::duration<double>(t_now - t_phase).count());
     t_phase = t_now;
 
-    // Phase 4: Store as merged_knngraph_ for copyTo()
-    merged_knngraph_.resize(n * graph_degree);
+    merged_knngraph_.resize(out_count);
     merged_knngraph_degree_ = graph_degree;
 
 #pragma omp parallel for
-    for (idx_t i = 0; i < n * graph_degree; i++) {
-        merged_knngraph_[i] = static_cast<idx_t>(h_cagra.data_handle()[i]);
+    for (idx_t i = 0; i < (idx_t)out_count; i++) {
+        merged_knngraph_[i] = static_cast<idx_t>(h_cagra[i]);
     }
 
     multi_gpu_dataset_ = x;
@@ -1112,6 +555,9 @@ void GpuIndexCagra::trainAllNeighbors(
     this->ntotal = n;
 
     t_now = std::chrono::high_resolution_clock::now();
+    fprintf(stderr,
+            "  [trainAllNeighbors] D2H + widen: %.2f seconds\n",
+            std::chrono::duration<double>(t_now - t_phase).count());
     fprintf(stderr,
             "  [trainAllNeighbors] Total: %.2f seconds\n",
             std::chrono::duration<double>(t_now - t_start).count());
@@ -1411,6 +857,121 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     index->init_level0 = true;
 }
 
+void GpuIndexCagra::buildHnswUpperLevelsGpu_(
+        faiss::IndexHNSWCagra* index,
+        int max_lvl) const {
+    auto& hnsw = index->hnsw;
+    const idx_t n_train = this->ntotal;
+    // Levels >= 1 all carry M neighbours; level 0 carries 2*M.
+    const int upper_degree = (int)hnsw.nb_neighbors(1);
+
+    // BRUTE_FORCE only exists on the multi-GPU path.
+    auto sub_algo = cagraConfig_.build_algo == graph_build_algo::IVF_PQ
+            ? faiss::cagra_build_algo::IVF_PQ
+            : faiss::cagra_build_algo::NN_DESCENT;
+
+    const int sub_intermediate = cagraConfig_.gpu_hnsw_intermediate_degree > 0
+            ? (int)cagraConfig_.gpu_hnsw_intermediate_degree
+            : 2 * upper_degree;
+
+    // Search starts at entry_point and immediately reads its neighbours at
+    // max_level, so the two must agree. Track the highest populated level
+    // rather than assuming max_lvl has any nodes.
+    int top_lvl = 0;
+    HNSW::storage_idx_t top_entry = 0;
+
+    std::vector<idx_t> ids;
+    std::vector<float> sub_x;
+    for (int lvl = 1; lvl <= max_lvl; lvl++) {
+        ids.clear();
+        for (idx_t i = 0; i < n_train; i++) {
+            if (hnsw.levels[i] - 1 >= lvl) {
+                ids.push_back(i);
+            }
+        }
+        const idx_t n_lvl = (idx_t)ids.size();
+        if (n_lvl < 1) {
+            continue;
+        }
+        top_lvl = lvl;
+        top_entry = static_cast<HNSW::storage_idx_t>(ids[0]);
+        if (n_lvl == 1) {
+            // Single node: no edges to add, but it is still a valid entry.
+            continue;
+        }
+
+        if (n_lvl <= upper_degree + 1) {
+            // Too small for a meaningful proximity graph: connect all-to-all.
+            for (idx_t a = 0; a < n_lvl; a++) {
+                size_t begin, end;
+                hnsw.neighbor_range(ids[a], lvl, &begin, &end);
+                size_t slot = begin;
+                for (idx_t b = 0; b < n_lvl && slot < end; b++) {
+                    if (b != a) {
+                        hnsw.neighbors[slot++] = ids[b];
+                    }
+                }
+            }
+            continue;
+        }
+
+        sub_x.resize((size_t)n_lvl * this->d);
+#pragma omp parallel for
+        for (idx_t a = 0; a < n_lvl; a++) {
+            memcpy(sub_x.data() + (size_t)a * this->d,
+                   multi_gpu_dataset_ + (size_t)ids[a] * this->d,
+                   this->d * sizeof(float));
+        }
+
+        auto t0 = std::chrono::high_resolution_clock::now();
+        std::vector<idx_t> sub_graph;
+        {
+            CuvsCagra<float> sub(
+                    this->resources_.get(),
+                    this->d,
+                    sub_intermediate,
+                    upper_degree,
+                    sub_algo,
+                    cagraConfig_.nn_descent_niter,
+                    /*store_dataset=*/false,
+                    this->metric_type,
+                    this->metric_arg,
+                    INDICES_64_BIT,
+                    std::nullopt,
+                    std::nullopt,
+                    cagraConfig_.refine_rate,
+                    cagraConfig_.gpu_hnsw_guarantee_connectivity);
+            sub.train(n_lvl, sub_x.data());
+            sub_graph = sub.get_knngraph();
+        }
+
+        // Map subgraph-local ids back to global ids.
+#pragma omp parallel for
+        for (idx_t a = 0; a < n_lvl; a++) {
+            size_t begin, end;
+            hnsw.neighbor_range(ids[a], lvl, &begin, &end);
+            for (size_t j = begin; j < end; j++) {
+                idx_t local = sub_graph[(size_t)a * upper_degree + (j - begin)];
+                hnsw.neighbors[j] =
+                        (local >= 0 && local < n_lvl) ? ids[local] : -1;
+            }
+        }
+
+        fprintf(stderr,
+                "  [copyTo] level %d: %ld nodes, igd=%d gc=%d, "
+                "CAGRA subgraph %.2f s\n",
+                lvl,
+                (long)n_lvl,
+                sub_intermediate,
+                (int)cagraConfig_.gpu_hnsw_guarantee_connectivity,
+                std::chrono::duration<double>(
+                        std::chrono::high_resolution_clock::now() - t0)
+                        .count());
+    }
+    hnsw.entry_point = top_entry;
+    hnsw.max_level = top_lvl;
+}
+
 void GpuIndexCagra::copyToMultiGpu_(faiss::IndexHNSWCagra* index) const {
     FAISS_ASSERT(this->is_trained && index && !merged_knngraph_.empty());
     FAISS_THROW_IF_NOT_MSG(
@@ -1446,12 +1007,23 @@ void GpuIndexCagra::copyToMultiGpu_(faiss::IndexHNSWCagra* index) const {
     auto n_train = this->ntotal;
 
     index->init_level0 = false;
-    if (!index->base_level_only) {
-        index->add(n_train, multi_gpu_dataset_);
-    } else {
+    if (index->base_level_only) {
         index->hnsw.prepare_level_tab(n_train, false);
         index->storage->add(n_train, multi_gpu_dataset_);
         index->ntotal = n_train;
+    } else if (cagraConfig_.gpu_hnsw_upper_levels) {
+        auto t0 = std::chrono::high_resolution_clock::now();
+        int max_lvl = index->hnsw.prepare_level_tab(n_train, false);
+        index->storage->add(n_train, multi_gpu_dataset_);
+        index->ntotal = n_train;
+        buildHnswUpperLevelsGpu_(index, max_lvl);
+        fprintf(stderr,
+                "  [copyTo] GPU upper levels: %.2f seconds\n",
+                std::chrono::duration<double>(
+                        std::chrono::high_resolution_clock::now() - t0)
+                        .count());
+    } else {
+        index->add(n_train, multi_gpu_dataset_);
     }
 
 #pragma omp parallel for

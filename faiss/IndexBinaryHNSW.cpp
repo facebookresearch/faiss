@@ -270,13 +270,25 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(
-            *this,
-            n0,
-            n,
-            x,
-            verbose,
-            hnsw.levels.size() == static_cast<size_t>(ntotal));
+    bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    if (hnsw_deterministic_build) {
+        hnsw_add_vertices_deterministic(
+                hnsw,
+                n0,
+                n,
+                d,
+                init_level0,
+                keep_max_size_level0,
+                preset_levels,
+                verbose,
+                [this] { return get_distance_computer(); },
+                [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                    dc.set_query((const float*)(x + (pt_id - n0) * code_size));
+                });
+    } else {
+        hnsw_add_vertices(*this, n0, n, x, verbose, preset_levels);
+    }
 }
 
 void IndexBinaryHNSW::reset() {
@@ -292,8 +304,8 @@ void IndexBinaryHNSW::reconstruct(idx_t key, uint8_t* recons) const {
 
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
-    FAISS_THROW_IF_NOT_MSG(
-            flat_storage != nullptr,
+    FAISS_THROW_IF_MSG(
+            flat_storage == nullptr,
             "IndexBinaryHNSW requires IndexBinaryFlat storage");
     return with_simd_level([&]<SIMDLevel SL>() {
         return make_binary_hnsw_distance_computer_fixSL<SL>(
@@ -316,8 +328,8 @@ IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d_, int M)
 }
 
 void IndexBinaryHNSWCagra::add(idx_t n, const uint8_t* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !base_level_only,
+    FAISS_THROW_IF_MSG(
+            base_level_only,
             "Cannot add vectors when base_level_only is set to True");
 
     IndexBinaryHNSW::add(n, x);

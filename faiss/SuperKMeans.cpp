@@ -392,7 +392,7 @@ SuperKMeans::SuperKMeans(int d, int k, const SuperKMeansParameters& cp_in)
 
 void SuperKMeans::train(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT_MSG(n > 0, "SuperKMeans: n must be positive");
-    FAISS_THROW_IF_NOT_MSG(x != nullptr, "SuperKMeans: x must not be null");
+    FAISS_THROW_IF_MSG(x == nullptr, "SuperKMeans: x must not be null");
     FAISS_THROW_IF_NOT_MSG(
             n >= static_cast<idx_t>(k), "SuperKMeans: n must be >= k");
     if (cp.check_input_data_for_NaNs) {
@@ -514,14 +514,14 @@ void super_kmeans_assign_iteration(
             "super_kmeans_assign_iteration: d_prime must be >= 1");
     FAISS_THROW_IF_NOT_MSG(
             d_prime < d, "super_kmeans_assign_iteration: d_prime must be < d");
-    FAISS_THROW_IF_NOT_MSG(
-            ad_coeff != nullptr,
+    FAISS_THROW_IF_MSG(
+            ad_coeff == nullptr,
             "super_kmeans_assign_iteration: ad_coeff must not be null");
-    FAISS_THROW_IF_NOT_MSG(
-            tau != nullptr,
+    FAISS_THROW_IF_MSG(
+            tau == nullptr,
             "super_kmeans_assign_iteration: tau must not be null");
-    FAISS_THROW_IF_NOT_MSG(
-            assignments != nullptr,
+    FAISS_THROW_IF_MSG(
+            assignments == nullptr,
             "super_kmeans_assign_iteration: assignments must not be null");
 
     const int d_trail = d - d_prime;
