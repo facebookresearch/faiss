@@ -358,7 +358,7 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half; // bytes per code = ceil(d/2)
+    size_t half;                         // bytes per code = ceil(d/2)
     std::vector<float> a_lo, a_hi;       // a_i = vdiff[i]/15, deinterleaved
     std::vector<float> rmin_lo, rmin_hi; // vmin[i] + 0.5*a_i, deinterleaved
     std::vector<float> e_lo, e_hi;       // q_i - rmin_i, per query
@@ -451,20 +451,14 @@ struct DCTemplate<
                     __riscv_vzext_vf4_u32m4(lo, vt), vt);
             vfloat32m4_t t_lo = __riscv_vle32_v_f32m4(e_lo.data() + b, vt);
             t_lo = __riscv_vfnmsac_vv_f32m4(
-                    t_lo,
-                    __riscv_vle32_v_f32m4(a_lo.data() + b, vt),
-                    clo,
-                    vt);
+                    t_lo, __riscv_vle32_v_f32m4(a_lo.data() + b, vt), clo, vt);
             acc = __riscv_vfmacc_vv_f32m4(acc, t_lo, t_lo, vt);
 
             vfloat32m4_t chi = __riscv_vfcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf4_u32m4(hi, vt), vt);
             vfloat32m4_t t_hi = __riscv_vle32_v_f32m4(e_hi.data() + b, vt);
             t_hi = __riscv_vfnmsac_vv_f32m4(
-                    t_hi,
-                    __riscv_vle32_v_f32m4(a_hi.data() + b, vt),
-                    chi,
-                    vt);
+                    t_hi, __riscv_vle32_v_f32m4(a_hi.data() + b, vt), chi, vt);
             acc = __riscv_vfmacc_vv_f32m4(acc, t_hi, t_hi, vt);
         }
 
@@ -548,7 +542,7 @@ struct DCTemplate<
     using Sim = SimilarityIP<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half; // bytes per code = ceil(d/2)
+    size_t half;                         // bytes per code = ceil(d/2)
     std::vector<float> a_lo, a_hi;       // a_i = vdiff[i]/15, deinterleaved
     std::vector<float> rmin_lo, rmin_hi; // vmin[i] + 0.5*a_i, deinterleaved
     std::vector<float> b_lo, b_hi;       // q_i * a_i, per query
@@ -787,8 +781,8 @@ struct DCTemplate<
     size_t half; // bytes per code = ceil(d/2)
     float vmin;
     float vdiff;
-    float a;  // vdiff / 15
-    float c0; // vmin + 0.5 * a
+    float a;                       // vdiff / 15
+    float c0;                      // vmin + 0.5 * a
     std::vector<float> q_lo, q_hi; // query components, deinterleaved
     float k_q;                     // c0 * sum_i q_i, per query
 
@@ -1130,22 +1124,17 @@ struct DCTemplate<
             // (uniform_ip v5/v6, ip v6).
             if (ngf >= vl) {
                 // Prologue: preload chunk 0.
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
                 g += vl;
 
                 // Main loop: while a full next chunk exists, issue its
                 // load first, then process the current one.
                 for (; g + vl <= ngf; g += vl) {
                     vuint8m1x3_t seg_next =
-                            __riscv_vlseg3e8_v_u8m1x3(
-                                    code + 3 * g, vl);
-                    vuint8m1_t b0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t b1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t b2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                            __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                    vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
                     // ID1: stream-order rescheduling — light
                     // extracts (c0: 1 op, c3: 1 op) computed
@@ -1153,36 +1142,28 @@ struct DCTemplate<
                     // immediately; heavy extracts (c1/c2: 3 ops
                     // each) overlap with in-flight FMAs.
                     // Accumulation order: c0, c3, c1, c2.
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(b0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(b2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(b0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(b2, 2, vl);
 
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
-                    vfloat32m4_t t0 =
-                            __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
+                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
                     t0 = __riscv_vfnmsac_vv_f32m4(
                             t0,
-                            __riscv_vle32_v_f32m4(
-                                    pa0 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa0 + g - vl, vl),
                             f0,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t0, t0, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vl);
 
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
-                    vfloat32m4_t t3 =
-                            __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
+                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
                     t3 = __riscv_vfnmsac_vv_f32m4(
                             t3,
-                            __riscv_vle32_v_f32m4(
-                                    pa3 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa3 + g - vl, vl),
                             f3,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t3, t3, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vl);
 
                     vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b0, 6, vl),
@@ -1192,16 +1173,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
-                    vfloat32m4_t t1 =
-                            __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
+                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
                     t1 = __riscv_vfnmsac_vv_f32m4(
                             t1,
-                            __riscv_vle32_v_f32m4(
-                                    pa1 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa1 + g - vl, vl),
                             f1,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t1, t1, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vl);
 
                     vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b1, 4, vl),
@@ -1211,16 +1189,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
-                    vfloat32m4_t t2 =
-                            __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
+                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
                     t2 = __riscv_vfnmsac_vv_f32m4(
                             t2,
-                            __riscv_vle32_v_f32m4(
-                                    pa2 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa2 + g - vl, vl),
                             f2,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t2, t2, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vl);
 
                     seg = seg_next; // rotate
                 }
@@ -1229,43 +1204,32 @@ struct DCTemplate<
                 // ID1: stream-order rescheduling c0,c3,c1,c2
                 // (same pattern as the main loop).
                 {
-                    vuint8m1_t b0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t b1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t b2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                    vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(b0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(b2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(b0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(b2, 2, vl);
 
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
-                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(
-                            pe0 + g - vl, vl);
+                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
                     t0 = __riscv_vfnmsac_vv_f32m4(
                             t0,
-                            __riscv_vle32_v_f32m4(
-                                    pa0 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa0 + g - vl, vl),
                             f0,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t0, t0, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vl);
 
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
-                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(
-                            pe3 + g - vl, vl);
+                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
                     t3 = __riscv_vfnmsac_vv_f32m4(
                             t3,
-                            __riscv_vle32_v_f32m4(
-                                    pa3 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa3 + g - vl, vl),
                             f3,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t3, t3, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vl);
 
                     vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b0, 6, vl),
@@ -1275,16 +1239,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
-                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(
-                            pe1 + g - vl, vl);
+                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
                     t1 = __riscv_vfnmsac_vv_f32m4(
                             t1,
-                            __riscv_vle32_v_f32m4(
-                                    pa1 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa1 + g - vl, vl),
                             f1,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t1, t1, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vl);
 
                     vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b1, 4, vl),
@@ -1294,16 +1255,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
-                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(
-                            pe2 + g - vl, vl);
+                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
                     t2 = __riscv_vfnmsac_vv_f32m4(
                             t2,
-                            __riscv_vle32_v_f32m4(
-                                    pa2 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa2 + g - vl, vl),
                             f2,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t2, t2, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vl);
                 }
             }
 
@@ -1314,8 +1272,7 @@ struct DCTemplate<
             if (g < ngf) {
                 const size_t vt = __riscv_vsetvl_e8m1(ngf - g);
 
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
                 vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
                 vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
                 vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
@@ -1372,8 +1329,7 @@ struct DCTemplate<
 
         // Scalar tail: dims beyond the last full group (d % 4).
         for (size_t i = 4 * ngf; i < d; i++) {
-            float r = rmin_all[i] +
-                    a_all[i] * float(sq6_decode_raw(code, i));
+            float r = rmin_all[i] + a_all[i] * float(sq6_decode_raw(code, i));
             float diff = q[i] - r;
             total += diff * diff;
         }
@@ -1530,22 +1486,17 @@ struct DCTemplate<
             // compute on the already-loaded current chunk.
             if (ngf >= vl) {
                 // Prologue: preload chunk 0.
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
                 g += vl;
 
                 // Main loop: while a full next chunk exists, issue its
                 // load first, then process the current one.
                 for (; g + vl <= ngf; g += vl) {
                     vuint8m1x3_t seg_next =
-                            __riscv_vlseg3e8_v_u8m1x3(
-                                    code + 3 * g, vl);
-                    vuint8m1_t r0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t r1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t r2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                            __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                    vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
                     // ID11: stream-order rescheduling — the two LIGHT
                     // extracts (c0: 1 op, c3: 1 op) are computed first
@@ -1556,19 +1507,15 @@ struct DCTemplate<
                     // order becomes 0,3,1,2 (float reassociation, same
                     // semantics class as the other specializations).
                     // ID3 load-first order kept inside each stream.
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(r0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(r2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(r0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(r2, 2, vl);
 
-                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(
-                            pb0 + g - vl, vl);
+                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb0 + g - vl, vl);
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, f0, vl);
 
-                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(
-                            pb3 + g - vl, vl);
+                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(pb3 + g - vl, vl);
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb3, f3, vl);
@@ -1578,8 +1525,7 @@ struct DCTemplate<
                             4,
                             __riscv_vand_vx_u8m1(r1, 0x0F, vl),
                             vl);
-                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(
-                            pb1 + g - vl, vl);
+                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb1 + g - vl, vl);
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb1, f1, vl);
@@ -1589,8 +1535,7 @@ struct DCTemplate<
                             16,
                             __riscv_vand_vx_u8m1(r2, 0x03, vl),
                             vl);
-                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(
-                            pb2 + g - vl, vl);
+                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(pb2 + g - vl, vl);
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb2, f2, vl);
@@ -1600,12 +1545,9 @@ struct DCTemplate<
 
                 // Epilogue: process the last full chunk (already loaded).
                 {
-                    vuint8m1_t r0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t r1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t r2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                    vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
                     // ID11: stream-order rescheduling — the two LIGHT
                     // extracts (c0: 1 op, c3: 1 op) are computed first
@@ -1616,19 +1558,15 @@ struct DCTemplate<
                     // order becomes 0,3,1,2 (float reassociation, same
                     // semantics class as the other specializations).
                     // ID3 load-first order kept inside each stream.
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(r0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(r2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(r0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(r2, 2, vl);
 
-                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(
-                            pb0 + g - vl, vl);
+                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb0 + g - vl, vl);
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, f0, vl);
 
-                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(
-                            pb3 + g - vl, vl);
+                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(pb3 + g - vl, vl);
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb3, f3, vl);
@@ -1638,8 +1576,7 @@ struct DCTemplate<
                             4,
                             __riscv_vand_vx_u8m1(r1, 0x0F, vl),
                             vl);
-                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(
-                            pb1 + g - vl, vl);
+                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb1 + g - vl, vl);
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb1, f1, vl);
@@ -1649,8 +1586,7 @@ struct DCTemplate<
                             16,
                             __riscv_vand_vx_u8m1(r2, 0x03, vl),
                             vl);
-                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(
-                            pb2 + g - vl, vl);
+                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(pb2 + g - vl, vl);
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb2, f2, vl);
@@ -1663,8 +1599,7 @@ struct DCTemplate<
             if (g < ngf) {
                 const size_t vt = __riscv_vsetvl_e8m1(ngf - g);
 
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
                 vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
                 vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
                 vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
@@ -1728,10 +1663,8 @@ struct DCTemplate<
         const uint8_t* c2 = codes + j * code_size;
         float acc = 0;
         for (size_t k = 0; k < d; k++) {
-            float r1 = rmin_all[k] +
-                    a_all[k] * float(sq6_decode_raw(c1, k));
-            float r2 = rmin_all[k] +
-                    a_all[k] * float(sq6_decode_raw(c2, k));
+            float r1 = rmin_all[k] + a_all[k] * float(sq6_decode_raw(c1, k));
+            float r2 = rmin_all[k] + a_all[k] * float(sq6_decode_raw(c2, k));
             acc += r1 * r2;
         }
         return acc;
@@ -1830,13 +1763,9 @@ struct DCTemplate<
                 vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
                 vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t =
-                        __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
                 t = __riscv_vfnmsac_vv_f32m4(
-                        t,
-                        __riscv_vle32_v_f32m4(pa + i - vl, vl),
-                        cf,
-                        vl);
+                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
                 acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
                 c8 = c8_next; // rotate
             }
@@ -1845,13 +1774,9 @@ struct DCTemplate<
             {
                 vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t =
-                        __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
                 t = __riscv_vfnmsac_vv_f32m4(
-                        t,
-                        __riscv_vle32_v_f32m4(pa + i - vl, vl),
-                        cf,
-                        vl);
+                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
                 acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
             }
         }
@@ -2013,18 +1938,16 @@ struct DCTemplate<
                 vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb + i - vl, vl);
                 vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb + i, vl);
                 for (; i + 2 * vl <= d; i += 2 * vl) {
-                    vuint8m1_t c8_n1 =
-                            __riscv_vle8_v_u8m1(code + i, vl);
+                    vuint8m1_t c8_n1 = __riscv_vle8_v_u8m1(code + i, vl);
                     vfloat32m4_t vb0_next =
                             __riscv_vle32_v_f32m4(pb + i + vl, vl);
                     vfloat32m4_t cf0 = __riscv_vfcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf4_u32m4(c8, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, cf0, vl);
 
-                    vuint8m1_t c8_n2 =
-                            __riscv_vle8_v_u8m1(code + i + vl, vl);
-                    vfloat32m4_t vb1_next = __riscv_vle32_v_f32m4(
-                            pb + i + 2 * vl, vl);
+                    vuint8m1_t c8_n2 = __riscv_vle8_v_u8m1(code + i + vl, vl);
+                    vfloat32m4_t vb1_next =
+                            __riscv_vle32_v_f32m4(pb + i + 2 * vl, vl);
                     vfloat32m4_t cf1 = __riscv_vfcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf4_u32m4(c8_n1, vl), vl);
                     acc1 = __riscv_vfmacc_vv_f32m4(acc1, vb1, cf1, vl);
@@ -2248,8 +2171,7 @@ struct DCTemplate<
             // Exact wide path for huge d (not reachable for realistic
             // dims): widening reduction i32m8 -> i64, scale in scalar.
             vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
-            vint64m1_t r64 =
-                    __riscv_vwredsum_vs_i32m8_i64m1(acc32, z64, vl);
+            vint64m1_t r64 = __riscv_vwredsum_vs_i32m8_i64m1(acc32, z64, vl);
             return static_cast<float>(__riscv_vmv_x_s_i64m1_i64(r64)) *
                     final_scale_sq;
         }
@@ -2346,10 +2268,10 @@ struct DCTemplate<
     size_t d;
     float vmin;
     float vdiff;
-    float scale;  // vdiff / 255
-    float c0;     // vmin + 0.5 * scale
-    float k_q;    // c0 * sum_i q_i, per query
-    float factor; // scale * s_q, per query
+    float scale;    // vdiff / 255
+    float c0;       // vmin + 0.5 * scale
+    float k_q;      // c0 * sum_i q_i, per query
+    float factor;   // scale * s_q, per query
     int32_t qbound; // fixed-point bound B (i32 overflow guard)
     // Fixed-point query stream; padded by 2*VLMAX(e16m4) zeros so a
     // future software-pipelined next-chunk vle16 stays in bounds.
@@ -2460,8 +2382,7 @@ struct DCTemplate<
         if (i + vl <= d) {
             vint16m4_t vq = __riscv_vle16_v_i16m4(pq, vl); // prologue
             for (; i + vl <= d; i += vl) {
-                vint16m4_t vq_next =
-                        __riscv_vle16_v_i16m4(pq + vl, vl);
+                vint16m4_t vq_next = __riscv_vle16_v_i16m4(pq + vl, vl);
                 vuint8m2_t c8 = __riscv_vle8_v_u8m2(pc, vl);
                 vint16m4_t c16 = __riscv_vreinterpret_v_u16m4_i16m4(
                         __riscv_vzext_vf2_u16m4(c8, vl));
@@ -3539,13 +3460,10 @@ struct DCTemplate<
             // Main loop: while a full next chunk exists, issue its load
             // first, then process the current one.
             for (; i + vl <= d; i += vl) {
-                vfloat16m1_t vc_next =
-                        __riscv_vle16_v_f16m1(code + i, vl);
+                vfloat16m1_t vc_next = __riscv_vle16_v_f16m1(code + i, vl);
 
-                vfloat32m2_t fc =
-                        __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
-                vfloat32m2_t fq =
-                        __riscv_vle32_v_f32m2(qf + i - vl, vl);
+                vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
+                vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i - vl, vl);
                 acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vl);
 
                 vc = vc_next; // rotate
@@ -3553,10 +3471,8 @@ struct DCTemplate<
 
             // Epilogue: process the last chunk (already loaded).
             {
-                vfloat32m2_t fc =
-                        __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
-                vfloat32m2_t fq =
-                        __riscv_vle32_v_f32m2(qf + i - vl, vl);
+                vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
+                vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i - vl, vl);
                 acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vl);
             }
         }
