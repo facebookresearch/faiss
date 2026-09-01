@@ -280,7 +280,8 @@ void compute_1_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
 } // namespace
 
 void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    // a1: fvec_L2sqr_ny_nearest / _y_transposed have ARM_SVE specializations
+    with_simd_level_a1([&]<SIMDLevel SL>() {
         switch (nbits) {
             case 8:
                 compute_1_code<PQEncoder8, SL>(*this, x, code);
@@ -294,7 +295,7 @@ void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
                 compute_1_code<PQEncoderGeneric, SL>(*this, x, code);
                 break;
         }
-    }); // with_simd_level
+    }); // with_simd_level_a1
 }
 
 template <class PQDecoder>
@@ -442,7 +443,8 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    // a1: fvec_L2sqr_ny / _transposed have ARM_SVE specializations
+    with_simd_level_a1([&]<SIMDLevel SL>() {
         if (transposed_centroids.empty()) {
             // use regular version
             for (size_t m = 0; m < M; m++) {
@@ -824,7 +826,8 @@ void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 
     if (dsub < 4) {
-        with_simd_level([&]<SIMDLevel SL>() {
+        // a1: fvec_L2sqr_ny has an ARM_SVE specialization
+        with_simd_level_a1([&]<SIMDLevel SL>() {
 #pragma omp parallel for
             for (int64_t mk = 0; mk < static_cast<int64_t>(M * ksub); mk++) {
                 // allow omp to schedule in a more fine-grained way
