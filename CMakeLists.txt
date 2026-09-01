@@ -122,7 +122,7 @@ if(FAISS_ENABLE_GPU)
 endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
-   find_package(cuvs 26.10 REQUIRED)
+   find_package(cuvs REQUIRED)
  endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET rmm::rmm)
