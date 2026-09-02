@@ -9,8 +9,10 @@
 
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <numeric>
 #include <random>
+#include <string>
 #include <vector>
 
 #include <faiss/Index.h>
@@ -4346,6 +4348,73 @@ TEST(ReadIndexDeserialize, SVSFlatInvalidStreamThrows) {
                 faiss::read_index(&reader);
             },
             faiss::FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Tests: SVS DirectoryArchiver entry validation.
+//
+// An "ISVF" payload carrying DirectoryArchiver::magic_number is unpacked by
+// the vendored SVS archiver, which reads the entry name length, the entry
+// name, and the entry size straight off the stream. All three are
+// attacker-controlled and are consumed before any FAISS-side validation runs
+// — the ReaderStreambuf byte limit only bounds individual reads, so it
+// cannot police either the name length or the resulting path.
+// -----------------------------------------------------------------------
+
+/// DirectoryArchiver::magic_number, from
+/// third-party/svs/v0.4.0/src/include/svs/lib/file.h.
+static constexpr uint64_t kSvsDirectoryArchiverMagic = 0x5e2d58d9f3b4a6c1ULL;
+
+/// Append an "ISVF" index that routes into DirectoryArchiver::unpack carrying
+/// a single archive entry. `declared_name_len` is written to the stream as the
+/// entry's name length and is deliberately separate from `filename` so that a
+/// test can claim a length it does not supply.
+static void push_svs_flat_archive_entry(
+        std::vector<uint8_t>& buf,
+        const std::string& filename,
+        uint64_t declared_name_len,
+        const std::vector<uint8_t>& contents = {}) {
+    push_fourcc(buf, "ISVF");
+    push_index_header(buf, 8, 0);
+    push_val<bool>(buf, true); // initialized -> enters deserialize_impl
+    push_val<uint64_t>(buf, kSvsDirectoryArchiverMagic);
+    push_val<uint64_t>(buf, uint64_t(1)); // num_files
+    push_val<uint64_t>(buf, declared_name_len);
+    buf.insert(buf.end(), filename.begin(), filename.end());
+    push_val<uint64_t>(buf, uint64_t(contents.size()));
+    buf.insert(buf.end(), contents.begin(), contents.end());
+}
+
+// An absolute entry name must not escape the archiver's temp root.
+// std::filesystem::operator/ discards its left operand entirely when the right
+// operand is absolute, so `root / filename` collapses to `filename`.
+TEST(ReadIndexDeserialize, SVSArchiveAbsolutePathEntryRejected) {
+    const auto probe = std::filesystem::temp_directory_path() /
+            "faiss_svs_archive_absolute_probe";
+    std::filesystem::remove(probe);
+
+    const std::string filename = probe.string();
+    std::vector<uint8_t> buf;
+    push_svs_flat_archive_entry(buf, filename, filename.size(), {'x'});
+
+    expect_read_throws_with(buf, "escapes the extraction root");
+    EXPECT_FALSE(std::filesystem::exists(probe));
+}
+
+// Same, for a relative entry name that climbs out of the temp root. The
+// archiver unpacks into temp_directory_path()/svs_flat_load-<uuid>, so a
+// single ".." lands back in temp_directory_path().
+TEST(ReadIndexDeserialize, SVSArchiveParentTraversalEntryRejected) {
+    const auto probe = std::filesystem::temp_directory_path() /
+            "faiss_svs_archive_traversal_probe";
+    std::filesystem::remove(probe);
+
+    const std::string filename = "../faiss_svs_archive_traversal_probe";
+    std::vector<uint8_t> buf;
+    push_svs_flat_archive_entry(buf, filename, filename.size(), {'x'});
+
+    expect_read_throws_with(buf, "escapes the extraction root");
+    EXPECT_FALSE(std::filesystem::exists(probe));
 }
 
 // -----------------------------------------------------------------------
