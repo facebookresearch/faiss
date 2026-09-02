@@ -194,6 +194,57 @@ class TestExhaustiveSearch(unittest.TestCase):
             ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
+    def test_query_iterator_similarity_metric(self):
+        """range_search_max_results must keep the highest-scoring results
+        (and raise the radius) for any similarity metric, not just
+        METRIC_INNER_PRODUCT. Regression test for a bug where pruning
+        for METRIC_Jaccard (also a similarity metric, see
+        faiss.is_similarity_metric) kept the lowest-scoring results
+        instead of the highest-scoring ones."""
+
+        class FakeSimilarityIndex:
+            """Stands in for an Index using a similarity metric (higher
+            score = better match), exposing only what
+            range_search_max_results touches."""
+
+            def __init__(self, sims, metric_type):
+                self.sims = sims
+                self.metric_type = metric_type
+
+            def range_search(self, xq, radius):
+                lims = [0]
+                D = []
+                I = []
+                for i in range(len(xq)):
+                    s = self.sims[i]
+                    idx = np.nonzero(s > radius)[0]
+                    D.append(s[idx])
+                    I.append(idx.astype("int64"))
+                    lims.append(lims[-1] + len(idx))
+                return (
+                    np.array(lims, dtype="uint64"),
+                    np.hstack(D).astype("float32"),
+                    np.hstack(I).astype("int64"),
+                )
+
+        rs = np.random.RandomState(1)
+        nq, ndb = 5, 200
+        sims = [rs.rand(ndb).astype("float32") for _ in range(nq)]
+        index = FakeSimilarityIndex(sims, faiss.METRIC_Jaccard)
+
+        xq = np.zeros((nq, 1), dtype="float32")  # unused by the fake index
+        radius = 0.0  # keep everything initially
+        total = sum(len(s) for s in sims)
+        max_results = total // 2
+
+        new_radius, lims, D, I = range_search_max_results(
+            index, iter([xq]), radius, max_results=max_results
+        )
+
+        self.assertGreaterEqual(new_radius, radius)
+        self.assertGreater(len(D), 0)
+        self.assertGreaterEqual(D.min(), new_radius - 1e-6)
+
 
 class TestInspect(unittest.TestCase):
 
