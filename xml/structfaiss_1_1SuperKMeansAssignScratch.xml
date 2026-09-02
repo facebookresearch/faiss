@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="101" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="101" bodyend="-1"/>
+        <location file="faiss/SuperKMeans.h" line="102" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a4b17a50bc348b70289fc443727a4151b" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="102" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="102" bodyend="-1"/>
+        <location file="faiss/SuperKMeans.h" line="103" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a2d415527bddefdb67b6836e5de1b88c4" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="103" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/SuperKMeans.h" line="104" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a1747a4b0846877ccec7ba264f9f7564a" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="104" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/SuperKMeans.h" line="105" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SuperKMeansAssignScratch_1a274d349b1df747541565779d0a29eddf" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="105" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/SuperKMeans.h" line="106" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="106" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -80,7 +80,7 @@
     <detaileddescription>
 <para>Reusable scratch for super_kmeans_assign_iteration; pass one instance across a loop of calls to avoid reallocating (buffers grow only as needed). </para>
     </detaileddescription>
-    <location file="faiss/SuperKMeans.h" line="100" column="1" bodyfile="faiss/SuperKMeans.h" bodystart="100" bodyend="106"/>
+    <location file="faiss/SuperKMeans.h" line="101" column="1" bodyfile="faiss/SuperKMeans.h" bodystart="101" bodyend="107"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a274d349b1df747541565779d0a29eddf" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>partial_ip</name></member>
       <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a2d415527bddefdb67b6836e5de1b88c4" prot="public" virt="non-virtual"><scope>faiss::SuperKMeansAssignScratch</scope><name>x_norms_partial</name></member>

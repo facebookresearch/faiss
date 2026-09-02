@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="165" column="9" bodyfile="faiss/Clustering.h" bodystart="165" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="173" column="9" bodyfile="faiss/Clustering.h" bodystart="173" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="166" column="10" bodyfile="faiss/Clustering.h" bodystart="166" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="174" column="10" bodyfile="faiss/Clustering.h" bodystart="174" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -290,6 +290,22 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="77" column="12" bodyfile="faiss/Clustering.h" bodystart="77" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a84a51c2d506530e8900272e5beef8780" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::ClusteringParameters::use_super_kmeans</definition>
+        <argsstring></argsstring>
+        <name>use_super_kmeans</name>
+        <qualifiedname>faiss::ClusteringParameters::use_super_kmeans</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Whether to use the <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref> (super fast k-means) variant instead of the vanilla <ref refid="structfaiss_1_1Clustering" kindref="compound">Clustering</ref> implementation. Only honored by callers that explicitly support it (e.g. IVF level-1 quantizer training). Cannot be combined with a user-provided clustering index: <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref> assigns with its own index, so callers that supply both get an exception rather than a silent downgrade to vanilla <ref refid="structfaiss_1_1Clustering" kindref="compound">Clustering</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="85" column="10" bodyfile="faiss/Clustering.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a8611a01f2d1c9b35af4871ce53e98160" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -304,7 +320,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="168" column="5"/>
+        <location file="faiss/Clustering.h" line="176" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -341,7 +357,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="164" column="1" bodyfile="faiss/Clustering.h" bodystart="164" bodyend="169"/>
+    <location file="faiss/Clustering.h" line="172" column="1" bodyfile="faiss/Clustering.h" bodystart="172" bodyend="177"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>afkmc2_chain_length</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>apply_pca</name></member>
@@ -361,6 +377,7 @@
       <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>spherical</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>update_index</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>use_faster_subsampling</name></member>
+      <member refid="structfaiss_1_1ClusteringParameters_1a84a51c2d506530e8900272e5beef8780" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>use_super_kmeans</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>verbose</name></member>
     </listofallmembers>
   </compounddef>

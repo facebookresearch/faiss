@@ -236,6 +236,7 @@
         <name>reverse_transform</name>
         <qualifiedname>faiss::VectorTransform::reverse_transform</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563">reverse_transform</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HadamardRotation_1a843bd3c452ad07f0288fccf155b9bc36">reverse_transform</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3">reverse_transform</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1">reverse_transform</reimplementedby>
         <reimplementedby refid="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5">reverse_transform</reimplementedby>

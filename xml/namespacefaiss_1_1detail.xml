@@ -533,7 +533,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/super_kmeans_dispatch.h" line="26" column="14" bodyfile="faiss/utils/simd_impl/super_kmeans_dispatch.h" bodystart="26" bodyend="29"/>
+        <location file="faiss/utils/simd_impl/super_kmeans_dispatch.h" line="25" column="14" bodyfile="faiss/utils/simd_impl/super_kmeans_dispatch.h" bodystart="25" bodyend="28"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1afcf5bb279cd6668c2e4e88ec8d7d4098" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

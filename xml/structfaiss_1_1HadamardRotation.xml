@@ -245,6 +245,34 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="145" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HadamardRotation_1a843bd3c452ad07f0288fccf155b9bc36" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::HadamardRotation::reverse_transform</definition>
+        <argsstring>(idx_t n, const float *xt, float *x) const override</argsstring>
+        <name>reverse_transform</name>
+        <qualifiedname>faiss::HadamardRotation::reverse_transform</qualifiedname>
+        <reimplements refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb">reverse_transform</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>xt</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Apply the inverse transform when d_in == d_out. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/VectorTransform.h" line="148" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HadamardRotation_1a026d7491ad09a3cd017752aebaf2a11e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::HadamardRotation::check_identical</definition>
@@ -262,7 +290,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="147" column="10"/>
+        <location file="faiss/VectorTransform.h" line="150" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HadamardRotation_1a4daf2a8a3b1a30d6f4659c8032cd65ba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -276,7 +304,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="149" column="5" bodyfile="faiss/VectorTransform.h" bodystart="149" bodyend="149"/>
+        <location file="faiss/VectorTransform.h" line="152" column="5" bodyfile="faiss/VectorTransform.h" bodystart="152" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float *</type>
@@ -320,37 +348,6 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="49" column="11"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::VectorTransform::reverse_transform</definition>
-        <argsstring>(idx_t n, const float *xt, float *x) const</argsstring>
-        <name>reverse_transform</name>
-        <qualifiedname>faiss::VectorTransform::reverse_transform</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563">reverse_transform</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3">reverse_transform</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1">reverse_transform</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5">reverse_transform</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>xt</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>x</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>reverse transformation. May not be implemented or may return approximate result </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="60" column="18"/>
-      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -381,7 +378,7 @@
         <link refid="structfaiss_1_1VectorTransform"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="133" column="1" bodyfile="faiss/VectorTransform.h" bodystart="133" bodyend="150"/>
+    <location file="faiss/VectorTransform.h" line="133" column="1" bodyfile="faiss/VectorTransform.h" bodystart="133" bodyend="153"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>apply</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1a8b51c06a5b6ba821394c7f9ae313043c" prot="public" virt="virtual"><scope>faiss::HadamardRotation</scope><name>apply_noalloc</name></member>
@@ -392,7 +389,7 @@
       <member refid="structfaiss_1_1HadamardRotation_1a4daf2a8a3b1a30d6f4659c8032cd65ba" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>HadamardRotation</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1aa1ce92b4a61a605755011fe0a8233cad" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>init</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" prot="public" virt="virtual"><scope>faiss::HadamardRotation</scope><name>reverse_transform</name></member>
+      <member refid="structfaiss_1_1HadamardRotation_1a843bd3c452ad07f0288fccf155b9bc36" prot="public" virt="virtual"><scope>faiss::HadamardRotation</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1a26e7d67687f76be9a2aa8ad10ceda833" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>seed</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1a1c132fb43763a79abb6669eabf1b58c4" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>signs1</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1a37c0de897839bded104d29490508047d" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>signs2</name></member>
