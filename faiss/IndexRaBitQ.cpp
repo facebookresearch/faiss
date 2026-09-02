@@ -21,10 +21,22 @@ using rabitq_utils::SignBitFactorsWithError;
 
 IndexRaBitQ::IndexRaBitQ() = default;
 
-IndexRaBitQ::IndexRaBitQ(idx_t d_in, MetricType metric, uint8_t nb_bits_in)
-        : IndexFlatCodes(0, d_in, metric), rabitq(d_in, metric, nb_bits_in) {
+IndexRaBitQ::IndexRaBitQ(
+        idx_t d_in,
+        MetricType metric,
+        uint8_t nb_bits_in,
+        bool dense_layout)
+        : IndexFlatCodes(0, d_in, metric),
+          rabitq(d_in, metric, nb_bits_in, dense_layout) {
     // Update code size based on nb_bits
     code_size = rabitq.code_size;
+
+    // Dense codes currently use the FP32-query distance computer. Keep the
+    // constructor valid on its own instead of requiring every caller to
+    // override the legacy qb=4 default before the first search.
+    if (dense_layout) {
+        qb = 0;
+    }
 
     is_trained = false;
 }
@@ -137,7 +149,10 @@ struct Run_search_with_dc_res {
                             float est_distance =
                                     dc->distance_to_code_1bit(code);
 
-                            size_t code_size_base = (index->d + 7) / 8;
+                            const size_t code_size_base =
+                                    index->rabitq.dense_layout
+                                    ? (index->d * index->rabitq.nb_bits + 7) / 8
+                                    : (index->d + 7) / 8;
                             const rabitq_utils::SignBitFactorsWithError*
                                     base_fac = reinterpret_cast<
                                             const rabitq_utils::

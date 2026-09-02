@@ -1024,7 +1024,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             write_index_header(idx, f);
             write_RaBitQuantizer(&idxq->rabitq, f, false);
         } else {
-            uint32_t h = fourcc("Ixrr"); // multi-bit (new format)
+            // Dense codes have a different bit layout even though their byte
+            // size is often identical to the split multi-bit representation.
+            uint32_t h =
+                    idxq->rabitq.dense_layout ? fourcc("Ixrd") : fourcc("Ixrr");
             WRITE1(h);
             write_index_header(idx, f);
             write_RaBitQuantizer(&idxq->rabitq, f, true);

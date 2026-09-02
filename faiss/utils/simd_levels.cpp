@@ -23,6 +23,7 @@ uint64_t SIMDConfig::supported_simd_levels = 0;
 // Microarchitecture flags (x86). Default false; set by
 // detect_x86_uarch_flags() at load time.
 bool SIMDConfig::avx512_split = false;
+bool SIMDConfig::bmi2_fast = false;
 
 // Resolved here rather than in the header so that dependents, which never see
 // FAISS_ENABLE_DD, still get the answer for the faiss they link against.
@@ -81,8 +82,26 @@ void detect_x86_uarch_flags() {
     asm volatile("cpuid"
                  : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
                  : "a"(eax), "c"(ecx));
+    const unsigned int max_basic_leaf = eax;
     const bool is_amd =
             ebx == 0x68747541u && edx == 0x69746e65u && ecx == 0x444d4163u;
+
+    // CPUID.7.0: EBX bit 8 is BMI2 and bit 16 is AVX-512F. All AMD Zen 4+
+    // CPUs implement AVX-512F, whereas AMD CPUs before Zen 4 do not. Use the
+    // latter as a robust generation gate rather than family/model tables,
+    // because family 0x19 contains both Zen 3 and Zen 4 model ranges.
+    bool has_bmi2 = false;
+    bool has_avx512f = false;
+    if (max_basic_leaf >= 7) {
+        eax = 7;
+        ecx = 0;
+        asm volatile("cpuid"
+                     : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+                     : "a"(eax), "c"(ecx));
+        has_bmi2 = (ebx & (1u << 8)) != 0;
+        has_avx512f = (ebx & (1u << 16)) != 0;
+    }
+    SIMDConfig::bmi2_fast = has_bmi2 && (!is_amd || has_avx512f);
 
     // Family/model (CPUID.1 EAX).
     eax = 1;
@@ -115,6 +134,9 @@ void detect_x86_uarch_flags() {}
 static SIMDConfig simd_config_initializer;
 
 SIMDConfig::SIMDConfig(const char** faiss_simd_level_env) {
+    // Initialize microarchitecture flags even when the SIMD level is forced
+    // through FAISS_SIMD_LEVEL.
+    detect_x86_uarch_flags();
     // Support dependency injection for testing
     const char* env_var = faiss_simd_level_env ? *faiss_simd_level_env
                                                : getenv("FAISS_SIMD_LEVEL");

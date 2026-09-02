@@ -111,6 +111,9 @@ IndexRaBitQFastScan::IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs_in)
             orig.metric_type == METRIC_L2 ||
                     orig.metric_type == METRIC_INNER_PRODUCT,
             "RaBitQ FastScan only supports L2 and Inner Product metrics");
+    FAISS_THROW_IF_NOT_MSG(
+            !orig.rabitq.dense_layout,
+            "RaBitQ FastScan conversion does not support dense codes");
 
     // RaBitQ uses 1 bit per dimension packed into 4-bit FastScan sub-quantizers
     // Each FastScan sub-quantizer handles 4 RaBitQ dimensions

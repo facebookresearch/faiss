@@ -1424,7 +1424,8 @@ static void read_RaBitQuantizer(
         RaBitQuantizer& rabitq,
         IOReader* f,
         int expected_d,
-        bool multi_bit = true) {
+        bool multi_bit = true,
+        bool dense_layout = false) {
     READ1(rabitq.d);
     READ1(rabitq.code_size);
     int metric_type_int;
@@ -1436,12 +1437,21 @@ static void read_RaBitQuantizer(
     } else {
         rabitq.nb_bits = 1;
     }
+    rabitq.dense_layout = dense_layout;
 
     FAISS_THROW_IF_NOT_FMT(
             rabitq.d == static_cast<size_t>(expected_d),
             "RaBitQuantizer dimension mismatch: rabitq.d=%zu vs index d=%d",
             rabitq.d,
             expected_d);
+
+    const size_t expected_code_size =
+            rabitq.compute_code_size(rabitq.d, rabitq.nb_bits);
+    FAISS_THROW_IF_NOT_FMT(
+            rabitq.code_size == expected_code_size,
+            "RaBitQuantizer code size mismatch: stored=%zu expected=%zu",
+            rabitq.code_size,
+            expected_code_size);
 }
 
 static void read_EDENScalarQuantizer(
@@ -2861,12 +2871,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         idxq->code_size = idxq->rabitq.code_size;
         idx = std::move(idxq);
-    } else if (h == fourcc("Ixrr")) {
-        // Ixrr = multi-bit format (new)
+    } else if (h == fourcc("Ixrr") || h == fourcc("Ixrd")) {
+        // Ixrr = split multi-bit format; Ixrd = dense multi-bit format.
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
         read_RaBitQuantizer(
-                idxq->rabitq, f, idxq->d, true); // Reads nb_bits from file
+                idxq->rabitq, f, idxq->d, true, h == fourcc("Ixrd"));
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
@@ -2878,6 +2888,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxq->qb);
 
         idxq->code_size = idxq->rabitq.code_size;
+        FAISS_THROW_IF_NOT_FMT(
+                idxq->codes.size() ==
+                        static_cast<size_t>(idxq->ntotal) * idxq->code_size,
+                "IndexRaBitQ codes size mismatch: stored=%zu expected=%zu",
+                idxq->codes.size(),
+                static_cast<size_t>(idxq->ntotal) * idxq->code_size);
         idx = std::move(idxq);
     } else if (h == fourcc("Iwrq")) {
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
