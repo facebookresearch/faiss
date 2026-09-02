@@ -52,6 +52,25 @@ jobs:
         env:
           CIBW_BUILD_VERBOSITY: 1
 
+      # Verify the freshly-built wheels install through `uv`, the resolution
+      # path users hit in issue #4510 ("faiss can only be installed by conda").
+      # cibuildwheel already runs the smoke tests via pip inside its test
+      # containers; this step additionally guarantees the wheels are resolvable
+      # and importable when installed with `uv pip install` from the wheelhouse.
+      # The smoke tests are dependency-light, so we do not need scipy here.
+      - name: Verify uv install
+        shell: bash
+        run: |
+          python -m pip install --quiet uv
+          uv venv --python 3.12 .uv-smoke
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            UV_PY=.uv-smoke/Scripts/python.exe
+          else
+            UV_PY=.uv-smoke/bin/python
+          fi
+          uv pip install --python "$UV_PY" numpy pytest wheelhouse/
+          "$UV_PY" -m pytest tests/test_wheel_smoke.py -v
+
       - name: Upload wheels
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
