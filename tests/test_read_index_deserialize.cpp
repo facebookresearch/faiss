@@ -4417,6 +4417,21 @@ TEST(ReadIndexDeserialize, SVSArchiveParentTraversalEntryRejected) {
     EXPECT_FALSE(std::filesystem::exists(probe));
 }
 
+// Reading an entry name must not pre-allocate the declared length: an 8-byte
+// header would otherwise commit an unbounded amount of memory. A lying length
+// has to surface as stream exhaustion rather than as an allocation failure.
+// The declared value is deliberately far above std::string::max_size() so that
+// a regression here aborts on the allocation attempt itself (length_error, or
+// an allocator abort under ASAN) rather than trying to commit the memory and
+// taking the test host down with it.
+TEST(ReadIndexDeserialize, SVSArchiveOversizedEntryNameThrowsStreamError) {
+    std::vector<uint8_t> buf;
+    push_svs_flat_archive_entry(
+            buf, /*filename=*/"", /*declared_name_len=*/SIZE_MAX / 2);
+
+    expect_read_throws_with(buf, "Error reading from stream");
+}
+
 // -----------------------------------------------------------------------
 // Tests: IndexRefine / IndexRefinePanorama k_factor validation.
 //
