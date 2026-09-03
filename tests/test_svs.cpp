@@ -21,10 +21,9 @@
  * limitations under the License.
  */
 
-#include <omp.h>
-
 #include <faiss/Index.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/index_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -605,6 +604,45 @@ TEST_F(SVSLL, WriteAndReadIndexSVSIVFLeanVec8x8) {
     faiss::IndexSVSIVFLeanVec index{
             d, 4ul, faiss::METRIC_L2, 0, faiss::SVSStorageKind::SVS_LeanVec8x8};
     write_and_read_ivf_index(index, test_data, n);
+}
+
+// Each SVS family streams its payload to the third-party SVS reader through a
+// ReaderStreambuf, and only a streambuf carrying the deserialization vector
+// byte limit rejects an oversized read. Every family must therefore build one
+// the same way.
+template <typename T>
+void expect_byte_limit_enforced(
+        T& index,
+        const std::vector<float>& xb,
+        size_t n) {
+    index.train(n, xb.data());
+    index.add(n, xb.data());
+
+    std::string temp_filename_template = "/tmp/faiss_svs_limit_test_XXXXXX";
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
+    ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
+
+    const size_t old_limit = faiss::get_deserialization_vector_byte_limit();
+    faiss::set_deserialization_vector_byte_limit(64);
+    EXPECT_THROW(
+            { delete faiss::read_index(filename.c_str()); },
+            faiss::FaissException);
+    faiss::set_deserialization_vector_byte_limit(old_limit);
+
+    faiss::Index* loaded = nullptr;
+    ASSERT_NO_THROW({ loaded = faiss::read_index(filename.c_str()); });
+    EXPECT_NE(loaded, nullptr);
+    delete loaded;
+}
+
+TEST_F(SVS, FlatHonorsDeserializationVectorByteLimit) {
+    faiss::IndexSVSFlat index{d};
+    expect_byte_limit_enforced(index, test_data, n);
+}
+
+TEST_F(SVS, IVFHonorsDeserializationVectorByteLimit) {
+    faiss::IndexSVSIVF index{d, 4ul};
+    expect_byte_limit_enforced(index, test_data, n);
 }
 
 TEST_F(SVS, IVFTrainAndAdd) {

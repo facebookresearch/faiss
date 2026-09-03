@@ -243,8 +243,8 @@ class TestSQ(unittest.TestCase):
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if CUVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if CUVS is compiled in"
+)
 class TestCuvsSQ8(unittest.TestCase):
 
     def make_gpu_index(self, metric):
@@ -261,8 +261,8 @@ class TestCuvsSQ8(unittest.TestCase):
         config.indicesOptions = faiss.INDICES_64_BIT
 
         idx_gpu = faiss.GpuIndexIVFScalarQuantizer(
-            res, d, nlist, faiss.ScalarQuantizer.QT_8bit,
-            metric, True, config)
+            res, d, nlist, faiss.ScalarQuantizer.QT_8bit, metric, True, config
+        )
         idx_gpu.train(xt)
         idx_gpu.add(xb)
         idx_gpu.nprobe = nprobe
@@ -278,8 +278,13 @@ class TestCuvsSQ8(unittest.TestCase):
 
         quantizer = faiss.IndexFlat(idx_gpu.d, metric)
         idx_cpu = faiss.IndexIVFScalarQuantizer(
-            quantizer, idx_gpu.d, nlist,
-            faiss.ScalarQuantizer.QT_8bit, metric, True)
+            quantizer,
+            idx_gpu.d,
+            nlist,
+            faiss.ScalarQuantizer.QT_8bit,
+            metric,
+            True,
+        )
         idx_gpu.copyTo(idx_cpu)
         idx_cpu.nprobe = nprobe
 
@@ -288,8 +293,7 @@ class TestCuvsSQ8(unittest.TestCase):
         self.assertEqual(idx_cpu.sq.trained.size(), 2 * idx_gpu.d)
         do_test_with_index(idx_cpu, idx_gpu, nprobe, k, False, 0.8)
 
-        idx_gpu_copy = faiss.GpuIndexIVFScalarQuantizer(
-            res, idx_cpu, config)
+        idx_gpu_copy = faiss.GpuIndexIVFScalarQuantizer(res, idx_cpu, config)
         idx_gpu_copy.nprobe = nprobe
         self.assertEqual(idx_gpu_copy.ntotal, idx_cpu.ntotal)
         do_test_with_index(idx_cpu, idx_gpu_copy, nprobe, k, False, 0.8)
@@ -297,9 +301,10 @@ class TestCuvsSQ8(unittest.TestCase):
         xq_nan = make_t(2, idx_gpu.d)
         xq_nan[1, 0] = np.nan
         D_nan, I_nan = idx_gpu.search(xq_nan, k)
-        np.testing.assert_array_equal(I_nan[1], -np.ones(k, dtype='int64'))
+        np.testing.assert_array_equal(I_nan[1], -np.ones(k, dtype="int64"))
         np.testing.assert_allclose(
-            D_nan[1], np.full(k, np.finfo('float32').max, dtype='float32'))
+            D_nan[1], np.full(k, np.finfo("float32").max, dtype="float32")
+        )
 
         idx_gpu.reset()
         self.assertEqual(idx_gpu.ntotal, 0)

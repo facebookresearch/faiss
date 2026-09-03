@@ -229,6 +229,7 @@ size_t IndexPreTransform::remove_ids(const IDSelector& sel) {
 }
 
 void IndexPreTransform::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(index, "IndexPreTransform: null sub-index");
     float* x = chain.empty() ? recons : new float[index->d];
     std::unique_ptr<float[]> del(recons == x ? nullptr : x);
     // Initial reconstruction
@@ -239,6 +240,7 @@ void IndexPreTransform::reconstruct(idx_t key, float* recons) const {
 }
 
 void IndexPreTransform::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(index, "IndexPreTransform: null sub-index");
     float* x = chain.empty() ? recons : new float[ni * index->d];
     std::unique_ptr<float[]> del(recons == x ? nullptr : x);
     // Initial reconstruction

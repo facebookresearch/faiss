@@ -53,6 +53,55 @@ class SuperKMeansTest(unittest.TestCase):
         v_final = v_stats.at(v_stats.size() - 1).obj
         self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
 
+    def test_spherical_objective_close_to_vanilla_spherical(self):
+        # With cp.spherical=true, SuperKMeans unit-normalizes centroids so the
+        # L2 assignment it computes is equivalent to inner-product assignment.
+        # The final objective must track vanilla spherical Clustering.
+        d, k, n = 64, 16, 2000
+        x = SyntheticDataset(d, n, 0, 0).get_train()
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 42
+        p.niter = 10
+        p.spherical = True
+        sc = faiss.SuperKMeans(d, k, p)
+        sc.train(x)
+
+        quant = faiss.IndexFlatL2(d)
+        vanilla = faiss.Clustering(d, k)
+        vanilla.seed = 42
+        vanilla.niter = 10
+        vanilla.spherical = True
+        vanilla.train(x, quant)
+
+        sc_final = sc.iteration_stats.at(sc.iteration_stats.size() - 1).obj
+        v_stats = vanilla.iteration_stats
+        v_final = v_stats.at(v_stats.size() - 1).obj
+        self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
+
+    def test_spherical_produces_unit_centroids(self):
+        d, k, n = 64, 16, 2000
+        x = SyntheticDataset(d, n, 0, 0).get_train()
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 42
+        p.niter = 10
+        p.spherical = True
+        sc = faiss.SuperKMeans(d, k, p)
+        sc.train(x)
+
+        centroids = faiss.vector_to_array(sc.centroids).reshape(k, d)
+        norms = np.linalg.norm(centroids, axis=1)
+        np.testing.assert_allclose(norms, 1.0, atol=1e-4)
+
+    def test_use_super_kmeans_field_is_inherited(self):
+        # use_super_kmeans lives on ClusteringParameters and is inherited by
+        # SuperKMeansParameters; it must be settable from Python.
+        p = faiss.SuperKMeansParameters()
+        self.assertFalse(p.use_super_kmeans)
+        p.use_super_kmeans = True
+        self.assertTrue(p.use_super_kmeans)
+
     def test_pruning_rate_in_expected_range(self):
         # The 10-d intrinsic manifold of SyntheticDataset gives ADSampling
         # the assigned-vs-other distance gap it needs to prune effectively.
@@ -186,3 +235,54 @@ class SuperKmeansWrapperTest(unittest.TestCase):
 
         rel_diff = abs(sk.obj[-1] - vanilla.obj[-1]) / vanilla.obj[-1]
         self.assertLess(rel_diff, 0.05)
+
+
+class SuperKMeansAssignIterationSmokeTest(unittest.TestCase):
+    def test_smoke(self):
+        n, d, k, dp = 50, 32, 8, 8
+        X = np.random.RandomState(0).randn(n, d).astype("float32")
+        Y = np.random.RandomState(1).randn(k, d).astype("float32")
+        tau = np.full(n, 1e30, dtype="float32")
+        A = np.zeros(n, dtype="int32")
+        coeff = faiss.precompute_ad_thresholds(d, 1.0 / d)
+        coeff_np = np.array(
+            [coeff.at(i) for i in range(coeff.size())], dtype="float32"
+        )
+        cp = faiss.SuperKMeansParameters()
+        total, pruned = faiss.super_kmeans_assign_iteration(
+            X, Y, tau, A, dp, coeff_np, cp
+        )
+        self.assertGreater(total, 0)
+        self.assertTrue((A >= 0).all())
+        self.assertTrue((A < k).all())
+
+    def test_rejects_bad_input(self):
+        # The wrapper must reject wrong dtypes and mismatched shapes at the
+        # Python boundary rather than passing a bad pointer to C++.
+        n, d, k, dp = 50, 32, 8, 8
+        X = np.random.RandomState(0).randn(n, d).astype("float32")
+        Y = np.random.RandomState(1).randn(k, d).astype("float32")
+        tau = np.full(n, 1e30, dtype="float32")
+        A = np.zeros(n, dtype="int32")
+        coeff = faiss.precompute_ad_thresholds(d, 1.0 / d)
+        coeff_np = np.array(
+            [coeff.at(i) for i in range(coeff.size())], dtype="float32"
+        )
+        cp = faiss.SuperKMeansParameters()
+
+        # int64 assignments (numpy's default int) must be rejected, not
+        # reinterpreted as int32.
+        with self.assertRaises(TypeError):
+            faiss.super_kmeans_assign_iteration(
+                X, Y, tau, A.astype("int64"), dp, coeff_np, cp
+            )
+        # tau too short must be rejected, not read out of bounds.
+        with self.assertRaises(ValueError):
+            faiss.super_kmeans_assign_iteration(
+                X, Y, tau[: n - 1], A, dp, coeff_np, cp
+            )
+        # ad_coeff too short must be rejected (kernel indexes up to d).
+        with self.assertRaises(ValueError):
+            faiss.super_kmeans_assign_iteration(
+                X, Y, tau, A, dp, coeff_np[:d], cp
+            )

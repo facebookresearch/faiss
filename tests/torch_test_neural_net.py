@@ -211,7 +211,8 @@ class QINCo(nn.Module):
         """
         Encode a batch of vectors x to codes of length M.
         If this function is called from IVF-QINCo, codes are 1 index longer,
-        due to the first index being the IVF index, and codebook0 is the IVF codebook.
+        due to the first index being the IVF index, and codebook0 is the
+        IVF codebook.
         """
         M = len(self.steps) + 1
         bs, d = x.shape

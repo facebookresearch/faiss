@@ -47,7 +47,9 @@ enum class graph_build_algo {
     /// Use NN-Descent to build all-neighbors knn graph
     NN_DESCENT,
     /// Use iterative search to build knn graph
-    ITERATIVE_SEARCH
+    ITERATIVE_SEARCH,
+    /// Exact knn graph via tiled brute force
+    BRUTE_FORCE
 };
 
 /// A type for specifying how PQ codebooks are created.
@@ -173,6 +175,34 @@ struct IVFPQSearchCagraConfig {
     uint32_t max_internal_batch_size = 4096;
 };
 
+/// Knobs for the multi-GPU build path, selected by listing more than one
+/// device in GpuIndexCagraConfig::devices. Degrees, build_algo and metric
+/// still come from GpuIndexCagraConfig.
+struct AllNeighborsCagraConfig {
+    /// Number of overlapping clusters the dataset is partitioned into.
+    /// 0 selects max(2 * number of devices, 4).
+    size_t n_clusters = 0;
+
+    /// Clusters each vector is assigned to. Must be >= 2: with 1 there are no
+    /// cross-cluster edges and recall collapses. 0 selects 2.
+    size_t overlap_factor = 2;
+
+    /// Bounds IVF-PQ search memory during the knn build. cuVS's default can
+    /// exhaust device memory around 100M vectors; 8192 avoids that and does
+    /// not change recall. 0 keeps cuVS's default.
+    uint32_t ivf_pq_search_batch_size = 0;
+
+    /// IVF-PQ refinement multiplier. The refine pass runs on the CPU, so cost
+    /// scales with this. Raising it above 1.0 measured both slower and less
+    /// accurate, so it is separate from the shared refine_rate.
+    float refinement_rate = 1.0f;
+
+    /// Size the IVF-PQ index for one cluster rather than the whole dataset.
+    /// cuVS reuses these params for every cluster without rescaling, so
+    /// sizing from the full dataset badly over-partitions each one.
+    bool ivf_pq_size_from_cluster = true;
+};
+
 struct GpuIndexCagraConfig : public GpuIndexConfig {
     /// Degree of input graph for pruning.
     size_t intermediate_graph_degree = 128;
@@ -190,6 +220,27 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
 
     /// Whether to use MST optimization to guarantee graph connectivity.
     bool guarantee_connectivity = false;
+
+    /// Devices to build on. More than one selects the multi-GPU build in
+    /// train(); see AllNeighborsCagraConfig and train() for its restrictions.
+    /// Empty or one device uses GpuIndexConfig::device as usual.
+    std::vector<int> devices;
+
+    AllNeighborsCagraConfig all_neighbors_params;
+
+    /// Build the HNSW upper levels on the GPU during copyTo() instead of by
+    /// CPU insertion. Roughly 10x faster, but measured worse recall than
+    /// base_level_only, which is cheaper still. Off by default.
+    bool gpu_hnsw_upper_levels = false;
+
+    /// intermediate_graph_degree for the per-level subgraph builds.
+    /// 0 = twice the upper-level degree.
+    size_t gpu_hnsw_intermediate_degree = 0;
+
+    /// MST connectivity pass on the per-level subgraphs. On by default:
+    /// upper levels are walked greedily with no backtracking, so a
+    /// disconnected component is a trap the descent cannot escape.
+    bool gpu_hnsw_guarantee_connectivity = true;
 };
 
 enum class search_algo {
@@ -317,6 +368,20 @@ struct GpuIndexCagra : public GpuIndex {
             idx_t* labels,
             const SearchParameters* search_params) const override;
 
+    /// Multi-GPU build path taken by train() when cagraConfig_.devices lists
+    /// more than one device: cuVS `all_neighbors` knn graph construction over
+    /// overlapping clusters, followed by graph pruning. Leaves the result in
+    /// merged_knngraph_ for copyTo(); index_ stays empty.
+    void trainAllNeighbors_(idx_t n, const float* x);
+
+    /// Populate HNSW levels >= 1 of `index` by building a CAGRA graph over
+    /// each level's node subset on the GPU. Requires the level table to be
+    /// prepared and the storage populated. Returns the max level.
+    void buildHnswUpperLevelsGpu_(faiss::IndexHNSWCagra* index, int max_lvl)
+            const;
+
+    void copyToMultiGpu_(faiss::IndexHNSWCagra* index) const;
+
     /// Our configuration options
     const GpuIndexCagraConfig cagraConfig_;
 
@@ -329,6 +394,11 @@ struct GpuIndexCagra : public GpuIndex {
             std::shared_ptr<CuvsCagra<half>>,
             std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
+
+    /// Multi-GPU state: populated by trainAllNeighbors_(), used by copyTo()
+    std::vector<idx_t> merged_knngraph_;
+    idx_t merged_knngraph_degree_ = 0;
+    const float* multi_gpu_dataset_ = nullptr;
 };
 
 } // namespace gpu

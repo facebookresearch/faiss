@@ -20,6 +20,7 @@ set(FAISS_SIMD_AVX2_SRC
   utils/hamming_distance/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
+  impl/scalar_quantizer/EDENQuantizer-avx2.cpp
   utils/simd_impl/rabitq_avx2.cpp
   utils/simd_impl/super_kmeans_kernels_avx2.cpp
 )
@@ -28,11 +29,13 @@ set(FAISS_SIMD_AVX512_SRC
   impl/hnsw/avx512.cpp
   impl/result_handler/avx512.cpp
   impl/pq_code_distance/avx512.cpp
+  impl/polysemous_training/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
   utils/distances_fused/avx512.cpp
   utils/hamming_distance/hamming_avx512.cpp
+  impl/scalar_quantizer/EDENQuantizer-avx512.cpp
   utils/simd_impl/rabitq_avx512.cpp
   utils/simd_impl/super_kmeans_kernels_avx512.cpp
 )
@@ -61,6 +64,7 @@ set(FAISS_SIMD_NEON_SRC
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
+  utils/simd_impl/super_kmeans_kernels_sve.cpp
 )
 set(FAISS_SIMD_RVV_SRC
   impl/fast_scan/impl-riscv.cpp
@@ -100,6 +104,7 @@ set(FAISS_SRC
   IndexBinaryHNSW.cpp
   IndexBinaryHash.cpp
   IndexBinaryIVF.cpp
+  IndexEDEN.cpp
   IndexFlat.cpp
   IndexFlatCodes.cpp
   IndexHNSW.cpp
@@ -109,6 +114,7 @@ set(FAISS_SRC
   IndexIVFFlat.cpp
   IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
+  IndexIVFEDEN.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
@@ -159,6 +165,7 @@ set(FAISS_SRC
   impl/pq_code_distance/pq_code_distance-generic.cpp
   impl/pq_code_distance/IVFPQ_QueryTables.cpp
   impl/AdditiveQuantizer.cpp
+  impl/scalar_quantizer/EDENQuantizer.cpp
   impl/RaBitQuantizer.cpp
   impl/RaBitQuantizerMultiBit.cpp
   impl/RaBitQUtils.cpp
@@ -229,6 +236,7 @@ set(FAISS_HEADERS
   IndexBinaryHNSW.h
   IndexBinaryHash.h
   IndexBinaryIVF.h
+  IndexEDEN.h
   IndexFlat.h
   IndexFlatCodes.h
   IndexHNSW.h
@@ -239,6 +247,7 @@ set(FAISS_HEADERS
   IndexIVFFlat.h
   IndexIVFFlatPanorama.h
   IndexIVFPQ.h
+  IndexIVFEDEN.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
@@ -283,6 +292,7 @@ set(FAISS_HEADERS
   impl/CodePackerRaBitQ.h
   impl/IDSelector.h
   impl/DistanceComputer.h
+  impl/EDENQuantizer.h
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
@@ -299,6 +309,7 @@ set(FAISS_HEADERS
   impl/PanoramaStats.h
   impl/PdxLayout.h
   impl/PolysemousTraining.h
+  impl/polysemous_training/dispatch.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
@@ -479,7 +490,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 ${FAISS_BMI2_FLAGS}>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 -mprefer-vector-width=512 ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper

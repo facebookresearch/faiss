@@ -38,12 +38,11 @@ struct GpuIndexConfig {
     /// more memory than is available on the GPU.
     MemorySpace memorySpace = MemorySpace::Device;
 
-    /// Should the index dispatch down to cuVS?
-#if defined USE_NVIDIA_CUVS
-    bool use_cuvs = true;
-#else
+    /// Should the index dispatch down to cuVS? Opt-in: dispatching to cuVS
+    /// selects a different implementation with its own numerical behaviour, so
+    /// it must be an explicit choice by the caller rather than a consequence of
+    /// how the binary happened to be built.
     bool use_cuvs = false;
-#endif
 };
 
 /// A centralized function that determines whether cuVS should
@@ -177,6 +176,33 @@ class GpuIndex : public faiss::Index {
         }
     };
 
+    virtual void addImplPrecomputed_(
+            idx_t n,
+            const float* x,
+            const idx_t* ids,
+            const idx_t* precomputed_idx);
+
+    virtual void addImplPrecomputed_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids,
+            const idx_t* precomputed_idx);
+
+    /// Handles paged adds if the add set is too large, passes to
+    /// addImpl_ to actually perform the add for the current page
+    void addPaged_(
+            idx_t n,
+            const float* x,
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
+    void addPaged_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
+
     /// Overridden to actually perform the search
     /// All data is guaranteed to be resident on our device
     virtual void searchImpl_(
@@ -209,22 +235,18 @@ class GpuIndex : public faiss::Index {
     }
 
    private:
-    /// Handles paged adds if the add set is too large, passes to
-    /// addImpl_ to actually perform the add for the current page
-    void addPaged_(idx_t n, const float* x, const idx_t* ids);
-    void addPaged_ex_(
-            idx_t n,
-            const void* x,
-            NumericType numeric_type,
-            const idx_t* ids);
-
     /// Calls addImpl_ for a single page of GPU-resident data
-    void addPage_(idx_t n, const float* x, const idx_t* ids);
+    void addPage_(
+            idx_t n,
+            const float* x,
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
     void addPage_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const idx_t* ids);
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
 
     /// Calls searchImpl_ for a single page of GPU-resident data
     void searchNonPaged_(

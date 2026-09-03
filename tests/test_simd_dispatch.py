@@ -80,7 +80,8 @@ class TestSIMDDispatch(unittest.TestCase):
         self.assertIsNotNone(result)
 
     def test_get_level_equals_get_dispatched_level(self):
-        """Verify get_level() and get_dispatched_level() return the same value."""
+        """Verify get_level() and get_dispatched_level() return the same
+        value."""
         try:
             import faiss
         except ImportError:

@@ -141,7 +141,9 @@ if args.bm_train:
     cuvs_gpu_train_time = bench_train_milliseconds(xt, True)
     classical_gpu_train_time = bench_train_milliseconds(xt, False)
     print(
-        "TRAIN, dim: %d, nlist %d, numTrain: %d, classical GPU train time: %.3f milliseconds, cuVS enabled GPU train time: %.3f milliseconds"
+        "TRAIN, dim: %d, nlist %d, numTrain: %d, "
+        "classical GPU train time: %.3f milliseconds, "
+        "cuVS enabled GPU train time: %.3f milliseconds"
         % (d, nlist, nt, classical_gpu_train_time, cuvs_gpu_train_time)
     )
 
@@ -167,7 +169,9 @@ if args.bm_add:
     cuvs_gpu_add_time = bench_add_milliseconds(xb, index_cpu, True)
     classical_gpu_add_time = bench_add_milliseconds(xb, index_cpu, False)
     print(
-        "ADD, dim: %d, nlist %d, numAdd: %d, classical GPU add time: %.3f milliseconds, cuVS enabled GPU add time: %.3f milliseconds"
+        "ADD, dim: %d, nlist %d, numAdd: %d, "
+        "classical GPU add time: %.3f milliseconds, "
+        "cuVS enabled GPU add time: %.3f milliseconds"
         % (d, nlist, nb, classical_gpu_add_time, cuvs_gpu_add_time)
     )
 
@@ -202,6 +206,8 @@ if args.bm_search:
         classical_gpu_indices, classical_gpu_search_time
     )
     print(
-        "SEARCH, dim: %d, nlist: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU qps: %.3f, cuVS enabled GPU qps: %.3f"
+        "SEARCH, dim: %d, nlist: %d, numVecs: %d, numQuery: %d, "
+        "nprobe: %d, k: %d, "
+        "classical GPU qps: %.3f, cuVS enabled GPU qps: %.3f"
         % (d, nlist, nb, nq, args.nprobe, args.k, classical_qps, cuvs_qps)
     )

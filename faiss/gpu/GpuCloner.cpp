@@ -14,7 +14,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexHNSW.h>
 #endif
@@ -28,7 +28,7 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #endif
@@ -92,7 +92,7 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
         // (inverse op of ToGpuClonerMultiple)
 
     }
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
         if (icg->get_numeric_type() != faiss::NumericType::Float32) {
@@ -150,8 +150,8 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         GpuIndexFlatConfig config;
         config.device = device;
         config.useFloat16 = true;
-        FAISS_THROW_IF_NOT_MSG(
-                !use_cuvs, "this type of index is not implemented for cuVS");
+        FAISS_THROW_IF_MSG(
+                use_cuvs, "this type of index is not implemented for cuVS");
         GpuIndexFlat* gif = new GpuIndexFlat(
                 provider, index->d, index->metric_type, config);
         // transfer data by blocks
@@ -233,7 +233,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 
         return res;
     }
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;
         config.device = device;
@@ -533,7 +533,7 @@ faiss::IndexBinary* index_binary_gpu_to_cpu(
         ii->copyTo(ret);
         return ret;
     }
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
     else if (auto ii = dynamic_cast<const GpuIndexBinaryCagra*>(gpu_index)) {
         IndexBinaryHNSWCagra* ret = new IndexBinaryHNSWCagra();
         ii->copyTo(ret);
@@ -549,13 +549,13 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
         GpuResourcesProvider* provider,
         int device,
         const faiss::IndexBinary* index,
-        const GpuClonerOptions* options) {
+        const GpuClonerOptions* /*options*/) {
     if (auto ii = dynamic_cast<const IndexBinaryFlat*>(index)) {
         GpuIndexBinaryFlatConfig config;
         config.device = device;
         return new GpuIndexBinaryFlat(provider, ii, config);
     }
-#if defined USE_NVIDIA_CUVS
+#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
     else if (
             auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;

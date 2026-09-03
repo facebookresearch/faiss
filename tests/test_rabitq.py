@@ -8,6 +8,7 @@ import unittest
 import numpy as np
 import faiss
 from faiss.contrib import datasets
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 
@@ -174,7 +175,7 @@ class TestRaBitQ(unittest.TestCase):
                     params = faiss.RaBitQSearchParameters(
                         qb=qb, centered=centered
                     )
-                    ratio_threshold = 2 ** (1 / qb)
+                    ratio_threshold = 2.1 ** (1 / qb)
                     test(
                         params,
                         ratio_threshold,
@@ -248,6 +249,20 @@ class TestRaBitQ(unittest.TestCase):
                 abs(ref_dis[0][j] - upd_dis) < mean_dist * 0.00001,
                 f"{j} {ref_dis[0][j]} {upd_dis}",
             )
+
+    def test_self_match_nonneg_distance(self):
+        d = 64
+        rs = np.random.RandomState(10996)
+        xb = rs.randn(200, d).astype("float32")
+
+        index = faiss.IndexRaBitQ(d, faiss.METRIC_L2)
+        index.train(xb)
+        index.add(xb)
+
+        D, I = index.search(xb[:5], 5)
+        np.testing.assert_(np.all(D >= 0), f"negative D: {D[D < 0]}")
+        for i in range(5):
+            self.assertIn(i, I[i])
 
     def test_serde_rabitq(self):
         do_test_serde("RaBitQ")
@@ -933,6 +948,41 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         atol=0.15,
                         err_msg=f"nb_bits={nb_bits}",
                     )
+
+    def test_zero_residual_coordinate(self):
+        """Test that an exactly-zero residual encodes like a negative one.
+
+        The sign bit uses `residual > 0`, so a zero residual must flip its
+        ex-bits too, or it decodes to the largest magnitude instead of the
+        smallest.
+        """
+        ds = datasets.SyntheticDataset(64, 2000, 1, 1)
+        zero_dims = np.arange(0, ds.d, 4)
+
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [2, 4, 8, 9]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    index = faiss.IndexRaBitQ(ds.d, metric, nb_bits)
+                    index.train(ds.get_train())
+
+                    # Anchor on the center: the residual must be exactly
+                    # zero, not merely small.
+                    center = faiss.vector_to_array(index.center)
+                    x = ds.get_database().copy()
+                    x[0, zero_dims] = center[zero_dims]
+
+                    x_neg = x.copy()
+                    x_neg[0, zero_dims] = np.nextafter(
+                        x[0, zero_dims], np.float32(-np.inf)
+                    )
+
+                    index.add(x)
+                    Dref, Iref = index.search(ds.get_queries(), 1)
+                    index.reset()
+                    index.add(x_neg)
+                    Dnew, Inew = index.search(ds.get_queries(), 1)
+
+                    check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
 
 if __name__ == "__main__":

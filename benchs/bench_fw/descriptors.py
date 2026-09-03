@@ -347,7 +347,8 @@ class IndexDescriptor(IndexBaseDescriptor):
         )
         return self.flat_desc_name
 
-    # alias is used to refer when index is uploaded to blobstore and referred again
+    # alias is used to refer when index is uploaded to blobstore and
+    # referred again
     def alias(self, benchmark_io: BenchmarkIO):
         if hasattr(benchmark_io, "bucket"):
             return IndexDescriptor(

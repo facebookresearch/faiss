@@ -121,7 +121,9 @@ if args.bm_train:
         xt, d, args.nlist, False
     )
     print(
-        "Method: IVFFlat, Operation: TRAIN, dim: %d, nlist %d, numTrain: %d, classical GPU train time: %.3f milliseconds, cuVS enabled GPU train time: %.3f milliseconds"
+        "Method: IVFFlat, Operation: TRAIN, dim: %d, nlist %d, numTrain: %d, "
+        "classical GPU train time: %.3f milliseconds, "
+        "cuVS enabled GPU train time: %.3f milliseconds"
         % (d, args.nlist, nt, classical_gpu_train_time, cuvs_gpu_train_time)
     )
 
@@ -149,7 +151,9 @@ if args.bm_add:
     cuvs_gpu_add_time = bench_add_milliseconds(xb, quantizer, True)
     classical_gpu_add_time = bench_add_milliseconds(xb, quantizer, False)
     print(
-        "Method: IVFFlat, Operation: ADD, dim: %d, nlist %d, numAdd: %d, classical GPU add time: %.3f milliseconds, cuVS enabled GPU add time: %.3f milliseconds"
+        "Method: IVFFlat, Operation: ADD, dim: %d, nlist %d, numAdd: %d, "
+        "classical GPU add time: %.3f milliseconds, "
+        "cuVS enabled GPU add time: %.3f milliseconds"
         % (d, args.nlist, nb, classical_gpu_add_time, cuvs_gpu_add_time)
     )
 
@@ -179,7 +183,10 @@ if args.bm_search:
         idx_cpu, xq, args.nprobe, args.k, False
     )
     print(
-        "Method: IVFFlat, Operation: SEARCH, dim: %d, nlist: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, cuVS enabled GPU search time: %.3f milliseconds"
+        "Method: IVFFlat, Operation: SEARCH, dim: %d, nlist: %d, numVecs: %d, "
+        "numQuery: %d, nprobe: %d, k: %d, "
+        "classical GPU search time: %.3f milliseconds, "
+        "cuVS enabled GPU search time: %.3f milliseconds"
         % (
             d,
             args.nlist,

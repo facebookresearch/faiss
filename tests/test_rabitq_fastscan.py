@@ -510,6 +510,40 @@ class TestRaBitQFastScan(unittest.TestCase):
         recall = faiss.eval_intersection(I, I_gt) / (nq * k)
         self.assertGreater(recall, 0.4)
 
+    def test_ivf_large_bbs_aux_offsets(self):
+        """Regression for aux-factor offsets when bbs > 32 (IVF path).
+
+        A bbs block holds bbs/32 SIMD sub-blocks. With nlist=1 every vector
+        lands in a single list that spans many bbs=64 blocks, so the b>=1
+        sub-blocks exercise ``idx_base % bbs != 0`` in IVFRaBitQHeapHandler.
+        If the per-element aux offset drops the ``idx_base % bbs`` term, roughly
+        half the vectors read another sub-block's factors and recall collapses,
+        so bbs=64 must match the bbs=32 baseline, which is always block-aligned.
+        """
+        d, nlist, nprobe, k = 64, 1, 1, 10
+        ds = datasets.SyntheticDataset(d, 2000, 2000, 100)
+        I_gt = ds.get_groundtruth(k)
+
+        def recall_for_bbs(bbs):
+            quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+            index = faiss.IndexIVFRaBitQFastScan(
+                quantizer, d, nlist, faiss.METRIC_L2, bbs, True, 1
+            )
+            index.qb = 8
+            index.nprobe = nprobe
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            _, I = index.search(ds.get_queries(), k)
+            return faiss.eval_intersection(I[:, :k], I_gt[:, :k]) / (ds.nq * k)
+
+        recall_bbs32 = recall_for_bbs(32)
+        recall_bbs64 = recall_for_bbs(64)
+        np.testing.assert_(
+            abs(recall_bbs32 - recall_bbs64) < 0.02,
+            f"bbs=64 recall ({recall_bbs64:.3f}) diverged from bbs=32 "
+            f"({recall_bbs32:.3f}); aux offsets likely wrong for bbs>32",
+        )
+
 
 @for_all_simd_levels
 class TestIVFRaBitQFastScanFiltering(unittest.TestCase):
@@ -645,7 +679,8 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
             self.assertEqual(index.code_size, expected_size)
 
     def test_ivf_construction(self):
-        """Test IndexIVFRaBitQFastScan construction with valid/invalid nb_bits."""
+        """Test IndexIVFRaBitQFastScan construction with valid/invalid
+        nb_bits."""
         d, nlist = 128, 16
         # Valid nb_bits
         for nb_bits in [1, 2, 4, 8]:
@@ -847,6 +882,52 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
 
                     np.testing.assert_array_equal(I_rbq_simd, I_rbq_none)
                     np.testing.assert_array_equal(I_fs_simd, I_fs_none)
+
+    def test_ivf_conversion_constructor_matches_direct_fastscan(self):
+        """Converting IndexIVFRaBitQ must build a usable FastScan index."""
+        d, nlist, nprobe, k = 64, 16, 4, 10
+        ds = datasets.SyntheticDataset(d, 700, 300, 20)
+
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 4]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    quantizer = faiss.IndexFlat(d, metric)
+                    index_rbq = faiss.IndexIVFRaBitQ(
+                        quantizer, d, nlist, metric, True, nb_bits
+                    )
+                    index_rbq.nprobe = nprobe
+                    index_rbq.train(ds.get_train())
+                    index_rbq.add(ds.get_database())
+
+                    index_converted = faiss.IndexIVFRaBitQFastScan(
+                        index_rbq, 32
+                    )
+
+                    direct_quantizer = faiss.clone_index(index_rbq.quantizer)
+                    index_direct = faiss.IndexIVFRaBitQFastScan(
+                        direct_quantizer, d, nlist, metric, 32, True, nb_bits
+                    )
+                    index_direct.nprobe = nprobe
+                    index_direct.qb = index_rbq.qb
+                    index_direct.centered = index_converted.centered
+                    index_direct.train(ds.get_train())
+                    index_direct.add(ds.get_database())
+
+                    D_converted, I_converted = index_converted.search(
+                        ds.get_queries(), k
+                    )
+                    D_direct, I_direct = index_direct.search(
+                        ds.get_queries(), k
+                    )
+
+                    self.assertEqual(index_converted.ntotal, index_rbq.ntotal)
+                    self.assertEqual(index_converted.bbs, 32)
+                    self.assertEqual(index_converted.nprobe, index_rbq.nprobe)
+                    self.assertTrue(index_converted.by_residual)
+                    np.testing.assert_array_equal(I_converted, I_direct)
+                    np.testing.assert_allclose(
+                        D_converted, D_direct, rtol=0, atol=1e-5
+                    )
 
     # ==================== Serialization Tests ====================
 

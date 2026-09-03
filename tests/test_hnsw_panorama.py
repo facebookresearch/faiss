@@ -43,7 +43,8 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         return D, I
 
     def compute_recall(self, gt_I, test_I):
-        """Compute recall@k - fraction of ground truth results found in test results."""
+        """Compute recall@k - fraction of ground truth results found in
+        test results."""
         nq, k = gt_I.shape
         recalls = [np.isin(gt_I[i], test_I[i]).sum() for i in range(nq)]
         return sum(recalls) / (nq * k)
@@ -122,7 +123,8 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         print(f"Recall@{k}: {recall}")
 
         # With efSearch=64, we should get reasonably good recall
-        # The threshold is lower than vanilla HNSW because of approximate distances
+        # The threshold is lower than vanilla HNSW because of approximate
+        # distances
         self.assertGreaterEqual(recall, 0.85)
 
     def test_different_panorama_levels(self):
@@ -394,7 +396,8 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         recall = self.compute_recall(gt_I, I_after)
         print(f"Recall after adding more vectors: {recall}")
 
-        # Recall might be slightly lower than single-batch due to HNSW graph structure
+        # Recall might be slightly lower than single-batch due to HNSW
+        # graph structure
         self.assertGreaterEqual(recall, 0.80)
 
         # Verify that previously found neighbors can still be found
@@ -409,7 +412,8 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
 
         retention = float(found_count) / (nq * k)
         print(f"Retention of previous neighbors: {retention}")
-        # Should retain a reasonable number of previous neighbors (new ones might push some out)
+        # Should retain a reasonable number of previous neighbors (new ones
+        # might push some out)
         # The threshold is lower to account for the approximate nature of HNSW
         self.assertGreaterEqual(retention, 0.5)
 

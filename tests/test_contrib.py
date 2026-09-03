@@ -194,6 +194,57 @@ class TestExhaustiveSearch(unittest.TestCase):
             ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
+    def test_query_iterator_similarity_metric(self):
+        """range_search_max_results must keep the highest-scoring results
+        (and raise the radius) for any similarity metric, not just
+        METRIC_INNER_PRODUCT. Regression test for a bug where pruning
+        for METRIC_Jaccard (also a similarity metric, see
+        faiss.is_similarity_metric) kept the lowest-scoring results
+        instead of the highest-scoring ones."""
+
+        class FakeSimilarityIndex:
+            """Stands in for an Index using a similarity metric (higher
+            score = better match), exposing only what
+            range_search_max_results touches."""
+
+            def __init__(self, sims, metric_type):
+                self.sims = sims
+                self.metric_type = metric_type
+
+            def range_search(self, xq, radius):
+                lims = [0]
+                D = []
+                I = []
+                for i in range(len(xq)):
+                    s = self.sims[i]
+                    idx = np.nonzero(s > radius)[0]
+                    D.append(s[idx])
+                    I.append(idx.astype("int64"))
+                    lims.append(lims[-1] + len(idx))
+                return (
+                    np.array(lims, dtype="uint64"),
+                    np.hstack(D).astype("float32"),
+                    np.hstack(I).astype("int64"),
+                )
+
+        rs = np.random.RandomState(1)
+        nq, ndb = 5, 200
+        sims = [rs.rand(ndb).astype("float32") for _ in range(nq)]
+        index = FakeSimilarityIndex(sims, faiss.METRIC_Jaccard)
+
+        xq = np.zeros((nq, 1), dtype="float32")  # unused by the fake index
+        radius = 0.0  # keep everything initially
+        total = sum(len(s) for s in sims)
+        max_results = total // 2
+
+        new_radius, lims, D, I = range_search_max_results(
+            index, iter([xq]), radius, max_results=max_results
+        )
+
+        self.assertGreaterEqual(new_radius, radius)
+        self.assertGreater(len(D), 0)
+        self.assertGreaterEqual(D.min(), new_radius - 1e-6)
+
 
 class TestInspect(unittest.TestCase):
 
@@ -319,8 +370,7 @@ class TestOperatingPoints(unittest.TestCase):
         pts = op.operating_points
         for _, pi, ti in pts:
             for _, pj, tj in pts:
-                self.assertFalse(
-                    pj >= pi and tj <= ti and (pj > pi or tj < ti))
+                self.assertFalse(pj >= pi and tj <= ti and (pj > pi or tj < ti))
 
 
 class TestPreassigned(unittest.TestCase):
@@ -882,7 +932,9 @@ class TestFactoryTools(unittest.TestCase):
             faiss.ScalarQuantizer.QT_fp16: "IVF32,SQfp16",
             faiss.ScalarQuantizer.QT_bf16: "IVF32,SQbf16",
             faiss.ScalarQuantizer.QT_8bit_direct: "IVF32,SQ8_direct",
-            faiss.ScalarQuantizer.QT_8bit_direct_signed: "IVF32,SQ8_direct_signed",
+            faiss.ScalarQuantizer.QT_8bit_direct_signed: (
+                "IVF32,SQ8_direct_signed"
+            ),
             faiss.ScalarQuantizer.QT_0bit: "IVF32,SQ0",
             faiss.ScalarQuantizer.QT_1bit_tqmse: "IVF32,SQtqmse1",
             faiss.ScalarQuantizer.QT_2bit_tqmse: "IVF32,SQtqmse2",
@@ -928,4 +980,60 @@ class TestFactoryTools(unittest.TestCase):
             index = faiss.IndexScalarQuantizer(d, qtype)
             self.assertEqual(
                 factory_tools.reverse_index_factory(index), expected
+            )
+
+    def test_get_code_size_hnsw_non_default_m(self):
+        d = 128
+        # Non-default M values previously raised
+        # RuntimeError("cannot parse HNSW16")
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW16"), d * 4 + 16 * 2 * 4
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW64"), d * 4 + 64 * 2 * 4
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW16,Flat"), d * 4 + 16 * 2 * 4
+        )
+        # HNSW32 backward compat: formula generalizes correctly
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32"), d * 4 + 32 * 2 * 4
+        )
+
+    def test_get_code_size_ivf_hnsw_non_default_m(self):
+        d = 128
+        # IVF+HNSW coarse quantizer with non-default M: code size is inner
+        # type only
+        self.assertEqual(
+            factory_tools.get_code_size(d, "IVF64_HNSW16,Flat"), d * 4
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "IVF64_HNSW64,PQ8x8"),
+            (8 * 8 + 7) // 8,
+        )
+
+    def test_get_code_size_hnsw_roundtrip(self):
+        d = 128
+        index = faiss.index_factory(d, "HNSW16,Flat")
+        factory_str = factory_tools.reverse_index_factory(index)
+        self.assertEqual(factory_str, "HNSW16")
+        # get_code_size(reverse_index_factory(index)) must not raise for any M
+        code_size = factory_tools.get_code_size(d, factory_str)
+        self.assertEqual(code_size, d * 4 + 16 * 2 * 4)
+
+    def test_rabitq_reverse_index_factory(self):
+        d = 64
+        quantizer = faiss.IndexFlatL2(d)
+        for nb_bits in [1, 2, 4]:
+            expected = "RaBitQ" if nb_bits == 1 else f"RaBitQ{nb_bits}"
+            index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
+            self.assertEqual(
+                factory_tools.reverse_index_factory(index), expected
+            )
+            ivf_index = faiss.IndexIVFRaBitQ(
+                quantizer, d, 8, faiss.METRIC_L2, False, nb_bits
+            )
+            self.assertEqual(
+                factory_tools.reverse_index_factory(ivf_index),
+                f"IVF8,{expected}",
             )

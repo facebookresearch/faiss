@@ -144,7 +144,8 @@ class Server:
             ret = f(*args)
         except Exception as e:
             # due to a bug (in mod_python?), ServerException cannot be
-            # unpickled, so send the string and make the exception on the client side
+            # unpickled, so send the string and make the exception on the
+            # client side
 
             # st=ServerException(
             #  "".join(traceback.format_tb(sys.exc_info()[2]))+

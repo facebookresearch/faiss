@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 
 import faiss  # @manual=//faiss/python:pyfaiss
 
-# from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib
+# from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib  # noqa: E501
 #     OperatingPoints,
 # )
 
@@ -162,7 +162,10 @@ class Optimizer:
                             )
                     ivf_descs.append(
                         IndexDescriptorClassic(
-                            factory=f"{pretransform}IVF{nlist}({quantizer_desc.factory}),{fine_ivf}",
+                            factory=(
+                                f"{pretransform}IVF{nlist}"
+                                f"({quantizer_desc.factory}),{fine_ivf}"
+                            ),
                             construction_params=construction_params,
                         )
                     )

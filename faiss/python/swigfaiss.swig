@@ -189,6 +189,7 @@ typedef uint64_t size_t;
 
 #include <faiss/Clustering.h>
 #include <faiss/SuperKMeans.h>
+#include <faiss/impl/AdSampling.h>
 #include <faiss/impl/ClusteringInitialization.h>
 
 #include <faiss/utils/hamming.h>
@@ -206,6 +207,9 @@ typedef uint64_t size_t;
 
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/RaBitQUtils.h>
+#include <faiss/impl/EDENQuantizer.h>
+#include <faiss/IndexEDEN.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -433,7 +437,10 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
-#ifdef FAISS_ENABLE_CUVS
+// CAGRA is absent from the aarch64 cuVS build (cuvs-ivfpq subset), so gate the
+// CAGRA bindings on FAISS_CUVS_NO_CAGRA too, else the wrapper references
+// undefined GpuIndexCagra symbols when linked against the aarch64 faiss_cuvs.
+#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
@@ -443,7 +450,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 
 %}
-#endif // FAISS_ENABLE_CUVS
+#endif // FAISS_ENABLE_CUVS && !FAISS_CUVS_NO_CAGRA
 
 typedef CUstream_st* cudaStream_t;
 
@@ -561,6 +568,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ClusteringInitialization.h>
 %include  <faiss/Clustering.h>
 %include  <faiss/SuperKMeans.h>
+%include  <faiss/impl/AdSampling.h>
 
 %include  <faiss/utils/extra_distances.h>
 
@@ -719,6 +727,9 @@ void gpu_sync_all_devices()
 
 %include <faiss/impl/RaBitQuantizer.h>
 %include <faiss/impl/RaBitQUtils.h>
+%include <faiss/impl/EDENQuantizer.h>
+%include <faiss/IndexEDEN.h>
+%include <faiss/IndexIVFEDEN.h>
 %include <faiss/IndexRaBitQ.h>
 %include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
@@ -766,7 +777,7 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
-#ifdef FAISS_ENABLE_CUVS
+#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
 // IVFPQSearchCagraConfig.lut_dtype and .internal_distance_dtype are typed as
 // cudaDataType_t (a C enum from <library_types.h>). Without an int typemap
 // SWIG generates accessors that read/write a cudaDataType_t* SwigPyObject,
@@ -849,6 +860,8 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexEDEN )
+    DOWNCAST ( IndexIVFEDEN )
     DOWNCAST ( IndexRaBitQFastScan )
     DOWNCAST ( IndexRaBitQ )
     DOWNCAST ( IndexIVFRaBitQ )
@@ -921,7 +934,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
-#ifdef FAISS_ENABLE_CUVS
+#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
     DOWNCAST_GPU ( GpuIndexCagra )
     DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif

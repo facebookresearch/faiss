@@ -47,6 +47,19 @@ int sgemm_(
         float* c,
         FINTEGER* ldc);
 
+int sgemv_(
+        const char* trans,
+        FINTEGER* m,
+        FINTEGER* n,
+        float* alpha,
+        const float* a,
+        FINTEGER* lda,
+        const float* x,
+        FINTEGER* incx,
+        float* beta,
+        float* y,
+        FINTEGER* incy);
+
 int dgemm_(
         const char* transa,
         const char* transb,
@@ -192,6 +205,25 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
     float one = 1;
     FINTEGER nbiti = d_out, ni = static_cast<FINTEGER>(n), di = d_in;
+    if (n == 1) {
+        FINTEGER onei = 1;
+        // Avoid GEMM packing overhead for single-vector transforms. GEMV is
+        // mathematically equivalent but may not be bit-exact with GEMM because
+        // BLAS implementations can use different accumulation orders.
+        sgemv_("Transposed",
+               &di,
+               &nbiti,
+               &one,
+               A.data(),
+               &di,
+               x,
+               &onei,
+               &c_factor,
+               xt,
+               &onei);
+        return;
+    }
+
     sgemm_("Transposed",
            "Not transposed",
            &nbiti,
@@ -477,6 +509,44 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
         for (size_t j = 0; j < p; j++) {
             xo[j] *= total_scale;
+        }
+    }
+}
+
+void HadamardRotation::reverse_transform(idx_t n, const float* xt, float* x)
+        const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(
+            d_in == d_out,
+            "HadamardRotation inverse requires equal input/output dimensions");
+
+    const size_t p = d_out;
+    // Reverse of apply_noalloc: three unnormalized FWHT rounds scale norms
+    // by (sqrt(p))^3 = p*sqrt(p); the forward pass cancels this with
+    // total_scale = 1/(p*sqrt(p)), so the inverse applies the same factor.
+    const float inverse_scale = 1.0f / (p * std::sqrt(static_cast<float>(p)));
+
+#pragma omp parallel for schedule(dynamic)
+    for (idx_t i = 0; i < n; i++) {
+        const float* xi = xt + i * p;
+        float* xo = x + i * p;
+
+        // The inverse reverses the three sign-flip/Hadamard factors.
+        std::memcpy(xo, xi, p * sizeof(float));
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs3[j];
+        }
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs2[j];
+        }
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs1[j] * inverse_scale;
         }
     }
 }
@@ -1064,8 +1134,7 @@ ITQTransform::ITQTransform(int din, int dout, bool do_pca_in)
 }
 
 void ITQTransform::train(idx_t n, const float* x_in) {
-    FAISS_THROW_IF_NOT_MSG(
-            !is_trained, "ITQTransform has already been trained");
+    FAISS_THROW_IF_MSG(is_trained, "ITQTransform has already been trained");
 
     size_t max_train_points = std::max(d_in * max_train_per_dim, 32768);
     const float* x =

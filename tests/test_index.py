@@ -112,6 +112,57 @@ class TestIndexFlat(unittest.TestCase):
     def test_with_blas_reservoir_ip(self):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
+    def test_empty_query_batch(self):
+        """search()/range_search() with nq=0 must not enter an OpenMP
+        parallel region with num_threads(0), which is unspecified
+        behavior. An empty batch always has nq * d below
+        distance_compute_blas_threshold, so this exercises the non-BLAS
+        exhaustive_{inner_product,L2sqr}_seq path unconditionally."""
+        d = 32
+        nb = 1000
+        _, xb, _ = get_dataset_2(d, 0, nb, 1)
+        xq_empty = np.empty((0, d), dtype="float32")
+
+        for metric_type in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+            with self.subTest(metric_type=metric_type):
+                index = faiss.IndexFlat(d, metric_type)
+                index.add(xb)
+
+                D, I = index.search(xq_empty, 10)
+                self.assertEqual(D.shape, (0, 10))
+                self.assertEqual(I.shape, (0, 10))
+
+                lims, _, _ = index.range_search(xq_empty, 1.0)
+                np.testing.assert_array_equal(
+                    lims, np.zeros(1, dtype=np.int64)
+                )
+
+    def test_empty_index_with_blas(self):
+        # The threshold is what makes this a regression test: it puts the
+        # search in a configuration that would otherwise select the BLAS path,
+        # which returns early on an empty database without ever initializing
+        # the result handler. k covers the Top1, heap, and reservoir handlers.
+        saved_threshold = faiss.cvar.distance_compute_blas_threshold
+        faiss.cvar.distance_compute_blas_threshold = 1
+        try:
+            xq = np.arange(5, dtype="float32").reshape(-1, 1)
+            for metric_type in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+                expected_distance = (
+                    np.finfo("float32").max
+                    if metric_type == faiss.METRIC_L2
+                    else np.finfo("float32").min
+                )
+                index = faiss.IndexFlat(1, metric_type)
+                for k in (1, 10, 150):
+                    with self.subTest(metric_type=metric_type, k=k):
+                        D = np.full((len(xq), k), 42, dtype="float32")
+                        I = np.full((len(xq), k), 99, dtype="int64")
+                        index.search(xq, k, D=D, I=I)
+                        np.testing.assert_array_equal(D, expected_distance)
+                        np.testing.assert_array_equal(I, -1)
+        finally:
+            faiss.cvar.distance_compute_blas_threshold = saved_threshold
+
 
 @for_all_simd_levels
 class TestDbParallelSearch(unittest.TestCase):
@@ -459,9 +510,9 @@ class TestScalarQuantizer(unittest.TestCase):
         D, I = index.search(xq, 10)
         nok["flat"] = (I[:, 0] == I_ref[:, 0]).sum()
 
-        for (
-            qname
-        ) in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16".split():
+        for qname in (
+            "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16"
+        ).split():
             qtype = getattr(faiss.ScalarQuantizer, qname)
             index = faiss.IndexIVFScalarQuantizer(
                 quantizer, d, ncent, qtype, faiss.METRIC_L2
@@ -500,9 +551,9 @@ class TestScalarQuantizer(unittest.TestCase):
 
         nok = {}
 
-        for (
-            qname
-        ) in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16".split():
+        for qname in (
+            "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16"
+        ).split():
             qtype = getattr(faiss.ScalarQuantizer, qname)
             index = faiss.IndexScalarQuantizer(d, qtype, faiss.METRIC_L2)
             index.train(xt)
@@ -528,23 +579,26 @@ class TestRangeSearch(unittest.TestCase):
 
         (xt, xb, xq) = get_dataset(d, nb, nt, nq)
 
-        index = faiss.IndexFlatL2(d)
-        index.add(xb)
+        for metric, thresh in [
+            (faiss.METRIC_L2, 0.1),
+            (faiss.METRIC_L1, 0.5),
+        ]:
+            index = faiss.IndexFlat(d, metric)
+            index.add(xb)
 
-        Dref, Iref = index.search(xq, 5)
+            Dref, Iref = index.search(xq, 5)
 
-        thresh = 0.1  # *squared* distance
-        lims, D, I = index.range_search(xq, thresh)
+            lims, D, I = index.range_search(xq, thresh)
 
-        for i in range(nq):
-            Iline = I[lims[i] : lims[i + 1]]
-            Dline = D[lims[i] : lims[i + 1]]
-            for j, dis in zip(Iref[i], Dref[i]):
-                if dis < thresh:
-                    (li,) = np.where(Iline == j)
-                    self.assertTrue(li.size == 1)
-                    idx = li[0]
-                    self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
+            for i in range(nq):
+                Iline = I[lims[i] : lims[i + 1]]
+                Dline = D[lims[i] : lims[i + 1]]
+                for j, dis in zip(Iref[i], Dref[i]):
+                    if dis < thresh:
+                        (li,) = np.where(Iline == j)
+                        self.assertTrue(li.size == 1)
+                        idx = li[0]
+                        self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
 
 
 class TestSearchAndReconstruct(unittest.TestCase):

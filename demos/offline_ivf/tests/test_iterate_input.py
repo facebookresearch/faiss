@@ -81,7 +81,8 @@ class TestUtilsMethods(unittest.TestCase):
 
     def test_get_vs_iterate(self) -> None:
         """
-        Loads vectors with iterator and get, and checks that they match, non-aligned by file size case.
+        Loads vectors with iterator and get, and checks that they match,
+        non-aligned by file size case.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(
@@ -105,7 +106,8 @@ class TestUtilsMethods(unittest.TestCase):
 
     def test_iterate_back(self) -> None:
         """
-        Loads vectors with iterator and get, and checks that they match, non-aligned by file size case.
+        Loads vectors with iterator and get, and checks that they match,
+        non-aligned by file size case.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(

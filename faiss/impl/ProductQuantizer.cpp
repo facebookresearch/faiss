@@ -280,7 +280,8 @@ void compute_1_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
 } // namespace
 
 void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    // a1: fvec_L2sqr_ny_nearest / _y_transposed have ARM_SVE specializations
+    with_simd_level_a1([&]<SIMDLevel SL>() {
         switch (nbits) {
             case 8:
                 compute_1_code<PQEncoder8, SL>(*this, x, code);
@@ -294,7 +295,7 @@ void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
                 compute_1_code<PQEncoderGeneric, SL>(*this, x, code);
                 break;
         }
-    }); // with_simd_level
+    }); // with_simd_level_a1
 }
 
 template <class PQDecoder>
@@ -442,7 +443,8 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    // a1: fvec_L2sqr_ny / _transposed have ARM_SVE specializations
+    with_simd_level_a1([&]<SIMDLevel SL>() {
         if (transposed_centroids.empty()) {
             // use regular version
             for (size_t m = 0; m < M; m++) {
@@ -824,7 +826,8 @@ void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 
     if (dsub < 4) {
-        with_simd_level([&]<SIMDLevel SL>() {
+        // a1: fvec_L2sqr_ny has an ARM_SVE specialization
+        with_simd_level_a1([&]<SIMDLevel SL>() {
 #pragma omp parallel for
             for (int64_t mk = 0; mk < static_cast<int64_t>(M * ksub); mk++) {
                 // allow omp to schedule in a more fine-grained way
@@ -862,32 +865,44 @@ void ProductQuantizer::search_sdc(
     size_t k = res->k;
     int64_t nq_signed = nq;
 
-#pragma omp parallel for
-    for (int64_t i = 0; i < nq_signed; i++) {
-        /* Compute distances and keep smallest values */
-        idx_t* heap_ids = res->ids + i * k;
-        float* heap_dis = res->val + i * k;
-        const uint8_t* qcode = qcodes + i * code_size;
+#pragma omp parallel
+    {
+        // One allocation per OMP thread instead of one per query.
+        std::vector<const float*> q_row(M);
+#pragma omp for
+        for (int64_t i = 0; i < nq_signed; i++) {
+            idx_t* heap_ids = res->ids + i * k;
+            float* heap_dis = res->val + i * k;
+            const uint8_t* qcode = qcodes + i * code_size;
 
-        if (init_finalize_heap)
-            maxheap_heapify(k, heap_dis, heap_ids);
+            if (init_finalize_heap)
+                maxheap_heapify(k, heap_dis, heap_ids);
 
-        const uint8_t* bcode = bcodes;
-        for (size_t j = 0; j < nb; j++) {
-            float dis = 0;
-            const float* tab = sdc_table.data();
+            // Precompute per-subquantizer row pointers: q_row[m] points to
+            // sdc_table[m*ksub^2 + qcode[m]*ksub], eliminating M
+            // multiplications and M pointer advances per database vector in the
+            // j-loop.
+            const float* sdc = sdc_table.data();
             for (size_t m = 0; m < M; m++) {
-                dis += tab[bcode[m] + qcode[m] * ksub];
-                tab += ksub * ksub;
+                q_row[m] = sdc + m * (size_t)(ksub * ksub) +
+                        (size_t)qcode[m] * ksub;
             }
-            if (dis < heap_dis[0]) {
-                maxheap_replace_top(k, heap_dis, heap_ids, dis, j);
-            }
-            bcode += code_size;
-        }
 
-        if (init_finalize_heap)
-            maxheap_reorder(k, heap_dis, heap_ids);
+            const uint8_t* bcode = bcodes;
+            for (size_t j = 0; j < nb; j++) {
+                float dis = 0;
+                for (size_t m = 0; m < M; m++) {
+                    dis += q_row[m][bcode[m]];
+                }
+                if (dis < heap_dis[0]) {
+                    maxheap_replace_top(k, heap_dis, heap_ids, dis, j);
+                }
+                bcode += code_size;
+            }
+
+            if (init_finalize_heap)
+                maxheap_reorder(k, heap_dis, heap_ids);
+        }
     }
 }
 

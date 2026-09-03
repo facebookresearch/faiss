@@ -124,7 +124,8 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
             combiner.D_remain = sp(D_remain)
             combiner.lim_remain = sp(lim_remain.view("int64"))
             combiner.I_remain = sp(I_remain)
-            # combiner.set_range_result(sp(mask), sp(lim_remain.view("int64")), sp(D_remain), sp(I_remain))
+            # combiner.set_range_result(sp(mask),
+            #     sp(lim_remain.view("int64")), sp(D_remain), sp(I_remain))
         L_res = np.empty(nq + 1, dtype="int64")
         combiner.compute_sizes(sp(L_res))
         nres = L_res[-1]
@@ -346,7 +347,7 @@ def range_search_max_results(
             radius, totres = apply_maxres(
                 res_batches,
                 min_results,
-                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT,
+                keep_max=faiss.is_similarity_metric(index.metric_type),
             )
         t2 = time.time()
         t_search += t1 - t0
@@ -365,7 +366,7 @@ def range_search_max_results(
         radius, totres = apply_maxres(
             res_batches,
             min_results,
-            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT,
+            keep_max=faiss.is_similarity_metric(index.metric_type),
         )
 
     nres = np.hstack([nres_i for nres_i, dis_i, ids_i in res_batches])

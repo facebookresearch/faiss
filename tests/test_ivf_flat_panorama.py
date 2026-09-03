@@ -20,6 +20,7 @@ import faiss
 import numpy as np
 from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
 @for_all_simd_levels
@@ -70,6 +71,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         nprobe=None,
         make_direct_map=False,
         metric=faiss.METRIC_L2,
+        batch_size=faiss.Panorama.kDefaultBatchSize,
     ):
         """Create and initialize IndexIVFFlatPanorama."""
         quantizer = (
@@ -77,7 +79,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
             if metric == faiss.METRIC_L2
             else faiss.IndexFlatIP(d)
         )
-        index = faiss.IndexIVFFlatPanorama(quantizer, d, nlist, nlevels, metric)
+        index = faiss.IndexIVFFlatPanorama(
+            quantizer, d, nlist, nlevels, metric, True, batch_size
+        )
         index.train(xt)
         if make_direct_map:
             index.make_direct_map()
@@ -94,25 +98,17 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         D_panorama,
         I_panorama,
         rtol=1e-5,
-        atol=1e-7,
-        otol=1e-3,
+        atol=1e-4,
     ):
-        # Allow small tolerance in overlap rate to account for floating-point errors
-        # in distance computations that can affect ordering when distances are nearly equal.
-        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b)
-        overlap_rate = np.mean(I_regular == I_panorama)
-
-        self.assertGreater(
-            overlap_rate,
-            1 - otol,
-            f"Overlap rate {overlap_rate:.6f} is not > {1-otol:.3f}. ",
-        )
         np.testing.assert_allclose(
             D_regular,
             D_panorama,
             rtol=rtol,
             atol=atol,
             err_msg="Distances mismatch",
+        )
+        check_ref_knn_with_draws(
+            D_regular, I_regular, D_panorama, I_panorama, rtol=rtol, atol=atol
         )
 
     def assert_range_results_equal(
@@ -127,7 +123,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         otol=1e-3,
         rtol=1e-4,
     ):
-        """Compare range search results with tolerance for boundary differences."""
+        """Compare range search results with tolerance for boundary
+        differences."""
         total_matches = total_regular = 0
 
         for i in range(nq):
@@ -167,7 +164,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     def validate_and_compare_range_results(
         self, metric, radius, lims_reg, D_reg, I_reg, lims_pan, D_pan, I_pan, nq
     ):
-        """Helper to validate range search results match between regular and panorama."""
+        """Helper to validate range search results match between regular
+        and panorama."""
         if metric == faiss.METRIC_L2:
             self.assertTrue(
                 np.all(D_pan <= radius),
@@ -480,7 +478,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     # Batch size and edge case tests
 
     def test_batch_boundaries(self):
-        """Test correctness at various batch size boundaries (kDefaultBatchSize=128)"""
+        """Test correctness at various batch size boundaries
+        (kDefaultBatchSize=128)"""
         d, nlist, nlevels, nt, nq, k = 128, 64, 8, 10000, 200, 15
         np.random.seed(987)
         xt = np.random.rand(nt, d).astype("float32")
@@ -699,7 +698,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 )
 
     def test_update_vectors(self):
-        """Test update operations (single, batch, and interleaved with search)"""
+        """Test update operations (single, batch, and interleaved with
+        search)"""
         d, nb, nt, nq, nlist, nlevels, k = 128, 40000, 60000, 400, 256, 8, 15
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=1414)
 
@@ -752,7 +752,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 )
 
     def test_serialization(self):
-        """Test that writing and reading Panorama indexes preserves search results"""
+        """Test that writing and reading Panorama indexes preserves
+        search results"""
         d, nb, nt, nq, nlist, nlevels, k = 128, 10000, 15000, 100, 128, 8, 20
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
@@ -770,6 +771,56 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
                 np.testing.assert_array_equal(I_before, I_after)
                 np.testing.assert_array_equal(D_before, D_after)
+
+    def test_read_legacy_format(self):
+        """Indexes serialized in the legacy "IwPn"/"ilpn" format (which does
+        not store batch_size and implies the legacy value of 128) must keep
+        deserializing correctly, whatever the current default batch_size is.
+
+        The current code always writes the explicit-batch_size format
+        ("IwP2"/"ilp2"), so a legacy stream is reconstructed here by
+        transforming a serialized index: swap the fourccs and drop the two
+        8-byte batch_size fields.
+        """
+        d, nlist, nlevels, nb, nq, k = 32, 4, 8, 2000, 10, 10
+        legacy_bs = 128
+        rng = np.random.RandomState(123)
+        xb = rng.rand(nb, d).astype("float32")
+        xq = rng.rand(nq, d).astype("float32")
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFFlatPanorama(
+            quantizer, d, nlist, nlevels, faiss.METRIC_L2, True, legacy_bs
+        )
+        index.train(xb)
+        index.add(xb)
+        index.nprobe = nlist
+        D_ref, I_ref = index.search(xq, k)
+
+        buf = faiss.serialize_index(index).tobytes()
+        # layout: "IwP2" | ivf header | n_levels (8) | batch_size (8) |
+        #         "ilp2" | nlist (8) | code_size (8) | n_levels (8) |
+        #         batch_size (8) | inverted lists data
+        self.assertEqual(buf[:4], b"IwP2")
+        self.assertEqual(buf.count(b"ilp2"), 1)
+        p = buf.index(b"ilp2")
+        legacy = (
+            b"IwPn"
+            + buf[4 : p - 8]  # drop the IVF-level batch_size field
+            + b"ilpn"
+            + buf[p + 4 : p + 28]  # nlist, code_size, n_levels
+            + buf[p + 36 :]  # drop the invlist-level batch_size field
+        )
+
+        index_legacy = faiss.deserialize_index(
+            np.frombuffer(legacy, dtype=np.uint8)
+        )
+        self.assertIsInstance(index_legacy, faiss.IndexIVFFlatPanorama)
+        self.assertEqual(index_legacy.batch_size, legacy_bs)
+        index_legacy.nprobe = nlist
+        D_legacy, I_legacy = index_legacy.search(xq, k)
+        np.testing.assert_array_equal(I_ref, I_legacy)
+        np.testing.assert_array_equal(D_ref, D_legacy)
 
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
@@ -800,7 +851,14 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                     with self.subTest(nlevels=nlevels):
                         faiss.cvar.indexPanorama_stats.reset()
                         index = self.create_panorama(
-                            d, nlist, nlevels, xt, xb, nprobe=1, metric=metric
+                            d,
+                            nlist,
+                            nlevels,
+                            xt,
+                            xb,
+                            nprobe=1,
+                            metric=metric,
+                            batch_size=128,
                         )
                         D, I = index.search(xq, k)
                         self.assert_search_results_equal(D_base, I_base, D, I)

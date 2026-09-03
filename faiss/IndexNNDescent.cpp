@@ -101,8 +101,7 @@ void IndexNNDescent::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexNNDescentFlat (or variants) "
@@ -183,11 +182,19 @@ void IndexNNDescent::add(idx_t n, const float* x) {
 
 void IndexNNDescent::reset() {
     nndescent.reset();
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNNDescentFlat (or variants) "
+            "instead of IndexNNDescent directly");
     storage->reset();
     ntotal = 0;
 }
 
 void IndexNNDescent::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNNDescentFlat (or variants) "
+            "instead of IndexNNDescent directly");
     storage->reconstruct(key, recons);
 }
 
