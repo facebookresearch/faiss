@@ -2628,6 +2628,7 @@ class ClusteringParameters:
     init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
+    use_super_kmeans: bool  # route through SuperKMeans when supported
 
     def __init__(self) -> None: ...
 
