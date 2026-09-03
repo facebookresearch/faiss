@@ -395,6 +395,87 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
 }
 
 template <>
+BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
+        SIMDLevel::AVX512>(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb) {
+    uint64_t dot_product = 0;
+    uint64_t popcount_sum = 0;
+    size_t offset = 0;
+    if (size_t step = 512 / 8; offset + step <= size) {
+        __m512i dot_512 = _mm512_setzero_si512();
+        __m512i pop_512 = _mm512_setzero_si512();
+        for (; offset + step <= size; offset += step) {
+            __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
+            pop_512 = _mm512_add_epi64(pop_512, popcount_512(v_x));
+            for (int j = 0; j < qb; j++) {
+                __m512i v_q = _mm512_loadu_si512(
+                        (const __m512i*)(query + j * size + offset));
+                __m512i v_and = _mm512_and_si512(v_q, v_x);
+                __m512i v_popcnt = popcount_512(v_and);
+                __m512i v_shifted = _mm512_slli_epi64(v_popcnt, j);
+                dot_512 = _mm512_add_epi64(dot_512, v_shifted);
+            }
+        }
+        dot_product += _mm512_reduce_add_epi64(dot_512);
+        popcount_sum += _mm512_reduce_add_epi64(pop_512);
+    }
+    if (size_t step = 256 / 8; offset + step <= size) {
+        __m256i dot_256 = _mm256_setzero_si256();
+        __m256i pop_256 = _mm256_setzero_si256();
+        for (; offset + step <= size; offset += step) {
+            __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
+            pop_256 = _mm256_add_epi64(pop_256, popcount_256(v_x));
+            for (int j = 0; j < qb; j++) {
+                __m256i v_q = _mm256_loadu_si256(
+                        (const __m256i*)(query + j * size + offset));
+                __m256i v_and = _mm256_and_si256(v_q, v_x);
+                __m256i v_popcnt = popcount_256(v_and);
+                __m256i v_shifted = _mm256_slli_epi64(v_popcnt, j);
+                dot_256 = _mm256_add_epi64(dot_256, v_shifted);
+            }
+        }
+        dot_product += reduce_add_256(dot_256);
+        popcount_sum += reduce_add_256(pop_256);
+    }
+    __m128i dot_128 = _mm_setzero_si128();
+    __m128i pop_128 = _mm_setzero_si128();
+    for (size_t step = 128 / 8; offset + step <= size; offset += step) {
+        __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
+        pop_128 = _mm_add_epi64(pop_128, popcount_128(v_x));
+        for (int j = 0; j < qb; j++) {
+            __m128i v_q = _mm_loadu_si128(
+                    (const __m128i*)(query + j * size + offset));
+            __m128i v_and = _mm_and_si128(v_q, v_x);
+            __m128i v_popcnt = popcount_128(v_and);
+            __m128i v_shifted = _mm_slli_epi64(v_popcnt, j);
+            dot_128 = _mm_add_epi64(dot_128, v_shifted);
+        }
+    }
+    dot_product += reduce_add_128(dot_128);
+    popcount_sum += reduce_add_128(pop_128);
+    for (size_t step = 64 / 8; offset + step <= size; offset += step) {
+        const auto yv = *(const uint64_t*)(data + offset);
+        popcount_sum += popcount64(yv);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(const uint64_t*)(query + j * size + offset);
+            dot_product += popcount64(qv & yv) << j;
+        }
+    }
+    for (; offset < size; ++offset) {
+        const auto yv = *(data + offset);
+        popcount_sum += popcount32(yv);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(query + j * size + offset);
+            dot_product += popcount32(qv & yv) << j;
+        }
+    }
+    return {dot_product, popcount_sum};
+}
+
+template <>
 uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
         const uint8_t* query,
         const uint8_t* data,
@@ -542,16 +623,6 @@ namespace faiss::rabitq::multibit {
 
 namespace {
 
-inline float hsum_avx2(__m256 v) {
-    __m128 hi = _mm256_extractf128_ps(v, 1);
-    __m128 lo = _mm256_castps256_ps128(v);
-    lo = _mm_add_ps(lo, hi);
-    __m128 shuf = _mm_movehdup_ps(lo);
-    lo = _mm_add_ps(lo, shuf);
-    shuf = _mm_movehl_ps(shuf, lo);
-    return _mm_cvtss_f32(_mm_add_ss(lo, shuf));
-}
-
 inline float ip_1exbit_avx512(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
@@ -583,60 +654,86 @@ inline float ip_1exbit_avx512(
     return result;
 }
 
-// AVX2+BMI2 bitplane kernel used as fallback for ex_bits >= 2.
-// AVX512 TU has AVX2 available. BMI2 guarded separately since
-// VIA Eden X4 has AVX2 without BMI2.
+// Needs BMI2 for _pext_u64. Some AVX2 CPUs lack it, and FAISS_BMI2_FLAGS can
+// be empty, so the dispatcher falls back to the scalar path without it.
 #ifdef __BMI2__
-inline float ip_bitplane_avx2(
+// Bitplane kernel for ex_bits >= 2, 16 dims per iteration. A bitplane is
+// already a bitmask, so it goes into a mask register and one masked add
+// applies its weight. Reads of ex_code run a few bytes past the ex-code
+// section into the record's own trailing factors, so they stay in bounds.
+inline float ip_bitplane_avx512(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
         const float* __restrict rotated_q,
         size_t d,
         size_t ex_bits,
         float cb) {
-    __m256 acc = _mm256_setzero_ps();
-    const __m256 v_one = _mm256_set1_ps(1.0f);
-    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
-    const __m256i zero = _mm256_setzero_si256();
-    const __m256 v_cb = _mm256_set1_ps(cb);
+    __m512 acc = _mm512_setzero_ps();
+    const __m512 v_cb = _mm512_set1_ps(cb);
 
     uint64_t pext_masks[7];
-    __m256 v_weights[8];
+    __m512 v_weights[8];
     for (size_t b = 0; b < ex_bits; b++) {
         uint64_t m = 0;
         for (int j = 0; j < 8; j++) {
             m |= (1ULL << (b + j * ex_bits));
         }
         pext_masks[b] = m;
-        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+        v_weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
     }
-    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+    v_weights[ex_bits] = _mm512_set1_ps(static_cast<float>(1u << ex_bits));
 
     size_t i = 0;
-    for (; i + 8 <= d; i += 8) {
-        __m256i sb_cmp = _mm256_cmpgt_epi32(
-                _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
-                zero);
-        __m256 recon = _mm256_mul_ps(
-                _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one),
-                v_weights[ex_bits]);
+    for (; i + 16 <= d; i += 16) {
+        uint16_t sb = 0;
+        memcpy(&sb, sign_bits + (i / 8), sizeof(uint16_t));
+        __m512 recon = _mm512_maskz_mov_ps(
+                static_cast<__mmask16>(sb), v_weights[ex_bits]);
 
-        uint64_t ex64 = 0;
-        memcpy(&ex64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
+        uint64_t lo64 = 0;
+        uint64_t hi64 = 0;
+        memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
+        memcpy(&hi64, ex_code + ((i / 8) + 1) * ex_bits, sizeof(uint64_t));
 
         for (size_t b = 0; b < ex_bits; b++) {
-            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
-            __m256i p_cmp = _mm256_cmpgt_epi32(
-                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
-            __m256 p_f = _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_one);
-            recon = _mm256_fmadd_ps(p_f, v_weights[b], recon);
+            const uint32_t plane =
+                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b])) |
+                    (static_cast<uint32_t>(_pext_u64(hi64, pext_masks[b]))
+                     << 8);
+            recon = _mm512_mask_add_ps(
+                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
         }
 
-        __m256 rq = _mm256_loadu_ps(rotated_q + i);
-        acc = _mm256_fmadd_ps(rq, _mm256_add_ps(recon, v_cb), acc);
+        __m512 rq = _mm512_loadu_ps(rotated_q + i);
+        acc = _mm512_fmadd_ps(rq, _mm512_add_ps(recon, v_cb), acc);
     }
 
-    float result = hsum_avx2(acc);
+    // Half-width step: keeps the scalar tail under 8 dims when d is a multiple
+    // of 8 but not of 16 (e.g. 200, 1000). The upper 8 lanes are masked off
+    // throughout, and rotated_q is loaded masked so nothing is read past the
+    // end.
+    if (i + 8 <= d) {
+        const __mmask16 low8 = static_cast<__mmask16>(0x00ff);
+        __m512 recon = _mm512_maskz_mov_ps(
+                static_cast<__mmask16>(sign_bits[i / 8]), v_weights[ex_bits]);
+
+        uint64_t lo64 = 0;
+        memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
+
+        for (size_t b = 0; b < ex_bits; b++) {
+            const uint32_t plane =
+                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b]));
+            recon = _mm512_mask_add_ps(
+                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
+        }
+
+        __m512 rq = _mm512_maskz_loadu_ps(low8, rotated_q + i);
+        acc = _mm512_fmadd_ps(
+                rq, _mm512_mask_add_ps(recon, low8, recon, v_cb), acc);
+        i += 8;
+    }
+
+    float result = _mm512_reduce_add_ps(acc);
     result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
     return result;
 }
@@ -658,7 +755,8 @@ float compute_inner_product<SIMDLevel::AVX512>(
 
 #ifdef __BMI2__
     if (ex_bits <= 7) {
-        return ip_bitplane_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+        return ip_bitplane_avx512(
+                sign_bits, ex_code, rotated_q, d, ex_bits, cb);
     }
 #endif
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);

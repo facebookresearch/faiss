@@ -70,6 +70,7 @@ set(FAISS_SIMD_NEON_SRC
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
+  utils/simd_impl/super_kmeans_kernels_sve.cpp
 )
 set(FAISS_SIMD_RVV_SRC
   impl/fast_scan/impl-riscv.cpp

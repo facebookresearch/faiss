@@ -20,6 +20,20 @@ SIMDLevel SIMDConfig::level = SIMDLevel::NONE;
 // Bitmask of supported SIMD levels (1 << SIMDLevel)
 uint64_t SIMDConfig::supported_simd_levels = 0;
 
+// Microarchitecture flags (x86). Default false; set by
+// detect_x86_uarch_flags() at load time.
+bool SIMDConfig::avx512_split = false;
+
+// Resolved here rather than in the header so that dependents, which never see
+// FAISS_ENABLE_DD, still get the answer for the faiss they link against.
+bool SIMDConfig::has_dynamic_dispatch() {
+#ifdef FAISS_ENABLE_DD
+    return true;
+#else
+    return false;
+#endif
+}
+
 // ARM SVE runtime detection
 #if defined(__aarch64__) || defined(_M_ARM64)
 
@@ -70,6 +84,42 @@ static bool has_sve() {
     return false;
 }
 #endif
+// Detect x86 microarchitecture flags used for kernel routing. Uses raw
+// cpuid so it is safe to run on any CPU regardless of compiled SIMD level.
+#if defined(__x86_64__)
+namespace {
+void detect_x86_uarch_flags() {
+    unsigned int eax, ebx, ecx, edx;
+
+    // Vendor string (CPUID.0): "AuthenticAMD" is EBX="Auth", EDX="enti",
+    // ECX="cAMD".
+    eax = 0;
+    ecx = 0;
+    asm volatile("cpuid"
+                 : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+                 : "a"(eax), "c"(ecx));
+    const bool is_amd =
+            ebx == 0x68747541u && edx == 0x69746e65u && ecx == 0x444d4163u;
+
+    // Family/model (CPUID.1 EAX).
+    eax = 1;
+    ecx = 0;
+    asm volatile("cpuid"
+                 : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+                 : "a"(eax), "c"(ecx));
+    const unsigned int base_family = (eax >> 8) & 0xfu;
+    const unsigned int display_family =
+            base_family + (base_family == 0xfu ? ((eax >> 20) & 0xffu) : 0u);
+    // AMD Zen 4 / Zen 4c (Bergamo) is family 0x19 and splits AVX-512.
+    // (Zen 5, family 0x1A, has a native 512-bit datapath and is excluded.)
+    SIMDConfig::avx512_split = is_amd && display_family == 0x19u;
+}
+} // namespace
+#else
+namespace {
+void detect_x86_uarch_flags() {}
+} // namespace
+#endif
 
 #ifdef FAISS_ENABLE_DD
 
@@ -118,6 +168,8 @@ bool SIMDConfig::is_simd_level_available(SIMDLevel l) {
 
 SIMDLevel SIMDConfig::auto_detect_simd_level() {
     SIMDLevel detected_level = SIMDLevel::NONE;
+
+    detect_x86_uarch_flags();
 
 #if defined(__x86_64__) && \
         (defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_AVX512))
@@ -304,6 +356,7 @@ bool SIMDConfig::is_simd_level_available(SIMDLevel l) {
 }
 
 SIMDLevel SIMDConfig::auto_detect_simd_level() {
+    detect_x86_uarch_flags();
     // In static mode, return the compiled-in level
 #if defined(COMPILE_SIMD_AMX)
     // AMX tile instructions require a one-time kernel permission request.

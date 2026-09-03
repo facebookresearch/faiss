@@ -39,6 +39,20 @@ ClusteringInitMethod_RANDOM: int
 ClusteringInitMethod_KMEANS_PLUS_PLUS: int
 ClusteringInitMethod_AFK_MC2: int
 
+# Storage kind for SVS (Intel Scalable Vector Search) indexes
+SVSStorageKind = int
+SVS_FP32: int
+SVS_FP16: int
+SVS_SQ8: int
+SVS_LVQ4x0: int
+SVS_LVQ4x4: int
+SVS_LVQ4x8: int
+SVS_LVQ8x0: int
+SVS_LeanVec4x4: int
+SVS_LeanVec4x8: int
+SVS_LeanVec8x8: int
+SVS_count: int
+
 # I/O flag constants for reading/writing indexes
 IO_FLAG_SKIP_STORAGE: int  # skip the storage for graph-based indexes
 IO_FLAG_READ_ONLY: int  # read-only mode
@@ -275,6 +289,16 @@ class SearchParameters:
 
 class SearchParametersPreTransform(SearchParameters):
     index_params: SearchParameters | None
+    def __init__(self) -> None: ...
+
+class SearchParametersSVSVamana(SearchParameters):
+    search_window_size: int
+    search_buffer_capacity: int
+    def __init__(self) -> None: ...
+
+class SearchParametersSVSIVF(SearchParameters):
+    n_probes: int
+    k_reorder: float
     def __init__(self) -> None: ...
 
 # Base Index class
@@ -1803,6 +1827,7 @@ class IndexIVFFlatPanorama(IndexIVFFlat):
     """Panorama adaptation of IndexIVFFlat following https://arxiv.org/abs/2510.00566"""
 
     n_levels: int
+    batch_size: int
 
     def __init__(
         self,
@@ -1812,6 +1837,7 @@ class IndexIVFFlatPanorama(IndexIVFFlat):
         n_levels: int,
         metric: MetricType = METRIC_L2,
         own_invlists: bool = True,
+        batch_size: int = ...,
     ) -> None: ...
 
 class IndexIVFPQ(IndexIVF):
@@ -2602,6 +2628,7 @@ class ClusteringParameters:
     init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
+    use_super_kmeans: bool  # route through SuperKMeans when supported
 
     def __init__(self) -> None: ...
 
@@ -3030,6 +3057,36 @@ class CodePacker:
 
 class CodePackerFlat(CodePacker):
     def __init__(self, code_size: int) -> None: ...
+
+# SIMD dispatch (faiss/utils/simd_levels.h). SWIG exposes the scoped enum
+# SIMDLevel as module-level int constants (EnumName_Value convention).
+SIMDLevel_NONE: int
+SIMDLevel_AVX2: int
+SIMDLevel_AVX512: int
+SIMDLevel_AVX512_SPR: int
+SIMDLevel_ARM_NEON: int
+SIMDLevel_ARM_SVE: int
+SIMDLevel_RISCV_RVV: int
+SIMDLevel_COUNT: int
+
+class SIMDConfig:
+    level: int
+    supported_simd_levels: int
+    avx512_split: bool
+    @staticmethod
+    def auto_detect_simd_level() -> int: ...
+    @staticmethod
+    def has_dynamic_dispatch() -> bool: ...
+    @staticmethod
+    def set_level(level: int) -> None: ...
+    @staticmethod
+    def get_level() -> int: ...
+    @staticmethod
+    def get_level_name() -> str: ...
+    @staticmethod
+    def is_simd_level_available(level: int) -> bool: ...
+    @staticmethod
+    def get_dispatched_level() -> int: ...
 
 # Utility functions
 def get_mem_usage_kb() -> int: ...
@@ -3833,6 +3890,106 @@ class IndexIVFRaBitQFastScan(IndexIVFFastScan):
     @overload
     def __init__(self, orig: IndexIVFRaBitQ, bbs: int = 32) -> None: ...
 
+# SVS (Intel Scalable Vector Search) indexes
+class IndexSVSFlat(Index):
+    nlabels: int
+    def __init__(self, d: int, metric: MetricType = METRIC_L2) -> None: ...
+
+class IndexSVSVamana(Index):
+    graph_max_degree: int
+    prune_to: int
+    alpha: float
+    search_window_size: int
+    search_buffer_capacity: int
+    construction_window_size: int
+    max_candidate_pool_size: int
+    use_full_search_history: bool
+    is_static: bool
+    storage_kind: SVSStorageKind
+
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_FP32,
+        is_static: bool = False,
+    ) -> None: ...
+    @staticmethod
+    def is_lvq_leanvec_enabled() -> bool: ...
+
+class IndexSVSVamanaLVQ(IndexSVSVamana):
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_LVQ4x0,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSVamanaLeanVec(IndexSVSVamana):
+    leanvec_d: int
+
+    def __init__(
+        self,
+        d: int,
+        degree: int,
+        metric: MetricType = METRIC_L2,
+        leanvec_dims: int = 0,
+        storage: SVSStorageKind = SVS_LeanVec4x4,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSIVF(Index):
+    num_centroids: int
+    minibatch_size: int
+    num_iterations: int
+    is_hierarchical: bool
+    training_fraction: float
+    hierarchical_level1_clusters: int
+    seed: int
+    n_probes: int
+    k_reorder: float
+    num_threads: int
+    intra_query_threads: int
+    is_static: bool
+    storage_kind: SVSStorageKind
+
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_FP32,
+        is_static: bool = False,
+    ) -> None: ...
+    @staticmethod
+    def is_lvq_leanvec_enabled() -> bool: ...
+
+class IndexSVSIVFLVQ(IndexSVSIVF):
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        storage: SVSStorageKind = SVS_LVQ4x0,
+        is_static: bool = False,
+    ) -> None: ...
+
+class IndexSVSIVFLeanVec(IndexSVSIVF):
+    leanvec_d: int
+
+    def __init__(
+        self,
+        d: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        leanvec_dims: int = 0,
+        storage: SVSStorageKind = SVS_LeanVec4x4,
+        is_static: bool = False,
+    ) -> None: ...
+
 # Independent quantizer
 class IndexIVFIndependentQuantizer(Index):
     quantizer: Index
@@ -4191,6 +4348,18 @@ distance_compute_min_k_reservoir: int
 
 # Index factory verbose flag
 index_factory_verbose: int
+
+# SWIG exposes mutable C++ globals here rather than as module attributes,
+# which could not write through to C++. Access as `faiss.cvar.<name>`.
+class _SwigGlobals:
+    distance_compute_blas_threshold: int
+    distance_compute_blas_query_bs: int
+    distance_compute_blas_database_bs: int
+    distance_compute_min_k_reservoir: int
+    index_factory_verbose: int
+    hnsw_deterministic_build: bool
+
+cvar: _SwigGlobals
 
 # GPU-specific types and functions
 class GpuDistanceParams:
