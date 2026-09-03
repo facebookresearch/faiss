@@ -2228,6 +2228,24 @@ TEST(ReadIndexDeserialize, InvertedListOversizedEntry) {
     set_deserialization_vector_byte_limit(old_limit);
 }
 
+// -----------------------------------------------------------------------
+// Test: "ilod" inverted lists whose lists vector is shorter than nlist are
+// rejected. Every OnDiskInvertedLists accessor indexes lists[] with a
+// list_no bounded only against nlist, so a short vector is an
+// out-of-bounds read.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, OnDiskInvertedListsShortListsVectorRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwFl");
+    push_ivf_header(buf, /*d=*/4);
+    push_fourcc(buf, "ilod");
+    push_val<size_t>(buf, 1);  // nlist = 1
+    push_val<size_t>(buf, 16); // code_size = 16
+    push_val<size_t>(buf, 0);  // lists: empty, inconsistent with nlist = 1
+
+    expect_read_throws_with(buf, "read 0 lists for nlist 1");
+}
+
 // -- Ixrq (IndexRaBitQ, single-bit) --
 // qb=0 is valid for Ixrq: disables query quantization, uses raw fp32 values.
 // See IndexRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
