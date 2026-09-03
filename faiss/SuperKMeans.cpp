@@ -59,7 +59,7 @@ namespace {
 struct TrainState {
     /// Orthogonal rotation. Train in rotated space (X_tilde = X * R);
     /// un-rotate centroids before return.
-    faiss::RandomRotationMatrix R;
+    std::unique_ptr<faiss::VectorTransform> R;
 
     std::vector<float> X_tilde; // (n, d) row-major
     int n = 0;
@@ -77,7 +77,17 @@ struct TrainState {
     int low_pruning_streak = 0;
     bool low_pruning_warning_printed = false;
 
-    explicit TrainState(int d) : R(d, d) {}
+    explicit TrainState(int d, bool spherical)
+            : R([d, spherical]() -> std::unique_ptr<faiss::VectorTransform> {
+                  // Spherical (inner-product) clustering only: a power-of-two
+                  // dimension can use the fast Hadamard rotation instead of
+                  // the generic random rotation. L2 training keeps the
+                  // original RandomRotationMatrix path unchanged.
+                  if (spherical && d > 0 && (d & (d - 1)) == 0) {
+                      return std::make_unique<faiss::HadamardRotation>(d);
+                  }
+                  return std::make_unique<faiss::RandomRotationMatrix>(d, d);
+              }()) {}
 };
 
 /// PDX block layout for the trailing pruning sweep: block b covers original
@@ -295,10 +305,17 @@ std::unique_ptr<uint8_t[]> setup_train_state(
             "SuperKMeans: training set size exceeds INT_MAX after sampling");
     state.n = static_cast<int>(nx);
 
-    state.R.init(cp.seed);
+    if (auto* R = dynamic_cast<HadamardRotation*>(state.R.get())) {
+        R->init(cp.seed);
+    } else {
+        auto* dense_rotation =
+                dynamic_cast<RandomRotationMatrix*>(state.R.get());
+        FAISS_ASSERT(dense_rotation != nullptr);
+        dense_rotation->init(cp.seed);
+    }
 
     state.X_tilde.resize(static_cast<size_t>(state.n) * d);
-    state.R.apply_noalloc(state.n, x_sampled, state.X_tilde.data());
+    state.R->apply_noalloc(state.n, x_sampled, state.X_tilde.data());
 
     // Forgy init: pick k random rows from the rotated pool as initial
     // centroids. These remain in rotated space; un-rotation happens
@@ -312,6 +329,9 @@ std::unique_ptr<uint8_t[]> setup_train_state(
                     state.Y_tilde.data() + static_cast<size_t>(j) * d,
                     state.X_tilde.data() + static_cast<size_t>(perm[j]) * d,
                     sizeof(float) * d);
+        }
+        if (cp.spherical) {
+            fvec_renorm_L2(d, k, state.Y_tilde.data());
         }
     }
 
@@ -339,7 +359,7 @@ std::unique_ptr<uint8_t[]> setup_train_state(
 /// reverse_transform applies R^T = R^-1.
 void untransform_centroids(
         std::vector<float>& centroids,
-        const RandomRotationMatrix& R,
+        const VectorTransform& R,
         int d,
         int k,
         const float* Y_tilde) {
@@ -411,7 +431,7 @@ void SuperKMeans::train(idx_t n, const float* x) {
                static_cast<idx_t>(k) * cp.min_points_per_centroid);
     }
 
-    TrainState state(d);
+    TrainState state(d, cp.spherical);
     std::vector<int64_t> labels64;
     SuperKMeansAssignScratch assign_scratch;
     std::vector<float> hassign;
@@ -446,6 +466,9 @@ void SuperKMeans::train(idx_t n, const float* x) {
 
         const int nsplit =
                 update_centroids_and_split(d, k, state, labels64, hassign);
+        if (cp.spherical) {
+            fvec_renorm_L2(d, k, state.Y_tilde.data());
+        }
         const float pruning_rate = (iter == 0)
                 ? 0.0f
                 : adapt_d_prime(d, cp, state, total_pairs, pruned_at_gemm);
@@ -492,7 +515,7 @@ void SuperKMeans::train(idx_t n, const float* x) {
                (getmillisecs() - t_train_start) / 1000.0);
     }
 
-    untransform_centroids(centroids, state.R, d, k, state.Y_tilde.data());
+    untransform_centroids(centroids, *state.R, d, k, state.Y_tilde.data());
 }
 
 void super_kmeans_assign_iteration(

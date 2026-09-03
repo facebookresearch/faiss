@@ -24,6 +24,16 @@ uint64_t SIMDConfig::supported_simd_levels = 0;
 // detect_x86_uarch_flags() at load time.
 bool SIMDConfig::avx512_split = false;
 
+// Resolved here rather than in the header so that dependents, which never see
+// FAISS_ENABLE_DD, still get the answer for the faiss they link against.
+bool SIMDConfig::has_dynamic_dispatch() {
+#ifdef FAISS_ENABLE_DD
+    return true;
+#else
+    return false;
+#endif
+}
+
 // ARM SVE runtime detection
 #if defined(__aarch64__) || defined(_M_ARM64)
 

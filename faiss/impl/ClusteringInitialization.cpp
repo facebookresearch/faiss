@@ -235,8 +235,11 @@ void ClusteringInitialization::init_kmeans_plus_plus(
             float* new_centroid = centroids + c * d;
             std::memcpy(new_centroid, x + next_idx * d, d * sizeof(float));
 
-            // Update min distances incrementally
-            for (size_t i = 0; i < n; i++) {
+            // Update min distances incrementally. The writes are independent,
+            // so the loop parallelizes without changing the output.
+            const int64_t ni = static_cast<int64_t>(n);
+#pragma omp parallel for
+            for (int64_t i = 0; i < ni; i++) {
                 double dist = fvec_L2sqr<SL>(x + i * d, new_centroid, d);
                 min_distances[i] = std::min(min_distances[i], dist);
             }

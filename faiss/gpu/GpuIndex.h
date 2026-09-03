@@ -38,12 +38,11 @@ struct GpuIndexConfig {
     /// more memory than is available on the GPU.
     MemorySpace memorySpace = MemorySpace::Device;
 
-    /// Should the index dispatch down to cuVS?
-#if defined USE_NVIDIA_CUVS
-    bool use_cuvs = true;
-#else
+    /// Should the index dispatch down to cuVS? Opt-in: dispatching to cuVS
+    /// selects a different implementation with its own numerical behaviour, so
+    /// it must be an explicit choice by the caller rather than a consequence of
+    /// how the binary happened to be built.
     bool use_cuvs = false;
-#endif
 };
 
 /// A centralized function that determines whether cuVS should

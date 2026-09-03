@@ -821,6 +821,10 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     }
 
     aq.set_derived_values();
+    FAISS_THROW_IF_NOT_FMT(
+            aq.code_size > 0,
+            "invalid AdditiveQuantizer: nbits sum to 0 bits, code_size %zd",
+            aq.code_size);
 
     // Sanity-check codebooks size without knowing the effective dimension.
     // codebooks stores effective_d * total_codebook_size floats, so its
@@ -2163,6 +2167,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ScalarQuantizer(&idxs->sq, f, *idxs);
         read_vector(idxs->codes, f);
         idxs->code_size = idxs->sq.code_size;
+        FAISS_THROW_IF_NOT(
+                idxs->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxs->ntotal,
+                        idxs->code_size,
+                        "IndexScalarQuantizer codes"));
         idx = std::move(idxs);
     } else if (h == fourcc("IxLa")) {
         int d, nsq, scale_nbit, r2;
@@ -3052,7 +3062,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool initialized;
         READ1_BOOL(initialized);
         if (initialized) {
-            faiss::svs_io::ReaderStreambuf rbuf(f);
+            faiss::svs_io::ReaderStreambuf rbuf(
+                    f, get_deserialization_vector_byte_limit());
             std::istream is(&rbuf);
             svs_ivf->deserialize_impl(is);
         }
@@ -3060,7 +3071,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             bool trained;
             READ1_BOOL(trained);
             if (trained) {
-                faiss::svs_io::ReaderStreambuf rbuf(f);
+                faiss::svs_io::ReaderStreambuf rbuf(
+                        f, get_deserialization_vector_byte_limit());
                 std::istream is(&rbuf);
                 auto* leanvec =
                         dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
