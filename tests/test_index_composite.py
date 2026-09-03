@@ -495,6 +495,59 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
+    def test_remove_ids_counts_duplicates(self):
+        # Regression test: removing an id whose vector duplicates another must
+        # decrement ntotal and be reflected in the return value, even though
+        # duplicates are tracked only in the instances map, not stored as
+        # separate inverted-list entries.
+        d = 8
+        rs = np.random.RandomState(123)
+        xt = rs.rand(200, d).astype('float32')
+        v = rs.rand(d).astype('float32')
+        w = rs.rand(d).astype('float32')
+
+        def build():
+            quantizer = faiss.IndexFlatL2(d)
+            index = faiss.IndexIVFFlatDedup(quantizer, d, 4)
+            index.nprobe = 4
+            index.train(xt)
+            # ids 10 and 11 share vector v; id 12 is the distinct vector w.
+            xb = np.vstack([v, v, w]).astype('float32')
+            index.add_with_ids(xb, np.array([10, 11, 12], dtype=np.int64))
+            return index
+
+        # Remove the non-stored duplicate id (11).
+        index = build()
+        self.assertEqual(index.ntotal, 3)
+        n = index.remove_ids(np.array([11], dtype=np.int64))
+        self.assertEqual(n, 1)
+        self.assertEqual(index.ntotal, 2)
+
+        # Remove the representative id (10) while its duplicate (11) survives:
+        # the vector stays under the surviving id, but one logical id is gone.
+        index = build()
+        n = index.remove_ids(np.array([10], dtype=np.int64))
+        self.assertEqual(n, 1)
+        self.assertEqual(index.ntotal, 2)
+        _, ids = index.search(v.reshape(1, d), 3)
+        found = {int(i) for i in ids[0]} - {-1}
+        self.assertIn(11, found)
+        self.assertNotIn(10, found)
+
+        # Remove a whole duplicate group at once: the stored id and the
+        # duplicate that has no slot of its own both count.
+        index = build()
+        n = index.remove_ids(np.array([10, 11], dtype=np.int64))
+        self.assertEqual(n, 2)
+        self.assertEqual(index.ntotal, 1)
+
+        # Removing the ids one at a time drains the index to empty.
+        index = build()
+        for i, remaining in ((11, 2), (10, 1), (12, 0)):
+            n = index.remove_ids(np.array([i], dtype=np.int64))
+            self.assertEqual(n, 1)
+            self.assertEqual(index.ntotal, remaining)
+
 
 class TestSerialize(unittest.TestCase):
 
