@@ -1692,6 +1692,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         int d;
         size_t n_levels, batch_size;
         READ1(d);
+        // This branch does not go through read_index_header, so the range
+        // check that guards `d` for every other index type has to be
+        // repeated here.
+        FAISS_CHECK_RANGE(d, 0, (1 << 20) + 1);
         READ1(n_levels);
         FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
@@ -1706,6 +1710,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     d, n_levels, batch_size);
         }
         READ1(idxp->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxp->ntotal >= 0,
+                "invalid ntotal %" PRId64 " read from IxFP index",
+                (int64_t)idxp->ntotal);
         READ1_BOOL(idxp->is_trained);
         READVECTOR(idxp->codes);
         READVECTOR(idxp->cum_sums);
@@ -2384,8 +2392,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Validate transform chain dimension consistency:
         // chain[0].d_in must equal the outer index d, consecutive
         // transforms must have matching d_out/d_in, and the last
-        // transform's d_out must equal the sub-index d.
-        if (nt > 0) {
+        // transform's d_out must equal the sub-index d. With an empty
+        // chain the sub-index d must equal the outer d directly, because
+        // reconstruct() then hands the caller's buffer -- sized from the
+        // outer d -- straight to the sub-index.
+        if (nt == 0 && ixpt->index) {
+            FAISS_THROW_IF_NOT_FMT(
+                    ixpt->index->d == ixpt->d,
+                    "IndexPreTransform empty chain: sub-index d=%d "
+                    "!= index d=%d",
+                    ixpt->index->d,
+                    ixpt->d);
+        } else if (nt > 0) {
             FAISS_THROW_IF_NOT_FMT(
                     ixpt->chain[0]->d_in == ixpt->d,
                     "IndexPreTransform chain[0] d_in=%d != index d=%d",
@@ -2535,10 +2553,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     "dynamic_cast to IndexHNSWFlatPanorama failed");
             size_t nlevels;
             READ1(nlevels);
+            FAISS_THROW_IF_NOT_FMT(
+                    nlevels > 0, "invalid IHfP n_levels %zd", nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
             const_cast<Panorama&>(idx_panorama->pano) =
                     Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
             READVECTOR(idx_panorama->cum_sums);
+            // Both the search path and get_cum_sum() index cum_sums at
+            // stride pano.n_levels + 1, which may be lower than the
+            // serialized nlevels if set_derived_values() truncated it.
+            FAISS_THROW_IF_NOT(
+                    idx_panorama->cum_sums.size() ==
+                    mul_no_overflow(
+                            (size_t)idx_panorama->ntotal,
+                            idx_panorama->pano.n_levels + 1,
+                            "IndexHNSWFlatPanorama cum_sums"));
         } else if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1_BOOL(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw.get());
