@@ -104,7 +104,10 @@ def eden_reference_l2_distances(
             + l2_norm_term
             - 2.0 * scale * float(np.dot(q, query_residual))
         )
-    return distances
+    # The unbiased scale reports an estimator of the squared distance that can
+    # go negative; the C++ distance computer clamps it to zero (METRIC_L2
+    # distances are never negative), so the reference must match.
+    return np.maximum(distances, 0.0)
 
 
 class TestEDENScalarQuantizer(unittest.TestCase):
@@ -279,6 +282,32 @@ class TestEDENScalarQuantizer(unittest.TestCase):
                         rtol=1e-5,
                         atol=1e-4,
                     )
+
+    def test_unbiased_l2_distances_are_non_negative(self):
+        # Unbiased 1-bit EDEN reports an unbiased estimator of the squared L2
+        # distance, which can dip below zero for strongly-aligned residuals
+        # (self-query below triggers it). Reported distances must still honor
+        # the METRIC_L2 contract of being non-negative.
+        rs = np.random.RandomState(2468)
+        d, nb = 128, 256
+        xt = rs.randn(400, d).astype("float32")
+        xb = rs.randn(nb, d).astype("float32")
+        xq = xb.copy()
+
+        index = faiss.IndexEDEN(d, faiss.METRIC_L2, 1)
+        index.train(xt)
+        index.add(xb)
+
+        dc = index.get_distance_computer()
+        for q in range(xq.shape[0]):
+            dc.set_query(faiss.swig_ptr(xq[q]))
+            vals = np.array(
+                [dc(i) for i in range(index.ntotal)], dtype="float32"
+            )
+            self.assertTrue(np.all(vals >= 0.0))
+
+        D, _ = index.search(xq, 10)
+        self.assertTrue(np.all(D >= 0.0))
 
     def test_factory_biased_eden_scale(self):
         index = faiss.index_factory(64, "EDEN4BIASED")
