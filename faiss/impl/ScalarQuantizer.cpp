@@ -665,7 +665,7 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     // A SIMD level's factory returns nullptr when the dimension is
     // incompatible (e.g. AVX-512 needs d % 16 == 0); the dispatcher then falls
     // back to the next-lower level (AVX-512 -> AVX2 -> scalar).
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> SQuantizer* {
                 return scalar_quantizer::sq_select_quantizer<SL>(
                         qtype, d, trained);
@@ -702,7 +702,7 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> SQDistanceComputer* {
                 return scalar_quantizer::sq_select_distance_computer<SL>(
                         metric, qtype, d, trained);
@@ -715,7 +715,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> InvertedListScanner* {
                 return scalar_quantizer::sq_select_InvertedListScanner<SL>(
                         qtype,

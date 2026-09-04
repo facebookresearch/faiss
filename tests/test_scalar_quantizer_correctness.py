@@ -603,3 +603,59 @@ class TestTurboQFullDistances(unittest.TestCase):
                 for q in range(len(xq)):
                     for k in range(1, 10):
                         self.assertLessEqual(D[q, k - 1], D[q, k])
+
+
+@for_all_simd_levels
+class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
+    """QT_8bit_direct{,_signed} distances are exact integers, so every SIMD
+    level must agree with NONE bit for bit.
+
+    d = 16 and 32 hit the d % 16 == 0 gate in sq-dispatch.h that routes to the
+    byte-domain DistanceComputerByte / DistanceComputerByteSigned kernels. The
+    two tests cover the two independent dispatch chains those kernels are
+    reached from: search() goes through sq_select_InvertedListScanner, and
+    get_distance_computer() through sq_select_distance_computer (the chain
+    Refine(SQ8) uses).
+    """
+
+    def do_test(self, measure):
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
+        rng = np.random.RandomState(1234)
+        for qtype in (
+            faiss.ScalarQuantizer.QT_8bit_direct,
+            faiss.ScalarQuantizer.QT_8bit_direct_signed,
+        ):
+            lo, hi = (
+                (-128, 128)
+                if qtype == faiss.ScalarQuantizer.QT_8bit_direct_signed
+                else (0, 256)
+            )
+            for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+                for d in (16, 32):
+                    with self.subTest(qtype=qtype, metric=metric, d=d):
+                        xb = rng.randint(lo, hi, (500, d)).astype("float32")
+                        xq = rng.randint(lo, hi, (10, d)).astype("float32")
+                        index = faiss.IndexScalarQuantizer(d, qtype, metric)
+                        index.add(xb)
+                        got = measure(index, xq)
+                        with NoneSIMDLevel():
+                            expect = measure(index, xq)
+                        np.testing.assert_array_equal(got, expect)
+
+    def test_scanner(self):
+        # One sequential scan per query at both levels, so identical distances
+        # imply identical tie-breaking and the labels are comparable too.
+        self.do_test(lambda index, xq: np.hstack(index.search(xq, 10)))
+
+    def test_distance_computer(self):
+        def measure(index, xq):
+            dc = index.get_distance_computer()
+            out = np.empty((len(xq), index.ntotal), dtype="float32")
+            for q in range(len(xq)):
+                dc.set_query(faiss.swig_ptr(xq[q]))
+                for i in range(index.ntotal):
+                    out[q, i] = dc(int(i))
+            return out
+
+        self.do_test(measure)
