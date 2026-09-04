@@ -319,8 +319,13 @@ struct EDENDistanceComputerBase : EDENFlatCodesDistanceComputer {
             const EDENCodeFactors* factors,
             float code_dot_query) const {
         if (metric_type == MetricType::METRIC_L2) {
-            return query_base + factors->l2_norm_term -
+            // The unbiased scale reports an unbiased estimator of the squared
+            // L2 distance rather than a true squared distance, so the raw
+            // value can dip below zero for strongly-aligned residuals. Clamp
+            // to keep the METRIC_L2 contract (distances are never negative).
+            const float dist = query_base + factors->l2_norm_term -
                     2.0f * factors->scale * code_dot_query;
+            return dist < 0.0f ? 0.0f : dist;
         }
         return query_base + factors->scale * code_dot_query;
     }
