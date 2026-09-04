@@ -64,9 +64,10 @@ if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
-# DD-only tests: x86-specific tests containing raw AVX2/AVX512 intrinsics
+# DD-only tests; x86-specific raw-intrinsic tests are added separately below.
 if(FAISS_OPT_LEVEL STREQUAL "dd")
   list(APPEND FAISS_TEST_SRC
+    test_distances_dispatch.cpp
     test_simd_perf.cpp
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")

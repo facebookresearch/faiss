@@ -111,7 +111,8 @@ struct IndexSVSVamana : Index {
             size_t degree,
             MetricType metric = METRIC_L2,
             SVSStorageKind storage = SVSStorageKind::SVS_FP32,
-            bool is_static = false);
+            bool is_static = false,
+            bool store_vectors = true);
 
     ~IndexSVSVamana() override;
 
@@ -163,6 +164,12 @@ struct IndexSVSVamana : Index {
     // quantizer this holds only nlist centroids.
     std::vector<float> stored_vectors;
     bool stored_vectors_valid{true};
+
+    // Set to false before the first add() to skip the stored_vectors copy,
+    // saving ntotal * d * 4 bytes at the cost of reconstruct() support and
+    // hence of use as an IVF coarse quantizer. Clearing it after vectors have
+    // been added drops the copy, which can no longer be aligned with the ids.
+    bool store_vectors{true};
 
    protected:
     /* Initializes the implementation. For static indexes the data is consumed
