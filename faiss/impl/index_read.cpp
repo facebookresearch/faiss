@@ -1290,7 +1290,10 @@ static void validate_HNSW(const HNSW& hnsw) {
     }
 }
 
-static void read_HNSW(HNSW& hnsw, IOReader* f) {
+// format_version 2 serializes prune_headroom, check_relative_distance and
+// search_bounded_queue. Files written before that do not contain them and
+// the fields keep their defaults.
+static void read_HNSW(HNSW& hnsw, IOReader* f, int format_version) {
     READVECTOR(hnsw.assign_probas);
     READVECTOR(hnsw.cum_nneighbor_per_level);
     READVECTOR(hnsw.levels);
@@ -1305,6 +1308,12 @@ static void read_HNSW(HNSW& hnsw, IOReader* f) {
     // // deprecated field
     // READ1(hnsw.upper_beam);
     READ1_DUMMY(int)
+
+    if (format_version >= 2) {
+        READ1(hnsw.prune_headroom);
+        READ1_BOOL(hnsw.check_relative_distance);
+        READ1_BOOL(hnsw.search_bounded_queue);
+    }
 
     validate_HNSW(hnsw);
 }
@@ -2507,27 +2516,38 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP") || h == fourcc("IH00")) {
+            h == fourcc("IHfP") || h == fourcc("IH00") || h == fourcc("IH2f") ||
+            h == fourcc("IH2p") || h == fourcc("IH2s") || h == fourcc("IH22") ||
+            h == fourcc("IH2c") || h == fourcc("IH2P") || h == fourcc("IH20")) {
         std::unique_ptr<IndexHNSW> idxhnsw;
-        if (h == fourcc("IH00")) {
+        // The IH2* codes serialize the HNSW graph tunables (prune_headroom,
+        // check_relative_distance, search_bounded_queue). The older IH* codes
+        // are still read, and those fields keep their defaults.
+        const int hnsw_format_version = h == fourcc("IH2f") ||
+                        h == fourcc("IH2p") || h == fourcc("IH2s") ||
+                        h == fourcc("IH22") || h == fourcc("IH2c") ||
+                        h == fourcc("IH2P") || h == fourcc("IH20")
+                ? 2
+                : 1;
+        if (h == fourcc("IH00") || h == fourcc("IH20")) {
             idxhnsw = std::make_unique<IndexHNSW>();
-        } else if (h == fourcc("IHNf")) {
+        } else if (h == fourcc("IHNf") || h == fourcc("IH2f")) {
             idxhnsw = std::make_unique<IndexHNSWFlat>();
-        } else if (h == fourcc("IHfP")) {
+        } else if (h == fourcc("IHfP") || h == fourcc("IH2P")) {
             idxhnsw = std::make_unique<IndexHNSWFlatPanorama>();
-        } else if (h == fourcc("IHNp")) {
+        } else if (h == fourcc("IHNp") || h == fourcc("IH2p")) {
             idxhnsw = std::make_unique<IndexHNSWPQ>();
-        } else if (h == fourcc("IHNs")) {
+        } else if (h == fourcc("IHNs") || h == fourcc("IH2s")) {
             idxhnsw = std::make_unique<IndexHNSWSQ>();
-        } else if (h == fourcc("IHN2")) {
+        } else if (h == fourcc("IHN2") || h == fourcc("IH22")) {
             idxhnsw = std::make_unique<IndexHNSW2Level>();
-        } else if (h == fourcc("IHNc")) {
-            idxhnsw = std::make_unique<IndexHNSWCagra>();
-        } else if (h == fourcc("IHc2")) {
+        } else if (
+                h == fourcc("IHNc") || h == fourcc("IHc2") ||
+                h == fourcc("IH2c")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
         }
         read_index_header(*idxhnsw, f);
-        if (h == fourcc("IHfP")) {
+        if (h == fourcc("IHfP") || h == fourcc("IH2P")) {
             auto idx_panorama =
                     dynamic_cast<IndexHNSWFlatPanorama*>(idxhnsw.get());
             FAISS_THROW_IF_NOT_MSG(
@@ -2539,27 +2559,30 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             const_cast<Panorama&>(idx_panorama->pano) =
                     Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
             READVECTOR(idx_panorama->cum_sums);
-        } else if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
+        } else if (
+                h == fourcc("IHNc") || h == fourcc("IHc2") ||
+                h == fourcc("IH2c")) {
             READ1_BOOL(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw.get());
             FAISS_THROW_IF_NOT_MSG(
                     idx_hnsw_cagra, "dynamic_cast to IndexHNSWCagra failed");
             READ1_BOOL(idx_hnsw_cagra->base_level_only);
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
-            if (h == fourcc("IHc2")) {
+            if (h == fourcc("IHc2") || h == fourcc("IH2c")) {
                 READ1(idx_hnsw_cagra->numeric_type_);
             } else { // cagra before numeric_type_ was introduced
                 idx_hnsw_cagra->set_numeric_type(faiss::Float32);
             }
         }
-        read_HNSW(idxhnsw->hnsw, f);
+        read_HNSW(idxhnsw->hnsw, f, hnsw_format_version);
         // Cross-check HNSW graph size against index header ntotal
         FAISS_THROW_IF_NOT_FMT(
                 idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
                 "HNSW levels size %zu != index ntotal %" PRId64,
                 idxhnsw->hnsw.levels.size(),
                 idxhnsw->ntotal);
-        idxhnsw->hnsw.is_panorama = (h == fourcc("IHfP"));
+        idxhnsw->hnsw.is_panorama =
+                (h == fourcc("IHfP") || h == fourcc("IH2P"));
         // `HNSW::is_similarity` is intentionally not serialized, so we
         // re-derive it here from the persisted metric type. Without this,
         // a saved IP/similarity index would come back configured as a
@@ -2581,7 +2604,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxhnsw->storage->d,
                     idxhnsw->d);
         }
-        if (h == fourcc("IHN2")) {
+        if (h == fourcc("IHN2") || h == fourcc("IH22")) {
             FAISS_THROW_IF_NOT_MSG(
                     idxhnsw->storage,
                     "IndexHNSW2Level requires non-null storage");
@@ -2590,7 +2613,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                             dynamic_cast<IndexIVFPQ*>(idxhnsw->storage),
                     "IndexHNSW2Level storage must be Index2Layer or IndexIVFPQ");
         }
-        if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
+        if ((h == fourcc("IHNp") || h == fourcc("IH2p")) &&
+            !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             auto* storage_pq = dynamic_cast<IndexPQ*>(idxhnsw->storage);
             FAISS_THROW_IF_NOT_MSG(
                     storage_pq,
@@ -3398,10 +3422,10 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         FAISS_THROW_IF_NOT_MSG(
                 idxff->index, "IndexBinaryFromFloat inner index is null");
         idx = std::move(idxff);
-    } else if (h == fourcc("IBHf")) {
+    } else if (h == fourcc("IBHf") || h == fourcc("IB2f")) {
         auto idxhnsw = std::make_unique<IndexBinaryHNSW>();
         read_index_binary_header(*idxhnsw, f);
-        read_HNSW(idxhnsw->hnsw, f);
+        read_HNSW(idxhnsw->hnsw, f, h == fourcc("IB2f") ? 2 : 1);
         idxhnsw->hnsw.is_panorama = false;
         FAISS_THROW_IF_NOT_FMT(
                 idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
@@ -3419,13 +3443,13 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
                 idxhnsw->storage->ntotal == idxhnsw->ntotal,
                 "IndexBinaryHNSW storage ntotal mismatch");
         idx = std::move(idxhnsw);
-    } else if (h == fourcc("IBHc")) {
+    } else if (h == fourcc("IBHc") || h == fourcc("IB2c")) {
         auto idxhnsw = std::make_unique<IndexBinaryHNSWCagra>();
         read_index_binary_header(*idxhnsw, f);
         READ1_BOOL(idxhnsw->keep_max_size_level0);
         READ1_BOOL(idxhnsw->base_level_only);
         READ1(idxhnsw->num_base_level_search_entrypoints);
-        read_HNSW(idxhnsw->hnsw, f);
+        read_HNSW(idxhnsw->hnsw, f, h == fourcc("IB2c") ? 2 : 1);
         idxhnsw->hnsw.is_panorama = false;
         FAISS_THROW_IF_NOT_FMT(
                 idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
