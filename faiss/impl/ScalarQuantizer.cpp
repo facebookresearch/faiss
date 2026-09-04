@@ -702,11 +702,17 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
-            [&]<SIMDLevel SL>() -> SQDistanceComputer* {
-                return scalar_quantizer::sq_select_distance_computer<SL>(
-                        metric, qtype, d, trained);
-            });
+    return with_simd_level_amx([&]<SIMDLevel SL>() -> SQDistanceComputer* {
+        if constexpr (SL != SIMDLevel::NONE) {
+            auto* dc = scalar_quantizer::sq_select_distance_computer<SL>(
+                    metric, qtype, d, trained);
+            if (dc) {
+                return dc;
+            }
+        }
+        return scalar_quantizer::sq_select_distance_computer<SIMDLevel::NONE>(
+                metric, qtype, d, trained);
+    });
 }
 
 InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
