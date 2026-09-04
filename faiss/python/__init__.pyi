@@ -3906,6 +3906,7 @@ class IndexSVSVamana(Index):
     use_full_search_history: bool
     is_static: bool
     storage_kind: SVSStorageKind
+    store_vectors: bool
 
     def __init__(
         self,
@@ -3914,6 +3915,7 @@ class IndexSVSVamana(Index):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_FP32,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
     @staticmethod
     def is_lvq_leanvec_enabled() -> bool: ...
@@ -3926,6 +3928,7 @@ class IndexSVSVamanaLVQ(IndexSVSVamana):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_LVQ4x0,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSVamanaLeanVec(IndexSVSVamana):
@@ -3939,6 +3942,7 @@ class IndexSVSVamanaLeanVec(IndexSVSVamana):
         leanvec_dims: int = 0,
         storage: SVSStorageKind = SVS_LeanVec4x4,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSIVF(Index):
