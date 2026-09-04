@@ -31,6 +31,14 @@ include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_perf_tests_utils)
 
+if(FAISS_OPT_LEVEL STREQUAL "dd" AND CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+  # The benchmark directly instantiates DD-only AVX2/AVX-512 symbols. Keep it
+  # opt-in so generic/avx2 default builds neither link nor run unavailable ISA.
+  add_executable(bench_rabitq_simd EXCLUDE_FROM_ALL ../benchs/bench_rabitq_simd.cpp)
+  link_to_faiss_lib(bench_rabitq_simd)
+  target_link_libraries(bench_rabitq_simd PRIVATE benchmark::benchmark)
+endif()
+
 set(FAISS_PERF_TEST_SRC
   bench_no_multithreading_rcq_search.cpp
   bench_scalar_quantizer_accuracy.cpp

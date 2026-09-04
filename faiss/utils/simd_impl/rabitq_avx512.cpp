@@ -583,6 +583,27 @@ uint64_t popcount<SIMDLevel::AVX512>(const uint8_t* data, size_t size) {
 }
 
 template <>
+float selected_float_sum<SIMDLevel::AVX512>(
+        const uint8_t* sign_bits,
+        const float* values,
+        size_t d) {
+    __m512 sum = _mm512_setzero_ps();
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        uint16_t packed = 0;
+        memcpy(&packed, sign_bits + i / 8, sizeof(packed));
+        sum = _mm512_add_ps(
+                sum,
+                _mm512_maskz_loadu_ps(
+                        static_cast<__mmask16>(packed), values + i));
+    }
+    float result = _mm512_reduce_add_ps(sum);
+    result += selected_float_sum<SIMDLevel::NONE>(
+            sign_bits + i / 8, values + i, d - i);
+    return result;
+}
+
+template <>
 void rearrange_bit_planes<SIMDLevel::AVX512>(
         const uint8_t* rotated_qq,
         size_t d,
@@ -623,6 +644,508 @@ namespace faiss::rabitq::multibit {
 
 namespace {
 
+template <size_t NBITS>
+inline __m256i dense_decode_8_i32_avx512(const uint8_t* code) {
+    static_assert(NBITS >= 2 && NBITS <= 8);
+    uint64_t packed = 0;
+    memcpy(&packed, code, NBITS);
+    constexpr uint64_t mask = (uint64_t{1} << NBITS) - 1;
+    return _mm256_setr_epi32(
+            (packed >> (0 * NBITS)) & mask,
+            (packed >> (1 * NBITS)) & mask,
+            (packed >> (2 * NBITS)) & mask,
+            (packed >> (3 * NBITS)) & mask,
+            (packed >> (4 * NBITS)) & mask,
+            (packed >> (5 * NBITS)) & mask,
+            (packed >> (6 * NBITS)) & mask,
+            (packed >> (7 * NBITS)) & mask);
+}
+
+template <size_t NBITS>
+inline __m512 dense_decode_16_avx512(const uint8_t* code) {
+    const __m256i lo = dense_decode_8_i32_avx512<NBITS>(code);
+    const __m256i hi = dense_decode_8_i32_avx512<NBITS>(code + NBITS);
+    const __m512i values =
+            _mm512_inserti32x8(_mm512_castsi256_si512(lo), hi, 1);
+    return _mm512_cvtepi32_ps(values);
+}
+
+inline __m512i dense_decode_3_64_u8_avx512(const uint8_t* code) {
+    const __m256i shuf_0 = _mm256_setr_epi8(
+            0,
+            -1,
+            0,
+            1,
+            1,
+            -1,
+            2,
+            -1,
+            3,
+            -1,
+            3,
+            4,
+            4,
+            -1,
+            5,
+            -1,
+            6,
+            -1,
+            6,
+            7,
+            7,
+            -1,
+            8,
+            -1,
+            9,
+            -1,
+            9,
+            10,
+            10,
+            -1,
+            11,
+            -1);
+    const __m256i shuf_1 = _mm256_setr_epi8(
+            0,
+            -1,
+            1,
+            -1,
+            1,
+            2,
+            2,
+            -1,
+            3,
+            -1,
+            4,
+            -1,
+            4,
+            5,
+            5,
+            -1,
+            6,
+            -1,
+            7,
+            -1,
+            7,
+            8,
+            8,
+            -1,
+            9,
+            -1,
+            10,
+            -1,
+            10,
+            11,
+            11,
+            -1);
+    const __m256i shuf_2 = _mm256_setr_epi8(
+            12,
+            -1,
+            12,
+            13,
+            13,
+            -1,
+            14,
+            -1,
+            15,
+            -1,
+            15,
+            0,
+            0,
+            -1,
+            1,
+            -1,
+            2,
+            -1,
+            2,
+            3,
+            3,
+            -1,
+            4,
+            -1,
+            5,
+            -1,
+            5,
+            6,
+            6,
+            -1,
+            7,
+            -1);
+    const __m256i shuf_3 = _mm256_setr_epi8(
+            12,
+            -1,
+            13,
+            -1,
+            13,
+            14,
+            14,
+            -1,
+            15,
+            -1,
+            0,
+            -1,
+            0,
+            1,
+            1,
+            -1,
+            2,
+            -1,
+            3,
+            -1,
+            3,
+            4,
+            4,
+            -1,
+            5,
+            -1,
+            6,
+            -1,
+            6,
+            7,
+            7,
+            -1);
+    const __m512i shuf_02 =
+            _mm512_inserti32x8(_mm512_castsi256_si512(shuf_0), shuf_2, 1);
+    const __m512i shuf_13 =
+            _mm512_inserti32x8(_mm512_castsi256_si512(shuf_1), shuf_3, 1);
+    const __m256i shifts_left =
+            _mm256_setr_epi16(5, 7, 1, 3, 5, 7, 1, 3, 5, 7, 1, 3, 5, 7, 1, 3);
+    const __m256i shifts_right =
+            _mm256_setr_epi16(0, 6, 4, 2, 0, 6, 4, 2, 0, 6, 4, 2, 0, 6, 4, 2);
+    const __m512i v_shl = _mm512_inserti32x8(
+            _mm512_castsi256_si512(shifts_left), shifts_left, 1);
+    const __m512i v_shr = _mm512_inserti32x8(
+            _mm512_castsi256_si512(shifts_right), shifts_right, 1);
+
+    const __m128i raw_0 =
+            _mm_loadu_si128(reinterpret_cast<const __m128i*>(code));
+    const __m128i raw_2_low =
+            _mm_loadl_epi64(reinterpret_cast<const __m128i*>(code + 16));
+    const __m128i raw_2 = _mm_blend_epi16(raw_0, raw_2_low, 0x0f);
+    const __m256i raw_01 =
+            _mm256_inserti32x4(_mm256_castsi128_si256(raw_0), raw_0, 1);
+    const __m256i raw_23 =
+            _mm256_inserti32x4(_mm256_castsi128_si256(raw_2), raw_2, 1);
+    const __m512i raw =
+            _mm512_inserti32x8(_mm512_castsi256_si512(raw_01), raw_23, 1);
+    const __m512i right =
+            _mm512_srlv_epi16(_mm512_shuffle_epi8(raw, shuf_02), v_shr);
+    const __m512i left =
+            _mm512_sllv_epi16(_mm512_shuffle_epi8(raw, shuf_13), v_shl);
+    return _mm512_and_si512(
+            _mm512_mask_blend_epi8(0xaaaaaaaaaaaaaaaaULL, right, left),
+            _mm512_set1_epi8(7));
+}
+
+inline __m512i dense_decode_4_64_u8_avx512(const uint8_t* code) {
+    const __m256i packed =
+            _mm256_loadu_si256(reinterpret_cast<const __m256i*>(code));
+    const __m512i widened = _mm512_cvtepu8_epi16(packed);
+    return _mm512_and_si512(
+            _mm512_or_si512(
+                    widened,
+                    _mm512_slli_epi16(_mm512_srli_epi16(widened, 4), 8)),
+            _mm512_set1_epi16(0x0f0f));
+}
+
+inline __m512i dense_decode_5_64_u8_avx512(const uint8_t* code) {
+    const __m512i low = _mm512_zextsi256_si512(
+            _mm256_loadu_si256(reinterpret_cast<const __m256i*>(code)));
+    const __m128i high =
+            _mm_loadl_epi64(reinterpret_cast<const __m128i*>(code + 32));
+    const __m512i raw = _mm512_inserti32x4(low, high, 2);
+    const __m512i spread = _mm512_permutexvar_epi64(
+            _mm512_setr_epi64(0, 1, 1, 2, 2, 3, 3, 4), raw);
+    const __m512i shuf_a = _mm512_setr_epi64(
+            0x04030302ff01ff00ULL,
+            0x09080807ff06ff05ULL,
+            0x06050504ff03ff02ULL,
+            0x0b0a0a09ff08ff07ULL,
+            0x08070706ff05ff04ULL,
+            0x0d0c0c0bff0aff09ULL,
+            0x0a090908ff07ff06ULL,
+            0x0f0e0e0dff0cff0bULL);
+    const __m512i shuf_b = _mm512_setr_epi64(
+            0xff04ff0302010100ULL,
+            0xff09ff0807060605ULL,
+            0xff06ff0504030302ULL,
+            0xff0bff0a09080807ULL,
+            0xff08ff0706050504ULL,
+            0xff0dff0c0b0a0a09ULL,
+            0xff0aff0908070706ULL,
+            0xff0fff0e0d0c0c0bULL);
+    const __m512i right = _mm512_srlv_epi16(
+            _mm512_shuffle_epi8(spread, shuf_a),
+            _mm512_set1_epi64(0x0006000400020000ULL));
+    const __m512i left = _mm512_sllv_epi16(
+            _mm512_shuffle_epi8(spread, shuf_b),
+            _mm512_set1_epi64(0x0005000700010003ULL));
+    return _mm512_and_si512(
+            _mm512_mask_blend_epi8(0xaaaaaaaaaaaaaaaaULL, right, left),
+            _mm512_set1_epi8(0x1f));
+}
+
+inline __m512i dense_decode_6_64_u8_avx512(const uint8_t* code) {
+    const __m512i packed =
+            _mm512_maskz_loadu_epi8((uint64_t{1} << 48) - 1, code);
+    const __m512i expanded = _mm512_permutexvar_epi32(
+            _mm512_setr_epi32(
+                    0, 1, 2, -1, 3, 4, 5, -1, 6, 7, 8, -1, 9, 10, 11, -1),
+            packed);
+    const __m512i shuf_0 = _mm512_broadcast_i32x4(
+            _mm_setr_epi8(0, 1, 1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11));
+    const __m512i shuf_1 = _mm512_broadcast_i32x4(_mm_setr_epi8(
+            0, 1, 2, -1, 3, 4, 5, -1, 6, 7, 8, -1, 9, 10, 11, -1));
+    const __m512i left = _mm512_sllv_epi16(
+            _mm512_shuffle_epi8(expanded, shuf_1),
+            _mm512_set1_epi32(0x00060002));
+    const __m512i right = _mm512_srlv_epi16(
+            _mm512_shuffle_epi8(expanded, shuf_0),
+            _mm512_set1_epi32(0x00040000));
+    return _mm512_and_si512(
+            _mm512_mask_blend_epi8(0x5555555555555555ULL, left, right),
+            _mm512_set1_epi8(0x3f));
+}
+
+template <size_t NBITS>
+inline __m512i dense_decode_64_u8_avx512(const uint8_t* code) {
+    if constexpr (NBITS == 3) {
+        return dense_decode_3_64_u8_avx512(code);
+    } else if constexpr (NBITS == 4) {
+        return dense_decode_4_64_u8_avx512(code);
+    } else if constexpr (NBITS == 5) {
+        return dense_decode_5_64_u8_avx512(code);
+    } else if constexpr (NBITS == 6) {
+        return dense_decode_6_64_u8_avx512(code);
+    } else {
+        static_assert(NBITS == 8);
+        return _mm512_loadu_si512(code);
+    }
+}
+
+inline void dense_fma_64_avx512(
+        __m512& acc,
+        __m512i decoded,
+        const float* query,
+        __m512 bias) {
+#define FAISS_RABITQ_DENSE_FMA_QUARTER(Q, BYTES)                               \
+    do {                                                                       \
+        const __m512 values = _mm512_cvtepi32_ps(_mm512_cvtepu8_epi32(BYTES)); \
+        acc = _mm512_fmadd_ps(                                                 \
+                _mm512_loadu_ps(query + 16 * (Q)),                             \
+                _mm512_add_ps(values, bias),                                   \
+                acc);                                                          \
+    } while (false)
+    FAISS_RABITQ_DENSE_FMA_QUARTER(0, _mm512_castsi512_si128(decoded));
+    FAISS_RABITQ_DENSE_FMA_QUARTER(1, _mm512_extracti32x4_epi32(decoded, 1));
+    FAISS_RABITQ_DENSE_FMA_QUARTER(2, _mm512_extracti32x4_epi32(decoded, 2));
+    FAISS_RABITQ_DENSE_FMA_QUARTER(3, _mm512_extracti32x4_epi32(decoded, 3));
+#undef FAISS_RABITQ_DENSE_FMA_QUARTER
+}
+
+template <size_t NBITS>
+float ip_dense_avx512(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        float cb) {
+    __m512 acc = _mm512_setzero_ps();
+    const __m512 bias = _mm512_set1_ps(cb);
+    size_t i = 0;
+    if constexpr ((NBITS >= 3 && NBITS <= 6) || NBITS == 8) {
+        for (; i + 64 <= d; i += 64) {
+            dense_fma_64_avx512(
+                    acc,
+                    dense_decode_64_u8_avx512<NBITS>(code + (i * NBITS) / 8),
+                    query + i,
+                    bias);
+        }
+    }
+    for (; i + 16 <= d; i += 16) {
+        const __m512 values =
+                dense_decode_16_avx512<NBITS>(code + (i * NBITS) / 8);
+        acc = _mm512_fmadd_ps(
+                _mm512_loadu_ps(query + i), _mm512_add_ps(values, bias), acc);
+    }
+    return _mm512_reduce_add_ps(acc) +
+            compute_inner_product_dense<SIMDLevel::NONE>(
+                    code + (i * NBITS) / 8, query + i, d - i, NBITS, cb);
+}
+
+template <size_t NBITS>
+void ip_dense_batch_4_avx512(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]) {
+    __m512 acc[4] = {
+            _mm512_setzero_ps(),
+            _mm512_setzero_ps(),
+            _mm512_setzero_ps(),
+            _mm512_setzero_ps()};
+    const __m512 bias = _mm512_set1_ps(cb);
+    size_t i = 0;
+    if constexpr ((NBITS >= 3 && NBITS <= 6) || NBITS == 8) {
+        for (; i + 64 <= d; i += 64) {
+            for (size_t j = 0; j < 4; j++) {
+                dense_fma_64_avx512(
+                        acc[j],
+                        dense_decode_64_u8_avx512<NBITS>(
+                                codes[j] + (i * NBITS) / 8),
+                        query + i,
+                        bias);
+            }
+        }
+    }
+    for (; i + 16 <= d; i += 16) {
+        const __m512 q = _mm512_loadu_ps(query + i);
+        for (size_t j = 0; j < 4; j++) {
+            const __m512 values =
+                    dense_decode_16_avx512<NBITS>(codes[j] + (i * NBITS) / 8);
+            acc[j] = _mm512_fmadd_ps(q, _mm512_add_ps(values, bias), acc[j]);
+        }
+    }
+    for (size_t j = 0; j < 4; j++) {
+        out[j] = _mm512_reduce_add_ps(acc[j]) +
+                compute_inner_product_dense<SIMDLevel::NONE>(
+                         codes[j] + (i * NBITS) / 8,
+                         query + i,
+                         d - i,
+                         NBITS,
+                         cb);
+    }
+}
+
+} // namespace
+
+template <>
+float compute_inner_product_dense<SIMDLevel::AVX512>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        size_t nbits,
+        float cb) {
+#define FAISS_RABITQ_DENSE_CASE(N) \
+    case N:                        \
+        return ip_dense_avx512<N>(code, query, d, cb)
+    switch (nbits) {
+        FAISS_RABITQ_DENSE_CASE(2);
+        FAISS_RABITQ_DENSE_CASE(3);
+        FAISS_RABITQ_DENSE_CASE(4);
+        FAISS_RABITQ_DENSE_CASE(5);
+        FAISS_RABITQ_DENSE_CASE(6);
+        FAISS_RABITQ_DENSE_CASE(7);
+        FAISS_RABITQ_DENSE_CASE(8);
+        default:
+            return compute_inner_product_dense<SIMDLevel::NONE>(
+                    code, query, d, nbits, cb);
+    }
+#undef FAISS_RABITQ_DENSE_CASE
+}
+
+template <>
+void compute_inner_product_dense_batch_4<SIMDLevel::AVX512>(
+        const uint8_t* const codes[4],
+        const float* query,
+        size_t d,
+        size_t nbits,
+        float cb,
+        float out[4]) {
+#define FAISS_RABITQ_DENSE_CASE(N) \
+    case N:                        \
+        return ip_dense_batch_4_avx512<N>(codes, query, d, cb, out)
+    switch (nbits) {
+        FAISS_RABITQ_DENSE_CASE(2);
+        FAISS_RABITQ_DENSE_CASE(3);
+        FAISS_RABITQ_DENSE_CASE(4);
+        FAISS_RABITQ_DENSE_CASE(5);
+        FAISS_RABITQ_DENSE_CASE(6);
+        FAISS_RABITQ_DENSE_CASE(7);
+        FAISS_RABITQ_DENSE_CASE(8);
+        default:
+            for (size_t i = 0; i < 4; i++) {
+                out[i] = compute_inner_product_dense<SIMDLevel::NONE>(
+                        codes[i], query, d, nbits, cb);
+            }
+    }
+#undef FAISS_RABITQ_DENSE_CASE
+}
+
+template <>
+float compute_inner_product_byte<SIMDLevel::AVX512>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        float cb) {
+    __m512 acc = _mm512_setzero_ps();
+    const __m512 bias = _mm512_set1_ps(cb);
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const __m128i bytes =
+                _mm_loadu_si128(reinterpret_cast<const __m128i*>(code + i));
+        const __m512 values = _mm512_cvtepi32_ps(_mm512_cvtepu8_epi32(bytes));
+        acc = _mm512_fmadd_ps(
+                _mm512_loadu_ps(query + i), _mm512_add_ps(values, bias), acc);
+    }
+    return _mm512_reduce_add_ps(acc) + ip_byte_scalar(code, query, i, d, cb);
+}
+
+template <>
+void compute_inner_product_byte_batch_4<SIMDLevel::AVX512>(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]) {
+    __m512 acc[4] = {
+            _mm512_setzero_ps(),
+            _mm512_setzero_ps(),
+            _mm512_setzero_ps(),
+            _mm512_setzero_ps()};
+    const __m512 bias = _mm512_set1_ps(cb);
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const __m512 q = _mm512_loadu_ps(query + i);
+        for (size_t j = 0; j < 4; j++) {
+            const __m128i bytes = _mm_loadu_si128(
+                    reinterpret_cast<const __m128i*>(codes[j] + i));
+            const __m512 values =
+                    _mm512_cvtepi32_ps(_mm512_cvtepu8_epi32(bytes));
+            acc[j] = _mm512_fmadd_ps(q, _mm512_add_ps(values, bias), acc[j]);
+        }
+    }
+    for (size_t j = 0; j < 4; j++) {
+        out[j] = _mm512_reduce_add_ps(acc[j]) +
+                ip_byte_scalar(codes[j], query, i, d, cb);
+    }
+}
+
+namespace {
+
+#if (defined(__GNUC__) || defined(__clang__)) && \
+        (defined(__x86_64__) || defined(__i386__))
+#define FAISS_RABITQ_HAS_BMI2_TARGET 1
+#define FAISS_RABITQ_TARGET_BMI2 __attribute__((target("bmi2")))
+
+inline bool cpu_supports_fast_bmi2() {
+    static const bool supported = __builtin_cpu_supports("bmi2");
+    return supported && SIMDConfig::bmi2_fast;
+}
+#else
+#define FAISS_RABITQ_HAS_BMI2_TARGET 0
+#define FAISS_RABITQ_TARGET_BMI2
+#endif
+
+inline float hsum_avx2(__m256 v) {
+    __m128 hi = _mm256_extractf128_ps(v, 1);
+    __m128 lo = _mm256_castps256_ps128(v);
+    lo = _mm_add_ps(lo, hi);
+    __m128 shuf = _mm_movehdup_ps(lo);
+    lo = _mm_add_ps(lo, shuf);
+    shuf = _mm_movehl_ps(shuf, lo);
+    return _mm_cvtss_f32(_mm_add_ss(lo, shuf));
+}
+
 inline float ip_1exbit_avx512(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
@@ -654,14 +1177,400 @@ inline float ip_1exbit_avx512(
     return result;
 }
 
-// Needs BMI2 for _pext_u64. Some AVX2 CPUs lack it, and FAISS_BMI2_FLAGS can
-// be empty, so the dispatcher falls back to the scalar path without it.
-#ifdef __BMI2__
-// Bitplane kernel for ex_bits >= 2, 16 dims per iteration. A bitplane is
-// already a bitmask, so it goes into a mask register and one masked add
-// applies its weight. Reads of ex_code run a few bytes past the ex-code
-// section into the record's own trailing factors, so they stay in bounds.
-inline float ip_bitplane_avx512(
+// AVX2+BMI2 bitplane kernel used as fallback for ex_bits >= 2.
+// AVX512 TU has AVX2 available. BMI2 guarded separately since
+// VIA Eden X4 has AVX2 without BMI2.
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+FAISS_RABITQ_TARGET_BMI2 inline float ip_bitplane_avx2(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256 v_one = _mm256_set1_ps(1.0f);
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+
+    uint64_t pext_masks[7];
+    __m256 v_weights[8];
+    for (size_t b = 0; b < ex_bits; b++) {
+        uint64_t m = 0;
+        for (int j = 0; j < 8; j++) {
+            m |= (1ULL << (b + j * ex_bits));
+        }
+        pext_masks[b] = m;
+        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+    }
+    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        __m256i sb_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
+                zero);
+        __m256 recon = _mm256_mul_ps(
+                _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one),
+                v_weights[ex_bits]);
+
+        uint64_t ex64 = 0;
+        memcpy(&ex64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
+
+        for (size_t b = 0; b < ex_bits; b++) {
+            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
+            __m256i p_cmp = _mm256_cmpgt_epi32(
+                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
+            __m256 p_f = _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_one);
+            recon = _mm256_fmadd_ps(p_f, v_weights[b], recon);
+        }
+
+        __m256 rq = _mm256_loadu_ps(rotated_q + i);
+        acc = _mm256_fmadd_ps(rq, _mm256_add_ps(recon, v_cb), acc);
+    }
+
+    float result = hsum_avx2(acc);
+    result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
+    return result;
+}
+
+// The 16-lane AVX-512 bit extraction below needs more than one 64-bit PEXT
+// window once ex_bits exceeds four. Keep a genuine four-code path for those
+// wider codes by sharing each query load across four 8-lane reconstructions.
+FAISS_RABITQ_TARGET_BMI2 inline void ip_bitplane_batch_4_avx2(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]) {
+    __m256 acc0 = _mm256_setzero_ps();
+    __m256 acc1 = _mm256_setzero_ps();
+    __m256 acc2 = _mm256_setzero_ps();
+    __m256 acc3 = _mm256_setzero_ps();
+    const __m256 v_one = _mm256_set1_ps(1.0f);
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+
+    uint64_t pext_masks[7];
+    __m256 v_weights[8];
+    for (size_t b = 0; b < ex_bits; b++) {
+        uint64_t mask = 0;
+        for (int j = 0; j < 8; j++) {
+            mask |= (1ULL << (b + j * ex_bits));
+        }
+        pext_masks[b] = mask;
+        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+    }
+    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 query = _mm256_loadu_ps(rotated_q + i);
+
+        auto reconstruct = [&](size_t code_index) FAISS_RABITQ_TARGET_BMI2 {
+            const __m256i sign_cmp = _mm256_cmpgt_epi32(
+                    _mm256_and_si256(
+                            _mm256_set1_epi32(sign_bits[code_index][i / 8]),
+                            bit_pos),
+                    zero);
+            __m256 reconstruction = _mm256_mul_ps(
+                    _mm256_and_ps(_mm256_castsi256_ps(sign_cmp), v_one),
+                    v_weights[ex_bits]);
+
+            uint64_t extra_bits = 0;
+            memcpy(&extra_bits,
+                   ex_codes[code_index] + (i / 8) * ex_bits,
+                   sizeof(extra_bits));
+            for (size_t b = 0; b < ex_bits; b++) {
+                const auto plane = static_cast<uint8_t>(
+                        _pext_u64(extra_bits, pext_masks[b]));
+                const __m256i plane_cmp = _mm256_cmpgt_epi32(
+                        _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos),
+                        zero);
+                const __m256 plane_values =
+                        _mm256_and_ps(_mm256_castsi256_ps(plane_cmp), v_one);
+                reconstruction = _mm256_fmadd_ps(
+                        plane_values, v_weights[b], reconstruction);
+            }
+            return _mm256_add_ps(reconstruction, v_cb);
+        };
+
+        acc0 = _mm256_fmadd_ps(query, reconstruct(0), acc0);
+        acc1 = _mm256_fmadd_ps(query, reconstruct(1), acc1);
+        acc2 = _mm256_fmadd_ps(query, reconstruct(2), acc2);
+        acc3 = _mm256_fmadd_ps(query, reconstruct(3), acc3);
+    }
+
+    out[0] = hsum_avx2(acc0) +
+            ip_scalar(sign_bits[0], ex_codes[0], rotated_q, i, d, ex_bits, cb);
+    out[1] = hsum_avx2(acc1) +
+            ip_scalar(sign_bits[1], ex_codes[1], rotated_q, i, d, ex_bits, cb);
+    out[2] = hsum_avx2(acc2) +
+            ip_scalar(sign_bits[2], ex_codes[2], rotated_q, i, d, ex_bits, cb);
+    out[3] = hsum_avx2(acc3) +
+            ip_scalar(sign_bits[3], ex_codes[3], rotated_q, i, d, ex_bits, cb);
+}
+#endif
+
+// For five to seven extra bits, eight packed coordinates still fit in one
+// uint64_t. Extract the per-coordinate integers directly with AVX-512
+// variable shifts instead of rebuilding them one bitplane at a time.
+template <size_t ExBits>
+inline float ip_packed_8_avx512(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb) {
+    static_assert(ExBits >= 5 && ExBits <= 7);
+    __m256 acc = _mm256_setzero_ps();
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+    const __m256 v_sign_weight =
+            _mm256_set1_ps(static_cast<float>(1u << ExBits));
+    const __m512i shifts = _mm512_setr_epi64(
+            0,
+            ExBits,
+            2 * ExBits,
+            3 * ExBits,
+            4 * ExBits,
+            5 * ExBits,
+            6 * ExBits,
+            7 * ExBits);
+    const __m512i value_mask = _mm512_set1_epi64((1u << ExBits) - 1);
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        uint64_t packed = 0;
+        memcpy(&packed, ex_code + (i / 8) * ExBits, ExBits);
+        const __m512i values = _mm512_and_si512(
+                _mm512_srlv_epi64(_mm512_set1_epi64(packed), shifts),
+                value_mask);
+        const __m256 extra_values =
+                _mm256_cvtepi32_ps(_mm512_cvtepi64_epi32(values));
+
+        const __m256i sign_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
+                zero);
+        const __m256 sign_values =
+                _mm256_and_ps(_mm256_castsi256_ps(sign_cmp), v_sign_weight);
+        const __m256 reconstruction =
+                _mm256_add_ps(_mm256_add_ps(extra_values, sign_values), v_cb);
+        acc = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i), reconstruction, acc);
+    }
+
+    return hsum_avx2(acc) +
+            ip_scalar(sign_bits, ex_code, rotated_q, i, d, ExBits, cb);
+}
+
+template <size_t ExBits>
+inline void ip_packed_8_batch_4_avx512(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb,
+        float out[4]) {
+    static_assert(ExBits >= 5 && ExBits <= 7);
+    __m256 acc0 = _mm256_setzero_ps();
+    __m256 acc1 = _mm256_setzero_ps();
+    __m256 acc2 = _mm256_setzero_ps();
+    __m256 acc3 = _mm256_setzero_ps();
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+    const __m256 v_sign_weight =
+            _mm256_set1_ps(static_cast<float>(1u << ExBits));
+    const __m512i shifts = _mm512_setr_epi64(
+            0,
+            ExBits,
+            2 * ExBits,
+            3 * ExBits,
+            4 * ExBits,
+            5 * ExBits,
+            6 * ExBits,
+            7 * ExBits);
+    const __m512i value_mask = _mm512_set1_epi64((1u << ExBits) - 1);
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 query = _mm256_loadu_ps(rotated_q + i);
+
+        auto reconstruct = [&](size_t code_index) {
+            uint64_t packed = 0;
+            memcpy(&packed, ex_codes[code_index] + (i / 8) * ExBits, ExBits);
+            const __m512i values = _mm512_and_si512(
+                    _mm512_srlv_epi64(_mm512_set1_epi64(packed), shifts),
+                    value_mask);
+            const __m256 extra_values =
+                    _mm256_cvtepi32_ps(_mm512_cvtepi64_epi32(values));
+
+            const __m256i sign_cmp = _mm256_cmpgt_epi32(
+                    _mm256_and_si256(
+                            _mm256_set1_epi32(sign_bits[code_index][i / 8]),
+                            bit_pos),
+                    zero);
+            const __m256 sign_values =
+                    _mm256_and_ps(_mm256_castsi256_ps(sign_cmp), v_sign_weight);
+            return _mm256_add_ps(
+                    _mm256_add_ps(extra_values, sign_values), v_cb);
+        };
+
+        acc0 = _mm256_fmadd_ps(query, reconstruct(0), acc0);
+        acc1 = _mm256_fmadd_ps(query, reconstruct(1), acc1);
+        acc2 = _mm256_fmadd_ps(query, reconstruct(2), acc2);
+        acc3 = _mm256_fmadd_ps(query, reconstruct(3), acc3);
+    }
+
+    out[0] = hsum_avx2(acc0) +
+            ip_scalar(sign_bits[0], ex_codes[0], rotated_q, i, d, ExBits, cb);
+    out[1] = hsum_avx2(acc1) +
+            ip_scalar(sign_bits[1], ex_codes[1], rotated_q, i, d, ExBits, cb);
+    out[2] = hsum_avx2(acc2) +
+            ip_scalar(sign_bits[2], ex_codes[2], rotated_q, i, d, ExBits, cb);
+    out[3] = hsum_avx2(acc3) +
+            ip_scalar(sign_bits[3], ex_codes[3], rotated_q, i, d, ExBits, cb);
+}
+
+template <size_t ExBits>
+inline __m256i unpack_packed_8_avx512(
+        const uint8_t* __restrict ex_code,
+        const __m512i shifts,
+        const __m512i value_mask) {
+    uint64_t packed = 0;
+    memcpy(&packed, ex_code, ExBits);
+    const __m512i values = _mm512_and_si512(
+            _mm512_srlv_epi64(_mm512_set1_epi64(packed), shifts), value_mask);
+    return _mm512_cvtepi64_epi32(values);
+}
+
+template <size_t ExBits>
+inline float ip_packed_16_avx512(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb) {
+    static_assert(ExBits >= 5 && ExBits <= 7);
+    __m512 acc = _mm512_setzero_ps();
+    const __m512 v_one = _mm512_set1_ps(1.0f);
+    const __m512 v_cb = _mm512_set1_ps(cb);
+    const __m512 v_sign_weight =
+            _mm512_set1_ps(static_cast<float>(1u << ExBits));
+    const __m512i shifts = _mm512_setr_epi64(
+            0,
+            ExBits,
+            2 * ExBits,
+            3 * ExBits,
+            4 * ExBits,
+            5 * ExBits,
+            6 * ExBits,
+            7 * ExBits);
+    const __m512i value_mask = _mm512_set1_epi64((1u << ExBits) - 1);
+
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const uint8_t* block = ex_code + (i / 8) * ExBits;
+        const __m256i lo =
+                unpack_packed_8_avx512<ExBits>(block, shifts, value_mask);
+        const __m256i hi = unpack_packed_8_avx512<ExBits>(
+                block + ExBits, shifts, value_mask);
+        const __m512i values =
+                _mm512_inserti64x4(_mm512_castsi256_si512(lo), hi, 1);
+        const __m512 extra_values = _mm512_cvtepi32_ps(values);
+
+        uint16_t sign_plane = 0;
+        memcpy(&sign_plane, sign_bits + i / 8, sizeof(sign_plane));
+        const __m512 sign_values = _mm512_mul_ps(
+                _mm512_maskz_mov_ps(_cvtu32_mask16(sign_plane), v_one),
+                v_sign_weight);
+        const __m512 reconstruction =
+                _mm512_add_ps(_mm512_add_ps(extra_values, sign_values), v_cb);
+        acc = _mm512_fmadd_ps(
+                _mm512_loadu_ps(rotated_q + i), reconstruction, acc);
+    }
+
+    return _mm512_reduce_add_ps(acc) +
+            ip_scalar(sign_bits, ex_code, rotated_q, i, d, ExBits, cb);
+}
+
+template <size_t ExBits>
+inline void ip_packed_16_batch_4_avx512(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb,
+        float out[4]) {
+    static_assert(ExBits >= 5 && ExBits <= 7);
+    __m512 acc0 = _mm512_setzero_ps();
+    __m512 acc1 = _mm512_setzero_ps();
+    __m512 acc2 = _mm512_setzero_ps();
+    __m512 acc3 = _mm512_setzero_ps();
+    const __m512 v_one = _mm512_set1_ps(1.0f);
+    const __m512 v_cb = _mm512_set1_ps(cb);
+    const __m512 v_sign_weight =
+            _mm512_set1_ps(static_cast<float>(1u << ExBits));
+    const __m512i shifts = _mm512_setr_epi64(
+            0,
+            ExBits,
+            2 * ExBits,
+            3 * ExBits,
+            4 * ExBits,
+            5 * ExBits,
+            6 * ExBits,
+            7 * ExBits);
+    const __m512i value_mask = _mm512_set1_epi64((1u << ExBits) - 1);
+
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const __m512 query = _mm512_loadu_ps(rotated_q + i);
+
+        auto reconstruct = [&](size_t code_index) {
+            const uint8_t* block = ex_codes[code_index] + (i / 8) * ExBits;
+            const __m256i lo =
+                    unpack_packed_8_avx512<ExBits>(block, shifts, value_mask);
+            const __m256i hi = unpack_packed_8_avx512<ExBits>(
+                    block + ExBits, shifts, value_mask);
+            const __m512i values =
+                    _mm512_inserti64x4(_mm512_castsi256_si512(lo), hi, 1);
+            const __m512 extra_values = _mm512_cvtepi32_ps(values);
+
+            uint16_t sign_plane = 0;
+            memcpy(&sign_plane,
+                   sign_bits[code_index] + i / 8,
+                   sizeof(sign_plane));
+            const __m512 sign_values = _mm512_mul_ps(
+                    _mm512_maskz_mov_ps(_cvtu32_mask16(sign_plane), v_one),
+                    v_sign_weight);
+            return _mm512_add_ps(
+                    _mm512_add_ps(extra_values, sign_values), v_cb);
+        };
+
+        acc0 = _mm512_fmadd_ps(query, reconstruct(0), acc0);
+        acc1 = _mm512_fmadd_ps(query, reconstruct(1), acc1);
+        acc2 = _mm512_fmadd_ps(query, reconstruct(2), acc2);
+        acc3 = _mm512_fmadd_ps(query, reconstruct(3), acc3);
+    }
+
+    out[0] = _mm512_reduce_add_ps(acc0) +
+            ip_scalar(sign_bits[0], ex_codes[0], rotated_q, i, d, ExBits, cb);
+    out[1] = _mm512_reduce_add_ps(acc1) +
+            ip_scalar(sign_bits[1], ex_codes[1], rotated_q, i, d, ExBits, cb);
+    out[2] = _mm512_reduce_add_ps(acc2) +
+            ip_scalar(sign_bits[2], ex_codes[2], rotated_q, i, d, ExBits, cb);
+    out[3] = _mm512_reduce_add_ps(acc3) +
+            ip_scalar(sign_bits[3], ex_codes[3], rotated_q, i, d, ExBits, cb);
+}
+
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+FAISS_RABITQ_TARGET_BMI2 inline float ip_bitplane_avx512(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
         const float* __restrict rotated_q,
@@ -669,75 +1578,122 @@ inline float ip_bitplane_avx512(
         size_t ex_bits,
         float cb) {
     __m512 acc = _mm512_setzero_ps();
+    const __m512 v_one = _mm512_set1_ps(1.0f);
     const __m512 v_cb = _mm512_set1_ps(cb);
+    const __m512 v_sign_weight =
+            _mm512_set1_ps(static_cast<float>(1u << ex_bits));
 
-    uint64_t pext_masks[7];
-    __m512 v_weights[8];
+    uint64_t pext_masks[4];
+    __m512 v_weights[4];
     for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
+        uint64_t mask = 0;
+        for (int j = 0; j < 16; j++) {
+            mask |= (1ULL << (j * ex_bits + b));
         }
-        pext_masks[b] = m;
+        pext_masks[b] = mask;
         v_weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
     }
-    v_weights[ex_bits] = _mm512_set1_ps(static_cast<float>(1u << ex_bits));
 
     size_t i = 0;
     for (; i + 16 <= d; i += 16) {
-        uint16_t sb = 0;
-        memcpy(&sb, sign_bits + (i / 8), sizeof(uint16_t));
-        __m512 recon = _mm512_maskz_mov_ps(
-                static_cast<__mmask16>(sb), v_weights[ex_bits]);
+        uint16_t sign_plane = 0;
+        memcpy(&sign_plane, sign_bits + i / 8, sizeof(sign_plane));
+        __m512 reconstruction = _mm512_mul_ps(
+                _mm512_maskz_mov_ps(_cvtu32_mask16(sign_plane), v_one),
+                v_sign_weight);
 
-        uint64_t lo64 = 0;
-        uint64_t hi64 = 0;
-        memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
-        memcpy(&hi64, ex_code + ((i / 8) + 1) * ex_bits, sizeof(uint64_t));
-
+        uint64_t extra_bits = 0;
+        memcpy(&extra_bits, ex_code + (i / 8) * ex_bits, sizeof(extra_bits));
         for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b])) |
-                    (static_cast<uint32_t>(_pext_u64(hi64, pext_masks[b]))
-                     << 8);
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
+            const uint16_t plane =
+                    static_cast<uint16_t>(_pext_u64(extra_bits, pext_masks[b]));
+            const __m512 plane_values =
+                    _mm512_maskz_mov_ps(_cvtu32_mask16(plane), v_one);
+            reconstruction =
+                    _mm512_fmadd_ps(plane_values, v_weights[b], reconstruction);
         }
 
-        __m512 rq = _mm512_loadu_ps(rotated_q + i);
-        acc = _mm512_fmadd_ps(rq, _mm512_add_ps(recon, v_cb), acc);
-    }
-
-    // Half-width step: keeps the scalar tail under 8 dims when d is a multiple
-    // of 8 but not of 16 (e.g. 200, 1000). The upper 8 lanes are masked off
-    // throughout, and rotated_q is loaded masked so nothing is read past the
-    // end.
-    if (i + 8 <= d) {
-        const __mmask16 low8 = static_cast<__mmask16>(0x00ff);
-        __m512 recon = _mm512_maskz_mov_ps(
-                static_cast<__mmask16>(sign_bits[i / 8]), v_weights[ex_bits]);
-
-        uint64_t lo64 = 0;
-        memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b]));
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
-
-        __m512 rq = _mm512_maskz_loadu_ps(low8, rotated_q + i);
-        acc = _mm512_fmadd_ps(
-                rq, _mm512_mask_add_ps(recon, low8, recon, v_cb), acc);
-        i += 8;
+        const __m512 query = _mm512_loadu_ps(rotated_q + i);
+        acc = _mm512_fmadd_ps(query, _mm512_add_ps(reconstruction, v_cb), acc);
     }
 
     float result = _mm512_reduce_add_ps(acc);
     result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
     return result;
 }
-#endif // __BMI2__
+
+FAISS_RABITQ_TARGET_BMI2 inline void ip_bitplane_batch_4_avx512(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]) {
+    __m512 acc0 = _mm512_setzero_ps();
+    __m512 acc1 = _mm512_setzero_ps();
+    __m512 acc2 = _mm512_setzero_ps();
+    __m512 acc3 = _mm512_setzero_ps();
+    const __m512 v_one = _mm512_set1_ps(1.0f);
+    const __m512 v_cb = _mm512_set1_ps(cb);
+    const __m512 v_sign_weight =
+            _mm512_set1_ps(static_cast<float>(1u << ex_bits));
+
+    uint64_t pext_masks[4];
+    __m512 v_weights[4];
+    for (size_t b = 0; b < ex_bits; b++) {
+        uint64_t mask = 0;
+        for (int j = 0; j < 16; j++) {
+            mask |= (1ULL << (j * ex_bits + b));
+        }
+        pext_masks[b] = mask;
+        v_weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
+    }
+
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const __m512 query = _mm512_loadu_ps(rotated_q + i);
+
+        auto reconstruct = [&](size_t code_index) FAISS_RABITQ_TARGET_BMI2 {
+            uint16_t sign_plane = 0;
+            memcpy(&sign_plane,
+                   sign_bits[code_index] + i / 8,
+                   sizeof(sign_plane));
+            __m512 reconstruction = _mm512_mul_ps(
+                    _mm512_maskz_mov_ps(_cvtu32_mask16(sign_plane), v_one),
+                    v_sign_weight);
+
+            uint64_t extra_bits = 0;
+            memcpy(&extra_bits,
+                   ex_codes[code_index] + (i / 8) * ex_bits,
+                   sizeof(extra_bits));
+            for (size_t b = 0; b < ex_bits; b++) {
+                const uint16_t plane = static_cast<uint16_t>(
+                        _pext_u64(extra_bits, pext_masks[b]));
+                const __m512 plane_values =
+                        _mm512_maskz_mov_ps(_cvtu32_mask16(plane), v_one);
+                reconstruction = _mm512_fmadd_ps(
+                        plane_values, v_weights[b], reconstruction);
+            }
+            return _mm512_add_ps(reconstruction, v_cb);
+        };
+
+        acc0 = _mm512_fmadd_ps(query, reconstruct(0), acc0);
+        acc1 = _mm512_fmadd_ps(query, reconstruct(1), acc1);
+        acc2 = _mm512_fmadd_ps(query, reconstruct(2), acc2);
+        acc3 = _mm512_fmadd_ps(query, reconstruct(3), acc3);
+    }
+
+    out[0] = _mm512_reduce_add_ps(acc0) +
+            ip_scalar(sign_bits[0], ex_codes[0], rotated_q, i, d, ex_bits, cb);
+    out[1] = _mm512_reduce_add_ps(acc1) +
+            ip_scalar(sign_bits[1], ex_codes[1], rotated_q, i, d, ex_bits, cb);
+    out[2] = _mm512_reduce_add_ps(acc2) +
+            ip_scalar(sign_bits[2], ex_codes[2], rotated_q, i, d, ex_bits, cb);
+    out[3] = _mm512_reduce_add_ps(acc3) +
+            ip_scalar(sign_bits[3], ex_codes[3], rotated_q, i, d, ex_bits, cb);
+}
+#endif
 
 } // namespace
 
@@ -753,14 +1709,74 @@ float compute_inner_product<SIMDLevel::AVX512>(
         return ip_1exbit_avx512(sign_bits, ex_code, rotated_q, d, cb);
     }
 
-#ifdef __BMI2__
-    if (ex_bits <= 7) {
+    switch (ex_bits) {
+        case 5:
+            return ip_packed_16_avx512<5>(sign_bits, ex_code, rotated_q, d, cb);
+        case 6:
+            return ip_packed_16_avx512<6>(sign_bits, ex_code, rotated_q, d, cb);
+        case 7:
+            return ip_packed_16_avx512<7>(sign_bits, ex_code, rotated_q, d, cb);
+        default:
+            break;
+    }
+
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+    if (ex_bits <= 4 && cpu_supports_fast_bmi2()) {
         return ip_bitplane_avx512(
                 sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+    }
+    if (ex_bits <= 7 && cpu_supports_fast_bmi2()) {
+        return ip_bitplane_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
     }
 #endif
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
 }
+
+template <>
+void compute_inner_product_batch_4<SIMDLevel::AVX512>(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]) {
+    switch (ex_bits) {
+        case 5:
+            ip_packed_16_batch_4_avx512<5>(
+                    sign_bits, ex_codes, rotated_q, d, cb, out);
+            return;
+        case 6:
+            ip_packed_16_batch_4_avx512<6>(
+                    sign_bits, ex_codes, rotated_q, d, cb, out);
+            return;
+        case 7:
+            ip_packed_16_batch_4_avx512<7>(
+                    sign_bits, ex_codes, rotated_q, d, cb, out);
+            return;
+        default:
+            break;
+    }
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+    if (ex_bits <= 4 && cpu_supports_fast_bmi2()) {
+        ip_bitplane_batch_4_avx512(
+                sign_bits, ex_codes, rotated_q, d, ex_bits, cb, out);
+        return;
+    }
+    if (ex_bits <= 7 && cpu_supports_fast_bmi2()) {
+        ip_bitplane_batch_4_avx2(
+                sign_bits, ex_codes, rotated_q, d, ex_bits, cb, out);
+        return;
+    }
+#endif
+    for (size_t i = 0; i < 4; i++) {
+        out[i] = compute_inner_product<SIMDLevel::AVX512>(
+                sign_bits[i], ex_codes[i], rotated_q, d, ex_bits, cb);
+    }
+}
+
+#undef FAISS_RABITQ_TARGET_BMI2
+#undef FAISS_RABITQ_HAS_BMI2_TARGET
 
 } // namespace faiss::rabitq::multibit
 

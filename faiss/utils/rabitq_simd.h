@@ -79,6 +79,13 @@ uint64_t bitwise_xor_dot_product(
 template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
 uint64_t popcount(const uint8_t* data, size_t size);
 
+/** Sum float values selected by one packed sign bit per dimension. */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float selected_float_sum(
+        const uint8_t* sign_bits,
+        const float* values,
+        size_t d);
+
 /**
  * Rearrange per-dimension quantized query codes into bit-plane layout.
  *
@@ -226,6 +233,20 @@ inline uint64_t popcount<SIMDLevel::NONE>(const uint8_t* data, size_t size) {
 }
 
 template <>
+inline float selected_float_sum<SIMDLevel::NONE>(
+        const uint8_t* sign_bits,
+        const float* values,
+        size_t d) {
+    float sum = 0.0f;
+    for (size_t i = 0; i < d; i++) {
+        if ((sign_bits[i / 8] >> (i % 8)) & 1) {
+            sum += values[i];
+        }
+    }
+    return sum;
+}
+
+template <>
 inline void rearrange_bit_planes<SIMDLevel::NONE>(
         const uint8_t* rotated_qq,
         size_t d,
@@ -345,6 +366,143 @@ inline void quantize_query_values<SIMDLevel::NONE>(
  *********************************************************/
 namespace faiss::rabitq::multibit {
 
+inline float ip_byte_scalar(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t start,
+        size_t d,
+        float cb) {
+    float result = 0.0f;
+    for (size_t i = start; i < d; i++) {
+        result += query[i] * (static_cast<float>(code[i]) + cb);
+    }
+    return result;
+}
+
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float compute_inner_product_byte(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        float cb);
+
+/** Dot product between an FP32 query and dense packed n-bit scalar codes. */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float compute_inner_product_dense(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        size_t nbits,
+        float cb);
+
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+inline void compute_inner_product_byte_batch_4(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]) {
+    for (size_t i = 0; i < 4; i++) {
+        out[i] = compute_inner_product_byte<SL>(codes[i], query, d, cb);
+    }
+}
+
+template <>
+void compute_inner_product_byte_batch_4<SIMDLevel::AVX2>(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]);
+
+template <>
+void compute_inner_product_byte_batch_4<SIMDLevel::AVX512>(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]);
+
+template <>
+void compute_inner_product_byte_batch_4<SIMDLevel::AVX512_SPR>(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]);
+
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+inline void compute_inner_product_dense_batch_4(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        size_t nbits,
+        float cb,
+        float out[4]) {
+    for (size_t i = 0; i < 4; i++) {
+        out[i] = compute_inner_product_dense<SL>(codes[i], query, d, nbits, cb);
+    }
+}
+
+template <>
+void compute_inner_product_dense_batch_4<SIMDLevel::AVX2>(
+        const uint8_t* const codes[4],
+        const float* query,
+        size_t d,
+        size_t nbits,
+        float cb,
+        float out[4]);
+
+template <>
+void compute_inner_product_dense_batch_4<SIMDLevel::AVX512>(
+        const uint8_t* const codes[4],
+        const float* query,
+        size_t d,
+        size_t nbits,
+        float cb,
+        float out[4]);
+
+template <>
+void compute_inner_product_dense_batch_4<SIMDLevel::AVX512_SPR>(
+        const uint8_t* const codes[4],
+        const float* query,
+        size_t d,
+        size_t nbits,
+        float cb,
+        float out[4]);
+
+template <>
+inline float compute_inner_product_byte<SIMDLevel::NONE>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        float cb) {
+    return ip_byte_scalar(code, query, 0, d, cb);
+}
+
+template <>
+inline float compute_inner_product_dense<SIMDLevel::NONE>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        size_t nbits,
+        float cb) {
+    float result = 0.0f;
+    const uint64_t mask = (uint64_t{1} << nbits) - 1;
+    for (size_t i = 0; i < d; i++) {
+        const size_t bit_pos = i * nbits;
+        const size_t byte_pos = bit_pos / 8;
+        const size_t shift = bit_pos % 8;
+        uint32_t window = code[byte_pos];
+        if (shift + nbits > 8) {
+            window |= uint32_t(code[byte_pos + 1]) << 8;
+        }
+        result +=
+                query[i] * (static_cast<float>((window >> shift) & mask) + cb);
+    }
+    return result;
+}
+
 /// Scalar inner product for multi-bit RaBitQ.
 /// Extracts each code value in O(1) via 64-bit window read + shift + mask.
 /// Also serves as the tail handler for SIMD kernels via the @p start parameter.
@@ -392,6 +550,57 @@ float compute_inner_product(
         size_t d,
         size_t ex_bits,
         float cb);
+
+/** Compute four independent multi-bit inner products against one query.
+ *
+ * HNSW evaluates graph neighbors in groups of four. Keeping the four
+ * accumulators in one dimension loop amortizes query loads and exposes ILP
+ * without requiring the database codes to be contiguous.
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+inline void compute_inner_product_batch_4(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]) {
+    for (size_t i = 0; i < 4; i++) {
+        out[i] = compute_inner_product<SL>(
+                sign_bits[i], ex_codes[i], rotated_q, d, ex_bits, cb);
+    }
+}
+
+template <>
+void compute_inner_product_batch_4<SIMDLevel::AVX2>(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]);
+
+template <>
+void compute_inner_product_batch_4<SIMDLevel::AVX512>(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]);
+
+template <>
+void compute_inner_product_batch_4<SIMDLevel::AVX512_SPR>(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]);
 
 // NONE specialization — pure scalar
 template <>

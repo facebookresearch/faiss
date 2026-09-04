@@ -137,6 +137,14 @@ uint64_t popcount<SIMDLevel::RISCV_RVV>(const uint8_t* data, size_t size) {
     return __riscv_vmv_x_s_u32m1_u32(red);
 }
 
+template <>
+float selected_float_sum<SIMDLevel::RISCV_RVV>(
+        const uint8_t* sign_bits,
+        const float* values,
+        size_t d) {
+    return selected_float_sum<SIMDLevel::NONE>(sign_bits, values, d);
+}
+
 } // namespace faiss::rabitq
 
 namespace faiss::rabitq::multibit {
@@ -185,6 +193,17 @@ compute_inner_product<SIMDLevel::RISCV_RVV>(
     // ex_bits >= 2 needs strided bit-plane extraction (PEXT on x86); RVV has no
     // cheap equivalent without Zvbb, so reuse the scalar kernel.
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
+template <>
+float compute_inner_product_dense<SIMDLevel::RISCV_RVV>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        size_t nbits,
+        float cb) {
+    return compute_inner_product_dense<SIMDLevel::NONE>(
+            code, query, d, nbits, cb);
 }
 
 } // namespace faiss::rabitq::multibit

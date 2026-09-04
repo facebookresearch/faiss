@@ -167,6 +167,11 @@ struct FAISS_API SIMDConfig {
     /// 256-bit kernel.
     static bool avx512_split;
 
+    /// BMI2 PEXT is a fast hardware instruction on Intel and AMD Zen 4+.
+    /// AMD CPUs before Zen 4 advertise BMI2 but execute PEXT very slowly, so
+    /// RaBitQ bit-plane kernels must use their non-BMI2 fallback there.
+    static bool bmi2_fast;
+
     static SIMDLevel auto_detect_simd_level();
 
     /// Whether this faiss build dispatches SIMD at runtime.

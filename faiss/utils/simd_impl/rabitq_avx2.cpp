@@ -438,6 +438,32 @@ uint64_t popcount<SIMDLevel::AVX2>(const uint8_t* data, size_t size) {
 }
 
 template <>
+float selected_float_sum<SIMDLevel::AVX2>(
+        const uint8_t* sign_bits,
+        const float* values,
+        size_t d) {
+    const __m256i bit_positions =
+            _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    __m256 sum = _mm256_setzero_ps();
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256i packed = _mm256_set1_epi32(sign_bits[i / 8]);
+        const __m256i selected = _mm256_cmpeq_epi32(
+                _mm256_and_si256(packed, bit_positions), bit_positions);
+        const __m256 values_i = _mm256_loadu_ps(values + i);
+        sum = _mm256_add_ps(
+                sum, _mm256_and_ps(values_i, _mm256_castsi256_ps(selected)));
+    }
+    alignas(32) float lanes[8];
+    _mm256_store_ps(lanes, sum);
+    float result = lanes[0] + lanes[1] + lanes[2] + lanes[3] + lanes[4] +
+            lanes[5] + lanes[6] + lanes[7];
+    result += selected_float_sum<SIMDLevel::NONE>(
+            sign_bits + i / 8, values + i, d - i);
+    return result;
+}
+
+template <>
 void rearrange_bit_planes<SIMDLevel::AVX2>(
         const uint8_t* rotated_qq,
         size_t d,
@@ -470,6 +496,211 @@ void rearrange_bit_planes<SIMDLevel::AVX2>(
 namespace faiss::rabitq::multibit {
 
 namespace {
+
+template <size_t NBITS>
+inline __m256 dense_decode_8_avx2(const uint8_t* code) {
+    static_assert(NBITS >= 2 && NBITS <= 8);
+    uint64_t packed = 0;
+    memcpy(&packed, code, NBITS);
+    constexpr uint64_t mask = (uint64_t{1} << NBITS) - 1;
+    const __m256i values = _mm256_setr_epi32(
+            (packed >> (0 * NBITS)) & mask,
+            (packed >> (1 * NBITS)) & mask,
+            (packed >> (2 * NBITS)) & mask,
+            (packed >> (3 * NBITS)) & mask,
+            (packed >> (4 * NBITS)) & mask,
+            (packed >> (5 * NBITS)) & mask,
+            (packed >> (6 * NBITS)) & mask,
+            (packed >> (7 * NBITS)) & mask);
+    return _mm256_cvtepi32_ps(values);
+}
+
+template <size_t NBITS>
+float ip_dense_avx2(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        float cb) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256 bias = _mm256_set1_ps(cb);
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 values =
+                dense_decode_8_avx2<NBITS>(code + (i * NBITS) / 8);
+        acc = _mm256_fmadd_ps(
+                _mm256_loadu_ps(query + i), _mm256_add_ps(values, bias), acc);
+    }
+    float lanes[8];
+    _mm256_storeu_ps(lanes, acc);
+    float result = lanes[0] + lanes[1] + lanes[2] + lanes[3] + lanes[4] +
+            lanes[5] + lanes[6] + lanes[7];
+    return result +
+            compute_inner_product_dense<SIMDLevel::NONE>(
+                    code + (i * NBITS) / 8, query + i, d - i, NBITS, cb);
+}
+
+template <size_t NBITS>
+void ip_dense_batch_4_avx2(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]) {
+    __m256 acc[4] = {
+            _mm256_setzero_ps(),
+            _mm256_setzero_ps(),
+            _mm256_setzero_ps(),
+            _mm256_setzero_ps()};
+    const __m256 bias = _mm256_set1_ps(cb);
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 q = _mm256_loadu_ps(query + i);
+        for (size_t j = 0; j < 4; j++) {
+            const __m256 values =
+                    dense_decode_8_avx2<NBITS>(codes[j] + (i * NBITS) / 8);
+            acc[j] = _mm256_fmadd_ps(q, _mm256_add_ps(values, bias), acc[j]);
+        }
+    }
+    for (size_t j = 0; j < 4; j++) {
+        float lanes[8];
+        _mm256_storeu_ps(lanes, acc[j]);
+        out[j] = lanes[0] + lanes[1] + lanes[2] + lanes[3] + lanes[4] +
+                lanes[5] + lanes[6] + lanes[7] +
+                compute_inner_product_dense<SIMDLevel::NONE>(
+                         codes[j] + (i * NBITS) / 8,
+                         query + i,
+                         d - i,
+                         NBITS,
+                         cb);
+    }
+}
+
+} // namespace
+
+template <>
+float compute_inner_product_dense<SIMDLevel::AVX2>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        size_t nbits,
+        float cb) {
+#define FAISS_RABITQ_DENSE_CASE(N) \
+    case N:                        \
+        return ip_dense_avx2<N>(code, query, d, cb)
+    switch (nbits) {
+        FAISS_RABITQ_DENSE_CASE(2);
+        FAISS_RABITQ_DENSE_CASE(3);
+        FAISS_RABITQ_DENSE_CASE(4);
+        FAISS_RABITQ_DENSE_CASE(5);
+        FAISS_RABITQ_DENSE_CASE(6);
+        FAISS_RABITQ_DENSE_CASE(7);
+        FAISS_RABITQ_DENSE_CASE(8);
+        default:
+            return compute_inner_product_dense<SIMDLevel::NONE>(
+                    code, query, d, nbits, cb);
+    }
+#undef FAISS_RABITQ_DENSE_CASE
+}
+
+template <>
+void compute_inner_product_dense_batch_4<SIMDLevel::AVX2>(
+        const uint8_t* const codes[4],
+        const float* query,
+        size_t d,
+        size_t nbits,
+        float cb,
+        float out[4]) {
+#define FAISS_RABITQ_DENSE_CASE(N) \
+    case N:                        \
+        return ip_dense_batch_4_avx2<N>(codes, query, d, cb, out)
+    switch (nbits) {
+        FAISS_RABITQ_DENSE_CASE(2);
+        FAISS_RABITQ_DENSE_CASE(3);
+        FAISS_RABITQ_DENSE_CASE(4);
+        FAISS_RABITQ_DENSE_CASE(5);
+        FAISS_RABITQ_DENSE_CASE(6);
+        FAISS_RABITQ_DENSE_CASE(7);
+        FAISS_RABITQ_DENSE_CASE(8);
+        default:
+            for (size_t i = 0; i < 4; i++) {
+                out[i] = compute_inner_product_dense<SIMDLevel::NONE>(
+                        codes[i], query, d, nbits, cb);
+            }
+    }
+#undef FAISS_RABITQ_DENSE_CASE
+}
+
+template <>
+float compute_inner_product_byte<SIMDLevel::AVX2>(
+        const uint8_t* __restrict code,
+        const float* __restrict query,
+        size_t d,
+        float cb) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256 bias = _mm256_set1_ps(cb);
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m128i bytes =
+                _mm_loadl_epi64(reinterpret_cast<const __m128i*>(code + i));
+        const __m256 values = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes));
+        acc = _mm256_fmadd_ps(
+                _mm256_loadu_ps(query + i), _mm256_add_ps(values, bias), acc);
+    }
+    float lanes[8];
+    _mm256_storeu_ps(lanes, acc);
+    float result = lanes[0] + lanes[1] + lanes[2] + lanes[3] + lanes[4] +
+            lanes[5] + lanes[6] + lanes[7];
+    return result + ip_byte_scalar(code, query, i, d, cb);
+}
+
+template <>
+void compute_inner_product_byte_batch_4<SIMDLevel::AVX2>(
+        const uint8_t* const codes[4],
+        const float* __restrict query,
+        size_t d,
+        float cb,
+        float out[4]) {
+    __m256 acc[4] = {
+            _mm256_setzero_ps(),
+            _mm256_setzero_ps(),
+            _mm256_setzero_ps(),
+            _mm256_setzero_ps()};
+    const __m256 bias = _mm256_set1_ps(cb);
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 q = _mm256_loadu_ps(query + i);
+        for (size_t j = 0; j < 4; j++) {
+            const __m128i bytes = _mm_loadl_epi64(
+                    reinterpret_cast<const __m128i*>(codes[j] + i));
+            const __m256 values =
+                    _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes));
+            acc[j] = _mm256_fmadd_ps(q, _mm256_add_ps(values, bias), acc[j]);
+        }
+    }
+    for (size_t j = 0; j < 4; j++) {
+        float lanes[8];
+        _mm256_storeu_ps(lanes, acc[j]);
+        out[j] = lanes[0] + lanes[1] + lanes[2] + lanes[3] + lanes[4] +
+                lanes[5] + lanes[6] + lanes[7] +
+                ip_byte_scalar(codes[j], query, i, d, cb);
+    }
+}
+
+namespace {
+
+#if (defined(__GNUC__) || defined(__clang__)) && \
+        (defined(__x86_64__) || defined(__i386__))
+#define FAISS_RABITQ_HAS_BMI2_TARGET 1
+#define FAISS_RABITQ_TARGET_BMI2 __attribute__((target("bmi2")))
+
+inline bool cpu_supports_fast_bmi2() {
+    static const bool supported = __builtin_cpu_supports("bmi2");
+    return supported && SIMDConfig::bmi2_fast;
+}
+#else
+#define FAISS_RABITQ_HAS_BMI2_TARGET 0
+#define FAISS_RABITQ_TARGET_BMI2
+#endif
 
 inline float hsum_avx2(__m256 v) {
     __m128 hi = _mm256_extractf128_ps(v, 1);
@@ -517,8 +748,8 @@ inline float ip_1exbit_avx2(
     return result;
 }
 
-#ifdef __BMI2__
-inline float ip_bitplane_avx2(
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+FAISS_RABITQ_TARGET_BMI2 inline float ip_bitplane_avx2(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
         const float* __restrict rotated_q,
@@ -571,7 +802,84 @@ inline float ip_bitplane_avx2(
     result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
     return result;
 }
-#endif // __BMI2__
+
+FAISS_RABITQ_TARGET_BMI2 inline void ip_bitplane_batch_4_avx2(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]) {
+    __m256 acc0 = _mm256_setzero_ps();
+    __m256 acc1 = _mm256_setzero_ps();
+    __m256 acc2 = _mm256_setzero_ps();
+    __m256 acc3 = _mm256_setzero_ps();
+    const __m256 v_one = _mm256_set1_ps(1.0f);
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+
+    uint64_t pext_masks[7];
+    __m256 v_weights[8];
+    for (size_t b = 0; b < ex_bits; b++) {
+        uint64_t mask = 0;
+        for (int j = 0; j < 8; j++) {
+            mask |= (1ULL << (b + j * ex_bits));
+        }
+        pext_masks[b] = mask;
+        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+    }
+    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const __m256 query = _mm256_loadu_ps(rotated_q + i);
+
+        auto reconstruct = [&](size_t code_index) FAISS_RABITQ_TARGET_BMI2 {
+            const __m256i sign_cmp = _mm256_cmpgt_epi32(
+                    _mm256_and_si256(
+                            _mm256_set1_epi32(sign_bits[code_index][i / 8]),
+                            bit_pos),
+                    zero);
+            __m256 reconstruction = _mm256_mul_ps(
+                    _mm256_and_ps(_mm256_castsi256_ps(sign_cmp), v_one),
+                    v_weights[ex_bits]);
+
+            uint64_t extra_bits = 0;
+            memcpy(&extra_bits,
+                   ex_codes[code_index] + (i / 8) * ex_bits,
+                   sizeof(extra_bits));
+            for (size_t b = 0; b < ex_bits; b++) {
+                const auto plane = static_cast<uint8_t>(
+                        _pext_u64(extra_bits, pext_masks[b]));
+                const __m256i plane_cmp = _mm256_cmpgt_epi32(
+                        _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos),
+                        zero);
+                const __m256 plane_values =
+                        _mm256_and_ps(_mm256_castsi256_ps(plane_cmp), v_one);
+                reconstruction = _mm256_fmadd_ps(
+                        plane_values, v_weights[b], reconstruction);
+            }
+            return _mm256_add_ps(reconstruction, v_cb);
+        };
+
+        acc0 = _mm256_fmadd_ps(query, reconstruct(0), acc0);
+        acc1 = _mm256_fmadd_ps(query, reconstruct(1), acc1);
+        acc2 = _mm256_fmadd_ps(query, reconstruct(2), acc2);
+        acc3 = _mm256_fmadd_ps(query, reconstruct(3), acc3);
+    }
+
+    out[0] = hsum_avx2(acc0) +
+            ip_scalar(sign_bits[0], ex_codes[0], rotated_q, i, d, ex_bits, cb);
+    out[1] = hsum_avx2(acc1) +
+            ip_scalar(sign_bits[1], ex_codes[1], rotated_q, i, d, ex_bits, cb);
+    out[2] = hsum_avx2(acc2) +
+            ip_scalar(sign_bits[2], ex_codes[2], rotated_q, i, d, ex_bits, cb);
+    out[3] = hsum_avx2(acc3) +
+            ip_scalar(sign_bits[3], ex_codes[3], rotated_q, i, d, ex_bits, cb);
+}
+#endif
 
 } // namespace
 
@@ -587,13 +895,38 @@ float compute_inner_product<SIMDLevel::AVX2>(
         return ip_1exbit_avx2(sign_bits, ex_code, rotated_q, d, cb);
     }
 
-#ifdef __BMI2__
-    if (ex_bits <= 7) {
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+    if (ex_bits <= 7 && cpu_supports_fast_bmi2()) {
         return ip_bitplane_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
     }
 #endif
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
 }
+
+template <>
+void compute_inner_product_batch_4<SIMDLevel::AVX2>(
+        const uint8_t* const sign_bits[4],
+        const uint8_t* const ex_codes[4],
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float out[4]) {
+#if FAISS_RABITQ_HAS_BMI2_TARGET
+    if (ex_bits <= 7 && cpu_supports_fast_bmi2()) {
+        ip_bitplane_batch_4_avx2(
+                sign_bits, ex_codes, rotated_q, d, ex_bits, cb, out);
+        return;
+    }
+#endif
+    for (size_t i = 0; i < 4; i++) {
+        out[i] = compute_inner_product<SIMDLevel::AVX2>(
+                sign_bits[i], ex_codes[i], rotated_q, d, ex_bits, cb);
+    }
+}
+
+#undef FAISS_RABITQ_TARGET_BMI2
+#undef FAISS_RABITQ_HAS_BMI2_TARGET
 
 } // namespace faiss::rabitq::multibit
 
