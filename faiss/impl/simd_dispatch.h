@@ -32,24 +32,29 @@ constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
 
-// A0: same + AVX512 + RISCV_RVV
-constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+// BASE: the default mask. Same as AVX2_NEON + AVX512 + RISCV_RVV, i.e.
+// NONE + AVX2 + AVX512 + ARM_NEON + RISCV_RVV. ARM_NEON is part of BASE:
+// NEON is mandatory on aarch64 (the ARM baseline, like AVX2 on x86) while
+// ARM_SVE is optional, so the ARM fallback chain is SVE -> NEON -> NONE.
+constexpr int AVAILABLE_SIMD_LEVELS_BASE = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
         (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
 
-// A0_SPR: same as A0 + AVX512_SPR (for functions with a dedicated SPR
+// BASE_WITH_SPR: BASE + AVX512_SPR (for functions with a dedicated SPR
 // specialization on top of an AVX512 fallback). Currently used by the
 // RaBitQ popcount kernels, which use VPOPCNTDQ on SPR+.
-constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
-        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::AVX512_SPR));
+constexpr int AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR =
+        AVAILABLE_SIMD_LEVELS_BASE | (1 << int(SIMDLevel::AVX512_SPR));
 
-// A1: same + ARM_SVE (for functions with dedicated SVE implementations)
-constexpr int AVAILABLE_SIMD_LEVELS_A1 =
-        AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::ARM_SVE));
-
-// A2: NONE + AVX2 + ARM_SVE only (for functions with only these
+// BASE_WITH_SVE: BASE + ARM_SVE (for functions with dedicated SVE
 // implementations)
-constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_SVE));
+constexpr int AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE =
+        AVAILABLE_SIMD_LEVELS_BASE | (1 << int(SIMDLevel::ARM_SVE));
+
+// BASE_WITH_SPR_AND_SVE: BASE + AVX512_SPR + ARM_SVE (for functions with both
+// a dedicated SPR specialization and a dedicated SVE specialization).
+constexpr int AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR_AND_SVE =
+        AVAILABLE_SIMD_LEVELS_BASE | (1 << int(SIMDLevel::AVX512_SPR)) |
+        (1 << int(SIMDLevel::ARM_SVE));
 
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
@@ -224,7 +229,7 @@ inline auto with_simd_level_fallback(const LambdaType& action) {
  */
 template <typename LambdaType>
 inline auto with_simd_level(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>(
             std::forward<LambdaType>(action));
 }
 
@@ -239,24 +244,35 @@ inline auto with_simd_level_256bit(LambdaType&& action) {
 }
 
 /**
- * Use for functions that have A0-level implementations plus a dedicated
- * ARM_SVE specialization. Plain with_simd_level() uses A0, which omits the
+ * Use for functions that have BASE-level implementations plus a dedicated
+ * ARM_SVE specialization. Plain with_simd_level() uses BASE, which omits the
  * ARM_SVE bit, so on an SVE host the ARM_SVE case falls through to ARM_NEON
  * and the SVE specialization is never instantiated.
  */
 template <typename LambdaType>
-inline auto with_simd_level_a1(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+inline auto with_simd_level_with_sve(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE>(
             std::forward<LambdaType>(action));
 }
 
 /**
- * Use for functions that have A0-level implementations plus an AVX512_SPR
+ * Use for functions that have BASE-level implementations plus an AVX512_SPR
  * specialization (e.g. using VPOPCNTDQ).
  */
 template <typename LambdaType>
-inline auto with_simd_level_a0_spr(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+inline auto with_simd_level_with_spr(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for functions that have BASE-level implementations plus both an
+ * AVX512_SPR specialization and an ARM_SVE specialization.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_with_spr_and_sve(LambdaType&& action) {
+    return with_selected_simd_levels<
+            AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR_AND_SVE>(
             std::forward<LambdaType>(action));
 }
 

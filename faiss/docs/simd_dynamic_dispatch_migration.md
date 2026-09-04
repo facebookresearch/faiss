@@ -238,8 +238,10 @@ your own with `(1 << int(SIMDLevel::X)) | ...`):
 |------|--------|---------|
 | `AVAILABLE_SIMD_LEVELS_NONE` | NONE only | Scalar-only functions |
 | `AVAILABLE_SIMD_LEVELS_AVX2_NEON` | NONE, AVX2, ARM_NEON | 256-bit `simdlib` ops (`with_simd_level_256bit`) |
-| `AVAILABLE_SIMD_LEVELS_A0` | NONE, AVX2, AVX512, ARM_NEON, RISCV_RVV | Default (`with_simd_level`) |
-| `AVAILABLE_SIMD_LEVELS_A1` | A0 + ARM_SVE | Functions with dedicated SVE implementations |
+| `AVAILABLE_SIMD_LEVELS_BASE` | NONE, AVX2, AVX512, ARM_NEON, RISCV_RVV | Default (`with_simd_level`). ARM_NEON is part of BASE: NEON is mandatory on aarch64, SVE is optional |
+| `AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR` | BASE + AVX512_SPR | Functions with a dedicated SPR specialization (`with_simd_level_with_spr`) |
+| `AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE` | BASE + ARM_SVE | Functions with dedicated SVE implementations (`with_simd_level_with_sve`) |
+| `AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR_AND_SVE` | BASE + AVX512_SPR + ARM_SVE | Functions with both (`with_simd_level_with_spr_and_sve`) |
 | `AVAILABLE_SIMD_LEVELS_ALL` | All levels | Identity / diagnostic functions |
 
 ### Step 4: Register in build system
