@@ -2861,8 +2861,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         idxq->code_size = idxq->rabitq.code_size;
         idx = std::move(idxq);
-    } else if (h == fourcc("Ixrr")) {
-        // Ixrr = multi-bit format (new)
+    } else if (h == fourcc("Ixrr") || h == fourcc("Ixrc")) {
+        // Ixrr = multi-bit format. Ixrc has the same layout and additionally
+        // means `centered`; Ixrq/Ixrr predate that field and leave it off.
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
         read_RaBitQuantizer(
@@ -2876,6 +2877,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxq->qb <= 8,
                 "invalid RaBitQ qb=%d (must be in [0, 8])",
                 idxq->qb);
+        idxq->centered = (h == fourcc("Ixrc"));
 
         idxq->code_size = idxq->rabitq.code_size;
         idx = std::move(idxq);

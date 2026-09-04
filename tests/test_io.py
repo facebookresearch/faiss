@@ -660,6 +660,31 @@ class TestIORoundTrip(unittest.TestCase):
         np.testing.assert_array_equal(Iref, I2)
         np.testing.assert_array_equal(Dref, D2)
 
+    def test_index_rabitq_centered(self):
+        """IndexRaBitQ.centered, which selects a different query-side distance
+        formula and so has to survive IO. Only Ixrc carries it: leaving it
+        unset keeps the legacy fourcc, so existing files stay readable."""
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        for nb_bits, legacy_fourcc in ((1, b"Ixrq"), (4, b"Ixrr")):
+            for centered in (False, True):
+                with self.subTest(nb_bits=nb_bits, centered=centered):
+                    index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
+                    index.train(xt)
+                    index.add(xb)
+                    index.centered = centered
+                    Dref, Iref = index.search(xq, 5)
+
+                    data = faiss.serialize_index(index)
+                    self.assertEqual(
+                        bytes(data[:4]),
+                        b"Ixrc" if centered else legacy_fourcc,
+                    )
+                    index2 = faiss.deserialize_index(data)
+                    self.assertEqual(index2.centered, centered)
+                    D2, I2 = index2.search(xq, 5)
+                    np.testing.assert_array_equal(Iref, I2)
+                    np.testing.assert_array_equal(Dref, D2)
+
     def test_vector_transform_pca(self):
         """PCAMatrix VectorTransform with output fidelity check."""
         xt, _, xq = get_dataset_2(d, nt, nb, nq)

@@ -1017,8 +1017,16 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITEVECTOR(idxqfs->codes);
     } else if (
             const IndexRaBitQ* idxq = dynamic_cast<const IndexRaBitQ*>(idx)) {
-        // Use different fourcc codes for 1-bit vs multi-bit
-        if (idxq->rabitq.nb_bits == 1) {
+        // The fourcc encodes both nb_bits and `centered`. Ixrc is emitted only
+        // when `centered` is set, so an index that leaves it at its default
+        // serializes byte-identically to Ixrq/Ixrr and stays readable by
+        // binaries that predate Ixrc.
+        if (idxq->centered) {
+            uint32_t h = fourcc("Ixrc"); // multi-bit + centered
+            WRITE1(h);
+            write_index_header(idx, f);
+            write_RaBitQuantizer(&idxq->rabitq, f, true);
+        } else if (idxq->rabitq.nb_bits == 1) {
             uint32_t h = fourcc("Ixrq"); // 1-bit (backward compatible)
             WRITE1(h);
             write_index_header(idx, f);
