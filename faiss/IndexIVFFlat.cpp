@@ -337,6 +337,9 @@ void IndexIVFFlatDedup::search_preassigned(
 size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
     std::unordered_map<idx_t, idx_t> replace;
     std::vector<std::pair<idx_t, idx_t>> toadd;
+    // Duplicate ids live only in `instances`, not in the inverted lists, so
+    // their removal must be counted separately from inverted-list shrinkage.
+    const size_t n_instances_before = instances.size();
     for (auto it = instances.begin(); it != instances.end();) {
         if (sel.is_member(it->first)) {
             // then we erase this entry
@@ -404,8 +407,16 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
             invlists->resize(i, invlists->list_size(i) - toremove[i]);
         }
     }
-    ntotal -= nremove;
-    return nremove;
+    // `nremove` counts only physically removed inverted-list entries. Removing
+    // a duplicate id (or a stored id replaced by a surviving duplicate) drops
+    // an `instances` entry without shrinking a list, so the net decrease in
+    // `instances` accounts for those logical removals. The invariant
+    // `ntotal == (physical entries) + instances.size()` makes the total number
+    // of removed ids exactly nremove + (instances_before - instances_after).
+    const int64_t total_removed =
+            nremove + int64_t(n_instances_before) - int64_t(instances.size());
+    ntotal -= total_removed;
+    return total_removed;
 }
 
 void IndexIVFFlatDedup::range_search(
