@@ -4763,3 +4763,103 @@ TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
             idmap.search(1, xq.data(), 1, distances.data(), labels.data()));
     EXPECT_EQ(labels[0], -1);
 }
+
+// -----------------------------------------------------------------------
+// A TurboQuant-full ScalarQuantizer carries a fixed-size `trained` vector
+// (2^(bits-1) centroids + boundaries + seed + qjl_type) regardless of d,
+// so `d` is not backed by any serialized payload. Deserialization must
+// not build the d x d QJL projection from it: the quantizers rebuild the
+// projection from `trained` when they are constructed, and doing it at
+// read time lets a few dozen bytes of input drive an arbitrarily large
+// allocation and QR decomposition (T287092602).
+//
+// The two branches (RR: qjl_type = 2, FWHT: qjl_type = 0) share the
+// entire serialized SQ layout; only `trained[9]` differs. Both branches
+// go through this helper so the layout is described in exactly one
+// place, and drift in a future SQ-serialization change updates both
+// tests together.
+// -----------------------------------------------------------------------
+
+// QT_3bit_tq: mse_bits = 2, k = 4 -> trained.size() = 4 + 3 + 3 = 10.
+// d is 4096 while trained is 40 bytes; the projection this used to
+// build is 4096 * 4096 floats = 64 MB.
+static constexpr size_t kTurboQFullD = 4096;
+static constexpr uint64_t kTurboQFullSeed = 0x0123456789abcdefULL;
+
+static std::vector<uint8_t> build_turboq_full_sq_buf(uint8_t qjl_type) {
+    float seed_f[2];
+    ScalarQuantizer::TurboQuantRefine::pack_seed(kTurboQFullSeed, seed_f);
+    std::vector<float> trained(10, 0.0f);
+    trained[7] = seed_f[0];
+    trained[8] = seed_f[1];
+    trained[9] = static_cast<float>(qjl_type);
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/static_cast<int>(kTurboQFullD), /*ntotal=*/0);
+    push_val<int>(buf, ScalarQuantizer::QT_3bit_tq);
+    push_val<int>(buf, 0);               // rangestat
+    push_val<float>(buf, 0.0f);          // rangestat_arg
+    push_val<size_t>(buf, kTurboQFullD); // d
+    push_val<size_t>(buf, 0);            // code_size (recomputed on read)
+    push_vector<float>(buf, trained);
+    push_vector<uint8_t>(buf, {}); // codes (ntotal = 0)
+    return buf;
+}
+
+TEST(ReadIndexDeserialize, SQTurboQuantFullSkipsProjectionOnRead) {
+    constexpr uint8_t kQjlRandomRotation = 2;
+
+    std::vector<uint8_t> buf = build_turboq_full_sq_buf(kQjlRandomRotation);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> index;
+    ASSERT_NO_THROW(index = read_index_up(&reader));
+
+    auto* idxs = dynamic_cast<IndexScalarQuantizer*>(index.get());
+    ASSERT_NE(idxs, nullptr);
+    // The cheap descriptors are still recovered from `trained`...
+    EXPECT_EQ(idxs->sq.d, kTurboQFullD);
+    EXPECT_EQ(idxs->sq.turboq_refine.qjl_type, kQjlRandomRotation);
+    EXPECT_EQ(idxs->sq.turboq_refine.seed, kTurboQFullSeed);
+    // ...but no projection state is materialized.
+    EXPECT_TRUE(idxs->sq.turboq_refine.rr_matrix.empty());
+    EXPECT_TRUE(idxs->sq.turboq_refine.fwht_signs.empty());
+    EXPECT_EQ(idxs->sq.turboq_refine.padded_d, 0);
+}
+
+// Same guarantee for the default FWHT branch (qjl_type = 0). Pre-fix,
+// init_projection on this branch would set `padded_d = 4096` and allocate
+// `fwht_signs.size() == 4096`, so `EXPECT_TRUE(fwht_signs.empty())` and
+// `EXPECT_EQ(padded_d, 0)` become genuinely discriminating here (they are
+// vacuous on the RR branch above, where only `rr_matrix.empty()` guards
+// the regression). MyRocks explicitly pins qjl_type = 0 for reproducible
+// codes (see rdb_vector_db.cc), so this is the more-important branch to
+// cover on the read path.
+TEST(ReadIndexDeserialize, SQTurboQuantFullSkipsProjectionOnReadFWHT) {
+    constexpr uint8_t kQjlFwht = 0;
+
+    std::vector<uint8_t> buf = build_turboq_full_sq_buf(kQjlFwht);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> index;
+    ASSERT_NO_THROW(index = read_index_up(&reader));
+
+    auto* idxs = dynamic_cast<IndexScalarQuantizer*>(index.get());
+    ASSERT_NE(idxs, nullptr);
+    // `d` and `seed` are recovered from `trained` (`seed` discriminates:
+    // the default is 42 and the test uses 0x0123456789abcdef).
+    EXPECT_EQ(idxs->sq.d, kTurboQFullD);
+    EXPECT_EQ(idxs->sq.turboq_refine.seed, kTurboQFullSeed);
+    // qjl_type == 0 is also the field's default and the vector fill value,
+    // so this restates intent rather than guarding it -- the RR test above
+    // pins the read-path assignment. Kept for documentation symmetry.
+    EXPECT_EQ(idxs->sq.turboq_refine.qjl_type, kQjlFwht);
+    // The FWHT-branch projection state is not materialized on read.
+    EXPECT_TRUE(idxs->sq.turboq_refine.fwht_signs.empty());
+    EXPECT_EQ(idxs->sq.turboq_refine.padded_d, 0);
+    // rr_matrix stays empty on this branch either way (RR is the other path).
+    EXPECT_TRUE(idxs->sq.turboq_refine.rr_matrix.empty());
+}
