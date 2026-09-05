@@ -7,7 +7,13 @@
 
 #include <faiss/utils/simd_levels.h>
 
+#include <cstdint>
 #include <cstdlib>
+
+#if defined(_MSC_VER)
+// __cpuidex, _xgetbv
+#include <intrin.h>
+#endif
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -67,42 +73,78 @@ static bool has_sve() {
 }
 #endif
 
+namespace {
+
+#if defined(__x86_64__) || defined(_M_X64)
+
+// MSVC and clang-cl do not support GNU-style
+// 64-bit inline assembly, MSVC defines _M_X64 instead of __x86_64__
+
+#if defined(_MSC_VER)
+
+[[maybe_unused]] void cpuid_count(
+        unsigned int leaf,
+        unsigned int subleaf,
+        unsigned int regs[4]) {
+    int r[4];
+    __cpuidex(r, static_cast<int>(leaf), static_cast<int>(subleaf));
+    for (int i = 0; i < 4; i++) {
+        regs[i] = static_cast<unsigned int>(r[i]);
+    }
+}
+
+[[maybe_unused]] uint64_t xgetbv0() {
+    return static_cast<uint64_t>(_xgetbv(0));
+}
+
+#else // GCC / Clang
+
+[[maybe_unused]] void cpuid_count(
+        unsigned int leaf,
+        unsigned int subleaf,
+        unsigned int regs[4]) {
+    asm volatile("cpuid"
+                 : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
+                 : "a"(leaf), "c"(subleaf));
+}
+
+[[maybe_unused]] uint64_t xgetbv0() {
+    unsigned int eax, edx;
+    asm volatile("xgetbv" : "=a"(eax), "=d"(edx) : "c"(0));
+    return eax | (static_cast<uint64_t>(edx) << 32);
+}
+
+#endif // _MSC_VER
+
 // Detect x86 microarchitecture flags used for kernel routing. Uses raw
 // cpuid so it is safe to run on any CPU regardless of compiled SIMD level.
-#if defined(__x86_64__)
-namespace {
 void detect_x86_uarch_flags() {
-    unsigned int eax, ebx, ecx, edx;
+    unsigned int regs[4];
 
     // Vendor string (CPUID.0): "AuthenticAMD" is EBX="Auth", EDX="enti",
     // ECX="cAMD".
-    eax = 0;
-    ecx = 0;
-    asm volatile("cpuid"
-                 : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-                 : "a"(eax), "c"(ecx));
-    const bool is_amd =
-            ebx == 0x68747541u && edx == 0x69746e65u && ecx == 0x444d4163u;
+    cpuid_count(0, 0, regs);
+    const bool is_amd = regs[1] == 0x68747541u && regs[3] == 0x69746e65u &&
+            regs[2] == 0x444d4163u;
 
     // Family/model (CPUID.1 EAX).
-    eax = 1;
-    ecx = 0;
-    asm volatile("cpuid"
-                 : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-                 : "a"(eax), "c"(ecx));
-    const unsigned int base_family = (eax >> 8) & 0xfu;
+    cpuid_count(1, 0, regs);
+    const unsigned int eax1 = regs[0];
+    const unsigned int base_family = (eax1 >> 8) & 0xfu;
     const unsigned int display_family =
-            base_family + (base_family == 0xfu ? ((eax >> 20) & 0xffu) : 0u);
+            base_family + (base_family == 0xfu ? ((eax1 >> 20) & 0xffu) : 0u);
     // AMD Zen 4 / Zen 4c (Bergamo) is family 0x19 and splits AVX-512.
     // (Zen 5, family 0x1A, has a native 512-bit datapath and is excluded.)
     SIMDConfig::avx512_split = is_amd && display_family == 0x19u;
 }
-} // namespace
-#else
-namespace {
+
+#else // Not x86-64
+
 void detect_x86_uarch_flags() {}
+
+#endif // defined(__x86_64__) || defined(_M_X64)
+
 } // namespace
-#endif
 
 #ifdef FAISS_ENABLE_DD
 
@@ -154,58 +196,51 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 
     detect_x86_uarch_flags();
 
-#if defined(__x86_64__) && \
+#if (defined(__x86_64__) || defined(_M_X64)) && \
         (defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_AVX512))
-    unsigned int eax, ebx, ecx, edx;
+    unsigned int regs[4];
 
-    eax = 1;
-    ecx = 0;
-    asm volatile("cpuid"
-                 : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-                 : "a"(eax), "c"(ecx));
+    cpuid_count(1, 0, regs);
+    unsigned int ecx1 = regs[2];
 
-    bool has_avx = (ecx & (1 << 28)) != 0;
+    bool has_avx = (ecx1 & (1 << 28)) != 0;
 
     bool has_xsave_osxsave =
-            (ecx & ((1 << 26) | (1 << 27))) == ((1 << 26) | (1 << 27));
+            (ecx1 & ((1 << 26) | (1 << 27))) == ((1 << 26) | (1 << 27));
 
     bool avx_supported = false;
     if (has_avx && has_xsave_osxsave) {
-        unsigned int xcr0;
-        asm volatile("xgetbv" : "=a"(xcr0), "=d"(edx) : "c"(0));
-        avx_supported = (xcr0 & 6) == 6;
+        avx_supported = (xgetbv0() & 6) == 6;
     }
 
     if (avx_supported) {
-        eax = 7;
-        ecx = 0;
-        asm volatile("cpuid"
-                     : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-                     : "a"(eax), "c"(ecx));
-        // Save feature bits before xgetbv clobbers EDX.
-        unsigned int cpuid7_edx = edx;
-        [[maybe_unused]] bool has_avx512_vnni = (ecx & (1 << 11)) != 0;
-        [[maybe_unused]] bool has_avx512_vpopcntdq = (ecx & (1 << 14)) != 0;
+        cpuid_count(7, 0, regs);
+        unsigned int ebx7 = regs[1];
+        // EDX of CPUID leaf 7 subleaf 0 carries AVX512_FP16 (bit 23),
+        // needed for the SPR detection below. Kept in a local so a later
+        // xgetbv cannot clobber it.
+        unsigned int cpuid7_edx = regs[3];
+        [[maybe_unused]] bool has_avx512_vnni = (ecx1 & (1 << 11)) != 0;
+        [[maybe_unused]] bool has_avx512_vpopcntdq = (ecx1 & (1 << 14)) != 0;
 
-        unsigned int xcr0;
-        asm volatile("xgetbv" : "=a"(xcr0), "=d"(edx) : "c"(0));
+        uint64_t xcr0 = xgetbv0();
 
 #if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_AVX512)
-        bool has_avx2 = (ebx & (1 << 5)) != 0;
+        bool has_avx2 = (ebx7 & (1 << 5)) != 0;
         if (has_avx2) {
             supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::AVX2));
             detected_level = SIMDLevel::AVX2;
         }
 
 #if defined(COMPILE_SIMD_AVX512)
-        bool cpu_has_avx512f = (ebx & (1 << 16)) != 0;
+        bool cpu_has_avx512f = (ebx7 & (1 << 16)) != 0;
         bool os_supports_avx512 = (xcr0 & 0xE0) == 0xE0;
         bool has_avx512f = cpu_has_avx512f && os_supports_avx512;
         if (has_avx512f) {
-            bool has_avx512cd = (ebx & (1 << 28)) != 0;
-            bool has_avx512vl = (ebx & (1 << 31)) != 0;
-            bool has_avx512dq = (ebx & (1 << 17)) != 0;
-            bool has_avx512bw = (ebx & (1 << 30)) != 0;
+            bool has_avx512cd = (ebx7 & (1 << 28)) != 0;
+            bool has_avx512vl = (ebx7 & (1 << 31)) != 0;
+            bool has_avx512dq = (ebx7 & (1 << 17)) != 0;
+            bool has_avx512bw = (ebx7 & (1 << 30)) != 0;
             if (has_avx512bw && has_avx512cd && has_avx512vl && has_avx512dq) {
                 detected_level = SIMDLevel::AVX512;
                 supported_simd_levels |=
@@ -229,13 +264,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                 // CPUID EAX=7, ECX=0: EDX bit 23 = AVX512_FP16
                 // (Linux: X86_FEATURE_AVX512_FP16 = 18*32+23)
                 bool has_avx512_fp16 = (cpuid7_edx & (1 << 23)) != 0;
-                unsigned int eax1, ebx1, ecx1, edx1;
-                eax1 = 7;
-                ecx1 = 1;
-                asm volatile("cpuid"
-                             : "=a"(eax1), "=b"(ebx1), "=c"(ecx1), "=d"(edx1)
-                             : "a"(eax1), "c"(ecx1));
-                bool has_avx512_bf16 = (eax1 & (1 << 5)) != 0;
+                cpuid_count(7, 1, regs);
+                const bool has_avx512_bf16 = (regs[0] & (1 << 5)) != 0;
                 if (has_avx512_vnni && has_avx512_vpopcntdq &&
                     has_avx512_bf16 && has_avx512_fp16) {
                     detected_level = SIMDLevel::AVX512_SPR;
@@ -248,7 +278,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #endif // defined(COMPILE_SIMD_AVX512)
 #endif // defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_AVX512)
     }
-#endif // defined(__x86_64__) && ...
+#endif // defined(__x86_64__) || defined(_M_X64)
 
 #ifdef COMPILE_SIMD_ARM_NEON
     // ARM NEON is standard on aarch64

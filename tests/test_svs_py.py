@@ -265,6 +265,63 @@ class TestSVSAdapter(unittest.TestCase):
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSStoreVectors(unittest.TestCase):
+    """Test the store_vectors opt-out for the fp32 reconstruct() copy"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.d = 32
+        cls.nb = 500
+        cls.nq = 10
+        np.random.seed(1234)
+        cls.xb = np.random.random((cls.nb, cls.d)).astype("float32")
+        cls.xq = np.random.random((cls.nq, cls.d)).astype("float32")
+
+    def test_stores_vectors_by_default(self):
+        index = faiss.IndexSVSVamana(self.d, 64)
+        self.assertTrue(index.store_vectors)
+        index.add(self.xb)
+        self.assertEqual(index.stored_vectors.size(), self.nb * self.d)
+        np.testing.assert_array_equal(index.reconstruct(0), self.xb[0])
+
+    def test_store_vectors_disabled_in_constructor(self):
+        index = faiss.IndexSVSVamana(
+            self.d, 64, faiss.METRIC_L2, faiss.SVS_FP32, False, False
+        )
+        self.assertFalse(index.store_vectors)
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+        self.assertEqual(index.stored_vectors.size(), 0)
+        with self.assertRaises(RuntimeError):
+            index.reconstruct(0)
+
+    def test_store_vectors_disabled_by_attribute(self):
+        """Search must be unaffected by dropping the fp32 copy"""
+        reference = faiss.IndexSVSVamana(self.d, 64)
+        reference.add(self.xb)
+        _, I_ref = reference.search(self.xq, 4)
+
+        index = faiss.IndexSVSVamana(self.d, 64)
+        index.store_vectors = False
+        index.add(self.xb)
+        self.assertEqual(index.stored_vectors.size(), 0)
+
+        _, I = index.search(self.xq, 4)
+        np.testing.assert_array_equal(I_ref, I)
+
+    def test_store_vectors_disabled_survives_serialization(self):
+        index = faiss.IndexSVSVamana(self.d, 64)
+        index.store_vectors = False
+        index.add(self.xb)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertEqual(loaded.ntotal, self.nb)
+        self.assertEqual(loaded.stored_vectors.size(), 0)
+        with self.assertRaises(RuntimeError):
+            loaded.reconstruct(0)
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSFactory(unittest.TestCase):
     """Test that SVS factory works correctly"""
 

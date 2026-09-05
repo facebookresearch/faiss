@@ -513,6 +513,44 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
     }
 }
 
+void HadamardRotation::reverse_transform(idx_t n, const float* xt, float* x)
+        const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(
+            d_in == d_out,
+            "HadamardRotation inverse requires equal input/output dimensions");
+
+    const size_t p = d_out;
+    // Reverse of apply_noalloc: three unnormalized FWHT rounds scale norms
+    // by (sqrt(p))^3 = p*sqrt(p); the forward pass cancels this with
+    // total_scale = 1/(p*sqrt(p)), so the inverse applies the same factor.
+    const float inverse_scale = 1.0f / (p * std::sqrt(static_cast<float>(p)));
+
+#pragma omp parallel for schedule(dynamic)
+    for (idx_t i = 0; i < n; i++) {
+        const float* xi = xt + i * p;
+        float* xo = x + i * p;
+
+        // The inverse reverses the three sign-flip/Hadamard factors.
+        std::memcpy(xo, xi, p * sizeof(float));
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs3[j];
+        }
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs2[j];
+        }
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs1[j] * inverse_scale;
+        }
+    }
+}
+
 void HadamardRotation::check_identical(const VectorTransform& other) const {
     auto* hr = dynamic_cast<const HadamardRotation*>(&other);
     FAISS_THROW_IF_NOT_MSG(hr, "failed to cast to HadamardRotation");
