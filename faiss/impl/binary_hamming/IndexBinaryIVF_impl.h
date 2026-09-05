@@ -117,6 +117,9 @@ void search_knn_hamming_count(
     idx_t nprobe = params ? params->nprobe : ivf->nprobe;
     nprobe = std::min((idx_t)ivf->nlist, nprobe);
     idx_t max_codes = params ? params->max_codes : ivf->max_codes;
+    if (max_codes == 0) {
+        max_codes = std::numeric_limits<idx_t>::max();
+    }
 
     std::vector<HCounterState<HammingComputer>> cs;
     cs.reserve(nx);
