@@ -52,20 +52,46 @@ runs:
       run: |
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
-        echo "$CONDA/bin" >> $GITHUB_PATH
+        : "${CONDA:?setup-miniconda did not export CONDA}"
 
-        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 pytest-timeout gflags=2.2 setuptools
+        # The MI325 runner's conda base cannot be repaired in place: its
+        # conda-meta lists python 3.12.9 and cpython 3.14.6 at once, so
+        # `conda install python=3.12` reports "already installed" while
+        # bin/python is 3.14, and forcing it strands conda's own compiled
+        # plugins. Build in a fresh prefix and leave base alone so conda keeps
+        # running on its own interpreter. ROCm-only; other runners' bases are
+        # fine. $CONDA is the single lever the later steps read, so pointing it
+        # at the new prefix redirects them all.
+        CONDA_HOME="$CONDA"
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          conda create -y -q -p "$CONDA_HOME/envs/faiss" python=3.12
+          CONDA="$CONDA_HOME/envs/faiss"
+          echo "CONDA=$CONDA" >> "$GITHUB_ENV"
+          "$CONDA/bin/python" -c 'import sys; assert sys.version_info[:2] == (3, 12), sys.version'
+        fi
+
+        # Env bin first so a base interpreter cannot shadow the env one, then
+        # base bin to keep `conda` itself resolvable: GITHUB_PATH entries land
+        # on PATH in the order written.
+        echo "$CONDA/bin" >> $GITHUB_PATH
+        if [ "$CONDA" != "$CONDA_HOME" ]; then
+          echo "$CONDA_HOME/bin" >> $GITHUB_PATH
+        fi
+
+        # -p "$CONDA" on every install below: a bare `conda install` targets
+        # whatever env is active, which is base regardless of the above.
+        conda install -y -q -p "$CONDA" python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 pytest-timeout gflags=2.2 setuptools
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q -c conda-forge openblas=0.3.33 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
+          conda install -y -q -p "$CONDA" -c conda-forge openblas=0.3.33 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
         fi
 
         # install base packages for X86_64
         if [ "${{ runner.arch }}" = "X64" ]; then
           # TODO: merge this with ARM64
-          conda install -y -q -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
-          conda install -y -q mkl=2024.2.2 mkl-devel=2024.2.2
+          conda install -y -q -p "$CONDA" -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
+          conda install -y -q -p "$CONDA" mkl=2024.2.2 mkl-devel=2024.2.2
         fi
 
         # no CUDA needed for ROCm so skip this
@@ -86,7 +112,7 @@ runs:
             # an older libnvJitLink.so.13 is left in the env and libcuvs fails to
             # load at import. PyTorch via pip supports cu132, avoiding the
             # conda-forge pytorch-gpu CUDA-12 limit.
-            conda install -y -q \
+            conda install -y -q -p "$CONDA" \
               cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 \
               'libnvjitlink>=13.3,<14' \
               libcublas-dev libcusolver-dev libcusparse-dev \
@@ -95,19 +121,20 @@ runs:
               -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
             conda clean --index-cache 2>/dev/null || true
           else
-            conda install -y -q cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
+            conda install -y -q -p "$CONDA" cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
           fi
         fi
 
         # install SVS runtime for SVS builds
         if [ "${{ inputs.svs }}" = "ON" ]; then
-          conda install -y -q libsvs-runtime=0.4.0 -c conda-forge
+          conda install -y -q -p "$CONDA" libsvs-runtime=0.4.0 -c conda-forge
         fi
 
         # install test packages
         if [ "${{ inputs.rocm }}" = "ON" ]; then
-          : # skip torch install via conda, we need to install via pip to get
-            #  ROCm-enabled version until it's supported in conda by PyTorch
+          # Skip torch install via conda, we need to install via pip to get the
+          # ROCm-enabled version until it's supported in conda by PyTorch.
+          "$CONDA/bin/python" -VV
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
           # PyTorch deprecated its official Anaconda channel (pytorch/pytorch#138506),
           # so we install via pip for CUDA builds. --break-system-packages is needed
@@ -127,7 +154,7 @@ runs:
           fi
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
-          conda install -y -q "pytorch<2.5" -c pytorch
+          conda install -y -q -p "$CONDA" "pytorch<2.5" -c pytorch
         fi
     - name: ROCm - Install dependencies
       if: inputs.rocm == 'ON'
@@ -148,8 +175,9 @@ runs:
         # Get UBUNTU version name
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
-        # Set ROCm version
+        # Exported so the torch wheel step resolves the same release.
         ROCM_VERSION="7.2"
+        echo "ROCM_VERSION=${ROCM_VERSION}" >> "$GITHUB_ENV"
 
         sudo mkdir -p /etc/apt/keyrings
         wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
@@ -169,7 +197,7 @@ runs:
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
-        conda install -y \
+        conda install -y -p "$CONDA" \
           "libblas=3.9.0=35_*" \
           "libcblas=3.9.0=35_*" \
           "liblapack=3.9.0=35_*"
@@ -215,7 +243,7 @@ runs:
       shell: bash
       run: |
         eval "$(conda shell.bash hook)"
-        conda activate
+        conda activate "$CONDA"
         conda list --show-channel-urls
         cmake -B build \
               -DBUILD_TESTING=ON \
@@ -285,39 +313,75 @@ runs:
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
+        set -euo pipefail
         conda list --show-channel-urls
-        conda install -y -q "pip<26"
 
-        # Install AMD's torch wheels built against the exact system ROCm (7.2.0,
-        # from apt/7.2). The PyTorch Foundation whl/rocm7.2 wheels float and bundle
-        # an older ROCr that lacks hsa_amd_memory_get_preferred_copy_engine (ROCr
-        # 1.18.0, added in ROCm 7.0.0), which collides with the system 7.2.0
-        # libamdhip64. Matching both sides to 7.2.0 avoids the dual-runtime
-        # undefined-symbol/segfault failures.
-        BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2"
-        HTML="$(wget -qO- "${BASE}/")"
-        pick() {
-          printf '%s\n' "$HTML" \
-            | grep -oE "$1-[0-9][^\"]*rocm7\.2\.0[^\"]*cp312-cp312-linux_x86_64\.whl" \
-            | sort -V | tail -1
-        }
-        TORCH_WHL="$(pick torch)"
-        TVISION_WHL="$(pick torchvision)"
-        TAUDIO_WHL="$(pick torchaudio)"
-        echo "Selected: ${TORCH_WHL} ${TVISION_WHL} ${TAUDIO_WHL}"
-        if [ -z "${TORCH_WHL}" ] || [ -z "${TVISION_WHL}" ] || [ -z "${TAUDIO_WHL}" ]; then
-          echo "Could not locate +rocm7.2.0 cp312 wheels at ${BASE}" >&2
-          exit 1
+        # `python -m pip` throughout so this pin, not some other pip on PATH,
+        # governs the installs below.
+        conda install -y -q -p "$CONDA" "pip<26" wheel
+
+        # These wheels exist for one CPython ABI only, so bail with the version in
+        # hand rather than letting it read as "no matching distribution".
+        python -c 'import sys; assert sys.version_info[:2] == (3, 12), "need CPython 3.12 for the ROCm wheels, got %s" % sys.version'
+
+        # Install AMD's torch wheels built against the exact system ROCm, from
+        # apt. The PyTorch Foundation wheels float and bundle an older ROCr that
+        # lacks hsa_amd_memory_get_preferred_copy_engine (ROCr 1.18.0, added in
+        # ROCm 7.0.0), which collides with the system libamdhip64. Matching both
+        # sides avoids the dual-runtime undefined-symbol/segfault failures.
+        ROCM_WHEEL_VERSION="${ROCM_VERSION}.0"
+        BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-${ROCM_VERSION}"
+
+        python -m pip --version
+        python -c "import sys, sysconfig; print(sys.version, sysconfig.get_platform())"
+
+        # Treat the directory listing as a flat index so pip matches wheel tags
+        # against the running interpreter. --no-deps avoids pulling
+        # triton/pytorch-triton-rocm (only on AMD's index, not PyPI); torch's
+        # import-time deps are installed explicitly below. --ignore-installed
+        # because this runner is self-hosted: a wrong-ABI torch left by an earlier
+        # run otherwise satisfies the requirement and skips tag matching entirely.
+        if ! python -m pip install --no-deps --ignore-installed --no-index \
+            --find-links "${BASE}/" torch torchvision torchaudio; then
+          # pip builds that reject the unqualified linux_x86_64 tag these wheels
+          # carry see an empty index, so retag: the wheels need a glibc well
+          # below the runner's, only the tag is wrong.
+          echo "Flat-index resolve found no candidate; retagging wheels" >&2
+          PYTAG="$(python -c 'import sys; print("cp%d%d" % sys.version_info[:2])')"
+          ROCM_RE="${ROCM_WHEEL_VERSION//./\\.}"
+          HTML="$(wget -qO- "${BASE}/")"
+          WHEELS=()
+          for pkg in torch torchvision torchaudio; do
+            # `|| true`: no match exits grep 1, which pipefail turns into a bare
+            # abort before the diagnostic below can run.
+            WHL="$(printf '%s\n' "$HTML" \
+              | grep -oE "${pkg}-[0-9][^\"]*rocm${ROCM_RE}[^\"]*${PYTAG}-${PYTAG}-linux_x86_64\.whl" \
+              | sort -V | tail -1 || true)"
+            if [ -z "${WHL}" ]; then
+              echo "Could not locate +rocm${ROCM_WHEEL_VERSION} ${PYTAG} ${pkg} wheel at ${BASE}" >&2
+              exit 1
+            fi
+            echo "Selected: ${WHL}"
+            # The listing percent-encodes the '+'; the URL needs it encoded, the
+            # file on disk must not be.
+            wget -q "${BASE}/${WHL}" -O "${WHL//%2B/+}"
+            WHEELS+=("$(python -m wheel tags --platform-tag manylinux_2_28_x86_64 \
+              --remove "${WHL//%2B/+}")")
+          done
+          python -m pip install --no-deps --ignore-installed "${WHEELS[@]}"
         fi
+        python -m pip install numpy pillow filelock typing-extensions sympy networkx jinja2 fsspec
 
-        # --no-deps avoids pulling triton/pytorch-triton-rocm (only on AMD's index,
-        # not PyPI); install torch's import-time deps explicitly instead.
-        pip3 install --no-deps \
-          "${BASE}/${TORCH_WHL}" "${BASE}/${TVISION_WHL}" "${BASE}/${TAUDIO_WHL}"
-        pip3 install numpy pillow filelock typing-extensions sympy networkx jinja2 fsspec
+        # Check torch resolves to this interpreter's own site-packages before
+        # trusting it: a stale tree left on the self-hosted runner has shadowed
+        # the fresh install before, and a wrong-ABI hit there surfaces as an
+        # unrelated-looking "Failed to load PyTorch C extensions".
+        python -c "import sysconfig, torch; p = sysconfig.get_paths()['purelib']; assert torch.__file__.startswith(p), 'torch loaded from %s, expected under %s' % (torch.__file__, p)"
 
-        # Confirm torch links against ROCm 7.2 (matches the system /opt/rocm-7.2.0).
-        python -c "import torch; print('torch', torch.__version__, 'hip', torch.version.hip)"
+        # A HIP mismatch here is the dual-runtime problem above, much cheaper to
+        # read than the resulting segfault. Kept on one line: an unindented
+        # continuation would terminate this block scalar and break the manifest.
+        python -c "import os, sys, torch; hip = torch.version.hip or ''; want = os.environ['ROCM_VERSION']; print('torch', torch.__version__, 'hip', hip); sys.exit(None if hip.startswith(want) else 'expected a HIP %s build, got %s' % (want, hip))"
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
