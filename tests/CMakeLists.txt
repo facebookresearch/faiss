@@ -93,6 +93,10 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
       )
     endif()
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+    list(APPEND FAISS_TEST_SRC
+      test_rabitq_neon.cpp
+    )
   endif()
 endif()
 
