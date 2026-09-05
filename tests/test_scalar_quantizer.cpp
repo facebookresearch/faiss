@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstring>
@@ -86,6 +87,24 @@ std::vector<faiss::SIMDLevel> available_lloyd_max_simd_levels() {
          {faiss::SIMDLevel::AVX512,
           faiss::SIMDLevel::AVX2,
           faiss::SIMDLevel::ARM_NEON}) {
+        if (faiss::SIMDConfig::is_simd_level_available(level)) {
+            levels.push_back(level);
+        }
+    }
+    return levels;
+}
+
+// SIMD levels with scalar-quantizer kernels that can be checked for parity
+// against the scalar (NONE) path. Unlike dispatch tests, parity tests do not
+// require dimension restrictions, so RISCV_RVV (no alignment constraints)
+// is included here.
+std::vector<faiss::SIMDLevel> available_sq_parity_simd_levels() {
+    std::vector<faiss::SIMDLevel> levels;
+    for (faiss::SIMDLevel level :
+         {faiss::SIMDLevel::AVX512,
+          faiss::SIMDLevel::AVX2,
+          faiss::SIMDLevel::ARM_NEON,
+          faiss::SIMDLevel::RISCV_RVV}) {
         if (faiss::SIMDConfig::is_simd_level_available(level)) {
             levels.push_back(level);
         }
@@ -253,6 +272,156 @@ void check_lloyd_max_distance_path_parity(
                 scalar_scanner->distance_to_code(code),
                 simd_scanner->distance_to_code(code),
                 1e-3);
+    }
+}
+
+// Parity between a SIMD level and the scalar (NONE) path for one quantizer
+// type, metric and dimension. Covers quantizer decoding, the
+// SQDistanceComputer APIs (query_to_code, query_to_codes_batch_4,
+// symmetric_dis) and the inverted-list scanner's distance_to_code.
+void check_sq_distance_path_parity(
+        faiss::SIMDLevel level,
+        faiss::ScalarQuantizer::QuantizerType qtype,
+        faiss::MetricType metric,
+        size_t d) {
+    ScopedSIMDLevel scoped(level);
+    const size_t n = 64;
+    std::vector<float> xb = make_normalized_vectors(n, d);
+    std::vector<float> xq = make_normalized_vectors(1, d);
+
+    faiss::ScalarQuantizer sq(d, qtype);
+    sq.train(n, xb.data());
+
+    std::vector<uint8_t> codes(sq.code_size * n, 0);
+    sq.compute_codes(xb.data(), codes.data(), n);
+
+    // fp16/bf16 codes are raw IEEE bit patterns: arbitrary bytes can decode
+    // to NaN, so only codes produced by compute_codes are checked for those.
+    const bool arbitrary_bytes_ok = qtype != faiss::ScalarQuantizer::QT_fp16 &&
+            qtype != faiss::ScalarQuantizer::QT_bf16;
+
+    std::vector<uint8_t> zero_code(sq.code_size, 0);
+    std::vector<uint8_t> max_code(sq.code_size, 0xff);
+    std::vector<const uint8_t*> query_codes = {
+            codes.data(),
+            codes.data() + sq.code_size,
+            codes.data() + 2 * sq.code_size,
+            codes.data() + 3 * sq.code_size};
+    if (arbitrary_bytes_ok) {
+        query_codes.push_back(zero_code.data());
+        query_codes.push_back(max_code.data());
+    }
+
+    std::unique_ptr<faiss::ScalarQuantizer::SQuantizer> scalar_quant(
+            faiss::scalar_quantizer::sq_select_quantizer<
+                    faiss::SIMDLevel::NONE>(qtype, d, sq.trained));
+    std::unique_ptr<faiss::ScalarQuantizer::SQuantizer> simd_quant(
+            sq.select_quantizer());
+    ASSERT_NE(scalar_quant, nullptr);
+    ASSERT_NE(simd_quant, nullptr);
+
+    for (const uint8_t* code : query_codes) {
+        std::vector<float> ref(d), out(d);
+        scalar_quant->decode_vector(code, ref.data());
+        simd_quant->decode_vector(code, out.data());
+        for (size_t j = 0; j < d; j++) {
+            EXPECT_NEAR(
+                    ref[j], out[j], 1e-5 * std::max(1.0f, std::fabs(ref[j])));
+        }
+    }
+
+    auto expect_distance_near = [](float ref, float out) {
+        EXPECT_NEAR(ref, out, 5e-3 * std::max(1.0f, std::fabs(ref)));
+    };
+
+    std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> scalar_dc(
+            faiss::scalar_quantizer::sq_select_distance_computer<
+                    faiss::SIMDLevel::NONE>(metric, qtype, d, sq.trained));
+    std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> simd_dc(
+            sq.get_distance_computer(metric));
+    ASSERT_NE(scalar_dc, nullptr);
+    ASSERT_NE(simd_dc, nullptr);
+
+    scalar_dc->set_query(xq.data());
+    simd_dc->set_query(xq.data());
+
+    for (const uint8_t* code : query_codes) {
+        expect_distance_near(
+                scalar_dc->query_to_code(code), simd_dc->query_to_code(code));
+    }
+
+    float scalar_dis[4], simd_dis[4];
+    scalar_dc->query_to_codes_batch_4(
+            query_codes[0],
+            query_codes[1],
+            query_codes[2],
+            query_codes[3],
+            scalar_dis[0],
+            scalar_dis[1],
+            scalar_dis[2],
+            scalar_dis[3]);
+    simd_dc->query_to_codes_batch_4(
+            query_codes[0],
+            query_codes[1],
+            query_codes[2],
+            query_codes[3],
+            simd_dis[0],
+            simd_dis[1],
+            simd_dis[2],
+            simd_dis[3]);
+    for (int k = 0; k < 4; k++) {
+        expect_distance_near(scalar_dis[k], simd_dis[k]);
+    }
+
+    std::vector<uint8_t> bundle(4 * sq.code_size, 0);
+    for (int k = 0; k < 4; k++) {
+        std::memcpy(
+                bundle.data() + k * sq.code_size, query_codes[k], sq.code_size);
+    }
+    scalar_dc->codes = bundle.data();
+    scalar_dc->code_size = sq.code_size;
+    simd_dc->codes = bundle.data();
+    simd_dc->code_size = sq.code_size;
+
+    const std::array<std::pair<faiss::idx_t, faiss::idx_t>, 4> pairs = {{
+            {0, 1},
+            {0, 2},
+            {1, 3},
+            {2, 3},
+    }};
+    for (const auto& [lhs, rhs] : pairs) {
+        expect_distance_near(
+                scalar_dc->symmetric_dis(lhs, rhs),
+                simd_dc->symmetric_dis(lhs, rhs));
+    }
+
+    std::unique_ptr<faiss::InvertedListScanner> scalar_scanner(
+            faiss::scalar_quantizer::sq_select_InvertedListScanner<
+                    faiss::SIMDLevel::NONE>(
+                    qtype,
+                    metric,
+                    d,
+                    sq.code_size,
+                    sq.trained,
+                    nullptr,
+                    false,
+                    nullptr,
+                    false));
+    std::unique_ptr<faiss::InvertedListScanner> simd_scanner(
+            sq.select_InvertedListScanner(
+                    metric, nullptr, false, nullptr, false));
+    ASSERT_NE(scalar_scanner, nullptr);
+    ASSERT_NE(simd_scanner, nullptr);
+
+    scalar_scanner->set_query(xq.data());
+    simd_scanner->set_query(xq.data());
+    scalar_scanner->set_list(0, 0.0f);
+    simd_scanner->set_list(0, 0.0f);
+
+    for (const uint8_t* code : query_codes) {
+        expect_distance_near(
+                scalar_scanner->distance_to_code(code),
+                simd_scanner->distance_to_code(code));
     }
 }
 
@@ -652,7 +821,7 @@ TEST(ScalarQuantizer, EDENSimdDispatchSelection) {
 
 TEST(ScalarQuantizer, TQMSESimdDistancePathParity) {
     const std::vector<faiss::SIMDLevel> levels =
-            available_lloyd_max_simd_levels();
+            available_sq_parity_simd_levels();
     if (levels.empty()) {
         GTEST_SKIP() << "No SIMD level available for TurboQuant parity tests";
     }
@@ -674,7 +843,7 @@ TEST(ScalarQuantizer, TQMSESimdDistancePathParity) {
 
 TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
     const std::vector<faiss::SIMDLevel> levels =
-            available_lloyd_max_simd_levels();
+            available_sq_parity_simd_levels();
     if (levels.empty()) {
         GTEST_SKIP() << "No SIMD level available for EDEN parity tests";
     }
@@ -691,5 +860,51 @@ TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
                 level, faiss::ScalarQuantizer::QT_4bit_eden);
         check_lloyd_max_distance_path_parity<8>(
                 level, faiss::ScalarQuantizer::QT_8bit_eden);
+    }
+}
+
+// RVV-versus-scalar parity for all quantizers with RVV kernels, over both
+// metrics and dimensions around VLMAX boundaries. With e32m8 vectors,
+// VLMAX = VLEN / 4: 32 lanes on QEMU's default VLEN=128 and up to 256+
+// lanes on wide hardware, so the dimensions below straddle those chunk
+// boundaries as well as tiny tails.
+TEST(ScalarQuantizer, RVVDistancePathParity) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RISCV_RVV not available on this machine";
+    }
+
+    const std::vector<faiss::ScalarQuantizer::QuantizerType> qtypes = {
+            faiss::ScalarQuantizer::QT_8bit,
+            faiss::ScalarQuantizer::QT_4bit,
+            faiss::ScalarQuantizer::QT_6bit,
+            faiss::ScalarQuantizer::QT_8bit_uniform,
+            faiss::ScalarQuantizer::QT_4bit_uniform,
+            faiss::ScalarQuantizer::QT_fp16,
+            faiss::ScalarQuantizer::QT_bf16,
+            faiss::ScalarQuantizer::QT_8bit_direct,
+            faiss::ScalarQuantizer::QT_8bit_direct_signed,
+            faiss::ScalarQuantizer::QT_1bit_eden,
+            faiss::ScalarQuantizer::QT_2bit_eden,
+            faiss::ScalarQuantizer::QT_3bit_eden,
+            faiss::ScalarQuantizer::QT_4bit_eden,
+            faiss::ScalarQuantizer::QT_8bit_eden,
+    };
+    const std::vector<size_t> dims = {
+            1, 7, 31, 32, 33, 63, 64, 65, 127, 128, 129, 255, 256, 257};
+    const std::vector<faiss::MetricType> metrics = {
+            faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT};
+
+    for (auto qtype : qtypes) {
+        for (size_t d : dims) {
+            for (auto metric : metrics) {
+                SCOPED_TRACE(
+                        testing::Message()
+                        << "qtype=" << static_cast<int>(qtype) << " d=" << d
+                        << " metric=" << metric);
+                check_sq_distance_path_parity(
+                        faiss::SIMDLevel::RISCV_RVV, qtype, metric, d);
+            }
+        }
     }
 }
