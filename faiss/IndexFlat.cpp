@@ -402,7 +402,11 @@ void IndexFlatL2::clear_l2norms() {
 
 FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
     if (metric_type == METRIC_L2) {
-        if (!cached_l2norms.empty()) {
+        // Only use the cached-norms distance computer when the cache covers
+        // every vector. add() after a sync_l2norms() leaves cached_l2norms
+        // shorter than ntotal; using it then would read stale/out-of-range
+        // norms and yield invalid (e.g. negative) L2 distances.
+        if (cached_l2norms.size() == static_cast<size_t>(ntotal)) {
             FlatCodesDistanceComputer* dc = nullptr;
             with_simd_level([&]<SIMDLevel SL>() {
                 dc = new FlatL2WithNormsDis<SL>(*this);
