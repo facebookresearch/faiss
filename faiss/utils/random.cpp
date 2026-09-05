@@ -9,6 +9,12 @@
 
 #include <faiss/utils/random.h>
 
+#include <cmath>
+#include <cstddef>
+#include <limits>
+#include <utility>
+#include <vector>
+
 extern "C" {
 int sgemm_(
         const char* transa,
