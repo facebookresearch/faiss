@@ -799,12 +799,17 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (const IndexIVFPQ* ivpq = dynamic_cast<const IndexIVFPQ*>(idx)) {
         const IndexIVFPQR* ivfpqr = dynamic_cast<const IndexIVFPQR*>(idx);
 
-        uint32_t h = fourcc(ivfpqr ? "IwQR" : "IwPQ");
+        // "IwPh"/"IwQh" additionally store the polysemous training
+        // parameters, which the older "IwPQ"/"IwQR" formats omitted
+        // (see GH issue #2120).
+        uint32_t h = fourcc(ivfpqr ? "IwQh" : "IwPh");
         WRITE1(h);
         write_ivf_header(ivpq, f);
         WRITE1(ivpq->by_residual);
         WRITE1(ivpq->code_size);
         write_ProductQuantizer(&ivpq->pq, f);
+        WRITE1(ivpq->do_polysemous_training);
+        WRITE1(ivpq->polysemous_ht);
         write_InvertedLists(ivpq->invlists, f);
         if (ivfpqr) {
             write_ProductQuantizer(&ivfpqr->refine_pq, f);
