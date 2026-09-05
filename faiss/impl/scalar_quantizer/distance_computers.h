@@ -78,8 +78,11 @@ template <class Similarity, SIMDLevel SL>
 struct DistanceComputerByte : SQDistanceComputer {};
 
 // Byte-domain distance computer for QT_8bit_direct_signed (storage is
-// value+128). Only specialized for AVX512_SPR; other levels fall back to
-// the float-domain DCTemplate path via the dispatch logic.
+// value+128). Specialized for AVX2, AVX512, AVX512_SPR and ARM_NEON; levels
+// without a specialization fall back to the float-domain DCTemplate path via
+// the dispatch logic. Adding a level to the dispatch chain in sq-dispatch.h
+// without a specialization here instantiates this empty primary template,
+// whose pure virtuals are left unimplemented.
 template <class Similarity, SIMDLevel SL>
 struct DistanceComputerByteSigned : SQDistanceComputer {};
 
