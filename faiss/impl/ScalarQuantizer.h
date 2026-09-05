@@ -177,18 +177,11 @@ struct ScalarQuantizer : Quantizer {
             return s;
         }
 
+        /// Config only: the QJL projection these select is built from
+        /// `trained` by QuantizerTurboQuantFull / DCTurboQuantFull, which
+        /// own their own copy of it. Do not cache a projection here.
         uint8_t qjl_type = 0;
         uint64_t seed = 42;
-        size_t padded_d = 0;
-        std::vector<float> fwht_signs;
-        std::vector<float> rr_matrix;
-        size_t nb_bits_lo = 0;
-        size_t n_hi_dims = 0;
-
-        void init_projection(size_t d);
-        bool use_fwht() const {
-            return qjl_type == 0;
-        }
 
         struct DistanceComputer : SQDistanceComputer {
             virtual void configure(uint8_t qb, bool int_qjl) = 0;

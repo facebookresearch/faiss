@@ -4767,16 +4767,16 @@ TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
 // -----------------------------------------------------------------------
 // A TurboQuant-full ScalarQuantizer carries a fixed-size `trained` vector
 // (2^(bits-1) centroids + boundaries + seed + qjl_type) regardless of d,
-// so `d` is not backed by any serialized payload. Deserialization must
-// not build the d x d QJL projection from it: the quantizers rebuild the
-// projection from `trained` when they are constructed, and doing it at
-// read time lets a few dozen bytes of input drive an arbitrarily large
-// allocation and QR decomposition (T287092602).
+// so `d` is not backed by any serialized payload. Reading one must stay
+// cheap: TurboQuantRefine no longer holds projection state, so the d x d
+// QJL projection is built only by the quantizers, from `trained`, when
+// they are constructed. Building it at read time let a few dozen bytes of
+// input drive an arbitrarily large allocation and QR (T287092602).
 // -----------------------------------------------------------------------
 TEST(ReadIndexDeserialize, SQTurboQuantFullSkipsProjectionOnRead) {
     // QT_3bit_tq: mse_bits = 2, k = 4 -> trained.size() = 4 + 3 + 3 = 10.
-    // d is 4096 while trained is 40 bytes; the projection this used to
-    // build is 4096 * 4096 floats = 64 MB.
+    // d is 4096 while trained is 40 bytes; the projection this once built
+    // at read time is 4096 * 4096 floats = 64 MB.
     constexpr size_t kD = 4096;
     constexpr uint64_t kSeed = 0x0123456789abcdefULL;
     constexpr uint8_t kQjlRandomRotation = 2;
@@ -4806,12 +4806,13 @@ TEST(ReadIndexDeserialize, SQTurboQuantFullSkipsProjectionOnRead) {
 
     auto* idxs = dynamic_cast<IndexScalarQuantizer*>(index.get());
     ASSERT_NE(idxs, nullptr);
-    // The cheap descriptors are still recovered from `trained`...
+    // The cheap descriptors are recovered from `trained`; TurboQuantRefine
+    // has no projection fields left for the reader to populate.
     EXPECT_EQ(idxs->sq.d, kD);
     EXPECT_EQ(idxs->sq.turboq_refine.qjl_type, kQjlRandomRotation);
     EXPECT_EQ(idxs->sq.turboq_refine.seed, kSeed);
-    // ...but no projection state is materialized.
-    EXPECT_TRUE(idxs->sq.turboq_refine.rr_matrix.empty());
-    EXPECT_TRUE(idxs->sq.turboq_refine.fwht_signs.empty());
-    EXPECT_EQ(idxs->sq.turboq_refine.padded_d, 0);
+    static_assert(
+            sizeof(ScalarQuantizer::TurboQuantRefine) <= 2 * sizeof(uint64_t),
+            "TurboQuantRefine must stay a small config struct: growing it back "
+            "into a projection cache reintroduces T287092602");
 }
