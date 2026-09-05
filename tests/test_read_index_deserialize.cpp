@@ -4763,3 +4763,56 @@ TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
             idmap.search(1, xq.data(), 1, distances.data(), labels.data()));
     EXPECT_EQ(labels[0], -1);
 }
+
+// -----------------------------------------------------------------------
+// A TurboQuant-full ScalarQuantizer carries a fixed-size `trained` vector
+// (2^(bits-1) centroids + boundaries + seed + qjl_type) regardless of d,
+// so `d` is not backed by any serialized payload. Reading one must stay
+// cheap: TurboQuantRefine no longer holds projection state, so the d x d
+// QJL projection is built only by the quantizers, from `trained`, when
+// they are constructed. Building it at read time let a few dozen bytes of
+// input drive an arbitrarily large allocation and QR (T287092602).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQTurboQuantFullSkipsProjectionOnRead) {
+    // QT_3bit_tq: mse_bits = 2, k = 4 -> trained.size() = 4 + 3 + 3 = 10.
+    // d is 4096 while trained is 40 bytes; the projection this once built
+    // at read time is 4096 * 4096 floats = 64 MB.
+    constexpr size_t kD = 4096;
+    constexpr uint64_t kSeed = 0x0123456789abcdefULL;
+    constexpr uint8_t kQjlRandomRotation = 2;
+
+    float seed_f[2];
+    ScalarQuantizer::TurboQuantRefine::pack_seed(kSeed, seed_f);
+    std::vector<float> trained(10, 0.0f);
+    trained[7] = seed_f[0];
+    trained[8] = seed_f[1];
+    trained[9] = static_cast<float>(kQjlRandomRotation);
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/static_cast<int>(kD), /*ntotal=*/0);
+    push_val<int>(buf, ScalarQuantizer::QT_3bit_tq);
+    push_val<int>(buf, 0);      // rangestat
+    push_val<float>(buf, 0.0f); // rangestat_arg
+    push_val<size_t>(buf, kD);  // d
+    push_val<size_t>(buf, 0);   // code_size (recomputed on read)
+    push_vector<float>(buf, trained);
+    push_vector<uint8_t>(buf, {}); // codes (ntotal = 0)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> index;
+    ASSERT_NO_THROW(index = read_index_up(&reader));
+
+    auto* idxs = dynamic_cast<IndexScalarQuantizer*>(index.get());
+    ASSERT_NE(idxs, nullptr);
+    // The cheap descriptors are recovered from `trained`; TurboQuantRefine
+    // has no projection fields left for the reader to populate.
+    EXPECT_EQ(idxs->sq.d, kD);
+    EXPECT_EQ(idxs->sq.turboq_refine.qjl_type, kQjlRandomRotation);
+    EXPECT_EQ(idxs->sq.turboq_refine.seed, kSeed);
+    static_assert(
+            sizeof(ScalarQuantizer::TurboQuantRefine) <= 2 * sizeof(uint64_t),
+            "TurboQuantRefine must stay a small config struct: growing it back "
+            "into a projection cache reintroduces T287092602");
+}
