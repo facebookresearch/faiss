@@ -409,7 +409,9 @@ struct SimilarityL2<SIMDLevel::RISCV_RVV> : SimilarityL2<SIMDLevel::NONE> {
         vfloat32m8_t yiv = __riscv_vle32_v_f32m8(yi, vl);
         yi += vl;
         vfloat32m8_t tmp = __riscv_vfsub_vv_f32m8(yiv, x, vl);
-        return __riscv_vfmacc_vv_f32m8(accu, tmp, tmp, vl);
+        // tail-undisturbed: the final short iteration must not clobber
+        // accumulator lanes above vl that were filled by earlier iterations
+        return __riscv_vfmacc_vv_f32m8_tu(accu, tmp, tmp, vl);
     }
 
     static FAISS_ALWAYS_INLINE vfloat32m8_t add_m8_components_2(
@@ -418,7 +420,7 @@ struct SimilarityL2<SIMDLevel::RISCV_RVV> : SimilarityL2<SIMDLevel::NONE> {
             vfloat32m8_t y_2,
             size_t vl) {
         vfloat32m8_t tmp = __riscv_vfsub_vv_f32m8(y_2, x, vl);
-        return __riscv_vfmacc_vv_f32m8(accu, tmp, tmp, vl);
+        return __riscv_vfmacc_vv_f32m8_tu(accu, tmp, tmp, vl);
     }
 
     static FAISS_ALWAYS_INLINE float result_m8(vfloat32m8_t accu, size_t vl) {
@@ -446,7 +448,7 @@ struct SimilarityIP<SIMDLevel::RISCV_RVV> : SimilarityIP<SIMDLevel::NONE> {
     add_m8_components(vfloat32m8_t accu, vfloat32m8_t x, size_t vl) {
         vfloat32m8_t yiv = __riscv_vle32_v_f32m8(yi, vl);
         yi += vl;
-        return __riscv_vfmacc_vv_f32m8(accu, yiv, x, vl);
+        return __riscv_vfmacc_vv_f32m8_tu(accu, yiv, x, vl);
     }
 
     static FAISS_ALWAYS_INLINE vfloat32m8_t add_m8_components_2(
@@ -454,7 +456,7 @@ struct SimilarityIP<SIMDLevel::RISCV_RVV> : SimilarityIP<SIMDLevel::NONE> {
             vfloat32m8_t x1,
             vfloat32m8_t x2,
             size_t vl) {
-        return __riscv_vfmacc_vv_f32m8(accu, x1, x2, vl);
+        return __riscv_vfmacc_vv_f32m8_tu(accu, x1, x2, vl);
     }
 
     static FAISS_ALWAYS_INLINE float result_m8(vfloat32m8_t accu, size_t vl) {
