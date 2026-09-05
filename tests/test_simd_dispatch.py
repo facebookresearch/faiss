@@ -52,6 +52,9 @@ def get_available_simd_levels():
 
     if arch in ("x86_64", "amd64"):
         levels.extend(["AVX2", "AVX512"])
+        flags = get_cpu_flags()
+        if flags is not None and "avx512_vpopcntdq" in flags:
+            levels.append("AVX512_VPOPCNT")
         # AVX512_SPR is typically not enabled in DD builds
     elif arch in ("aarch64", "arm64"):
         levels.append("ARM_NEON")
@@ -224,7 +227,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         """SPR detection must agree with the CPU's real feature flags. The SPR
         code path is compiled with -mavx512fp16, so AVX512_SPR must be
         reported available if and only if the CPU actually has the full
-        AVX512 core feature set AND AVX512_BF16 AND AVX512_FP16.
+        AVX512 core feature set, VNNI, VPOPCNTDQ, BF16, and FP16.
         """
         import platform
 
@@ -255,6 +258,8 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         }
         spr_capable = (
             avx512_core <= flags
+            and "avx512_vnni" in flags
+            and "avx512_vpopcntdq" in flags
             and "avx512_bf16" in flags
             and "avx512_fp16" in flags
         )
@@ -269,9 +274,54 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             "AVX512_SPR detection disagrees with /proc/cpuinfo: "
             f"detected={spr_detected}, cpu_spr_capable={spr_capable} "
             f"(avx512_core={avx512_core <= flags}, "
-            f"bf16={'avx512_bf16' in flags}, fp16={'avx512_fp16' in flags}). "
+            f"vnni={'avx512_vnni' in flags}, "
+            f"vpopcntdq={'avx512_vpopcntdq' in flags}, "
+            f"bf16={'avx512_bf16' in flags}, "
+            f"fp16={'avx512_fp16' in flags}). "
             "detected=True with fp16=False is the D107684495 regression "
             "(AMD Zen 4 mis-detected as SPR).",
+        )
+
+    def test_vpopcnt_detection_matches_cpu_features(self):
+        """The VPOPCNT level requires baseline AVX-512 and VPOPCNTDQ."""
+        import platform
+
+        try:
+            import faiss
+
+            if "DD" not in faiss.get_compile_options():
+                self.skipTest(
+                    "Not a DD build - SIMD level is fixed at compile time"
+                )
+        except ImportError:
+            self.skipTest("faiss not available")
+
+        if platform.machine().lower() not in ("x86_64", "amd64"):
+            self.skipTest("x86_64-only test")
+
+        flags = get_cpu_flags()
+        if flags is None:
+            self.skipTest("/proc/cpuinfo not available")
+
+        avx512_core = {
+            "avx512f",
+            "avx512cd",
+            "avx512vl",
+            "avx512dq",
+            "avx512bw",
+        }
+        capable = (
+            avx512_core <= flags and "avx512_vpopcntdq" in flags
+        )
+        detected = faiss.SIMDConfig.is_simd_level_available(
+            faiss.SIMDLevel_AVX512_VPOPCNT
+        )
+
+        self.assertEqual(
+            detected,
+            capable,
+            "AVX512_VPOPCNT detection disagrees with /proc/cpuinfo: "
+            f"detected={detected}, cpu_capable={capable}",
         )
 
 

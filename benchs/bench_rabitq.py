@@ -23,8 +23,8 @@ from faiss.contrib.datasets import SyntheticDataset
 #   d=512  -> size=64  -> 512-bit zmm, 1 iteration per bit-plane
 #   d=768  -> size=96  -> 512-bit zmm + 256-bit tail
 #   d=1024 -> size=128 -> 512-bit zmm only, 2 iterations per bit-plane
-# Sweeping these is useful for verifying the AVX512_SPR (vpopcntdq)
-# specialization in faiss/utils/simd_impl/rabitq_avx512_spr.cpp and for
+# Sweeping these is useful for verifying the AVX512_VPOPCNT specialization in
+# faiss/utils/simd_impl/rabitq_avx512_vpopcnt.cpp and for
 # profiling perf-record annotations across SIMD-width tiers.
 DIMENSIONS = [256, 512, 768, 1024]
 nlist: int = 1000

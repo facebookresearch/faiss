@@ -39,8 +39,23 @@ static std::vector<uint8_t> random_bytes(size_t n, uint32_t seed) {
 }
 
 // 32-d chunks and chunk boundaries.
-static const std::vector<size_t> kDims =
-        {1, 8, 16, 31, 32, 33, 255, 256, 257, 512, 1024, 2048};
+static const std::vector<size_t> kDims = {
+        1,
+        8,
+        16,
+        31,
+        32,
+        33,
+        100,
+        128,
+        255,
+        256,
+        257,
+        384,
+        512,
+        768,
+        1024,
+        2048};
 
 template <SIMDLevel SL>
 static void check_quantization_matches_scalar() {
@@ -377,3 +392,51 @@ TEST(RaBitQBitwiseAndDotProductWithPopcount, Avx2MatchesScalar) {
         }
     }
 }
+
+#if defined(FAISS_ENABLE_DD) && defined(__x86_64__)
+
+TEST(RaBitQVpopcnt, BitwiseKernelsMatchScalarAcrossTails) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                SIMDLevel::AVX512_VPOPCNT)) {
+        GTEST_SKIP() << "AVX512_VPOPCNT is not available on this CPU";
+    }
+
+    for (size_t d : kDims) {
+        for (size_t qb = 1; qb <= 8; qb++) {
+            const size_t size = (d + 7) / 8;
+            const auto data = random_bytes(size, 19717);
+            const auto q = random_bytes(size * qb, 51691);
+
+            const uint64_t expected_and =
+                    faiss::rabitq::bitwise_and_dot_product<SIMDLevel::NONE>(
+                            q.data(), data.data(), size, qb);
+            const uint64_t expected_xor =
+                    faiss::rabitq::bitwise_xor_dot_product<SIMDLevel::NONE>(
+                            q.data(), data.data(), size, qb);
+            const uint64_t expected_pop =
+                    faiss::rabitq::popcount<SIMDLevel::NONE>(data.data(), size);
+
+            const uint64_t actual_and = faiss::rabitq::bitwise_and_dot_product<
+                    SIMDLevel::AVX512_VPOPCNT>(q.data(), data.data(), size, qb);
+            const uint64_t actual_xor = faiss::rabitq::bitwise_xor_dot_product<
+                    SIMDLevel::AVX512_VPOPCNT>(q.data(), data.data(), size, qb);
+            const uint64_t actual_pop =
+                    faiss::rabitq::popcount<SIMDLevel::AVX512_VPOPCNT>(
+                            data.data(), size);
+            const auto actual_fused =
+                    faiss::rabitq::bitwise_and_dot_product_with_popcount<
+                            SIMDLevel::AVX512_VPOPCNT>(
+                            q.data(), data.data(), size, qb);
+
+            EXPECT_EQ(actual_and, expected_and) << "d=" << d << " qb=" << qb;
+            EXPECT_EQ(actual_xor, expected_xor) << "d=" << d << " qb=" << qb;
+            EXPECT_EQ(actual_pop, expected_pop) << "d=" << d << " qb=" << qb;
+            EXPECT_EQ(actual_fused.dot_product, expected_and)
+                    << "d=" << d << " qb=" << qb;
+            EXPECT_EQ(actual_fused.popcount, expected_pop)
+                    << "d=" << d << " qb=" << qb;
+        }
+    }
+}
+
+#endif
