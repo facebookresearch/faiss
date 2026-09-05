@@ -832,3 +832,42 @@ class TestIVFEarlyTermination(unittest.TestCase):
         self.assertEqual(p.max_lists_num, 5)
         self.assertIs(p.ensure_topk_full, True)
         self.assertEqual(p.max_empty_result_buckets, 2)
+
+
+class TestSortedRangeSearch(unittest.TestCase):
+    def test_exact_bounds_across_scanners(self):
+        rs = np.random.RandomState(123)
+        xt = rs.randn(640, 8).astype("float32")
+        xb = rs.randn(64, 8).astype("float32")
+        xq = xb[:8].copy()
+        for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+            for factory in ("IVF4,Flat", "IVF4,PQ2x4", "IVF4,SQ8"):
+                index = faiss.index_factory(8, factory, metric)
+                index.train(xt)
+                index.add(xb)
+                for lo, hi in ((0, 0), (64, 65), (0, 64), (0, 1),
+                               (63, 64), (10, 40), (20, 21)):
+                    for radius in (-100.0, 0.0, 10.0, 1000.0):
+                        with self.subTest(metric=metric, factory=factory,
+                                          bounds=(lo, hi), radius=radius):
+                            outputs = []
+                            counts = []
+                            for sorted_ids in (False, True):
+                                params = faiss.SearchParametersIVF(
+                                    nprobe=4, sel=faiss.IDSelectorRange(
+                                        lo, hi, sorted_ids))
+                                faiss.cvar.indexIVF_stats.reset()
+                                lim, distances, ids = index.range_search(
+                                    xq, radius, params=params)
+                                outputs.append([
+                                    sorted(zip(
+                                        ids[lim[i]:lim[i + 1]].tolist(),
+                                        distances[lim[i]:lim[i + 1]].tolist()))
+                                    for i in range(len(xq))])
+                                counts.append((faiss.cvar.indexIVF_stats.nlist,
+                                               faiss.cvar.indexIVF_stats.ndis))
+                            self.assertEqual(outputs[0], outputs[1])
+                            self.assertEqual(counts[0], counts[1])
+                            for results in outputs[1]:
+                                self.assertTrue(all(lo <= idx < hi
+                                                    for idx, _ in results))
