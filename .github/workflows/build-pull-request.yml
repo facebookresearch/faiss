@@ -461,6 +461,28 @@ jobs:
             build/tests/faiss_test \
             --gtest_filter="SIMDConfig.*:SIMDLevel.*:CompileOptions.*"
 
+      - name: Run scalar quantizer RVV parity tests (via QEMU)
+        run: |
+          # v=true makes the vector extension explicit (VLEN defaults to
+          # 128). QEMU 8.2 (Ubuntu 24.04) already implements the zvfhmin
+          # FP16 vector instructions needed by the QT_fp16 RVV kernels.
+          qemu-riscv64-static \
+            -cpu rv64,v=true \
+            -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="ScalarQuantizer.*DistancePathParity*"
+
+      - name: Run scalar quantizer RVV parity tests (VLEN=1024, via QEMU)
+        run: |
+          # VLEN=1024 gives VLMAX=256 lanes for e32m8; together with the
+          # default VLEN=128 run this exercises chunk-tail boundaries at
+          # both ends of the dimensions used by the parity tests.
+          qemu-riscv64-static \
+            -cpu rv64,v=true,vlen=1024 \
+            -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="ScalarQuantizer.*DistancePathParity*"
+
   index-io-backward-compatibility:
     needs: linux-x86_64-cmake
     name: Index serialization backward compatibility
