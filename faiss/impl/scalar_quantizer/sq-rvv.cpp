@@ -40,17 +40,19 @@ struct Codec4bit<SIMDLevel::RISCV_RVV> : Codec4bit<SIMDLevel::NONE> {
         const uint8_t* src = code + (i >> 1);
         size_t byte_vl = (vl + 1) >> 1;
         vuint8m2_t packed = __riscv_vle8_v_u8m2(src, byte_vl);
-        vuint8m2_t byte_index = __riscv_vid_v_u8m2(vl);
-        byte_index = __riscv_vsrl_vx_u8m2(byte_index, 1, vl);
-        vuint8m2_t bytes = __riscv_vrgather_vv_u8m2(packed, byte_index, vl);
-        vuint8m2_t lo = __riscv_vand_vx_u8m2(bytes, 0xf, vl);
-        vuint8m2_t hi = __riscv_vsrl_vx_u8m2(bytes, 4, vl);
-        vuint8m2_t lane = __riscv_vid_v_u8m2(vl);
-        vuint8m2_t parity = __riscv_vand_vx_u8m2(lane, 1, vl);
-        vbool4_t odd = __riscv_vmsne_vx_u8m2_b4(parity, 0, vl);
-        vuint8m2_t q = __riscv_vmerge_vvm_u8m2(lo, hi, odd, vl);
-        vuint32m8_t q32 = __riscv_vzext_vf4_u32m8(q, vl);
-        vfloat32m8_t result = __riscv_vfcvt_f_xu_v_f32m8(q32, vl);
+        // Widen to 32-bit lanes before gathering: with more than 256 active
+        // lanes (VLEN > 1024 for e32m8) 8-bit lane indices would wrap around
+        // and decode the wrong bytes.
+        vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
+        vuint32m8_t lane = __riscv_vid_v_u32m8(vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
+                packed32, __riscv_vsrl_vx_u32m8(lane, 1, vl), vl);
+        vuint32m8_t lo = __riscv_vand_vx_u32m8(bytes, 0xf, vl);
+        vuint32m8_t hi = __riscv_vsrl_vx_u32m8(bytes, 4, vl);
+        vuint32m8_t parity = __riscv_vand_vx_u32m8(lane, 1, vl);
+        vbool4_t odd = __riscv_vmsne_vx_u32m8_b4(parity, 0, vl);
+        vuint32m8_t q = __riscv_vmerge_vvm_u32m8(lo, hi, odd, vl);
+        vfloat32m8_t result = __riscv_vfcvt_f_xu_v_f32m8(q, vl);
         result = __riscv_vfadd_vf_f32m8(result, 0.5f, vl);
         result = __riscv_vfdiv_vf_f32m8(result, 15.0f, vl);
         return result;
@@ -226,14 +228,15 @@ struct QuantizerLloydMax<1, SIMDLevel::RISCV_RVV>
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
         size_t byte_vl = (vl + 7) >> 3;
         vuint8m2_t packed = __riscv_vle8_v_u8m2(code + (i >> 3), byte_vl);
-        vuint8m2_t vid = __riscv_vid_v_u8m2(vl);
-        vuint8m2_t bytes = __riscv_vrgather_vv_u8m2(
-                packed, __riscv_vsrl_vx_u8m2(vid, 3, vl), vl);
-        vuint8m2_t shift = __riscv_vand_vx_u8m2(vid, 7, vl);
-        vuint8m2_t idx = __riscv_vand_vx_u8m2(
-                __riscv_vsrl_vv_u8m2(bytes, shift, vl), 1, vl);
-        vuint32m8_t off =
-                __riscv_vsll_vx_u32m8(__riscv_vzext_vf4_u32m8(idx, vl), 2, vl);
+        // 32-bit lane indices: 8-bit indices wrap above 256 active lanes
+        vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
+        vuint32m8_t vid = __riscv_vid_v_u32m8(vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
+                packed32, __riscv_vsrl_vx_u32m8(vid, 3, vl), vl);
+        vuint32m8_t shift = __riscv_vand_vx_u32m8(vid, 7, vl);
+        vuint32m8_t idx = __riscv_vand_vx_u32m8(
+                __riscv_vsrl_vv_u32m8(bytes, shift, vl), 1, vl);
+        vuint32m8_t off = __riscv_vsll_vx_u32m8(idx, 2, vl);
         return __riscv_vluxei32_v_f32m8(this->centroids, off, vl);
     }
 
@@ -260,15 +263,16 @@ struct QuantizerLloydMax<2, SIMDLevel::RISCV_RVV>
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
         size_t byte_vl = (vl + 3) >> 2;
         vuint8m2_t packed = __riscv_vle8_v_u8m2(code + (i >> 2), byte_vl);
-        vuint8m2_t vid = __riscv_vid_v_u8m2(vl);
-        vuint8m2_t bytes = __riscv_vrgather_vv_u8m2(
-                packed, __riscv_vsrl_vx_u8m2(vid, 2, vl), vl);
-        vuint8m2_t shift =
-                __riscv_vsll_vx_u8m2(__riscv_vand_vx_u8m2(vid, 3, vl), 1, vl);
-        vuint8m2_t idx = __riscv_vand_vx_u8m2(
-                __riscv_vsrl_vv_u8m2(bytes, shift, vl), 3, vl);
-        vuint32m8_t off =
-                __riscv_vsll_vx_u32m8(__riscv_vzext_vf4_u32m8(idx, vl), 2, vl);
+        // 32-bit lane indices: 8-bit indices wrap above 256 active lanes
+        vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
+        vuint32m8_t vid = __riscv_vid_v_u32m8(vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
+                packed32, __riscv_vsrl_vx_u32m8(vid, 2, vl), vl);
+        vuint32m8_t shift =
+                __riscv_vsll_vx_u32m8(__riscv_vand_vx_u32m8(vid, 3, vl), 1, vl);
+        vuint32m8_t idx = __riscv_vand_vx_u32m8(
+                __riscv_vsrl_vv_u32m8(bytes, shift, vl), 3, vl);
+        vuint32m8_t off = __riscv_vsll_vx_u32m8(idx, 2, vl);
         return __riscv_vluxei32_v_f32m8(this->centroids, off, vl);
     }
 
@@ -339,16 +343,17 @@ struct QuantizerLloydMax<4, SIMDLevel::RISCV_RVV>
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
         size_t byte_vl = (vl + 1) >> 1;
         vuint8m2_t packed = __riscv_vle8_v_u8m2(code + (i >> 1), byte_vl);
-        vuint8m2_t vid = __riscv_vid_v_u8m2(vl);
-        vuint8m2_t bytes = __riscv_vrgather_vv_u8m2(
-                packed, __riscv_vsrl_vx_u8m2(vid, 1, vl), vl);
-        vuint8m2_t lo = __riscv_vand_vx_u8m2(bytes, 0xf, vl);
-        vuint8m2_t hi = __riscv_vsrl_vx_u8m2(bytes, 4, vl);
-        vbool4_t odd = __riscv_vmsne_vx_u8m2_b4(
-                __riscv_vand_vx_u8m2(vid, 1, vl), 0, vl);
-        vuint8m2_t idx = __riscv_vmerge_vvm_u8m2(lo, hi, odd, vl);
-        vuint32m8_t off =
-                __riscv_vsll_vx_u32m8(__riscv_vzext_vf4_u32m8(idx, vl), 2, vl);
+        // 32-bit lane indices: 8-bit indices wrap above 256 active lanes
+        vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
+        vuint32m8_t vid = __riscv_vid_v_u32m8(vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
+                packed32, __riscv_vsrl_vx_u32m8(vid, 1, vl), vl);
+        vuint32m8_t lo = __riscv_vand_vx_u32m8(bytes, 0xf, vl);
+        vuint32m8_t hi = __riscv_vsrl_vx_u32m8(bytes, 4, vl);
+        vbool4_t odd = __riscv_vmsne_vx_u32m8_b4(
+                __riscv_vand_vx_u32m8(vid, 1, vl), 0, vl);
+        vuint32m8_t idx = __riscv_vmerge_vvm_u32m8(lo, hi, odd, vl);
+        vuint32m8_t off = __riscv_vsll_vx_u32m8(idx, 2, vl);
         return __riscv_vluxei32_v_f32m8(this->centroids, off, vl);
     }
 
