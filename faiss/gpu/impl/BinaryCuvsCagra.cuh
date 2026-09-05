@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <memory>
 #include <optional>
 
 #include <faiss/MetricType.h>
@@ -117,9 +118,12 @@ class BinaryCuvsCagra {
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
-    /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
+    std::shared_ptr<cuvs::neighbors::cagra::device_standard_index<uint8_t, uint32_t>>
             cuvs_index{nullptr};
+    std::shared_ptr<cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
+            cuvs_padded_index{nullptr};
+    std::unique_ptr<cuvs::neighbors::device_padded_dataset<uint8_t, int64_t>>
+            dataset_storage_;
 };
 
 } // namespace gpu

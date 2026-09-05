@@ -33,6 +33,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <cstddef>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -56,6 +57,11 @@ constexpr size_t k8GiBTempMem = (size_t)1024 * 1024 * 1024;
 
 // Maximum temporary memory allocation for all GPUs
 constexpr size_t kMaxTempMem = (size_t)1536 * 1024 * 1024;
+
+#if defined USE_NVIDIA_CUVS
+// Match the alignment used by the deprecated RMM allocation overloads.
+constexpr size_t kRmmAllocationAlignment = alignof(std::max_align_t);
+#endif
 
 std::string allocsToString(const std::unordered_map<void*, AllocRequest>& map) {
     // Produce a sorted list of all outstanding allocations by type
@@ -548,7 +554,8 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
         try {
             auto current_mr = rmm::mr::get_per_device_resource_ref(
                     rmm::cuda_device_id{adjReq.device});
-            p = current_mr.allocate(adjReq.stream, adjReq.size);
+            p = current_mr.allocate(
+                    adjReq.stream, adjReq.size, kRmmAllocationAlignment);
             adjReq.mr = current_mr;
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
@@ -583,7 +590,8 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             // TODO: change this to use the current device resource once RMM has
             // a way to retrieve a "guaranteed" managed memory resource for a
             // device.
-            p = mmr_.allocate(adjReq.stream, adjReq.size);
+            p = mmr_.allocate(
+                    adjReq.stream, adjReq.size, kRmmAllocationAlignment);
             adjReq.mr = mmr_;
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
@@ -647,7 +655,7 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_CUVS
-        req.mr->deallocate(req.stream, p, req.size);
+        req.mr->deallocate(req.stream, p, req.size, kRmmAllocationAlignment);
 #else
         auto err = cudaFree(p);
         FAISS_ASSERT_FMT(

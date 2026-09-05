@@ -27,6 +27,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <memory>
 #include <optional>
 
 #include <faiss/MetricType.h>
@@ -154,9 +155,12 @@ class CuvsCagra {
     /// Parameter to use MST optimization to guarantee graph connectivity
     bool guarantee_connectivity_ = false;
 
-    /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
-            nullptr};
+    std::shared_ptr<cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>>
+            cuvs_index{nullptr};
+    std::shared_ptr<cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
+            cuvs_padded_index{nullptr};
+    std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
+            dataset_storage_;
 };
 } // namespace gpu
 } // namespace faiss
