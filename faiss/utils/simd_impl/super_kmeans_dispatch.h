@@ -11,10 +11,10 @@
 // highest available SIMD specialization at runtime (DD mode) or the
 // compiled-in level (static mode).
 //
-// The A1 level mask is required: plain with_simd_level() omits the ARM_SVE bit,
-// so on an SVE host the SVE specialization would never be instantiated.
-// ARM_NEON has no specialization and falls through to the scalar primary
-// template.
+// The BASE_WITH_SVE level mask is required: plain with_simd_level() omits the
+// ARM_SVE bit, so on an SVE host the SVE specialization would never be
+// instantiated. ARM_NEON has no specialization and falls through to the scalar
+// primary template.
 
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/simd_impl/super_kmeans_kernels.h>
@@ -23,7 +23,7 @@ namespace faiss {
 namespace detail {
 
 inline float block_l2_dispatch(const float* x, const float* y, int n) {
-    return with_simd_level_a1(
+    return with_simd_level_with_sve(
             [&]<SIMDLevel SL>() { return block_l2<SL>(x, y, n); });
 }
 

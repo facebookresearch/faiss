@@ -376,7 +376,8 @@ void AdditiveQuantizer::compute_centroid_norms(float* norms) const {
     size_t ntotal = (size_t)1 << tot_bits;
     int64_t ntotal_signed = ntotal;
     // TODO: make tree of partial sums
-    with_simd_level([&]<SIMDLevel SL>() {
+    // BASE_WITH_SVE: fvec_norm_L2sqr has an ARM_SVE specialization.
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
 #pragma omp parallel
         {
             std::vector<float> tmp(d);
