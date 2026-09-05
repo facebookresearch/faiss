@@ -467,7 +467,10 @@ void search_knn_hamming_heap(
 
 BinaryInvertedListScanner* IndexBinaryIVF::get_InvertedListScanner(
         bool store_pairs) const {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    // AVX512_SPR rather than the AVX512 default: HammingComputerDefault and
+    // HammingComputer32/64 have VPOPCNTDQ implementations that only exist at
+    // that level. Below it this falls through to AVX512 as before.
+    return with_simd_level_with_spr([&]<SIMDLevel SL>() {
         return make_binary_ivf_scanner_fixSL<SL>(code_size, store_pairs);
     });
 }
@@ -483,7 +486,7 @@ void IndexBinaryIVF::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params) const {
     if (per_invlist_search) {
-        with_simd_level([&]<SIMDLevel SL>() {
+        with_simd_level_with_spr([&]<SIMDLevel SL>() {
             search_knn_hamming_per_invlist_fixSL<SL>(
                     code_size,
                     this,
@@ -501,7 +504,7 @@ void IndexBinaryIVF::search_preassigned(
         search_knn_hamming_heap(
                 this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
     } else {
-        with_simd_level([&]<SIMDLevel SL>() {
+        with_simd_level_with_spr([&]<SIMDLevel SL>() {
             search_knn_hamming_count_fixSL<SL>(
                     code_size,
                     store_pairs,
