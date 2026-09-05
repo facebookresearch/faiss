@@ -125,6 +125,11 @@ int faiss_IndexRefineFlat_new(
 DEFINE_DESTRUCTOR(IndexRefineFlat)
 DEFINE_INDEX_DOWNCAST(IndexRefineFlat)
 
+FaissIndex* faiss_IndexRefineFlat_base_index(FaissIndexRefineFlat* index) {
+    return reinterpret_cast<FaissIndex*>(
+            reinterpret_cast<faiss::IndexRefineFlat*>(index)->base_index);
+}
+
 DEFINE_GETTER(IndexRefineFlat, int, own_fields)
 DEFINE_SETTER(IndexRefineFlat, int, own_fields)
 
