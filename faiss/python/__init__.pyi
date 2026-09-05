@@ -1939,12 +1939,23 @@ class HNSWStats:
     n3: int
     ndis: int
     nreorder: int
+    n_rabitq_1bit: int
+    n_rabitq_refine: int
+
+class RaBitQHNSWStats:
+    n_1bit: int
+    n_refine: int
+
+    def reset(self) -> None: ...
+    def add(self, other: RaBitQHNSWStats) -> None: ...
+    def refine_ratio(self) -> float: ...
 
 class HNSW:
     max_level: int
     entry_point: int
     efConstruction: int
     efSearch: int
+    is_rabitq: bool
     hnsw_stats: HNSWStats
     assign_probas: Float32Vector
     cum_nneighbor_per_level: Int32Vector
@@ -2007,6 +2018,18 @@ class IndexHNSWSQ(IndexHNSW):
         M: int,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
+
+class IndexHNSWRaBitQ(IndexHNSW):
+    build_storage: IndexFlat | None
+
+    def __init__(
+        self,
+        d: int,
+        M: int,
+        nb_bits: int = 4,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+    def finalize(self) -> None: ...
 
 class IndexHNSW2Level(IndexHNSW):
     q1: Any  # Level1Quantizer

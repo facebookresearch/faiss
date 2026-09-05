@@ -17,10 +17,13 @@
 
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/RaBitQUtils.h>
+#include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
+#include <faiss/utils/prefetch.h>
 
 namespace faiss {
 
@@ -1290,6 +1293,189 @@ int search_from_candidates_dispatch(
     return call(vts);
 }
 
+/** Staged RaBitQ level-0 search.
+ *
+ * Every neighbor gets a cheap 1-bit estimate; the full multi-bit distance is
+ * computed only when the error bound leaves the candidate able to enter the
+ * result heap. Deliberately mirrors `search_from_candidates_fixVT` step for
+ * step apart from how a neighbor's distance is obtained, so that any recall
+ * difference is attributable to the staged distance rather than to a different
+ * traversal.
+ *
+ * Both the beam and the result heap receive the same value per candidate, which
+ * means the beam mixes 1-bit estimates with refined distances. That is the
+ * reference implementation's behavior and it is why recall is not guaranteed to
+ * match vanilla HNSW.
+ */
+template <typename VTType, class C>
+int search_from_candidates_rabitq_fixVT(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VTType& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    int nres = nres_in;
+    int ndis = 0;
+
+    bool do_dis_check;
+    int efSearch;
+    const IDSelector* sel;
+    extract_search_params(hnsw, params, do_dis_check, efSearch, sel);
+
+    // Resolved once per query: this must never happen inside the neighbor loop.
+    auto* rq = dynamic_cast<RaBitQDistanceComputer*>(&qdis);
+    FAISS_THROW_IF_NOT_MSG(
+            rq, "staged RaBitQ search requires an IndexRaBitQ storage");
+    FAISS_THROW_IF_NOT_MSG(
+            rq->nb_bits >= 2,
+            "staged RaBitQ search requires nb_bits >= 2: 1-bit codes store "
+            "plain SignBitFactors with no f_error, so there is no bound");
+
+    const uint8_t* all_codes = rq->codes;
+    const size_t code_size = rq->code_size;
+    const size_t sign_bytes = (rq->d + 7) / 8;
+    const size_t filter_bytes =
+            sign_bytes + sizeof(rabitq_utils::SignBitFactorsWithError);
+    const bool is_sim = hnsw.is_similarity;
+
+    vt.reserve(efSearch);
+
+    typename C::T threshold = res.threshold;
+    for (int i = 0; i < candidates.size(); i++) {
+        idx_t v1 = candidates.ids[i];
+        float d = candidates.dis[i];
+        FAISS_ASSERT(v1 >= 0);
+        if (!sel || sel->is_member(v1)) {
+            if (C::cmp(threshold, d)) {
+                if (res.add_result(d, v1)) {
+                    threshold = res.threshold;
+                }
+            }
+        }
+        vt.set(v1);
+    }
+
+    int nstep = 0;
+
+    while (candidates.size() > 0) {
+        float d0 = 0;
+        int v0 = candidates.pop_min(&d0);
+
+        if (do_dis_check) {
+            int n_dis_below = candidates.count_below(d0);
+            if (n_dis_below >= efSearch) {
+                break;
+            }
+        }
+
+        size_t begin, end;
+        hnsw.neighbor_range(v0, level, &begin, &end);
+
+        threshold = res.threshold;
+
+        // RaBitQ codes are random accesses during graph traversal. Prefetch
+        // the bytes needed by both the 1-bit estimate and its error bound.
+        constexpr size_t kCacheLineBytes = 64;
+        constexpr size_t kPrefetchDistance = 4;
+        for (size_t j = begin; j < end; j++) {
+            if (j + kPrefetchDistance < end) {
+                int next = hnsw.neighbors[j + kPrefetchDistance];
+                if (next >= 0) {
+                    const uint8_t* next_code =
+                            all_codes + static_cast<size_t>(next) * code_size;
+                    for (size_t offset = 0; offset < filter_bytes;
+                         offset += kCacheLineBytes) {
+                        prefetch_L1(next_code + offset);
+                    }
+                }
+            }
+
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0) {
+                break;
+            }
+            if (!vt.set(v1)) {
+                continue;
+            }
+
+            const uint8_t* code =
+                    all_codes + static_cast<size_t>(v1) * code_size;
+            const float est = rq->distance_to_code_1bit(code);
+            stats.n_rabitq_1bit++;
+
+            float dis = est;
+            const auto* fac = reinterpret_cast<
+                    const rabitq_utils::SignBitFactorsWithError*>(
+                    code + sign_bytes);
+            if (rabitq_utils::should_refine_candidate(
+                        est, fac->f_error, rq->g_error, threshold, is_sim)) {
+                dis = rq->distance_to_code_full(code);
+                stats.n_rabitq_refine++;
+            }
+            ndis++;
+
+            if (!sel || sel->is_member(v1)) {
+                if (C::cmp(threshold, dis)) {
+                    if (res.add_result(dis, v1)) {
+                        threshold = res.threshold;
+                        nres += 1;
+                    }
+                }
+            }
+            candidates.push(v1, dis);
+        }
+
+        nstep++;
+        if (!do_dis_check && nstep > efSearch) {
+            break;
+        }
+    }
+
+    if (level == 0) {
+        stats.n1++;
+        if (candidates.size() == 0) {
+            stats.n2++;
+        }
+        stats.ndis += ndis;
+        stats.nhops += nstep;
+    }
+    return nres;
+}
+
+template <class C>
+int search_from_candidates_rabitq_dispatch(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    auto call = [&]<typename VTType>(VTType& vt_concrete) -> int {
+        return search_from_candidates_rabitq_fixVT<VTType, C>(
+                hnsw,
+                qdis,
+                res,
+                candidates,
+                vt_concrete,
+                stats,
+                level,
+                nres_in,
+                params);
+    };
+    if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
+        return call(*vtv);
+    }
+    VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
+    return call(vts);
+}
+
 } // namespace
 
 /** Do a BFS on the candidates list. Public dispatcher: only handles the
@@ -1722,7 +1908,12 @@ HNSWStats search_impl(
 
         candidates.push(nearest, d_nearest);
 
-        if (!hnsw.is_panorama) {
+        if (hnsw.is_rabitq) {
+            // Works for both L2 and IP: should_refine_candidate() applies a
+            // lower bound for L2 and an upper bound for IP.
+            search_from_candidates_rabitq_dispatch<C>(
+                    hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
+        } else if (!hnsw.is_panorama) {
             search_from_candidates_dispatch<C>(
                     hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
         } else {

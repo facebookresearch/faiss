@@ -2507,7 +2507,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP") || h == fourcc("IH00")) {
+            h == fourcc("IHfP") || h == fourcc("IHNr") || h == fourcc("IH00")) {
         std::unique_ptr<IndexHNSW> idxhnsw;
         if (h == fourcc("IH00")) {
             idxhnsw = std::make_unique<IndexHNSW>();
@@ -2525,6 +2525,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
         } else if (h == fourcc("IHc2")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
+        } else if (h == fourcc("IHNr")) {
+            // A serialized index is always finalized: build_storage stays null
+            // and the storage read below is the RaBitQ one.
+            idxhnsw = std::make_unique<IndexHNSWRaBitQ>();
         }
         read_index_header(*idxhnsw, f);
         if (h == fourcc("IHfP")) {
@@ -2580,6 +2584,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     "HNSW storage d %d != index d %d",
                     idxhnsw->storage->d,
                     idxhnsw->d);
+        }
+        if (h == fourcc("IHNr")) {
+            auto* idx_rabitq = dynamic_cast<IndexHNSWRaBitQ*>(idxhnsw.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    idx_rabitq, "IHNr must deserialize to an IndexHNSWRaBitQ");
+            if (idxhnsw->storage) {
+                auto* rq = dynamic_cast<IndexRaBitQ*>(idxhnsw->storage);
+                FAISS_THROW_IF_NOT_MSG(
+                        rq, "IndexHNSWRaBitQ storage must be an IndexRaBitQ");
+                // Like is_similarity, is_rabitq is not serialized: re-derive
+                // it, so that a reloaded index still takes the staged search
+                // path. 1-bit codes have no f_error and fall back to plain
+                // search. IO_FLAG_SKIP_STORAGE leaves it false because the
+                // resulting index is not searchable.
+                idxhnsw->hnsw.is_rabitq = rq->rabitq.nb_bits >= 2;
+            }
         }
         if (h == fourcc("IHN2")) {
             FAISS_THROW_IF_NOT_MSG(
