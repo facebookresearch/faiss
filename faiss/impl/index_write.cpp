@@ -873,12 +873,22 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
                 : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
+                : dynamic_cast<const IndexHNSWRaBitQ*>(idx) ? fourcc("IHNr")
                 : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
                                                             : 0;
         FAISS_THROW_IF_NOT_FMT(
                 h != 0,
                 "don't know how to serialize this IndexHNSW subtype: %s",
                 typeid(*idx).name());
+        const IndexRaBitQ* storage_rabitq = nullptr;
+        if (h == fourcc("IHNr")) {
+            storage_rabitq = dynamic_cast<const IndexRaBitQ*>(idxhnsw->storage);
+            FAISS_THROW_IF_NOT_MSG(
+                    storage_rabitq ||
+                            ((io_flags & IO_FLAG_SKIP_STORAGE) &&
+                             idxhnsw->storage == nullptr),
+                    "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+        }
         WRITE1(h);
         write_index_header(idxhnsw, f);
         if (h == fourcc("IHfP")) {
@@ -900,6 +910,18 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITE1(n4);
         } else {
             write_index(idxhnsw->storage, f);
+        }
+        if (h == fourcc("IHNr")) {
+            // When storage is skipped, a subsequently attached IndexRaBitQ
+            // supplies its own centered setting. The staged flag belongs to
+            // the graph traversal and must survive a metadata-only round trip.
+            const bool centered =
+                    storage_rabitq ? storage_rabitq->centered : false;
+            WRITE1(centered);
+            const bool staged = storage_rabitq
+                    ? storage_rabitq->rabitq.nb_bits >= 2
+                    : idxhnsw->hnsw.search_method == HNSW::SM_RABITQ;
+            WRITE1(staged);
         }
     } else if (const IndexNSG* idxnsg = dynamic_cast<const IndexNSG*>(idx)) {
         uint32_t h = dynamic_cast<const IndexNSGFlat*>(idx) ? fourcc("INSf")
