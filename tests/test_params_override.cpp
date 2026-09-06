@@ -19,6 +19,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/clone_index.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -333,6 +334,44 @@ TEST(TPO, IVFPQ) {
     EXPECT_EQ(err1, 0);
     int err2 = test_params_override("IVF32,PQ8np", METRIC_INNER_PRODUCT);
     EXPECT_EQ(err2, 0);
+}
+
+TEST(TPO, IVFPQPolysemousThreshold) {
+    constexpr size_t local_nb = 2000;
+    constexpr idx_t k = 20;
+    auto xb = make_data(local_nb);
+    auto xq = make_data(1);
+
+    IndexFlatL2 quantizer(d);
+    IndexIVFPQ index(&quantizer, d, 4, 4, 4);
+    index.train(local_nb, xb.data());
+    index.add(local_nb, xb.data());
+    index.nprobe = 4;
+
+    std::vector<float> distances(k);
+    std::vector<idx_t> reference(k);
+    index.polysemous_ht = 0;
+    index.search(1, xq.data(), k, distances.data(), reference.data());
+
+    std::vector<idx_t> restrictive(k);
+    index.polysemous_ht = 1;
+    index.search(1, xq.data(), k, distances.data(), restrictive.data());
+    EXPECT_LT(
+            std::count_if(
+                    restrictive.cbegin(),
+                    restrictive.cend(),
+                    [](idx_t id) { return id >= 0; }),
+            k);
+
+    // M * nbits == 16, so a threshold of 17 admits every possible code.
+    // It must override the restrictive per-index value for this search only.
+    IVFPQSearchParameters params;
+    params.nprobe = 4;
+    params.polysemous_ht = 17;
+    std::vector<idx_t> overridden(k);
+    index.search(1, xq.data(), k, distances.data(), overridden.data(), &params);
+    EXPECT_EQ(reference, overridden);
+    EXPECT_EQ(1, index.polysemous_ht);
 }
 
 TEST(TPO, IVFSQ) {
