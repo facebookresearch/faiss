@@ -784,6 +784,26 @@ struct ScopedOmpThreads {
     }
 };
 
+TEST_F(HNSWTest, TEST_search_advances_one_generation_per_query) {
+    ScopedOmpThreads omp_guard;
+    omp_set_num_threads(1);
+    index->hnsw.use_visited_hashset = false;
+
+    auto& reusable = dynamic_cast<faiss::VisitedTableVector&>(
+            faiss::VisitedTable::get_reusable(index->ntotal, false));
+    std::fill(reusable.visited.begin(), reusable.visited.end(), 0);
+    reusable.visno = 10;
+
+    std::vector<faiss::idx_t> labels(k);
+    std::vector<float> distances(k);
+    index->search(1, xq->data(), k, distances.data(), labels.data());
+
+    // Acquiring the reusable table advances 10 -> 11 to clear stale state.
+    // HNSW::search then advances 11 -> 12 after the query. The outer wrapper
+    // must not perform a third advance.
+    EXPECT_EQ(12, reusable.visno);
+}
+
 TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     ScopedOmpThreads omp_guard;
 
