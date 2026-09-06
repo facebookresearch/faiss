@@ -17,6 +17,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <limits>
+#include <optional>
 
 #include <faiss/utils/utils.h>
 
@@ -437,6 +438,10 @@ void IndexIVF::search_preassigned(
     const bool ensure_topk_full = params ? params->ensure_topk_full : false;
 
     IDSelector* sel = params ? params->sel : nullptr;
+    FAISS_THROW_IF_NOT_MSG(
+            !(sel && store_pairs),
+            "selector and store_pairs cannot be combined");
+
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
     if (selr) {
         if (selr->assume_sorted) {
@@ -445,10 +450,6 @@ void IndexIVF::search_preassigned(
             selr = nullptr; // use generic processing
         }
     }
-
-    FAISS_THROW_IF_NOT_MSG(
-            !(sel && store_pairs),
-            "selector and store_pairs cannot be combined");
 
     FAISS_THROW_IF_NOT_MSG(
             !invlists->use_iterator ||
@@ -568,10 +569,9 @@ void IndexIVF::search_preassigned(
                     return (size_t)0;
                 }
 
-                scanner->set_list(key, coarse_dis_i);
-
                 nlistv++;
                 if (invlists->use_iterator) {
+                    scanner->set_list(key, coarse_dis_i);
                     size_t list_size = 0;
                     std::unique_ptr<InvertedListsIterator> it(
                             invlists->get_iterator(key, inverted_list_context));
@@ -586,30 +586,29 @@ void IndexIVF::search_preassigned(
                         list_size = static_cast<size_t>(list_size_max);
                     }
 
-                    InvertedLists::ScopedCodes scodes(invlists, key);
-                    const uint8_t* codes = scodes.get();
-
-                    std::unique_ptr<InvertedLists::ScopedIds> sids;
+                    std::optional<InvertedLists::ScopedIds> sids;
                     const idx_t* ids = nullptr;
-
                     if (!store_pairs) {
-                        sids = std::make_unique<InvertedLists::ScopedIds>(
-                                invlists, key);
+                        sids.emplace(invlists, key);
                         ids = sids->get();
                     }
 
+                    size_t jmin = 0;
                     if (selr) { // IDSelectorRange
                         // restrict search to a section of the inverted list
-                        size_t jmin, jmax;
+                        size_t jmax;
                         selr->find_sorted_ids_bounds(
                                 list_size, ids, &jmin, &jmax);
                         list_size = jmax - jmin;
                         if (list_size == 0) {
                             return (size_t)0;
                         }
-                        codes += jmin * code_size;
                         ids += jmin;
                     }
+
+                    scanner->set_list(key, coarse_dis_i);
+                    InvertedLists::ScopedCodes scodes(invlists, key);
+                    const uint8_t* codes = scodes.get() + jmin * code_size;
 
                     size_t old_scan_cnt = 0;
                     size_t old_heap_updates = 0;

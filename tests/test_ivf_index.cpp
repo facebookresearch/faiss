@@ -19,6 +19,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 
 namespace {
@@ -254,6 +255,49 @@ TEST(IVF, list_context) {
                 labels.cend())
                 << "should return the query vector";
     }
+}
+
+TEST(IVF, sorted_range_selector_rejects_store_pairs) {
+    constexpr size_t d = 4;
+    constexpr size_t nb = 100;
+    constexpr faiss::idx_t k = 50;
+
+    faiss::IndexFlatL2 quantizer(d);
+    const std::vector<float> centroid(d, 0.0f);
+    quantizer.add(1, centroid.data());
+    faiss::IndexIVFFlat index(&quantizer, d, 1);
+    index.is_trained = true;
+
+    std::vector<float> database(nb * d);
+    std::vector<faiss::idx_t> ids(nb);
+    for (size_t i = 0; i < nb; ++i) {
+        ids[i] = static_cast<faiss::idx_t>(1000 + i);
+        for (size_t j = 0; j < d; ++j) {
+            database[i * d + j] = static_cast<float>(i + j);
+        }
+    }
+    index.add_with_ids(nb, database.data(), ids.data());
+
+    faiss::IDSelectorRange selector(1020, 1040, true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = 1;
+    params.sel = &selector;
+    const faiss::idx_t key = 0;
+    const float coarse_distance = 0.0f;
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    EXPECT_THROW(
+            index.search_preassigned(
+                    1,
+                    centroid.data(),
+                    k,
+                    &key,
+                    &coarse_distance,
+                    distances.data(),
+                    labels.data(),
+                    true,
+                    &params),
+            faiss::FaissException);
 }
 
 TEST(IVF, jaccard_search_returns_most_similar_vector) {
