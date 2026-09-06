@@ -19,6 +19,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 
 namespace {
@@ -253,6 +254,48 @@ TEST(IVF, list_context) {
                 std::find(labels.cbegin(), labels.cend(), query_vector_id) !=
                 labels.cend())
                 << "should return the query vector";
+    }
+    {
+        // Iterator scans must honor the same selector contract as array-backed
+        // scans. Keep only the upper half of the IDs and verify both KNN and
+        // range search.
+        constexpr faiss::idx_t k = 100;
+        constexpr size_t nprobe = 10;
+        faiss::IDSelectorRange selector(nb / 2, nb);
+        faiss::SearchParametersIVF params;
+        params.inverted_list_context = &context;
+        params.nprobe = nprobe;
+        params.sel = &selector;
+
+        context.lists_probed.clear();
+        std::vector<float> distances(k);
+        std::vector<faiss::idx_t> labels(k);
+        index.search(
+                1,
+                query_vector.data(),
+                k,
+                distances.data(),
+                labels.data(),
+                &params);
+        const size_t rejected_knn = std::count_if(
+                labels.cbegin(), labels.cend(), [&](faiss::idx_t id) {
+                    return id != -1 && !selector.is_member(id);
+                });
+        EXPECT_EQ(0, rejected_knn);
+
+        context.lists_probed.clear();
+        faiss::RangeSearchResult result(1);
+        index.range_search(
+                1,
+                query_vector.data(),
+                std::numeric_limits<float>::max(),
+                &result,
+                &params);
+        const size_t rejected_range = std::count_if(
+                result.labels,
+                result.labels + result.lims[1],
+                [&](faiss::idx_t id) { return !selector.is_member(id); });
+        EXPECT_EQ(0, rejected_range);
     }
 }
 
