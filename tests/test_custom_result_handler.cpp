@@ -16,9 +16,13 @@
 #include <gtest/gtest.h>
 
 #include <faiss/AutoTune.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/index_factory.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/random.h>
 
 using namespace faiss;
@@ -187,6 +191,88 @@ void test_index(
     }
 }
 
+void test_ivfflat_batch4_matches_scalar(MetricType metric) {
+    constexpr size_t local_d = 37;
+    constexpr size_t local_nb = 11;
+
+    std::vector<float> xb(local_nb * local_d);
+    std::vector<float> xq(local_d);
+    rand_smooth_vectors(local_nb, local_d, xb.data(), 1234);
+    rand_smooth_vectors(1, local_d, xq.data(), 5678);
+    std::copy_n(xb.data() + 4 * local_d, local_d, xb.data() + 5 * local_d);
+
+    std::vector<idx_t> ids(local_nb);
+    for (size_t i = 0; i < local_nb; i++) {
+        ids[i] = 1000 + 3 * i;
+    }
+
+    IndexFlat quantizer(local_d, metric);
+    IndexIVFFlat index(&quantizer, local_d, 1, metric);
+    index.train(local_nb, xb.data());
+    index.add_with_ids(local_nb, xb.data(), ids.data());
+
+    const size_t list_size = index.invlists->list_size(0);
+    ASSERT_EQ(list_size, local_nb);
+    InvertedLists::ScopedCodes codes(index.invlists, 0);
+    InvertedLists::ScopedIds stored_ids(index.invlists, 0);
+    IDSelectorAll select_all;
+
+    std::unique_ptr<InvertedListScanner> distance_scanner(
+            index.get_InvertedListScanner(false, &select_all, nullptr));
+    distance_scanner->set_query(xq.data());
+    distance_scanner->set_list(0, 0.0f);
+    const float tied_threshold = distance_scanner->distance_to_code(
+            codes.get() + 4 * index.code_size);
+    EXPECT_EQ(
+            tied_threshold,
+            distance_scanner->distance_to_code(
+                    codes.get() + 5 * index.code_size));
+
+    const float open_threshold = metric == METRIC_INNER_PRODUCT
+            ? -std::numeric_limits<float>::max()
+            : std::numeric_limits<float>::max();
+    for (float threshold : {open_threshold, tied_threshold}) {
+        for (bool store_pairs : {false, true}) {
+            SCOPED_TRACE(
+                    testing::Message()
+                    << "metric=" << metric << ", threshold=" << threshold
+                    << ", store_pairs=" << store_pairs);
+
+            std::unique_ptr<InvertedListScanner> batch_scanner(
+                    index.get_InvertedListScanner(
+                            store_pairs, nullptr, nullptr));
+            std::unique_ptr<InvertedListScanner> scalar_scanner(
+                    index.get_InvertedListScanner(
+                            store_pairs, &select_all, nullptr));
+            batch_scanner->set_query(xq.data());
+            batch_scanner->set_list(0, 0.0f);
+            scalar_scanner->set_query(xq.data());
+            scalar_scanner->set_list(0, 0.0f);
+
+            CollectAllResultHandler batch_handler;
+            CollectAllResultHandler scalar_handler;
+            batch_handler.threshold = threshold;
+            scalar_handler.threshold = threshold;
+            const idx_t* scan_ids = store_pairs ? nullptr : stored_ids.get();
+            const size_t batch_nup = batch_scanner->scan_codes(
+                    list_size, codes.get(), scan_ids, batch_handler);
+            const size_t scalar_nup = scalar_scanner->scan_codes(
+                    list_size, codes.get(), scan_ids, scalar_handler);
+
+            EXPECT_EQ(batch_handler.D, scalar_handler.D);
+            EXPECT_EQ(batch_handler.I, scalar_handler.I);
+            EXPECT_EQ(batch_handler.stats.scan_cnt, list_size);
+            EXPECT_EQ(
+                    batch_handler.stats.scan_cnt,
+                    scalar_handler.stats.scan_cnt);
+            EXPECT_EQ(
+                    batch_handler.stats.nheap_updates,
+                    scalar_handler.stats.nheap_updates);
+            EXPECT_EQ(batch_nup, scalar_nup);
+        }
+    }
+}
+
 /*************************************************************
  * Test cases for different IVF index types
  *************************************************************/
@@ -197,6 +283,14 @@ TEST(TestIndexTypes, IVFFlat_L2) {
 
 TEST(TestIndexTypes, IVFFlat_IP) {
     test_index("IVF32,Flat", METRIC_INNER_PRODUCT);
+}
+
+TEST(IVFFlatScanner, Batch4MatchesScalarL2) {
+    test_ivfflat_batch4_matches_scalar(METRIC_L2);
+}
+
+TEST(IVFFlatScanner, Batch4MatchesScalarIP) {
+    test_ivfflat_batch4_matches_scalar(METRIC_INNER_PRODUCT);
 }
 
 TEST(TestIndexTypes, IVFPQ_L2) {
