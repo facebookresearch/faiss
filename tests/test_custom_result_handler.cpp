@@ -16,9 +16,12 @@
 #include <gtest/gtest.h>
 
 #include <faiss/AutoTune.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/index_factory.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/random.h>
 
 using namespace faiss;
@@ -187,6 +190,93 @@ void test_index(
     }
 }
 
+void test_rabitq_one_bit_scanner(MetricType metric) {
+    constexpr size_t local_d = 32;
+    constexpr size_t local_nb = 129;
+
+    std::vector<float> xb(local_nb * local_d);
+    std::vector<float> xq(local_d);
+    rand_smooth_vectors(local_nb, local_d, xb.data(), 1234);
+    rand_smooth_vectors(1, local_d, xq.data(), 5678);
+
+    IndexFlat quantizer(local_d, metric);
+    IndexIVFRaBitQ index(
+            &quantizer,
+            local_d,
+            1,
+            metric,
+            /*own_invlists=*/true,
+            /*nb_bits=*/1);
+    index.train(local_nb, xb.data());
+    index.add(local_nb, xb.data());
+
+    const size_t list_size = index.invlists->list_size(0);
+    ASSERT_EQ(list_size, local_nb);
+    InvertedLists::ScopedCodes codes(index.invlists, 0);
+    InvertedLists::ScopedIds ids(index.invlists, 0);
+
+    for (uint8_t qb : {uint8_t{0}, uint8_t{4}, uint8_t{8}}) {
+        for (bool centered : {false, true}) {
+            if (qb == 0 && centered) {
+                continue;
+            }
+            for (bool store_pairs : {false, true}) {
+                SCOPED_TRACE(
+                        testing::Message()
+                        << "metric=" << metric << ", qb=" << int(qb)
+                        << ", centered=" << centered
+                        << ", store_pairs=" << store_pairs);
+
+                IVFRaBitQSearchParameters params;
+                params.qb = qb;
+                params.centered = centered;
+                std::unique_ptr<InvertedListScanner> scanner(
+                        index.get_InvertedListScanner(
+                                store_pairs, nullptr, &params));
+                scanner->set_query(xq.data());
+                scanner->set_list(0, 0.0f);
+
+                std::vector<float> all_distances(list_size);
+                for (size_t j = 0; j < list_size; j++) {
+                    all_distances[j] = scanner->distance_to_code(
+                            codes.get() + j * index.code_size);
+                }
+                std::vector<float> sorted_distances = all_distances;
+                std::sort(sorted_distances.begin(), sorted_distances.end());
+                const float threshold = sorted_distances[list_size / 2];
+
+                std::vector<float> expected_distances;
+                std::vector<idx_t> expected_ids;
+                for (size_t j = 0; j < list_size; j++) {
+                    const float distance = all_distances[j];
+                    const bool passes_threshold = metric == METRIC_INNER_PRODUCT
+                            ? distance > threshold
+                            : distance < threshold;
+                    if (passes_threshold) {
+                        expected_distances.push_back(distance);
+                        expected_ids.push_back(
+                                store_pairs ? lo_build(0, j) : ids[j]);
+                    }
+                }
+
+                CollectAllResultHandler handler;
+                handler.threshold = threshold;
+                const size_t nup = scanner->scan_codes(
+                        list_size,
+                        codes.get(),
+                        store_pairs ? nullptr : ids.get(),
+                        handler);
+
+                EXPECT_EQ(handler.D, expected_distances);
+                EXPECT_EQ(handler.I, expected_ids);
+                EXPECT_EQ(handler.stats.scan_cnt, list_size);
+                EXPECT_EQ(handler.stats.nheap_updates, expected_ids.size());
+                EXPECT_EQ(nup, expected_ids.size());
+            }
+        }
+    }
+}
+
 /*************************************************************
  * Test cases for different IVF index types
  *************************************************************/
@@ -213,6 +303,14 @@ TEST(TestIndexTypes, IVFSQ_L2) {
 
 TEST(TestIndexTypes, IVFRaBitQ_IP) {
     test_index("IVF32,RaBitQ", METRIC_INNER_PRODUCT);
+}
+
+TEST(RaBitQScanner, OneBitL2MatchesDistanceComputer) {
+    test_rabitq_one_bit_scanner(METRIC_L2);
+}
+
+TEST(RaBitQScanner, OneBitIPMatchesDistanceComputer) {
+    test_rabitq_one_bit_scanner(METRIC_INNER_PRODUCT);
 }
 
 TEST(TestIndexTypes, IVFRaBitQ4_L2) {

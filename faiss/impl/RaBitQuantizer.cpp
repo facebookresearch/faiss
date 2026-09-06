@@ -391,8 +391,7 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
         FAISS_ASSERT(ex_bits > 0);
 
         // Honor IDSelectorWithContext on the multibit path too, so a RaBitQ
-        // index does not silently lose the context hook once nb_bits >= 2 (the
-        // 1-bit path already routes through run_scan_codes1).
+        // index does not silently lose the context hook once nb_bits >= 2.
         const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
 
         size_t nup = 0;
@@ -605,14 +604,12 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
             ResultHandler& handler) final {
         const size_t code_size_base = (d + 7) / 8;
         const size_t ex_bits = nb_bits - 1;
-        FAISS_ASSERT(ex_bits > 0);
 
-        // Honor IDSelectorWithContext on the multibit path too, so a RaBitQ
-        // index does not silently lose the context hook once nb_bits >= 2 (the
-        // 1-bit path already routes through run_scan_codes1).
+        // Honor IDSelectorWithContext on both the 1-bit and multibit paths.
         const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
 
         size_t nup = 0;
+        float one_bit_threshold = handler.threshold;
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
@@ -621,6 +618,25 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
                     codes += code_size;
                     continue;
                 }
+            }
+
+            if (ex_bits == 0) {
+                const auto* base_fac = reinterpret_cast<const SignBitFactors*>(
+                        codes + code_size_base);
+                handler.stats.scan_cnt++;
+                const float dis = distance_to_code_1bit_impl(
+                        codes, base_fac, code_size_base);
+                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                const bool passes_threshold = keep_max
+                        ? one_bit_threshold < dis
+                        : one_bit_threshold > dis;
+                if (passes_threshold && handler.add_result(dis, id)) {
+                    handler.stats.nheap_updates++;
+                    nup++;
+                    one_bit_threshold = handler.threshold;
+                }
+                codes += code_size;
+                continue;
             }
 
             const auto* base_fac =
