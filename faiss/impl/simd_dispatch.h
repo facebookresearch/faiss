@@ -36,6 +36,16 @@ constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
 constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
         (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
 
+// A0 minus AVX512: functions implemented at NONE, AVX2, ARM_NEON and
+// RISCV_RVV but with no 512-bit specialization, so AVX512 machines fall
+// through to AVX2 in the dispatch switch. The RISCV_RVV entries are native
+// vector-length-agnostic kernels (__riscv_vsetvl-based, in the V-enabled
+// TUs) and dispatch straight to them at their own level - RVV never rides
+// the fixed-width 256-bit simdlib path (simd_dynamic_dispatch_migration.md,
+// pitfall 5).
+constexpr int AVAILABLE_SIMD_LEVELS_A0_NO_AVX512 =
+        AVAILABLE_SIMD_LEVELS_A0 & ~(1 << int(SIMDLevel::AVX512));
+
 // A0_SPR: same as A0 + AVX512_SPR (for functions with a dedicated SPR
 // specialization on top of an AVX512 fallback). Currently used by the
 // RaBitQ popcount kernels, which use VPOPCNTDQ on SPR+.
