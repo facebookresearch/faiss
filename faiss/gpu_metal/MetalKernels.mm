@@ -405,12 +405,25 @@ void MetalKernels::encodeIVFPQScanListPrecomp(
         int nprobe,
         bool wantMin,
         bool useTerm2,
-        bool useDis0) {
-    [enc setComputePipelineState:pipeline("ivf_scan_list_pq8_precomp")];
+        bool useDis0,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> coarseCentroids,
+        id<MTLBuffer> pqCentroids,
+        int d,
+        bool onTheFly,
+        bool shortLists) {
+    const char* name = onTheFly
+            ? (shortLists ? "ivf_scan_list_pq8_onthefly_small"
+                          : "ivf_scan_list_pq8_onthefly")
+            : (M > 16 ? "ivf_scan_list_pq8_precomp_large"
+                      : "ivf_scan_list_pq8_precomp");
+    [enc setComputePipelineState:pipeline(name)];
     // The kernel never reads term2 when useTerm2 is 0, but Metal requires a
     // valid binding; rebind qterm in that case.
-    [enc setBuffer:(term2 ? term2 : qterm) offset:0 atIndex:0];
-    [enc setBuffer:qterm offset:0 atIndex:1];
+    [enc setBuffer:(onTheFly ? coarseCentroids : (term2 ? term2 : qterm))
+             offset:0
+            atIndex:0];
+    [enc setBuffer:(onTheFly ? queries : qterm) offset:0 atIndex:1];
     [enc setBuffer:coarseDist offset:0 atIndex:2];
     [enc setBuffer:codes offset:0 atIndex:3];
     [enc setBuffer:ids offset:0 atIndex:4];
@@ -419,18 +432,24 @@ void MetalKernels::encodeIVFPQScanListPrecomp(
     [enc setBuffer:coarseAssign offset:0 atIndex:7];
     [enc setBuffer:perListDist offset:0 atIndex:8];
     [enc setBuffer:perListIdx offset:0 atIndex:9];
-    uint32_t args[7] = {
+    uint32_t args[8] = {
             (uint32_t)nq,
             (uint32_t)M,
             (uint32_t)k,
             (uint32_t)nprobe,
             wantMin ? 1u : 0u,
             useTerm2 ? 1u : 0u,
-            useDis0 ? 1u : 0u};
+            useDis0 ? 1u : 0u,
+            (uint32_t)d};
     [enc setBytes:args length:sizeof(args) atIndex:10];
+    if (onTheFly)
+        [enc setBuffer:pqCentroids offset:0 atIndex:11];
     [enc dispatchThreadgroups:MTLSizeMake(
                                       (NSUInteger)nq * (NSUInteger)nprobe, 1, 1)
-            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+            threadsPerThreadgroup:MTLSizeMake(
+                                          onTheFly && shortLists ? 32 : 256,
+                                          1,
+                                          1)];
 }
 
 void MetalKernels::encodeIVFMergeListsGrouped(
@@ -443,18 +462,20 @@ void MetalKernels::encodeIVFMergeListsGrouped(
         int numLists,
         int groupSize,
         int k,
-        bool wantMin) {
+        bool wantMin,
+        bool compact) {
     [enc setComputePipelineState:pipeline("ivf_merge_lists_grouped")];
     [enc setBuffer:inDist offset:0 atIndex:0];
     [enc setBuffer:inIdx offset:0 atIndex:1];
     [enc setBuffer:outDist offset:0 atIndex:2];
     [enc setBuffer:outIdx offset:0 atIndex:3];
-    uint32_t args[5] = {
+    uint32_t args[6] = {
             (uint32_t)nq,
             (uint32_t)numLists,
             (uint32_t)groupSize,
             (uint32_t)k,
-            wantMin ? 1u : 0u};
+            wantMin ? 1u : 0u,
+            compact ? 1u : 0u};
     [enc setBytes:args length:sizeof(args) atIndex:4];
     const NSUInteger nGroups =
             ((NSUInteger)numLists + (NSUInteger)groupSize - 1) /

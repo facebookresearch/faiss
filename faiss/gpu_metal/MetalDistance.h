@@ -134,7 +134,10 @@ bool runMetalIVFPQPrecomputeTerm2(
 /// kernel, and the coarse distance is added as the constant ||x - c||^2 term.
 /// The scan keeps an exact running top-k over arbitrarily long lists and the
 /// merge runs in rounds, so there is no list-length or nprobe*k cap; the
-/// remaining requirements are k <= 512, M <= 16 and d/M <= 256.
+/// remaining requirements are k <= 512, M <= 64 and d/M <= 256.
+/// onTheFly evaluates encountered codes directly (d <= 256), using the
+/// supplied coarse centroids; shortLists requires every list to have <= 128
+/// entries and selects a smaller threadgroup and scratch allocation.
 /// @p term2 may be nil for inner product (qterm is the whole table);
 /// @p useDis0 adds the coarse distance (required for L2, by_residual for IP).
 bool runMetalIVFPQPrecompSearch(
@@ -163,7 +166,11 @@ bool runMetalIVFPQPrecompSearch(
         id<MTLBuffer> perListIdxBuf,
         id<MTLBuffer> mergeScratchDistBuf,
         id<MTLBuffer> mergeScratchIdxBuf,
-        bool waitForCompletion = true);
+        bool waitForCompletion = true,
+        id<MTLBuffer> coarseCentroids = nil,
+        bool onTheFly = false,
+        bool shortLists = false,
+        bool compactMerge = true);
 
 } // namespace gpu_metal
 } // namespace faiss

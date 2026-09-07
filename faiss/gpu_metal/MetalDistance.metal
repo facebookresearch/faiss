@@ -1720,7 +1720,7 @@ constant constexpr uint PQPRE_CAND = PQPRE_MAX_K + PQPRE_SEG; // 1024
 constant constexpr uint PQPRE_LUT_MAX = 16 * 256; // M <= 16
 
 // Bitonic sort over tgDist/tgIdx[0..n), n a power of two. Sorted best-first.
-template <typename IndexT>
+template <typename IndexT, uint ThreadgroupSize = PQPRE_TG>
 inline void ivf_tg_bitonic(
     threadgroup float* tgDist,
     threadgroup IndexT* tgIdx,
@@ -1730,7 +1730,7 @@ inline void ivf_tg_bitonic(
 ) {
     for (uint k2 = 2; k2 <= n; k2 *= 2) {
         for (uint j = k2 >> 1; j > 0; j >>= 1) {
-            for (uint idx = tid; idx < n; idx += PQPRE_TG) {
+            for (uint idx = tid; idx < n; idx += ThreadgroupSize) {
                 uint partner = idx ^ j;
                 if (partner < n && partner > idx) {
                     bool ascending = ((idx & k2) == 0);
@@ -1972,12 +1972,353 @@ kernel void ivf_scan_list_pq8_precomp(
     }
 }
 
+// Large-dimensional fallback: stream the precomputed terms directly rather
+// than allocating an M*256 threadgroup LUT. Selection remains segmented/exact.
+kernel void ivf_scan_list_pq8_precomp_large(
+        device const float* term2 [[buffer(0)]],
+        device const float* qterm [[buffer(1)]],
+        device const float* coarseDist [[buffer(2)]],
+        device const uchar* codes [[buffer(3)]],
+        device const long* ids [[buffer(4)]],
+        device const uint* listOffset [[buffer(5)]],
+        device const uint* listLength [[buffer(6)]],
+        device const int* coarseAssign [[buffer(7)]],
+        device float* perListDist [[buffer(8)]],
+        device long* perListIdx [[buffer(9)]],
+        constant uint* params [[buffer(10)]],
+        uint tgid [[threadgroup_position_in_grid]],
+        uint tid [[thread_position_in_threadgroup]]) {
+    uint nq = params[0];
+    uint M = params[1];
+    uint k = params[2];
+    uint nprobe = params[3];
+    uint want_min = params[4];
+    uint useTerm2 = params[5];
+    uint useDis0 = params[6];
+
+    uint qi = tgid / nprobe;
+    uint pi = tgid % nprobe;
+    if (qi >= nq || k == 0)
+        return;
+
+    float sentinel = want_min ? 1e38f : -1e38f;
+    uint outBase = (qi * nprobe + pi) * k;
+    if (k > PQPRE_MAX_K || M > 64) {
+        for (uint i = tid; i < k; i += PQPRE_TG) {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+        return;
+    }
+
+    int list_no = coarseAssign[qi * nprobe + pi];
+    uint lLen = (list_no < 0) ? 0u : listLength[(uint)list_no];
+    if (lLen == 0) {
+        for (uint i = tid; i < k; i += PQPRE_TG) {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+        return;
+    }
+
+    threadgroup float tgDist[PQPRE_CAND];
+    threadgroup int tgIdx[PQPRE_CAND];
+    threadgroup float tgThresh;
+    threadgroup atomic_uint tgCount;
+
+    // Address the query and centroid terms without a threadgroup LUT.
+    uint lutN = M * 256;
+    uint qBase = qi * lutN;
+    uint t2Base = (uint)list_no * lutN;
+    if (tid == 0) {
+        tgThresh = sentinel;
+        atomic_store_explicit(&tgCount, 0u, memory_order_relaxed);
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+
+    float dis0 = useDis0 ? coarseDist[qi * nprobe + pi] : 0.0f;
+    uint lOff = listOffset[(uint)list_no];
+    uint kk = 0; // current size of the sorted running top-k (uniform)
+
+    for (uint segStart = 0; segStart < lLen; segStart += PQPRE_SEG) {
+        uint segN = min(PQPRE_SEG, lLen - segStart);
+        float thresh = tgThresh;
+        bool haveK = (kk >= k);
+
+        for (uint li = tid; li < segN; li += PQPRE_TG) {
+            uint vecIdx = lOff + segStart + li;
+            device const uchar* cv = codes + (ulong)vecIdx * M;
+            float dist = dis0;
+            for (uint m = 0; m < M; ++m) {
+                uint idx = m * 256 + (uint)cv[m];
+                dist += qterm[qBase + idx] +
+                        (useTerm2 ? term2[t2Base + idx] : 0.0f);
+            }
+            bool accept =
+                    !haveK || (want_min ? (dist < thresh) : (dist > thresh));
+            if (accept) {
+                uint slot = atomic_fetch_add_explicit(
+                        &tgCount, 1u, memory_order_relaxed);
+                tgDist[kk + slot] = dist;
+                tgIdx[kk + slot] = (int)vecIdx;
+            }
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+
+        uint count = atomic_load_explicit(&tgCount, memory_order_relaxed);
+        if (count > 0) {
+            uint total = kk + count;
+            uint paddedN = ivf_next_pow2(total);
+            for (uint i = total + tid; i < paddedN; i += PQPRE_TG) {
+                tgDist[i] = sentinel;
+                tgIdx[i] = -1;
+            }
+            threadgroup_barrier(mem_flags::mem_threadgroup);
+            ivf_tg_bitonic(tgDist, tgIdx, paddedN, tid, want_min);
+            kk = min(k, total);
+        }
+        if (tid == 0) {
+            atomic_store_explicit(&tgCount, 0u, memory_order_relaxed);
+            if (kk >= k)
+                tgThresh = tgDist[k - 1];
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+    }
+
+    for (uint i = tid; i < k; i += PQPRE_TG) {
+        if (i < kk) {
+            int vi = tgIdx[i];
+            perListDist[outBase + i] = tgDist[i];
+            perListIdx[outBase + i] = (vi < 0) ? -1L : ids[vi];
+        } else {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+    }
+}
+
+// For d <= 256, the codebook is small enough to reuse through the device cache.
+// Evaluate only encountered codes: dis0 + sum(p*p - 2*(q-c)*p) for L2,
+// or dis0 + sum(q*p) for IP. No M*256 table is needed, regardless of M.
+// Buffers 0/1 contain coarse centroids/queries, not precomputed terms.
+// This variant handles arbitrarily long lists in 512-code segments.
+kernel void ivf_scan_list_pq8_onthefly(
+        device const float* coarseCentroids [[buffer(0)]],
+        device const float* queries [[buffer(1)]],
+        device const float* coarseDist [[buffer(2)]],
+        device const uchar* codes [[buffer(3)]],
+        device const long* ids [[buffer(4)]],
+        device const uint* listOffset [[buffer(5)]],
+        device const uint* listLength [[buffer(6)]],
+        device const int* coarseAssign [[buffer(7)]],
+        device float* perListDist [[buffer(8)]],
+        device long* perListIdx [[buffer(9)]],
+        constant uint* params [[buffer(10)]],
+        device const float* pqCentroids [[buffer(11)]],
+        uint tgid [[threadgroup_position_in_grid]],
+        uint tid [[thread_position_in_threadgroup]]) {
+    uint nq = params[0];
+    uint M = params[1];
+    uint k = params[2];
+    uint nprobe = params[3];
+    uint want_min = params[4];
+    uint isL2 = params[5];
+    uint useDis0 = params[6];
+
+    uint qi = tgid / nprobe;
+    uint pi = tgid % nprobe;
+    if (qi >= nq || k == 0)
+        return;
+
+    float sentinel = want_min ? 1e38f : -1e38f;
+    uint outBase = (qi * nprobe + pi) * k;
+    if (k > PQPRE_MAX_K || M == 0 || M > 64 || params[7] == 0 ||
+        params[7] > 256 || params[7] % M != 0) {
+        for (uint i = tid; i < k; i += PQPRE_TG) {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+        return;
+    }
+
+    int list_no = coarseAssign[qi * nprobe + pi];
+    uint lLen = (list_no < 0) ? 0u : listLength[(uint)list_no];
+    if (lLen == 0) {
+        for (uint i = tid; i < k; i += PQPRE_TG) {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+        return;
+    }
+
+    threadgroup float tgDist[PQPRE_CAND];
+    threadgroup int tgIdx[PQPRE_CAND];
+    threadgroup float tgThresh;
+    threadgroup atomic_uint tgCount;
+
+    uint d = params[7];
+    uint dsub = d / M;
+    threadgroup float residual[256];
+    for (uint j = tid; j < d; j += PQPRE_TG)
+        residual[j] = queries[qi * d + j] -
+                (isL2 ? coarseCentroids[(uint)list_no * d + j] : 0.0f);
+    if (tid == 0) {
+        tgThresh = sentinel;
+        atomic_store_explicit(&tgCount, 0u, memory_order_relaxed);
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+
+    float dis0 = useDis0 ? coarseDist[qi * nprobe + pi] : 0.0f;
+    uint lOff = listOffset[(uint)list_no];
+    uint kk = 0; // current size of the sorted running top-k (uniform)
+
+    for (uint segStart = 0; segStart < lLen; segStart += PQPRE_SEG) {
+        uint segN = min(PQPRE_SEG, lLen - segStart);
+        float thresh = tgThresh;
+        bool haveK = (kk >= k);
+
+        for (uint li = tid; li < segN; li += PQPRE_TG) {
+            uint vecIdx = lOff + segStart + li;
+            device const uchar* cv = codes + (ulong)vecIdx * M;
+            float dist = dis0;
+            for (uint m = 0; m < M; ++m) {
+                uint base = (m * 256 + (uint)cv[m]) * dsub;
+                for (uint j = 0; j < dsub; ++j) {
+                    float p = pqCentroids[base + j];
+                    dist += isL2 ? p * p - 2.0f * residual[m * dsub + j] * p
+                                 : residual[m * dsub + j] * p;
+                }
+            }
+            bool accept =
+                    !haveK || (want_min ? (dist < thresh) : (dist > thresh));
+            if (accept) {
+                uint slot = atomic_fetch_add_explicit(
+                        &tgCount, 1u, memory_order_relaxed);
+                tgDist[kk + slot] = dist;
+                tgIdx[kk + slot] = (int)vecIdx;
+            }
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+
+        uint count = atomic_load_explicit(&tgCount, memory_order_relaxed);
+        if (count > 0) {
+            uint total = kk + count;
+            uint paddedN = ivf_next_pow2(total);
+            for (uint i = total + tid; i < paddedN; i += PQPRE_TG) {
+                tgDist[i] = sentinel;
+                tgIdx[i] = -1;
+            }
+            threadgroup_barrier(mem_flags::mem_threadgroup);
+            ivf_tg_bitonic(tgDist, tgIdx, paddedN, tid, want_min);
+            kk = min(k, total);
+        }
+        if (tid == 0) {
+            atomic_store_explicit(&tgCount, 0u, memory_order_relaxed);
+            if (kk >= k)
+                tgThresh = tgDist[k - 1];
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+    }
+
+    for (uint i = tid; i < k; i += PQPRE_TG) {
+        if (i < kk) {
+            int vi = tgIdx[i];
+            perListDist[outBase + i] = tgDist[i];
+            perListIdx[outBase + i] = (vi < 0) ? -1L : ids[vi];
+        } else {
+            perListDist[outBase + i] = sentinel;
+            perListIdx[outBase + i] = -1L;
+        }
+    }
+}
+
+// All lists must have <= 128 codes (checked by the host). Four vectors share
+// a 32-thread group, eight lanes per vector, to parallelize over subquantizers.
+// The residual and sorting scratch occupy only 2 KiB of threadgroup memory.
+// Buffers 0/1 contain coarse centroids/queries; params[7] is d (<= 256).
+kernel void ivf_scan_list_pq8_onthefly_small(
+        device const float* coarseCentroids [[buffer(0)]],
+        device const float* queries [[buffer(1)]],
+        device const float* coarseDist [[buffer(2)]],
+        device const uchar* codes [[buffer(3)]],
+        device const long* ids [[buffer(4)]],
+        device const uint* listOffset [[buffer(5)]],
+        device const uint* listLength [[buffer(6)]],
+        device const int* coarseAssign [[buffer(7)]],
+        device float* perListDist [[buffer(8)]],
+        device long* perListIdx [[buffer(9)]],
+        constant uint* params [[buffer(10)]],
+        device const float* pqCentroids [[buffer(11)]],
+        uint tgid [[threadgroup_position_in_grid]],
+        uint tid [[thread_position_in_threadgroup]]) {
+    uint M = params[1], k = params[2], nprobe = params[3], want_min = params[4];
+    uint isL2 = params[5], useDis0 = params[6], qi = tgid / nprobe;
+    if (qi >= params[0] || k == 0)
+        return;
+    int list = coarseAssign[tgid];
+    uint len = list < 0 ? 0u : listLength[list];
+    float sentinel = want_min ? 1e38f : -1e38f;
+    threadgroup float ds[128];
+    threadgroup int ix[128];
+    if (len > 128 || M > 64)
+        len = 0;
+    uint off = list < 0 ? 0u : listOffset[list];
+    float dis0 = useDis0 ? coarseDist[tgid] : 0.0f;
+    uint d = params[7];
+    if (M == 0 || M > 64 || k > PQPRE_MAX_K || d == 0 || d > 256 ||
+        d % M != 0) {
+        for (uint i = tid; i < k; i += 32) {
+            perListDist[tgid * k + i] = sentinel;
+            perListIdx[tgid * k + i] = -1L;
+        }
+        return;
+    }
+    uint dsub = d / M;
+    threadgroup float residual[256];
+    for (uint j = tid; j < d; j += 32)
+        residual[j] = queries[qi * d + j] -
+                (isL2 && list >= 0 ? coarseCentroids[uint(list) * d + j]
+                                   : 0.0f);
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    for (uint li = tid / 8; li < ((len + 3) / 4) * 4; li += 4) {
+        uint vec = off + li;
+        device const uchar* cv = codes + (ulong)vec * M;
+        float dist = 0;
+        for (uint m = tid % 8; li < len && m < M; m += 8) {
+            uint base = (m * 256 + uint(cv[m])) * dsub;
+            for (uint j = 0; j < dsub; ++j) {
+                float p = pqCentroids[base + j];
+                dist += isL2 ? p * p - 2.0f * residual[m * dsub + j] * p
+                             : residual[m * dsub + j] * p;
+            }
+        }
+        dist += simd_shuffle_down(dist, 4);
+        dist += simd_shuffle_down(dist, 2);
+        dist += simd_shuffle_down(dist, 1);
+        if (li < len && tid % 8 == 0) {
+            ds[li] = dist + dis0;
+            ix[li] = int(vec);
+        }
+    }
+    uint padded = ivf_next_pow2(len);
+    for (uint i = len + tid; i < padded; i += 32) {
+        ds[i] = sentinel;
+        ix[i] = -1;
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    ivf_tg_bitonic<int, 32>(ds, ix, padded, tid, want_min);
+    for (uint i = tid; i < k; i += 32) {
+        perListDist[tgid * k + i] = i < len ? ds[i] : sentinel;
+        perListIdx[tgid * k + i] = i < len ? ids[ix[i]] : -1L;
+    }
+}
+
 // Merge numLists per-query candidate lists (k entries each, best-first or
 // sentinel-padded) in groups of groupSize lists per threadgroup. Output is
 // nGroups = ceil(numLists / groupSize) lists of k per query. Run repeatedly
 // (ping-pong) until one list remains; exact for any nprobe * k as long as
 // groupSize * k <= MERGE_GROUP_CAND.
-// params: [nq, numLists, groupSize, k, want_min]
+// params: [nq, numLists, groupSize, k, want_min, compact]
 constant constexpr uint MERGE_GROUP_CAND = 2048;
 
 kernel void ivf_merge_lists_grouped(
@@ -2011,11 +2352,31 @@ kernel void ivf_merge_lists_grouped(
 
     threadgroup float tgDist[MERGE_GROUP_CAND];
     threadgroup long  tgIdx [MERGE_GROUP_CAND];
+    threadgroup atomic_uint validCount;
 
     uint inBase = (qi * numLists + listStart) * k;
-    for (uint i = tid; i < count; i += PQPRE_TG) {
-        tgDist[i] = inDist[inBase + i];
-        tgIdx [i] = inIdx [inBase + i];
+    if (params[5]) {
+        // Short IVF lists often contribute far fewer than k results. Compact
+        // away their padding before sorting, especially for large k.
+        if (tid == 0)
+            atomic_store_explicit(&validCount, 0u, memory_order_relaxed);
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+        for (uint i = tid; i < count; i += PQPRE_TG) {
+            long id = inIdx[inBase + i];
+            if (id >= 0) {
+                uint slot = atomic_fetch_add_explicit(
+                        &validCount, 1u, memory_order_relaxed);
+                tgDist[slot] = inDist[inBase + i];
+                tgIdx[slot] = id;
+            }
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+        count = atomic_load_explicit(&validCount, memory_order_relaxed);
+    } else {
+        for (uint i = tid; i < count; i += PQPRE_TG) {
+            tgDist[i] = inDist[inBase + i];
+            tgIdx[i] = inIdx[inBase + i];
+        }
     }
     uint paddedN = ivf_next_pow2(count);
     for (uint i = count + tid; i < paddedN; i += PQPRE_TG) {
@@ -2028,7 +2389,7 @@ kernel void ivf_merge_lists_grouped(
 
     uint outBase = (qi * nGroups + g) * k;
     for (uint i = tid; i < k; i += PQPRE_TG) {
-        outDist[outBase + i] = tgDist[i];
-        outIdx [outBase + i] = tgIdx [i];
+        outDist[outBase + i] = i < count ? tgDist[i] : sentinel;
+        outIdx [outBase + i] = i < count ? tgIdx[i] : -1L;
     }
 }

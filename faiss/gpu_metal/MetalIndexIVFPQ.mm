@@ -189,7 +189,10 @@ void MetalIndexIVFPQ::precomputeTerm2_() const {
 
     const int M = (int)cpuIndex_->pq.M;
     const idx_t nl = cpuIndex_->nlist;
-    if (M <= 0 || M > 16 || (d % M) != 0 || (d / M) > 256 || nl <= 0)
+    if (M <= 0 || M > 64 || (d % M) != 0 || (d / M) > 256 || nl <= 0)
+        return;
+    // These indexes evaluate only the encountered codes from the codebook.
+    if (M > 16 && d <= 256)
         return;
 
     // Mirror the CPU's precomputed_table_max_bytes default (2 GiB).
@@ -357,9 +360,25 @@ void MetalIndexIVFPQ::search(
     }
 
     size_t nprobe = cpuIndex_->nprobe;
-    if (auto* ivfParams = dynamic_cast<const IVFSearchParameters*>(params)) {
-        if (ivfParams->nprobe > 0)
-            nprobe = ivfParams->nprobe;
+    if (params) {
+        const auto* ivfParams =
+                dynamic_cast<const IVFSearchParameters*>(params);
+        const auto* pqParams =
+                dynamic_cast<const IVFPQSearchParameters*>(params);
+        // The GPU scans every code in each probe and cannot apply selectors,
+        // scan budgets, or polysemous filters. Preserve CPU semantics when
+        // extending GPU dispatch to configurations that previously fell back.
+        if (!ivfParams || ivfParams->nprobe == 0 || ivfParams->sel ||
+            ivfParams->max_codes || ivfParams->max_lists_num ||
+            ivfParams->ensure_topk_full ||
+            ivfParams->max_empty_result_buckets ||
+            ivfParams->quantizer_params || ivfParams->inverted_list_context ||
+            (pqParams &&
+             (pqParams->polysemous_ht || pqParams->scan_table_threshold))) {
+            cpuIndex_->search(n, x, k, distances, labels, params);
+            return;
+        }
+        nprobe = ivfParams->nprobe;
     }
     nprobe = std::min(nprobe, (size_t)cpuIndex_->nlist);
     if (nprobe == 0) {
@@ -424,13 +443,25 @@ void MetalIndexIVFPQ::search(
 
     bool ok = false;
 
-    // Preferred path: precomputed-table decomposition. The per-query term is
-    // built once per batch (no per-(query, probe) LUT), the scan is exact for
-    // any list length, and the merge runs in rounds for any nprobe * k.
+    // Preferred path: evaluate encountered codes directly for small dimensions,
+    // or use the precomputed decomposition. Both scans retain an exact top-k;
+    // merging runs in rounds for any nprobe * k. Keep the cached LUT kernel for
+    // M <= 16 when the small-list specialization cannot be used.
     const int dsub = d / M;
     const bool byResidual = cpuIndex_->by_residual;
-    const bool canPrecomp = M <= 16 && dsub <= 256 && kI <= 512 &&
-            (!isL2 || (byResidual && term2Buf_ != nil)) &&
+    const auto& listLengths = gpuIvf_->listLength();
+    const bool shortLists =
+            std::all_of(listLengths.begin(), listLengths.end(), [](size_t len) {
+                return len <= 128;
+            });
+    const bool onTheFly =
+            d <= 256 && M >= 8 && (M > 16 || shortLists) && centroidBuf_ != nil;
+    const bool compactMerge = std::any_of(
+            listLengths.begin(), listLengths.end(), [k](size_t len) {
+                return len < (size_t)k;
+            });
+    const bool canPrecomp = M <= 64 && dsub <= 256 && kI <= 512 &&
+            (!isL2 || (byResidual && (onTheFly || term2Buf_ != nil))) &&
             gpuIvf_->totalVecs() <= (size_t)std::numeric_limits<int32_t>::max();
     if (canPrecomp) {
         const size_t coarseDistBytes = (size_t)n * nprobe * sizeof(float);
@@ -438,14 +469,15 @@ void MetalIndexIVFPQ::search(
                 (size_t)n * (size_t)M * (size_t)ksub * sizeof(float);
         ensureSearchBuf_(
                 searchCoarseDistBuf_, searchCoarseDistCap_, coarseDistBytes);
-        ensureSearchBuf_(searchQTermBuf_, searchQTermCap_, qtermBytes);
+        if (!onTheFly)
+            ensureSearchBuf_(searchQTermBuf_, searchQTermCap_, qtermBytes);
         if (nprobeI > 1) {
             ensureSearchBuf_(
                     searchMergeDistBuf_, searchMergeDistCap_, perListBytes);
             ensureSearchBuf_(
                     searchMergeIdxBuf_, searchMergeIdxCap_, perListIdxB);
         }
-        if (searchCoarseDistBuf_ && searchQTermBuf_ &&
+        if (searchCoarseDistBuf_ && (onTheFly || searchQTermBuf_) &&
             (nprobeI == 1 || (searchMergeDistBuf_ && searchMergeIdxBuf_))) {
             std::memcpy(
                     [searchCoarseDistBuf_ contents],
@@ -476,7 +508,12 @@ void MetalIndexIVFPQ::search(
                     searchPerListDistBuf_,
                     searchPerListIdxBuf_,
                     searchMergeDistBuf_,
-                    searchMergeIdxBuf_);
+                    searchMergeIdxBuf_,
+                    true,
+                    centroidBuf_,
+                    onTheFly,
+                    shortLists,
+                    compactMerge);
         }
     }
 

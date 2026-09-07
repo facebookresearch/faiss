@@ -162,7 +162,13 @@ class MetalKernels {
             int nprobe,
             bool wantMin,
             bool useTerm2,
-            bool useDis0);
+            bool useDis0,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> coarseCentroids,
+            id<MTLBuffer> pqCentroids,
+            int d,
+            bool onTheFly,
+            bool shortLists);
 
     void encodeIVFMergeListsGrouped(
             id<MTLComputeCommandEncoder> enc,
@@ -174,7 +180,8 @@ class MetalKernels {
             int numLists,
             int groupSize,
             int k,
-            bool wantMin);
+            bool wantMin,
+            bool compact);
 
     static int selectTopKVariantIndex(int k);
 

@@ -489,7 +489,7 @@ bool runMetalIVFPQFullSearch(
 
 // Must match the limits in MetalDistance.metal (PQPRE_* / MERGE_GROUP_CAND).
 constexpr int kIvfPQPrecompMaxK = 512;
-constexpr int kIvfPQPrecompMaxM = 16;
+constexpr int kIvfPQPrecompMaxM = 64;
 constexpr int kIvfPQPrecompMaxDsub = 256;
 constexpr uint32_t kIvfMergeGroupCand = 2048;
 
@@ -551,10 +551,14 @@ bool runMetalIVFPQPrecompSearch(
         id<MTLBuffer> perListIdxBuf,
         id<MTLBuffer> mergeScratchDistBuf,
         id<MTLBuffer> mergeScratchIdxBuf,
-        bool waitForCompletion) {
+        bool waitForCompletion,
+        id<MTLBuffer> coarseCentroids,
+        bool onTheFly,
+        bool shortLists,
+        bool compactMerge) {
     if (!device || !queue || !queries || !coarseAssign || !coarseDist ||
-        !qtermScratch || !pqCentroids || !codes || !ids || !listOffset ||
-        !listLength || !outDistances || !outIndices) {
+        (!onTheFly && !qtermScratch) || !pqCentroids || !codes || !ids ||
+        !listOffset || !listLength || !outDistances || !outIndices) {
         return false;
     }
     if (nq <= 0 || d <= 0 || M <= 0 || k <= 0 || nprobe <= 0)
@@ -565,7 +569,9 @@ bool runMetalIVFPQPrecompSearch(
         return false;
     if (k > kIvfPQPrecompMaxK)
         return false;
-    if (isL2 && !term2)
+    if (onTheFly && (d > 256 || !coarseCentroids))
+        return false;
+    if (isL2 && !onTheFly && !term2)
         return false;
     if (nprobe > 1 &&
         (!perListDistBuf || !perListIdxBuf || !mergeScratchDistBuf ||
@@ -588,8 +594,9 @@ bool runMetalIVFPQPrecompSearch(
     id<MTLComputeCommandEncoder> enc = [cmdBuf computeCommandEncoder];
 
     // Step 1: per-query M*256 term (once per batch, not per probe).
-    K.encodeIVFPQBuildQueryTerm(
-            enc, queries, pqCentroids, qtermScratch, nq, d, M, isL2);
+    if (!onTheFly)
+        K.encodeIVFPQBuildQueryTerm(
+                enc, queries, pqCentroids, qtermScratch, nq, d, M, isL2);
 
     // Step 2: fused LUT-combine + list scan with exact running top-k.
     // With a single probe the per-list result is the final result.
@@ -613,7 +620,13 @@ bool runMetalIVFPQPrecompSearch(
             nprobe,
             wantMin,
             useTerm2,
-            useDis0);
+            useDis0,
+            queries,
+            coarseCentroids,
+            pqCentroids,
+            d,
+            onTheFly,
+            shortLists);
 
     // Step 3: merge the nprobe per-list top-k in rounds of groupSize lists
     // per threadgroup, ping-ponging between the per-list and scratch buffers.
@@ -638,7 +651,8 @@ bool runMetalIVFPQPrecompSearch(
                     numLists,
                     groupSize,
                     k,
-                    wantMin);
+                    wantMin,
+                    compactMerge);
             if (!last) {
                 std::swap(curD, altD);
                 std::swap(curI, altI);
