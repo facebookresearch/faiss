@@ -1644,7 +1644,7 @@ void reservePriorityQueue(
 /// Templated body of `search_from_candidate_unbounded`. The choice of
 /// max-heap vs min-heap for both `top_candidates` and `candidates` is
 /// derived from C via `TopCandidatesQueue` / `CandidatesQueue`.
-template <typename VTType, class C, bool use_selector>
+template <typename VTType, class C>
 TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         const HNSW& hnsw,
         const HNSW::Node& node,
@@ -1658,8 +1658,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     reservePriorityQueue(top_candidates, ef);
 
     TopCandidatesQueue<C> result_candidates;
-    if constexpr (use_selector) {
-        FAISS_ASSERT(sel);
+    if (sel) {
         // Keep rejected nodes in top_candidates so they can still be used
         // for graph traversal, but never return them as search results.
         reservePriorityQueue(result_candidates, ef);
@@ -1707,7 +1706,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         size_t saved_j[4];
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
-            if constexpr (use_selector) {
+            if (sel) {
                 // Check the size before top(): the starting node may be
                 // rejected, leaving result_candidates empty.
                 if (sel->is_member(idx) &&
@@ -1775,7 +1774,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     }
     stats.ndis += ndis;
 
-    if constexpr (use_selector) {
+    if (sel) {
         return result_candidates;
     } else {
         return top_candidates;
@@ -1797,7 +1796,7 @@ std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
         HNSWStats& stats) {
     using C = HNSW::C_distance;
     auto call = [&]<typename VTType>(VTType& vt_concrete) {
-        return search_from_candidate_unbounded_fixVT<VTType, C, false>(
+        return search_from_candidate_unbounded_fixVT<VTType, C>(
                 hnsw, node, qdis, ef, vt_concrete, stats, nullptr);
     };
     if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(vt)) {
@@ -1899,24 +1898,14 @@ HNSWStats search_impl(
                 "invalid HNSW search method");
         const IDSelector* sel = params ? params->sel : nullptr;
         auto call = [&]<typename VTType>(VTType& vt_concrete) {
-            if (sel) {
-                return search_from_candidate_unbounded_fixVT<VTType, C, true>(
-                        hnsw,
-                        HNSW::Node(d_nearest, nearest),
-                        qdis,
-                        ef,
-                        vt_concrete,
-                        stats,
-                        sel);
-            }
-            return search_from_candidate_unbounded_fixVT<VTType, C, false>(
+            return search_from_candidate_unbounded_fixVT<VTType, C>(
                     hnsw,
                     HNSW::Node(d_nearest, nearest),
                     qdis,
                     ef,
                     vt_concrete,
                     stats,
-                    nullptr);
+                    sel);
         };
         TopCandidatesQueue<C> top_candidates;
         if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
