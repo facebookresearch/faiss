@@ -98,6 +98,20 @@ struct Quantizer8bitDirect<SIMDLevel::RISCV_RVV>
         : Quantizer8bitDirect<SIMDLevel::NONE> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
             : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
+
+    void encode_vector(const float* x, uint8_t* code) const final {
+        std::size_t i = 0;
+        while (i < this->d) {
+            const std::size_t vl = __riscv_vsetvl_e32m4(this->d - i);
+            const vfloat32m4_t input = __riscv_vle32_v_f32m4(x + i, vl);
+            const vuint32m4_t converted =
+                    __riscv_vfcvt_rtz_xu_f_v_u32m4(input, vl);
+            const vuint16m2_t half = __riscv_vnsrl_wx_u16m2(converted, 0, vl);
+            const vuint8m1_t bytes = __riscv_vnsrl_wx_u8m1(half, 0, vl);
+            __riscv_vse8_v_u8m1(code + i, bytes, vl);
+            i += vl;
+        }
+    }
 };
 
 template <>

@@ -414,6 +414,45 @@ TEST(ScalarQuantizer, MinimalTraining) {
     }
 }
 
+TEST(ScalarQuantizer, RVVDirect8bitEncodingMatchesTruncation) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RVV is not available";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::RISCV_RVV);
+    // Negative fractions greater than -1 truncate to the valid code zero.
+    // Inputs outside (-1, 256) have no portable scalar conversion contract.
+    const std::vector<float> values = {
+            std::nextafter(-1.0f, 0.0f),
+            -0.75f,
+            -0.0f,
+            std::nextafter(0.0f, -1.0f),
+            0.0f,
+            std::nextafter(0.0f, 1.0f),
+            std::nextafter(1.0f, 0.0f),
+            1.0f,
+            std::nextafter(1.0f, 2.0f),
+            127.75f,
+            128.5f,
+            254.999f,
+            255.0f,
+            std::nextafter(256.0f, 0.0f)};
+    for (size_t d : {0, 1, 15, 16, 17, 31, 32, 33, 65, 769}) {
+        SCOPED_TRACE(d);
+        const size_t n = 3;
+        std::vector<float> input(d * n + 1);
+        std::vector<uint8_t> expected(d * n + 32, 0xa5);
+        for (size_t i = 0; i < d * n; ++i) {
+            input[i] = values[i % values.size()];
+            expected[16 + i] = static_cast<uint8_t>(input[i]);
+        }
+        std::vector<uint8_t> actual(d * n + 32, 0xa5);
+        faiss::ScalarQuantizer sq(d, faiss::ScalarQuantizer::QT_8bit_direct);
+        sq.compute_codes(input.data(), actual.data() + 16, n);
+        EXPECT_EQ(actual, expected);
+    }
+}
+
 TEST(TestSQ0bit, CoarseOnlySearch) {
     // Test QT_0bit: centroid-only distance
     int d = 64;
