@@ -891,9 +891,23 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
             faiss::ScalarQuantizer::QT_8bit_eden,
     };
     const std::vector<size_t> dims = {
-            1,   7,   31,  32,  33,  63,  64,
-            65,  127, 128, 129, 255, 256, 257,
-            511, 512, 513};
+            1,
+            7,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            127,
+            128,
+            129,
+            255,
+            256,
+            257,
+            511,
+            512,
+            513};
     const std::vector<faiss::MetricType> metrics = {
             faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT};
 
