@@ -270,6 +270,19 @@ class TestBinaryIVF(unittest.TestCase):
                 index.reconstruct(int(ids[i])), self.xb[i]
             )
 
+    def test_ivf_reconstruct_n_uses_code_size_stride(self):
+        d = 64
+        code_size = d // 8
+        xb = np.arange(3 * code_size, dtype="uint8").reshape(3, code_size)
+
+        quantizer = faiss.IndexBinaryFlat(d)
+        quantizer.add(np.zeros((1, code_size), dtype="uint8"))
+        index = faiss.IndexBinaryIVF(quantizer, d, 1)
+        index.is_trained = True
+        index.add(xb)
+
+        np.testing.assert_array_equal(index.reconstruct_n(0, 3), xb)
+
     def test_ivf_nprobe(self):
         """Test in case of nprobe > nlist."""
         d = self.xq.shape[1] * 8

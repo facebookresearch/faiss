@@ -549,7 +549,7 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
         GpuResourcesProvider* provider,
         int device,
         const faiss::IndexBinary* index,
-        const GpuClonerOptions* options) {
+        const GpuClonerOptions* /*options*/) {
     if (auto ii = dynamic_cast<const IndexBinaryFlat*>(index)) {
         GpuIndexBinaryFlatConfig config;
         config.device = device;

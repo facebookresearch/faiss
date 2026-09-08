@@ -29,19 +29,31 @@ struct WrappedSearchResult {
     ResultHandler& res;
     size_t nup = 0;
     idx_t list_no;
-
+    size_t list_size;
     const idx_t* ids;
     const IDSelector* sel;
+    IDSelectorContextDispatch dispatch;
 
     WrappedSearchResult(
             idx_t list_no_in,
+            size_t list_size_in,
             const idx_t* ids_in,
             const IDSelector* sel_in,
             ResultHandler& res_in)
-            : res(res_in), list_no(list_no_in), ids(ids_in), sel(sel_in) {}
+            : res(res_in),
+              list_no(list_no_in),
+              list_size(list_size_in),
+              ids(ids_in),
+              sel(sel_in),
+              // A selector implies real ids, so ids==nullptr iff store_pairs;
+              // that disables the context path exactly when ids[] is synthetic.
+              dispatch(sel_in, /*store_pairs=*/ids_in == nullptr) {}
 
     inline bool skip_entry(idx_t j) {
-        return use_sel && !sel->is_member(ids[j]);
+        return use_sel &&
+                !dispatch.is_member(
+                        ids[j],
+                        IDScanContext{ids, list_size, static_cast<size_t>(j)});
     }
 
     inline void add(idx_t j, float dis) {
@@ -474,6 +486,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             ResultHandler& handler) const override {
         WrappedSearchResult<C, use_sel> res(
                 this->key,
+                ncode,
                 this->store_pairs ? nullptr : ids,
                 this->sel,
                 handler);

@@ -38,6 +38,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -79,6 +80,7 @@ VectorTransform* Cloner::clone_VectorTransform(const VectorTransform* vt) {
     TRYCLONE(PCAMatrix, vt)
     TRYCLONE(ITQMatrix, vt)
     TRYCLONE(RandomRotationMatrix, vt)
+    TRYCLONE(HadamardRotation, vt)
     TRYCLONE(LinearTransform, vt) {
         FAISS_THROW_MSG("clone not supported for this type of VectorTransform");
     }
@@ -138,6 +140,7 @@ IndexIDMap* clone_IndexIDMap(const IndexIDMap* im) {
 IndexHNSW* clone_IndexHNSW(const IndexHNSW* ihnsw) {
     TRYCLONE(IndexHNSW2Level, ihnsw)
     TRYCLONE(IndexHNSWFlatPanorama, ihnsw)
+    TRYCLONE(IndexHNSWRaBitQ, ihnsw)
     TRYCLONE(IndexHNSWFlat, ihnsw)
     TRYCLONE(IndexHNSWPQ, ihnsw)
     TRYCLONE(IndexHNSWSQ, ihnsw)
@@ -293,6 +296,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexEDEN, index)
 
     TRYCLONE(IndexScalarQuantizer, index)
+    TRYCLONE(IndexRaBitQ, index)
     TRYCLONE(MultiIndexQuantizer, index)
 
     if (const IndexIVF* ivf = dynamic_cast<const IndexIVF*>(index)) {

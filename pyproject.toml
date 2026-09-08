@@ -119,9 +119,11 @@ cmake.define.FAISS_OPT_LEVEL = "generic"
 
 [tool.cibuildwheel]
 # Build all Python versions on Windows (no abi3); cp310 only on Linux/macOS (abi3).
-# Skip 32-bit and free-threaded builds. musllinux is built (see override below).
+# Skip Windows arm64 for Python 3.10 because Python 3.10 is not available as a
+# supported Windows arm64 target. Also skip 32-bit and free-threaded builds.
+# musllinux is built below.
 build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
-skip = "*-win32 *-manylinux_i686 cp3*t-*"
+skip = "cp310-win_arm64 *-win32 *-manylinux_i686 cp3*t-*"
 test-requires = ["numpy", "pytest", "scipy"]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke.py -v"
 
@@ -167,14 +169,26 @@ environment = {MACOSX_DEPLOYMENT_TARGET = "14.0"}
 select = "*-macosx_x86_64"
 environment = {MACOSX_DEPLOYMENT_TARGET = "15.0"}
 
+# Windows arm64: drop scipy for the same reason as musllinux above — the smoke
+# test does not import it, and a missing win_arm64 scipy wheel would force a
+# failing sdist build (needs a Fortran toolchain and a BLAS on the runner).
+[[tool.cibuildwheel.overrides]]
+select = "*-win_arm64"
+test-requires = ["numpy", "pytest"]
+
 [tool.cibuildwheel.windows]
-# Install prebuilt OpenBLAS (statically-linked MinGW runtime, no external deps).
-before-all = "powershell -Command \"Invoke-WebRequest -Uri 'https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.30/OpenBLAS-0.3.30-x64.zip' -OutFile openblas.zip; Expand-Archive openblas.zip -DestinationPath C:/openblas -Force\""
+# Install the native x64 or arm64 OpenBLAS package for the runner.
+# delvewheel only has to vendor the OpenBLAS DLL itself, because the x64 package
+# links the MinGW runtime statically. Re-check that property when bumping the
+# OpenBLAS version or adding an architecture: `delvewheel show` on a repaired
+# wheel lists what was vendored, and the PATH below hides a missed DLL from the
+# smoke test, so a wheel broken this way still passes CI.
+before-all = 'powershell -NoProfile -ExecutionPolicy Bypass -File "{package}\.github\scripts\install-openblas.ps1"'
 repair-wheel-command = "pip install delvewheel && delvewheel repair -w {dest_dir} {wheel} --add-path C:/openblas/bin --ignore-in-wheel"
 
 [tool.cibuildwheel.windows.environment]
 # BLAS_ROOT tells CMake's FindBLAS (via CMP0074) where to find OpenBLAS.
-# PATH includes the bin/ dir so delvewheel and tests can find libopenblas.dll.
+# PATH includes the bin/ dir so delvewheel and tests can find the OpenBLAS DLL.
 BLAS_ROOT = "C:/openblas"
 LAPACK_ROOT = "C:/openblas"
 PATH = "C:/openblas/bin;$PATH"

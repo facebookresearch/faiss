@@ -73,6 +73,42 @@ uint64_t bitwise_and_dot_product<SIMDLevel::RISCV_RVV>(
 }
 
 template <>
+BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
+        SIMDLevel::RISCV_RVV>(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb) {
+    // Fused single pass over @p data: reuse each loaded data group for both the
+    // doc-side popcount and the qb AND-dot bit-planes, mirroring the separate
+    // popcount<RVV> and bitwise_and_dot_product<RVV> kernels above.
+    size_t vlmax = __riscv_vsetvlmax_e16m8();
+    vuint16m8_t dot_acc = __riscv_vmv_v_x_u16m8(0, vlmax);
+    vuint16m8_t pop_acc = __riscv_vmv_v_x_u16m8(0, vlmax);
+    size_t i = 0;
+    while (i < size) {
+        size_t vl = __riscv_vsetvl_e8m4(size - i);
+        vuint8m4_t vx = __riscv_vle8_v_u8m4(data + i, vl);
+        vuint16m8_t vxp = __riscv_vzext_vf2_u16m8(popcount_u8m4(vx, vl), vl);
+        pop_acc = __riscv_vadd_vv_u16m8_tu(pop_acc, pop_acc, vxp, vl);
+        for (size_t j = 0; j < qb; j++) {
+            vuint8m4_t vq = __riscv_vle8_v_u8m4(query + j * size + i, vl);
+            vuint8m4_t vp = popcount_u8m4(__riscv_vand_vv_u8m4(vx, vq, vl), vl);
+            vuint16m8_t vw = __riscv_vzext_vf2_u16m8(vp, vl);
+            vw = __riscv_vsll_vx_u16m8(vw, j, vl);
+            dot_acc = __riscv_vadd_vv_u16m8_tu(dot_acc, dot_acc, vw, vl);
+        }
+        i += vl;
+    }
+    vuint32m1_t dot_red = __riscv_vmv_v_x_u32m1(0, 1);
+    dot_red = __riscv_vwredsumu_vs_u16m8_u32m1(dot_acc, dot_red, vlmax);
+    vuint32m1_t pop_red = __riscv_vmv_v_x_u32m1(0, 1);
+    pop_red = __riscv_vwredsumu_vs_u16m8_u32m1(pop_acc, pop_red, vlmax);
+    return {__riscv_vmv_x_s_u32m1_u32(dot_red),
+            __riscv_vmv_x_s_u32m1_u32(pop_red)};
+}
+
+template <>
 uint64_t bitwise_xor_dot_product<SIMDLevel::RISCV_RVV>(
         const uint8_t* query,
         const uint8_t* data,

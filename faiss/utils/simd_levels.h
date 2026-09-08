@@ -161,15 +161,16 @@ struct FAISS_API SIMDConfig {
     /// Returns bitmask of supported SIMD levels (1 << SIMDLevel).
     static uint64_t supported_simd_levels;
 
+    /// CPU implements AVX-512 by splitting over a 256-bit datapath
+    /// (AMD Zen 4 / Zen 4c "Bergamo", family 0x19). On such CPUs 512-bit
+    /// ops give no throughput gain, so the fast-scan QBS path prefers the
+    /// 256-bit kernel.
+    static bool avx512_split;
+
     static SIMDLevel auto_detect_simd_level();
 
-    static constexpr bool has_dynamic_dispatch() {
-#ifdef FAISS_ENABLE_DD
-        return true;
-#else
-        return false;
-#endif
-    }
+    /// Whether this faiss build dispatches SIMD at runtime.
+    static bool has_dynamic_dispatch();
 
     SIMDConfig(const char** faiss_simd_level_env = nullptr);
 

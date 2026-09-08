@@ -84,6 +84,24 @@ inline auto dispatch_with_fallback(LambdaType&& action) {
     }
 }
 
+/** Run action at current_level; on a null result, retry the next-lower level,
+ * down to NONE (terminal). action is called per level tried, so never moved. */
+template <int available_levels, SIMDLevel current_level, typename LambdaType>
+inline auto dispatch_simd_level_or_lower(LambdaType& action) {
+    if constexpr (current_level == SIMDLevel::NONE) {
+        return action.template operator()<SIMDLevel::NONE>();
+    } else {
+        if constexpr (available_levels & (1 << int(current_level))) {
+            if (auto result = action.template operator()<current_level>()) {
+                return result;
+            }
+        }
+        return dispatch_simd_level_or_lower<
+                available_levels,
+                get_simd_fallback(current_level)>(action);
+    }
+}
+
 /** The complete dispatching function. It takes into account:
  * - the currently selected SIMD level
  * - the compiled in SIMD levels (given by COMPILE_SIMD_XXX)
@@ -163,6 +181,18 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
 #endif
 }
 
+/** Like with_selected_simd_levels, but for factory actions that return null to
+ * decline a level (e.g. AVX-512 needing d % 16 == 0). Falls back to the next
+ * lower level, down to NONE. */
+template <int available_levels, typename LambdaType>
+inline auto with_simd_level_fallback(const LambdaType& action) {
+    return with_selected_simd_levels<available_levels>(
+            [&action]<SIMDLevel SL>() {
+                return dispatch_simd_level_or_lower<available_levels, SL>(
+                        action);
+            });
+}
+
 /**
  * Dispatch to a lambda with SIMDLevel as a compile-time constant.
  *
@@ -199,21 +229,24 @@ inline auto with_simd_level(LambdaType&& action) {
 }
 
 /**
- * Use for functions with AVX512_SPR-specific implementations.
- */
-template <typename LambdaType>
-inline auto with_simd_level_spr(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
-            std::forward<LambdaType>(action));
-}
-
-/**
  * Use for functions implemented with simdXintY (256-bit) operations
  * that don't have dedicated AVX512 or SVE implementations.
  */
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
     return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for functions that have A0-level implementations plus a dedicated
+ * ARM_SVE specialization. Plain with_simd_level() uses A0, which omits the
+ * ARM_SVE bit, so on an SVE host the ARM_SVE case falls through to ARM_NEON
+ * and the SVE specialization is never instantiated.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_a1(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
             std::forward<LambdaType>(action));
 }
 

@@ -44,6 +44,7 @@ set(FAISS_TEST_SRC
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
+  test_rabitq_fastscan.cpp
   test_super_kmeans_foundations.cpp
 )
 
@@ -61,13 +62,15 @@ if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
-# DD-only tests: x86-specific tests containing raw AVX2/AVX512 intrinsics
+# DD-only tests; x86-specific raw-intrinsic tests are added separately below.
 if(FAISS_OPT_LEVEL STREQUAL "dd")
   list(APPEND FAISS_TEST_SRC
+    test_distances_dispatch.cpp
     test_simd_perf.cpp
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     list(APPEND FAISS_TEST_SRC
+      test_rabitq_simd.cpp
       test_simd_levels_x86_avx2.cpp
       test_simd_levels_x86_avx512.cpp
     )

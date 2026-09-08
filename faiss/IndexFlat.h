@@ -176,7 +176,7 @@ struct IndexFlatL2Panorama : IndexFlatPanorama {
     explicit IndexFlatL2Panorama(
             idx_t d_in,
             size_t n_levels_in,
-            size_t batch_size_in = 512)
+            size_t batch_size_in = Panorama::kDefaultBatchSize)
             : IndexFlatPanorama(d_in, METRIC_L2, n_levels_in, batch_size_in) {}
 };
 
@@ -189,7 +189,7 @@ struct IndexFlatIPPanorama : IndexFlatPanorama {
     explicit IndexFlatIPPanorama(
             idx_t d_in,
             size_t n_levels_in,
-            size_t batch_size_in = 512)
+            size_t batch_size_in = Panorama::kDefaultBatchSize)
             : IndexFlatPanorama(
                       d_in,
                       METRIC_INNER_PRODUCT,

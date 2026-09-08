@@ -17,8 +17,10 @@
 
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
 
 namespace faiss {
@@ -222,17 +224,17 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
         }
     }
 
-    int max_level_2 = 0;
+    int local_max_level = 0;
     for (size_t i = 0; i < n; i++) {
         int pt_level = levels[i + n0] - 1;
-        if (pt_level > max_level_2) {
-            max_level_2 = pt_level;
+        if (pt_level > local_max_level) {
+            local_max_level = pt_level;
         }
         offsets.push_back(offsets.back() + cum_nb_neighbors(pt_level + 1));
     }
     neighbors.resize(offsets.back(), -1);
 
-    return max_level_2;
+    return local_max_level;
 }
 
 /** Enumerate vertices from nearest to farthest from query, keep a
@@ -304,6 +306,11 @@ template void HNSW::shrink_neighbor_list<HNSW::C_similarity>(
 namespace {
 
 using storage_idx_t = HNSW::storage_idx_t;
+
+inline size_t pruned_neighbor_size(size_t max_size, float prune_headroom) {
+    return static_cast<size_t>(
+            max_size - max_size * std::clamp(prune_headroom, 0.0f, 0.5f));
+}
 
 // Map a (high-level) HNSW comparator C — which uses int64_t IDs — to the
 // (low-level) MinimaxHeap comparator HC, which uses int32_t IDs.
@@ -784,7 +791,183 @@ HNSWStats hnsw_detail::greedy_update_nearest(
             hnsw, qdis, level, nearest, d_nearest);
 }
 
+/**************************************************************
+ * Deterministic addition subroutines
+ **************************************************************/
+
 namespace {
+
+template <class C>
+void compute_forward_links_impl(
+        HNSW& hnsw,
+        DistanceComputer& ptdis,
+        int pt_level,
+        storage_idx_t pt_id,
+        VisitedTable& vt,
+        std::vector<std::pair<storage_idx_t, int>>& pt_reverse_edges,
+        bool keep_max_size_level0) {
+    storage_idx_t nearest = hnsw.entry_point;
+    FAISS_ASSERT(nearest >= 0);
+    float d_nearest = ptdis(nearest);
+
+    int level = hnsw.max_level;
+    // greedy descent on the upper levels the point does not live on
+    for (; level > pt_level; level--) {
+        greedy_update_nearest_impl<C>(hnsw, ptdis, level, nearest, d_nearest);
+    }
+
+    // levels the point lives on: search from the same entry point
+    for (; level >= 0; level--) {
+        std::priority_queue<HNSW::NodeDistCloserT<C>> link_targets;
+        search_neighbors_to_add_dispatch<C>(
+                hnsw,
+                ptdis,
+                link_targets,
+                nearest,
+                d_nearest,
+                level,
+                vt,
+                false);
+
+        int M = hnsw.nb_neighbors(level);
+        shrink_neighbor_list_inner<C>(
+                ptdis, link_targets, M, keep_max_size_level0 && (level == 0));
+
+        // pt_id is not reachable yet, so the snapshot stays immutable for the
+        // other points in this batch
+        size_t begin, end;
+        hnsw.neighbor_range(pt_id, level, &begin, &end);
+        size_t i = begin;
+        while (!link_targets.empty()) {
+            storage_idx_t other_id = link_targets.top().id;
+            link_targets.pop();
+            // pt_id is in its own candidate list when it is the entry point
+            if (other_id == pt_id) {
+                continue;
+            }
+            FAISS_ASSERT(i < end);
+            hnsw.neighbors[i++] = other_id;
+            pt_reverse_edges.emplace_back(other_id, level);
+        }
+        while (i < end) {
+            hnsw.neighbors[i++] = -1;
+        }
+    }
+}
+
+template <class C>
+void merge_reverse_links_impl(
+        HNSW& hnsw,
+        DistanceComputer& dis,
+        storage_idx_t node,
+        int level,
+        std::vector<storage_idx_t>& incoming,
+        bool keep_max_size_level0) {
+    size_t begin, end;
+    hnsw.neighbor_range(node, level, &begin, &end);
+    size_t max_size = end - begin;
+
+    std::vector<storage_idx_t> cands;
+    cands.reserve(max_size + incoming.size());
+    for (size_t i = begin; i < end; i++) {
+        if (hnsw.neighbors[i] < 0) {
+            break;
+        }
+        cands.push_back(hnsw.neighbors[i]);
+    }
+    size_t n_existing = cands.size();
+
+    std::sort(incoming.begin(), incoming.end());
+    incoming.erase(
+            std::unique(incoming.begin(), incoming.end()), incoming.end());
+    for (storage_idx_t v : incoming) {
+        if (v == node) {
+            continue;
+        }
+        bool present = false;
+        for (size_t i = 0; i < n_existing; i++) {
+            if (cands[i] == v) {
+                present = true;
+                break;
+            }
+        }
+        if (!present) {
+            cands.push_back(v);
+        }
+    }
+
+    if (cands.size() <= max_size) {
+        size_t i = begin;
+        for (storage_idx_t v : cands) {
+            hnsw.neighbors[i++] = v;
+        }
+        while (i < end) {
+            hnsw.neighbors[i++] = -1;
+        }
+        return;
+    }
+
+    // Ties broken by id, so the result is independent of collection order.
+    std::vector<std::pair<float, storage_idx_t>> arr;
+    arr.reserve(cands.size());
+    for (storage_idx_t v : cands) {
+        arr.emplace_back(dis.symmetric_dis(node, v), v);
+    }
+    std::sort(
+            arr.begin(),
+            arr.end(),
+            [](const std::pair<float, storage_idx_t>& a,
+               const std::pair<float, storage_idx_t>& b) {
+                if (a.first != b.first) {
+                    // C::cmp(x, y) is true when y is "better" than x, so
+                    // a before b iff a is better than b.
+                    return C::cmp(b.first, a.first);
+                }
+                return a.second < b.second;
+            });
+
+    // Same headroom as add_link's reciprocal pruning, so degrees stay
+    // comparable between the two builds.
+    size_t pruned_size = pruned_neighbor_size(max_size, hnsw.prune_headroom);
+    if (pruned_size < 1) {
+        pruned_size = 1;
+    }
+
+    std::vector<std::pair<float, storage_idx_t>> kept;
+    std::vector<std::pair<float, storage_idx_t>> outsiders;
+    for (const auto& cand : arr) {
+        float dist_v1_q = cand.first;
+        bool good = true;
+        for (const auto& k : kept) {
+            float dist_v1_v2 = dis.symmetric_dis(k.second, cand.second);
+            if (C::cmp(dist_v1_q, dist_v1_v2)) {
+                good = false;
+                break;
+            }
+        }
+        if (good) {
+            kept.push_back(cand);
+            if (kept.size() >= pruned_size) {
+                break;
+            }
+        } else if (keep_max_size_level0) {
+            outsiders.push_back(cand);
+        }
+    }
+    for (size_t idx = 0; keep_max_size_level0 && kept.size() < max_size &&
+         idx < outsiders.size();
+         idx++) {
+        kept.push_back(outsiders[idx]);
+    }
+
+    size_t i = begin;
+    for (const auto& k : kept) {
+        hnsw.neighbors[i++] = k.second;
+    }
+    while (i < end) {
+        hnsw.neighbors[i++] = -1;
+    }
+}
 
 template <class C>
 void add_with_locks_impl(
@@ -864,6 +1047,49 @@ void HNSW::add_with_locks(
     }
 }
 
+void HNSW::compute_forward_links_deterministic(
+        DistanceComputer& ptdis,
+        int pt_level,
+        storage_idx_t pt_id,
+        VisitedTable& vt,
+        std::vector<std::pair<storage_idx_t, int>>& pt_reverse_edges,
+        bool keep_max_size_level0) {
+    if (is_similarity) {
+        compute_forward_links_impl<C_similarity>(
+                *this,
+                ptdis,
+                pt_level,
+                pt_id,
+                vt,
+                pt_reverse_edges,
+                keep_max_size_level0);
+    } else {
+        compute_forward_links_impl<C_distance>(
+                *this,
+                ptdis,
+                pt_level,
+                pt_id,
+                vt,
+                pt_reverse_edges,
+                keep_max_size_level0);
+    }
+}
+
+void HNSW::merge_reverse_links_deterministic(
+        DistanceComputer& dis,
+        storage_idx_t node,
+        int level,
+        std::vector<storage_idx_t>& incoming,
+        bool keep_max_size_level0) {
+    if (is_similarity) {
+        merge_reverse_links_impl<C_similarity>(
+                *this, dis, node, level, incoming, keep_max_size_level0);
+    } else {
+        merge_reverse_links_impl<C_distance>(
+                *this, dis, node, level, incoming, keep_max_size_level0);
+    }
+}
+
 /**************************************************************
  * Searching
  **************************************************************/
@@ -891,13 +1117,82 @@ inline void extract_search_params(
     }
 }
 
-/** Templated body of `search_from_candidates` — instantiated once per
- * VisitedTable subclass × comparator.
+struct DefaultCandidateDistanceEvaluator {
+    DistanceComputer& qdis;
+
+    template <typename GetThreshold, typename AddResult>
+    size_t evaluate(
+            const storage_idx_t* ids,
+            int count,
+            GetThreshold&& /* get_threshold */,
+            AddResult&& add_result) {
+        if (count == 4) {
+            float distances[4];
+            qdis.distances_batch_4(
+                    ids[0],
+                    ids[1],
+                    ids[2],
+                    ids[3],
+                    distances[0],
+                    distances[1],
+                    distances[2],
+                    distances[3]);
+            for (int i = 0; i < 4; ++i) {
+                add_result(ids[i], distances[i]);
+            }
+        } else {
+            for (int i = 0; i < count; ++i) {
+                add_result(ids[i], qdis(ids[i]));
+            }
+        }
+        return count;
+    }
+};
+
+/** RaBitQ's staged evaluator plugs into the same graph traversal as the
+ * default distance computer. Each candidate first receives a 1-bit estimate;
+ * the full code is evaluated only when its error bound can still beat the
+ * current result threshold.
  */
-template <typename VTType, class C>
+struct RaBitQCandidateDistanceEvaluator {
+    RaBitQDistanceComputer& rq;
+    const bool is_similarity;
+
+    template <typename GetThreshold, typename AddResult>
+    size_t evaluate(
+            const storage_idx_t* ids,
+            int count,
+            GetThreshold&& get_threshold,
+            AddResult&& add_result) {
+        size_t ndis = 0;
+        for (int i = 0; i < count; ++i) {
+            const uint8_t* code =
+                    rq.codes + static_cast<size_t>(ids[i]) * rq.code_size;
+            const float estimate = rq.distance_to_code_1bit(code);
+            rq.stats.n_1bit++;
+            ndis++;
+
+            float distance = estimate;
+            if (rq.should_refine(
+                        code, estimate, get_threshold(), is_similarity)) {
+                distance = rq.distance_to_code_full(code);
+                rq.stats.n_refine++;
+                ndis++;
+            }
+            add_result(ids[i], distance);
+        }
+        return ndis;
+    }
+};
+
+/** Templated body shared by the default and staged RaBitQ searches. The
+ * evaluator changes only how a group of unvisited neighbors receives its
+ * distance; traversal, result handling and stopping conditions stay identical.
+ */
+template <typename VTType, class C, typename DistanceEvaluator>
 int search_from_candidates_fixVT(
         const HNSW& hnsw,
-        DistanceComputer& qdis,
+        DistanceEvaluator& evaluator,
         ResultHandler& res,
         MinimaxHeapT<HC_for<C>>& candidates,
         VTType& vt,
@@ -906,7 +1201,7 @@ int search_from_candidates_fixVT(
         int nres_in,
         const SearchParameters* params) {
     int nres = nres_in;
-    int ndis = 0;
+    size_t ndis = 0;
 
     bool do_dis_check;
     int efSearch;
@@ -964,7 +1259,7 @@ int search_from_candidates_fixVT(
         }
 
         int counter = 0;
-        size_t saved_j[4];
+        storage_idx_t saved_j[4];
 
         threshold = res.threshold;
 
@@ -987,32 +1282,18 @@ int search_from_candidates_fixVT(
             counter += vt.set(v1) ? 1 : 0;
 
             if (counter == 4) {
-                float dis[4];
-                qdis.distances_batch_4(
-                        saved_j[0],
-                        saved_j[1],
-                        saved_j[2],
-                        saved_j[3],
-                        dis[0],
-                        dis[1],
-                        dis[2],
-                        dis[3]);
-
-                for (size_t id4 = 0; id4 < 4; id4++) {
-                    add_to_heap(saved_j[id4], dis[id4]);
-                }
-
-                ndis += 4;
-
+                ndis += evaluator.evaluate(
+                        saved_j,
+                        counter,
+                        [&] { return threshold; },
+                        add_to_heap);
                 counter = 0;
             }
         }
 
-        for (int icnt = 0; icnt < counter; icnt++) {
-            float dis = qdis(saved_j[icnt]);
-            add_to_heap(saved_j[icnt], dis);
-
-            ndis += 1;
+        if (counter > 0) {
+            ndis += evaluator.evaluate(
+                    saved_j, counter, [&] { return threshold; }, add_to_heap);
         }
 
         nstep++;
@@ -1033,12 +1314,12 @@ int search_from_candidates_fixVT(
     return nres;
 }
 
-/// Dispatches the VisitedTable concrete type for a given C, then calls
-/// the templated `search_from_candidates_fixVT<VTType, C>`.
-template <class C>
-int search_from_candidates_dispatch(
+/// Dispatches the VisitedTable concrete type while keeping the distance
+/// evaluator statically selected outside the graph traversal loop.
+template <class C, typename DistanceEvaluator>
+int search_from_candidates_evaluator_dispatch(
         const HNSW& hnsw,
-        DistanceComputer& qdis,
+        DistanceEvaluator& evaluator,
         ResultHandler& res,
         MinimaxHeapT<HC_for<C>>& candidates,
         VisitedTable& vt,
@@ -1049,7 +1330,7 @@ int search_from_candidates_dispatch(
     auto call = [&]<typename VTType>(VTType& vt_concrete) -> int {
         return search_from_candidates_fixVT<VTType, C>(
                 hnsw,
-                qdis,
+                evaluator,
                 res,
                 candidates,
                 vt_concrete,
@@ -1063,6 +1344,59 @@ int search_from_candidates_dispatch(
     }
     VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
     return call(vts);
+}
+
+template <class C>
+int search_from_candidates_dispatch(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    DefaultCandidateDistanceEvaluator evaluator{qdis};
+    return search_from_candidates_evaluator_dispatch<C>(
+            hnsw,
+            evaluator,
+            res,
+            candidates,
+            vt,
+            stats,
+            level,
+            nres_in,
+            params);
+}
+
+template <class C>
+int search_from_candidates_rabitq_dispatch(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    auto* rq = dynamic_cast<RaBitQDistanceComputer*>(&qdis);
+    FAISS_THROW_IF_NOT_MSG(
+            rq, "staged RaBitQ search requires an IndexRaBitQ storage");
+    FAISS_THROW_IF_NOT_MSG(
+            rq->nb_bits >= 2, "staged RaBitQ search requires nb_bits >= 2");
+    RaBitQCandidateDistanceEvaluator evaluator{*rq, hnsw.is_similarity};
+    return search_from_candidates_evaluator_dispatch<C>(
+            hnsw,
+            evaluator,
+            res,
+            candidates,
+            vt,
+            stats,
+            level,
+            nres_in,
+            params);
 }
 
 } // namespace
@@ -1491,37 +1825,49 @@ HNSWStats search_impl(
     }
 
     int ef = std::max(cur_efSearch, k);
-    if (bounded_queue) { // this is the most common branch, for now we only
-                         // support Panorama search in this branch
+    if (bounded_queue) {
         MinimaxHeapT<HC_for<C>> candidates(ef);
 
         candidates.push(nearest, d_nearest);
 
-        if (!hnsw.is_panorama) {
-            search_from_candidates_dispatch<C>(
-                    hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
-        } else {
-            // Panorama is L2-specific and is only valid for C_distance.
-            // The public dispatch ensures we never reach this code path
-            // with C != C_distance, but assert in debug builds.
-            if constexpr (std::is_same_v<C, HNSW::C_distance>) {
-                hnsw_detail::search_from_candidates_panorama(
-                        hnsw,
-                        index,
-                        qdis,
-                        res,
-                        candidates,
-                        vt,
-                        stats,
-                        0,
-                        0,
-                        params);
-            } else {
-                FAISS_THROW_MSG(
-                        "Panorama search is not supported with is_similarity=true");
-            }
+        switch (hnsw.search_method) {
+            case HNSW::SM_DEFAULT:
+                search_from_candidates_dispatch<C>(
+                        hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
+                break;
+            case HNSW::SM_RABITQ:
+                search_from_candidates_rabitq_dispatch<C>(
+                        hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
+                break;
+            case HNSW::SM_PANORAMA:
+                if constexpr (std::is_same_v<C, HNSW::C_distance>) {
+                    hnsw_detail::search_from_candidates_panorama(
+                            hnsw,
+                            index,
+                            qdis,
+                            res,
+                            candidates,
+                            vt,
+                            stats,
+                            0,
+                            0,
+                            params);
+                } else {
+                    FAISS_THROW_MSG(
+                            "Panorama search does not support similarity metrics");
+                }
+                break;
+            default:
+                FAISS_THROW_MSG("invalid HNSW search method");
         }
     } else {
+        FAISS_THROW_IF_NOT_MSG(
+                hnsw.search_method != HNSW::SM_RABITQ,
+                "staged RaBitQ search requires bounded_queue=true");
+        FAISS_THROW_IF_NOT_MSG(
+                hnsw.search_method == HNSW::SM_DEFAULT ||
+                        hnsw.search_method == HNSW::SM_PANORAMA,
+                "invalid HNSW search method");
         auto call = [&]<typename VTType>(VTType& vt_concrete) {
             return search_from_candidate_unbounded_fixVT<VTType, C>(
                     hnsw,
@@ -1579,6 +1925,50 @@ void search_level_0_impl(
 
     int k = extract_k_from_ResultHandler<C>(res);
 
+    auto search_candidates = [&](MinimaxHeapT<HC_for<C>>& candidates,
+                                 int nres) {
+        switch (hnsw.search_method) {
+            case HNSW::SM_DEFAULT:
+                return search_from_candidates_dispatch<C>(
+                        hnsw,
+                        qdis,
+                        res,
+                        candidates,
+                        vt,
+                        search_stats,
+                        0,
+                        nres,
+                        params);
+            case HNSW::SM_RABITQ:
+                return search_from_candidates_rabitq_dispatch<C>(
+                        hnsw,
+                        qdis,
+                        res,
+                        candidates,
+                        vt,
+                        search_stats,
+                        0,
+                        nres,
+                        params);
+            case HNSW::SM_PANORAMA:
+                // Preserve the pre-enum behavior: search_level_0 did not use
+                // Panorama's progressive traversal and fell back to the
+                // ordinary HNSW candidate search.
+                return search_from_candidates_dispatch<C>(
+                        hnsw,
+                        qdis,
+                        res,
+                        candidates,
+                        vt,
+                        search_stats,
+                        0,
+                        nres,
+                        params);
+            default:
+                FAISS_THROW_MSG("invalid HNSW search method");
+        }
+    };
+
     if (search_type == 1) {
         int nres = 0;
 
@@ -1598,16 +1988,7 @@ void search_level_0_impl(
 
             candidates.push(cj, nearest_d[j]);
 
-            nres = search_from_candidates_dispatch<C>(
-                    hnsw,
-                    qdis,
-                    res,
-                    candidates,
-                    vt,
-                    search_stats,
-                    0,
-                    nres,
-                    params);
+            nres = search_candidates(candidates, nres);
             nres = std::min(nres, candidates_size);
         }
     } else if (search_type == 2) {
@@ -1624,8 +2005,7 @@ void search_level_0_impl(
             candidates.push(cj, nearest_d[j]);
         }
 
-        search_from_candidates_dispatch<C>(
-                hnsw, qdis, res, candidates, vt, search_stats, 0, 0, params);
+        search_candidates(candidates, 0);
     }
 }
 

@@ -270,13 +270,25 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(
-            *this,
-            n0,
-            n,
-            x,
-            verbose,
-            hnsw.levels.size() == static_cast<size_t>(ntotal));
+    bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    if (hnsw_deterministic_build) {
+        hnsw_add_vertices_deterministic(
+                hnsw,
+                n0,
+                n,
+                d,
+                init_level0,
+                keep_max_size_level0,
+                preset_levels,
+                verbose,
+                [this] { return get_distance_computer(); },
+                [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                    dc.set_query((const float*)(x + (pt_id - n0) * code_size));
+                });
+    } else {
+        hnsw_add_vertices(*this, n0, n, x, verbose, preset_levels);
+    }
 }
 
 void IndexBinaryHNSW::reset() {

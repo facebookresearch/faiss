@@ -123,14 +123,20 @@ struct SingleQueryBlockResultHandler : BlockResultHandler<C, use_sel> {
         using ResultHandlerT<C>::threshold;
 
         explicit SingleResultHandler(SingleQueryBlockResultHandler& hr)
-                : the_handler(hr.the_handler) {}
+                : the_handler(hr.the_handler) {
+            threshold = the_handler.threshold;
+        }
 
         /// begin results for query # i
-        void begin(const size_t /* qid */) {}
+        void begin(const size_t /* qid */) {
+            threshold = the_handler.threshold;
+        }
 
         /// add one result for query i
         bool add_result(T dis, TI idx) final {
-            return the_handler.add_result(dis, idx);
+            bool updated = the_handler.add_result(dis, idx);
+            threshold = the_handler.threshold;
+            return updated;
         }
 
         /// series of results for query i is done

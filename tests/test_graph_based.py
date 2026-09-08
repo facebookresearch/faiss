@@ -39,6 +39,82 @@ class TestHNSW(unittest.TestCase):
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
+    def test_deterministic_build(self):
+        # The HNSW build is deterministic and lock-free: repeated builds, and
+        # builds at different thread counts, produce byte-identical graphs.
+        # nb must be large enough that the batch-size cap (2% of n) exceeds
+        # the >100 threshold gating the parallel build region; otherwise the
+        # build runs single-threaded and determinism is trivially untested.
+        d = 32
+        nb = 20000
+        xb = np.random.RandomState(123).random((nb, d)).astype("float32")
+
+        # build() mutates the process-global OpenMP thread count and the
+        # deterministic-build flag; restore both so they do not leak into
+        # subsequent tests.
+        self.addCleanup(faiss.omp_set_num_threads, faiss.omp_get_max_threads())
+        self.addCleanup(
+            setattr,
+            faiss.cvar,
+            "hnsw_deterministic_build",
+            faiss.cvar.hnsw_deterministic_build,
+        )
+        faiss.cvar.hnsw_deterministic_build = True
+
+        def build(nthreads):
+            faiss.omp_set_num_threads(nthreads)
+            index = faiss.IndexHNSWFlat(d, 16)
+            index.add(xb)
+            return index
+
+        # `index.hnsw` returns a fresh (copied) proxy and `.neighbors` /
+        # `.offsets` are views into it, so chaining `index.hnsw.neighbors`
+        # inline reads a freed temporary. Bind the hnsw proxy to keep it alive
+        # across the (copying) vector_to_array calls.
+        def graph_of(index):
+            hnsw = index.hnsw
+            return (
+                hnsw.max_level,
+                faiss.vector_to_array(hnsw.neighbors),
+                faiss.vector_to_array(hnsw.offsets),
+            )
+
+        idx8 = build(8)
+        max_level, g8a, offs = graph_of(idx8)
+
+        # graph is non-trivial: multi-level, many real edges
+        self.assertGreaterEqual(max_level, 1)
+        self.assertGreater(int((g8a >= 0).sum()), nb)
+
+        # reproducible across repeated builds and across thread counts
+        g8b = graph_of(build(8))[1]
+        g1 = graph_of(build(1))[1]
+        np.testing.assert_array_equal(g8a, g8b)
+        np.testing.assert_array_equal(g8a, g1)
+
+        # no self-loops
+        for i in range(nb):
+            seg = g8a[int(offs[i]) : int(offs[i + 1])]
+            self.assertNotIn(i, seg[seg >= 0].tolist())
+
+    def test_deterministic_build_recall(self):
+        # Same recall bar as test_hnsw (which exercises the lock-based default),
+        # so the deterministic graph is not merely reproducible but as good.
+        self.addCleanup(
+            setattr,
+            faiss.cvar,
+            "hnsw_deterministic_build",
+            faiss.cvar.hnsw_deterministic_build,
+        )
+        faiss.cvar.hnsw_deterministic_build = True
+
+        index = faiss.IndexHNSWFlat(self.xq.shape[1], 16)
+        index.add(self.xb)
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
+        self.io_and_retest(index, Dhnsw, Ihnsw)
+
     def test_range_search(self):
         index_flat = faiss.IndexFlat(self.xb.shape[1])
         index_flat.add(self.xb)
@@ -143,6 +219,7 @@ class TestHNSW(unittest.TestCase):
         zero_vecs = np.zeros((0, 10), dtype="float32")
         # infinite loop
         index.add(zero_vecs)
+        self.assertEqual(index.ntotal, 0)
 
     def test_hnsw_IP(self):
         d = self.xq.shape[1]
@@ -158,7 +235,7 @@ class TestHNSW(unittest.TestCase):
         self.assertGreaterEqual((Iref == Ihnsw).sum(), 470)
 
         mask = Iref[:, 0] == Ihnsw[:, 0]
-        assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
+        self.assertTrue(np.allclose(Dref[mask, 0], Dhnsw[mask, 0]))
 
     def test_ndis_stats(self):
         d = self.xq.shape[1]
@@ -194,14 +271,6 @@ class TestHNSW(unittest.TestCase):
         Dnew, Inew = index.search(self.xq, 5)
         np.testing.assert_array_equal(Dnew, Dref)
         np.testing.assert_array_equal(Inew, Iref)
-
-        if False:
-            # test reading without storage
-            # not implemented because it is hard to skip over an index
-            index3 = faiss.deserialize_index(
-                faiss.serialize_index(index), faiss.IO_FLAG_SKIP_STORAGE
-            )
-            self.assertEqual(index3.storage, None)
 
     def test_hnsw_reset(self):
         d = self.xb.shape[1]
@@ -607,9 +676,10 @@ class TestNSG(unittest.TestCase):
         d = self.xq.shape[1]
         R, pq_M = 32, 4
         index = faiss.index_factory(d, f"NSG{R}_PQ{pq_M}np")
-        assert isinstance(index, faiss.IndexNSGPQ)
+        self.assertIsInstance(index, faiss.IndexNSGPQ)
         idxpq = faiss.downcast_index(index.storage)
-        assert index.nsg.R == R and idxpq.pq.M == pq_M
+        self.assertEqual(index.nsg.R, R)
+        self.assertEqual(idxpq.pq.M, pq_M)
 
         flat_index = faiss.IndexFlat(d)
         flat_index.add(self.xb)
@@ -634,10 +704,10 @@ class TestNSG(unittest.TestCase):
         d = self.xq.shape[1]
         R = 32
         index = faiss.index_factory(d, f"NSG{R}_SQ8")
-        assert isinstance(index, faiss.IndexNSGSQ)
+        self.assertIsInstance(index, faiss.IndexNSGSQ)
         idxsq = faiss.downcast_index(index.storage)
-        assert index.nsg.R == R
-        assert idxsq.sq.qtype == faiss.ScalarQuantizer.QT_8bit
+        self.assertEqual(index.nsg.R, R)
+        self.assertEqual(idxsq.sq.qtype, faiss.ScalarQuantizer.QT_8bit)
 
         flat_index = faiss.IndexFlat(d)
         flat_index.add(self.xb)
@@ -743,6 +813,8 @@ class TestNNDescentGenRandom(unittest.TestCase):
 
         # This crashed with division by zero before the fix
         D, I = index.search(xq, k=1)
+        self.assertEqual(I.shape, (xq.shape[0], 1))
+        self.assertEqual(D.shape, (xq.shape[0], 1))
 
 
 class TestNNDescentKNNG(unittest.TestCase):
@@ -780,7 +852,7 @@ class TestNNDescentKNNG(unittest.TestCase):
                         recalls += 1
                         break
         recall = 1.0 * recalls / (nb * K)
-        assert recall > 0.99
+        self.assertGreater(recall, 0.99)
 
     def test_small_nndescent(self):
         """building a too small graph used to crash, make sure it raises

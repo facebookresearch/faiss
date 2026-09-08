@@ -35,12 +35,16 @@ size_t run_scan_codes1(
     size_t list_no = scanner.list_no;
     size_t code_size = scanner.code_size;
     const IDSelector* sel = scanner.sel;
+    // If the selector implements IDSelectorWithContext, hand it the scan
+    // context (ids, list_size, j) so it can exploit scan-order locality; the
+    // dispatch caches the once-per-list RTTI detection.
+    const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
     float threshold = handler.threshold;
     for (size_t j = 0; j < list_size; j++) {
         if (use_sel) {
             int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
             // skip code without computing distance
-            if (!sel->is_member(id)) {
+            if (!sel_dispatch.is_member(id, IDScanContext{ids, list_size, j})) {
                 codes += code_size;
                 continue;
             }

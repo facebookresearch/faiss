@@ -385,7 +385,7 @@ IndexIVF* parse_IndexIVF(
     }
     if (match("FlatPanorama([0-9]+)?(_([0-9]+))?")) {
         int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
-        int bs = mres_to_int(sm[3], 128);
+        int bs = mres_to_int(sm[3], Panorama::kDefaultBatchSize);
         return new IndexIVFFlatPanorama(
                 get_q(), d, nlist, nlevels, mt, own_il, bs);
     }
@@ -574,6 +574,13 @@ IndexHNSW* parse_IndexHNSW(
     }
     if (match(sq_pattern)) {
         return new IndexHNSWSQ(d, sq_types[sm[1].str()], hnsw_M, mt);
+    }
+    // Keep the bare RaBitQ token consistent with Flat and IVF: it means 1 bit.
+    // Use an explicit width such as RaBitQ4 to enable staged refinement.
+    if (match("RaBitQ([1-9])?")) {
+        // the capture is the bare digit, so no substr offset here
+        int nb_bits = mres_to_int(sm[1], 1);
+        return new IndexHNSWRaBitQ(d, hnsw_M, nb_bits, mt);
     }
     if (match("([0-9]+)\\+PQ([0-9]+)?")) {
         int ncent = mres_to_int(sm[1]);

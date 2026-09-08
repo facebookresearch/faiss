@@ -46,8 +46,7 @@ std::pair<double, double> run_search(
         IndexData& data,
         int d,
         int k,
-        int nprobe,
-        const char* factory_string) {
+        int nprobe) {
     ParameterSpace().set_index_parameter(data.index.get(), "nprobe", nprobe);
 
     omp_set_num_threads(1);
@@ -184,8 +183,7 @@ int main() {
         std::vector<faiss::BenchmarkResult> results;
         for (int k : ks) {
             for (int nprobe : nprobes) {
-                auto [mean, std] = faiss::run_search(
-                        data, d, k, nprobe, index_factory.c_str());
+                auto [mean, std] = faiss::run_search(data, d, k, nprobe);
                 results.push_back({index_factory, d, k, nprobe, mean, std});
             }
         }

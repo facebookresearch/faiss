@@ -235,7 +235,8 @@ inline auto with_bool(bool value, Lambda&& fn) {
  * accelerating the refinement stage.
  */
 struct Panorama {
-    static constexpr size_t kDefaultBatchSize = 128;
+    static constexpr size_t kDefaultBatchSize = 1024;
+    static constexpr size_t kLegacyBatchSize = 128;
 
     size_t d = 0;
     size_t code_size = 0;
@@ -322,12 +323,20 @@ struct Panorama {
         size_t batch_offset = batch_no * batch_size * code_size;
         const uint8_t* storage_base = codes_base + batch_offset;
 
+        // Honor IDSelectorWithContext: the scan-order position within the whole
+        // list is global_idx, so a lookahead crosses batch boundaries correctly
+        // (ids is the full list, length list_size).
+        IDSelectorContextDispatch sel_dispatch(
+                sel, /*store_pairs=*/ids == nullptr);
+
         // Initialize active set with ID-filtered vectors.
         size_t num_active = 0;
         for (size_t i = 0; i < curr_batch_size; i++) {
             size_t global_idx = batch_start + i;
             idx_t id = (ids == nullptr) ? global_idx : ids[global_idx];
-            bool include = !use_sel || sel->is_member(id);
+            bool include = !use_sel ||
+                    sel_dispatch.is_member(
+                            id, IDScanContext{ids, list_size, global_idx});
 
             active_indices[num_active] = i;
             float cum_sum = batch_cum_sums[i];

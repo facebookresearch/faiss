@@ -209,8 +209,12 @@ struct RaBitQHeapHandler
                 : 0;
 
         const size_t block_idx = base_db_idx / rabitq_index->bbs;
+        // aux_base points at this 32-lane sub-block's factors: the bbs block
+        // base plus the loop-invariant intra-block offset
+        // ((base_db_idx % bbs)). Only the per-element i term varies below.
         const uint8_t* aux_base = rabitq_index->codes.get() +
-                block_idx * full_block_size + packed_block_size;
+                block_idx * full_block_size + packed_block_size +
+                (base_db_idx % rabitq_index->bbs) * storage_size;
 
         for (size_t i = 0; i < max_vectors; i++) {
             const size_t db_idx = base_db_idx + i;

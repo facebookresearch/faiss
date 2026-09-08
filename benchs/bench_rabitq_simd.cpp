@@ -82,6 +82,18 @@ void bench_rabitq_and_dot_product_with_sum(benchmark::State& state) {
             });
 }
 
+void bench_rabitq_and_dot_product_with_sum_fused(benchmark::State& state) {
+    bench_rabitq_generic(
+            state,
+            [](const uint8_t* q, const uint8_t* x, size_t size, size_t qb)
+                    -> int64_t {
+                auto result = rabitq::bitwise_and_dot_product_with_popcount(
+                        q, x, size, qb);
+                // Synthetic operation using both inputs for benchmarking.
+                return result.popcount + result.dot_product;
+            });
+}
+
 template <SIMDLevel SL>
 void bench_rabitq_rearrange_impl(benchmark::State& state) {
     size_t qb = state.range(0);
@@ -125,6 +137,9 @@ BENCHMARK(bench_rabitq_xor_dot_product)
         ->ArgsProduct({qbs, dims})
         ->ArgNames({"qb", "d"});
 BENCHMARK(bench_rabitq_and_dot_product_with_sum)
+        ->ArgsProduct({qbs, dims})
+        ->ArgNames({"qb", "d"});
+BENCHMARK(bench_rabitq_and_dot_product_with_sum_fused)
         ->ArgsProduct({qbs, dims})
         ->ArgNames({"qb", "d"});
 BENCHMARK(bench_rabitq_rearrange_scalar)
