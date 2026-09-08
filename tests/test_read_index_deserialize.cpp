@@ -2076,6 +2076,36 @@ TEST(ReadIndexDeserialize, PreTransformChainDimensionMismatch) {
     expect_read_throws_with(buf, "d_out=4");
 }
 
+// Test: IndexPreTransform with an *empty* chain must still agree with its
+// sub-index on d. With no transform, reconstruct() hands the caller's
+// buffer -- sized from the outer d -- straight to the sub-index, so a
+// larger sub-index d is a heap overflow (T287094917).
+TEST(ReadIndexDeserialize, PreTransformEmptyChainDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, 0); // nt = 0, empty chain
+    push_minimal_flat(buf, /*d=*/8);
+
+    expect_read_throws_with(buf, "IndexPreTransform empty chain");
+}
+
+// A well-formed empty-chain IxPT still deserializes.
+TEST(ReadIndexDeserialize, PreTransformEmptyChainMatchingDimensionAccepted) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    push_val<int>(buf, 0); // nt = 0, empty chain
+    push_minimal_flat(buf, /*d=*/8);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW({
+        auto idx = read_index_up(&reader);
+        EXPECT_NE(idx, nullptr);
+    });
+}
+
 TEST(ReadIndexDeserialize, HadamardRotationInvalidDout) {
     // HRot format: fourcc("HRot") + seed(int) + d_in(int) + d_out(int) +
     //              is_trained(bool)
@@ -4762,4 +4792,135 @@ TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
     EXPECT_NO_THROW(
             idmap.search(1, xq.data(), 1, distances.data(), labels.data()));
     EXPECT_EQ(labels[0], -1);
+}
+
+// -----------------------------------------------------------------------
+// Panorama deserialization and reconstruct bounds (T287094917).
+//
+// "IxFP"/"IxFp" format: fourcc + d(int) + n_levels + batch_size +
+// ntotal(int64) + is_trained(bool) + codes vec + cum_sums vec.
+// Unlike every other index type this branch does not go through
+// read_index_header, so its own range checks are all that guard d and
+// ntotal.
+// -----------------------------------------------------------------------
+static void push_flat_panorama(
+        std::vector<uint8_t>& buf,
+        int d,
+        size_t n_levels,
+        size_t batch_size,
+        int64_t ntotal,
+        size_t codes_bytes,
+        size_t cum_sums_count) {
+    push_fourcc(buf, "IxFP");
+    push_val<int>(buf, d);
+    push_val<size_t>(buf, n_levels);
+    push_val<size_t>(buf, batch_size);
+    push_val<int64_t>(buf, ntotal);
+    push_val<bool>(buf, true);
+    push_val<size_t>(buf, codes_bytes);
+    buf.resize(buf.size() + codes_bytes, 0);
+    push_val<size_t>(buf, cum_sums_count);
+    buf.resize(buf.size() + cum_sums_count * sizeof(float), 0);
+}
+
+// A d large enough to make code_size = d * 4 overflow into gigabytes must
+// be rejected at read time, as it is for every other index type.
+TEST(ReadIndexDeserialize, FlatPanoramaDimensionOutOfRange) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/1280725833,
+            /*n_levels=*/1,
+            /*batch_size=*/1024,
+            /*ntotal=*/0,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    expect_read_throws_with(buf, "out of range");
+}
+
+TEST(ReadIndexDeserialize, FlatPanoramaNegativeNtotal) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/8,
+            /*n_levels=*/1,
+            /*batch_size=*/4,
+            /*ntotal=*/-1,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    expect_read_throws_with(buf, "invalid ntotal");
+}
+
+// End-to-end shape of the fuzzer crash: an IndexPreTransform with an empty
+// chain wrapping an empty IndexFlatPanorama. Everything deserializes, and
+// reconstruct() must then reject the out-of-range key instead of memcpy'ing
+// code_size bytes out of a zero-length codes buffer.
+TEST(ReadIndexDeserialize, PreTransformOverEmptyFlatPanoramaReconstruct) {
+    constexpr int d = 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_val<int>(buf, 0); // nt = 0, empty chain
+    push_flat_panorama(
+            buf,
+            d,
+            /*n_levels=*/1,
+            /*batch_size=*/4,
+            /*ntotal=*/0,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> idx;
+    ASSERT_NO_THROW({ idx = read_index_up(&reader); });
+    ASSERT_NE(idx, nullptr);
+
+    std::vector<float> recons(d, 0.0f);
+    EXPECT_THROW(idx->reconstruct(0, recons.data()), FaissException);
+}
+
+// "IHfP" format: fourcc + index_header + n_levels(size_t) + cum_sums vec +
+// HNSW graph + storage index. cum_sums must hold ntotal * (n_levels + 1)
+// floats; a short vector is an out-of-bounds read on the search path.
+TEST(ReadIndexDeserialize, HNSWFlatPanoramaCumSumsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHfP");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/1);
+    push_val<size_t>(buf, size_t(1)); // n_levels
+    push_vector<float>(buf, {0.0f});  // cum_sums: 1 float, needs 2
+
+    expect_read_throws_with(buf, "IndexHNSWFlatPanorama cum_sums");
+}
+
+TEST(ReadIndexDeserialize, HNSWFlatPanoramaZeroLevels) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHfP");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<size_t>(buf, size_t(0)); // n_levels = 0
+
+    expect_read_throws_with(buf, "invalid IHfP n_levels");
+}
+
+// IndexFlatPanorama overrides reconstruct()/reconstruct_n() and so does not
+// inherit the range guards in IndexFlat / IndexFlatCodes. Panorama's
+// level-major layout means an out-of-range key reads whole batch strides
+// past the end of `codes`.
+TEST(IndexFlatPanoramaSafety, ReconstructRejectsOutOfRangeKey) {
+    constexpr int d = 8;
+    IndexFlatL2Panorama index(d, /*n_levels_in=*/2, /*batch_size_in=*/4);
+    std::vector<float> recons(2 * d, 0.0f);
+
+    EXPECT_THROW(index.reconstruct(0, recons.data()), FaissException);
+
+    std::vector<float> xb(2 * d, 1.0f);
+    index.add(2, xb.data());
+
+    EXPECT_NO_THROW(index.reconstruct(1, recons.data()));
+    EXPECT_THROW(index.reconstruct(2, recons.data()), FaissException);
+    EXPECT_THROW(index.reconstruct(-1, recons.data()), FaissException);
+    EXPECT_NO_THROW(index.reconstruct_n(0, 2, recons.data()));
+    EXPECT_THROW(index.reconstruct_n(1, 2, recons.data()), FaissException);
 }

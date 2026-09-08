@@ -704,10 +704,12 @@ void IndexFlatPanorama::reset() {
 }
 
 void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     pano.reconstruct(key, recons, codes.data());
 }
 
 void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
+    FAISS_THROW_IF_NOT(n == 0 || (i >= 0 && i + n <= ntotal));
     Index::reconstruct_n(i, n, recons);
 }
 
