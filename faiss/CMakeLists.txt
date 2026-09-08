@@ -39,15 +39,16 @@ set(FAISS_SIMD_AVX512_SRC
   utils/simd_impl/rabitq_avx512.cpp
   utils/simd_impl/super_kmeans_kernels_avx512.cpp
 )
-# AVX-512 sources that additionally require AVX512_VPOPCNTDQ
-# (Sapphire Rapids and later). Compiled into faiss_avx512_spr only,
-# and into the DD faiss target with an extra per-file -mavx512vpopcntdq
-# flag. Not compiled into faiss_avx512 — that target stops at the
-# baseline AVX-512F/CD/VL/DQ/BW feature set.
+# AVX-512 sources that only require AVX512_VPOPCNTDQ on top of the baseline
+# AVX-512F/CD/VL/DQ/BW feature set. In DD builds these are available on CPUs
+# such as Ice Lake and Zen 4 without requiring the full SPR feature set.
+set(FAISS_SIMD_AVX512_VPOPCNT_SRC
+  utils/simd_impl/rabitq_avx512_vpopcnt.cpp
+  utils/hamming_distance/hamming_avx512_vpopcnt.cpp
+)
+# AVX-512 sources that require the full Sapphire Rapids feature set.
 set(FAISS_SIMD_AVX512_SPR_SRC
   impl/scalar_quantizer/sq-avx512-spr.cpp
-  utils/simd_impl/rabitq_avx512_spr.cpp
-  utils/hamming_distance/hamming_avx512_spr.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
@@ -80,7 +81,8 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   set(FAISS_SIMD_SRC
     ${FAISS_SIMD_AVX2_SRC}
     ${FAISS_SIMD_AVX512_SRC}
-    ${FAISS_SIMD_AVX512_SPR_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
+    ${FAISS_SIMD_AVX512_VPOPCNT_SRC}
+    ${FAISS_SIMD_AVX512_SPR_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
@@ -404,7 +406,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/hamming_computer.h
   utils/hamming_distance/hamming_computer-avx2.h
   utils/hamming_distance/hamming_computer-avx512.h
-  utils/hamming_distance/hamming_computer-avx512_spr.h
+  utils/hamming_distance/hamming_computer-avx512_vpopcnt.h
   utils/hamming_distance/hamming_computer-generic.h
   utils/hamming_distance/hamming_computer-neon.h
   utils/hamming_distance/hamming_computer-rvv.h
@@ -496,8 +498,16 @@ else()
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
-target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
-target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
+target_sources(faiss_avx512_spr PRIVATE
+  ${FAISS_SIMD_AVX2_SRC}
+  ${FAISS_SIMD_AVX512_SRC}
+  ${FAISS_SIMD_AVX512_VPOPCNT_SRC}
+  ${FAISS_SIMD_AVX512_SPR_SRC})
+target_compile_definitions(faiss_avx512_spr PRIVATE
+  COMPILE_SIMD_AVX2
+  COMPILE_SIMD_AVX512
+  COMPILE_SIMD_AVX512_VPOPCNT
+  COMPILE_SIMD_AVX512_SPR)
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -539,7 +549,10 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
   # Architecture-specific SIMD definitions for Dynamic Dispatch
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     target_compile_definitions(faiss PRIVATE
-      COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
+      COMPILE_SIMD_AVX2
+      COMPILE_SIMD_AVX512
+      COMPILE_SIMD_AVX512_VPOPCNT
+      COMPILE_SIMD_AVX512_SPR)
     if(NOT WIN32)
       # Baseline flags for common files (prevents auto-vectorization)
       target_compile_options(faiss PRIVATE
@@ -554,9 +567,13 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         PROPERTIES COMPILE_OPTIONS
           "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt"
       )
-      # SPR-only sources additionally require AVX512_VPOPCNTDQ.
-      # vpopcntq is the whole point of these files, so the extra flag
-      # is mandatory; without it the intrinsics fail to compile.
+      # VPOPCNT sources only require VPOPCNTDQ in addition to baseline AVX-512.
+      set_source_files_properties(${FAISS_SIMD_AVX512_VPOPCNT_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt"
+      )
+      # The remaining SPR sources require the full SPR feature set.
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
@@ -573,11 +590,11 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
       )
-      # MSVC has no per-feature flag for VPOPCNTDQ; /arch:AVX512
-      # enables it as part of the AVX-512 feature set used by recent
-      # toolchains. (Newer MSVC supports __isa_available checks at
-      # runtime; the SPR specialization is gated by COMPILE_SIMD_AVX512_SPR
-      # at the source level, so this is safe.)
+      # MSVC has no per-feature flag for VPOPCNTDQ.
+      set_source_files_properties(${FAISS_SIMD_AVX512_VPOPCNT_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
+      )
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"

@@ -28,6 +28,14 @@ namespace scalar_quantizer {
 // Define SL as alias for THE_LEVEL_TO_DISPATCH for use in this file
 constexpr SIMDLevel SL = THE_LEVEL_TO_DISPATCH;
 
+// The SPR scalar-quantizer implementation uses VPOPCNTDQ for its RaBitQ
+// popcount helpers, but those helpers belong to the narrower VPOPCNT
+// capability. Keep the SQ implementation at AVX512_SPR while explicitly
+// reusing the independently dispatched VPOPCNT kernels.
+template <SIMDLevel SL0>
+inline constexpr SIMDLevel rabitq_popcount_level =
+        SL0 == SIMDLevel::AVX512_SPR ? SIMDLevel::AVX512_VPOPCNT : SL0;
+
 /*******************************************************************
  * TurboQuant SIMD kernel: masked_sum
  * Compute sum of arr[j] where bit j of the bitmask is set.
@@ -259,9 +267,11 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
             if (qb > 0) {
                 // Integer popcount path for 1-bit MSE
                 size_t byte_size = (d + 7) / 8;
-                uint64_t and_result = rabitq::bitwise_and_dot_product<SL2>(
+                uint64_t and_result = rabitq::bitwise_and_dot_product<
+                        rabitq_popcount_level<SL2>>(
                         rearranged_q.data(), code, byte_size, qb);
-                uint64_t pop = rabitq::popcount<SL2>(code, byte_size);
+                uint64_t pop = rabitq::popcount<rabitq_popcount_level<SL2>>(
+                        code, byte_size);
                 mse_dot = mse_base +
                         mse_int_scale * static_cast<float>(and_result) +
                         mse_popcnt_scale * static_cast<float>(pop);
@@ -316,9 +326,11 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
         float qjl_dot;
         if (qb > 0 && int_qjl) {
             size_t byte_size = (d + 7) / 8;
-            uint64_t and_result = rabitq::bitwise_and_dot_product<SL2>(
-                    rearranged_qproj.data(), qjl_code, byte_size, qb);
-            uint64_t pop = rabitq::popcount<SL2>(qjl_code, byte_size);
+            uint64_t and_result =
+                    rabitq::bitwise_and_dot_product<rabitq_popcount_level<SL2>>(
+                            rearranged_qproj.data(), qjl_code, byte_size, qb);
+            uint64_t pop = rabitq::popcount<rabitq_popcount_level<SL2>>(
+                    qjl_code, byte_size);
             float pos_sum = qjl_popcnt_scale * static_cast<float>(pop) +
                     qjl_int_scale * static_cast<float>(and_result);
             qjl_dot = qjl_coeff * gamma * (2.0f * pos_sum - total_qproj_sum);

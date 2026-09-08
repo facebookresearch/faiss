@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifndef HAMMING_COMPUTER_AVX512_SPR_H
-#define HAMMING_COMPUTER_AVX512_SPR_H
+#ifndef HAMMING_COMPUTER_AVX512_VPOPCNT_H
+#define HAMMING_COMPUTER_AVX512_VPOPCNT_H
 
-// AVX512_SPR HammingComputer specializations using VPOPCNTDQ.
-// On Sapphire Rapids+, _mm512_popcnt_epi64 (and _mm256_popcnt_epi64 with VL)
-// are unconditionally available. This gives a faster path than the scalar
-// popcount fallback used in the base AVX512 specializations when compiled
-// without -mavx512vpopcntdq.
+// AVX512_VPOPCNT HammingComputer specializations using VPOPCNTDQ. This gives
+// a faster path than the scalar popcount fallback used in the base AVX512
+// specializations when compiled without -mavx512vpopcntdq.
 
 #include <cassert>
 #include <cstdint>
@@ -25,31 +23,31 @@
 namespace faiss {
 
 /***************************************************************************
- * AVX512_SPR inheriting specializations for types without custom SPR code.
+ * AVX512_VPOPCNT inheriting specializations without custom VPOPCNT code.
  ***************************************************************************/
 
-#define FAISS_INHERIT_HAMMING_SPR(Class)                                   \
-    template <>                                                            \
-    struct Class##                                                         \
-            _tpl<SIMDLevel::AVX512_SPR> : Class##_tpl<SIMDLevel::AVX512> { \
-        using Class##_tpl<SIMDLevel::AVX512>::Class##_tpl;                 \
+#define FAISS_INHERIT_HAMMING_VPOPCNT(Class)                                   \
+    template <>                                                                \
+    struct Class##                                                             \
+            _tpl<SIMDLevel::AVX512_VPOPCNT> : Class##_tpl<SIMDLevel::AVX512> { \
+        using Class##_tpl<SIMDLevel::AVX512>::Class##_tpl;                     \
     }
 
-FAISS_INHERIT_HAMMING_SPR(HammingComputer16);
-FAISS_INHERIT_HAMMING_SPR(HammingComputer20);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputer8);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputer16);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputer32);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputerM8);
+FAISS_INHERIT_HAMMING_VPOPCNT(HammingComputer16);
+FAISS_INHERIT_HAMMING_VPOPCNT(HammingComputer20);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputer8);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputer16);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputer32);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputerM8);
 
-#undef FAISS_INHERIT_HAMMING_SPR
+#undef FAISS_INHERIT_HAMMING_VPOPCNT
 
 /***************************************************************************
- * Custom AVX512_SPR specializations using VPOPCNTDQ.
+ * Custom AVX512_VPOPCNT specializations using VPOPCNTDQ.
  ***************************************************************************/
 
 template <>
-struct HammingComputer32_tpl<SIMDLevel::AVX512_SPR> {
+struct HammingComputer32_tpl<SIMDLevel::AVX512_VPOPCNT> {
     const uint8_t* a8;
 
     HammingComputer32_tpl() {}
@@ -81,7 +79,7 @@ struct HammingComputer32_tpl<SIMDLevel::AVX512_SPR> {
 };
 
 template <>
-struct HammingComputer64_tpl<SIMDLevel::AVX512_SPR> {
+struct HammingComputer64_tpl<SIMDLevel::AVX512_VPOPCNT> {
     const uint8_t* a8;
 
     HammingComputer64_tpl() {}
@@ -108,7 +106,7 @@ struct HammingComputer64_tpl<SIMDLevel::AVX512_SPR> {
 };
 
 template <>
-struct HammingComputerDefault_tpl<SIMDLevel::AVX512_SPR> {
+struct HammingComputerDefault_tpl<SIMDLevel::AVX512_VPOPCNT> {
     const uint8_t* a8;
     int quotient8;
     int remainder8;
