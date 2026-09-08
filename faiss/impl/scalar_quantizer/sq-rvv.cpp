@@ -14,7 +14,9 @@
 #include <faiss/impl/scalar_quantizer/similarities.h>
 
 #include <riscv_vector.h>
+#include <algorithm>
 #include <cmath>
+#include <cstring>
 
 namespace faiss {
 
@@ -139,18 +141,23 @@ struct DistanceComputerByte<Similarity, SIMDLevel::RISCV_RVV>
     using Base::Base;
 };
 
-//  * Fast path — QT_4bit_uniform + L2
+//  * Fast path — QT_4bit_uniform + L2 (float domain)
 //  *
-//  * 4-bit UNIFORM scaling: every component reconstructs as an affine function
-//  * of the 4-bit code,
-//  *     recon(c) = vmin + vdiff * (c + 0.5) / 15 = final_scale * c + bias
-//  * where final_scale = vdiff / 15. L2 distance between two reconstructions
-//  * therefore reduces to final_scale^2 * (q_c - c_c)^2 over integer codes,
-//  * so we can stay in the int domain and pay one float multiply at the end.
+//  * 4-bit UNIFORM scaling: every component reconstructs as
+//  *     recon(c) = vmin + vdiff * (c + 0.5) / 15 = c0 + a * c
+//  * with a = vdiff / 15 and c0 = vmin + 0.5 * a.
 //  *
-//  * The RVV path pre-nibbles the query into q_lo / q_hi (even / odd lanes)
-//  * once at set_query time and then processes native-VL-sized chunks of code
-//  * without ever decoding to float.
+//  * L2 distance is evaluated in the exact affine float domain,
+//  *     L2(q, code) = sum_i (q_i - recon(c_i))^2 = sum_i (e_i - a*c_i)^2
+//  * with e_i = q_i - c0, so the ORIGINAL float query is retained (no
+//  * integer-grid pre-quantization) and the result matches the scalar
+//  * NONE reference to float-reassociation precision. vdiff == 0
+//  * degenerates naturally (a == 0 -> L2 = sum_i (q_i - vmin)^2).
+//  *
+//  * The packed 4-bit code interleaves dimensions (even -> low nibble,
+//  * odd -> high nibble), so set_query deinterleaves e_i into e_lo/e_hi
+//  * once per query. The hot loop unpacks nibbles, converts to f32 and
+//  * accumulates (e - a*c)^2 via the scalar-operand vfnmsac.vf + vfmacc.
 //  ************************************************************************/
 
 template <>
@@ -164,144 +171,119 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    float vmin;
-    float vdiff;
-    float final_scale_sq;
-    std::vector<uint8_t> q_lo;
-    std::vector<uint8_t> q_hi;
+    size_t half; // bytes per code = ceil(d/2)
+    float a;     // vdiff / 15
+    float c0;    // vmin + 0.5 * a
+    std::vector<float> e_lo, e_hi; // q_i - c0, deinterleaved per query
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
             : d(d_in),
-              vmin(trained[0]),
-              vdiff(trained[1]),
-              q_lo((d_in + 1) / 2, 0),
-              q_hi((d_in + 1) / 2, 0) {
-        const float final_scale = vdiff / 15.0f;
-        final_scale_sq = final_scale * final_scale;
+              half((d_in + 1) / 2),
+              e_lo(half, 0.0f),
+              e_hi(half, 0.0f) {
+        a = trained[1] / 15.0f;
+        c0 = trained[0] + 0.5f * a;
     }
 
     void set_query(const float* x) final {
-        this->q = x;
-        const float inv_scale = (vdiff == 0.0f) ? 0.0f : 15.0f / vdiff;
+        q = x;
+        // e_i = q_i - c0, deinterleaved. Padding slot (odd d) keeps 0.
         for (size_t i = 0; i < d; i++) {
-            float val = (x[i] - vmin) * inv_scale;
-            int code = static_cast<int>(val);
-            if (code < 0) {
-                code = 0;
-            }
-            if (code > 15) {
-                code = 15;
-            }
             if (i % 2 == 0) {
-                q_lo[i / 2] = static_cast<uint8_t>(code);
+                e_lo[i / 2] = x[i] - c0;
             } else {
-                q_hi[i / 2] = static_cast<uint8_t>(code);
+                e_hi[i / 2] = x[i] - c0;
             }
         }
     }
 
-    /// Squared integer-domain L2 between pre-nibbled q and packed 4-bit code.
-    /// Returns the raw integer sum — caller multiplies by final_scale_sq.
-    ///
-    /// ID1: byte-domain loop over nb = ceil(d/2) code bytes with vsetvl
-    /// hoisted (0 vsetvl inside the hot loop), a cross-iteration vector
-    /// accumulator, and a SINGLE horizontal reduction after the loop.
-    /// e8m2 fills all lanes (32B per iteration at VLEN=128).
-    ///
-    /// ID3: signed-domain squaring — |q-c|^2 == (q-c)^2, so the 3-op
-    /// absdiff (vmaxu/vminu/vsub) per nibble stream is replaced by one
-    /// widening subtract (vwsubu: zext operands, signed i16 result) and
-    /// the square-accumulate becomes vwmacc (i16*i16 += i32). The i32
-    /// accumulator cannot overflow for any realistic d, which removes
-    /// the u16 strip-mine flush entirely — one flat loop.
-    int64_t accumulate_int_l2(const uint8_t* code) const {
-        const size_t nb = (d + 1) / 2; // bytes per code
-        // Odd d: the last byte's high nibble is padding. The standard
-        // encoder zeroes it and q_hi's tail slot is 0, but to stay exact
-        // for any producer we process that byte's low nibble in scalar.
+    /// Exact affine float-domain L2 over the packed 4-bit code.
+    /// Per byte chunk: unpack nibbles (e8), widen+convert to f32, then
+    /// t = e - a*c (vfnmsac.vf, scalar a) and acc += t*t (vfmacc).
+    /// vsetvl hoisted; _tu on the tail keeps lanes past vt intact.
+    /// Odd d: the last byte's high nibble is padding, so it is excluded
+    /// from the vector domain (nbv = nb - 1) and the low nibble is
+    /// processed in scalar to stay exact for any producer.
+    float compute_l2(const uint8_t* code) const {
+        const size_t nb = half; // bytes per code
         const size_t nbv = (d & 1) ? (nb - 1) : nb; // vector-domain bytes
-        int64_t acc = 0;
+        float total = 0.0f;
         size_t b = 0;
 
-        // Hoist vsetvl: full VLMAX for e8m2, reused across the hot loop.
-        const size_t vlb = __riscv_vsetvl_e8m2(nbv > 0 ? nbv : 1);
-        const uint8_t* qlp = q_lo.data();
-        const uint8_t* qhp = q_hi.data();
+        // Hoist vsetvl: VLMAX for e8m1 (== f32m4 lanes). d==0 guard.
+        const size_t vlb = __riscv_vsetvl_e8m1(nbv > 0 ? nbv : 1);
+        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vlb);
 
-        vint32m8_t acc32 = __riscv_vmv_v_x_i32m8(0, vlb);
-
-        // Hot loop: 3 loads, nibble split, two widening subtracts, two
-        // fused square-accumulates. No vsetvl, no reduction inside.
         for (; b + vlb <= nbv; b += vlb) {
-            vuint8m2_t packed = __riscv_vle8_v_u8m2(code + b, vlb);
-            vuint8m2_t ql = __riscv_vle8_v_u8m2(qlp + b, vlb);
-            vuint8m2_t qh = __riscv_vle8_v_u8m2(qhp + b, vlb);
+            vuint8m1_t packed = __riscv_vle8_v_u8m1(code + b, vlb);
+            vuint8m1_t lo = __riscv_vand_vx_u8m1(packed, 0x0F, vlb);
+            vuint8m1_t hi = __riscv_vsrl_vx_u8m1(packed, 4, vlb);
 
-            vuint8m2_t lo_nib = __riscv_vand_vx_u8m2(packed, 0x0F, vlb);
-            vuint8m2_t hi_nib = __riscv_vsrl_vx_u8m2(packed, 4, vlb);
+            vfloat32m4_t clo = __riscv_vfcvt_f_xu_v_f32m4(
+                    __riscv_vzext_vf4_u32m4(lo, vlb), vlb);
+            vfloat32m4_t t_lo = __riscv_vle32_v_f32m4(e_lo.data() + b, vlb);
+            t_lo = __riscv_vfnmsac_vf_f32m4(t_lo, a, clo, vlb);
+            acc = __riscv_vfmacc_vv_f32m4(acc, t_lo, t_lo, vlb);
 
-            // Signed differences in i16 (values in [-15, 15]); vwsubu
-            // returns the 2's-complement bit pattern as u16 — reinterpret.
-            vint16m4_t d_lo = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(ql, lo_nib, vlb));
-            vint16m4_t d_hi = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(qh, hi_nib, vlb));
-
-            acc32 = __riscv_vwmacc_vv_i32m8(acc32, d_lo, d_lo, vlb);
-            acc32 = __riscv_vwmacc_vv_i32m8(acc32, d_hi, d_hi, vlb);
+            vfloat32m4_t chi = __riscv_vfcvt_f_xu_v_f32m4(
+                    __riscv_vzext_vf4_u32m4(hi, vlb), vlb);
+            vfloat32m4_t t_hi = __riscv_vle32_v_f32m4(e_hi.data() + b, vlb);
+            t_hi = __riscv_vfnmsac_vf_f32m4(t_hi, a, chi, vlb);
+            acc = __riscv_vfmacc_vv_f32m4(acc, t_hi, t_hi, vlb);
         }
 
         // Tail: fewer than vlb bytes left — one shorter-vl pass into the
-        // same accumulator (only the first vt lanes are touched).
+        // same accumulator; _tu keeps lanes past vt intact.
         if (b < nbv) {
-            const size_t vt = __riscv_vsetvl_e8m2(nbv - b);
+            const size_t vt = __riscv_vsetvl_e8m1(nbv - b);
+            vuint8m1_t packed = __riscv_vle8_v_u8m1(code + b, vt);
+            vuint8m1_t lo = __riscv_vand_vx_u8m1(packed, 0x0F, vt);
+            vuint8m1_t hi = __riscv_vsrl_vx_u8m1(packed, 4, vt);
 
-            vuint8m2_t packed = __riscv_vle8_v_u8m2(code + b, vt);
-            vuint8m2_t ql = __riscv_vle8_v_u8m2(qlp + b, vt);
-            vuint8m2_t qh = __riscv_vle8_v_u8m2(qhp + b, vt);
+            vfloat32m4_t clo = __riscv_vfcvt_f_xu_v_f32m4(
+                    __riscv_vzext_vf4_u32m4(lo, vt), vt);
+            vfloat32m4_t t_lo = __riscv_vle32_v_f32m4(e_lo.data() + b, vt);
+            t_lo = __riscv_vfnmsac_vf_f32m4(t_lo, a, clo, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t_lo, t_lo, vt);
 
-            vuint8m2_t lo_nib = __riscv_vand_vx_u8m2(packed, 0x0F, vt);
-            vuint8m2_t hi_nib = __riscv_vsrl_vx_u8m2(packed, 4, vt);
-
-            vint16m4_t d_lo = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(ql, lo_nib, vt));
-            vint16m4_t d_hi = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(qh, hi_nib, vt));
-
-            acc32 = __riscv_vwmacc_vv_i32m8(acc32, d_lo, d_lo, vt);
-            acc32 = __riscv_vwmacc_vv_i32m8(acc32, d_hi, d_hi, vt);
+            vfloat32m4_t chi = __riscv_vfcvt_f_xu_v_f32m4(
+                    __riscv_vzext_vf4_u32m4(hi, vt), vt);
+            vfloat32m4_t t_hi = __riscv_vle32_v_f32m4(e_hi.data() + b, vt);
+            t_hi = __riscv_vfnmsac_vf_f32m4(t_hi, a, chi, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t_hi, t_hi, vt);
         }
 
-        // Single horizontal reduction over all vlb lanes.
-        vint32m1_t zero = __riscv_vmv_v_x_i32m1(0, 1);
-        vint32m1_t red = __riscv_vredsum_vs_i32m8_i32m1(acc32, zero, vlb);
-        acc += __riscv_vmv_x_s_i32m1_i32(red);
+        // Horizontal reduce over all vlb lanes.
+        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(
+                acc, __riscv_vfmv_v_f_f32m1(0.0f, 1), vlb);
+        total = __riscv_vfmv_f_s_f32m1_f32(red);
 
         // Odd d: last dimension lives in the low nibble of the last byte.
         if (d & 1) {
-            int diff = int(q_lo[nb - 1]) - int(code[nb - 1] & 0x0F);
-            acc += diff * diff;
+            float diff = e_lo[nb - 1] - a * float(code[nb - 1] & 0x0F);
+            total += diff * diff;
         }
-        return acc;
+        return total;
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return static_cast<float>(accumulate_int_l2(code)) * final_scale_sq;
+        return compute_l2(code);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
         // Not on the critical path for most workloads; reconstruct both
         // codes into nibbles scalar-style and compute squared distance.
+        // recon1 - recon2 = a * (c1 - c2).
         const uint8_t* c1 = codes + i * code_size;
         const uint8_t* c2 = codes + j * code_size;
-        int64_t acc = 0;
+        float acc = 0.0f;
         for (size_t k = 0; k < d; k++) {
-            uint8_t a = (k % 2 == 0) ? (c1[k / 2] & 0x0F) : (c1[k / 2] >> 4);
-            uint8_t b = (k % 2 == 0) ? (c2[k / 2] & 0x0F) : (c2[k / 2] >> 4);
-            int diff = int(a) - int(b);
+            uint8_t n1 = (k % 2 == 0) ? (c1[k / 2] & 0x0F) : (c1[k / 2] >> 4);
+            uint8_t n2 = (k % 2 == 0) ? (c2[k / 2] & 0x0F) : (c2[k / 2] >> 4);
+            float diff = a * float(int(n1) - int(n2));
             acc += diff * diff;
         }
-        return static_cast<float>(acc) * final_scale_sq;
+        return acc;
     }
 
     void query_to_codes_batch_4(
@@ -313,12 +295,10 @@ struct DCTemplate<
             float& dis1,
             float& dis2,
             float& dis3) const final {
-        // Simple 4x unroll of the single-code path; good enough as a first
-        // cut — gives ILP across the four independent accumulate loops.
-        dis0 = static_cast<float>(accumulate_int_l2(code_0)) * final_scale_sq;
-        dis1 = static_cast<float>(accumulate_int_l2(code_1)) * final_scale_sq;
-        dis2 = static_cast<float>(accumulate_int_l2(code_2)) * final_scale_sq;
-        dis3 = static_cast<float>(accumulate_int_l2(code_3)) * final_scale_sq;
+        dis0 = compute_l2(code_0);
+        dis1 = compute_l2(code_1);
+        dis2 = compute_l2(code_2);
+        dis3 = compute_l2(code_3);
     }
 };
 
@@ -358,7 +338,7 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half;                         // bytes per code = ceil(d/2)
+    size_t half; // bytes per code = ceil(d/2)
     std::vector<float> a_lo, a_hi;       // a_i = vdiff[i]/15, deinterleaved
     std::vector<float> rmin_lo, rmin_hi; // vmin[i] + 0.5*a_i, deinterleaved
     std::vector<float> e_lo, e_hi;       // q_i - rmin_i, per query
@@ -406,8 +386,10 @@ struct DCTemplate<
         const size_t nb = half; // total bytes to process
         size_t b = 0;
 
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group chunk)
-        size_t vlb = __riscv_vsetvl_e8m1(nb);
+        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group chunk).
+        // d==0 => nb==0: guard so vsetvl(0) doesn't return 0 and the
+        // chunk loop below (b + vlb <= nb with vlb==0) never stalls.
+        size_t vlb = __riscv_vsetvl_e8m1(nb > 0 ? nb : 1);
         vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vlb);
 
         for (; b + vlb <= nb; b += vlb) {
@@ -451,15 +433,21 @@ struct DCTemplate<
                     __riscv_vzext_vf4_u32m4(lo, vt), vt);
             vfloat32m4_t t_lo = __riscv_vle32_v_f32m4(e_lo.data() + b, vt);
             t_lo = __riscv_vfnmsac_vv_f32m4(
-                    t_lo, __riscv_vle32_v_f32m4(a_lo.data() + b, vt), clo, vt);
-            acc = __riscv_vfmacc_vv_f32m4(acc, t_lo, t_lo, vt);
+                    t_lo,
+                    __riscv_vle32_v_f32m4(a_lo.data() + b, vt),
+                    clo,
+                    vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t_lo, t_lo, vt);
 
             vfloat32m4_t chi = __riscv_vfcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf4_u32m4(hi, vt), vt);
             vfloat32m4_t t_hi = __riscv_vle32_v_f32m4(e_hi.data() + b, vt);
             t_hi = __riscv_vfnmsac_vv_f32m4(
-                    t_hi, __riscv_vle32_v_f32m4(a_hi.data() + b, vt), chi, vt);
-            acc = __riscv_vfmacc_vv_f32m4(acc, t_hi, t_hi, vt);
+                    t_hi,
+                    __riscv_vle32_v_f32m4(a_hi.data() + b, vt),
+                    chi,
+                    vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t_hi, t_hi, vt);
         }
 
         // Horizontal reduce over all vlb lanes
@@ -542,7 +530,7 @@ struct DCTemplate<
     using Sim = SimilarityIP<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half;                         // bytes per code = ceil(d/2)
+    size_t half; // bytes per code = ceil(d/2)
     std::vector<float> a_lo, a_hi;       // a_i = vdiff[i]/15, deinterleaved
     std::vector<float> rmin_lo, rmin_hi; // vmin[i] + 0.5*a_i, deinterleaved
     std::vector<float> b_lo, b_hi;       // q_i * a_i, per query
@@ -591,20 +579,17 @@ struct DCTemplate<
     }
 
     /// IP = K_q + sum_i b_i * c_i over the packed code.
-    /// Hot loop body per byte chunk: unpack nibbles (e8), widen+convert
-    /// to f32, then acc += b * c (vfmacc). Single accumulator; vsetvl
-    /// hoisted outside the loop (0 explicit vsetvl inside).
-    /// ID4 (kept): one scalar prefetch per chunk for the code stream.
-    /// ID8: manual software pipelining — the packed-byte load of chunk
-    /// k+1 is issued at the top of iteration k (prologue + rotate), so
-    /// the load-use distance spans a whole iteration body instead of a
-    /// couple of instructions. Zero extra instructions, +1 live m1 reg.
+    /// Hot loop per byte chunk: unpack nibbles, widen to f32, acc += b*c.
+    /// Software-pipelined: the next chunk's load is issued at the top of
+    /// this iteration (prologue + rotate) to stretch the load-use distance.
     float compute_ip(const uint8_t* code) const {
         const size_t nb = half; // total bytes to process
         size_t bpos = 0;
 
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group chunk)
-        size_t vlb = __riscv_vsetvl_e8m1(nb);
+        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group chunk).
+        // d==0 => nb==0: guard so the `if (nb >= vlb)` prologue + chunk
+        // loop (bpos + 2*vlb <= nb) don't stall on vlb==0.
+        size_t vlb = __riscv_vsetvl_e8m1(nb > 0 ? nb : 1);
         vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vlb);
 
         if (nb >= vlb) {
@@ -678,7 +663,7 @@ struct DCTemplate<
 
             vfloat32m4_t clo = __riscv_vfcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf4_u32m4(lo, vt), vt);
-            acc = __riscv_vfmacc_vv_f32m4(
+            acc = __riscv_vfmacc_vv_f32m4_tu(
                     acc,
                     __riscv_vle32_v_f32m4(b_lo.data() + bpos, vt),
                     clo,
@@ -686,7 +671,7 @@ struct DCTemplate<
 
             vfloat32m4_t chi = __riscv_vfcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf4_u32m4(hi, vt), vt);
-            acc = __riscv_vfmacc_vv_f32m4(
+            acc = __riscv_vfmacc_vv_f32m4_tu(
                     acc,
                     __riscv_vle32_v_f32m4(b_hi.data() + bpos, vt),
                     chi,
@@ -739,32 +724,15 @@ struct DCTemplate<
 
 //  * Fast path — QT_4bit_uniform + IP
 //  *
-//  * 4-bit UNIFORM scaling: every component reconstructs as an affine
-//  * function of the 4-bit code with SHARED scalar constants,
-//  *     recon(c) = vmin + vdiff * (c + 0.5) / 15 = c0 + a * c
-//  * with a = vdiff / 15 and c0 = vmin + 0.5 * a. The inner product
-//  * against the query then folds into a query-only constant plus one
-//  * uniformly-scaled integer-code dot product:
-//  *     IP(q, code) = sum_i q_i * (c0 + a * c_i)
-//  *                 = c0 * sum_i q_i  +  a * sum_i q_i * c_i
-//  *                 = K_q + a * S
-//  * K_q = c0 * sum(q) is precomputed once per query in set_query, so the
-//  * hot loop only evaluates S = sum_i q_i * c_i. Unlike the NON_UNIFORM
-//  * IP variant there is no per-dimension coefficient stream to build —
-//  * the q streams ARE the raw query components (deinterleaved).
+//  * Uniform scaling: recon(c) = vmin + vdiff*(c + 0.5)/15 = c0 + a*c,
+//  * with a = vdiff/15, c0 = vmin + 0.5*a. The inner product folds into a
+//  * query-only constant plus one uniformly-scaled integer-code dot product:
+//  *     IP(q, code) = c0 * sum_i q_i + a * sum_i q_i*c_i = K_q + a*S
+//  * K_q is precomputed in set_query; the hot loop only evaluates S.
 //  *
-//  * The packed 4-bit code interleaves dimensions (even dim -> low nibble,
-//  * odd dim -> high nibble), so set_query deinterleaves q into q_lo/q_hi
-//  * once per query. Hot loop per 16-byte code chunk (32 dims, e8m1 ->
-//  * f32m4): unpack nibbles, widen+convert to f32, acc += q * c (vfmacc,
-//  * single accumulator). vsetvl hoisted (0 explicit vsetvl in the loop);
-//  * software pipelining (next-chunk packed load issued at the top of the
-//  * current iteration) + one scalar prefetch per chunk, both carried
-//  * over from the board-validated qt_4bit_ip v6 kernel shape.
-//  *
-//  * Padding: for odd d the last byte's high nibble is not a real
-//  * dimension; q_hi keeps 0 in that slot so its contribution is 0.
-//  * vdiff == 0 degenerates naturally (a = 0 -> IP = K_q), no branch.
+//  * The packed code interleaves dims (even -> low nibble, odd -> high), so
+//  * set_query deinterleaves q into q_lo/q_hi. Odd-d padding nibble keeps
+//  * q_hi = 0. vdiff == 0 degenerates naturally (a = 0 -> IP = K_q).
 //  ************************************************************************/
 
 template <>
@@ -781,8 +749,8 @@ struct DCTemplate<
     size_t half; // bytes per code = ceil(d/2)
     float vmin;
     float vdiff;
-    float a;                       // vdiff / 15
-    float c0;                      // vmin + 0.5 * a
+    float a;  // vdiff / 15
+    float c0; // vmin + 0.5 * a
     std::vector<float> q_lo, q_hi; // query components, deinterleaved
     float k_q;                     // c0 * sum_i q_i, per query
 
@@ -815,22 +783,17 @@ struct DCTemplate<
         k_q = c0 * sum;
     }
 
-    /// S = sum_i q_i * c_i over the packed code (raw integer nibbles).
-    /// Hot loop body per byte chunk: unpack nibbles (e8), widen+convert
-    /// to f32, then acc += q * c (vfmacc). Single accumulator; vsetvl
-    /// hoisted outside the loop (0 explicit vsetvl inside). Software
-    /// pipelining: the packed-byte load of chunk k+1 is issued at the
-    /// top of iteration k (prologue + rotate) so the load-use distance
-    /// spans a whole iteration body. One scalar prefetch per chunk.
+    /// S = sum_i q_i * c_i over the packed code. Software-pipelined hot
+    /// loop (prologue + rotate) with dual accumulators per nibble stream.
     float compute_qc_dot(const uint8_t* code) const {
         const size_t nb = half; // total bytes to process
         size_t bpos = 0;
 
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group chunk)
-        size_t vlb = __riscv_vsetvl_e8m1(nb);
-        // ID3: dual accumulators — one per nibble stream — break the
-        // per-iteration serial chain of two dependent vfmacc ops into
-        // two independent chains (f32 FMA latency > 1 iter issue time).
+        // Hoist vsetvl; d==0 => nb==0, guard so the chunk loop can't
+        // stall on vlb==0.
+        size_t vlb = __riscv_vsetvl_e8m1(nb > 0 ? nb : 1);
+        // Dual accumulators (one per nibble stream) break the serial
+        // chain of two dependent FMAs into two independent chains.
         vfloat32m4_t acc_lo = __riscv_vfmv_v_f_f32m4(0.0f, vlb);
         vfloat32m4_t acc_hi = __riscv_vfmv_v_f_f32m4(0.0f, vlb);
 
@@ -841,8 +804,6 @@ struct DCTemplate<
             // Main loop: while a full NEXT chunk exists, issue its load
             // first, then process the current one.
             for (; bpos + 2 * vlb <= nb; bpos += vlb) {
-                // ID5: prefetch distance 256 -> 512 (8 chunks ahead) —
-                // probe this kernel's sensitivity to SW prefetch depth.
                 __builtin_prefetch(code + bpos + 512, 0, 0);
                 vuint8m1_t packed_next =
                         __riscv_vle8_v_u8m1(code + bpos + vlb, vlb);
@@ -850,21 +811,14 @@ struct DCTemplate<
                 vuint8m1_t lo = __riscv_vand_vx_u8m1(packed, 0x0F, vlb);
                 vuint8m1_t hi = __riscv_vsrl_vx_u8m1(packed, 4, vlb);
 
-                // ID4: manual scheduling — issue both q-stream loads
-                // right after the nibble split, before the convert
-                // chains, so each load has >=3 instructions of distance
-                // to its consuming vfmacc (hides L1-hit load-use
-                // latency on an in-order core).
+                // Issue both q-stream loads early to hide L1 load-use
+                // latency ahead of the consuming FMAs.
                 vfloat32m4_t vq_lo =
                         __riscv_vle32_v_f32m4(q_lo.data() + bpos, vlb);
                 vfloat32m4_t vq_hi =
                         __riscv_vle32_v_f32m4(q_hi.data() + bpos, vlb);
 
                 // Low-nibble stream (even dims): acc_lo += q_lo * c_lo
-                // ID2: narrow widening chain — u8 -> u16m2 (vzext_vf2)
-                // -> f32m4 (vfwcvt.f.xu.v): same 2 instructions as the
-                // vzext_vf4+vfcvt chain but the integer intermediate is
-                // half as wide (m2 vs m4), halving its register beats.
                 vfloat32m4_t clo = __riscv_vfwcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf2_u16m2(lo, vlb), vlb);
                 acc_lo = __riscv_vfmacc_vv_f32m4(acc_lo, vq_lo, clo, vlb);
@@ -913,7 +867,7 @@ struct DCTemplate<
 
             vfloat32m4_t clo = __riscv_vfwcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf2_u16m2(lo, vt), vt);
-            acc_lo = __riscv_vfmacc_vv_f32m4(
+            acc_lo = __riscv_vfmacc_vv_f32m4_tu(
                     acc_lo,
                     __riscv_vle32_v_f32m4(q_lo.data() + bpos, vt),
                     clo,
@@ -921,7 +875,7 @@ struct DCTemplate<
 
             vfloat32m4_t chi = __riscv_vfwcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf2_u16m2(hi, vt), vt);
-            acc_hi = __riscv_vfmacc_vv_f32m4(
+            acc_hi = __riscv_vfmacc_vv_f32m4_tu(
                     acc_hi,
                     __riscv_vle32_v_f32m4(q_hi.data() + bpos, vt),
                     chi,
@@ -973,38 +927,16 @@ struct DCTemplate<
 
 // * Fast path — QT_6bit (NON_UNIFORM) + L2
 //  *
-//  * Per-dimension affine reconstruction:
-//  *     recon_i(c) = vmin[i] + vdiff[i] * (c + 0.5) / 63
-//  *                = rmin_i + a_i * c,  with a_i = vdiff[i] / 63,
-//  *                  rmin_i = vmin[i] + 0.5 * a_i
-//  * L2 contribution per dim: (q_i - recon_i)^2 = (e_i - a_i * c_i)^2
-//  * where e_i = q_i - rmin_i is precomputed once per query in set_query.
+//  * recon_i(c) = vmin[i] + vdiff[i]*(c + 0.5)/63 = rmin_i + a_i*c_i,
+//  * with a_i = vdiff[i]/63, rmin_i = vmin[i] + 0.5*a_i. L2 contribution
+//  * per dim: (q_i - recon_i)^2 = (e_i - a_i*c_i)^2, e_i = q_i - rmin_i.
 //  *
-//  * Codec6bit packs 4 dimensions into 3 bytes (b0,b1,b2):
-//  *     c0 = b0 & 0x3F
-//  *     c1 = (b0 >> 6) | ((b1 & 0x0F) << 2)
-//  *     c2 = (b1 >> 4) | ((b2 & 0x03) << 4)
-//  *     c3 = b2 >> 2
-//  * Unlike 4-bit there is no lo/hi nibble symmetry: the kernel deinterleaves
-//  * by (i & 3) into FOUR streams. The constructor splits a_i / rmin_i into
-//  * s0..s3 streams once; set_query does the same for e_i.
-//  *
-//  * Hot loop per vl=VLMAX(e8m1) groups (3*vl code bytes, 4*vl dims):
-//  * vlseg3e8 deinterleaves the 3-byte groups into b0/b1/b2 registers, the
-//  * 6-bit fields are extracted with 8 u8 ALU ops (field combines use
-//  * vmacc.vx), then each value stream goes u8 -> u16m2 (vzext_vf2) ->
-//  * f32m4 (vfwcvt) and accumulates t = e - a*c (vfnmsac), acc += t*t
-//  * (vfmacc). vsetvl hoisted (0 explicit vsetvl inside the hot loop).
-//  *
-//  * ID3 (R3): software pipeline the vlseg3e8 segment load — the NEXT
-//  * chunk's code block is preloaded at the top of THIS iteration
-//  * (prologue + rotate), stretching the load-use distance across the
-//  * full iteration body (~20+ ops). Proven on qt_4bit family.
-//  * (R2/ID2 strided-vlse8 duel: tied within noise, vlseg3e8 kept as
-//  * simpler 1-instruction form.)
-//  *
-//  * Tail: dims beyond 4*(d/4) are decoded scalar (exact Codec6bit
-//  * semantics); for the benchmark d=768 there is no tail.
+//  * Codec6bit packs 4 dims into 3 bytes (b0,b1,b2); no lo/hi symmetry, so
+//  * the kernel deinterleaves by (i & 3) into FOUR streams (a0..a3 / e0..e3).
+//  * Hot loop: vlseg3e8 deinterleaves the 3-byte groups, 6-bit fields are
+//  * extracted with u8 ALU ops, each stream widens to f32 and accumulates
+//  * t = e - a*c (vfnmsac), acc += t*t (vfmacc). Software-pipelined
+//  * (prologue + rotate). Tail dims (d % 4) are decoded scalar.
 //  ************************************************************************
 
 // Raw 6-bit field extract, scalar (exact Codec6bit<NONE> bit semantics).
@@ -1115,55 +1047,60 @@ struct DCTemplate<
             const float* pe2 = e2.data();
             const float* pe3 = e3.data();
 
-            // ID3: software-pipelined vlseg3e8 — preload the NEXT
-            // chunk's code block at the top of THIS iteration, then
-            // compute on the already-loaded current chunk. The load-use
-            // distance stretches across the full iteration body (12
-            // f32m4 FMA + 4 conversions + 8 u8 ALU ops), hiding L1
-            // miss/latency. Prologue + rotate pattern proven on qt_4bit
-            // (uniform_ip v5/v6, ip v6).
+            // Software-pipelined vlseg3e8: preload the next chunk's code
+            // block, then compute on the already-loaded current chunk.
             if (ngf >= vl) {
                 // Prologue: preload chunk 0.
-                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                vuint8m1x3_t seg =
+                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
                 g += vl;
 
                 // Main loop: while a full next chunk exists, issue its
                 // load first, then process the current one.
                 for (; g + vl <= ngf; g += vl) {
                     vuint8m1x3_t seg_next =
-                            __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
-                    vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                            __riscv_vlseg3e8_v_u8m1x3(
+                                    code + 3 * g, vl);
+                    vuint8m1_t b0 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t b1 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t b2 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
-                    // ID1: stream-order rescheduling — light
-                    // extracts (c0: 1 op, c3: 1 op) computed
-                    // first and their convert+FMA chains issued
-                    // immediately; heavy extracts (c1/c2: 3 ops
-                    // each) overlap with in-flight FMAs.
+                    // Light extracts (c0, c3) first so their FMA chains
+                    // issue early; heavy extracts (c1, c2) overlap.
                     // Accumulation order: c0, c3, c1, c2.
-                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(b0, 0x3F, vl);
-                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(b2, 2, vl);
+                    vuint8m1_t c0 =
+                            __riscv_vand_vx_u8m1(b0, 0x3F, vl);
+                    vuint8m1_t c3 =
+                            __riscv_vsrl_vx_u8m1(b2, 2, vl);
 
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
-                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
+                    vfloat32m4_t t0 =
+                            __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
                     t0 = __riscv_vfnmsac_vv_f32m4(
                             t0,
-                            __riscv_vle32_v_f32m4(pa0 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa0 + g - vl, vl),
                             f0,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t0, t0, vl);
 
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
-                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
+                    vfloat32m4_t t3 =
+                            __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
                     t3 = __riscv_vfnmsac_vv_f32m4(
                             t3,
-                            __riscv_vle32_v_f32m4(pa3 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa3 + g - vl, vl),
                             f3,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t3, t3, vl);
 
                     vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b0, 6, vl),
@@ -1173,13 +1110,16 @@ struct DCTemplate<
 
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
-                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
+                    vfloat32m4_t t1 =
+                            __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
                     t1 = __riscv_vfnmsac_vv_f32m4(
                             t1,
-                            __riscv_vle32_v_f32m4(pa1 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa1 + g - vl, vl),
                             f1,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t1, t1, vl);
 
                     vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b1, 4, vl),
@@ -1189,47 +1129,59 @@ struct DCTemplate<
 
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
-                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
+                    vfloat32m4_t t2 =
+                            __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
                     t2 = __riscv_vfnmsac_vv_f32m4(
                             t2,
-                            __riscv_vle32_v_f32m4(pa2 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa2 + g - vl, vl),
                             f2,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t2, t2, vl);
 
                     seg = seg_next; // rotate
                 }
 
                 // Epilogue: process the last full chunk (already loaded).
-                // ID1: stream-order rescheduling c0,c3,c1,c2
-                // (same pattern as the main loop).
                 {
-                    vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                    vuint8m1_t b0 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t b1 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t b2 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
-                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(b0, 0x3F, vl);
-                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(b2, 2, vl);
+                    vuint8m1_t c0 =
+                            __riscv_vand_vx_u8m1(b0, 0x3F, vl);
+                    vuint8m1_t c3 =
+                            __riscv_vsrl_vx_u8m1(b2, 2, vl);
 
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
-                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
+                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(
+                            pe0 + g - vl, vl);
                     t0 = __riscv_vfnmsac_vv_f32m4(
                             t0,
-                            __riscv_vle32_v_f32m4(pa0 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa0 + g - vl, vl),
                             f0,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t0, t0, vl);
 
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
-                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
+                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(
+                            pe3 + g - vl, vl);
                     t3 = __riscv_vfnmsac_vv_f32m4(
                             t3,
-                            __riscv_vle32_v_f32m4(pa3 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa3 + g - vl, vl),
                             f3,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t3, t3, vl);
 
                     vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b0, 6, vl),
@@ -1239,13 +1191,16 @@ struct DCTemplate<
 
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
-                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
+                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(
+                            pe1 + g - vl, vl);
                     t1 = __riscv_vfnmsac_vv_f32m4(
                             t1,
-                            __riscv_vle32_v_f32m4(pa1 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa1 + g - vl, vl),
                             f1,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t1, t1, vl);
 
                     vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b1, 4, vl),
@@ -1255,24 +1210,25 @@ struct DCTemplate<
 
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
-                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
+                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(
+                            pe2 + g - vl, vl);
                     t2 = __riscv_vfnmsac_vv_f32m4(
                             t2,
-                            __riscv_vle32_v_f32m4(pa2 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(
+                                    pa2 + g - vl, vl),
                             f2,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(
+                            acc, t2, t2, vl);
                 }
             }
 
-            // Tail groups: one shorter-vl pass into the same accumulator
-            // (only the first vt lanes are touched; reduction below
-            // covers all vl lanes).
-            // ID1: stream-order rescheduling c0,c3,c1,c2 (same pattern).
+            // Tail groups: one shorter-vl pass into the same accumulator.
             if (g < ngf) {
                 const size_t vt = __riscv_vsetvl_e8m1(ngf - g);
 
-                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
+                vuint8m1x3_t seg =
+                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
                 vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
                 vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
                 vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
@@ -1285,14 +1241,14 @@ struct DCTemplate<
                 vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g, vt);
                 t0 = __riscv_vfnmsac_vv_f32m4(
                         t0, __riscv_vle32_v_f32m4(pa0 + g, vt), f0, vt);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vt);
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, t0, t0, vt);
 
                 vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf2_u16m2(c3, vt), vt);
                 vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g, vt);
                 t3 = __riscv_vfnmsac_vv_f32m4(
                         t3, __riscv_vle32_v_f32m4(pa3 + g, vt), f3, vt);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vt);
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, t3, t3, vt);
 
                 vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                         __riscv_vsrl_vx_u8m1(b0, 6, vt),
@@ -1305,7 +1261,7 @@ struct DCTemplate<
                 vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g, vt);
                 t1 = __riscv_vfnmsac_vv_f32m4(
                         t1, __riscv_vle32_v_f32m4(pa1 + g, vt), f1, vt);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vt);
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, t1, t1, vt);
 
                 vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                         __riscv_vsrl_vx_u8m1(b1, 4, vt),
@@ -1318,7 +1274,7 @@ struct DCTemplate<
                 vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g, vt);
                 t2 = __riscv_vfnmsac_vv_f32m4(
                         t2, __riscv_vle32_v_f32m4(pa2 + g, vt), f2, vt);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vt);
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, t2, t2, vt);
             }
 
             // Single horizontal reduction over all vl lanes.
@@ -1329,7 +1285,8 @@ struct DCTemplate<
 
         // Scalar tail: dims beyond the last full group (d % 4).
         for (size_t i = 4 * ngf; i < d; i++) {
-            float r = rmin_all[i] + a_all[i] * float(sq6_decode_raw(code, i));
+            float r = rmin_all[i] +
+                    a_all[i] * float(sq6_decode_raw(code, i));
             float diff = q[i] - r;
             total += diff * diff;
         }
@@ -1373,36 +1330,16 @@ struct DCTemplate<
 
 //  * Fast path — QT_6bit (NON_UNIFORM) + IP
 //  *
-//  * Per-dimension affine reconstruction:
-//  *     recon_i(c) = vmin[i] + vdiff[i] * (c + 0.5) / 63
-//  *                = rmin_i + a_i * c,  with a_i = vdiff[i] / 63,
-//  *                  rmin_i = vmin[i] + 0.5 * a_i
-//  * The inner product against the query decomposes into a query-only
-//  * constant plus a coefficient dot product over the integer codes:
-//  *     IP(q, code) = sum_i q_i * recon_i(c_i)
-//  *                 = sum_i q_i * rmin_i + sum_i (q_i * a_i) * c_i
-//  *                 = K_q + sum_i b_i * c_i
-//  * K_q and b_i = q_i * a_i depend only on the query, so set_query
-//  * precomputes them once per query (amortized over all 2000 codes).
+//  * recon_i(c) = rmin_i + a_i*c_i, a_i = vdiff[i]/63, rmin_i = vmin[i] +
+//  * 0.5*a_i. IP decomposes into a query-only constant plus a coefficient
+//  * dot product over the integer codes:
+//  *     IP(q, code) = sum_i q_i*rmin_i + sum_i (q_i*a_i)*c_i = K_q + sum_i b_i*c_i
+//  * K_q and b_i = q_i*a_i are precomputed in set_query. Codec6bit packs 4
+//  * dims into 3 bytes, so b_i is deinterleaved by (i & 3) into four streams.
 //  *
-//  * Codec6bit packs 4 dimensions into 3 bytes (b0,b1,b2) — same layout
-//  * as the L2 kernel above; the coefficient streams are deinterleaved by
-//  * (i & 3) into FOUR b-streams in set_query.
-//  *
-//  * Hot loop per vl=VLMAX(e8m1) groups (3*vl code bytes, 4*vl dims):
-//  * vlseg3e8 deinterleaves the 3-byte groups (software-pipelined depth 1:
-//  * next chunk preloaded at the top of this iteration, prologue + rotate —
-//  * board-proven on qt_6bit_l2 R3 / qt_4bit_ip R6), 6-bit fields extracted
-//  * with 8 u8 ALU ops (field combines via vmacc.vx), then each value
-//  * stream goes u8 -> u16m2 (vzext_vf2) -> f32m4 (vfwcvt, narrow widening
-//  * chain proven on uniform_ip R2) and accumulates acc += b * c (vfmacc,
-//  * single accumulator — 1 load + 1 FMA per stream, lighter than the L2
-//  * kernel's 2 loads + FNMSAC + FMACC). vsetvl hoisted: 0 explicit vsetvl
-//  * inside the hot loop, 2 in the whole function (hoist + tail).
-//  *
-//  * Tail: dims beyond 4*(d/4) are decoded scalar (exact Codec6bit
-//  * semantics) and contribute q_i * a_i * c_i on the fly (K_q already
-//  * covers ALL dims' rmin part); for the benchmark d=768 there is no tail.
+//  * Hot loop: software-pipelined vlseg3e8, 6-bit fields extracted with u8
+//  * ALU ops, each stream widens to f32 and accumulates acc += b*c (vfmacc).
+//  * Tail dims (d % 4) are decoded scalar.
 //  ************************************************************************/
 
 template <>
@@ -1486,36 +1423,39 @@ struct DCTemplate<
             // compute on the already-loaded current chunk.
             if (ngf >= vl) {
                 // Prologue: preload chunk 0.
-                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                vuint8m1x3_t seg =
+                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
                 g += vl;
 
                 // Main loop: while a full next chunk exists, issue its
                 // load first, then process the current one.
                 for (; g + vl <= ngf; g += vl) {
                     vuint8m1x3_t seg_next =
-                            __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
-                    vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                            __riscv_vlseg3e8_v_u8m1x3(
+                                    code + 3 * g, vl);
+                    vuint8m1_t r0 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t r1 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t r2 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
-                    // ID11: stream-order rescheduling — the two LIGHT
-                    // extracts (c0: 1 op, c3: 1 op) are computed first
-                    // and their convert+FMA chains issued immediately,
-                    // so the first vfmacc starts ~4 ALU ops earlier;
-                    // the two HEAVY extracts (c1/c2: 3 ops each) then
-                    // overlap with the in-flight FMAs. Accumulation
-                    // order becomes 0,3,1,2 (float reassociation, same
-                    // semantics class as the other specializations).
-                    // ID3 load-first order kept inside each stream.
-                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(r0, 0x3F, vl);
-                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(r2, 2, vl);
+                    // Light extracts (c0, c3) first so their FMA chains
+                    // issue early; heavy extracts (c1, c2) overlap.
+                    // Accumulation order: 0, 3, 1, 2.
+                    vuint8m1_t c0 =
+                            __riscv_vand_vx_u8m1(r0, 0x3F, vl);
+                    vuint8m1_t c3 =
+                            __riscv_vsrl_vx_u8m1(r2, 2, vl);
 
-                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb0 + g - vl, vl);
+                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(
+                            pb0 + g - vl, vl);
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, f0, vl);
 
-                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(pb3 + g - vl, vl);
+                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(
+                            pb3 + g - vl, vl);
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb3, f3, vl);
@@ -1525,7 +1465,8 @@ struct DCTemplate<
                             4,
                             __riscv_vand_vx_u8m1(r1, 0x0F, vl),
                             vl);
-                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb1 + g - vl, vl);
+                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(
+                            pb1 + g - vl, vl);
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb1, f1, vl);
@@ -1535,7 +1476,8 @@ struct DCTemplate<
                             16,
                             __riscv_vand_vx_u8m1(r2, 0x03, vl),
                             vl);
-                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(pb2 + g - vl, vl);
+                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(
+                            pb2 + g - vl, vl);
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb2, f2, vl);
@@ -1545,28 +1487,29 @@ struct DCTemplate<
 
                 // Epilogue: process the last full chunk (already loaded).
                 {
-                    vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                    vuint8m1_t r0 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t r1 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t r2 =
+                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
-                    // ID11: stream-order rescheduling — the two LIGHT
-                    // extracts (c0: 1 op, c3: 1 op) are computed first
-                    // and their convert+FMA chains issued immediately,
-                    // so the first vfmacc starts ~4 ALU ops earlier;
-                    // the two HEAVY extracts (c1/c2: 3 ops each) then
-                    // overlap with the in-flight FMAs. Accumulation
-                    // order becomes 0,3,1,2 (float reassociation, same
-                    // semantics class as the other specializations).
-                    // ID3 load-first order kept inside each stream.
-                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(r0, 0x3F, vl);
-                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(r2, 2, vl);
+                    // Light extracts (c0, c3) first so their FMA chains
+                    // issue early; heavy extracts (c1, c2) overlap.
+                    // Accumulation order: 0, 3, 1, 2.
+                    vuint8m1_t c0 =
+                            __riscv_vand_vx_u8m1(r0, 0x3F, vl);
+                    vuint8m1_t c3 =
+                            __riscv_vsrl_vx_u8m1(r2, 2, vl);
 
-                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb0 + g - vl, vl);
+                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(
+                            pb0 + g - vl, vl);
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, f0, vl);
 
-                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(pb3 + g - vl, vl);
+                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(
+                            pb3 + g - vl, vl);
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb3, f3, vl);
@@ -1576,7 +1519,8 @@ struct DCTemplate<
                             4,
                             __riscv_vand_vx_u8m1(r1, 0x0F, vl),
                             vl);
-                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb1 + g - vl, vl);
+                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(
+                            pb1 + g - vl, vl);
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb1, f1, vl);
@@ -1586,7 +1530,8 @@ struct DCTemplate<
                             16,
                             __riscv_vand_vx_u8m1(r2, 0x03, vl),
                             vl);
-                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(pb2 + g - vl, vl);
+                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(
+                            pb2 + g - vl, vl);
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb2, f2, vl);
@@ -1599,7 +1544,8 @@ struct DCTemplate<
             if (g < ngf) {
                 const size_t vt = __riscv_vsetvl_e8m1(ngf - g);
 
-                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
+                vuint8m1x3_t seg =
+                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
                 vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
                 vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
                 vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
@@ -1619,22 +1565,22 @@ struct DCTemplate<
 
                 vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf2_u16m2(c0, vt), vt);
-                acc = __riscv_vfmacc_vv_f32m4(
+                acc = __riscv_vfmacc_vv_f32m4_tu(
                         acc, __riscv_vle32_v_f32m4(pb0 + g, vt), f0, vt);
 
                 vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf2_u16m2(c1, vt), vt);
-                acc = __riscv_vfmacc_vv_f32m4(
+                acc = __riscv_vfmacc_vv_f32m4_tu(
                         acc, __riscv_vle32_v_f32m4(pb1 + g, vt), f1, vt);
 
                 vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf2_u16m2(c2, vt), vt);
-                acc = __riscv_vfmacc_vv_f32m4(
+                acc = __riscv_vfmacc_vv_f32m4_tu(
                         acc, __riscv_vle32_v_f32m4(pb2 + g, vt), f2, vt);
 
                 vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf2_u16m2(c3, vt), vt);
-                acc = __riscv_vfmacc_vv_f32m4(
+                acc = __riscv_vfmacc_vv_f32m4_tu(
                         acc, __riscv_vle32_v_f32m4(pb3 + g, vt), f3, vt);
             }
 
@@ -1663,8 +1609,10 @@ struct DCTemplate<
         const uint8_t* c2 = codes + j * code_size;
         float acc = 0;
         for (size_t k = 0; k < d; k++) {
-            float r1 = rmin_all[k] + a_all[k] * float(sq6_decode_raw(c1, k));
-            float r2 = rmin_all[k] + a_all[k] * float(sq6_decode_raw(c2, k));
+            float r1 = rmin_all[k] +
+                    a_all[k] * float(sq6_decode_raw(c1, k));
+            float r2 = rmin_all[k] +
+                    a_all[k] * float(sq6_decode_raw(c2, k));
             acc += r1 * r2;
         }
         return acc;
@@ -1746,16 +1694,16 @@ struct DCTemplate<
         const float* pa = a_v.data();
         const float* pe = e_v.data();
 
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group)
-        const size_t vl = __riscv_vsetvl_e8m1(d);
+        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group).
+        // d==0: guard so vsetvl(0) doesn't return 0 and the prologue
+        // `if (i + vl <= d)` + chunk loop don't stall.
+        const size_t vl = __riscv_vsetvl_e8m1(d > 0 ? d : 1);
         vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vl);
 
         size_t i = 0;
         if (i + vl <= d) {
-            // ID2: software pipeline depth 1 — preload the NEXT chunk's
-            // code bytes at the top of THIS iteration. ID6: u8->f32 via
-            // the u32 intermediate (vzext_vf4 + vfcvt) instead of the
-            // u16 widening chain (vzext_vf2 + vfwcvt).
+            // Software pipeline depth 1: preload the next chunk's code
+            // bytes at the top of this iteration.
             vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vl); // prologue
             i += vl;
 
@@ -1763,9 +1711,13 @@ struct DCTemplate<
                 vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
                 vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                vfloat32m4_t t =
+                        __riscv_vle32_v_f32m4(pe + i - vl, vl);
                 t = __riscv_vfnmsac_vv_f32m4(
-                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
+                        t,
+                        __riscv_vle32_v_f32m4(pa + i - vl, vl),
+                        cf,
+                        vl);
                 acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
                 c8 = c8_next; // rotate
             }
@@ -1774,9 +1726,13 @@ struct DCTemplate<
             {
                 vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                vfloat32m4_t t =
+                        __riscv_vle32_v_f32m4(pe + i - vl, vl);
                 t = __riscv_vfnmsac_vv_f32m4(
-                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
+                        t,
+                        __riscv_vle32_v_f32m4(pa + i - vl, vl),
+                        cf,
+                        vl);
                 acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
             }
         }
@@ -1791,7 +1747,7 @@ struct DCTemplate<
             vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i, vt);
             t = __riscv_vfnmsac_vv_f32m4(
                     t, __riscv_vle32_v_f32m4(pa + i, vt), cf, vt);
-            acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t, t, vt);
         }
 
         // Horizontal reduce over all vl lanes
@@ -1836,28 +1792,13 @@ struct DCTemplate<
 /**********************************************************
  * QT_8bit (NON_UNIFORM) + IP — full RVV specialization
  *
- * Per-dimension affine reconstruction:
- *     recon_i(c) = vmin[i] + vdiff[i] * (c + 0.5) / 255
- *                = rmin_i + a_i * c,  with a_i = vdiff[i] / 255,
- *                  rmin_i = vmin[i] + 0.5 * a_i
- * The inner product against the query decomposes into a query-only
- * constant plus a coefficient dot product over the integer codes:
- *     IP(q, code) = sum_i q_i * recon_i(c_i)
- *                 = sum_i q_i * rmin_i + sum_i (q_i * a_i) * c_i
- *                 = K_q + sum_i b_i * c_i
- * K_q and b_i = q_i * a_i depend only on the query, so set_query
- * precomputes them once per query (amortized over all codes of the
- * scan).
- *
- * Unlike the 4/6-bit codecs there is no bit-field unpacking: each
- * code byte is one dimension, so the kernel is a single contiguous
- * stream — the lightest non-uniform kernel in this file (5 vector
- * ops per block): vle8 (software-pipelined depth 1, board-proven on
- * qt_8bit_l2 R2 / qt_6bit_ip R1) -> vzext_vf4 (u8->u32m4) -> vfcvt
- * (u32->f32m4) -> vle32 (b) -> vfmacc (acc += b * c, single
- * accumulator). vsetvl is hoisted: 0 explicit vsetvl in the hot
- * loop, 1 hoisted + 1 for the tail (d % vl != 0; absent for the
- * benchmark d=768).
+ * recon_i(c) = rmin_i + a_i*c_i, a_i = vdiff[i]/255, rmin_i = vmin[i] +
+ * 0.5*a_i. IP decomposes into a query-only constant plus a coefficient
+ * dot product over the integer codes:
+ *     IP(q, code) = sum_i q_i*rmin_i + sum_i (q_i*a_i)*c_i = K_q + sum_i b_i*c_i
+ * K_q and b_i = q_i*a_i are precomputed in set_query. Each code byte is
+ * one dim (no bit unpacking): hot loop vle8 -> vzext -> vfcvt -> vle32 ->
+ * vfmacc, software-pipelined.
  **********************************************************/
 
 template <>
@@ -1880,9 +1821,8 @@ struct DCTemplate<
             : d(d_in),
               a_v(d_in, 0.0f),
               rmin_v(d_in, 0.0f),
-              // ID4: b_v padded by 2*VLMAX zeros so the software-
-              // pipelined next-iteration vle32 loads are always in
-              // bounds (padding lanes are loaded but never used).
+              // Pad b_v by 2*VLMAX so the pipelined next-iteration
+              // vle32 loads stay in bounds (padding lanes never used).
               b_v(d_in + 2 * __riscv_vsetvlmax_e8m1(), 0.0f),
               k_q(0.0f) {
         const float* vmin = trained.data();
@@ -1911,43 +1851,42 @@ struct DCTemplate<
     float compute_ip(const uint8_t* code) const {
         const float* pb = b_v.data();
 
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group)
-        const size_t vl = __riscv_vsetvl_e8m1(d);
+        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group).
+        // d==0: guard so vsetvl(0) doesn't return 0 and the prologue
+        // `if (i + vl <= d)` + chunk loop don't stall.
+        const size_t vl = __riscv_vsetvl_e8m1(d > 0 ? d : 1);
         vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vl);
-        // ID3: second accumulator — 2x unrolled main loop feeds
-        // acc/acc1 alternately, halving the serial vfmacc chain.
-        // (ID11 4x/4acc board-rejected: +112.96% vs v3, register
-        // spill — ILP ceiling for this kernel is 2x.)
+        // Second accumulator: the 2x-unrolled loop feeds acc/acc1
+        // alternately, halving the serial FMA chain.
         vfloat32m4_t acc1 = __riscv_vfmv_v_f_f32m4(0.0f, vl);
 
         size_t i = 0;
         if (i + vl <= d) {
-            // Software pipeline depth 1 — preload the NEXT chunk's
-            // code bytes at the top of THIS iteration.
+            // Software pipeline depth 1: preload the next chunk's code
+            // bytes at the top of this iteration.
             vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vl); // prologue
             i += vl;
 
-            // ID3: 2x unroll + dual accumulators (blocks k -> acc,
-            // k+1 -> acc1). ID4: the b-coefficient stream is ALSO
-            // software-pipelined depth 1 — both halves' vle32 for the
-            // NEXT iteration are issued in THIS iteration (rotate
-            // vb0/vb1); loads past d land in the zero padding of b_v
-            // and are discarded on loop exit. Branch-free hot loop.
+            // 2x unroll + dual accumulators; the b stream is also
+            // software-pipelined (loads past d land in b_v's zero
+            // padding and are discarded on exit).
             if (i + 2 * vl <= d) {
                 // b-prologue: preload both halves of iteration 0.
                 vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb + i - vl, vl);
                 vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb + i, vl);
                 for (; i + 2 * vl <= d; i += 2 * vl) {
-                    vuint8m1_t c8_n1 = __riscv_vle8_v_u8m1(code + i, vl);
+                    vuint8m1_t c8_n1 =
+                            __riscv_vle8_v_u8m1(code + i, vl);
                     vfloat32m4_t vb0_next =
                             __riscv_vle32_v_f32m4(pb + i + vl, vl);
                     vfloat32m4_t cf0 = __riscv_vfcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf4_u32m4(c8, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, cf0, vl);
 
-                    vuint8m1_t c8_n2 = __riscv_vle8_v_u8m1(code + i + vl, vl);
-                    vfloat32m4_t vb1_next =
-                            __riscv_vle32_v_f32m4(pb + i + 2 * vl, vl);
+                    vuint8m1_t c8_n2 =
+                            __riscv_vle8_v_u8m1(code + i + vl, vl);
+                    vfloat32m4_t vb1_next = __riscv_vle32_v_f32m4(
+                            pb + i + 2 * vl, vl);
                     vfloat32m4_t cf1 = __riscv_vfcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf4_u32m4(c8_n1, vl), vl);
                     acc1 = __riscv_vfmacc_vv_f32m4(acc1, vb1, cf1, vl);
@@ -1986,7 +1925,7 @@ struct DCTemplate<
             vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vt);
             vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf4_u32m4(c8, vt), vt);
-            acc = __riscv_vfmacc_vv_f32m4(
+            acc = __riscv_vfmacc_vv_f32m4_tu(
                     acc, __riscv_vle32_v_f32m4(pb + i, vt), cf, vt);
         }
 
@@ -2033,20 +1972,25 @@ struct DCTemplate<
 };
 
 /**********************************************************
- * QT_8bit_uniform + L2 — integer-domain RVV specialization
+ * QT_8bit_uniform + L2 — float-domain RVV specialization
  *
  * 8-bit UNIFORM scaling: every component reconstructs as
- *     recon(c) = vmin + vdiff * (c + 0.5) / 255
- *              = final_scale * c + bias
- * where final_scale = vdiff / 255.
+ *     recon(c) = vmin + vdiff * (c + 0.5) / 255 = c0 + a * c
+ * with a = vdiff / 255 and c0 = vmin + 0.5 * a.
  *
- * L2 distance reduces to final_scale² * Σ(q_byte - code_byte)²,
- * so we quantize the query to uint8_t once at set_query and then
- * compute integer-domain squared differences via RVV vector ops
- * without ever decoding to float.
+ * L2 distance is evaluated in the exact affine float domain,
+ *     L2(q, code) = sum_i (q_i - recon(c_i))^2
+ *                 = sum_i (e_i - a * c_i)^2   with  e_i = q_i - c0,
+ * so the ORIGINAL float query is retained — no integer-grid
+ * pre-quantization — and the result matches the scalar NONE
+ * reference to float-reassociation precision. vdiff == 0
+ * degenerates naturally (a == 0 -> L2 = sum_i (q_i - vmin)^2).
  *
- * Pattern mirrors QT_4bit_uniform+L2 (above), but simpler: each
- * code byte is an independent value in [0,255] — no nibble split.
+ * Hot loop per vl = VLMAX(e8m1) dims (16 at VLEN=128): vle8 ->
+ * vzext_vf4 (u8 -> u32m4) -> vfcvt (u32 -> f32m4), then
+ * t = e - a*c via the scalar-operand vfnmsac.vf (a is a SHARED
+ * scalar constant — no per-dimension coefficient stream) and
+ * acc += t*t (vfmacc). vsetvl hoisted: 1 hoisted + 1 for the tail.
  **********************************************************/
 
 template <>
@@ -2060,133 +2004,81 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    float vmin;
-    float vdiff;
-    float final_scale_sq;
-    std::vector<uint8_t> query_bytes;
+    float a;  // vdiff / 255
+    float c0; // vmin + 0.5 * a
+    std::vector<float> e_v; // q_i - c0, per query
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
-            : d(d_in),
-              vmin(trained[0]),
-              vdiff(trained[1]),
-              query_bytes(d_in, 0) {
-        const float final_scale = vdiff / 255.0f;
-        final_scale_sq = final_scale * final_scale;
+            : d(d_in), e_v(d_in, 0.0f) {
+        a = trained[1] / 255.0f;
+        c0 = trained[0] + 0.5f * a;
     }
 
     void set_query(const float* x) final {
-        this->q = x;
-        if (vdiff == 0.0f) {
-            memset(query_bytes.data(), 0, d);
-            return;
-        }
-        const float inv_scale = 255.0f / vdiff;
-        uint8_t* out = query_bytes.data();
-
-        // ID4: branch-free RVV quantization replicating the scalar
-        // semantics exactly: code = trunc((x-vmin)*inv_scale + 0.5)
-        // clamped to [0, 255]. Clamping the FLOAT to [0, 255] before
-        // the RTZ convert is equivalent to clamping the int after
-        // (trunc is monotonic and 0/255 are exact in f32).
-        // 16 floats per chunk at e32m4 (VLEN=128); narrowing via two
-        // plain vnsrl-by-0 steps (values already <= 255, no clip
-        // needed). vsetvl hoisted; one shorter-vl tail pass.
-        const size_t vl = __riscv_vsetvl_e32m4(d > 0 ? d : 1);
-        size_t i = 0;
-        for (; i + vl <= d; i += vl) {
-            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vl);
-            vfloat32m4_t val = __riscv_vfmul_vf_f32m4(
-                    __riscv_vfsub_vf_f32m4(vx, vmin, vl), inv_scale, vl);
-            val = __riscv_vfadd_vf_f32m4(val, 0.5f, vl);
-            val = __riscv_vfmax_vf_f32m4(val, 0.0f, vl);
-            val = __riscv_vfmin_vf_f32m4(val, 255.0f, vl);
-            vuint32m4_t u32 = __riscv_vfcvt_rtz_xu_f_v_u32m4(val, vl);
-            vuint16m2_t u16 = __riscv_vnsrl_wx_u16m2(u32, 0, vl);
-            vuint8m1_t u8 = __riscv_vnsrl_wx_u8m1(u16, 0, vl);
-            __riscv_vse8_v_u8m1(out + i, u8, vl);
-        }
-        if (i < d) {
-            const size_t vt = __riscv_vsetvl_e32m4(d - i);
-            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vt);
-            vfloat32m4_t val = __riscv_vfmul_vf_f32m4(
-                    __riscv_vfsub_vf_f32m4(vx, vmin, vt), inv_scale, vt);
-            val = __riscv_vfadd_vf_f32m4(val, 0.5f, vt);
-            val = __riscv_vfmax_vf_f32m4(val, 0.0f, vt);
-            val = __riscv_vfmin_vf_f32m4(val, 255.0f, vt);
-            vuint32m4_t u32 = __riscv_vfcvt_rtz_xu_f_v_u32m4(val, vt);
-            vuint16m2_t u16 = __riscv_vnsrl_wx_u16m2(u32, 0, vt);
-            vuint8m1_t u8 = __riscv_vnsrl_wx_u8m1(u16, 0, vt);
-            __riscv_vse8_v_u8m1(out + i, u8, vt);
+        q = x;
+        // e_i = q_i - c0, once per query (amortized over all codes).
+        for (size_t i = 0; i < d; i++) {
+            e_v[i] = x[i] - c0;
         }
     }
 
-    /// Integer-domain squared L2 via RVV vector ops, returning the
-    /// final scaled float distance.
-    /// ID1 (kept as the best form): vsetvl hoisted out of the hot loop,
-    /// cross-iteration i32m8 vector accumulator, one reduction per call.
-    /// Signed-difference kernel: vwsubu(q, c) widens to u16 whose
-    /// 2's-complement bit pattern reinterprets as the exact signed
-    /// difference in [-255, 255]; vwmacc squares and accumulates in a
-    /// single op — 4 vector ops per chunk. Measured alternatives:
-    /// absdiff+vwmulu+vwaddu 7-op (+47%), LMUL e8m1 variant (+5.1%),
-    /// 2x unroll (+122.9%) — this machine is issue-limited and prefers
-    /// the minimal e8m2 full-lane loop.
-    /// ID8 variant under test: pointer-bump addressing in the hot loop
-    /// and a fused reduction tail — reduce to i32m1, convert + scale in
-    /// the vector unit (vfcvt + vfmul.vf + vfmv.f.s), avoiding the
-    /// vmv.x.s GPR round-trip and the scalar int->float convert. The
-    /// i32 total is exact while d <= 33025 (sum <= d * 65025 < 2^31);
-    /// larger d takes the exact widening i64 path (cold branch).
-    float l2_scaled(const uint8_t* code) const {
-        const uint8_t* pq = query_bytes.data();
-        const uint8_t* pc = code;
+    /// Exact affine float-domain L2: sum_i (e_i - a*c_i)^2.
+    /// Hot loop per chunk: vle8 (code byte) -> vzext_vf4 -> vfcvt to
+    /// f32, then t = e - a*c (vfnmsac.vf, a shared scalar) and
+    /// acc += t*t (vfmacc). 5 vector ops per chunk, single f32m4
+    /// accumulator, single vfredusum at the end. vsetvl hoisted.
+    float compute_l2(const uint8_t* code) const {
+        const float* pe = e_v.data();
 
-        // Hoist vsetvl: full VLMAX for e8m2, reused across the hot loop.
-        const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
-        vint32m8_t acc32 = __riscv_vmv_v_x_i32m8(0, vl);
+        // Hoist vsetvl: VLMAX for e8m1 (== f32m4 lanes).
+        // d==0 guard: vsetvl(0) would return 0 and stall the prologue.
+        const size_t vl = __riscv_vsetvl_e8m1(d > 0 ? d : 1);
+        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vl);
 
         size_t i = 0;
-        for (; i + vl <= d; i += vl) {
-            vuint8m2_t vq = __riscv_vle8_v_u8m2(pq, vl);
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vl);
-            vint16m4_t d16 = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(vq, vc, vl));
-            acc32 = __riscv_vwmacc_vv_i32m8(acc32, d16, d16, vl);
-            pq += vl;
-            pc += vl;
+        if (i + vl <= d) {
+            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vl); // prologue
+            i += vl;
+            for (; i + vl <= d; i += vl) {
+                vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
+                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
+                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
+                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                t = __riscv_vfnmsac_vf_f32m4(t, a, cf, vl);
+                acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
+                c8 = c8_next;
+            }
+            // Epilogue: process the last full chunk (already loaded).
+            {
+                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
+                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
+                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                t = __riscv_vfnmsac_vf_f32m4(t, a, cf, vl);
+                acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
+            }
         }
 
         // Tail: fewer than vl dims left — one shorter-vl pass into the
-        // same accumulator (only the first vt lanes are touched).
+        // same accumulator; _tu keeps lanes past vt (accumulated by
+        // prior chunks) intact for the full-vl reduction below.
         if (i < d) {
-            const size_t vt = __riscv_vsetvl_e8m2(d - i);
-            vuint8m2_t vq = __riscv_vle8_v_u8m2(pq, vt);
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vt);
-            vint16m4_t d16 = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(vq, vc, vt));
-            acc32 = __riscv_vwmacc_vv_i32m8(acc32, d16, d16, vt);
+            const size_t vt = __riscv_vsetvl_e8m1(d - i);
+            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vt);
+            vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
+                    __riscv_vzext_vf4_u32m4(c8, vt), vt);
+            vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i, vt);
+            t = __riscv_vfnmsac_vf_f32m4(t, a, cf, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t, t, vt);
         }
 
-        if (d > 33025) {
-            // Exact wide path for huge d (not reachable for realistic
-            // dims): widening reduction i32m8 -> i64, scale in scalar.
-            vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
-            vint64m1_t r64 = __riscv_vwredsum_vs_i32m8_i64m1(acc32, z64, vl);
-            return static_cast<float>(__riscv_vmv_x_s_i64m1_i64(r64)) *
-                    final_scale_sq;
-        }
-
-        // Single horizontal reduction over all vl lanes, then convert
-        // and scale inside the vector unit — no GPR round-trip.
-        vint32m1_t z32 = __riscv_vmv_v_x_i32m1(0, 1);
-        vint32m1_t red = __riscv_vredsum_vs_i32m8_i32m1(acc32, z32, vl);
-        vfloat32m1_t f = __riscv_vfcvt_f_x_v_f32m1(red, 1);
-        f = __riscv_vfmul_vf_f32m1(f, final_scale_sq, 1);
-        return __riscv_vfmv_f_s_f32m1_f32(f);
+        // Horizontal reduce over all vl lanes.
+        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(
+                acc, __riscv_vfmv_v_f_f32m1(0.0f, 1), vl);
+        return __riscv_vfmv_f_s_f32m1_f32(red);
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return l2_scaled(code);
+        return compute_l2(code);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -2197,7 +2089,7 @@ struct DCTemplate<
             int diff = int(c1[k]) - int(c2[k]);
             acc += diff * diff;
         }
-        return static_cast<float>(acc) * final_scale_sq;
+        return static_cast<float>(acc) * (a * a);
     }
 
     void query_to_codes_batch_4(
@@ -2209,50 +2101,40 @@ struct DCTemplate<
             float& dis1,
             float& dis2,
             float& dis3) const final {
-        dis0 = l2_scaled(code_0);
-        dis1 = l2_scaled(code_1);
-        dis2 = l2_scaled(code_2);
-        dis3 = l2_scaled(code_3);
+        dis0 = compute_l2(code_0);
+        dis1 = compute_l2(code_1);
+        dis2 = compute_l2(code_2);
+        dis3 = compute_l2(code_3);
     }
 };
 
 /**********************************************************
- * QT_8bit_uniform + IP — RVV specialization
+ * QT_8bit_uniform + IP — float-domain RVV specialization
  *
  * 8-bit UNIFORM scaling: every component reconstructs as
- *     recon(c) = vmin + vdiff * (c + 0.5) / 255 = c0 + s * c
- * with s = vdiff / 255 and c0 = vmin + 0.5 * s (SHARED scalar
- * constants). The inner product folds into a query-only constant
- * plus one uniformly-scaled integer-code dot product:
- *     IP(q, code) = sum_i q_i * (c0 + s * c_i)
- *                 = c0 * sum_i q_i + s * sum_i q_i * c_i
- *                 = K_q + s * S
+ *     recon(c) = vmin + vdiff * (c + 0.5) / 255 = c0 + scale * c
+ * with scale = vdiff / 255 and c0 = vmin + 0.5 * scale (SHARED
+ * scalar constants). The inner product folds into a query-only
+ * constant plus one uniformly-scaled integer-code dot product:
+ *     IP(q, code) = sum_i q_i * (c0 + scale * c_i)
+ *                 = c0 * sum_i q_i + scale * sum_i q_i * c_i
+ *                 = K_q + scale * S
  * K_q = c0 * sum(q) is precomputed once per query in set_query
  * (amortized 1/n over the codes of the scan), so the hot loop only
  * evaluates S = sum_i q_i * c_i.
  *
- * ID2: integer-domain fixed-point rewrite (board-proven 4-op int
- * kernel shape from QT_8bit_uniform+L2 v6, 457ms vs the f32 5-op
- * kernel family's 911ms). set_query re-expresses the query in
- * per-query fixed point: s_q = max|q| / B, q16_i = round(q_i /
- * s_q) in [-B, B] (B = 8191 for d <= 1028; shrunk for larger d so
- * that d * B * 255 < 2^31 keeps the i32 accumulator exact). Then
- *     S ~= s_q * sum_i q16_i * c_i
- * and the hot loop is pure integer, 4 vector ops per vl = 32 dims
- * (e8m2 at VLEN=128): vle8 (c, u8m2) + vle16 (q16, i16m4) +
- * vzext_vf2 (c -> u16m4, reinterpret i16m4) + vwmacc (i16 x i16
- * -> i32m8 cross-iteration accumulator). Query representation
- * error <= s_q/2 per component (~6e-5 relative) — 3 orders of
- * magnitude below the code's own 8-bit quantization error, and
- * far tighter than the u8-grid query quantization precedent of
- * the QT_8bit_uniform+L2 specialization above.
+ * The ORIGINAL float query is retained — no fixed-point / integer
+ * pre-quantization of the query — so scores and rankings match the
+ * scalar NONE reference to float-reassociation precision (same
+ * semantics class as the QT_8bit_uniform+L2 and QT_8bit_nonuniform
+ * IP float-domain kernels). scale == 0 degenerates naturally
+ * (IP == K_q == c0 * sum(q)), no special-casing.
  *
- * vsetvl hoisted: 0 in the hot loop, 1 hoisted + 1 tail. Reduction
- * tail fused in the vector domain (uniform_l2 R6 pattern): vredsum
- * i32m8 -> i32m1, vfcvt, then a single vfmacc.vf folds K_q +
- * factor * sum (factor = s * s_q) with no vector->GPR round-trip.
- * Pointer-bump addressing in the hot loop. Huge-d degradation
- * (B < 64, i.e. d > ~129k) takes an exact scalar cold path.
+ * Hot loop per vl = VLMAX(e8m1) dims (16 at VLEN=128): vle8 ->
+ * vzext_vf4 (u8 -> u32m4) -> vfcvt (u32 -> f32m4), then
+ * acc += q * c (vfmacc). 4 vector ops per chunk, single f32m4
+ * accumulator, single vfredusum at the end. vsetvl hoisted:
+ * 1 hoisted + 1 for the tail.
  **********************************************************/
 
 template <>
@@ -2266,166 +2148,82 @@ struct DCTemplate<
     using Sim = SimilarityIP<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    float vmin;
-    float vdiff;
-    float scale;    // vdiff / 255
-    float c0;       // vmin + 0.5 * scale
-    float k_q;      // c0 * sum_i q_i, per query
-    float factor;   // scale * s_q, per query
-    int32_t qbound; // fixed-point bound B (i32 overflow guard)
-    // Fixed-point query stream; padded by 2*VLMAX(e16m4) zeros so a
-    // future software-pipelined next-chunk vle16 stays in bounds.
-    std::vector<int16_t> q16;
+    float scale; // vdiff / 255
+    float c0;    // vmin + 0.5 * scale
+    float k_q;   // c0 * sum_i q_i, per query
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
-            : d(d_in),
-              vmin(trained[0]),
-              vdiff(trained[1]),
-              k_q(0.0f),
-              factor(0.0f),
-              q16(d_in + 2 * __riscv_vsetvlmax_e16m4(), 0) {
-        scale = vdiff / 255.0f;
-        c0 = vmin + 0.5f * scale;
-        // Largest B with d * B * 255 < 2^31 (exact i32 total), capped
-        // at 8191 (13 bits: query rel. error <= 6.1e-5).
-        int64_t cap = d_in > 0
-                ? (int64_t(1) << 31) / (int64_t(255) * int64_t(d_in)) - 1
-                : 8191;
-        qbound = cap < 8191 ? int32_t(cap) : 8191;
+            : d(d_in), k_q(0.0f) {
+        scale = trained[1] / 255.0f;
+        c0 = trained[0] + 0.5f * scale;
     }
 
     void set_query(const float* x) final {
         q = x;
-        // ID3: RVV-vectorized set_query (uniform_l2 R4 precedent).
-        // Pass 1 fuses sum(q) and max|q| in one sweep: e32m4 chunks,
-        // vfadd into a vector sum accumulator + vfabs/vfmax into a
-        // vector max accumulator; single vfredusum/vfredmax at the
-        // end. Pass 2 converts to fixed point: vfmul.vf(inv) ->
-        // vfcvt_x_f_v (i32, dynamic rounding mode = RNE by default,
-        // matching lrintf under the default FP environment) ->
-        // vncvt narrowing i32->i16 (values already in [-B, B], no
-        // clip needed) -> vse16.
-        const size_t vlmax = __riscv_vsetvl_e32m4(d > 0 ? d : 1);
-        vfloat32m4_t vsum = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
-        vfloat32m4_t vmax = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
-        size_t i = 0;
-        for (; i + vlmax <= d; i += vlmax) {
-            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vlmax);
-            vsum = __riscv_vfadd_vv_f32m4(vsum, vx, vlmax);
-            vmax = __riscv_vfmax_vv_f32m4(
-                    vmax, __riscv_vfabs_v_f32m4(vx, vlmax), vlmax);
+        // K_q = c0 * sum_i q_i, once per query (amortized over codes).
+        float sum = 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            sum += x[i];
         }
-        if (i < d) {
-            const size_t vt = __riscv_vsetvl_e32m4(d - i);
-            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vt);
-            // Tail lanes merge into the first vt lanes of the
-            // accumulators; reductions below cover all vlmax lanes.
-            vsum = __riscv_vfadd_vv_f32m4_tu(vsum, vsum, vx, vt);
-            vmax = __riscv_vfmax_vv_f32m4_tu(
-                    vmax, vmax, __riscv_vfabs_v_f32m4(vx, vt), vt);
-        }
-        vfloat32m1_t z = __riscv_vfmv_v_f_f32m1(0.0f, 1);
-        float sum = __riscv_vfmv_f_s_f32m1_f32(
-                __riscv_vfredusum_vs_f32m4_f32m1(vsum, z, vlmax));
-        float m = __riscv_vfmv_f_s_f32m1_f32(
-                __riscv_vfredmax_vs_f32m4_f32m1(vmax, z, vlmax));
         k_q = c0 * sum;
-
-        if (m == 0.0f || qbound < 64) {
-            // All-zero query, or huge-d cold path: integer kernel
-            // unused (factor = 0 makes the vector result K_q).
-            factor = 0.0f;
-            if (qbound >= 64) {
-                memset(q16.data(), 0, d * sizeof(int16_t));
-            }
-            return;
-        }
-        // Pass 2: fixed-point conversion q16_i = round(q_i * inv).
-        const float inv = float(qbound) / m;
-        int16_t* out = q16.data();
-        i = 0;
-        for (; i + vlmax <= d; i += vlmax) {
-            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vlmax);
-            vint32m4_t vi = __riscv_vfcvt_x_f_v_i32m4(
-                    __riscv_vfmul_vf_f32m4(vx, inv, vlmax), vlmax);
-            __riscv_vse16_v_i16m2(
-                    out + i, __riscv_vncvt_x_x_w_i16m2(vi, vlmax), vlmax);
-        }
-        if (i < d) {
-            const size_t vt = __riscv_vsetvl_e32m4(d - i);
-            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vt);
-            vint32m4_t vi = __riscv_vfcvt_x_f_v_i32m4(
-                    __riscv_vfmul_vf_f32m4(vx, inv, vt), vt);
-            __riscv_vse16_v_i16m2(
-                    out + i, __riscv_vncvt_x_x_w_i16m2(vi, vt), vt);
-        }
-        factor = scale * (m / float(qbound));
     }
 
-    /// Integer-domain dot product; returns K_q + factor * Σ q16_i*c_i
-    /// with the reduction tail fused in the vector unit.
-    /// ID5 (under test): software pipeline depth 1 on the q16 stream
-    /// — the NEXT chunk's vle16 is issued at the top of THIS
-    /// iteration (qt_8bit_ip R5 second-stream precedent, -2.25%);
-    /// loads past d land in the 2*VLMAX zero padding of q16 and are
-    /// discarded on loop exit. Branch-free hot loop, +1 in-flight
-    /// m4 group (22/32 registers).
-    float ip_fixed(const uint8_t* code) const {
-        const int16_t* pq = q16.data();
-        const uint8_t* pc = code;
+    /// S = sum_i q_i * c_i over the 1-byte-per-dim code; returns
+    /// K_q + scale * S.
+    float compute_ip(const uint8_t* code) const {
+        const float* pq = q;
 
-        // Hoist vsetvl: full VLMAX for e8m2, reused across the loop.
-        const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
-        vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group).
+        // d==0: guard so vsetvl(0) doesn't return 0 and the prologue
+        // `if (i + vl <= d)` + chunk loop don't stall.
+        const size_t vl = __riscv_vsetvl_e8m1(d > 0 ? d : 1);
+        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vl);
 
         size_t i = 0;
         if (i + vl <= d) {
-            vint16m4_t vq = __riscv_vle16_v_i16m4(pq, vl); // prologue
+            // Software pipeline depth 1 — preload the NEXT chunk's
+            // code bytes at the top of THIS iteration.
+            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vl); // prologue
+            i += vl;
+
             for (; i + vl <= d; i += vl) {
-                vint16m4_t vq_next = __riscv_vle16_v_i16m4(pq + vl, vl);
-                vuint8m2_t c8 = __riscv_vle8_v_u8m2(pc, vl);
-                vint16m4_t c16 = __riscv_vreinterpret_v_u16m4_i16m4(
-                        __riscv_vzext_vf2_u16m4(c8, vl));
-                acc = __riscv_vwmacc_vv_i32m8(acc, vq, c16, vl);
-                vq = vq_next; // rotate
-                pc += vl;
-                pq += vl;
+                vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
+                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
+                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
+                vfloat32m4_t vq = __riscv_vle32_v_f32m4(pq + i - vl, vl);
+                acc = __riscv_vfmacc_vv_f32m4(acc, vq, cf, vl);
+                c8 = c8_next; // rotate
+            }
+
+            // Epilogue: process the last full chunk (already loaded).
+            {
+                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
+                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
+                vfloat32m4_t vq = __riscv_vle32_v_f32m4(pq + i - vl, vl);
+                acc = __riscv_vfmacc_vv_f32m4(acc, vq, cf, vl);
             }
         }
 
-        // Tail: fewer than vl dims left — one shorter-vl pass into
-        // the same accumulator (only the first vt lanes touched).
+        // Tail: fewer than vl dims left — one shorter-vl pass into the
+        // same accumulator; _tu keeps lanes past vt (accumulated by
+        // prior chunks) intact for the full-vl reduction below.
         if (i < d) {
-            const size_t vt = __riscv_vsetvl_e8m2(d - i);
-            vuint8m2_t c8 = __riscv_vle8_v_u8m2(pc, vt);
-            vint16m4_t vq = __riscv_vle16_v_i16m4(pq, vt);
-            vint16m4_t c16 = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vzext_vf2_u16m4(c8, vt));
-            acc = __riscv_vwmacc_vv_i32m8(acc, vq, c16, vt);
+            const size_t vt = __riscv_vsetvl_e8m1(d - i);
+            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vt);
+            vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
+                    __riscv_vzext_vf4_u32m4(c8, vt), vt);
+            vfloat32m4_t vq = __riscv_vle32_v_f32m4(pq + i, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, vq, cf, vt);
         }
 
-        // Single horizontal reduction, then convert + fold K_q and
-        // factor inside the vector unit — no GPR round-trip.
-        vint32m1_t z32 = __riscv_vmv_v_x_i32m1(0, 1);
-        vint32m1_t red = __riscv_vredsum_vs_i32m8_i32m1(acc, z32, vl);
-        vfloat32m1_t f = __riscv_vfcvt_f_x_v_f32m1(red, 1);
-        vfloat32m1_t vk = __riscv_vfmv_v_f_f32m1(k_q, 1);
-        vk = __riscv_vfmacc_vf_f32m1(vk, factor, f, 1);
-        return __riscv_vfmv_f_s_f32m1_f32(vk);
+        // Horizontal reduce over all vl lanes.
+        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(
+                acc, __riscv_vfmv_v_f_f32m1(0.0f, 1), vl);
+        return k_q + scale * __riscv_vfmv_f_s_f32m1_f32(red);
     }
 
     float query_to_code(const uint8_t* code) const final {
-        if (qbound < 64) {
-            // Exact scalar cold path for absurdly large d (i32
-            // fixed-point budget too small; unreachable for
-            // realistic dims).
-            float S = 0.0f;
-            for (size_t k = 0; k < d; k++) {
-                S += q[k] * float(code[k]);
-            }
-            return k_q + scale * S;
-        }
-        return ip_fixed(code);
+        return compute_ip(code);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -2461,40 +2259,15 @@ struct DCTemplate<
 /**********************************************************
  * QT_8bit_direct + L2 — full RVV specialization
  *
- * Direct 8-bit storage: encode is code[i] = (uint8_t)x[i] and
- * reconstruction is simply recon_i(c) = c_i (no vmin/vdiff affine,
- * no trained parameters). The distance is therefore
- *     L2(q, code) = sum_i (q_i - c_i)^2
- * with the raw byte value participating directly — the lightest
- * possible L2 kernel in this file: there are no a/e coefficient
- * streams at all, the query float stream is used as-is.
+ * Direct 8-bit storage: recon_i(c) = c_i (no affine, no trained
+ * params), so L2(q, code) = sum_i (q_i - c_i)^2.
  *
- * ID1: hot loop per vl = VLMAX(e8m1) dims (16 at VLEN=128):
- * vle8 -> vzext_vf4 (u8->u32m4) -> vfcvt (u32->f32m4), then
- * t = q - c (vfsub) and acc += t*t (vfmacc). 6 vector ops per
- * block, single f32m4 accumulator, single vfredusum after the
- * loop. vsetvl hoisted: 0 explicit vsetvl in the hot loop, 1
- * hoisted + 1 for the tail (d % vl != 0; absent for d=768).
- *
- * ID2: integer-domain rewrite. set_query truncates the query to
- * bytes once (q8[i] = clamp(int(x[i]), 0, 255)) — the exact
- * semantics of x86 DistanceComputerByte::set_query (tmp[i] =
- * int(x[i])), which IS the kernel faiss runs for this qtype on
- * AVX2/AVX512 whenever d%16==0 / d%32==0 (both hit at d=768).
- * For in-contract data (components are byte values, per the
- * encoder code[i] = (uint8_t)x[i]) the result is bit-exact.
- * Hot loop becomes pure integer, 4 vector ops per block:
- * vle8(c) + vle8(q8) -> vwsubu (u8-u8 -> u16m2, reinterpret
- * i16m2: signed diff in [-255,255]) -> vwmacc (i16*i16 ->
- * i32m4 accumulator; max d*255^2 means no overflow for any
- * d < 33k). One vredsum + one int->float convert at the end.
- * Register-width traffic per block drops from ~21 beats
- * (m1+m4+m4+m4+m4+m4) to ~8 (m1+m1+m2+m4).
- *
- * (x86 note: AVX2/AVX512 route this qtype to DistanceComputerByte
- * — an integer-domain kernel with the query truncated to bytes —
- * whenever d%16==0 / d%32==0. The RVV dispatch keeps the
- * DCTemplate entry, so this specialization is the RVV analogue.)
+ * Integer-domain kernel: set_query truncates the query to bytes
+ * (q8[i] = clamp(int(x[i]), 0, 255)) — matching x86
+ * DistanceComputerByte::set_query (the kernel faiss runs for this
+ * qtype on AVX2/AVX512). In-contract data is bit-exact. Hot loop:
+ * vle8(c) + vle8(q8) -> vwsubu -> vwmacc (i32m8 accumulator), one
+ * vredsum + one int->float at the end.
  **********************************************************/
 
 template <>
@@ -2528,21 +2301,15 @@ struct DCTemplate<
         }
     }
 
-    /// Integer-domain L2: sum_i (q8_i - c_i)^2 into an i32 vector
+    /// Integer-domain L2: sum_i (q8_i - c_i)^2 into an i32m8 vector
     /// accumulator; single reduction + single int->float at the end.
-    /// ID5: LMUL m2 variant — e8m2 loads, vwsubu -> i16m4, vwmacc ->
-    /// i32m8 single accumulator. Per 32 dims this is 4 instructions
-    /// (2 loads m2 + m4-write + m8-write, 16 data beats) vs the v4
-    /// 2x-unrolled m1 form's 8 instructions (same 16 beats): halves
-    /// the front-end pressure at equal datapath traffic. Register
-    /// budget: acc(8) + vc(2) + vq(2) + df(4) = 16/32, no spill.
-    /// (Sibling LMUL-up refutations were all on f32-heavy kernels;
-    /// this integer form is the premise-changed retest.)
     int64_t accumulate_int_l2(const uint8_t* code) const {
         const uint8_t* pq = q8.data();
 
         // Hoist vsetvl: VLMAX for e8m2, reused across the hot loop.
-        const size_t vl = __riscv_vsetvl_e8m2(d);
+        // d==0: guard so vsetvl(0) doesn't return 0 and the chunk loop
+        // `i + vl <= d` doesn't stall.
+        const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
         vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
 
         size_t i = 0;
@@ -2564,13 +2331,15 @@ struct DCTemplate<
             vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vt);
             vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
                     __riscv_vwsubu_vv_u16m4(vq, vc, vt));
-            acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vt);
+            acc = __riscv_vwmacc_vv_i32m8_tu(acc, df, df, vt);
         }
 
-        // Single horizontal reduction over all vl lanes.
-        vint32m1_t zero = __riscv_vmv_v_x_i32m1(0, 1);
-        vint32m1_t red = __riscv_vredsum_vs_i32m8_i32m1(acc, zero, vl);
-        return __riscv_vmv_x_s_i32m1_i32(red);
+        // Single horizontal reduction over all vl lanes, widened to i64
+        // so the total d*65025 cannot overflow i32 for large d. Per-lane
+        // i32 accumulation is safe while (d/vl)*65025 < 2^31 (~1e6 dims).
+        vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
+        vint64m1_t red = __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl);
+        return __riscv_vmv_x_s_i64m1_i64(red);
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2609,40 +2378,15 @@ struct DCTemplate<
 /**********************************************************
  * QT_8bit_direct + IP — full RVV specialization
  *
- * Direct 8-bit storage: reconstruction is recon_i(c) = c_i (no
- * vmin/vdiff affine, no trained parameters), so
- *     IP(q, code) = sum_i q_i * c_i
- * with the raw byte value participating directly — even lighter
- * than the direct+L2 kernel (no difference, no square): there are
- * no coefficient streams at all.
+ * Direct 8-bit storage: recon_i(c) = c_i (no affine, no trained
+ * params), so IP(q, code) = sum_i q_i * c_i.
  *
- * ID1: float-domain hot loop per vl = VLMAX(e8m1) dims (16 at
- * VLEN=128): vle8(c) -> vzext_vf4 -> vfcvt -> vle32(q) -> vfmacc.
- * 5 vector ops per block, single f32m4 accumulator. Board:
- * -83.70% vs scalar baseline.
- *
- * ID2: integer-domain rewrite. set_query truncates the query to
- * bytes once (q8[i] = clamp(int(x[i]), 0, 255)) — the exact
- * semantics of x86 DistanceComputerByte::set_query (tmp[i] =
- * int(x[i])), which IS the kernel faiss runs for this qtype on
- * AVX2/AVX512 whenever d%16==0 / d%32==0 (both hit at d=768).
- * For in-contract data (components are byte values, per the
- * encoder code[i] = (uint8_t)x[i]) the result is bit-exact.
- * Hot loop becomes pure integer, 4 vector ops per block (e8m2,
- * vl=32 at VLEN=128): vle8(c) + vle8(q8) -> vwmulu (u8*u8 ->
- * u16m4; a single product <= 255^2 = 65025 just fits u16, so
- * the product CANNOT be accumulated in u16 — it is immediately
- * widened) -> vwaddu.wv (u32m8 accumulator += u16m4; max
- * d*65025 means no overflow for any d < 66k). One vredsum +
- * one uint->float convert at the end. Zero FP / zero convert
- * instructions in the hot loop. (Note: unlike the L2 kernel's
- * signed i16 diff in [-255,255], the IP product does NOT fit
- * i16 — the unsigned vwmulu/vwaddu path is mandatory.)
- *
- * (x86 note: AVX2/AVX512 route this qtype to DistanceComputerByte
- * — an integer-domain kernel with the query truncated to bytes —
- * whenever d%16==0 / d%32==0. The RVV dispatch keeps the
- * DCTemplate entry, so this specialization is the RVV analogue.)
+ * Integer-domain kernel: set_query truncates the query to bytes
+ * (matching x86 DistanceComputerByte::set_query); the query is
+ * pre-widened to u16 and the hot loop uses a fused vwmaccu into a
+ * u32m8 accumulator (the u8*u8 product does not fit i16, so the
+ * unsigned vwmulu/vwaddu path is mandatory). In-contract data is
+ * bit-exact.
  **********************************************************/
 
 template <>
@@ -2653,10 +2397,8 @@ struct DCTemplate<
     using Sim = SimilarityIP<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    // ID5 probe: query truncated to the byte range but stored
-    // pre-widened as u16 — the hot loop loads it directly at
-    // SEW=16 and uses a single fused vwmaccu instead of
-    // vwmulu + vwaddu.wv (query stream bytes double: still L1).
+    // Query stored pre-widened as u16 so the hot loop loads it at
+    // SEW=16 and uses a single fused vwmaccu.
     std::vector<uint16_t> q16; // query truncated to [0,255], u16
 
     DCTemplate(size_t d_in, const std::vector<float>& /* unused */)
@@ -2680,23 +2422,16 @@ struct DCTemplate<
         }
     }
 
-    /// Integer-domain IP: sum_i q_i * c_i into a u32 vector
-    /// accumulator; single reduction + single uint->float at the
-    /// end. Base form ID5 (board: -90.70% vs baseline, -14.05%
-    /// vs the vwmulu+vwaddu chain): fused-MAC — q stream
-    /// pre-widened to u16 in set_query; per 32 dims: vle8(c,e8m2)
-    /// -> vzext_vf2 + vle16(q16,u16m4) -> vwmaccu (u32m8 acc).
-    /// ID7 (round 6 probe): bump-pointer addressing — replace the
-    /// indexed `code + i` / `pq + i` forms and the i counter with
-    /// two stepped pointers and a remaining-count, trimming the
-    /// per-iteration scalar address arithmetic on this
-    /// front-end-bound machine. Vector op sequence is unchanged.
-    uint32_t accumulate_int_ip(const uint8_t* code) const {
+    /// Integer-domain IP: sum_i q_i * c_i into a u32m8 accumulator;
+    /// single reduction + single uint->float at the end.
+    uint64_t accumulate_int_ip(const uint8_t* code) const {
         const uint16_t* pq = q16.data();
         const uint8_t* pc = code;
 
         // Hoist vsetvl: VLMAX for e8m2, reused across the hot loop.
-        const size_t vl = __riscv_vsetvl_e8m2(d);
+        // d==0: guard so vsetvl(0) doesn't return 0 and the
+        // `while (remaining >= vl)` loop doesn't stall.
+        const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
         vuint32m8_t acc = __riscv_vmv_v_x_u32m8(0, vl);
 
         size_t remaining = d;
@@ -2720,13 +2455,15 @@ struct DCTemplate<
             vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vt);
             vuint16m4_t vq = __riscv_vle16_v_u16m4(pq, vt);
             vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vt);
-            acc = __riscv_vwmaccu_vv_u32m8(acc, vq, c16, vt);
+            acc = __riscv_vwmaccu_vv_u32m8_tu(acc, vq, c16, vt);
         }
 
-        // Single horizontal reduction over all vl lanes.
-        vuint32m1_t zero = __riscv_vmv_v_x_u32m1(0, 1);
-        vuint32m1_t red = __riscv_vredsum_vs_u32m8_u32m1(acc, zero, vl);
-        return __riscv_vmv_x_s_u32m1_u32(red);
+        // Single horizontal reduction over all vl lanes, widened to u64
+        // so the total d*65025 cannot overflow u32 for large d. Per-lane
+        // u32 accumulation is safe while (d/vl)*65025 < 2^32 (~1.3e6 dims).
+        vuint64m1_t z64 = __riscv_vmv_v_x_u64m1(0, 1);
+        vuint64m1_t red = __riscv_vwredsumu_vs_u32m8_u64m1(acc, z64, vl);
+        return __riscv_vmv_x_s_u64m1_u64(red);
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2764,48 +2501,16 @@ struct DCTemplate<
 /**********************************************************
  * QT_8bit_direct_signed + L2 — full RVV specialization
  *
- * Signed direct 8-bit storage (see Quantizer8bitDirectSigned):
- *     stored_byte = value + 128,  i.e.  value = stored_byte - 128
- * Reconstruction is recon_i(c) = c_i - 128, so
- *     L2(q, code) = sum_i (q_i - (c_i - 128))^2
- *                 = sum_i ((q_i + 128) - c_i)^2
- * — the +128 storage bias cancels inside the difference (same
- * identity x86 DistanceComputerByteSigned<AVX512_SPR> relies on:
- * (s_a - 128) - (s_b - 128) == s_a - s_b), so the kernel is
- * structurally identical to the unsigned QT_8bit_direct+L2 one
- * with the query re-biased into the storage domain once per
- * query in set_query.
+ * Signed direct storage (Quantizer8bitDirectSigned): recon_i(c) =
+ * c_i - 128, so L2(q, code) = sum_i ((q_i + 128) - c_i)^2 — the +128
+ * bias cancels inside the difference, making this kernel isomorphic to
+ * the unsigned QT_8bit_direct+L2 one with the query re-biased by +128
+ * in set_query (matching x86 DistanceComputerByteSigned::set_query).
  *
- * ID1: float-domain hot loop per vl = VLMAX(e8m1) dims (16 at
- * VLEN=128): set_query precomputes qb[i] = x[i] + 128.0f (bias
- * folding, zero extra hot-loop cost), then vle8(c) ->
- * vzext_vf4 (u8->u32m4) -> vfcvt (u32->f32m4) -> vle32(qb) ->
- * vfsub -> vfmacc. 6 vector ops per block, single f32m4
- * accumulator, single vfredusum after the loop. Board: -79.76%
- * vs the scalar baseline.
- *
- * ID2: integer-domain rewrite (port of the direct_l2 final v5
- * kernel — bias cancellation makes the two kernels isomorphic).
- * set_query re-biases the query to bytes once (q8[i] =
- * clamp(int(x[i]) + 128, 0, 255)) — the exact semantics of x86
- * DistanceComputerByteSigned::set_query (tmp[i] =
- * uint8(int(x[i]) + 128)), which IS the kernel faiss runs for
- * this qtype on AVX512_SPR whenever d%64==0 (hit at d=768).
- * For in-contract data (components are integers in [-128,127],
- * per the encoder code[i] = (uint8_t)(x[i] + 128)) the result
- * is bit-exact. Hot loop becomes pure integer, 4 vector ops per
- * block (e8m2, vl=32 at VLEN=128): vle8(c) + vle8(q8) ->
- * vwsubu (u8-u8 -> u16m4, reinterpret i16m4: signed diff in
- * [-255,255]) -> vwmacc (i16*i16 -> i32m8 single accumulator;
- * max d*255^2 means no overflow for any d < 33k). One vredsum +
- * one int->float convert at the end; zero FP / zero convert
- * instructions in the hot loop.
- *
- * (x86 note: AVX512_SPR routes this qtype to
- * DistanceComputerByteSigned — an integer-domain kernel with the
- * query re-biased by +128 into bytes — whenever d%64==0 (hit at
- * d=768). The RVV dispatch keeps the DCTemplate entry, so this
- * specialization is the RVV analogue.)
+ * Integer-domain: set_query re-biases the query to bytes (q8[i] =
+ * clamp(int(x[i]) + 128, 0, 255)); hot loop vle8(c)+vle8(q8) -> vwsubu
+ * -> vwmacc (i32m8 accumulator), one vredsum + int->float. In-contract
+ * data (integers in [-128,127]) is bit-exact.
  **********************************************************/
 
 template <>
@@ -2841,24 +2546,16 @@ struct DCTemplate<
         }
     }
 
-    /// Integer-domain L2: sum_i (q8_i - c_i)^2 into an i32 vector
+    /// Integer-domain L2: sum_i (q8_i - c_i)^2 into an i32m8 vector
     /// accumulator; single reduction + single int->float at the end.
-    /// LMUL m2 flat form (direct_l2 board-proven final shape):
-    /// e8m2 loads, vwsubu -> i16m4, vwmacc -> i32m8 single
-    /// accumulator. 4 instructions / 32 dims; register budget
-    /// acc(8) + vc(2) + vq(2) + df(4) = 16/32, no spill.
-    /// ID3 (round 3 probe): bump-pointer addressing — replace the
-    /// indexed `code + i` / `pq + i` forms and the i counter with
-    /// two stepped pointers and a remaining-count, trimming the
-    /// per-iteration scalar address arithmetic on this
-    /// front-end-bound machine (direct_ip round-6 board-proven
-    /// -2.07%). Vector op sequence is unchanged.
     int64_t accumulate_int_l2(const uint8_t* code) const {
         const uint8_t* pq = q8.data();
         const uint8_t* pc = code;
 
         // Hoist vsetvl: VLMAX for e8m2, reused across the hot loop.
-        const size_t vl = __riscv_vsetvl_e8m2(d);
+        // d==0: guard so vsetvl(0) doesn't return 0 and the
+        // `while (remaining >= vl)` loop doesn't stall.
+        const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
         vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
 
         size_t remaining = d;
@@ -2884,13 +2581,15 @@ struct DCTemplate<
             vuint8m2_t vq = __riscv_vle8_v_u8m2(pq, vt);
             vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
                     __riscv_vwsubu_vv_u16m4(vq, vc, vt));
-            acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vt);
+            acc = __riscv_vwmacc_vv_i32m8_tu(acc, df, df, vt);
         }
 
-        // Single horizontal reduction over all vl lanes.
-        vint32m1_t zero = __riscv_vmv_v_x_i32m1(0, 1);
-        vint32m1_t red = __riscv_vredsum_vs_i32m8_i32m1(acc, zero, vl);
-        return __riscv_vmv_x_s_i32m1_i32(red);
+        // Single horizontal reduction over all vl lanes, widened to i64
+        // so the total d*65025 cannot overflow i32 for large d. Per-lane
+        // i32 accumulation is safe while (d/vl)*65025 < 2^31 (~1e6 dims).
+        vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
+        vint64m1_t red = __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl);
+        return __riscv_vmv_x_s_i64m1_i64(red);
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2929,48 +2628,15 @@ struct DCTemplate<
 /**********************************************************
  * QT_8bit_direct_signed + IP — full RVV specialization
  *
- * Signed direct 8-bit storage (see Quantizer8bitDirectSigned):
- *     stored_byte = value + 128,  i.e.  value = stored_byte - 128
- * Reconstruction is recon_i(c) = c_i - 128, so
- *     IP(q, code) = sum_i q_i * (c_i - 128)
- * Unlike L2, the +128 storage bias does NOT cancel inside a
- * difference: expanding q_i * (c_i - 128) leaves a
- * -128 * sum_i q_i term. That term depends on the QUERY only,
- * so it can be hoisted out of the per-code kernel entirely
- * (precomputed once per query in set_query) — x86
- * DistanceComputerByteSigned<AVX512_SPR> uses the same algebra,
- * with its code-side sums; here the whole bias is query-side.
+ * Signed direct storage: recon_i(c) = c_i - 128, so IP(q, code) =
+ * sum_i q_i*(c_i - 128). Unlike L2 the +128 bias does not cancel:
+ * expanding leaves a query-only term -128*sum_i q_i, which set_query
+ * hoists out (matching x86 DistanceComputerByteSigned::set_query).
  *
- * ID1: float-domain hot loop per vl = VLMAX(e8m1) dims (16 at
- * VLEN=128): vle8(c) -> vzext_vf4 (u8->u32m4) -> vfcvt
- * (u32->f32m4) -> vfsub(128.0f) -> vle32(q) -> vfmacc. 6 vector
- * ops per block, single f32m4 accumulator, single vfredusum
- * after the loop. Board: -79.75% vs the scalar baseline.
- *
- * ID2: integer-domain rewrite. set_query truncates the query
- * once into the signed byte range, stored pre-widened as i16
- * (qs[i] = clamp(int(x[i]), -128, 127)) and precomputes the
- * query-only bias 128 * sum_i qs_i. This is the exact semantics
- * of x86 DistanceComputerByteSigned::set_query (tmp[i] =
- * uint8(int(x[i]) + 128)) — which IS the kernel faiss runs for
- * this qtype on AVX512_SPR whenever d%64==0 (hit at d=768) —
- * with both (tmp_i - 128) and (c_i - 128) expanded so that the
- * only non-query term left in
- *     IP = sum_i qs_i * (c_i - 128)
- *        = sum_i qs_i * c_i  -  128 * sum_i qs_i
- * is a plain mixed-sign dot product. For in-contract data
- * (components are integers in [-128,127], per the encoder
- * code[i] = (uint8_t)(x[i] + 128)) the result is bit-exact.
- * Hot loop per vl=32 dims (e8m2, VLEN=128): vle8(c) ->
- * vzext_vf2 (u8->u16m4) + vle16(qs,i16m4) -> vwmaccsu
- * (i16 x u16 -> i32m8 single accumulator) — 4 vector ops, the
- * direct_ip final-kernel shape (fused MAC on the acc chain,
- * off-chain only the zext). Products lie in [-32640, 32385], so
- * the i32 accumulator is safe for any d < 65k. The -128*sum(qs)
- * bias is injected as the vredsum SEED (vmv.v.x of -bias):
- * zero extra instructions in both the hot loop and the tail.
- * One vredsum + one int->float at the end; zero FP / zero
- * convert instructions in the hot loop.
+ * Integer-domain: set_query truncates the query to i16 (qs[i] =
+ * clamp(int(x[i]), -128, 127)) and precomputes the bias 128*sum(qs).
+ * Hot loop vle8(c) + vle16(qs) -> vwmaccsu (i32m8 accumulator); the
+ * bias is injected as the vredsum seed. In-contract data is bit-exact.
  **********************************************************/
 
 template <>
@@ -2981,10 +2647,8 @@ struct DCTemplate<
     using Sim = SimilarityIP<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    // ID2 probe: query truncated to the signed byte range but
-    // stored pre-widened as i16 — the hot loop loads it directly
-    // at SEW=16 and uses a single fused vwmaccsu (signed q x
-    // unsigned zext'ed code) on the accumulator chain.
+    // Query stored pre-widened as i16 so the hot loop loads it at
+    // SEW=16 and uses a single fused vwmaccsu.
     std::vector<int16_t> q16; // query truncated to [-128,127], i16
     int32_t qbias = 0;        // 128 * sum_i q16[i] (query-only term)
 
@@ -3016,28 +2680,18 @@ struct DCTemplate<
     }
 
     /// Integer-domain signed IP:
-    ///     sum_i qs_i * (c_i - 128)
-    ///   = sum_i qs_i * c_i - 128 * sum_i qs_i
-    /// The mixed-sign dot product runs in an i32 vector
-    /// accumulator (fused vwmaccsu, direct_ip final-kernel
-    /// shape); the query-only bias is injected as the vredsum
-    /// seed — zero extra instructions anywhere on the hot path.
-    /// Per 32 dims (e8m2, VLEN=128): vle8(c) + vle16(q16) ->
-    /// vzext_vf2 (c -> u16m4) -> vwmaccsu (i32m8 acc). 4 vector
-    /// ops per block, single accumulator.
-    /// ID3 (round 3 probe): bump-pointer addressing — replace the
-    /// indexed `pc + i` / `pq + i` forms and the i counter with
-    /// two stepped pointers and a remaining-count, trimming the
-    /// per-iteration scalar address arithmetic (the q16 stream's
-    /// x2-scale indexed form blocks GCC's own strength
-    /// reduction; direct_ip board evidence -2.07%). Vector op
-    /// sequence is unchanged.
-    int32_t accumulate_int_ip(const uint8_t* code) const {
+    ///     sum_i qs_i * (c_i - 128) = sum_i qs_i*c_i - 128*sum_i qs_i
+    /// The mixed-sign dot product runs in an i32m8 accumulator
+    /// (fused vwmaccsu); the query-only bias is injected as the
+    /// vredsum seed.
+    int64_t accumulate_int_ip(const uint8_t* code) const {
         const int16_t* pq = q16.data();
         const uint8_t* pc = code;
 
         // Hoist vsetvl: VLMAX for e8m2, reused across the hot loop.
-        const size_t vl = __riscv_vsetvl_e8m2(d);
+        // d==0: guard so vsetvl(0) doesn't return 0 and the
+        // `while (remaining >= vl)` loop doesn't stall.
+        const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
         vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
 
         size_t remaining = d;
@@ -3061,14 +2715,16 @@ struct DCTemplate<
             vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vt);
             vint16m4_t vq = __riscv_vle16_v_i16m4(pq, vt);
             vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vt);
-            acc = __riscv_vwmaccsu_vv_i32m8(acc, vq, c16, vt);
+            acc = __riscv_vwmaccsu_vv_i32m8_tu(acc, vq, c16, vt);
         }
 
-        // Single horizontal reduction over all vl lanes, seeded
-        // with -qbias: the bias subtraction rides the reduction.
-        vint32m1_t seed = __riscv_vmv_v_x_i32m1(-qbias, 1);
-        vint32m1_t red = __riscv_vredsum_vs_i32m8_i32m1(acc, seed, vl);
-        return __riscv_vmv_x_s_i32m1_i32(red);
+        // Single horizontal reduction over all vl lanes, seeded with
+        // -qbias (the bias subtraction rides the reduction), widened to
+        // i64 so the total |sum| <= d*32640 cannot overflow i32 for large
+        // d. Per-lane i32 accumulation is safe while (d/vl)*32640 < 2^31.
+        vint64m1_t seed = __riscv_vmv_v_x_i64m1(-int64_t(qbias), 1);
+        vint64m1_t red = __riscv_vwredsum_vs_i32m8_i64m1(acc, seed, vl);
+        return __riscv_vmv_x_s_i64m1_i64(red);
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -3105,20 +2761,13 @@ struct DCTemplate<
 
 //  * Fast path — QT_bf16 + L2
 //  *
-//  * bf16 code: each dimension is the high 16 bits of an f32, stored as
-//  * uint16. decode_bf16(v) = reinterpret_f32(u32(v) << 16).
+//  * bf16 code: each dim is the high 16 bits of an f32, stored as uint16;
+//  * decode_bf16(v) = reinterpret_f32(u32(v) << 16). The query stays in full
+//  * f32 precision: L2 = sum_i (q_i - decode_bf16(c_i))^2.
 //  *
-//  * ID1 (direct form): the query stays in full f32 precision — exactly the
-//  * scalar NONE fallback's numeric model:
-//  *     L2 = sum_i (q_i - decode_bf16(c_i))^2
-//  *
-//  * march has no zvfbfmin/zvfbfwma (and no dpbf16), so bf16→f32 widening
-//  * is manual: vle16 (u16m2) → vzext_vf2 (u32m4) → vsll 16 → reinterpret
-//  * f32m4. Hot loop per vl=16 dims (VLEN=128): 1 code load + 2-op widen +
-//  * 1 q load + vfsub + vfmacc — 6 vector ops, single f32m4 accumulator,
-//  * vsetvl hoisted (0 inside the hot loop), one horizontal reduction at
-//  * the end. Tail (d % vl) takes one shorter-vl pass into the same
-//  * accumulator (d=768 → no tail).
+//  * march has no zvfbfmin/zvfbfwma, so bf16→f32 widening is manual: vle16 →
+//  * vzext_vf2 → vsll 16 → reinterpret. Hot loop: code load + 2-op widen + q
+//  * load + vfsub + vfmacc.
 //  ************************************************************************/
 
 /// Widen a bf16 (u16) vector chunk to f32: (u32(v) << 16) reinterpreted.
@@ -3168,7 +2817,7 @@ struct DCTemplate<
             vfloat32m4_t fc = bf16_widen_f32m4(vc, vt);
             vfloat32m4_t fq = __riscv_vle32_v_f32m4(qf + i, vt);
             vfloat32m4_t t = __riscv_vfsub_vv_f32m4(fq, fc, vt);
-            acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t, t, vt);
         }
 
         // Single horizontal reduction over all vl lanes.
@@ -3211,15 +2860,9 @@ struct DCTemplate<
 
 //  * Fast path — QT_bf16 + IP
 //  *
-//  * Same bf16 code layout as the L2 block above; the query stays in full
-//  * f32 precision — exactly the scalar NONE fallback's numeric model:
+//  * Same bf16 layout as L2 above; query stays in full f32 precision:
 //  *     IP = sum_i q_i * decode_bf16(c_i)
-//  *
-//  * ID1 (direct form): hot loop per vl=16 dims (VLEN=128, e16m2→f32m4):
-//  * 1 code load + 2-op widen + 1 q load + vfmacc — 5 vector ops, single
-//  * f32m4 accumulator, vsetvl hoisted (0 inside the hot loop), one
-//  * horizontal reduction at the end. Tail (d % vl) takes one shorter-vl
-//  * pass into the same accumulator (d=768 → no tail).
+//  * Hot loop: code load + 2-op widen + q load + vfmacc.
 //  ************************************************************************/
 
 template <>
@@ -3260,7 +2903,7 @@ struct DCTemplate<
             vuint16m2_t vc = __riscv_vle16_v_u16m2(code + i, vt);
             vfloat32m4_t fc = bf16_widen_f32m4(vc, vt);
             vfloat32m4_t fq = __riscv_vle32_v_f32m4(qf + i, vt);
-            acc = __riscv_vfmacc_vv_f32m4(acc, fq, fc, vt);
+            acc = __riscv_vfmacc_vv_f32m4_tu(acc, fq, fc, vt);
         }
 
         // Single horizontal reduction over all vl lanes.
@@ -3302,29 +2945,15 @@ struct DCTemplate<
 
 //  * Fast path — QT_fp16 + L2
 //  *
-//  * fp16 code: each dimension is an IEEE-754 binary16 stored as uint16.
-//  * The scalar NONE fallback decodes with the software bit-twiddling
-//  * decode_fp16 (fp16-inl.h; RISC-V has no F16C/NEON path), which costs
-//  * ~20 scalar ops per dimension — so the scalar gap is even more
-//  * expensive here than for bf16.
-//  *
-//  * ID6 (LMUL sweep, down): ID1 direct form (the best so far: q in full
-//  * f32, subtract-first — exactly the scalar NONE numeric model at
-//  * f32-reassociation level) lowered from e16m2->f32m4 to e16m1->f32m2:
-//  * 96 iterations at d=768 (2x the instruction count of the m2/m4
-//  * sweet spot, ~6/32 registers). Family evidence (S9, 5x refuted for
-//  * m4/m8 in R4) says the m2/m4 point is the sweet spot; this round is
-//  * the designated lower-boundary verification.
+//  * fp16 code: each dim is an IEEE-754 binary16 stored as uint16. The
+//  * query stays in full f32 precision: L2 = sum_i (q_i - decode_fp16(c_i))^2.
 //  *
 //  * Toolchain note: march is rv64gcv_zvfhmin — NO full zvfh, so f16
-//  * vector arithmetic is unavailable (GCC ICEs, R2 evidence); only
-//  * vle16/vse16, vfwcvt.f.f.v, vfncvt.f.f.w are legal on f16.
+//  * vector arithmetic is unavailable; only vle16/vse16, vfwcvt.f.f.v,
+//  * vfncvt.f.f.w are legal on f16.
 //  *
-//  * Hot loop per vl=8 dims (VLEN=128, e16m1 -> f32m2): vle16 c +
-//  * vfwcvt + vle32 q + vfsub + vfmacc — 5 vector ops, single f32m2
-//  * accumulator, vsetvl hoisted (0 inside the hot loop), one horizontal
-//  * reduction at the end. Tail (d % vl) takes one shorter-vl pass into
-//  * the same accumulator (d=768 -> no tail).
+//  * Hot loop per vl=8 dims (e16m1 -> f32m2): vle16 c + vfwcvt + vle32 q
+//  * + vfsub + vfmacc, single f32m2 accumulator.
 //  ************************************************************************/
 
 template <>
@@ -3367,7 +2996,7 @@ struct DCTemplate<
             vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vt);
             vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i, vt);
             vfloat32m2_t t = __riscv_vfsub_vv_f32m2(fq, fc, vt);
-            acc = __riscv_vfmacc_vv_f32m2(acc, t, t, vt);
+            acc = __riscv_vfmacc_vv_f32m2_tu(acc, t, t, vt);
         }
 
         // Single horizontal reduction over all vl lanes.
@@ -3410,20 +3039,12 @@ struct DCTemplate<
 
 //  * Fast path — QT_fp16 + IP
 //  *
-//  * fp16 code: each dimension is an IEEE-754 binary16 stored as uint16.
-//  * The scalar NONE fallback decodes with the software bit-twiddling
-//  * decode_fp16 (fp16-inl.h; RISC-V has no F16C/NEON path), which costs
-//  * ~20 scalar ops per dimension.
-//  *
-//  * ID6 (software pipelining): IP kernel with prologue+rotate pattern.
-//  * Hot loop per vl=8 dims (VLEN=128, e16m1->f32m2): preload next chunk's
-//  * f16 code at loop top, process current chunk, rotate. Load-use distance
-//  * stretched from 1 op to ~4 ops across full iteration body.
-//  * 96 iterations at d=768, ~8/32 registers (+1 m1 for next_vc).
-//  * q stays in f32, numerical model matches scalar NONE fallback.
+//  * fp16 code: each dim is an IEEE-754 binary16 stored as uint16. The
+//  * query stays in full f32 precision: IP = sum_i q_i * decode_fp16(c_i).
+//  * Software-pipelined (prologue + rotate): preload the next chunk's f16
+//  * code at loop top, then compute on the current chunk.
 //  *
 //  * Toolchain: march=rv64gcv_zvfhmin — NO full zvfh.
-//  * d=768 = 96 * vl=8 -> no tail.
 //  ************************************************************************/
 
 template <>
@@ -3441,11 +3062,8 @@ struct DCTemplate<
         q = x;
     }
 
-    /// Direct-form IP with dual independent accumulators (m1/m2, ID4).
-    /// Direct-form IP with software pipelining (m1/m2, ID6).
-    /// Prologue+rotate pattern: preload next chunk's f16 code at loop top,
-    /// then compute on current chunk, stretching load-use distance from 1 op
-    /// to full iteration body (~4 ops).
+    /// Direct-form IP, software-pipelined (prologue + rotate): preload the
+    /// next chunk's f16 code, then compute on the current chunk.
     float compute_ip(const float* qf, const uint8_t* code8) const {
         const _Float16* code = (const _Float16*)code8;
         size_t i = 0;
@@ -3460,10 +3078,13 @@ struct DCTemplate<
             // Main loop: while a full next chunk exists, issue its load
             // first, then process the current one.
             for (; i + vl <= d; i += vl) {
-                vfloat16m1_t vc_next = __riscv_vle16_v_f16m1(code + i, vl);
+                vfloat16m1_t vc_next =
+                        __riscv_vle16_v_f16m1(code + i, vl);
 
-                vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
-                vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i - vl, vl);
+                vfloat32m2_t fc =
+                        __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
+                vfloat32m2_t fq =
+                        __riscv_vle32_v_f32m2(qf + i - vl, vl);
                 acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vl);
 
                 vc = vc_next; // rotate
@@ -3471,8 +3092,10 @@ struct DCTemplate<
 
             // Epilogue: process the last chunk (already loaded).
             {
-                vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
-                vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i - vl, vl);
+                vfloat32m2_t fc =
+                        __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
+                vfloat32m2_t fq =
+                        __riscv_vle32_v_f32m2(qf + i - vl, vl);
                 acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vl);
             }
         }
@@ -3483,7 +3106,7 @@ struct DCTemplate<
             vfloat16m1_t vc = __riscv_vle16_v_f16m1(code + i, vt);
             vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vt);
             vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i, vt);
-            acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vt);
+            acc = __riscv_vfmacc_vv_f32m2_tu(acc, fq, fc, vt);
         }
 
         vfloat32m1_t red = __riscv_vfredusum_vs_f32m2_f32m1(
