@@ -148,6 +148,54 @@ class TestInvertedLists : public faiss::InvertedLists {
 };
 } // namespace
 
+TEST(IVF, dedup_reset) {
+    const float vectors[] = {0.0f, 0.0f};
+    const faiss::idx_t ids[] = {403, 404};
+    faiss::IndexFlatL2 quantizer(1);
+    quantizer.add(1, vectors);
+    faiss::IndexIVFFlatDedup index(&quantizer, 1, 1);
+    ASSERT_TRUE(index.is_trained);
+
+    index.add_with_ids(2, vectors, ids);
+    ASSERT_EQ(index.ntotal, 2);
+    float distances[3];
+    faiss::idx_t labels[3];
+    index.search(1, vectors, 2, distances, labels);
+    EXPECT_EQ(
+            (std::set<faiss::idx_t>{403, 404}),
+            (std::set<faiss::idx_t>(labels, labels + 2)));
+
+    // Reset must remove logical duplicates as well as physical entries.
+    index.reset();
+    EXPECT_EQ(index.ntotal, 0);
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(quantizer.ntotal, 1);
+    index.search(1, vectors, 2, distances, labels);
+    EXPECT_EQ(labels[0], -1);
+    EXPECT_EQ(labels[1], -1);
+    index.reset();
+    EXPECT_EQ(index.ntotal, 0);
+
+    // Reusing the representative ID must not revive its old duplicate.
+    index.add_with_ids(1, vectors, ids);
+    EXPECT_EQ(index.ntotal, 1);
+    index.search(1, vectors, 2, distances, labels);
+    EXPECT_EQ(labels[0], 403);
+    EXPECT_EQ(labels[1], -1);
+    EXPECT_FLOAT_EQ(distances[0], 0.0f);
+
+    // New duplicates must still be returned after reset.
+    const faiss::idx_t new_id = 405;
+    index.add_with_ids(1, vectors, &new_id);
+    EXPECT_EQ(index.ntotal, 2);
+    index.search(1, vectors, 3, distances, labels);
+    EXPECT_EQ(
+            (std::set<faiss::idx_t>{-1, 403, 405}),
+            (std::set<faiss::idx_t>(labels, labels + 3)));
+    EXPECT_FLOAT_EQ(distances[0], 0.0f);
+    EXPECT_FLOAT_EQ(distances[1], 0.0f);
+}
+
 TEST(IVF, list_context) {
     // this test verifies that the context object is passed
     // to the InvertedListsIterator and InvertedLists::add_entry.
