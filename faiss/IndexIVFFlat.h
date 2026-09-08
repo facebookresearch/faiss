@@ -127,6 +127,9 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
 
     size_t remove_ids(const IDSelector& sel) override;
 
+    /// also clears the duplicate map
+    void reset() override;
+
     /// not implemented
     void range_search(
             idx_t n,

@@ -335,8 +335,26 @@ void IndexIVFFlatDedup::search_preassigned(
 }
 
 size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
+    // The removal accounting below is derived from the invariant
+    // `ntotal == (physical inverted-list entries) + instances.size()`. Check it
+    // before touching anything, so an index whose `instances` has drifted out
+    // of sync (e.g. one filled in by a base-class method that does not know
+    // about the duplicate map) fails cleanly instead of being left half
+    // modified with a corrupted `ntotal`.
+    int64_t n_entries = 0;
+    for (size_t i = 0; i < nlist; i++) {
+        n_entries += invlists->list_size(i);
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            ntotal == n_entries + static_cast<int64_t>(instances.size()),
+            "IndexIVFFlatDedup::remove_ids: ntotal does not match "
+            "inverted-list entries + instances.size()");
+
     std::unordered_map<idx_t, idx_t> replace;
     std::vector<std::pair<idx_t, idx_t>> toadd;
+    // Duplicate ids live only in `instances`, not in the inverted lists, so
+    // their removal must be counted separately from inverted-list shrinkage.
+    const int64_t n_instances_before = static_cast<int64_t>(instances.size());
     for (auto it = instances.begin(); it != instances.end();) {
         if (sel.is_member(it->first)) {
             // then we erase this entry
@@ -404,8 +422,24 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
             invlists->resize(i, invlists->list_size(i) - toremove[i]);
         }
     }
-    ntotal -= nremove;
-    return nremove;
+    // `nremove` counts only physically removed inverted-list entries. Removing
+    // a duplicate id (or a stored id replaced by a surviving duplicate) drops
+    // an `instances` entry without shrinking a list, so the net decrease in
+    // `instances` accounts for those logical removals. Given the invariant
+    // checked on entry, the total number of removed ids is exactly
+    // nremove + (instances_before - instances_after).
+    const int64_t total_removed = nremove + n_instances_before -
+            static_cast<int64_t>(instances.size());
+    ntotal -= total_removed;
+    return total_removed;
+}
+
+void IndexIVFFlatDedup::reset() {
+    // `instances` is maintained only by this subclass, so the base-class reset
+    // would leave it holding entries for ids that no longer exist, breaking the
+    // `ntotal == (physical entries) + instances.size()` invariant.
+    IndexIVFFlat::reset();
+    instances.clear();
 }
 
 void IndexIVFFlatDedup::range_search(
