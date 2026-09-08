@@ -7,6 +7,7 @@
     <derivedcompoundref refid="structfaiss_1_1IndexHNSWCagra" prot="public" virt="non-virtual">faiss::IndexHNSWCagra</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexHNSWFlat" prot="public" virt="non-virtual">faiss::IndexHNSWFlat</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexHNSWPQ" prot="public" virt="non-virtual">faiss::IndexHNSWPQ</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexHNSWRaBitQ" prot="public" virt="non-virtual">faiss::IndexHNSWRaBitQ</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexHNSWSQ" prot="public" virt="non-virtual">faiss::IndexHNSWSQ</derivedcompoundref>
     <includes refid="IndexHNSW_8h" local="no">IndexHNSW.h</includes>
     <sectiondef kind="public-type">
@@ -1903,6 +1904,12 @@
         </childnode>
       </node>
       <node id="8">
+        <label>faiss::IndexHNSWRaBitQ</label>
+        <link refid="structfaiss_1_1IndexHNSWRaBitQ"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
         <label>faiss::IndexHNSWSQ</label>
         <link refid="structfaiss_1_1IndexHNSWSQ"/>
         <childnode refid="1" relation="public-inheritance">

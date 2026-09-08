@@ -1,285 +1,30 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1IndexHNSWCagra" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::IndexHNSWCagra</compoundname>
+  <compounddef id="structfaiss_1_1IndexHNSWRaBitQ" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexHNSWRaBitQ</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexHNSW" prot="public" virt="non-virtual">faiss::IndexHNSW</basecompoundref>
-    <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSWCagra_1ad200e22f5fe20ab347c4846b9bd30896" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexHNSWCagra::base_level_only</definition>
-        <argsstring></argsstring>
-        <name>base_level_only</name>
-        <qualifiedname>faiss::IndexHNSWCagra::base_level_only</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>When set to true, the index is immutable. This option is used to copy the knn graph from GpuIndexCagra to the base level of <ref refid="structfaiss_1_1IndexHNSWCagra" kindref="compound">IndexHNSWCagra</ref> without adding upper levels. Doing so enables to search the <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> index, but removes the ability to add vectors. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="280" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="280" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSWCagra_1a1c1182e0d77cfefb0dd16c0de808ad6a" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::IndexHNSWCagra::num_base_level_search_entrypoints</definition>
-        <argsstring></argsstring>
-        <name>num_base_level_search_entrypoints</name>
-        <qualifiedname>faiss::IndexHNSWCagra::num_base_level_search_entrypoints</qualifiedname>
-        <initializer>= 256</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>When <computeroutput>base_level_only</computeroutput> is set to <computeroutput>True</computeroutput>, the search function searches only the base level knn graph of the <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> index. This parameter selects the entry point by randomly selecting some points and using the best one. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="286" column="9" bodyfile="faiss/IndexHNSW.h" bodystart="286" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSWCagra_1a4ba3e07e9f1558336e74880671c8628c" prot="public" static="no" mutable="no">
-        <type>NumericType</type>
-        <definition>NumericType faiss::IndexHNSWCagra::numeric_type_</definition>
-        <argsstring></argsstring>
-        <name>numeric_type_</name>
-        <qualifiedname>faiss::IndexHNSWCagra::numeric_type_</qualifiedname>
-        <initializer>= Float32</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="308" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="308" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref></type>
-        <definition>HNSW faiss::IndexHNSW::hnsw</definition>
-        <argsstring></argsstring>
-        <name>hnsw</name>
-        <qualifiedname>faiss::IndexHNSW::hnsw</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="35" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="35" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexHNSW::own_fields</definition>
-        <argsstring></argsstring>
-        <name>own_fields</name>
-        <qualifiedname>faiss::IndexHNSW::own_fields</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="38" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="38" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::IndexHNSW::storage</definition>
-        <argsstring></argsstring>
-        <name>storage</name>
-        <qualifiedname>faiss::IndexHNSW::storage</qualifiedname>
-        <initializer>= nullptr</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="39" column="11" bodyfile="faiss/IndexHNSW.h" bodystart="39" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexHNSW::init_level0</definition>
-        <argsstring></argsstring>
-        <name>init_level0</name>
-        <qualifiedname>faiss::IndexHNSW::init_level0</qualifiedname>
-        <initializer>= true</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="45" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="45" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexHNSW::keep_max_size_level0</definition>
-        <argsstring></argsstring>
-        <name>keep_max_size_level0</name>
-        <qualifiedname>faiss::IndexHNSW::keep_max_size_level0</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="51" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="51" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" prot="public" static="no" mutable="no">
-        <type>std::optional&lt; bool &gt;</type>
-        <definition>std::optional&lt;bool&gt; faiss::IndexHNSW::use_visited_hashset</definition>
-        <argsstring></argsstring>
-        <name>use_visited_hashset</name>
-        <qualifiedname>faiss::IndexHNSW::use_visited_hashset</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="54" column="19" bodyfile="faiss/IndexHNSW.h" bodystart="54" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" prot="public" static="no" mutable="no">
-        <type><ref refid="classfaiss_1_1LockVector" kindref="compound">LockVector</ref></type>
-        <definition>LockVector faiss::IndexHNSW::locks</definition>
-        <argsstring></argsstring>
-        <name>locks</name>
-        <qualifiedname>faiss::IndexHNSW::locks</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="57" column="16" bodyfile="faiss/IndexHNSW.h" bodystart="57" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexHNSW::retain_locks</definition>
-        <argsstring></argsstring>
-        <name>retain_locks</name>
-        <qualifiedname>faiss::IndexHNSW::retain_locks</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="59" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="59" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::Index::d</definition>
-        <argsstring></argsstring>
-        <name>d</name>
-        <qualifiedname>faiss::Index::d</qualifiedname>
-        <briefdescription>
-<para>vector dimension </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="105" column="9" bodyfile="faiss/Index.h" bodystart="105" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" static="no" mutable="no">
-        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
-        <definition>idx_t faiss::Index::ntotal</definition>
-        <argsstring></argsstring>
-        <name>ntotal</name>
-        <qualifiedname>faiss::Index::ntotal</qualifiedname>
-        <briefdescription>
-<para>total nb of indexed vectors </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="106" column="11" bodyfile="faiss/Index.h" bodystart="106" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::Index::verbose</definition>
-        <argsstring></argsstring>
-        <name>verbose</name>
-        <qualifiedname>faiss::Index::verbose</qualifiedname>
-        <briefdescription>
-<para>verbosity level </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="107" column="10" bodyfile="faiss/Index.h" bodystart="107" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::Index::is_trained</definition>
-        <argsstring></argsstring>
-        <name>is_trained</name>
-        <qualifiedname>faiss::Index::is_trained</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="111" column="10" bodyfile="faiss/Index.h" bodystart="111" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" static="no" mutable="no">
-        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
-        <definition>MetricType faiss::Index::metric_type</definition>
-        <argsstring></argsstring>
-        <name>metric_type</name>
-        <qualifiedname>faiss::Index::metric_type</qualifiedname>
-        <briefdescription>
-<para>type of metric this index uses for search </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="114" column="16" bodyfile="faiss/Index.h" bodystart="114" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" static="no" mutable="no">
-        <type>float</type>
-        <definition>float faiss::Index::metric_arg</definition>
-        <argsstring></argsstring>
-        <name>metric_arg</name>
-        <qualifiedname>faiss::Index::metric_arg</qualifiedname>
-        <briefdescription>
-<para>argument of the metric type </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="115" column="11" bodyfile="faiss/Index.h" bodystart="115" bodyend="-1"/>
-      </memberdef>
-    </sectiondef>
+    <includes refid="IndexHNSW_8h" local="no">IndexHNSW.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a8339f048a4012b6e365b16fc2e2825fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSWRaBitQ_1a41ebeb30fd6a8aacd516b04d61bc7965" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexHNSWCagra::IndexHNSWCagra</definition>
+        <definition>faiss::IndexHNSWRaBitQ::IndexHNSWRaBitQ</definition>
         <argsstring>()</argsstring>
-        <name>IndexHNSWCagra</name>
-        <qualifiedname>faiss::IndexHNSWCagra::IndexHNSWCagra</qualifiedname>
+        <name>IndexHNSWRaBitQ</name>
+        <qualifiedname>faiss::IndexHNSWRaBitQ::IndexHNSWRaBitQ</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="268" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="231" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a92d77a82fe783100f1486df952cae2b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSWRaBitQ_1a49db05274f4b1a202e5d52b2790939b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexHNSWCagra::IndexHNSWCagra</definition>
-        <argsstring>(int d, int M, MetricType metric=METRIC_L2, NumericType numeric_type=NumericType::Float32)</argsstring>
-        <name>IndexHNSWCagra</name>
-        <qualifiedname>faiss::IndexHNSWCagra::IndexHNSWCagra</qualifiedname>
+        <definition>faiss::IndexHNSWRaBitQ::IndexHNSWRaBitQ</definition>
+        <argsstring>(int d, int M, uint8_t nb_bits=1, MetricType metric=METRIC_L2)</argsstring>
+        <name>IndexHNSWRaBitQ</name>
+        <qualifiedname>faiss::IndexHNSWRaBitQ::IndexHNSWRaBitQ</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -289,14 +34,14 @@
           <declname>M</declname>
         </param>
         <param>
+          <type>uint8_t</type>
+          <declname>nb_bits</declname>
+          <defval>1</defval>
+        </param>
+        <param>
           <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
           <declname>metric</declname>
           <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>numeric_type</declname>
-          <defval>NumericType::Float32</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -304,15 +49,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="269" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="232" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSWRaBitQ_1ae39a21e23f7e36a49821e3733cee6ace" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexHNSWRaBitQ" kindref="compound">IndexHNSWRaBitQ</ref> &amp;</type>
+        <definition>IndexHNSWRaBitQ &amp; faiss::IndexHNSWRaBitQ::operator=</definition>
+        <argsstring>(const IndexHNSWRaBitQ &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::IndexHNSWRaBitQ::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexHNSWRaBitQ" kindref="compound">IndexHNSWRaBitQ</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="238" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexHNSWCagra::add</definition>
+        <definition>void faiss::IndexHNSW::add</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>add</name>
-        <qualifiedname>faiss::IndexHNSWCagra::add</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9">add</reimplements>
+        <qualifiedname>faiss::IndexHNSW::add</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2">add</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexHNSWFlatPanorama_1ab6169154be3d429b2970dc2e6cc4c9aa">add</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750">add</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -328,15 +92,42 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="288" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="67" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1ab3f031a1ff0bbd2418fdc74bde6f0483" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexHNSWCagra::search</definition>
+        <definition>void faiss::IndexHNSW::train</definition>
+        <argsstring>(idx_t n, const float *x) override</argsstring>
+        <name>train</name>
+        <qualifiedname>faiss::IndexHNSW::train</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532">train</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c">train</reimplementedby>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Trains the storage if needed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="70" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexHNSW::search</definition>
         <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
-        <qualifiedname>faiss::IndexHNSWCagra::search</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409">search</reimplements>
+        <qualifiedname>faiss::IndexHNSW::search</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a4bec1a04796e20ea0bfa24bad5b246e3">search</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexHNSW2Level_1a0702820667ab98a90da866ec311f39aa">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1ab3f031a1ff0bbd2418fdc74bde6f0483">search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -369,15 +160,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="291" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="73" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1acaf8f7dd4469b333d4ff804dad8ec666" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexHNSWCagra::range_search</definition>
+        <definition>void faiss::IndexHNSW::range_search</definition>
         <argsstring>(idx_t n, const float *x, float radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const override</argsstring>
         <name>range_search</name>
-        <qualifiedname>faiss::IndexHNSWCagra::range_search</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c">range_search</reimplements>
+        <qualifiedname>faiss::IndexHNSW::range_search</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba">range_search</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1acaf8f7dd4469b333d4ff804dad8ec666">range_search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -441,64 +233,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="299" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a8ace3336205a8eb1717d6241536d6f0e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>faiss::NumericType</type>
-        <definition>faiss::NumericType faiss::IndexHNSWCagra::get_numeric_type</definition>
-        <argsstring>() const</argsstring>
-        <name>get_numeric_type</name>
-        <qualifiedname>faiss::IndexHNSWCagra::get_numeric_type</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="306" column="24"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a1307f73cdf2a304d44362810e366700f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::IndexHNSWCagra::set_numeric_type</definition>
-        <argsstring>(faiss::NumericType numeric_type)</argsstring>
-        <name>set_numeric_type</name>
-        <qualifiedname>faiss::IndexHNSWCagra::set_numeric_type</qualifiedname>
-        <param>
-          <type>faiss::NumericType</type>
-          <declname>numeric_type</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="307" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>void faiss::IndexHNSW::train</definition>
-        <argsstring>(idx_t n, const float *x) override</argsstring>
-        <name>train</name>
-        <qualifiedname>faiss::IndexHNSW::train</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532">train</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c">train</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <briefdescription>
-<para>Trains the storage if needed. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="70" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="81" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a3c44c91bfe78cb7ef100d92b6512040b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1860,6 +1595,45 @@
         <location file="faiss/Index.h" line="430" column="18"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSWRaBitQ_1a0c656d1c40142374774a1ad7dfcb67d0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IndexHNSWRaBitQ::IndexHNSWRaBitQ</definition>
+        <argsstring>(const IndexHNSWRaBitQ &amp;)=default</argsstring>
+        <name>IndexHNSWRaBitQ</name>
+        <qualifiedname>faiss::IndexHNSWRaBitQ::IndexHNSWRaBitQ</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexHNSWRaBitQ" kindref="compound">IndexHNSWRaBitQ</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="243" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structfaiss_1_1IndexHNSWRaBitQ_1a17e1690489b765e2d3d22aa9b3c09e33" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> *</type>
+        <definition>IndexHNSW * clone_IndexHNSW</definition>
+        <argsstring>(const IndexHNSW *index)</argsstring>
+        <name>clone_IndexHNSW</name>
+        <qualifiedname>faiss::IndexHNSWRaBitQ::clone_IndexHNSW</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="245" column="22"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref></type>
@@ -1904,9 +1678,221 @@
         <location file="faiss/Index.h" line="103" column="5" bodyfile="faiss/Index.h" bodystart="103" bodyend="-1"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref></type>
+        <definition>HNSW faiss::IndexHNSW::hnsw</definition>
+        <argsstring></argsstring>
+        <name>hnsw</name>
+        <qualifiedname>faiss::IndexHNSW::hnsw</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="35" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IndexHNSW::own_fields</definition>
+        <argsstring></argsstring>
+        <name>own_fields</name>
+        <qualifiedname>faiss::IndexHNSW::own_fields</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="38" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+        <definition>Index* faiss::IndexHNSW::storage</definition>
+        <argsstring></argsstring>
+        <name>storage</name>
+        <qualifiedname>faiss::IndexHNSW::storage</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="39" column="11" bodyfile="faiss/IndexHNSW.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IndexHNSW::init_level0</definition>
+        <argsstring></argsstring>
+        <name>init_level0</name>
+        <qualifiedname>faiss::IndexHNSW::init_level0</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="45" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IndexHNSW::keep_max_size_level0</definition>
+        <argsstring></argsstring>
+        <name>keep_max_size_level0</name>
+        <qualifiedname>faiss::IndexHNSW::keep_max_size_level0</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="51" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; bool &gt;</type>
+        <definition>std::optional&lt;bool&gt; faiss::IndexHNSW::use_visited_hashset</definition>
+        <argsstring></argsstring>
+        <name>use_visited_hashset</name>
+        <qualifiedname>faiss::IndexHNSW::use_visited_hashset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="54" column="19" bodyfile="faiss/IndexHNSW.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" prot="public" static="no" mutable="no">
+        <type><ref refid="classfaiss_1_1LockVector" kindref="compound">LockVector</ref></type>
+        <definition>LockVector faiss::IndexHNSW::locks</definition>
+        <argsstring></argsstring>
+        <name>locks</name>
+        <qualifiedname>faiss::IndexHNSW::locks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="57" column="16" bodyfile="faiss/IndexHNSW.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IndexHNSW::retain_locks</definition>
+        <argsstring></argsstring>
+        <name>retain_locks</name>
+        <qualifiedname>faiss::IndexHNSW::retain_locks</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="59" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::Index::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::Index::d</qualifiedname>
+        <briefdescription>
+<para>vector dimension </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="105" column="9" bodyfile="faiss/Index.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::Index::ntotal</definition>
+        <argsstring></argsstring>
+        <name>ntotal</name>
+        <qualifiedname>faiss::Index::ntotal</qualifiedname>
+        <briefdescription>
+<para>total nb of indexed vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="106" column="11" bodyfile="faiss/Index.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::Index::verbose</definition>
+        <argsstring></argsstring>
+        <name>verbose</name>
+        <qualifiedname>faiss::Index::verbose</qualifiedname>
+        <briefdescription>
+<para>verbosity level </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="107" column="10" bodyfile="faiss/Index.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::Index::is_trained</definition>
+        <argsstring></argsstring>
+        <name>is_trained</name>
+        <qualifiedname>faiss::Index::is_trained</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="111" column="10" bodyfile="faiss/Index.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::Index::metric_type</definition>
+        <argsstring></argsstring>
+        <name>metric_type</name>
+        <qualifiedname>faiss::Index::metric_type</qualifiedname>
+        <briefdescription>
+<para>type of metric this index uses for search </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="114" column="16" bodyfile="faiss/Index.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::Index::metric_arg</definition>
+        <argsstring></argsstring>
+        <name>metric_arg</name>
+        <qualifiedname>faiss::Index::metric_arg</qualifiedname>
+        <briefdescription>
+<para>argument of the metric type </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="115" column="11" bodyfile="faiss/Index.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
+<para><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> index whose storage is RaBitQ-compressed.</para>
+<para>The graph is built directly from the compressed codes. Neighbor-diversity pruning uses a fast 1-bit symmetric L2 estimator, including when the storage contains multi-bit codes.</para>
+<para>With nb_bits &gt;= 2 the codes carry a per-vector error factor, so search uses the staged search method: a 1-bit estimate for every neighbor and the full multi-bit distance only for candidates the error bound cannot rule out. nb_bits = 1 has no error factor and uses ordinary <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> search. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">
@@ -1920,8 +1906,8 @@
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::IndexHNSWCagra</label>
-        <link refid="structfaiss_1_1IndexHNSWCagra"/>
+        <label>faiss::IndexHNSWRaBitQ</label>
+        <link refid="structfaiss_1_1IndexHNSWRaBitQ"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -1961,8 +1947,8 @@
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::IndexHNSWCagra</label>
-        <link refid="structfaiss_1_1IndexHNSWCagra"/>
+        <label>faiss::IndexHNSWRaBitQ</label>
+        <link refid="structfaiss_1_1IndexHNSWRaBitQ"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -1975,72 +1961,70 @@
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="267" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="267" bodyend="309"/>
+    <location file="faiss/IndexHNSW.h" line="230" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="230" bodyend="247"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add</name></member>
-      <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add_ex</name></member>
-      <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add_sa_codes</name></member>
-      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add_with_ids_ex</name></member>
-      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>assign</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1ad200e22f5fe20ab347c4846b9bd30896" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>base_level_only</name></member>
-      <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>check_compatible_for_merge</name></member>
-      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>component_t</name></member>
-      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>compute_residual</name></member>
-      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>compute_residual_n</name></member>
-      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>d</name></member>
-      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>distance_t</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a8ace3336205a8eb1717d6241536d6f0e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>get_numeric_type</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>hnsw</name></member>
-      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>Index</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a973769979e047374a8310b9fa891214c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>IndexHNSW</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a74d1ec193f1749a55ec83b6c7779119c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>IndexHNSW</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a8339f048a4012b6e365b16fc2e2825fe" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>IndexHNSWCagra</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a92d77a82fe783100f1486df952cae2b9" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>IndexHNSWCagra</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>init_level0</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>init_level_0_from_entry_points</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a9a86c58212f3f9cf88394f5297cba525" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>init_level_0_from_knngraph</name></member>
-      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>keep_max_size_level0</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>link_singletons</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>locks</name></member>
-      <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>merge_from</name></member>
-      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>metric_arg</name></member>
-      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>metric_type</name></member>
-      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>ntotal</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a1c1182e0d77cfefb0dd16c0de808ad6a" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>num_base_level_search_entrypoints</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a4ba3e07e9f1558336e74880671c8628c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>numeric_type_</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>own_fields</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>permute_entries</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1acaf8f7dd4469b333d4ff804dad8ec666" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>range_search</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>reconstruct_batch</name></member>
-      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>reconstruct_n</name></member>
-      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>remove_ids</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>reorder_links</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1ad4b9f97d42e2521e01f8b60012985396" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>reset</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>retain_locks</name></member>
-      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>sa_code_size</name></member>
-      <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>sa_decode</name></member>
-      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>sa_encode</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1ab3f031a1ff0bbd2418fdc74bde6f0483" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>search</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a3c44c91bfe78cb7ef100d92b6512040b" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>search1</name></member>
-      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>search_ex</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a0c4947283a65855653f077531be85f05" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>search_level_0</name></member>
-      <member refid="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>search_subset</name></member>
-      <member refid="structfaiss_1_1IndexHNSWCagra_1a1307f73cdf2a304d44362810e366700f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>set_numeric_type</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a37f79ff64b8aa13977c1b4dbccf3eec6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>shrink_level_0_neighbors</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>storage</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>storage_idx_t</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>train_ex</name></member>
-      <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>train_with_queries</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>use_visited_hashset</name></member>
-      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>~Index</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1ae9f5460874a4fba7d4ce1e718d25608b" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>~IndexHNSW</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>add</name></member>
+      <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>add_ex</name></member>
+      <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>add_sa_codes</name></member>
+      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>add_with_ids_ex</name></member>
+      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>assign</name></member>
+      <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>check_compatible_for_merge</name></member>
+      <member refid="structfaiss_1_1IndexHNSWRaBitQ_1a17e1690489b765e2d3d22aa9b3c09e33" prot="private" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>clone_IndexHNSW</name></member>
+      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>component_t</name></member>
+      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>compute_residual</name></member>
+      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>compute_residual_n</name></member>
+      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>hnsw</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a973769979e047374a8310b9fa891214c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>IndexHNSW</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a74d1ec193f1749a55ec83b6c7779119c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>IndexHNSW</name></member>
+      <member refid="structfaiss_1_1IndexHNSWRaBitQ_1a41ebeb30fd6a8aacd516b04d61bc7965" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>IndexHNSWRaBitQ</name></member>
+      <member refid="structfaiss_1_1IndexHNSWRaBitQ_1a49db05274f4b1a202e5d52b2790939b6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>IndexHNSWRaBitQ</name></member>
+      <member refid="structfaiss_1_1IndexHNSWRaBitQ_1a0c656d1c40142374774a1ad7dfcb67d0" prot="private" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>IndexHNSWRaBitQ</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>init_level0</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>init_level_0_from_entry_points</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a9a86c58212f3f9cf88394f5297cba525" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>init_level_0_from_knngraph</name></member>
+      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>keep_max_size_level0</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>link_singletons</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>locks</name></member>
+      <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>merge_from</name></member>
+      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1IndexHNSWRaBitQ_1ae39a21e23f7e36a49821e3733cee6ace" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>own_fields</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>permute_entries</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>range_search</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>reconstruct_batch</name></member>
+      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>reconstruct_n</name></member>
+      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>remove_ids</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>reorder_links</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1ad4b9f97d42e2521e01f8b60012985396" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>retain_locks</name></member>
+      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>sa_code_size</name></member>
+      <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>sa_decode</name></member>
+      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>sa_encode</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a3c44c91bfe78cb7ef100d92b6512040b" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>search1</name></member>
+      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>search_and_reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>search_ex</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a0c4947283a65855653f077531be85f05" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>search_level_0</name></member>
+      <member refid="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>search_subset</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a37f79ff64b8aa13977c1b4dbccf3eec6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>shrink_level_0_neighbors</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>storage</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>storage_idx_t</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>train_ex</name></member>
+      <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>train_with_queries</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>use_visited_hashset</name></member>
+      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>verbose</name></member>
+      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>~Index</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1ae9f5460874a4fba7d4ce1e718d25608b" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWRaBitQ</scope><name>~IndexHNSW</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

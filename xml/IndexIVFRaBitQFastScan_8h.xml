@@ -34,7 +34,7 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="49">
+      <node id="52">
         <label>faiss/IndexFastScan.h</label>
         <link refid="IndexFastScan_8h_source"/>
         <childnode refid="2" relation="include">
@@ -48,7 +48,7 @@
         <childnode refid="43" relation="include">
         </childnode>
       </node>
-      <node id="51">
+      <node id="54">
         <label>faiss/IndexFlatCodes.h</label>
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="3" relation="include">
@@ -117,9 +117,9 @@
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
+        <childnode refid="51" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="48" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
@@ -130,26 +130,26 @@
         <childnode refid="30" relation="include">
         </childnode>
       </node>
-      <node id="50">
+      <node id="53">
         <label>faiss/IndexRaBitQ.h</label>
         <link refid="IndexRaBitQ_8h_source"/>
-        <childnode refid="51" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="48">
+      <node id="51">
         <label>faiss/IndexRaBitQFastScan.h</label>
         <link refid="IndexRaBitQFastScan_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="49" relation="include">
-        </childnode>
-        <childnode refid="50" relation="include">
-        </childnode>
         <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
@@ -292,7 +292,7 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="52">
+      <node id="48">
         <label>faiss/impl/RaBitQUtils.h</label>
         <link refid="RaBitQUtils_8h_source"/>
         <childnode refid="9" relation="include">
@@ -301,7 +301,7 @@
         </childnode>
         <childnode refid="43" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
+        <childnode refid="49" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
@@ -330,6 +330,10 @@
         <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="60">
@@ -385,7 +389,7 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="48" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -570,13 +574,13 @@
         <childnode refid="36" relation="include">
         </childnode>
       </node>
-      <node id="54">
+      <node id="50">
         <label>faiss/utils/popcount.h</label>
         <link refid="popcount_8h_source"/>
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="49">
         <label>faiss/utils/rabitq_simd.h</label>
         <link refid="rabitq__simd_8h_source"/>
         <childnode refid="37" relation="include">
@@ -587,7 +591,7 @@
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="50" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>

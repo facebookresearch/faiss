@@ -115,6 +115,12 @@
         <label>faiss/IndexIVFPQR.h</label>
         <link refid="IndexIVFPQR_8h_source"/>
       </node>
+      <node id="18">
+        <label>faiss/IndexIVFRaBitQ.h</label>
+        <link refid="IndexIVFRaBitQ_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
       <node id="6">
         <label>faiss/IndexIVFRaBitQFastScan.h</label>
         <link refid="IndexIVFRaBitQFastScan_8h_source"/>
@@ -124,6 +130,12 @@
       <node id="4">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
+      </node>
+      <node id="19">
+        <label>faiss/IndexRaBitQ.h</label>
+        <link refid="IndexRaBitQ_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="5">
         <label>faiss/IndexRaBitQFastScan.h</label>
@@ -146,28 +158,42 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-      </node>
-      <node id="17">
-        <label>faiss/impl/RaBitQuantizerMultiBit.h</label>
-        <link refid="RaBitQuantizerMultiBit_8h_source"/>
-      </node>
-      <node id="23">
-        <label>faiss/impl/fast_scan/accumulate_loops.h</label>
-        <link refid="accumulate__loops_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="24" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="17">
+        <label>faiss/impl/RaBitQuantizer.h</label>
+        <link refid="RaBitQuantizer_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/impl/RaBitQuantizerMultiBit.h</label>
+        <link refid="RaBitQuantizerMultiBit_8h_source"/>
+      </node>
+      <node id="26">
+        <label>faiss/impl/fast_scan/accumulate_loops.h</label>
+        <link refid="accumulate__loops_8h"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
         <label>faiss/impl/fast_scan/decompose_qbs.h</label>
         <link refid="decompose__qbs_8h_source"/>
       </node>
-      <node id="24">
+      <node id="27">
         <label>faiss/impl/fast_scan/dispatching.h</label>
         <link refid="dispatching_8h"/>
       </node>
@@ -175,22 +201,22 @@
         <label>faiss/impl/fast_scan/rabitq_dispatching.h</label>
         <link refid="rabitq__dispatching_8h"/>
       </node>
-      <node id="18">
+      <node id="21">
         <label>faiss/impl/fast_scan/rabitq_result_handler.h</label>
         <link refid="rabitq__result__handler_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="25">
         <label>faiss/impl/fast_scan/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
       <node id="14">
@@ -203,25 +229,25 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="22">
         <label>faiss/impl/scalar_quantizer/quantizers.h</label>
         <link refid="quantizers_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="23">
         <label>faiss/impl/scalar_quantizer/scanners.h</label>
         <link refid="scanners_8h_source"/>
-        <childnode refid="21" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="24">
         <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
         <link refid="sq-dispatch_8h_source"/>
       </node>
-      <node id="26">
+      <node id="29">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
@@ -246,14 +272,14 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="30">
         <label>faiss/utils/simd_impl/partitioning_simdlib256.h</label>
         <link refid="partitioning__simdlib256_8h"/>
       </node>

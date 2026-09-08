@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RaBitQStats" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RaBitQStats</compoundname>
+    <includes refid="RaBitQuantizer_8h" local="no">RaBitQuantizer.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQStats_1a919fcd126620e419b760a83b71ab2d05" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::RaBitQStats::n_1bit</definition>
+        <argsstring></argsstring>
+        <name>n_1bit</name>
+        <qualifiedname>faiss::RaBitQStats::n_1bit</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="31" column="14" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQStats_1a5bf3c0f5caf5ce3900dd4c00909efebc" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::RaBitQStats::n_refine</definition>
+        <argsstring></argsstring>
+        <name>n_refine</name>
+        <qualifiedname>faiss::RaBitQStats::n_refine</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="32" column="14" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1a071b8230bddb32d8ab04dfde726e7f9f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQStats::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <qualifiedname>faiss::RaBitQStats::reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="34" column="10" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="34" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1a0669a4a1bf92ee9b8b3826c483e91757" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQStats::add</definition>
+        <argsstring>(const RaBitQStats &amp;other)</argsstring>
+        <name>add</name>
+        <qualifiedname>faiss::RaBitQStats::add</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1RaBitQStats" kindref="compound">RaBitQStats</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="38" column="10" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="38" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1adbc539ee7fa2db38e96ed54a19e852e6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double faiss::RaBitQStats::refine_ratio</definition>
+        <argsstring>() const</argsstring>
+        <name>refine_ratio</name>
+        <qualifiedname>faiss::RaBitQStats::refine_ratio</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="43" column="12" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="43" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Statistics for staged RaBitQ distance evaluation.</para>
+<para>These counters belong to the quantizer rather than to a particular ANN graph. They are currently populated by <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&apos;s staged search path. </para>
+    </detaileddescription>
+    <location file="faiss/impl/RaBitQuantizer.h" line="30" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="30" bodyend="46"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RaBitQStats_1a0669a4a1bf92ee9b8b3826c483e91757" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>add</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a919fcd126620e419b760a83b71ab2d05" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>n_1bit</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a5bf3c0f5caf5ce3900dd4c00909efebc" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>n_refine</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1adbc539ee7fa2db38e96ed54a19e852e6" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>refine_ratio</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a071b8230bddb32d8ab04dfde726e7f9f" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>reset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

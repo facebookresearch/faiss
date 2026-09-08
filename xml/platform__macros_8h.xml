@@ -22,6 +22,7 @@
     <includedby refid="PanoramaStats_8h" local="no">faiss/impl/PanoramaStats.h</includedby>
     <includedby refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includedby>
     <includedby refid="RaBitQUtils_8h" local="no">faiss/impl/RaBitQUtils.h</includedby>
+    <includedby refid="RaBitQuantizer_8h" local="no">faiss/impl/RaBitQuantizer.h</includedby>
     <includedby refid="VisitedTable_8h" local="no">faiss/impl/VisitedTable.h</includedby>
     <includedby refid="approx__topk_8h" local="no">faiss/impl/approx_topk/approx_topk.h</includedby>
     <includedby refid="kernels__simd512_8h" local="no">faiss/impl/fast_scan/kernels_simd512.h</includedby>
@@ -1123,6 +1124,8 @@
         </childnode>
         <childnode refid="62" relation="include">
         </childnode>
+        <childnode refid="148" relation="include">
+        </childnode>
         <childnode refid="171" relation="include">
         </childnode>
         <childnode refid="66" relation="include">
@@ -1442,6 +1445,8 @@
         <childnode refid="96" relation="include">
         </childnode>
         <childnode refid="170" relation="include">
+        </childnode>
+        <childnode refid="148" relation="include">
         </childnode>
         <childnode refid="192" relation="include">
         </childnode>

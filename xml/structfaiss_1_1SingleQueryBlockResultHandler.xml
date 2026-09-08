@@ -267,7 +267,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="107" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="107" bodyend="139"/>
+    <location file="faiss/impl/ResultHandler.h" line="107" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="107" bodyend="145"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" prot="public" virt="virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>add_results</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a6fdfd97929109943fec48be75f50f61b" prot="public" virt="virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>begin_multiple</name></member>

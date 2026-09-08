@@ -146,6 +146,7 @@
     <innerclass refid="structfaiss_1_1IndexHNSWFlat" prot="public">faiss::IndexHNSWFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWFlatPanorama" prot="public">faiss::IndexHNSWFlatPanorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWPQ" prot="public">faiss::IndexHNSWPQ</innerclass>
+    <innerclass refid="structfaiss_1_1IndexHNSWRaBitQ" prot="public">faiss::IndexHNSWRaBitQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWSQ" prot="public">faiss::IndexHNSWSQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexIDMap2Template" prot="public">faiss::IndexIDMap2Template</innerclass>
     <innerclass refid="structfaiss_1_1IndexIDMapTemplate" prot="public">faiss::IndexIDMapTemplate</innerclass>
@@ -297,6 +298,7 @@
     <innerclass refid="structfaiss_1_1RaBitQDistanceComputer" prot="public">faiss::RaBitQDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQHeapHandler" prot="public">faiss::RaBitQHeapHandler</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQSearchParameters" prot="public">faiss::RaBitQSearchParameters</innerclass>
+    <innerclass refid="structfaiss_1_1RaBitQStats" prot="public">faiss::RaBitQStats</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQuantizer" prot="public">faiss::RaBitQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
@@ -1558,7 +1560,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="324" column="28" declfile="faiss/impl/HNSW.h" declline="324" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="330" column="28" declfile="faiss/impl/HNSW.h" declline="330" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a425b13a639db2a4b0a65b7b7b81ab032" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API bool</type>
@@ -1574,7 +1576,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="330" column="23" declfile="faiss/impl/HNSW.h" declline="330" declcolumn="23"/>
+        <location file="faiss/impl/HNSW.h" line="336" column="23" declfile="faiss/impl/HNSW.h" declline="336" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -1604,6 +1606,20 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="189" column="22" declfile="faiss/impl/ProductQuantizer.h" declline="189" declcolumn="22"/>
       </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" prot="public" static="no" extern="yes" mutable="no">
+        <type>FAISS_API <ref refid="structfaiss_1_1RaBitQStats" kindref="compound">RaBitQStats</ref></type>
+        <definition>FAISS_API RaBitQStats faiss::rabitq_stats</definition>
+        <argsstring></argsstring>
+        <name>rabitq_stats</name>
+        <qualifiedname>faiss::rabitq_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="48" column="30" declfile="faiss/impl/RaBitQuantizer.h" declline="48" declcolumn="30"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
         <definition>FAISS_API int faiss::distance_compute_min_k_reservoir</definition>
@@ -1616,7 +1632,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="706" column="22" bodyfile="faiss/utils/distances.h" bodystart="381" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="706" declcolumn="22"/>
+        <location file="faiss/impl/ResultHandler.h" line="712" column="22" bodyfile="faiss/utils/distances.h" bodystart="381" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="712" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a12459a18353dd0cbfcc26e1090da53a5" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -5734,7 +5750,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="289" column="6" declfile="faiss/impl/HNSW.h" declline="289" declcolumn="6"/>
+        <location file="faiss/impl/HNSW.h" line="295" column="6" declfile="faiss/impl/HNSW.h" declline="295" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -6791,7 +6807,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="709" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="709" bodyend="746"/>
+        <location file="faiss/impl/ResultHandler.h" line="715" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="715" bodyend="752"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -6839,7 +6855,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="749" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="749" bodyend="776"/>
+        <location file="faiss/impl/ResultHandler.h" line="755" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="755" bodyend="782"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a087cf08bf58efd47a208ad444a3c774b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -6884,7 +6900,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="783" column="6" declfile="faiss/impl/ResultHandler.h" declline="783" declcolumn="6"/>
+        <location file="faiss/impl/ResultHandler.h" line="789" column="6" declfile="faiss/impl/ResultHandler.h" declline="789" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab13c17c79eb8e68e28b06ec4566fb305" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -6929,7 +6945,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="790" column="6" declfile="faiss/impl/ResultHandler.h" declline="790" declcolumn="6"/>
+        <location file="faiss/impl/ResultHandler.h" line="796" column="6" declfile="faiss/impl/ResultHandler.h" declline="796" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a959d72ca7b23268325bad5696725b683" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>constexpr SIMDLevel</type>
