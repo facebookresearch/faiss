@@ -618,6 +618,64 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
     }
 };
 
+// Byte-domain kernels for QT_8bit_direct{,_signed}. The dispatch only
+// selects them when d % 16 == 0, so no loop needs a tail.
+
+namespace {
+
+// The accumulator stays unsigned: a vmull_u8 square reaches 255*255 = 65025,
+// which an int16 lane would read as negative.
+FAISS_ALWAYS_INLINE int neon_byte_l2sqr(
+        const uint8_t* code1,
+        const uint8_t* code2,
+        int d) {
+    uint32x4_t accu = vdupq_n_u32(0);
+    for (int i = 0; i < d; i += 16) {
+        const uint8x16_t diff =
+                vabdq_u8(vld1q_u8(code1 + i), vld1q_u8(code2 + i));
+        accu = vpadalq_u16(
+                accu, vmull_u8(vget_low_u8(diff), vget_low_u8(diff)));
+        accu = vpadalq_u16(
+                accu, vmull_u8(vget_high_u8(diff), vget_high_u8(diff)));
+    }
+    return static_cast<int>(vaddvq_u32(accu));
+}
+
+FAISS_ALWAYS_INLINE int neon_byte_ip(
+        const uint8_t* code1,
+        const uint8_t* code2,
+        int d) {
+    uint32x4_t accu = vdupq_n_u32(0);
+    for (int i = 0; i < d; i += 16) {
+        const uint8x16_t c1 = vld1q_u8(code1 + i);
+        const uint8x16_t c2 = vld1q_u8(code2 + i);
+        accu = vpadalq_u16(accu, vmull_u8(vget_low_u8(c1), vget_low_u8(c2)));
+        accu = vpadalq_u16(accu, vmull_u8(vget_high_u8(c1), vget_high_u8(c2)));
+    }
+    return static_cast<int>(vaddvq_u32(accu));
+}
+
+// The codes store value + 128. For x in 0 to 255, x ^ 0x80 read as int8 is
+// exactly x - 128, which is how the bias comes off before vmull_s8.
+FAISS_ALWAYS_INLINE int neon_byte_ip_unbias(
+        const uint8_t* code1,
+        const uint8_t* code2,
+        int d) {
+    const uint8x16_t bias = vdupq_n_u8(0x80);
+    int32x4_t accu = vdupq_n_s32(0);
+    for (int i = 0; i < d; i += 16) {
+        const int8x16_t c1 =
+                vreinterpretq_s8_u8(veorq_u8(vld1q_u8(code1 + i), bias));
+        const int8x16_t c2 =
+                vreinterpretq_s8_u8(veorq_u8(vld1q_u8(code2 + i), bias));
+        accu = vpadalq_s16(accu, vmull_s8(vget_low_s8(c1), vget_low_s8(c2)));
+        accu = vpadalq_s16(accu, vmull_s8(vget_high_s8(c1), vget_high_s8(c2)));
+    }
+    return static_cast<int>(vaddvq_s32(accu));
+}
+
+} // namespace
+
 template <class Similarity>
 struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
         : SQDistanceComputer {
@@ -630,21 +688,58 @@ struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
-        int accu = 0;
-        for (int i = 0; i < d; i++) {
-            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                accu += int(code1[i]) * code2[i];
-            } else {
-                int diff = int(code1[i]) - code2[i];
-                accu += diff * diff;
-            }
+        if constexpr (Sim::metric_type == METRIC_INNER_PRODUCT) {
+            return neon_byte_ip(code1, code2, d);
+        } else {
+            return neon_byte_l2sqr(code1, code2, d);
         }
-        return accu;
     }
 
     void set_query(const float* x) final {
         for (int i = 0; i < d; i++) {
             tmp[i] = int(x[i]);
+        }
+    }
+
+    int compute_distance(const float* x, const uint8_t* code) {
+        set_query(x);
+        return compute_code_distance(tmp.data(), code);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_code_distance(tmp.data(), code);
+    }
+};
+
+template <class Similarity>
+struct DistanceComputerByteSigned<Similarity, SIMDLevel::ARM_NEON>
+        : SQDistanceComputer {
+    using Sim = Similarity;
+
+    int d;
+    std::vector<uint8_t> tmp;
+
+    DistanceComputerByteSigned(int d, const std::vector<float>&)
+            : d(d), tmp(d) {}
+
+    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        if constexpr (Sim::metric_type == METRIC_INNER_PRODUCT) {
+            return neon_byte_ip_unbias(code1, code2, d);
+        } else {
+            // The bias cancels in the difference.
+            return neon_byte_l2sqr(code1, code2, d);
+        }
+    }
+
+    void set_query(const float* x) final {
+        for (int i = 0; i < d; i++) {
+            tmp[i] = uint8_t(int(x[i]) + 128);
         }
     }
 

@@ -46,11 +46,6 @@ constexpr int AVAILABLE_SIMD_LEVELS_A0_SPR =
 constexpr int AVAILABLE_SIMD_LEVELS_A1 =
         AVAILABLE_SIMD_LEVELS_A0 | (1 << int(SIMDLevel::ARM_SVE));
 
-// A2: NONE + AVX2 + ARM_SVE only (for functions with only these
-// implementations)
-constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_SVE));
-
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
 constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
