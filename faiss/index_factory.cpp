@@ -374,8 +374,9 @@ IndexIVF* parse_IndexIVF(
     auto match = [&sm, &code_string](const std::string pattern) {
         return re_match(code_string, pattern, sm);
     };
-    // we cannot release the quantizer until we know no error happens and destroys the owning
-    // index since in this path the index does not own quantizer
+    // we cannot release the quantizer until we know no error happens and
+    // destroys the owning index since in this path the index does not own
+    // quantizer
     auto get_q = [&quantizer] { return quantizer.get(); };
     int d = quantizer->d;
 
