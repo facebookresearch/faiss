@@ -374,7 +374,9 @@ IndexIVF* parse_IndexIVF(
     auto match = [&sm, &code_string](const std::string pattern) {
         return re_match(code_string, pattern, sm);
     };
-    auto get_q = [&quantizer] { return quantizer.release(); };
+    // we cannot release the quantizer until we know no error happens and destroys the owning
+    // index since in this path the index does not own quantizer
+    auto get_q = [&quantizer] { return quantizer.get(); };
     int d = quantizer->d;
 
     if (match("Flat")) {
@@ -1207,7 +1209,8 @@ std::unique_ptr<Index> index_factory_sub(
                         description.c_str());
                 int M = std::stoi(sm[1].str()), nbit = mres_to_int(sm[2], 8, 1);
                 Index2Layer* index_2l =
-                        new Index2Layer(quantizer.release(), nlist, M, nbit);
+                        new Index2Layer(quantizer.get(), nlist, M, nbit);
+                (void)quantizer.release(); // now owned by index_2l
                 index_2l->q1.own_fields = true;
                 index_2l->q1.quantizer_trains_alone =
                         get_trains_alone(index_2l->q1.quantizer);
@@ -1222,6 +1225,7 @@ std::unique_ptr<Index> index_factory_sub(
                     "could not parse code description %s in %s",
                     code_description.c_str(),
                     description.c_str());
+            (void)quantizer.release(); // now owned by index_ivf
             return std::unique_ptr<Index>(fix_ivf_fields(index_ivf));
         }
     }
