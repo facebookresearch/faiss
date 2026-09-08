@@ -865,9 +865,9 @@ TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
 
 // RVV-versus-scalar parity for all quantizers with RVV kernels, over both
 // metrics and dimensions around VLMAX boundaries. With e32m8 vectors,
-// VLMAX = VLEN / 4: 32 lanes on QEMU's default VLEN=128 and up to 256+
-// lanes on wide hardware, so the dimensions below straddle those chunk
-// boundaries as well as tiny tails.
+// VLMAX = VLEN / 4: 32 lanes on QEMU's default VLEN=128 and up to 512
+// lanes on VLEN=2048 hardware, so the dimensions below straddle those
+// chunk boundaries as well as tiny tails.
 TEST(ScalarQuantizer, RVVDistancePathParity) {
     if (!faiss::SIMDConfig::is_simd_level_available(
                 faiss::SIMDLevel::RISCV_RVV)) {
@@ -891,7 +891,9 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
             faiss::ScalarQuantizer::QT_8bit_eden,
     };
     const std::vector<size_t> dims = {
-            1, 7, 31, 32, 33, 63, 64, 65, 127, 128, 129, 255, 256, 257};
+            1,   7,   31,  32,  33,  63,  64,
+            65,  127, 128, 129, 255, 256, 257,
+            511, 512, 513};
     const std::vector<faiss::MetricType> metrics = {
             faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT};
 
