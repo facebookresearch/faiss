@@ -563,7 +563,11 @@ struct Run_search_inner_product {
            size_t d,
            size_t nx,
            size_t ny) {
-        if (res.sel ||
+        // ny == 0 goes to the sequential path: it guards only on nx, so its
+        // per-query begin()/end() still runs and each handler writes its own
+        // neutral distance and -1 label. The BLAS path instead returns early
+        // on ny == 0, before the handler is initialized.
+        if (res.sel || ny == 0 ||
             nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
@@ -582,7 +586,8 @@ struct Run_search_L2sqr {
            size_t nx,
            size_t ny,
            const float* y_norm2) {
-        if (res.sel ||
+        // See the note on ny == 0 in Run_search_inner_product.
+        if (res.sel || ny == 0 ||
             nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
         } else {

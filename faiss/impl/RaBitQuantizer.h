@@ -13,12 +13,39 @@
 #include <faiss/MetricType.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/Quantizer.h>
+#include <faiss/impl/RaBitQUtils.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
 struct IDSelector;
 template <typename T, typename TI>
 struct ResultHandlerUnordered;
+
+/** Statistics for staged RaBitQ distance evaluation.
+ *
+ * These counters belong to the quantizer rather than to a particular ANN
+ * graph. They are currently populated by HNSW's staged search path.
+ */
+struct RaBitQStats {
+    uint64_t n_1bit = 0;
+    uint64_t n_refine = 0;
+
+    void reset() {
+        n_1bit = n_refine = 0;
+    }
+
+    void add(const RaBitQStats& other) {
+        n_1bit += other.n_1bit;
+        n_refine += other.n_refine;
+    }
+
+    double refine_ratio() const {
+        return n_1bit ? double(n_refine) / double(n_1bit) : 0.0;
+    }
+};
+
+FAISS_API extern RaBitQStats rabitq_stats;
 
 // the reference implementation of the https://arxiv.org/pdf/2405.12497
 //   Jianyang Gao, Cheng Long, "RaBitQ: Quantizing High-Dimensional Vectors
@@ -122,16 +149,32 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
     // Used with f_error to compute error bounds for two-stage filtering
     float g_error = 0.0f;
 
-    float symmetric_dis(idx_t /*i*/, idx_t /*j*/) override {
-        // Not used for RaBitQ
-        FAISS_THROW_MSG("Not implemented");
-    }
+    /// Per-distance-computer counters, aggregated by the owning index.
+    RaBitQStats stats;
+
+    float symmetric_dis(idx_t i, idx_t j) override;
 
     // Compute 1-bit distance estimate (fast)
     virtual float distance_to_code_1bit(const uint8_t* code) = 0;
 
     // Compute full multi-bit distance (accurate)
     virtual float distance_to_code_full(const uint8_t* code) = 0;
+
+    /// Apply the RaBitQ error bound without exposing the packed code layout to
+    /// ANN consumers. Precondition: nb_bits >= 2.
+#ifndef SWIG
+    FAISS_ALWAYS_INLINE bool should_refine(
+            const uint8_t* code,
+            float estimate,
+            float threshold,
+            bool is_similarity) const {
+        const auto* factors =
+                reinterpret_cast<const rabitq_utils::SignBitFactorsWithError*>(
+                        code + (d + 7) / 8);
+        return rabitq_utils::should_refine_candidate(
+                estimate, factors->f_error, g_error, threshold, is_similarity);
+    }
+#endif
 
     virtual void set_centroid(const float* centroid_in) {
         centroid = centroid_in;

@@ -1939,12 +1939,23 @@ class HNSWStats:
     n3: int
     ndis: int
     nreorder: int
+class RaBitQStats:
+    n_1bit: int
+    n_refine: int
+
+    def reset(self) -> None: ...
+    def add(self, other: RaBitQStats) -> None: ...
+    def refine_ratio(self) -> float: ...
 
 class HNSW:
+    SM_DEFAULT: int
+    SM_PANORAMA: int
+    SM_RABITQ: int
     max_level: int
     entry_point: int
     efConstruction: int
     efSearch: int
+    search_method: int
     hnsw_stats: HNSWStats
     assign_probas: Float32Vector
     cum_nneighbor_per_level: Int32Vector
@@ -2005,6 +2016,15 @@ class IndexHNSWSQ(IndexHNSW):
         d: int,
         sq: ScalarQuantizer,
         M: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+
+class IndexHNSWRaBitQ(IndexHNSW):
+    def __init__(
+        self,
+        d: int,
+        M: int,
+        nb_bits: int = 1,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
 
@@ -2628,6 +2648,7 @@ class ClusteringParameters:
     init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
+    use_super_kmeans: bool  # route through SuperKMeans when supported
 
     def __init__(self) -> None: ...
 
@@ -3905,6 +3926,7 @@ class IndexSVSVamana(Index):
     use_full_search_history: bool
     is_static: bool
     storage_kind: SVSStorageKind
+    store_vectors: bool
 
     def __init__(
         self,
@@ -3913,6 +3935,7 @@ class IndexSVSVamana(Index):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_FP32,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
     @staticmethod
     def is_lvq_leanvec_enabled() -> bool: ...
@@ -3925,6 +3948,7 @@ class IndexSVSVamanaLVQ(IndexSVSVamana):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_LVQ4x0,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSVamanaLeanVec(IndexSVSVamana):
@@ -3938,6 +3962,7 @@ class IndexSVSVamanaLeanVec(IndexSVSVamana):
         leanvec_dims: int = 0,
         storage: SVSStorageKind = SVS_LeanVec4x4,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSIVF(Index):

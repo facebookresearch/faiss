@@ -49,6 +49,44 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
 
         np.testing.assert_allclose((D_ref / 4.0).astype("int32"), D)
 
+    def test_index_from_float_inner_product(self):
+        d = 256
+        nt = 0
+        nb = 1500
+        nq = 500
+        (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
+
+        index_ref = faiss.IndexBinaryFlat(d)
+        index_ref.add(xb)
+
+        index = faiss.IndexFlat(d, faiss.METRIC_INNER_PRODUCT)
+        index_bin = faiss.IndexBinaryFromFloat(index)
+        index_bin.add(xb)
+
+        D_ref, I_ref = index_ref.search(xq, 10)
+        D, I = index_bin.search(xq, 10)
+
+        np.testing.assert_array_equal(D_ref, D)
+
+    def test_index_from_float_l1(self):
+        d = 256
+        nt = 0
+        nb = 1500
+        nq = 500
+        (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
+
+        index_ref = faiss.IndexBinaryFlat(d)
+        index_ref.add(xb)
+
+        index = faiss.IndexFlat(d, faiss.METRIC_L1)
+        index_bin = faiss.IndexBinaryFromFloat(index)
+        index_bin.add(xb)
+
+        D_ref, I_ref = index_ref.search(xq, 10)
+        D, I = index_bin.search(xq, 10)
+
+        np.testing.assert_array_equal(D_ref, D)
+
     def test_wrapped_quantizer(self):
         d = 256
         nt = 150

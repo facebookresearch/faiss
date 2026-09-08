@@ -7,6 +7,8 @@
 
 #include <faiss/IndexHNSW.h>
 
+#include <faiss/IndexRaBitQ.h>
+
 #include <omp.h>
 #include <atomic>
 #include <cinttypes>
@@ -17,7 +19,6 @@
 #include <limits>
 #include <memory>
 #include <queue>
-#include <random>
 
 #include <cstdint>
 #include "faiss/Index.h"
@@ -317,11 +318,16 @@ void hnsw_add_vertices_deterministic(
                     order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
         }
 
-        // Bootstrap/raise the entry point: the top bucket runs first, so its
-        // first (shuffled) point is a valid max-level entry point.
-        if (hnsw.entry_point == -1 || pt_level > hnsw.max_level) {
+        // Bootstrap only when the graph is empty. Raising entry_point to a
+        // point that is not yet linked orphans everything already inserted,
+        // which on an incremental add() is the entire prior graph. order[i0]
+        // is the sole member of the first batch below, so defer until then.
+        bool raise_entry_point = false;
+        if (hnsw.entry_point == -1) {
             hnsw.max_level = pt_level;
             hnsw.entry_point = order[i0];
+        } else if (pt_level > hnsw.max_level) {
+            raise_entry_point = true;
         }
 
         // Prefix-doubling batches within this bucket.
@@ -496,6 +502,12 @@ void hnsw_add_vertices_deterministic(
 
             InterruptCallback::check();
             s = e;
+
+            if (raise_entry_point) {
+                hnsw.max_level = pt_level;
+                hnsw.entry_point = order[i0];
+                raise_entry_point = false;
+            }
         }
 
         i1 = i0;
@@ -567,6 +579,7 @@ void hnsw_search(
         }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+    size_t n_rabitq_1bit = 0, n_rabitq_refine = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
@@ -592,7 +605,9 @@ void hnsw_search(
                 omp_capture_exception(ex, [&] { interrupt = true; });
             }
 
-#pragma omp for reduction(+ : n1, n2, ndis, nhops) schedule(guided)
+#pragma omp for reduction(                                               \
+                + : n1, n2, ndis, nhops, n_rabitq_1bit, n_rabitq_refine) \
+        schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 if (interrupt.load(std::memory_order_relaxed)) {
                     continue;
@@ -600,6 +615,10 @@ void hnsw_search(
                 try {
                     res->begin(i);
                     dis->set_query(x + i * index->d);
+                    auto* rq = dynamic_cast<RaBitQDistanceComputer*>(dis.get());
+                    if (rq) {
+                        rq->stats.reset();
+                    }
 
                     HNSWStats stats =
                             hnsw.search(*dis, index, *res, *vt, params);
@@ -607,6 +626,10 @@ void hnsw_search(
                     n2 += stats.n2;
                     ndis += stats.ndis;
                     nhops += stats.nhops;
+                    if (rq) {
+                        n_rabitq_1bit += rq->stats.n_1bit;
+                        n_rabitq_refine += rq->stats.n_refine;
+                    }
                     res->end();
                     vt->advance();
                 } catch (...) {
@@ -619,6 +642,7 @@ void hnsw_search(
     }
 
     hnsw_stats.combine({n1, n2, ndis, nhops});
+    rabitq_stats.add({n_rabitq_1bit, n_rabitq_refine});
 }
 
 } // anonymous namespace
@@ -789,6 +813,7 @@ void IndexHNSW::search_level_0(
         {
             std::unique_ptr<DistanceComputer> qdis;
             HNSWStats search_stats;
+            RaBitQStats rq_search_stats;
             VisitedTable* vt = nullptr;
             std::unique_ptr<typename RH::SingleResultHandler> res;
             try {
@@ -808,6 +833,11 @@ void IndexHNSW::search_level_0(
                 try {
                     res->begin(i);
                     qdis->set_query(x + i * d);
+                    auto* rq =
+                            dynamic_cast<RaBitQDistanceComputer*>(qdis.get());
+                    if (rq) {
+                        rq->stats.reset();
+                    }
 
                     hnsw.search_level_0(
                             *qdis.get(),
@@ -819,6 +849,9 @@ void IndexHNSW::search_level_0(
                             search_stats,
                             *vt,
                             params);
+                    if (rq) {
+                        rq_search_stats.add(rq->stats);
+                    }
                     res->end();
                     vt->advance();
                 } catch (...) {
@@ -828,6 +861,7 @@ void IndexHNSW::search_level_0(
 #pragma omp critical
             {
                 hnsw_stats.combine(search_stats);
+                rabitq_stats.add(rq_search_stats);
             }
         }
         omp_rethrow_if_exception(ex);
@@ -1051,7 +1085,7 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
     // Enable Panorama search mode.
     // This is not ideal, but is still more simple than making a subclass of
     // HNSW and overriding the search logic.
-    hnsw.is_panorama = true;
+    hnsw.search_method = HNSW::SM_PANORAMA;
 }
 
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
@@ -1117,6 +1151,38 @@ IndexHNSWSQ::IndexHNSWSQ(
 }
 
 IndexHNSWSQ::IndexHNSWSQ() = default;
+
+/**************************************************************
+ * IndexHNSWRaBitQ implementation
+ **************************************************************/
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ() = default;
+
+namespace {
+
+IndexRaBitQ* make_hnsw_rabitq_storage(
+        int d,
+        uint8_t nb_bits,
+        MetricType metric) {
+    FAISS_THROW_IF_NOT_MSG(
+            metric == METRIC_L2, "IndexHNSWRaBitQ supports only the L2 metric");
+    return new IndexRaBitQ(d, metric, nb_bits);
+}
+
+} // namespace
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ(
+        int d,
+        int M,
+        uint8_t nb_bits,
+        MetricType metric)
+        : IndexHNSW(make_hnsw_rabitq_storage(d, nb_bits, metric), M) {
+    own_fields = true;
+    is_trained = storage->is_trained;
+    // 1-bit codes store plain SignBitFactors with no f_error, so there is no
+    // bound to prune with and the staged path does not apply.
+    hnsw.search_method = nb_bits >= 2 ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
+}
 
 /**************************************************************
  * IndexHNSW2Level implementation
@@ -1433,13 +1499,11 @@ void IndexHNSWCagra::search(
                 // first real candidate will always be strictly better.
                 nearest_d[i] = C::neutral();
 
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<idx_t> distrib(
-                        0, this->ntotal - 1);
+                // Seeded per query so entrypoints are reproducible.
+                SplitMix64RandomGenerator gen(i);
 
                 for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                    auto idx = distrib(gen);
+                    idx_t idx = gen.rand_int64() % this->ntotal;
                     auto distance = (*dis)(idx);
                     if (C::cmp(nearest_d[i], distance)) {
                         nearest[i] = static_cast<storage_idx_t>(idx);
@@ -1498,12 +1562,11 @@ void IndexHNSWCagra::range_search(
             // real candidate will always be strictly better.
             float nearest_d = C::neutral();
 
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
+            // For reproducible entrypoint.
+            SplitMix64RandomGenerator gen(i);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                auto idx = distrib(gen);
+                idx_t idx = gen.rand_int64() % ntotal;
                 auto distance = (*dis)(idx);
                 // C::cmp(nearest_d, distance) is true iff distance is
                 // strictly better than the current nearest_d.
