@@ -37,19 +37,25 @@ template <>
 struct Codec4bit<SIMDLevel::RISCV_RVV> : Codec4bit<SIMDLevel::NONE> {
     static FAISS_ALWAYS_INLINE vfloat32m8_t
     decode_m8_components(const uint8_t* code, size_t i, size_t vl) {
-        const uint8_t* src = code + (i >> 1);
-        size_t byte_vl = (vl + 1) >> 1;
-        vuint8m2_t packed = __riscv_vle8_v_u8m2(src, byte_vl);
+        // Packed positions derive from the absolute component index:
+        // implementations may hand out a non-maximal, non-pack-aligned vl
+        // when AVL is between VLMAX and 2*VLMAX, so a chunk can start on
+        // an odd component (mid-byte).
+        const size_t byte_base = i >> 1;
+        const size_t byte_vl = ((i + vl - 1) >> 1) - byte_base + 1;
+        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + byte_base, byte_vl);
         // Widen to 32-bit lanes before gathering: with more than 256 active
         // lanes (VLEN > 1024 for e32m8) 8-bit lane indices would wrap around
         // and decode the wrong bytes.
         vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
-        vuint32m8_t lane = __riscv_vid_v_u32m8(vl);
-        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
-                packed32, __riscv_vsrl_vx_u32m8(lane, 1, vl), vl);
+        vuint32m8_t comp =
+                __riscv_vadd_vx_u32m8(__riscv_vid_v_u32m8(vl), i, vl);
+        vuint32m8_t rel = __riscv_vsub_vx_u32m8(
+                __riscv_vsrl_vx_u32m8(comp, 1, vl), byte_base, vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(packed32, rel, vl);
         vuint32m8_t lo = __riscv_vand_vx_u32m8(bytes, 0xf, vl);
         vuint32m8_t hi = __riscv_vsrl_vx_u32m8(bytes, 4, vl);
-        vuint32m8_t parity = __riscv_vand_vx_u32m8(lane, 1, vl);
+        vuint32m8_t parity = __riscv_vand_vx_u32m8(comp, 1, vl);
         vbool4_t odd = __riscv_vmsne_vx_u32m8_b4(parity, 0, vl);
         vuint32m8_t q = __riscv_vmerge_vvm_u32m8(lo, hi, odd, vl);
         vfloat32m8_t result = __riscv_vfcvt_f_xu_v_f32m8(q, vl);
@@ -226,14 +232,19 @@ struct QuantizerLloydMax<1, SIMDLevel::RISCV_RVV>
 
     FAISS_ALWAYS_INLINE vfloat32m8_t
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
-        size_t byte_vl = (vl + 7) >> 3;
-        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + (i >> 3), byte_vl);
+        // Absolute component indexing: a non-maximal vl can leave a chunk
+        // starting mid-byte (see Codec4bit above).
+        const size_t byte_base = i >> 3;
+        const size_t byte_vl = ((i + vl - 1) >> 3) - byte_base + 1;
+        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + byte_base, byte_vl);
         // 32-bit lane indices: 8-bit indices wrap above 256 active lanes
         vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
-        vuint32m8_t vid = __riscv_vid_v_u32m8(vl);
-        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
-                packed32, __riscv_vsrl_vx_u32m8(vid, 3, vl), vl);
-        vuint32m8_t shift = __riscv_vand_vx_u32m8(vid, 7, vl);
+        vuint32m8_t comp =
+                __riscv_vadd_vx_u32m8(__riscv_vid_v_u32m8(vl), i, vl);
+        vuint32m8_t rel = __riscv_vsub_vx_u32m8(
+                __riscv_vsrl_vx_u32m8(comp, 3, vl), byte_base, vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(packed32, rel, vl);
+        vuint32m8_t shift = __riscv_vand_vx_u32m8(comp, 7, vl);
         vuint32m8_t idx = __riscv_vand_vx_u32m8(
                 __riscv_vsrl_vv_u32m8(bytes, shift, vl), 1, vl);
         vuint32m8_t off = __riscv_vsll_vx_u32m8(idx, 2, vl);
@@ -261,15 +272,20 @@ struct QuantizerLloydMax<2, SIMDLevel::RISCV_RVV>
 
     FAISS_ALWAYS_INLINE vfloat32m8_t
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
-        size_t byte_vl = (vl + 3) >> 2;
-        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + (i >> 2), byte_vl);
+        // Absolute component indexing: a non-maximal vl can leave a chunk
+        // starting mid-byte (see Codec4bit above).
+        const size_t byte_base = i >> 2;
+        const size_t byte_vl = ((i + vl - 1) >> 2) - byte_base + 1;
+        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + byte_base, byte_vl);
         // 32-bit lane indices: 8-bit indices wrap above 256 active lanes
         vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
-        vuint32m8_t vid = __riscv_vid_v_u32m8(vl);
-        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
-                packed32, __riscv_vsrl_vx_u32m8(vid, 2, vl), vl);
-        vuint32m8_t shift =
-                __riscv_vsll_vx_u32m8(__riscv_vand_vx_u32m8(vid, 3, vl), 1, vl);
+        vuint32m8_t comp =
+                __riscv_vadd_vx_u32m8(__riscv_vid_v_u32m8(vl), i, vl);
+        vuint32m8_t rel = __riscv_vsub_vx_u32m8(
+                __riscv_vsrl_vx_u32m8(comp, 2, vl), byte_base, vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(packed32, rel, vl);
+        vuint32m8_t shift = __riscv_vsll_vx_u32m8(
+                __riscv_vand_vx_u32m8(comp, 3, vl), 1, vl);
         vuint32m8_t idx = __riscv_vand_vx_u32m8(
                 __riscv_vsrl_vv_u32m8(bytes, shift, vl), 3, vl);
         vuint32m8_t off = __riscv_vsll_vx_u32m8(idx, 2, vl);
@@ -341,17 +357,22 @@ struct QuantizerLloydMax<4, SIMDLevel::RISCV_RVV>
 
     FAISS_ALWAYS_INLINE vfloat32m8_t
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
-        size_t byte_vl = (vl + 1) >> 1;
-        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + (i >> 1), byte_vl);
+        // Absolute component indexing: a non-maximal vl can leave a chunk
+        // starting mid-byte (see Codec4bit above).
+        const size_t byte_base = i >> 1;
+        const size_t byte_vl = ((i + vl - 1) >> 1) - byte_base + 1;
+        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + byte_base, byte_vl);
         // 32-bit lane indices: 8-bit indices wrap above 256 active lanes
         vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
-        vuint32m8_t vid = __riscv_vid_v_u32m8(vl);
-        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(
-                packed32, __riscv_vsrl_vx_u32m8(vid, 1, vl), vl);
+        vuint32m8_t comp =
+                __riscv_vadd_vx_u32m8(__riscv_vid_v_u32m8(vl), i, vl);
+        vuint32m8_t rel = __riscv_vsub_vx_u32m8(
+                __riscv_vsrl_vx_u32m8(comp, 1, vl), byte_base, vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(packed32, rel, vl);
         vuint32m8_t lo = __riscv_vand_vx_u32m8(bytes, 0xf, vl);
         vuint32m8_t hi = __riscv_vsrl_vx_u32m8(bytes, 4, vl);
         vbool4_t odd = __riscv_vmsne_vx_u32m8_b4(
-                __riscv_vand_vx_u32m8(vid, 1, vl), 0, vl);
+                __riscv_vand_vx_u32m8(comp, 1, vl), 0, vl);
         vuint32m8_t idx = __riscv_vmerge_vvm_u32m8(lo, hi, odd, vl);
         vuint32m8_t off = __riscv_vsll_vx_u32m8(idx, 2, vl);
         return __riscv_vluxei32_v_f32m8(this->centroids, off, vl);
@@ -504,6 +525,9 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::RISCV_RVV>
             : quant(d, trained) {}
 
     float compute_distance(const float* x, const uint8_t* code) const {
+        if (quant.d == 0) {
+            return 0.0f;
+        }
         Similarity sim(x);
         sim.begin_m8();
         const size_t first_vl = __riscv_vsetvl_e32m8(quant.d);
@@ -520,6 +544,9 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::RISCV_RVV>
 
     float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
+        if (quant.d == 0) {
+            return 0.0f;
+        }
         Similarity sim(nullptr);
         sim.begin_m8();
         const size_t first_vl = __riscv_vsetvl_e32m8(quant.d);
