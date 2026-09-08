@@ -8,6 +8,7 @@
 #include <faiss/utils/simd_levels.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 
 #if defined(_MSC_VER)
@@ -156,6 +157,35 @@ void detect_x86_uarch_flags() {}
 // NOLINTNEXTLINE(facebook-avoid-non-const-global-variables)
 static SIMDConfig simd_config_initializer;
 
+namespace {
+
+/// Levels this binary holds code for. Must mirror the case labels in
+/// with_selected_simd_levels.
+uint64_t compiled_simd_levels() {
+    uint64_t mask = uint64_t(1) << static_cast<int>(SIMDLevel::NONE);
+#ifdef COMPILE_SIMD_AVX2
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX2);
+#endif
+#ifdef COMPILE_SIMD_AVX512
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX512);
+#endif
+#ifdef COMPILE_SIMD_AVX512_SPR
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX512_SPR);
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::ARM_NEON);
+#endif
+#ifdef COMPILE_SIMD_ARM_SVE
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::ARM_SVE);
+#endif
+#ifdef COMPILE_SIMD_RISCV_RVV
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::RISCV_RVV);
+#endif
+    return mask;
+}
+
+} // namespace
+
 SIMDConfig::SIMDConfig(const char** faiss_simd_level_env) {
     // Support dependency injection for testing
     const char* env_var = faiss_simd_level_env ? *faiss_simd_level_env
@@ -164,7 +194,22 @@ SIMDConfig::SIMDConfig(const char** faiss_simd_level_env) {
     if (!env_var) {
         level = auto_detect_simd_level();
     } else {
-        level = to_simd_level(env_var);
+        // Forcing a level the CPU lacks is allowed. Forcing one the binary
+        // does not hold is not: dispatch would fall to NONE and skip every
+        // level between. Walk down to the nearest compiled level instead.
+        const uint64_t compiled = compiled_simd_levels();
+        const SIMDLevel requested = to_simd_level(env_var);
+        level = requested;
+        while (((compiled >> static_cast<int>(level)) & 1) == 0) {
+            level = get_simd_fallback(level);
+        }
+        if (level != requested) {
+            fprintf(stderr,
+                    "faiss: FAISS_SIMD_LEVEL=%s is not compiled into this "
+                    "build, using %s instead\n",
+                    to_string(requested).c_str(),
+                    to_string(level).c_str());
+        }
         supported_simd_levels = (1 << static_cast<int>(level));
     }
     supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::NONE));
