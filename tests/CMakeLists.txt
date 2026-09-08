@@ -5,6 +5,7 @@
 
 set(FAISS_TEST_SRC
   test_binary_flat.cpp
+  test_binary_ivf_scanner.cpp
   test_dealloc_invlists.cpp
   test_ivfpq_codec.cpp
   test_ivfpq_indexing.cpp

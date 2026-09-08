@@ -234,6 +234,13 @@ struct BinaryInvertedListScanner {
     /** compute the distances to codes. (distances, labels) should be
      * organized as a min- or max-heap
      *
+     * A k of 0 is valid and scans nothing.
+     *
+     * The heap top is the only bound. To keep the k nearest codes inside a
+     * radius, seed every heap slot with that radius instead of the neutral
+     * value; an unfilled slot keeps its label of -1. A seed below zero
+     * admits nothing.
+     *
      * @param n      number of codes to scan
      * @param codes  codes to scan (n * code_size)
      * @param ids        corresponding ids (ignored if store_pairs)
