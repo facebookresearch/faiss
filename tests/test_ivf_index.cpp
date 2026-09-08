@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <limits>
 #include <map>
+#include <memory>
 #include <random>
 #include <set>
 
@@ -17,9 +18,12 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
+#include <faiss/clone_index.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/invlists/InvertedLists.h>
 
 namespace {
 
@@ -510,4 +514,127 @@ TEST(IVF, search_callbacks) {
             << "on_heap_changed should fire when vectors enter the heap";
     EXPECT_GE(distance_count, heap_count)
             << "not every distance computation leads to a heap change";
+}
+
+TEST(IVF, clone_panorama_storage) {
+    constexpr int d = 4;
+    constexpr int nlist = 2;
+    constexpr int nlevels = 2;
+    constexpr size_t batch_size = 3;
+    constexpr faiss::idx_t nb = 4;
+    constexpr faiss::idx_t nq = 2;
+    constexpr faiss::idx_t k = 2;
+    const float centroids[] = {
+            0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f, 10.0f};
+    const float database[] = {
+            1.0f,
+            1.0f,
+            1.0f,
+            1.0f,
+            2.0f,
+            2.0f,
+            2.0f,
+            2.0f,
+            11.0f,
+            11.0f,
+            11.0f,
+            11.0f,
+            12.0f,
+            12.0f,
+            12.0f,
+            12.0f};
+    const float queries[] = {
+            1.0f, 1.0f, 1.0f, 1.0f, 11.0f, 11.0f, 11.0f, 11.0f};
+
+    auto make_quantizer = [&]() {
+        auto* quantizer = new faiss::IndexFlatL2(d);
+        quantizer->add(nlist, centroids);
+        return quantizer;
+    };
+
+    std::vector<float> reference_distances(nq * k);
+    std::vector<faiss::idx_t> reference_labels(nq * k);
+    std::unique_ptr<faiss::Index> panorama_clone;
+    {
+        auto original = std::make_unique<faiss::IndexIVFFlatPanorama>(
+                make_quantizer(),
+                d,
+                nlist,
+                nlevels,
+                faiss::METRIC_L2,
+                true,
+                batch_size);
+        original->own_fields = true;
+        original->nprobe = nlist;
+        ASSERT_TRUE(original->is_trained);
+        original->add(nb, database);
+        original->search(
+                nq,
+                queries,
+                k,
+                reference_distances.data(),
+                reference_labels.data());
+        panorama_clone.reset(faiss::clone_index(original.get()));
+    }
+
+    auto* cloned_panorama =
+            dynamic_cast<faiss::IndexIVFFlatPanorama*>(panorama_clone.get());
+    ASSERT_NE(cloned_panorama, nullptr);
+    const auto* cloned_storage =
+            dynamic_cast<const faiss::ArrayInvertedListsPanorama*>(
+                    cloned_panorama->invlists);
+    EXPECT_NE(cloned_storage, nullptr);
+
+    std::vector<float> cloned_distances(nq * k);
+    std::vector<faiss::idx_t> cloned_labels(nq * k);
+    EXPECT_NO_THROW(cloned_panorama->search(
+            nq, queries, k, cloned_distances.data(), cloned_labels.data()));
+    EXPECT_EQ(cloned_labels, reference_labels);
+    EXPECT_EQ(cloned_distances, reference_distances);
+    if (cloned_storage) {
+        EXPECT_EQ(cloned_storage->n_levels, nlevels);
+        EXPECT_EQ(cloned_storage->pano.batch_size, batch_size);
+    }
+
+    // Keep the ordinary ArrayInvertedLists clone path covered as a control.
+    std::vector<float> regular_reference_distances(nq * k);
+    std::vector<faiss::idx_t> regular_reference_labels(nq * k);
+    std::unique_ptr<faiss::Index> regular_clone;
+    {
+        auto original = std::make_unique<faiss::IndexIVFFlat>(
+                make_quantizer(), d, nlist);
+        original->own_fields = true;
+        original->nprobe = nlist;
+        ASSERT_TRUE(original->is_trained);
+        original->add(nb, database);
+        original->search(
+                nq,
+                queries,
+                k,
+                regular_reference_distances.data(),
+                regular_reference_labels.data());
+        regular_clone.reset(faiss::clone_index(original.get()));
+    }
+
+    auto* cloned_regular =
+            dynamic_cast<faiss::IndexIVFFlat*>(regular_clone.get());
+    ASSERT_NE(cloned_regular, nullptr);
+    EXPECT_EQ(
+            dynamic_cast<const faiss::ArrayInvertedListsPanorama*>(
+                    cloned_regular->invlists),
+            nullptr);
+    EXPECT_NE(
+            dynamic_cast<const faiss::ArrayInvertedLists*>(
+                    cloned_regular->invlists),
+            nullptr);
+    std::vector<float> regular_cloned_distances(nq * k);
+    std::vector<faiss::idx_t> regular_cloned_labels(nq * k);
+    cloned_regular->search(
+            nq,
+            queries,
+            k,
+            regular_cloned_distances.data(),
+            regular_cloned_labels.data());
+    EXPECT_EQ(regular_cloned_labels, regular_reference_labels);
+    EXPECT_EQ(regular_cloned_distances, regular_reference_distances);
 }
