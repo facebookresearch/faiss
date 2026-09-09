@@ -8,8 +8,13 @@
 #ifdef COMPILE_SIMD_AVX512_VPOPCNT
 
 #define THE_SIMD_LEVEL SIMDLevel::AVX512_VPOPCNT
-// NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h>
 #include <faiss/utils/hamming_distance/hamming_impl.h>
+
+// Must follow the computer specializations above.
+// clang-format off
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/binary_hamming/IndexBinaryIVF_impl.h>
+// clang-format on
 
 #endif // COMPILE_SIMD_AVX512_VPOPCNT
