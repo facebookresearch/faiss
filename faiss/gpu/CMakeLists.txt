@@ -254,22 +254,26 @@ if(FAISS_ENABLE_CUVS)
   list(APPEND FAISS_GPU_HEADERS
           GpuIndexBinaryCagra.h
           GpuIndexCagra.h
+          GpuIndexIVFRaBitQ.h
           impl/BinaryCuvsCagra.cuh
           impl/CuvsCagra.cuh
           impl/CuvsFlatIndex.cuh
           impl/CuvsIVFFlat.cuh
           impl/CuvsIVFPQ.cuh
+          impl/CuvsIVFRaBitQ.cuh
           impl/CuvsIVFSQ.cuh
           utils/CuvsFilterConvert.h
           utils/CuvsUtils.h)
   list(APPEND FAISS_GPU_SRC
           GpuIndexBinaryCagra.cu
           GpuIndexCagra.cu
+          GpuIndexIVFRaBitQ.cu
           impl/BinaryCuvsCagra.cu
           impl/CuvsCagra.cu
           impl/CuvsFlatIndex.cu
           impl/CuvsIVFFlat.cu
           impl/CuvsIVFPQ.cu
+          impl/CuvsIVFRaBitQ.cu
           impl/CuvsIVFSQ.cu
           utils/CuvsFilterConvert.cu
           utils/CuvsUtils.cu)
@@ -306,12 +310,14 @@ if(FAISS_ENABLE_CUVS)
     GpuDistance.cu
     GpuIndexIVFFlat.cu
     GpuIndexIVFPQ.cu
+    GpuIndexIVFRaBitQ.cu
     GpuIndexFlat.cu
     StandardGpuResources.cpp
     impl/CuvsCagra.cu
     impl/CuvsFlatIndex.cu
     impl/CuvsIVFFlat.cu
     impl/CuvsIVFPQ.cu
+    impl/CuvsIVFRaBitQ.cu
     impl/CuvsIVFSQ.cu
     utils/CuvsFilterConvert.cu
     utils/CuvsUtils.cu
