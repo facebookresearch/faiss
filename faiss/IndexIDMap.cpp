@@ -377,6 +377,12 @@ void IndexIDMap2Template<IndexT>::construct_rev_map() {
 }
 
 template <typename IndexT>
+void IndexIDMap2Template<IndexT>::reset() {
+    IndexIDMapTemplate<IndexT>::reset();
+    rev_map.clear();
+}
+
+template <typename IndexT>
 size_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel) {
     // This is quite inefficient
     size_t nremove = IndexIDMapTemplate<IndexT>::remove_ids(sel);

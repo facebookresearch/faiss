@@ -102,6 +102,8 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
     /// make the rev_map from scratch
     void construct_rev_map();
 
+    void reset() override;
+
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;
     void add_with_ids_ex(
