@@ -541,17 +541,19 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
         return;
     }
 
-    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>([&]<SIMDLevel SL>() {
-        if constexpr (
-                SL == SIMDLevel::AVX2 || SL == SIMDLevel::AVX512 ||
-                SL == SIMDLevel::ARM_SVE) {
-            exhaustive_L2sqr_blas_cmax<SL>(x, y, d, nx, ny, res, y_norms);
-        } else {
-            exhaustive_L2sqr_blas_default_impl<
-                    Top1BlockResultHandler<CMax<float, int64_t>>>(
-                    x, y, d, nx, ny, res, y_norms);
-        }
-    });
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE>(
+            [&]<SIMDLevel SL>() {
+                if constexpr (
+                        SL == SIMDLevel::AVX2 || SL == SIMDLevel::AVX512 ||
+                        SL == SIMDLevel::ARM_SVE) {
+                    exhaustive_L2sqr_blas_cmax<SL>(
+                            x, y, d, nx, ny, res, y_norms);
+                } else {
+                    exhaustive_L2sqr_blas_default_impl<
+                            Top1BlockResultHandler<CMax<float, int64_t>>>(
+                            x, y, d, nx, ny, res, y_norms);
+                }
+            });
 }
 
 struct Run_search_inner_product {
