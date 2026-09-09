@@ -1164,8 +1164,7 @@ void read_ScalarQuantizer(
         }
     }
 
-    // TurboQ full types: extract seed and qjl_type from trained,
-    // regenerate projection matrix.
+    // TurboQ full types: extract seed and qjl_type from trained.
     if (ScalarQuantizer::TurboQuantRefine::is_turboq_full(ivsc->qtype) &&
         ivsc->trained.size() >= 3) {
         size_t n = ivsc->trained.size();
@@ -1174,7 +1173,6 @@ void read_ScalarQuantizer(
         ivsc->turboq_refine.seed =
                 ScalarQuantizer::TurboQuantRefine::unpack_seed(
                         ivsc->trained[n - 3], ivsc->trained[n - 2]);
-        ivsc->turboq_refine.init_projection(ivsc->d);
     }
 }
 

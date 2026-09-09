@@ -635,29 +635,10 @@ void ScalarQuantizer::train(size_t n, const float* x) {
             trained.push_back(seed_f[0]);
             trained.push_back(seed_f[1]);
             trained.push_back(static_cast<float>(turboq_refine.qjl_type));
-            turboq_refine.init_projection(d);
             break;
         }
         default:
             break;
-    }
-}
-
-void ScalarQuantizer::TurboQuantRefine::init_projection(size_t d) {
-    if (use_fwht()) {
-        padded_d = 1;
-        while (padded_d < d) {
-            padded_d <<= 1;
-        }
-        fwht_signs.resize(padded_d);
-        RandomGenerator rng(seed);
-        for (size_t i = 0; i < padded_d; i++) {
-            fwht_signs[i] = (rng.rand_int(2) == 0) ? 1.0f : -1.0f;
-        }
-    } else {
-        rr_matrix.resize(d * d);
-        float_randn(rr_matrix.data(), d * d, seed);
-        matrix_qr(static_cast<int>(d), static_cast<int>(d), rr_matrix.data());
     }
 }
 
