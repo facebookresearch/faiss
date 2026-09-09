@@ -215,8 +215,8 @@ ARM_NEON + RISCV_RVV implementations exist. If your function has another subset
 of available implementations, it can be passed with
 `with_selected_simd_levels<mask>` with a bitmask of available levels. Missing
 levels in the mask cause the dispatch to **fall through** to the next lower
-level in the same architecture family (x86: AVX512_SPR → AVX512 → AVX2 →
-NONE; ARM: ARM_SVE → ARM_NEON → NONE; RISC-V: RISCV_RVV → NONE —
+level in the same architecture family (x86: AVX512_SPR → AVX512_VPOPCNT →
+AVX512 → AVX2 → NONE; ARM: ARM_SVE → ARM_NEON → NONE; RISC-V: RISCV_RVV → NONE —
 architecture chains are independent):
 
 ```cpp
@@ -239,7 +239,8 @@ your own with `(1 << int(SIMDLevel::X)) | ...`):
 | `AVAILABLE_SIMD_LEVELS_NONE` | NONE only | Scalar-only functions |
 | `AVAILABLE_SIMD_LEVELS_AVX2_NEON` | NONE, AVX2, ARM_NEON | 256-bit `simdlib` ops (`with_simd_level_256bit`) |
 | `AVAILABLE_SIMD_LEVELS_BASE` | NONE, AVX2, AVX512, ARM_NEON, RISCV_RVV | Default (`with_simd_level`). ARM_NEON is part of BASE: NEON is mandatory on aarch64, SVE is optional |
-| `AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR` | BASE + AVX512_SPR | Kernels needing the whole SPR feature set (`with_simd_level_with_spr`) |
+| `AVAILABLE_SIMD_LEVELS_BASE_WITH_VPOPCNT` | BASE + AVX512_VPOPCNT | Kernels needing only VPOPCNTDQ (`with_simd_level_with_vpopcnt`) |
+| `AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR` | BASE + AVX512_SPR | Kernels needing the whole SPR feature set |
 | `AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE` | BASE + ARM_SVE | Functions with dedicated SVE implementations (`with_simd_level_with_sve`) |
 | `AVAILABLE_SIMD_LEVELS_ALL` | All levels | Identity / diagnostic functions |
 
