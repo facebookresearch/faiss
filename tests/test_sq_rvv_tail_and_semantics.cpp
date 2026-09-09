@@ -13,6 +13,10 @@
  *       (may pass on well-behaved hardware; regression + VLEN sensitivity)
  *   D3  DirectBitExact          — in-contract integer data => exactly equal
  *   D5  OverflowGuard           — d beyond i32/u32 accumulator safety
+ *   D5b Flush                   — per-lane i32/u32 accumulator wraparound
+ *       (d ~ vl*33026) and the int64 signed-IP query-bias overflow
+ *       (all-127 query at d = 132105); regression net for the flush
+ *       blocks in the direct kernels
  *   D6  ZeroDim                 — d == 0 must return 0, not hang; each case
  *       runs in a forked child under alarm() so a hang only fails its own
  *       case (POSIX only; skipped on Windows hosts)
@@ -29,6 +33,7 @@
  *   D2: PASS expected on board
  *   D3: PASS expected
  *   D5: PASS (direct i64/u64 reduction, no wraparound)
+ *   D5b: PASS (flush blocks + int64 qbias, no wraparound)
  *   D6: PASS (all kernels guard vsetvl(0) with `d > 0 ? d : 1`)
  *   D7: PASS (uniform L2/IP are exact float-domain)
  *   D8: PASS expected
@@ -46,9 +51,15 @@
 #include <vector>
 
 #ifndef _WIN32
-#include <csignal>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <csignal>
+#endif
+
+// D5b derives the wrap thresholds from the board's real VLMAX.
+#if defined(__riscv) && defined(COMPILE_SIMD_RISCV_RVV)
+#include <riscv_vector.h>
+#define FAISS_RVV_HAS_INTRINSICS 1
 #endif
 
 #include <faiss/IndexIVF.h>
@@ -158,9 +169,9 @@ static DcPair make_dc_pair(
         const uint8_t* codes,
         size_t code_size) {
     DcPair p;
-    p.scalar_dc.reset(faiss::scalar_quantizer::sq_select_distance_computer<
-                      faiss::SIMDLevel::NONE>(
-            metric, qtype, d, trained));
+    p.scalar_dc.reset(
+            faiss::scalar_quantizer::sq_select_distance_computer<
+                    faiss::SIMDLevel::NONE>(metric, qtype, d, trained));
     {
         ScopedSIMDLevel _(faiss::SIMDLevel::RISCV_RVV);
         p.rvv_dc.reset(
@@ -232,8 +243,7 @@ struct UniformL2Params {
     const char* name;
 };
 
-class SQRVVCounterexample : public ::testing::TestWithParam<UniformL2Params> {
-};
+class SQRVVCounterexample : public ::testing::TestWithParam<UniformL2Params> {};
 
 TEST_P(SQRVVCounterexample, HalfGridCounterexample) {
     const auto& p = GetParam();
@@ -248,8 +258,8 @@ TEST_P(SQRVVCounterexample, HalfGridCounterexample) {
     // code_size: d=1 -> 1 byte for both codecs
     const size_t code_size = 1;
 
-    DcPair dc = make_dc_pair(
-            p.qtype, METRIC_L2, d, trained, nullptr, code_size);
+    DcPair dc =
+            make_dc_pair(p.qtype, METRIC_L2, d, trained, nullptr, code_size);
     ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
 
     // Codes: dim 0 lives in the low nibble for Codec4bit; byte value == code.
@@ -271,23 +281,20 @@ TEST_P(SQRVVCounterexample, HalfGridCounterexample) {
         }
 
         // (a) distance to the reconstruction point of `code` is minimal
-        int ref_argmin = int(std::min_element(ref.begin(), ref.end()) -
-                             ref.begin());
-        int tst_argmin = int(std::min_element(tst.begin(), tst.end()) -
-                             tst.begin());
+        int ref_argmin =
+                int(std::min_element(ref.begin(), ref.end()) - ref.begin());
+        int tst_argmin =
+                int(std::min_element(tst.begin(), tst.end()) - tst.begin());
         EXPECT_EQ(ref_argmin, code)
-                << p.name << " sweep A: scalar argmin wrong at code="
-                << code;
+                << p.name << " sweep A: scalar argmin wrong at code=" << code;
         EXPECT_EQ(tst_argmin, code)
                 << p.name << " sweep A: RVV argmin=" << tst_argmin
-                << ", expected " << code
-                << " (half-grid semantics violated)";
+                << ", expected " << code << " (half-grid semantics violated)";
 
         // (b) RVV distance at the reconstruction point is ~0
         EXPECT_NEAR(tst[code], 0.0f, 1e-3f)
                 << p.name << " sweep A: q=recon(" << code
-                << ") but RVV distance to code " << code << " = "
-                << tst[code];
+                << ") but RVV distance to code " << code << " = " << tst[code];
     }
 
     // ---- Sweep B: q = c (integer code units) — full parity required ----
@@ -341,11 +348,9 @@ TEST_P(SQRVVZeroVdiff, UniformVdiffZero) {
     std::vector<float> xq = make_random_vectors(1, d, 99);
 
     // code_size: 4-bit packs two dims per byte, 8-bit one byte per dim.
-    const size_t code_size =
-            (p.qtype == SQ::QT_4bit_uniform) ? (d + 1) / 2 : d;
+    const size_t code_size = (p.qtype == SQ::QT_4bit_uniform) ? (d + 1) / 2 : d;
 
-    DcPair dc = make_dc_pair(
-            p.qtype, p.metric, d, trained, nullptr, code_size);
+    DcPair dc = make_dc_pair(p.qtype, p.metric, d, trained, nullptr, code_size);
     ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
     dc.scalar_dc->set_query(xq.data());
     dc.rvv_dc->set_query(xq.data());
@@ -368,22 +373,30 @@ TEST_P(SQRVVZeroVdiff, UniformVdiffZero) {
     const float tol = 1e-3f * std::max(1.0f, std::abs(expect));
     EXPECT_NEAR(ref, expect, tol) << p.name << ": scalar reference drifted";
     EXPECT_NEAR(tst, expect, tol)
-            << p.name << ": vdiff==0 RVV returned " << tst
-            << ", expected " << expect << " (all-distances-zero defect)";
+            << p.name << ": vdiff==0 RVV returned " << tst << ", expected "
+            << expect << " (all-distances-zero defect)";
 }
 
 INSTANTIATE_TEST_SUITE_P(
         D1,
         SQRVVZeroVdiff,
         ::testing::Values(
-                ZeroVdiffParams{SQ::QT_8bit_uniform, METRIC_L2,
-                                "8bit_uniform_L2"},
-                ZeroVdiffParams{SQ::QT_4bit_uniform, METRIC_L2,
-                                "4bit_uniform_L2"},
-                ZeroVdiffParams{SQ::QT_8bit_uniform, METRIC_INNER_PRODUCT,
-                                "8bit_uniform_IP"},
-                ZeroVdiffParams{SQ::QT_4bit_uniform, METRIC_INNER_PRODUCT,
-                                "4bit_uniform_IP"}),
+                ZeroVdiffParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        "8bit_uniform_L2"},
+                ZeroVdiffParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        "4bit_uniform_L2"},
+                ZeroVdiffParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_uniform_IP"},
+                ZeroVdiffParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        "4bit_uniform_IP"}),
         [](const ::testing::TestParamInfo<ZeroVdiffParams>& info) {
             return std::string(info.param.name);
         });
@@ -427,9 +440,8 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
     std::vector<float> xb = direct
             ? random_int_floats(n_train, p.d, dlo, dhi, 42)
             : make_random_vectors(n_train, p.d, 42);
-    std::vector<float> xq = direct
-            ? random_int_floats(1, p.d, dlo, dhi, 99)
-            : make_random_vectors(1, p.d, 99);
+    std::vector<float> xq = direct ? random_int_floats(1, p.d, dlo, dhi, 99)
+                                   : make_random_vectors(1, p.d, 99);
     if (p.metric == METRIC_INNER_PRODUCT && !direct) {
         // Normalize for IP parity. NOTE: skip for direct codecs — renorm
         // would leave the integer grid and break the in-contract premise
@@ -444,16 +456,15 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
     sq.compute_codes(xb.data(), db_codes.data(), n_db);
 
     DcPair dc = make_dc_pair(
-            p.qtype, p.metric, p.d, sq.trained, db_codes.data(),
-            sq.code_size);
+            p.qtype, p.metric, p.d, sq.trained, db_codes.data(), sq.code_size);
     ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
 
     dc.scalar_dc->set_query(xq.data());
     dc.rvv_dc->set_query(xq.data());
 
-    SCOPED_TRACE(::testing::Message()
-                 << p.name << " metric=" << metric_name(p.metric)
-                 << " d=" << p.d);
+    SCOPED_TRACE(
+            ::testing::Message()
+            << p.name << " metric=" << metric_name(p.metric) << " d=" << p.d);
 
     // query_to_code
     for (size_t i = 0; i < n_db; i++) {
@@ -497,8 +508,7 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
                       *c2 = db_codes.data() + 2 * sq.code_size,
                       *c3 = db_codes.data() + 3 * sq.code_size;
         float r0, r1, r2, r3, t0, t1, t2, t3;
-        dc.scalar_dc->query_to_codes_batch_4(
-                c0, c1, c2, c3, r0, r1, r2, r3);
+        dc.scalar_dc->query_to_codes_batch_4(c0, c1, c2, c3, r0, r1, r2, r3);
         dc.rvv_dc->query_to_codes_batch_4(c0, c1, c2, c3, t0, t1, t2, t3);
         EXPECT_NEAR(r0, t0, p.tol + std::abs(r0) * 1e-4f)
                 << p.name << " batch_4[0]";
@@ -514,8 +524,15 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
     std::unique_ptr<faiss::InvertedListScanner> scalar_scanner(
             faiss::scalar_quantizer::sq_select_InvertedListScanner<
                     faiss::SIMDLevel::NONE>(
-                    p.qtype, p.metric, p.d, sq.code_size, sq.trained,
-                    nullptr, false, nullptr, false));
+                    p.qtype,
+                    p.metric,
+                    p.d,
+                    sq.code_size,
+                    sq.trained,
+                    nullptr,
+                    false,
+                    nullptr,
+                    false));
     ASSERT_NE(scalar_scanner, nullptr);
     scalar_scanner->set_query(xq.data());
     scalar_scanner->set_list(0, 0.0f);
@@ -564,85 +581,201 @@ INSTANTIATE_TEST_SUITE_P(
                 TailParams{SQ::QT_4bit, METRIC_L2, 65, 1e-3f, "4bit/d65"},
                 TailParams{SQ::QT_4bit, METRIC_L2, 94, 1e-3f, "4bit/d94"},
                 TailParams{SQ::QT_4bit, METRIC_L2, 129, 1e-3f, "4bit/d129"},
-                TailParams{SQ::QT_4bit, METRIC_INNER_PRODUCT, 65, 1e-3f,
-                           "4bit_IP/d65"},
-                TailParams{SQ::QT_4bit, METRIC_INNER_PRODUCT, 94, 1e-3f,
-                           "4bit_IP/d94"},
-                TailParams{SQ::QT_4bit, METRIC_INNER_PRODUCT, 129, 1e-3f,
-                           "4bit_IP/d129"},
+                TailParams{
+                        SQ::QT_4bit,
+                        METRIC_INNER_PRODUCT,
+                        65,
+                        1e-3f,
+                        "4bit_IP/d65"},
+                TailParams{
+                        SQ::QT_4bit,
+                        METRIC_INNER_PRODUCT,
+                        94,
+                        1e-3f,
+                        "4bit_IP/d94"},
+                TailParams{
+                        SQ::QT_4bit,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        1e-3f,
+                        "4bit_IP/d129"},
                 // ---- QT_4bit_uniform: L2 e8m2 on nbv bytes (odd-d
                 //      padding byte is excluded -> nbv = (d+1)/2 - 1),
                 //      IP e8m1 on nb bytes
-                TailParams{SQ::QT_4bit_uniform, METRIC_L2, 94, 1e-3f,
-                           "4bit_uniform/d94"},
-                TailParams{SQ::QT_4bit_uniform, METRIC_L2, 127, 1e-3f,
-                           "4bit_uniform/d127"},
-                TailParams{SQ::QT_4bit_uniform, METRIC_L2, 191, 1e-3f,
-                           "4bit_uniform/d191"},
-                TailParams{SQ::QT_4bit_uniform, METRIC_INNER_PRODUCT, 65,
-                           1e-3f, "4bit_uniform_IP/d65"},
-                TailParams{SQ::QT_4bit_uniform, METRIC_INNER_PRODUCT, 129,
-                           1e-3f, "4bit_uniform_IP/d129"},
+                TailParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        94,
+                        1e-3f,
+                        "4bit_uniform/d94"},
+                TailParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        127,
+                        1e-3f,
+                        "4bit_uniform/d127"},
+                TailParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        191,
+                        1e-3f,
+                        "4bit_uniform/d191"},
+                TailParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        65,
+                        1e-3f,
+                        "4bit_uniform_IP/d65"},
+                TailParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        1e-3f,
+                        "4bit_uniform_IP/d129"},
                 // ---- QT_6bit: vl=16 groups; d%4 scalar tail at 69/127
                 TailParams{SQ::QT_6bit, METRIC_L2, 68, 1e-3f, "6bit/d68"},
                 TailParams{SQ::QT_6bit, METRIC_L2, 69, 1e-3f, "6bit/d69"},
                 TailParams{SQ::QT_6bit, METRIC_L2, 127, 1e-3f, "6bit/d127"},
-                TailParams{SQ::QT_6bit, METRIC_INNER_PRODUCT, 68, 1e-3f,
-                           "6bit_IP/d68"},
-                TailParams{SQ::QT_6bit, METRIC_INNER_PRODUCT, 127, 1e-3f,
-                           "6bit_IP/d127"},
+                TailParams{
+                        SQ::QT_6bit,
+                        METRIC_INNER_PRODUCT,
+                        68,
+                        1e-3f,
+                        "6bit_IP/d68"},
+                TailParams{
+                        SQ::QT_6bit,
+                        METRIC_INNER_PRODUCT,
+                        127,
+                        1e-3f,
+                        "6bit_IP/d127"},
                 // ---- QT_8bit (nonuniform): e8m1
                 TailParams{SQ::QT_8bit, METRIC_L2, 17, 1e-3f, "8bit/d17"},
                 TailParams{SQ::QT_8bit, METRIC_L2, 33, 1e-3f, "8bit/d33"},
                 TailParams{SQ::QT_8bit, METRIC_L2, 81, 1e-3f, "8bit/d81"},
-                TailParams{SQ::QT_8bit, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                           "8bit_IP/d17"},
-                TailParams{SQ::QT_8bit, METRIC_INNER_PRODUCT, 81, 1e-3f,
-                           "8bit_IP/d81"},
+                TailParams{
+                        SQ::QT_8bit,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "8bit_IP/d17"},
+                TailParams{
+                        SQ::QT_8bit,
+                        METRIC_INNER_PRODUCT,
+                        81,
+                        1e-3f,
+                        "8bit_IP/d81"},
                 // ---- QT_8bit_uniform: e8m2 on d
-                TailParams{SQ::QT_8bit_uniform, METRIC_L2, 33, 1e-3f,
-                           "8bit_uniform/d33"},
-                TailParams{SQ::QT_8bit_uniform, METRIC_L2, 97, 1e-3f,
-                           "8bit_uniform/d97"},
-                TailParams{SQ::QT_8bit_uniform, METRIC_L2, 129, 1e-3f,
-                           "8bit_uniform/d129"},
-                TailParams{SQ::QT_8bit_uniform, METRIC_INNER_PRODUCT, 33,
-                           1e-3f, "8bit_uniform_IP/d33"},
-                TailParams{SQ::QT_8bit_uniform, METRIC_INNER_PRODUCT, 129,
-                           1e-3f, "8bit_uniform_IP/d129"},
+                TailParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        33,
+                        1e-3f,
+                        "8bit_uniform/d33"},
+                TailParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        97,
+                        1e-3f,
+                        "8bit_uniform/d97"},
+                TailParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        129,
+                        1e-3f,
+                        "8bit_uniform/d129"},
+                TailParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        33,
+                        1e-3f,
+                        "8bit_uniform_IP/d33"},
+                TailParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        1e-3f,
+                        "8bit_uniform_IP/d129"},
                 // ---- QT_8bit_direct (in-contract data -> ~exact)
-                TailParams{SQ::QT_8bit_direct, METRIC_L2, 33, 1e-3f,
-                           "8bit_direct/d33"},
-                TailParams{SQ::QT_8bit_direct, METRIC_L2, 129, 1e-3f,
-                           "8bit_direct/d129"},
-                TailParams{SQ::QT_8bit_direct, METRIC_INNER_PRODUCT, 33,
-                           1e-3f, "8bit_direct_IP/d33"},
-                TailParams{SQ::QT_8bit_direct, METRIC_INNER_PRODUCT, 129,
-                           1e-3f, "8bit_direct_IP/d129"},
+                TailParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        33,
+                        1e-3f,
+                        "8bit_direct/d33"},
+                TailParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        129,
+                        1e-3f,
+                        "8bit_direct/d129"},
+                TailParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        33,
+                        1e-3f,
+                        "8bit_direct_IP/d33"},
+                TailParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        1e-3f,
+                        "8bit_direct_IP/d129"},
                 // ---- QT_8bit_direct_signed
-                TailParams{SQ::QT_8bit_direct_signed, METRIC_L2, 33, 1e-3f,
-                           "8bit_direct_signed/d33"},
-                TailParams{SQ::QT_8bit_direct_signed, METRIC_L2, 129, 1e-3f,
-                           "8bit_direct_signed/d129"},
-                TailParams{SQ::QT_8bit_direct_signed, METRIC_INNER_PRODUCT,
-                           33, 1e-3f, "8bit_direct_signed_IP/d33"},
-                TailParams{SQ::QT_8bit_direct_signed, METRIC_INNER_PRODUCT,
-                           129, 1e-3f, "8bit_direct_signed_IP/d129"},
+                TailParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        33,
+                        1e-3f,
+                        "8bit_direct_signed/d33"},
+                TailParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        129,
+                        1e-3f,
+                        "8bit_direct_signed/d129"},
+                TailParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        33,
+                        1e-3f,
+                        "8bit_direct_signed_IP/d33"},
+                TailParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        1e-3f,
+                        "8bit_direct_signed_IP/d129"},
                 // ---- QT_bf16: e16m2 (vl=16)
                 TailParams{SQ::QT_bf16, METRIC_L2, 17, 1e-3f, "bf16/d17"},
                 TailParams{SQ::QT_bf16, METRIC_L2, 33, 1e-3f, "bf16/d33"},
-                TailParams{SQ::QT_bf16, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                           "bf16_IP/d17"},
-                TailParams{SQ::QT_bf16, METRIC_INNER_PRODUCT, 33, 1e-3f,
-                           "bf16_IP/d33"},
+                TailParams{
+                        SQ::QT_bf16,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "bf16_IP/d17"},
+                TailParams{
+                        SQ::QT_bf16,
+                        METRIC_INNER_PRODUCT,
+                        33,
+                        1e-3f,
+                        "bf16_IP/d33"},
                 // ---- QT_fp16: e16m1 (vl=8)
                 TailParams{SQ::QT_fp16, METRIC_L2, 9, 1e-3f, "fp16/d9"},
                 TailParams{SQ::QT_fp16, METRIC_L2, 17, 1e-3f, "fp16/d17"},
                 TailParams{SQ::QT_fp16, METRIC_L2, 23, 1e-3f, "fp16/d23"},
-                TailParams{SQ::QT_fp16, METRIC_INNER_PRODUCT, 9, 1e-3f,
-                           "fp16_IP/d9"},
-                TailParams{SQ::QT_fp16, METRIC_INNER_PRODUCT, 23, 1e-3f,
-                           "fp16_IP/d23"}));
+                TailParams{
+                        SQ::QT_fp16,
+                        METRIC_INNER_PRODUCT,
+                        9,
+                        1e-3f,
+                        "fp16_IP/d9"},
+                TailParams{
+                        SQ::QT_fp16,
+                        METRIC_INNER_PRODUCT,
+                        23,
+                        1e-3f,
+                        "fp16_IP/d23"}));
 
 // ===========================================================================
 // D3 — Direct codecs: in-contract (integer-grid) data must give EXACTLY
@@ -657,8 +790,8 @@ struct DirectExactParams {
     const char* name;
 };
 
-class SQRVVDirectBitExact :
-        public ::testing::TestWithParam<DirectExactParams> {};
+class SQRVVDirectBitExact : public ::testing::TestWithParam<DirectExactParams> {
+};
 
 TEST_P(SQRVVDirectBitExact, InContractExact) {
     const auto& p = GetParam();
@@ -708,8 +841,7 @@ TEST_P(SQRVVDirectBitExact, InContractExact) {
         }
         float rs = dc.scalar_dc->symmetric_dis(0, 1);
         float ts = dc.rvv_dc->symmetric_dis(0, 1);
-        EXPECT_EQ(rs, ts)
-                << p.name << " query=" << qi << " symmetric_dis";
+        EXPECT_EQ(rs, ts) << p.name << " query=" << qi << " symmetric_dis";
     }
 }
 
@@ -717,28 +849,56 @@ INSTANTIATE_TEST_SUITE_P(
         D3,
         SQRVVDirectBitExact,
         ::testing::Values(
-                DirectExactParams{SQ::QT_8bit_direct, METRIC_L2, 33,
-                                  "8bit_direct_L2_d33"},
-                DirectExactParams{SQ::QT_8bit_direct, METRIC_L2, 96,
-                                  "8bit_direct_L2_d96"},
-                DirectExactParams{SQ::QT_8bit_direct, METRIC_L2, 129,
-                                  "8bit_direct_L2_d129"},
-                DirectExactParams{SQ::QT_8bit_direct, METRIC_INNER_PRODUCT,
-                                  33, "8bit_direct_IP_d33"},
-                DirectExactParams{SQ::QT_8bit_direct, METRIC_INNER_PRODUCT,
-                                  129, "8bit_direct_IP_d129"},
-                DirectExactParams{SQ::QT_8bit_direct_signed, METRIC_L2, 33,
-                                  "8bit_direct_signed_L2_d33"},
-                DirectExactParams{SQ::QT_8bit_direct_signed, METRIC_L2, 96,
-                                  "8bit_direct_signed_L2_d96"},
-                DirectExactParams{SQ::QT_8bit_direct_signed, METRIC_L2, 129,
-                                  "8bit_direct_signed_L2_d129"},
-                DirectExactParams{SQ::QT_8bit_direct_signed,
-                                  METRIC_INNER_PRODUCT, 33,
-                                  "8bit_direct_signed_IP_d33"},
-                DirectExactParams{SQ::QT_8bit_direct_signed,
-                                  METRIC_INNER_PRODUCT, 129,
-                                  "8bit_direct_signed_IP_d129"}));
+                DirectExactParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        33,
+                        "8bit_direct_L2_d33"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        96,
+                        "8bit_direct_L2_d96"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        129,
+                        "8bit_direct_L2_d129"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        33,
+                        "8bit_direct_IP_d33"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        "8bit_direct_IP_d129"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        33,
+                        "8bit_direct_signed_L2_d33"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        96,
+                        "8bit_direct_signed_L2_d96"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        129,
+                        "8bit_direct_signed_L2_d129"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        33,
+                        "8bit_direct_signed_IP_d33"},
+                DirectExactParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        129,
+                        "8bit_direct_signed_IP_d129"}));
 
 // ===========================================================================
 // D5 — Overflow guard: worst-case magnitudes at d beyond the i32/u32
@@ -776,8 +936,8 @@ static void run_overflow_case(
     // the RVV integer path is exact when it does not wrap.
     const float tol = float(expected_exact * 1e-3);
     EXPECT_NEAR(tst, expected_exact, tol)
-            << name << " d=" << d << " rvv=" << tst << " expected="
-            << expected_exact << " (accumulator wrap?)";
+            << name << " d=" << d << " rvv=" << tst
+            << " expected=" << expected_exact << " (accumulator wrap?)";
     EXPECT_NEAR(ref, expected_exact, tol) << name << " scalar ref drifted";
 }
 
@@ -820,6 +980,143 @@ TEST(D5Overflow, DirectSignedL2Wraparound) {
             127.0f,
             "8bit_direct_signed_L2",
             double(d) * 65025.0);
+}
+
+// ===========================================================================
+// D5b — Per-lane i32/u32 accumulator wraparound and the int64 query-bias
+//       overflow. The vector accumulators hold ceil(d/vl) chunk sums per
+//       lane (65025 per L2 chunk, 32640 per signed-IP chunk), so they wrap
+//       around d ~1e6; the signed-IP bias 128*sum(q) reaches 2^31 at
+//       d = 132105 for an all-127 query. These cases sit exactly past the
+//       wrap thresholds (block-based flush must kick in), so the old
+//       single-accumulator kernels would fail them.
+// ===========================================================================
+
+static void run_flush_case(
+        SQ::QuantizerType qtype,
+        faiss::MetricType metric,
+        uint8_t code_byte,
+        float q_value,
+        const char* name,
+        int64_t per_dim) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RISCV_RVV not available";
+    }
+    // VLMAX for e8m2 at this VLEN, derived at runtime so the wrap
+    // thresholds below hold on VLEN=128/256/... boards alike.
+#if defined(FAISS_RVV_HAS_INTRINSICS)
+    const size_t vl = __riscv_vsetvlmax_e8m2();
+#else
+    GTEST_SKIP() << "no RVV intrinsics at test compile time";
+    const size_t vl = 32;
+#endif
+    // Past the per-lane wrap point: 33026 chunks * 65025 > 2^31.
+    const size_t d = vl * 33026 + 1;
+    // Far past the flush-block boundary (16384 chunks), so both a full
+    // flush block and a tail block run.
+    ASSERT_GT(d, vl * 16384 * 2);
+
+    std::vector<float> trained;
+    DcPair dc = make_dc_pair(qtype, metric, d, trained, nullptr, d);
+    ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
+
+    std::vector<float> q(d, q_value);
+    dc.scalar_dc->set_query(q.data());
+    dc.rvv_dc->set_query(q.data());
+
+    std::vector<uint8_t> code(d, code_byte);
+    // Exact i64 reference computed in the test (the scalar NONE computer
+    // itself accumulates in f32 and would drift at this magnitude).
+    const double expected_exact = double(per_dim) * double(d);
+    const float tst = dc.rvv_dc->query_to_code(code.data());
+    // float has a 24-bit mantissa: allow the i64 -> float quantization
+    // slack (~0.5 ulp at this magnitude) around the exact i64 value.
+    const double tol = std::fabs(expected_exact) * 1e-6;
+    EXPECT_NEAR(tst, expected_exact, tol)
+            << name << " d=" << d << " rvv=" << tst
+            << " expected=" << expected_exact
+            << " (per-lane wrap or bias overflow?)";
+}
+
+TEST(D5bFlush, DirectL2LaneWrap) {
+    // q=255, code=0: 65025 per dim. Per-lane i32 sum crosses 2^31 at
+    // chunk 33026; the flush blocks must keep the total exact in i64.
+    run_flush_case(
+            SQ::QT_8bit_direct,
+            METRIC_L2,
+            0x00,
+            255.0f,
+            "8bit_direct_L2_flush",
+            65025);
+}
+
+TEST(D5bFlush, DirectIPLaneWrap) {
+    // q=255, code=255: 65025 per dim, unsigned domain.
+    run_flush_case(
+            SQ::QT_8bit_direct,
+            METRIC_INNER_PRODUCT,
+            0xff,
+            255.0f,
+            "8bit_direct_IP_flush",
+            65025);
+}
+
+TEST(D5bFlush, DirectSignedL2LaneWrap) {
+    // q=-128 (storage byte 0) vs code 0xff (value 127):
+    // diff -128-127 = -255 -> 65025 per dim; bias cancels in L2.
+    run_flush_case(
+            SQ::QT_8bit_direct_signed,
+            METRIC_L2,
+            0xff,
+            -128.0f,
+            "8bit_direct_signed_L2_flush",
+            65025);
+}
+
+TEST(D5bFlush, DirectSignedIPBiasOverflow) {
+    // The reviewer case: an all-127 query makes qbias = 128*127*d
+    // = 16256*d cross 2^31 at d = 132105; int32_t qbias was UB there.
+    // This d is far below the per-lane wrap point, so this isolates the
+    // bias overflow from the accumulator flush.
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RISCV_RVV not available";
+    }
+    const size_t d = 132105;
+    std::vector<float> trained;
+    DcPair dc = make_dc_pair(
+            SQ::QT_8bit_direct_signed,
+            METRIC_INNER_PRODUCT,
+            d,
+            trained,
+            nullptr,
+            d);
+    ASSERT_TRUE(dc.rvv_dc);
+
+    std::vector<float> q(d, 127.0f);
+    dc.rvv_dc->set_query(q.data());
+    std::vector<uint8_t> code(d, 0x00); // value -128: qs*(c-128) = 127*128
+
+    // exact = d * 127 * (0 - 128) = -16256 * d (needs i64 range)
+    const double expected_exact = -16256.0 * double(d);
+    const float tst = dc.rvv_dc->query_to_code(code.data());
+    EXPECT_NEAR(tst, expected_exact, std::abs(expected_exact) * 1e-6)
+            << "signed-IP qbias overflow at d=" << d << " rvv=" << tst;
+}
+
+TEST(D5bFlush, DirectSignedIPLaneWrap) {
+    // q=-128 vs code 0xff (value 127): qs*(c-128) = -128*127 = -16256
+    // per dim (the -128*sum(qs) bias included); per-lane raw chunk sums
+    // reach -128*255 = -32640 per chunk, so the i32 lanes wrap and the
+    // flush blocks must keep the total exact in i64.
+    run_flush_case(
+            SQ::QT_8bit_direct_signed,
+            METRIC_INNER_PRODUCT,
+            0xff,
+            -128.0f,
+            "8bit_direct_signed_IP_flush",
+            -16256);
 }
 
 // ===========================================================================
@@ -867,10 +1164,10 @@ TEST_P(SQRVVZeroDim, ReturnsZeroNoHang) {
                             p.metric, p.qtype, d, trained));
             {
                 ScopedSIMDLevel _(faiss::SIMDLevel::RISCV_RVV);
-                dp.rvv_dc.reset(faiss::scalar_quantizer::
-                                        sq_select_distance_computer<
-                                                faiss::SIMDLevel::RISCV_RVV>(
-                                        p.metric, p.qtype, d, trained));
+                dp.rvv_dc.reset(
+                        faiss::scalar_quantizer::sq_select_distance_computer<
+                                faiss::SIMDLevel::RISCV_RVV>(
+                                p.metric, p.qtype, d, trained));
             }
             return dp;
         }();
@@ -894,8 +1191,7 @@ TEST_P(SQRVVZeroDim, ReturnsZeroNoHang) {
     int status = 0;
     waitpid(pid, &status, 0);
     if (WIFSIGNALED(status) && WTERMSIG(status) == SIGALRM) {
-        FAIL() << "qtype=" << int(p.qtype) << " "
-               << metric_name(p.metric)
+        FAIL() << "qtype=" << int(p.qtype) << " " << metric_name(p.metric)
                << ": d=0 kernel HUNG (vsetvl(0)==0 loop) — killed after 20s";
     } else if (WIFEXITED(status)) {
         int rc = WEXITSTATUS(status);
@@ -904,20 +1200,20 @@ TEST_P(SQRVVZeroDim, ReturnsZeroNoHang) {
                 GTEST_SUCCEED();
                 break;
             case 1:
-                FAIL() << "d=0 RVV distance != 0 (qtype="
-                       << int(p.qtype) << " " << metric_name(p.metric) << ")";
+                FAIL() << "d=0 RVV distance != 0 (qtype=" << int(p.qtype) << " "
+                       << metric_name(p.metric) << ")";
                 break;
             case 2:
-                FAIL() << "d=0 RVV != scalar parity (qtype="
-                       << int(p.qtype) << " " << metric_name(p.metric) << ")";
+                FAIL() << "d=0 RVV != scalar parity (qtype=" << int(p.qtype)
+                       << " " << metric_name(p.metric) << ")";
                 break;
             case 3:
-                FAIL() << "distance computer is null (qtype="
-                       << int(p.qtype) << " " << metric_name(p.metric) << ")";
+                FAIL() << "distance computer is null (qtype=" << int(p.qtype)
+                       << " " << metric_name(p.metric) << ")";
                 break;
             case 4:
-                FAIL() << "d=0 non-finite result (qtype="
-                       << int(p.qtype) << " " << metric_name(p.metric) << ")";
+                FAIL() << "d=0 non-finite result (qtype=" << int(p.qtype) << " "
+                       << metric_name(p.metric) << ")";
                 break;
             default:
                 FAIL() << "child exit " << rc;
@@ -940,32 +1236,43 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
                 ZeroDimParams{SQ::QT_4bit, METRIC_L2, "4bit_L2"},
                 ZeroDimParams{SQ::QT_4bit, METRIC_INNER_PRODUCT, "4bit_IP"},
-                ZeroDimParams{SQ::QT_4bit_uniform, METRIC_L2,
-                              "4bit_uniform_L2"},
-                ZeroDimParams{SQ::QT_4bit_uniform, METRIC_INNER_PRODUCT,
-                              "4bit_uniform_IP"},
+                ZeroDimParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        "4bit_uniform_L2"},
+                ZeroDimParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        "4bit_uniform_IP"},
                 ZeroDimParams{SQ::QT_6bit, METRIC_L2, "6bit_L2"},
                 ZeroDimParams{SQ::QT_6bit, METRIC_INNER_PRODUCT, "6bit_IP"},
                 ZeroDimParams{SQ::QT_8bit, METRIC_L2, "8bit_L2"},
                 ZeroDimParams{SQ::QT_8bit, METRIC_INNER_PRODUCT, "8bit_IP"},
-                ZeroDimParams{SQ::QT_8bit_uniform, METRIC_L2,
-                              "8bit_uniform_L2"},
-                ZeroDimParams{SQ::QT_8bit_uniform, METRIC_INNER_PRODUCT,
-                              "8bit_uniform_IP"},
-                ZeroDimParams{SQ::QT_8bit_direct, METRIC_L2,
-                              "8bit_direct_L2"},
-                ZeroDimParams{SQ::QT_8bit_direct, METRIC_INNER_PRODUCT,
-                              "8bit_direct_IP"},
-                ZeroDimParams{SQ::QT_8bit_direct_signed, METRIC_L2,
-                              "8bit_direct_signed_L2"},
-                ZeroDimParams{SQ::QT_8bit_direct_signed,
-                              METRIC_INNER_PRODUCT,
-                              "8bit_direct_signed_IP"},
+                ZeroDimParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        "8bit_uniform_L2"},
+                ZeroDimParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_uniform_IP"},
+                ZeroDimParams{SQ::QT_8bit_direct, METRIC_L2, "8bit_direct_L2"},
+                ZeroDimParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_direct_IP"},
+                ZeroDimParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        "8bit_direct_signed_L2"},
+                ZeroDimParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_direct_signed_IP"},
                 ZeroDimParams{SQ::QT_bf16, METRIC_L2, "bf16_L2"},
                 ZeroDimParams{SQ::QT_bf16, METRIC_INNER_PRODUCT, "bf16_IP"},
                 ZeroDimParams{SQ::QT_fp16, METRIC_L2, "fp16_L2"},
-                ZeroDimParams{SQ::QT_fp16, METRIC_INNER_PRODUCT,
-                              "fp16_IP"}),
+                ZeroDimParams{SQ::QT_fp16, METRIC_INNER_PRODUCT, "fp16_IP"}),
         [](const ::testing::TestParamInfo<ZeroDimParams>& info) {
             return std::string(info.param.name);
         });
@@ -986,8 +1293,7 @@ struct SpecialQParams {
     const char* name;
 };
 
-class SQRVVSpecialQueries :
-        public ::testing::TestWithParam<SpecialQParams> {};
+class SQRVVSpecialQueries : public ::testing::TestWithParam<SpecialQParams> {};
 
 TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
     const auto& p = GetParam();
@@ -1006,8 +1312,8 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
     std::vector<float> xt = direct
             ? random_int_floats(n_train, p.d, dlo, dhi, 42)
             : random_int_floats(n_train, p.d, -40, 200, 42);
-    std::vector<float> xb = direct ? xt : random_int_floats(n_db, p.d,
-                                             -40, 200, 43);
+    std::vector<float> xb =
+            direct ? xt : random_int_floats(n_db, p.d, -40, 200, 43);
 
     SQ sq(p.d, p.qtype);
     sq.train(n_train, xt.data());
@@ -1072,8 +1378,9 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
     const float rel_tol = 1e-4f;
 
     for (size_t qi = 0; qi < queries.size(); qi++) {
-        SCOPED_TRACE(::testing::Message()
-                     << p.name << " query=" << qi << " d=" << p.d);
+        SCOPED_TRACE(
+                ::testing::Message()
+                << p.name << " query=" << qi << " d=" << p.d);
         dc.scalar_dc->set_query(queries[qi].data());
         dc.rvv_dc->set_query(queries[qi].data());
         for (size_t i = 0; i < n_db; i++) {
@@ -1097,37 +1404,88 @@ INSTANTIATE_TEST_SUITE_P(
         SQRVVSpecialQueries,
         ::testing::Values(
                 SpecialQParams{SQ::QT_4bit, METRIC_L2, 17, 1e-3f, "4bit"},
-                SpecialQParams{SQ::QT_4bit, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                               "4bit_IP"},
-                SpecialQParams{SQ::QT_4bit_uniform, METRIC_L2, 17, 1e-3f,
-                               "4bit_uniform"},
-                SpecialQParams{SQ::QT_4bit_uniform, METRIC_INNER_PRODUCT, 17,
-                               1e-3f, "4bit_uniform_IP"},
+                SpecialQParams{
+                        SQ::QT_4bit,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "4bit_IP"},
+                SpecialQParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        17,
+                        1e-3f,
+                        "4bit_uniform"},
+                SpecialQParams{
+                        SQ::QT_4bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "4bit_uniform_IP"},
                 SpecialQParams{SQ::QT_6bit, METRIC_L2, 17, 1e-3f, "6bit"},
-                SpecialQParams{SQ::QT_6bit, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                               "6bit_IP"},
+                SpecialQParams{
+                        SQ::QT_6bit,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "6bit_IP"},
                 SpecialQParams{SQ::QT_8bit, METRIC_L2, 17, 1e-3f, "8bit"},
-                SpecialQParams{SQ::QT_8bit, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                               "8bit_IP"},
-                SpecialQParams{SQ::QT_8bit_uniform, METRIC_L2, 17, 1e-3f,
-                               "8bit_uniform"},
-                SpecialQParams{SQ::QT_8bit_uniform, METRIC_INNER_PRODUCT, 17,
-                               1e-3f, "8bit_uniform_IP"},
-                SpecialQParams{SQ::QT_8bit_direct, METRIC_L2, 17, 1e-3f,
-                               "8bit_direct"},
-                SpecialQParams{SQ::QT_8bit_direct, METRIC_INNER_PRODUCT, 17,
-                               1e-3f, "8bit_direct_IP"},
-                SpecialQParams{SQ::QT_8bit_direct_signed, METRIC_L2, 17,
-                               1e-3f, "8bit_direct_signed"},
-                SpecialQParams{SQ::QT_8bit_direct_signed,
-                               METRIC_INNER_PRODUCT, 17, 1e-3f,
-                               "8bit_direct_signed_IP"},
+                SpecialQParams{
+                        SQ::QT_8bit,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "8bit_IP"},
+                SpecialQParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        17,
+                        1e-3f,
+                        "8bit_uniform"},
+                SpecialQParams{
+                        SQ::QT_8bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "8bit_uniform_IP"},
+                SpecialQParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        17,
+                        1e-3f,
+                        "8bit_direct"},
+                SpecialQParams{
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "8bit_direct_IP"},
+                SpecialQParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        17,
+                        1e-3f,
+                        "8bit_direct_signed"},
+                SpecialQParams{
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "8bit_direct_signed_IP"},
                 SpecialQParams{SQ::QT_bf16, METRIC_L2, 17, 1e-3f, "bf16"},
-                SpecialQParams{SQ::QT_bf16, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                               "bf16_IP"},
+                SpecialQParams{
+                        SQ::QT_bf16,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "bf16_IP"},
                 SpecialQParams{SQ::QT_fp16, METRIC_L2, 17, 1e-3f, "fp16"},
-                SpecialQParams{SQ::QT_fp16, METRIC_INNER_PRODUCT, 17, 1e-3f,
-                               "fp16_IP"}));
+                SpecialQParams{
+                        SQ::QT_fp16,
+                        METRIC_INNER_PRODUCT,
+                        17,
+                        1e-3f,
+                        "fp16_IP"}));
 
 // ===========================================================================
 // D8 — Very small / odd dimensions. The review asks for "odd and very small
@@ -1162,9 +1520,8 @@ TEST_P(SQRVVSmallDim, SmallDimensionParity) {
     std::vector<float> xb = direct
             ? random_int_floats(n_train, p.d, dlo, dhi, 42)
             : make_random_vectors(n_train, p.d, 42);
-    std::vector<float> xq = direct
-            ? random_int_floats(1, p.d, dlo, dhi, 99)
-            : make_random_vectors(1, p.d, 99);
+    std::vector<float> xq = direct ? random_int_floats(1, p.d, dlo, dhi, 99)
+                                   : make_random_vectors(1, p.d, 99);
     if (p.metric == METRIC_INNER_PRODUCT && !direct) {
         faiss::fvec_renorm_L2(p.d, n_train, xb.data());
         faiss::fvec_renorm_L2(p.d, 1, xq.data());
@@ -1181,8 +1538,9 @@ TEST_P(SQRVVSmallDim, SmallDimensionParity) {
     dc.scalar_dc->set_query(xq.data());
     dc.rvv_dc->set_query(xq.data());
 
-    SCOPED_TRACE(::testing::Message()
-                 << p.name << " d=" << p.d << " " << metric_name(p.metric));
+    SCOPED_TRACE(
+            ::testing::Message()
+            << p.name << " d=" << p.d << " " << metric_name(p.metric));
 
     // All kernels are float-domain after the review fix -> reassociation
     // precision only; direct codecs are additionally integer-exact here.
@@ -1213,8 +1571,7 @@ TEST_P(SQRVVSmallDim, SmallDimensionParity) {
     }
 
     {
-        const uint8_t *c0 = codes.data(),
-                      *c1 = codes.data() + sq.code_size,
+        const uint8_t *c0 = codes.data(), *c1 = codes.data() + sq.code_size,
                       *c2 = codes.data() + 2 * sq.code_size,
                       *c3 = codes.data() + 3 * sq.code_size;
         float r[4], t[4];
@@ -1229,8 +1586,8 @@ TEST_P(SQRVVSmallDim, SmallDimensionParity) {
 }
 
 // 9 qtypes x {L2, IP} x {1, 2, 3, 5, 7}
-#define SMALL_DIM_CASES(QT, METRIC, TAG)          \
-    SmallDimParams{QT, METRIC, 1, TAG "_d1"},     \
+#define SMALL_DIM_CASES(QT, METRIC, TAG)              \
+    SmallDimParams{QT, METRIC, 1, TAG "_d1"},         \
             SmallDimParams{QT, METRIC, 2, TAG "_d2"}, \
             SmallDimParams{QT, METRIC, 3, TAG "_d3"}, \
             SmallDimParams{QT, METRIC, 5, TAG "_d5"}, \
@@ -1241,36 +1598,47 @@ INSTANTIATE_TEST_SUITE_P(
         SQRVVSmallDim,
         ::testing::Values(
                 SMALL_DIM_CASES(SQ::QT_4bit, METRIC_L2, "4bit_L2"),
+                SMALL_DIM_CASES(SQ::QT_4bit, METRIC_INNER_PRODUCT, "4bit_IP"),
                 SMALL_DIM_CASES(
-                        SQ::QT_4bit, METRIC_INNER_PRODUCT, "4bit_IP"),
+                        SQ::QT_4bit_uniform,
+                        METRIC_L2,
+                        "4bit_uniform_L2"),
                 SMALL_DIM_CASES(
-                        SQ::QT_4bit_uniform, METRIC_L2, "4bit_uniform_L2"),
-                SMALL_DIM_CASES(SQ::QT_4bit_uniform, METRIC_INNER_PRODUCT,
-                                "4bit_uniform_IP"),
+                        SQ::QT_4bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        "4bit_uniform_IP"),
                 SMALL_DIM_CASES(SQ::QT_6bit, METRIC_L2, "6bit_L2"),
-                SMALL_DIM_CASES(
-                        SQ::QT_6bit, METRIC_INNER_PRODUCT, "6bit_IP"),
+                SMALL_DIM_CASES(SQ::QT_6bit, METRIC_INNER_PRODUCT, "6bit_IP"),
                 SMALL_DIM_CASES(SQ::QT_8bit, METRIC_L2, "8bit_L2"),
+                SMALL_DIM_CASES(SQ::QT_8bit, METRIC_INNER_PRODUCT, "8bit_IP"),
                 SMALL_DIM_CASES(
-                        SQ::QT_8bit, METRIC_INNER_PRODUCT, "8bit_IP"),
+                        SQ::QT_8bit_uniform,
+                        METRIC_L2,
+                        "8bit_uniform_L2"),
                 SMALL_DIM_CASES(
-                        SQ::QT_8bit_uniform, METRIC_L2, "8bit_uniform_L2"),
-                SMALL_DIM_CASES(SQ::QT_8bit_uniform, METRIC_INNER_PRODUCT,
-                                "8bit_uniform_IP"),
+                        SQ::QT_8bit_uniform,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_uniform_IP"),
                 SMALL_DIM_CASES(
-                        SQ::QT_8bit_direct, METRIC_L2, "8bit_direct_L2"),
-                SMALL_DIM_CASES(SQ::QT_8bit_direct, METRIC_INNER_PRODUCT,
-                                "8bit_direct_IP"),
-                SMALL_DIM_CASES(SQ::QT_8bit_direct_signed, METRIC_L2,
-                                "8bit_direct_signed_L2"),
-                SMALL_DIM_CASES(SQ::QT_8bit_direct_signed,
-                                METRIC_INNER_PRODUCT, "8bit_direct_signed_IP"),
+                        SQ::QT_8bit_direct,
+                        METRIC_L2,
+                        "8bit_direct_L2"),
+                SMALL_DIM_CASES(
+                        SQ::QT_8bit_direct,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_direct_IP"),
+                SMALL_DIM_CASES(
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_L2,
+                        "8bit_direct_signed_L2"),
+                SMALL_DIM_CASES(
+                        SQ::QT_8bit_direct_signed,
+                        METRIC_INNER_PRODUCT,
+                        "8bit_direct_signed_IP"),
                 SMALL_DIM_CASES(SQ::QT_bf16, METRIC_L2, "bf16_L2"),
-                SMALL_DIM_CASES(
-                        SQ::QT_bf16, METRIC_INNER_PRODUCT, "bf16_IP"),
+                SMALL_DIM_CASES(SQ::QT_bf16, METRIC_INNER_PRODUCT, "bf16_IP"),
                 SMALL_DIM_CASES(SQ::QT_fp16, METRIC_L2, "fp16_L2"),
-                SMALL_DIM_CASES(
-                        SQ::QT_fp16, METRIC_INNER_PRODUCT, "fp16_IP")),
+                SMALL_DIM_CASES(SQ::QT_fp16, METRIC_INNER_PRODUCT, "fp16_IP")),
         [](const ::testing::TestParamInfo<SmallDimParams>& info) {
             return std::string(info.param.name);
         });
@@ -1311,9 +1679,8 @@ TEST_P(SQRVVReconQuery, QueryEqualsReconstructedValue) {
     sq.train(n_train, xb.data());
 
     // Encode one in-contract vector, then decode it back to recon(code).
-    std::vector<float> xsrc = direct
-            ? random_int_floats(1, p.d, dlo, dhi, 7)
-            : make_random_vectors(1, p.d, 7);
+    std::vector<float> xsrc = direct ? random_int_floats(1, p.d, dlo, dhi, 7)
+                                     : make_random_vectors(1, p.d, 7);
     std::vector<uint8_t> code(sq.code_size);
     sq.compute_codes(xsrc.data(), code.data(), 1);
     std::vector<float> q(p.d);
@@ -1352,9 +1719,13 @@ INSTANTIATE_TEST_SUITE_P(
                 ReconParams{SQ::QT_8bit_direct, 8, "8bit_direct_d8"},
                 ReconParams{SQ::QT_8bit_direct, 17, "8bit_direct_d17"},
                 ReconParams{
-                        SQ::QT_8bit_direct_signed, 8, "8bit_direct_signed_d8"},
-                ReconParams{SQ::QT_8bit_direct_signed, 17,
-                            "8bit_direct_signed_d17"},
+                        SQ::QT_8bit_direct_signed,
+                        8,
+                        "8bit_direct_signed_d8"},
+                ReconParams{
+                        SQ::QT_8bit_direct_signed,
+                        17,
+                        "8bit_direct_signed_d17"},
                 ReconParams{SQ::QT_bf16, 8, "bf16_d8"},
                 ReconParams{SQ::QT_bf16, 17, "bf16_d17"},
                 ReconParams{SQ::QT_fp16, 8, "fp16_d8"},

@@ -171,9 +171,9 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half; // bytes per code = ceil(d/2)
-    float a;     // vdiff / 15
-    float c0;    // vmin + 0.5 * a
+    size_t half;                   // bytes per code = ceil(d/2)
+    float a;                       // vdiff / 15
+    float c0;                      // vmin + 0.5 * a
     std::vector<float> e_lo, e_hi; // q_i - c0, deinterleaved per query
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
@@ -205,7 +205,7 @@ struct DCTemplate<
     /// from the vector domain (nbv = nb - 1) and the low nibble is
     /// processed in scalar to stay exact for any producer.
     float compute_l2(const uint8_t* code) const {
-        const size_t nb = half; // bytes per code
+        const size_t nb = half;                     // bytes per code
         const size_t nbv = (d & 1) ? (nb - 1) : nb; // vector-domain bytes
         float total = 0.0f;
         size_t b = 0;
@@ -338,7 +338,7 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half; // bytes per code = ceil(d/2)
+    size_t half;                         // bytes per code = ceil(d/2)
     std::vector<float> a_lo, a_hi;       // a_i = vdiff[i]/15, deinterleaved
     std::vector<float> rmin_lo, rmin_hi; // vmin[i] + 0.5*a_i, deinterleaved
     std::vector<float> e_lo, e_hi;       // q_i - rmin_i, per query
@@ -433,20 +433,14 @@ struct DCTemplate<
                     __riscv_vzext_vf4_u32m4(lo, vt), vt);
             vfloat32m4_t t_lo = __riscv_vle32_v_f32m4(e_lo.data() + b, vt);
             t_lo = __riscv_vfnmsac_vv_f32m4(
-                    t_lo,
-                    __riscv_vle32_v_f32m4(a_lo.data() + b, vt),
-                    clo,
-                    vt);
+                    t_lo, __riscv_vle32_v_f32m4(a_lo.data() + b, vt), clo, vt);
             acc = __riscv_vfmacc_vv_f32m4_tu(acc, t_lo, t_lo, vt);
 
             vfloat32m4_t chi = __riscv_vfcvt_f_xu_v_f32m4(
                     __riscv_vzext_vf4_u32m4(hi, vt), vt);
             vfloat32m4_t t_hi = __riscv_vle32_v_f32m4(e_hi.data() + b, vt);
             t_hi = __riscv_vfnmsac_vv_f32m4(
-                    t_hi,
-                    __riscv_vle32_v_f32m4(a_hi.data() + b, vt),
-                    chi,
-                    vt);
+                    t_hi, __riscv_vle32_v_f32m4(a_hi.data() + b, vt), chi, vt);
             acc = __riscv_vfmacc_vv_f32m4_tu(acc, t_hi, t_hi, vt);
         }
 
@@ -530,7 +524,7 @@ struct DCTemplate<
     using Sim = SimilarityIP<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    size_t half; // bytes per code = ceil(d/2)
+    size_t half;                         // bytes per code = ceil(d/2)
     std::vector<float> a_lo, a_hi;       // a_i = vdiff[i]/15, deinterleaved
     std::vector<float> rmin_lo, rmin_hi; // vmin[i] + 0.5*a_i, deinterleaved
     std::vector<float> b_lo, b_hi;       // q_i * a_i, per query
@@ -749,8 +743,8 @@ struct DCTemplate<
     size_t half; // bytes per code = ceil(d/2)
     float vmin;
     float vdiff;
-    float a;  // vdiff / 15
-    float c0; // vmin + 0.5 * a
+    float a;                       // vdiff / 15
+    float c0;                      // vmin + 0.5 * a
     std::vector<float> q_lo, q_hi; // query components, deinterleaved
     float k_q;                     // c0 * sum_i q_i, per query
 
@@ -1051,56 +1045,43 @@ struct DCTemplate<
             // block, then compute on the already-loaded current chunk.
             if (ngf >= vl) {
                 // Prologue: preload chunk 0.
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
                 g += vl;
 
                 // Main loop: while a full next chunk exists, issue its
                 // load first, then process the current one.
                 for (; g + vl <= ngf; g += vl) {
                     vuint8m1x3_t seg_next =
-                            __riscv_vlseg3e8_v_u8m1x3(
-                                    code + 3 * g, vl);
-                    vuint8m1_t b0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t b1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t b2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                            __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                    vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
                     // Light extracts (c0, c3) first so their FMA chains
                     // issue early; heavy extracts (c1, c2) overlap.
                     // Accumulation order: c0, c3, c1, c2.
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(b0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(b2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(b0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(b2, 2, vl);
 
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
-                    vfloat32m4_t t0 =
-                            __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
+                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
                     t0 = __riscv_vfnmsac_vv_f32m4(
                             t0,
-                            __riscv_vle32_v_f32m4(
-                                    pa0 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa0 + g - vl, vl),
                             f0,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t0, t0, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vl);
 
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
-                    vfloat32m4_t t3 =
-                            __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
+                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
                     t3 = __riscv_vfnmsac_vv_f32m4(
                             t3,
-                            __riscv_vle32_v_f32m4(
-                                    pa3 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa3 + g - vl, vl),
                             f3,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t3, t3, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vl);
 
                     vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b0, 6, vl),
@@ -1110,16 +1091,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
-                    vfloat32m4_t t1 =
-                            __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
+                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
                     t1 = __riscv_vfnmsac_vv_f32m4(
                             t1,
-                            __riscv_vle32_v_f32m4(
-                                    pa1 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa1 + g - vl, vl),
                             f1,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t1, t1, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vl);
 
                     vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b1, 4, vl),
@@ -1129,59 +1107,45 @@ struct DCTemplate<
 
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
-                    vfloat32m4_t t2 =
-                            __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
+                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
                     t2 = __riscv_vfnmsac_vv_f32m4(
                             t2,
-                            __riscv_vle32_v_f32m4(
-                                    pa2 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa2 + g - vl, vl),
                             f2,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t2, t2, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vl);
 
                     seg = seg_next; // rotate
                 }
 
                 // Epilogue: process the last full chunk (already loaded).
                 {
-                    vuint8m1_t b0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t b1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t b2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                    vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(b0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(b2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(b0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(b2, 2, vl);
 
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
-                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(
-                            pe0 + g - vl, vl);
+                    vfloat32m4_t t0 = __riscv_vle32_v_f32m4(pe0 + g - vl, vl);
                     t0 = __riscv_vfnmsac_vv_f32m4(
                             t0,
-                            __riscv_vle32_v_f32m4(
-                                    pa0 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa0 + g - vl, vl),
                             f0,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t0, t0, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t0, t0, vl);
 
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
-                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(
-                            pe3 + g - vl, vl);
+                    vfloat32m4_t t3 = __riscv_vle32_v_f32m4(pe3 + g - vl, vl);
                     t3 = __riscv_vfnmsac_vv_f32m4(
                             t3,
-                            __riscv_vle32_v_f32m4(
-                                    pa3 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa3 + g - vl, vl),
                             f3,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t3, t3, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t3, t3, vl);
 
                     vuint8m1_t c1 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b0, 6, vl),
@@ -1191,16 +1155,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
-                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(
-                            pe1 + g - vl, vl);
+                    vfloat32m4_t t1 = __riscv_vle32_v_f32m4(pe1 + g - vl, vl);
                     t1 = __riscv_vfnmsac_vv_f32m4(
                             t1,
-                            __riscv_vle32_v_f32m4(
-                                    pa1 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa1 + g - vl, vl),
                             f1,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t1, t1, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t1, t1, vl);
 
                     vuint8m1_t c2 = __riscv_vmacc_vx_u8m1(
                             __riscv_vsrl_vx_u8m1(b1, 4, vl),
@@ -1210,16 +1171,13 @@ struct DCTemplate<
 
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
-                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(
-                            pe2 + g - vl, vl);
+                    vfloat32m4_t t2 = __riscv_vle32_v_f32m4(pe2 + g - vl, vl);
                     t2 = __riscv_vfnmsac_vv_f32m4(
                             t2,
-                            __riscv_vle32_v_f32m4(
-                                    pa2 + g - vl, vl),
+                            __riscv_vle32_v_f32m4(pa2 + g - vl, vl),
                             f2,
                             vl);
-                    acc = __riscv_vfmacc_vv_f32m4(
-                            acc, t2, t2, vl);
+                    acc = __riscv_vfmacc_vv_f32m4(acc, t2, t2, vl);
                 }
             }
 
@@ -1227,8 +1185,7 @@ struct DCTemplate<
             if (g < ngf) {
                 const size_t vt = __riscv_vsetvl_e8m1(ngf - g);
 
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
                 vuint8m1_t b0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
                 vuint8m1_t b1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
                 vuint8m1_t b2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
@@ -1285,8 +1242,7 @@ struct DCTemplate<
 
         // Scalar tail: dims beyond the last full group (d % 4).
         for (size_t i = 4 * ngf; i < d; i++) {
-            float r = rmin_all[i] +
-                    a_all[i] * float(sq6_decode_raw(code, i));
+            float r = rmin_all[i] + a_all[i] * float(sq6_decode_raw(code, i));
             float diff = q[i] - r;
             total += diff * diff;
         }
@@ -1333,7 +1289,8 @@ struct DCTemplate<
 //  * recon_i(c) = rmin_i + a_i*c_i, a_i = vdiff[i]/63, rmin_i = vmin[i] +
 //  * 0.5*a_i. IP decomposes into a query-only constant plus a coefficient
 //  * dot product over the integer codes:
-//  *     IP(q, code) = sum_i q_i*rmin_i + sum_i (q_i*a_i)*c_i = K_q + sum_i b_i*c_i
+//  *     IP(q, code) = sum_i q_i*rmin_i + sum_i (q_i*a_i)*c_i = K_q + sum_i
+//  b_i*c_i
 //  * K_q and b_i = q_i*a_i are precomputed in set_query. Codec6bit packs 4
 //  * dims into 3 bytes, so b_i is deinterleaved by (i & 3) into four streams.
 //  *
@@ -1423,39 +1380,30 @@ struct DCTemplate<
             // compute on the already-loaded current chunk.
             if (ngf >= vl) {
                 // Prologue: preload chunk 0.
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
                 g += vl;
 
                 // Main loop: while a full next chunk exists, issue its
                 // load first, then process the current one.
                 for (; g + vl <= ngf; g += vl) {
                     vuint8m1x3_t seg_next =
-                            __riscv_vlseg3e8_v_u8m1x3(
-                                    code + 3 * g, vl);
-                    vuint8m1_t r0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t r1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t r2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                            __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vl);
+                    vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
                     // Light extracts (c0, c3) first so their FMA chains
                     // issue early; heavy extracts (c1, c2) overlap.
                     // Accumulation order: 0, 3, 1, 2.
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(r0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(r2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(r0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(r2, 2, vl);
 
-                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(
-                            pb0 + g - vl, vl);
+                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb0 + g - vl, vl);
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, f0, vl);
 
-                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(
-                            pb3 + g - vl, vl);
+                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(pb3 + g - vl, vl);
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb3, f3, vl);
@@ -1465,8 +1413,7 @@ struct DCTemplate<
                             4,
                             __riscv_vand_vx_u8m1(r1, 0x0F, vl),
                             vl);
-                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(
-                            pb1 + g - vl, vl);
+                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb1 + g - vl, vl);
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb1, f1, vl);
@@ -1476,8 +1423,7 @@ struct DCTemplate<
                             16,
                             __riscv_vand_vx_u8m1(r2, 0x03, vl),
                             vl);
-                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(
-                            pb2 + g - vl, vl);
+                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(pb2 + g - vl, vl);
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb2, f2, vl);
@@ -1487,29 +1433,22 @@ struct DCTemplate<
 
                 // Epilogue: process the last full chunk (already loaded).
                 {
-                    vuint8m1_t r0 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 0);
-                    vuint8m1_t r1 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 1);
-                    vuint8m1_t r2 =
-                            __riscv_vget_v_u8m1x3_u8m1(seg, 2);
+                    vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
+                    vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
+                    vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
 
                     // Light extracts (c0, c3) first so their FMA chains
                     // issue early; heavy extracts (c1, c2) overlap.
                     // Accumulation order: 0, 3, 1, 2.
-                    vuint8m1_t c0 =
-                            __riscv_vand_vx_u8m1(r0, 0x3F, vl);
-                    vuint8m1_t c3 =
-                            __riscv_vsrl_vx_u8m1(r2, 2, vl);
+                    vuint8m1_t c0 = __riscv_vand_vx_u8m1(r0, 0x3F, vl);
+                    vuint8m1_t c3 = __riscv_vsrl_vx_u8m1(r2, 2, vl);
 
-                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(
-                            pb0 + g - vl, vl);
+                    vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb0 + g - vl, vl);
                     vfloat32m4_t f0 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c0, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, f0, vl);
 
-                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(
-                            pb3 + g - vl, vl);
+                    vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(pb3 + g - vl, vl);
                     vfloat32m4_t f3 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c3, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb3, f3, vl);
@@ -1519,8 +1458,7 @@ struct DCTemplate<
                             4,
                             __riscv_vand_vx_u8m1(r1, 0x0F, vl),
                             vl);
-                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(
-                            pb1 + g - vl, vl);
+                    vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb1 + g - vl, vl);
                     vfloat32m4_t f1 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c1, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb1, f1, vl);
@@ -1530,8 +1468,7 @@ struct DCTemplate<
                             16,
                             __riscv_vand_vx_u8m1(r2, 0x03, vl),
                             vl);
-                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(
-                            pb2 + g - vl, vl);
+                    vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(pb2 + g - vl, vl);
                     vfloat32m4_t f2 = __riscv_vfwcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf2_u16m2(c2, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb2, f2, vl);
@@ -1544,8 +1481,7 @@ struct DCTemplate<
             if (g < ngf) {
                 const size_t vt = __riscv_vsetvl_e8m1(ngf - g);
 
-                vuint8m1x3_t seg =
-                        __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
+                vuint8m1x3_t seg = __riscv_vlseg3e8_v_u8m1x3(code + 3 * g, vt);
                 vuint8m1_t r0 = __riscv_vget_v_u8m1x3_u8m1(seg, 0);
                 vuint8m1_t r1 = __riscv_vget_v_u8m1x3_u8m1(seg, 1);
                 vuint8m1_t r2 = __riscv_vget_v_u8m1x3_u8m1(seg, 2);
@@ -1609,10 +1545,8 @@ struct DCTemplate<
         const uint8_t* c2 = codes + j * code_size;
         float acc = 0;
         for (size_t k = 0; k < d; k++) {
-            float r1 = rmin_all[k] +
-                    a_all[k] * float(sq6_decode_raw(c1, k));
-            float r2 = rmin_all[k] +
-                    a_all[k] * float(sq6_decode_raw(c2, k));
+            float r1 = rmin_all[k] + a_all[k] * float(sq6_decode_raw(c1, k));
+            float r2 = rmin_all[k] + a_all[k] * float(sq6_decode_raw(c2, k));
             acc += r1 * r2;
         }
         return acc;
@@ -1711,13 +1645,9 @@ struct DCTemplate<
                 vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
                 vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t =
-                        __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
                 t = __riscv_vfnmsac_vv_f32m4(
-                        t,
-                        __riscv_vle32_v_f32m4(pa + i - vl, vl),
-                        cf,
-                        vl);
+                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
                 acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
                 c8 = c8_next; // rotate
             }
@@ -1726,13 +1656,9 @@ struct DCTemplate<
             {
                 vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
                         __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t =
-                        __riscv_vle32_v_f32m4(pe + i - vl, vl);
+                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
                 t = __riscv_vfnmsac_vv_f32m4(
-                        t,
-                        __riscv_vle32_v_f32m4(pa + i - vl, vl),
-                        cf,
-                        vl);
+                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
                 acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
             }
         }
@@ -1795,8 +1721,8 @@ struct DCTemplate<
  * recon_i(c) = rmin_i + a_i*c_i, a_i = vdiff[i]/255, rmin_i = vmin[i] +
  * 0.5*a_i. IP decomposes into a query-only constant plus a coefficient
  * dot product over the integer codes:
- *     IP(q, code) = sum_i q_i*rmin_i + sum_i (q_i*a_i)*c_i = K_q + sum_i b_i*c_i
- * K_q and b_i = q_i*a_i are precomputed in set_query. Each code byte is
+ *     IP(q, code) = sum_i q_i*rmin_i + sum_i (q_i*a_i)*c_i = K_q + sum_i
+ * b_i*c_i K_q and b_i = q_i*a_i are precomputed in set_query. Each code byte is
  * one dim (no bit unpacking): hot loop vle8 -> vzext -> vfcvt -> vle32 ->
  * vfmacc, software-pipelined.
  **********************************************************/
@@ -1875,18 +1801,16 @@ struct DCTemplate<
                 vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(pb + i - vl, vl);
                 vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(pb + i, vl);
                 for (; i + 2 * vl <= d; i += 2 * vl) {
-                    vuint8m1_t c8_n1 =
-                            __riscv_vle8_v_u8m1(code + i, vl);
+                    vuint8m1_t c8_n1 = __riscv_vle8_v_u8m1(code + i, vl);
                     vfloat32m4_t vb0_next =
                             __riscv_vle32_v_f32m4(pb + i + vl, vl);
                     vfloat32m4_t cf0 = __riscv_vfcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf4_u32m4(c8, vl), vl);
                     acc = __riscv_vfmacc_vv_f32m4(acc, vb0, cf0, vl);
 
-                    vuint8m1_t c8_n2 =
-                            __riscv_vle8_v_u8m1(code + i + vl, vl);
-                    vfloat32m4_t vb1_next = __riscv_vle32_v_f32m4(
-                            pb + i + 2 * vl, vl);
+                    vuint8m1_t c8_n2 = __riscv_vle8_v_u8m1(code + i + vl, vl);
+                    vfloat32m4_t vb1_next =
+                            __riscv_vle32_v_f32m4(pb + i + 2 * vl, vl);
                     vfloat32m4_t cf1 = __riscv_vfcvt_f_xu_v_f32m4(
                             __riscv_vzext_vf4_u32m4(c8_n1, vl), vl);
                     acc1 = __riscv_vfmacc_vv_f32m4(acc1, vb1, cf1, vl);
@@ -2004,8 +1928,8 @@ struct DCTemplate<
     using Sim = SimilarityL2<SIMDLevel::RISCV_RVV>;
 
     size_t d;
-    float a;  // vdiff / 255
-    float c0; // vmin + 0.5 * a
+    float a;                // vdiff / 255
+    float c0;               // vmin + 0.5 * a
     std::vector<float> e_v; // q_i - c0, per query
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
@@ -2303,6 +2227,12 @@ struct DCTemplate<
 
     /// Integer-domain L2: sum_i (q8_i - c_i)^2 into an i32m8 vector
     /// accumulator; single reduction + single int->float at the end.
+    ///
+    /// Per-lane i32 accumulation wraps once (d/vl)*65025 exceeds 2^31
+    /// (d > ~1.05e6 at VLEN=128), so the dimension axis is strip-mined
+    /// into flush blocks: every kFlushChunks chunks the accumulator is
+    /// widened+reduced into an i64 total and reset. d <= block runs the
+    /// original single-accumulator loop shape.
     int64_t accumulate_int_l2(const uint8_t* code) const {
         const uint8_t* pq = q8.data();
 
@@ -2310,36 +2240,52 @@ struct DCTemplate<
         // d==0: guard so vsetvl(0) doesn't return 0 and the chunk loop
         // `i + vl <= d` doesn't stall.
         const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
-        vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+        // 16384 chunks * 65025 max increment per chunk per lane
+        // = 1.065e9 < 2^31 (2x margin), any VLEN.
+        constexpr size_t kFlushChunks = 16384;
+        const size_t block = vl * kFlushChunks;
+
+        vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
+        int64_t total = 0;
 
         size_t i = 0;
-        // Hot loop: 2 loads, one widening subtract, one widening
-        // square-accumulate. No vsetvl, no reduction inside.
-        for (; i + vl <= d; i += vl) {
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i, vl);
-            vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vl);
-            vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(vq, vc, vl));
-            acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vl);
+        // Full flush blocks: reduce+reset every `block` dims.
+        for (; i + block <= d; i += block) {
+            vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+            for (size_t j = 0; j < block; j += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i + j, vl);
+                vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i + j, vl);
+                vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
+                        __riscv_vwsubu_vv_u16m4(vq, vc, vl));
+                acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vl);
+            }
+            total += __riscv_vmv_x_s_i64m1_i64(
+                    __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl));
         }
 
-        // Tail: fewer than vl dims left — one shorter-vl pass into
-        // the same accumulator (only the first vt lanes touched).
+        // Tail block (< block dims left): original main + short-tail
+        // shape, one final reduction into the i64 total.
         if (i < d) {
-            const size_t vt = __riscv_vsetvl_e8m2(d - i);
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i, vt);
-            vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vt);
-            vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(vq, vc, vt));
-            acc = __riscv_vwmacc_vv_i32m8_tu(acc, df, df, vt);
+            vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+            for (; i + vl <= d; i += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i, vl);
+                vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vl);
+                vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
+                        __riscv_vwsubu_vv_u16m4(vq, vc, vl));
+                acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vl);
+            }
+            if (i < d) {
+                const size_t vt = __riscv_vsetvl_e8m2(d - i);
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i, vt);
+                vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vt);
+                vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
+                        __riscv_vwsubu_vv_u16m4(vq, vc, vt));
+                acc = __riscv_vwmacc_vv_i32m8_tu(acc, df, df, vt);
+            }
+            total += __riscv_vmv_x_s_i64m1_i64(
+                    __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl));
         }
-
-        // Single horizontal reduction over all vl lanes, widened to i64
-        // so the total d*65025 cannot overflow i32 for large d. Per-lane
-        // i32 accumulation is safe while (d/vl)*65025 < 2^31 (~1e6 dims).
-        vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
-        vint64m1_t red = __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl);
-        return __riscv_vmv_x_s_i64m1_i64(red);
+        return total;
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2424,6 +2370,10 @@ struct DCTemplate<
 
     /// Integer-domain IP: sum_i q_i * c_i into a u32m8 accumulator;
     /// single reduction + single uint->float at the end.
+    ///
+    /// Per-lane u32 accumulation wraps once (d/vl)*65025 exceeds 2^32
+    /// (d > ~2.1e6 at VLEN=128), so the dimension axis is strip-mined
+    /// into flush blocks like the L2 kernel.
     uint64_t accumulate_int_ip(const uint8_t* code) const {
         const uint16_t* pq = q16.data();
         const uint8_t* pc = code;
@@ -2432,38 +2382,49 @@ struct DCTemplate<
         // d==0: guard so vsetvl(0) doesn't return 0 and the
         // `while (remaining >= vl)` loop doesn't stall.
         const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
-        vuint32m8_t acc = __riscv_vmv_v_x_u32m8(0, vl);
+        // 16384 chunks * 65025 max increment per chunk per lane
+        // = 1.065e9 < 2^32 (4x margin), any VLEN.
+        constexpr size_t kFlushChunks = 16384;
+        const size_t block = vl * kFlushChunks;
 
-        size_t remaining = d;
-        // Hot loop: 2 loads, one zero-extend, one fused widening
-        // multiply-accumulate. No vsetvl, no reduction inside;
-        // bump-pointer form, no indexed addressing.
-        while (remaining >= vl) {
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vl);
-            vuint16m4_t vq = __riscv_vle16_v_u16m4(pq, vl);
-            vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vl);
-            acc = __riscv_vwmaccu_vv_u32m8(acc, vq, c16, vl);
-            pc += vl;
-            pq += vl;
-            remaining -= vl;
-        }
-
-        // Tail: fewer than vl dims left — one shorter-vl pass into
-        // the same accumulator (only the first vt lanes touched).
-        if (remaining > 0) {
-            const size_t vt = __riscv_vsetvl_e8m2(remaining);
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vt);
-            vuint16m4_t vq = __riscv_vle16_v_u16m4(pq, vt);
-            vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vt);
-            acc = __riscv_vwmaccu_vv_u32m8_tu(acc, vq, c16, vt);
-        }
-
-        // Single horizontal reduction over all vl lanes, widened to u64
-        // so the total d*65025 cannot overflow u32 for large d. Per-lane
-        // u32 accumulation is safe while (d/vl)*65025 < 2^32 (~1.3e6 dims).
         vuint64m1_t z64 = __riscv_vmv_v_x_u64m1(0, 1);
-        vuint64m1_t red = __riscv_vwredsumu_vs_u32m8_u64m1(acc, z64, vl);
-        return __riscv_vmv_x_s_u64m1_u64(red);
+        uint64_t total = 0;
+
+        size_t i = 0;
+        // Full flush blocks: reduce+reset every `block` dims.
+        for (; i + block <= d; i += block) {
+            vuint32m8_t acc = __riscv_vmv_v_x_u32m8(0, vl);
+            for (size_t j = 0; j < block; j += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i + j, vl);
+                vuint16m4_t vq = __riscv_vle16_v_u16m4(pq + i + j, vl);
+                vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vl);
+                acc = __riscv_vwmaccu_vv_u32m8(acc, vq, c16, vl);
+            }
+            total += __riscv_vmv_x_s_u64m1_u64(
+                    __riscv_vwredsumu_vs_u32m8_u64m1(acc, z64, vl));
+        }
+
+        // Tail block (< block dims left): original main + short-tail
+        // shape, one final reduction into the u64 total.
+        if (i < d) {
+            vuint32m8_t acc = __riscv_vmv_v_x_u32m8(0, vl);
+            for (; i + vl <= d; i += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i, vl);
+                vuint16m4_t vq = __riscv_vle16_v_u16m4(pq + i, vl);
+                vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vl);
+                acc = __riscv_vwmaccu_vv_u32m8(acc, vq, c16, vl);
+            }
+            if (i < d) {
+                const size_t vt = __riscv_vsetvl_e8m2(d - i);
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(code + i, vt);
+                vuint16m4_t vq = __riscv_vle16_v_u16m4(pq + i, vt);
+                vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vt);
+                acc = __riscv_vwmaccu_vv_u32m8_tu(acc, vq, c16, vt);
+            }
+            total += __riscv_vmv_x_s_u64m1_u64(
+                    __riscv_vwredsumu_vs_u32m8_u64m1(acc, z64, vl));
+        }
+        return total;
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2548,6 +2509,10 @@ struct DCTemplate<
 
     /// Integer-domain L2: sum_i (q8_i - c_i)^2 into an i32m8 vector
     /// accumulator; single reduction + single int->float at the end.
+    ///
+    /// Per-lane i32 accumulation wraps once (d/vl)*65025 exceeds 2^31,
+    /// so the dimension axis is strip-mined into flush blocks (same
+    /// structure as the unsigned direct-L2 kernel).
     int64_t accumulate_int_l2(const uint8_t* code) const {
         const uint8_t* pq = q8.data();
         const uint8_t* pc = code;
@@ -2556,40 +2521,52 @@ struct DCTemplate<
         // d==0: guard so vsetvl(0) doesn't return 0 and the
         // `while (remaining >= vl)` loop doesn't stall.
         const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
-        vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+        // 16384 chunks * 65025 max increment per chunk per lane
+        // = 1.065e9 < 2^31 (2x margin), any VLEN.
+        constexpr size_t kFlushChunks = 16384;
+        const size_t block = vl * kFlushChunks;
 
-        size_t remaining = d;
-        // Hot loop: 2 loads, one widening subtract, one widening
-        // square-accumulate. No vsetvl, no reduction inside;
-        // bump-pointer form, no indexed addressing.
-        while (remaining >= vl) {
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vl);
-            vuint8m2_t vq = __riscv_vle8_v_u8m2(pq, vl);
-            vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(vq, vc, vl));
-            acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vl);
-            pc += vl;
-            pq += vl;
-            remaining -= vl;
-        }
-
-        // Tail: fewer than vl dims left — one shorter-vl pass into
-        // the same accumulator (only the first vt lanes touched).
-        if (remaining > 0) {
-            const size_t vt = __riscv_vsetvl_e8m2(remaining);
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vt);
-            vuint8m2_t vq = __riscv_vle8_v_u8m2(pq, vt);
-            vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
-                    __riscv_vwsubu_vv_u16m4(vq, vc, vt));
-            acc = __riscv_vwmacc_vv_i32m8_tu(acc, df, df, vt);
-        }
-
-        // Single horizontal reduction over all vl lanes, widened to i64
-        // so the total d*65025 cannot overflow i32 for large d. Per-lane
-        // i32 accumulation is safe while (d/vl)*65025 < 2^31 (~1e6 dims).
         vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
-        vint64m1_t red = __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl);
-        return __riscv_vmv_x_s_i64m1_i64(red);
+        int64_t total = 0;
+
+        size_t i = 0;
+        // Full flush blocks: reduce+reset every `block` dims.
+        for (; i + block <= d; i += block) {
+            vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+            for (size_t j = 0; j < block; j += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(pc + i + j, vl);
+                vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i + j, vl);
+                vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
+                        __riscv_vwsubu_vv_u16m4(vq, vc, vl));
+                acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vl);
+            }
+            total += __riscv_vmv_x_s_i64m1_i64(
+                    __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl));
+        }
+
+        // Tail block (< block dims left): original main + short-tail
+        // shape, one final reduction into the i64 total.
+        if (i < d) {
+            vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+            for (; i + vl <= d; i += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(pc + i, vl);
+                vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vl);
+                vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
+                        __riscv_vwsubu_vv_u16m4(vq, vc, vl));
+                acc = __riscv_vwmacc_vv_i32m8(acc, df, df, vl);
+            }
+            if (i < d) {
+                const size_t vt = __riscv_vsetvl_e8m2(d - i);
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(pc + i, vt);
+                vuint8m2_t vq = __riscv_vle8_v_u8m2(pq + i, vt);
+                vint16m4_t df = __riscv_vreinterpret_v_u16m4_i16m4(
+                        __riscv_vwsubu_vv_u16m4(vq, vc, vt));
+                acc = __riscv_vwmacc_vv_i32m8_tu(acc, df, df, vt);
+            }
+            total += __riscv_vmv_x_s_i64m1_i64(
+                    __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl));
+        }
+        return total;
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2650,7 +2627,9 @@ struct DCTemplate<
     // Query stored pre-widened as i16 so the hot loop loads it at
     // SEW=16 and uses a single fused vwmaccsu.
     std::vector<int16_t> q16; // query truncated to [-128,127], i16
-    int32_t qbias = 0;        // 128 * sum_i q16[i] (query-only term)
+    // int64_t: 128 * sum(q) reaches 2^31 at d=132105 for an all-127
+    // query — int32_t would overflow (UB) there.
+    int64_t qbias = 0; // 128 * sum_i q16[i] (query-only term)
 
     DCTemplate(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in), q16(d_in, 0) {}
@@ -2664,7 +2643,7 @@ struct DCTemplate<
         // tmp_i - 128) plus clamping so out-of-contract values
         // cannot wrap. The query-only bias 128*sum(qs) is
         // precomputed here so the per-code kernel never sees it.
-        int32_t s = 0;
+        int64_t s = 0;
         for (size_t i = 0; i < d; i++) {
             int v = static_cast<int>(x[i]);
             if (v < -128) {
@@ -2682,8 +2661,12 @@ struct DCTemplate<
     /// Integer-domain signed IP:
     ///     sum_i qs_i * (c_i - 128) = sum_i qs_i*c_i - 128*sum_i qs_i
     /// The mixed-sign dot product runs in an i32m8 accumulator
-    /// (fused vwmaccsu); the query-only bias is injected as the
-    /// vredsum seed.
+    /// (fused vwmaccsu); the query-only bias is subtracted from the
+    /// i64 total at the end.
+    ///
+    /// Per-lane i32 accumulation wraps once (d/vl)*32640 exceeds 2^31
+    /// (d > ~2.1e6 at VLEN=128), so the dimension axis is strip-mined
+    /// into flush blocks like the other direct kernels.
     int64_t accumulate_int_ip(const uint8_t* code) const {
         const int16_t* pq = q16.data();
         const uint8_t* pc = code;
@@ -2692,39 +2675,52 @@ struct DCTemplate<
         // d==0: guard so vsetvl(0) doesn't return 0 and the
         // `while (remaining >= vl)` loop doesn't stall.
         const size_t vl = __riscv_vsetvl_e8m2(d > 0 ? d : 1);
-        vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+        // 16384 chunks * 32640 max |increment| per chunk per lane
+        // = 5.35e8 < 2^31 (4x margin), any VLEN.
+        constexpr size_t kFlushChunks = 16384;
+        const size_t block = vl * kFlushChunks;
 
-        size_t remaining = d;
-        // Hot loop: 2 loads, one zero-extend, one fused widening
-        // multiply-accumulate. No vsetvl, no reduction inside;
-        // bump-pointer form, no indexed addressing.
-        while (remaining >= vl) {
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vl);
-            vint16m4_t vq = __riscv_vle16_v_i16m4(pq, vl);
-            vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vl);
-            acc = __riscv_vwmaccsu_vv_i32m8(acc, vq, c16, vl);
-            pc += vl;
-            pq += vl;
-            remaining -= vl;
+        vint64m1_t z64 = __riscv_vmv_v_x_i64m1(0, 1);
+        int64_t total = 0;
+
+        size_t i = 0;
+        // Full flush blocks: reduce+reset every `block` dims.
+        for (; i + block <= d; i += block) {
+            vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+            for (size_t j = 0; j < block; j += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(pc + i + j, vl);
+                vint16m4_t vq = __riscv_vle16_v_i16m4(pq + i + j, vl);
+                vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vl);
+                acc = __riscv_vwmaccsu_vv_i32m8(acc, vq, c16, vl);
+            }
+            total += __riscv_vmv_x_s_i64m1_i64(
+                    __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl));
         }
 
-        // Tail: fewer than vl dims left — one shorter-vl pass into
-        // the same accumulator (only the first vt lanes touched).
-        if (remaining > 0) {
-            const size_t vt = __riscv_vsetvl_e8m2(remaining);
-            vuint8m2_t vc = __riscv_vle8_v_u8m2(pc, vt);
-            vint16m4_t vq = __riscv_vle16_v_i16m4(pq, vt);
-            vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vt);
-            acc = __riscv_vwmaccsu_vv_i32m8_tu(acc, vq, c16, vt);
+        // Tail block (< block dims left): original main + short-tail
+        // shape, one final reduction into the i64 total.
+        if (i < d) {
+            vint32m8_t acc = __riscv_vmv_v_x_i32m8(0, vl);
+            for (; i + vl <= d; i += vl) {
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(pc + i, vl);
+                vint16m4_t vq = __riscv_vle16_v_i16m4(pq + i, vl);
+                vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vl);
+                acc = __riscv_vwmaccsu_vv_i32m8(acc, vq, c16, vl);
+            }
+            if (i < d) {
+                const size_t vt = __riscv_vsetvl_e8m2(d - i);
+                vuint8m2_t vc = __riscv_vle8_v_u8m2(pc + i, vt);
+                vint16m4_t vq = __riscv_vle16_v_i16m4(pq + i, vt);
+                vuint16m4_t c16 = __riscv_vzext_vf2_u16m4(vc, vt);
+                acc = __riscv_vwmaccsu_vv_i32m8_tu(acc, vq, c16, vt);
+            }
+            total += __riscv_vmv_x_s_i64m1_i64(
+                    __riscv_vwredsum_vs_i32m8_i64m1(acc, z64, vl));
         }
-
-        // Single horizontal reduction over all vl lanes, seeded with
-        // -qbias (the bias subtraction rides the reduction), widened to
-        // i64 so the total |sum| <= d*32640 cannot overflow i32 for large
-        // d. Per-lane i32 accumulation is safe while (d/vl)*32640 < 2^31.
-        vint64m1_t seed = __riscv_vmv_v_x_i64m1(-int64_t(qbias), 1);
-        vint64m1_t red = __riscv_vwredsum_vs_i32m8_i64m1(acc, seed, vl);
-        return __riscv_vmv_x_s_i64m1_i64(red);
+        // The query-only bias rides out of the integer domain here:
+        // qbias is int64_t, so an all-127 query at d=132105 (where
+        // 128*sum(q) crosses 2^31) is handled exactly.
+        return total - qbias;
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -3078,13 +3074,10 @@ struct DCTemplate<
             // Main loop: while a full next chunk exists, issue its load
             // first, then process the current one.
             for (; i + vl <= d; i += vl) {
-                vfloat16m1_t vc_next =
-                        __riscv_vle16_v_f16m1(code + i, vl);
+                vfloat16m1_t vc_next = __riscv_vle16_v_f16m1(code + i, vl);
 
-                vfloat32m2_t fc =
-                        __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
-                vfloat32m2_t fq =
-                        __riscv_vle32_v_f32m2(qf + i - vl, vl);
+                vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
+                vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i - vl, vl);
                 acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vl);
 
                 vc = vc_next; // rotate
@@ -3092,10 +3085,8 @@ struct DCTemplate<
 
             // Epilogue: process the last chunk (already loaded).
             {
-                vfloat32m2_t fc =
-                        __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
-                vfloat32m2_t fq =
-                        __riscv_vle32_v_f32m2(qf + i - vl, vl);
+                vfloat32m2_t fc = __riscv_vfwcvt_f_f_v_f32m2(vc, vl);
+                vfloat32m2_t fq = __riscv_vle32_v_f32m2(qf + i - vl, vl);
                 acc = __riscv_vfmacc_vv_f32m2(acc, fq, fc, vl);
             }
         }

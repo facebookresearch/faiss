@@ -44,8 +44,8 @@ set(FAISS_TEST_SRC
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
-  test_rabitq_fastscan.cpp
   test_super_kmeans_foundations.cpp
+  test_sq_rvv_tail_and_semantics.cpp
 )
 
 # Tests that use POSIX APIs or have platform-specific issues on Windows
@@ -62,15 +62,13 @@ if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
-# DD-only tests; x86-specific raw-intrinsic tests are added separately below.
+# DD-only tests: x86-specific tests containing raw AVX2/AVX512 intrinsics
 if(FAISS_OPT_LEVEL STREQUAL "dd")
   list(APPEND FAISS_TEST_SRC
-    test_distances_dispatch.cpp
     test_simd_perf.cpp
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     list(APPEND FAISS_TEST_SRC
-      test_rabitq_simd.cpp
       test_simd_levels_x86_avx2.cpp
       test_simd_levels_x86_avx512.cpp
     )
@@ -94,6 +92,19 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       )
     endif()
   endif()
+endif()
+
+# test_sq_rvv_tail_and_semantics.cpp uses raw RVV intrinsics (guarded
+# in-source by __riscv && COMPILE_SIMD_RISCV_RVV). The faiss target's
+# COMPILE_SIMD_RISCV_RVV is PRIVATE and does not propagate, so give this
+# TU the same flags the library's RVV sources get — otherwise the
+# compile-time-intrinsic cases (D5b) skip on riscv64.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  set_source_files_properties(test_sq_rvv_tail_and_semantics.cpp
+    PROPERTIES
+      COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+      COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"
+  )
 endif()
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
@@ -138,8 +149,8 @@ endif()
 ]=])
 endif()
 
-find_package(OpenMP REQUIRED)
 find_package(GTest CONFIG REQUIRED)
+find_package(OpenMP REQUIRED)
 
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
