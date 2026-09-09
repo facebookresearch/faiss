@@ -546,6 +546,25 @@ class TestAdd(unittest.TestCase):
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
 
+    def test_reset(self):
+        # regression for #5591: reset() must clear ntotal2 (the bbs-padded
+        # scan count), not just ntotal. Otherwise a search after reset scans
+        # ntotal2/bbs blocks over the freed (empty) code buffer -> SIGSEGV.
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+
+        index = faiss.IndexPQFastScan(d, d // 2, 4)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal2, 0)
+
+        # searching the empty index must be safe and return the -1 sentinel
+        D, I = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, -1)
+
 
 class TestAQFastScan(unittest.TestCase):
 
