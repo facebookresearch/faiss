@@ -13434,16 +13434,9 @@
   <compound refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine" kind="struct"><name>faiss::ScalarQuantizer::TurboQuantRefine</name>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a6334a0ab17378ae014b03206342a6066" kind="variable"><name>qjl_type</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a27232d8c0b935fab8148b8e2d080ce86" kind="variable"><name>seed</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a71c32c2013f95a58eac9fd77eca42413" kind="variable"><name>padded_d</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a2582186108115b5fc38e2e6e1e5e57db" kind="variable"><name>fwht_signs</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ae3591c6d2defd86c787f5a80daa77e80" kind="variable"><name>rr_matrix</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ae508f8d2441dc0f9b64a21c896f69692" kind="variable"><name>nb_bits_lo</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1af99b78373348afc4d36e5d0ff4a56178" kind="variable"><name>n_hi_dims</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1aab2faa8b2d97307717aac5497c30498a" kind="function"><name>is_turboq_full</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a33edf169434b195b2889c4f811c8559e" kind="function"><name>pack_seed</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ace8779a2ca48efbc0c332a679cbfd684" kind="function"><name>unpack_seed</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1ab6f9505e350f631735723e292314ab5e" kind="function"><name>init_projection</name></member>
-    <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1a7531e67601b08d65f15ccb8abb33116c" kind="function"><name>use_fwht</name></member>
   </compound>
   <compound refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" kind="struct"><name>faiss::detail::simdlib::unary_func_impl</name>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1a0845a998aad6e2984f59e280e7300597" kind="typedef"><name>Telem</name></member>

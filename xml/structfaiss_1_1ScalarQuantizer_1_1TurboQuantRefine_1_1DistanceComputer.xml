@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="194" column="26"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="185" column="26"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1aa051991ccb1bd9d6e59e988cf7c1942e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="195" column="26"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="186" column="26"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a8d160bd6912a62d7d1526f4f7480977e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="198" column="26"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="189" column="26"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
@@ -517,7 +517,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ScalarQuantizer.h" line="193" column="9" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="193" bodyend="199"/>
+    <location file="faiss/impl/ScalarQuantizer.h" line="184" column="9" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="184" bodyend="190"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1TurboQuantRefine_1_1DistanceComputer_1a8d160bd6912a62d7d1526f4f7480977e" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>clear_prescreen_threshold</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::TurboQuantRefine::DistanceComputer</scope><name>code_size</name></member>
