@@ -241,7 +241,7 @@ auto with_VectorDistance(
         if constexpr (!has_simd) {
             return call.template operator()<SIMDLevel::NONE>();
         } else {
-            return with_simd_level(call);
+            return with_simd_level_a1(call);
         }
     };
     return with_metric_type(metric, dispatch_metric);

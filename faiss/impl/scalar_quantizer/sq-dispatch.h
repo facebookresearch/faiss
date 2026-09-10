@@ -531,7 +531,8 @@ SQDistanceComputer* select_distance_computer_body(
                     return new DistanceComputerByte<Sim, SL2>(
                             static_cast<int>(d), trained);
                 }
-            } else if constexpr (SL2 == SIMDLevel::AVX2) {
+            } else if constexpr (
+                    SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
                 if (d % 16 == 0) {
                     return new DistanceComputerByte<Sim, SL2>(
                             static_cast<int>(d), trained);
@@ -551,7 +552,8 @@ SQDistanceComputer* select_distance_computer_body(
                     return new DistanceComputerByteSigned<Sim, SL2>(
                             static_cast<int>(d), trained);
                 }
-            } else if constexpr (SL2 == SIMDLevel::AVX2) {
+            } else if constexpr (
+                    SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
                 if (d % 16 == 0) {
                     return new DistanceComputerByteSigned<Sim, SL2>(
                             static_cast<int>(d), trained);
@@ -744,7 +746,8 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         return scan.template
                         operator()<DistanceComputerByte<Similarity, SL2>>();
                     }
-                } else if constexpr (SL2 == SIMDLevel::AVX2) {
+                } else if constexpr (
+                        SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
                     if (d % 16 == 0) {
                         return scan.template
                         operator()<DistanceComputerByte<Similarity, SL2>>();
@@ -765,7 +768,8 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         return scan.template operator()<
                                 DistanceComputerByteSigned<Similarity, SL2>>();
                     }
-                } else if constexpr (SL2 == SIMDLevel::AVX2) {
+                } else if constexpr (
+                        SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
                     if (d % 16 == 0) {
                         return scan.template operator()<
                                 DistanceComputerByteSigned<Similarity, SL2>>();
