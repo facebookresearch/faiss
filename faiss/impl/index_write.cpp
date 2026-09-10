@@ -866,6 +866,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_index(idxmap->index, f);
         WRITEVECTOR(idxmap->id_map);
     } else if (const IndexHNSW* idxhnsw = dynamic_cast<const IndexHNSW*>(idx)) {
+        const auto* hnsw_rabitq = dynamic_cast<const IndexHNSWRaBitQ*>(idxhnsw);
         uint32_t h = dynamic_cast<const IndexHNSWFlatPanorama*>(idx)
                 ? fourcc("IHfP")
                 : dynamic_cast<const IndexHNSWFlat*>(idx)   ? fourcc("IHNf")
@@ -873,15 +874,16 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
                 : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
-                : dynamic_cast<const IndexHNSWRaBitQ*>(idx) ? fourcc("IHNr")
-                : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
-                                                            : 0;
+                : hnsw_rabitq ? hnsw_rabitq->fp32_graph_built ? fourcc("IHNg")
+                                                              : fourcc("IHNr")
+                : typeid(*idx) == typeid(IndexHNSW) ? fourcc("IH00")
+                                                    : 0;
         FAISS_THROW_IF_NOT_FMT(
                 h != 0,
                 "don't know how to serialize this IndexHNSW subtype: %s",
                 typeid(*idx).name());
         const IndexRaBitQ* storage_rabitq = nullptr;
-        if (h == fourcc("IHNr")) {
+        if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             storage_rabitq = dynamic_cast<const IndexRaBitQ*>(idxhnsw->storage);
             FAISS_THROW_IF_NOT_MSG(
                     storage_rabitq ||
@@ -911,7 +913,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         } else {
             write_index(idxhnsw->storage, f);
         }
-        if (h == fourcc("IHNr")) {
+        if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             // The staged flag is graph-traversal state, so it has to live here:
             // with IO_FLAG_SKIP_STORAGE there is no storage to derive it from.
             // Storage-owned settings are not duplicated in this payload;

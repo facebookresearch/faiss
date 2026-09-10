@@ -110,6 +110,96 @@ class TestHNSWRaBitQ(unittest.TestCase):
         loaded.add(xb[:1])
         self.assertEqual(loaded.ntotal, len(xb) + 1)
 
+    def test_fp32_graph_batch_build_lifecycle(self):
+        xt, xb, xq = self.make_data()
+        native = faiss.IndexHNSWRaBitQ(xt.shape[1], 8, 3, faiss.METRIC_L2)
+        fp32_graph = faiss.IndexHNSWRaBitQ(
+            xt.shape[1], 8, 3, faiss.METRIC_L2
+        )
+        native.train(xt)
+        fp32_graph.train(xt)
+
+        native.add(xb)
+        fp32_graph.add_with_fp32_graph(xb)
+        self.assertTrue(fp32_graph.fp32_graph_built)
+
+        native_storage = faiss.downcast_index(native.storage)
+        fp32_storage = faiss.downcast_index(fp32_graph.storage)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(fp32_storage.codes),
+            faiss.vector_to_array(native_storage.codes),
+        )
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(fp32_graph.hnsw.levels),
+            faiss.vector_to_array(native.hnsw.levels),
+        )
+        self.assertEqual(fp32_graph.hnsw.entry_point, native.hnsw.entry_point)
+        self.assertEqual(fp32_graph.hnsw.max_level, native.hnsw.max_level)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(fp32_graph.hnsw.offsets),
+            faiss.vector_to_array(native.hnsw.offsets),
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "cannot append"):
+            fp32_graph.add(xb[:1])
+        with self.assertRaisesRegex(RuntimeError, "requires an empty"):
+            fp32_graph.add_with_fp32_graph(xb[:1])
+
+        cloned = faiss.clone_index(fp32_graph)
+        self.assertTrue(cloned.fp32_graph_built)
+        with self.assertRaisesRegex(RuntimeError, "cannot append"):
+            cloned.add(xb[:1])
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(fp32_graph))
+        self.assertIsInstance(loaded, faiss.IndexHNSWRaBitQ)
+        self.assertTrue(loaded.fp32_graph_built)
+        loaded_storage = faiss.downcast_index(loaded.storage)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(loaded_storage.codes),
+            faiss.vector_to_array(fp32_storage.codes),
+        )
+        with self.assertRaisesRegex(RuntimeError, "cannot append"):
+            loaded.add(xb[:1])
+
+        metadata = faiss.deserialize_index(
+            faiss.serialize_index(fp32_graph, faiss.IO_FLAG_SKIP_STORAGE)
+        )
+        self.assertTrue(metadata.fp32_graph_built)
+        self.assertIsNone(metadata.storage)
+        faiss.serialize_index(metadata, faiss.IO_FLAG_SKIP_STORAGE)
+
+        loaded.reset()
+        self.assertFalse(loaded.fp32_graph_built)
+        loaded.add(xb)
+        self.assertEqual(loaded.ntotal, len(xb))
+        D, I = loaded.search(xq, 10)
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(np.isfinite(D)))
+
+    def test_fp32_graph_matches_deterministic_flat_topology(self):
+        xt, xb, _ = self.make_data(nb=160)
+        fp32_graph = faiss.IndexHNSWRaBitQ(
+            xt.shape[1], 8, 3, faiss.METRIC_L2
+        )
+        flat_graph = faiss.IndexHNSWFlat(xt.shape[1], 8, faiss.METRIC_L2)
+        fp32_graph.train(xt)
+
+        old_deterministic = faiss.cvar.hnsw_deterministic_build
+        try:
+            faiss.cvar.hnsw_deterministic_build = True
+            fp32_graph.add_with_fp32_graph(xb)
+            flat_graph.add(xb)
+        finally:
+            faiss.cvar.hnsw_deterministic_build = old_deterministic
+
+        self.assertEqual(fp32_graph.hnsw.entry_point, flat_graph.hnsw.entry_point)
+        self.assertEqual(fp32_graph.hnsw.max_level, flat_graph.hnsw.max_level)
+        for field in ("levels", "offsets", "neighbors"):
+            np.testing.assert_array_equal(
+                faiss.vector_to_array(getattr(fp32_graph.hnsw, field)),
+                faiss.vector_to_array(getattr(flat_graph.hnsw, field)),
+            )
+
     def test_io_and_reset(self):
         index, xb, xq = self.make_index(nb_bits=4)
         cloned = faiss.clone_index(index)
