@@ -39,8 +39,23 @@ static std::vector<uint8_t> random_bytes(size_t n, uint32_t seed) {
 }
 
 // 32-d chunks and chunk boundaries.
-static const std::vector<size_t> kDims =
-        {1, 8, 16, 31, 32, 33, 255, 256, 257, 512, 1024, 2048};
+static const std::vector<size_t> kDims = {
+        1,
+        8,
+        16,
+        31,
+        32,
+        33,
+        100,
+        128,
+        255,
+        256,
+        257,
+        384,
+        512,
+        768,
+        1024,
+        2048};
 
 template <SIMDLevel SL>
 static void check_quantization_matches_scalar() {

@@ -28,6 +28,14 @@ namespace scalar_quantizer {
 // Define SL as alias for THE_LEVEL_TO_DISPATCH for use in this file
 constexpr SIMDLevel SL = THE_LEVEL_TO_DISPATCH;
 
+// The SPR scalar-quantizer implementation uses VPOPCNTDQ for its RaBitQ
+// popcount helpers, but those helpers belong to the narrower VPOPCNT
+// capability. Keep the SQ implementation at AVX512_SPR while explicitly
+// reusing the independently dispatched VPOPCNT kernels.
+template <SIMDLevel SL0>
+inline constexpr SIMDLevel rabitq_popcount_level =
+        SL0 == SIMDLevel::AVX512_SPR ? SIMDLevel::AVX512_VPOPCNT : SL0;
+
 /*******************************************************************
  * TurboQuant SIMD kernel: masked_sum
  * Compute sum of arr[j] where bit j of the bitmask is set.
@@ -259,9 +267,11 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
             if (qb > 0) {
                 // Integer popcount path for 1-bit MSE
                 size_t byte_size = (d + 7) / 8;
-                uint64_t and_result = rabitq::bitwise_and_dot_product<SL2>(
+                uint64_t and_result = rabitq::bitwise_and_dot_product<
+                        rabitq_popcount_level<SL2>>(
                         rearranged_q.data(), code, byte_size, qb);
-                uint64_t pop = rabitq::popcount<SL2>(code, byte_size);
+                uint64_t pop = rabitq::popcount<rabitq_popcount_level<SL2>>(
+                        code, byte_size);
                 mse_dot = mse_base +
                         mse_int_scale * static_cast<float>(and_result) +
                         mse_popcnt_scale * static_cast<float>(pop);
@@ -316,9 +326,11 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
         float qjl_dot;
         if (qb > 0 && int_qjl) {
             size_t byte_size = (d + 7) / 8;
-            uint64_t and_result = rabitq::bitwise_and_dot_product<SL2>(
-                    rearranged_qproj.data(), qjl_code, byte_size, qb);
-            uint64_t pop = rabitq::popcount<SL2>(qjl_code, byte_size);
+            uint64_t and_result =
+                    rabitq::bitwise_and_dot_product<rabitq_popcount_level<SL2>>(
+                            rearranged_qproj.data(), qjl_code, byte_size, qb);
+            uint64_t pop = rabitq::popcount<rabitq_popcount_level<SL2>>(
+                    qjl_code, byte_size);
             float pos_sum = qjl_popcnt_scale * static_cast<float>(pop) +
                     qjl_int_scale * static_cast<float>(and_result);
             qjl_dot = qjl_coeff * gamma * (2.0f * pos_sum - total_qproj_sum);
@@ -342,10 +354,17 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
     }
 };
 
+// True for every level that runs the 512-bit kernels. AVX512_VPOPCNT is
+// unreachable here until an SQ translation unit is compiled at that level;
+// naming it keeps the 512-bit alignment rule correct when one is.
+template <SIMDLevel SL2>
+constexpr bool is_avx512_family = SL2 == SIMDLevel::AVX512 ||
+        SL2 == SIMDLevel::AVX512_VPOPCNT || SL2 == SIMDLevel::AVX512_SPR;
+
 // Returns true if dimension d is compatible with the given SIMD level
 template <SIMDLevel SL2>
 constexpr bool is_dimension_compatible(size_t d) {
-    if constexpr (SL2 == SIMDLevel::AVX512 || SL2 == SIMDLevel::AVX512_SPR) {
+    if constexpr (is_avx512_family<SL2>) {
         return d % 16 == 0;
     } else if constexpr (SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
         return d % 8 == 0;
@@ -525,8 +544,7 @@ SQDistanceComputer* select_distance_computer_body(
             return new DCTemplate<QuantizerBF16<SL2>, Sim, SL2>(d, trained);
 
         case ScalarQuantizer::QT_8bit_direct:
-            if constexpr (
-                    SL2 == SIMDLevel::AVX512 || SL2 == SIMDLevel::AVX512_SPR) {
+            if constexpr (is_avx512_family<SL2>) {
                 if (d % 32 == 0) {
                     return new DistanceComputerByte<Sim, SL2>(
                             static_cast<int>(d), trained);
@@ -547,7 +565,7 @@ SQDistanceComputer* select_distance_computer_body(
                     return new DistanceComputerByteSigned<Sim, SL2>(
                             static_cast<int>(d), trained);
                 }
-            } else if constexpr (SL2 == SIMDLevel::AVX512) {
+            } else if constexpr (is_avx512_family<SL2>) {
                 if (d % 32 == 0) {
                     return new DistanceComputerByteSigned<Sim, SL2>(
                             static_cast<int>(d), trained);
@@ -739,9 +757,7 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                 return scan.template
                 operator()<DCTemplate<QuantizerBF16<SL2>, Similarity, SL2>>();
             case ScalarQuantizer::QT_8bit_direct:
-                if constexpr (
-                        SL2 == SIMDLevel::AVX512 ||
-                        SL2 == SIMDLevel::AVX512_SPR) {
+                if constexpr (is_avx512_family<SL2>) {
                     if (d % 32 == 0) {
                         return scan.template
                         operator()<DistanceComputerByte<Similarity, SL2>>();
@@ -763,7 +779,7 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         return scan.template operator()<
                                 DistanceComputerByteSigned<Similarity, SL2>>();
                     }
-                } else if constexpr (SL2 == SIMDLevel::AVX512) {
+                } else if constexpr (is_avx512_family<SL2>) {
                     if (d % 32 == 0) {
                         return scan.template operator()<
                                 DistanceComputerByteSigned<Similarity, SL2>>();
