@@ -21,7 +21,7 @@ enum class SIMDLevel {
     // x86
     AVX2,
     AVX512,
-    AVX512_SPR, // Sapphire Rapids: AVX512 + BF16 + FP16 + VNNI + VPOPCNTDQ
+    AVX512_SPR, // Sapphire Rapids: AVX512_VPOPCNT + BF16 + FP16 + VNNI
     // arm & aarch64
     ARM_NEON,
     ARM_SVE, // Scalable Vector Extension (ARMv8.2+)
@@ -29,7 +29,8 @@ enum class SIMDLevel {
     RISCV_RVV, // RISC-V Vector Extension (rv64gcv)
 
     // Appended to preserve the numeric values of the existing public enum.
-    // AVX-512 core features plus AVX512_VPOPCNTDQ (Ice Lake, Zen 4, etc.).
+    // AVX-512 core features plus AVX512_VPOPCNTDQ and AVX512_BITALG
+    // (Ice Lake, Zen 4, etc.).
     AVX512_VPOPCNT,
 
     COUNT

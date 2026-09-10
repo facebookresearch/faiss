@@ -162,3 +162,69 @@ class TestBinaryIVFScanner(unittest.TestCase):
             self.make_scanner(rs, query), codes, ids, [2], 10, 0
         )
         self.assertEqual(got, [])
+
+    def test_every_distance_matches_at_this_level(self):
+        """Three shapes. (64, 64) has k == n, so every distance is compared
+        and all eight lanes are covered; a lane returning too large a distance
+        would never reach a smaller heap. (2003, 12) runs the batch loop and
+        then the tail. (5, 12) is below the batch size, so the batch loop must
+        not run at all."""
+        rs = np.random.RandomState(61)
+        query = self.random_codes(rs, 1)
+
+        for n, k in [(2003, 12), (5, 12), (64, 64)]:
+            codes, ids = self.random_codes(rs, n), self.sequential_ids(n)
+            got, _ = self.run_scan(
+                self.make_scanner(rs, query), codes, ids, [n], k
+            )
+            self.assertEqual(got, _expected(query, codes, k), f"n={n}")
+
+    def test_range_search_matches_the_reference(self):
+        """range_search reaches scan_codes_range. n is not a multiple of the
+        batch size, so the batch loop and the tail both run."""
+        rs = np.random.RandomState(63)
+        n, nq = 2003, 4
+
+        for cs in WIDTHS:
+            dim = cs * 8
+            codes = self.random_codes(rs, n, cs)
+            queries = self.random_codes(rs, nq, cs)
+            radius = int(dim * 0.42)
+
+            quantizer = faiss.IndexBinaryFlat(dim)
+            index = faiss.IndexBinaryIVF(quantizer, dim, 4)
+            index.train(codes)
+            index.add(codes)
+            index.nprobe = 4  # every list, so the scan is exhaustive
+
+            lims, dis, _ = index.range_search(queries, radius)
+            for q in range(nq):
+                got = sorted(dis[lims[q] : lims[q + 1]].tolist())
+                truth = _hamming(queries[q : q + 1], codes)
+                self.assertEqual(
+                    got,
+                    sorted(truth[truth < radius].tolist()),
+                    f"code_size={cs}, q={q}",
+                )
+
+    def test_store_pairs_offsets(self):
+        """store_pairs makes the batch path build ids with
+        lo_build(list_no, j + t) instead of reading them."""
+        rs = np.random.RandomState(62)
+        n, k = 100, 8
+        query = self.random_codes(rs, 1)
+        codes, ids = self.random_codes(rs, n), self.sequential_ids(n)
+
+        distances, labels = self.run_scan(
+            self.make_scanner(rs, query, store_pairs=True), codes, ids, [n], k
+        )
+        self.assertEqual(len(distances), k)
+
+        self.assertEqual([faiss.lo_listno(x) for x in labels], [0] * k)
+
+        # Each distance must be the distance to the code at the offset the
+        # same label decodes to.
+        truth = _hamming(query, codes)
+        offsets = [faiss.lo_offset(x) for x in labels]
+        self.assertEqual(distances, [int(truth[o]) for o in offsets])
+        self.assertEqual(distances, _expected(query, codes, k))

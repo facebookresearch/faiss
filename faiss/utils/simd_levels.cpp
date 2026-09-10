@@ -267,6 +267,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
         unsigned int ecx7 = regs[2];
         [[maybe_unused]] bool has_avx512_vnni = (ecx7 & (1 << 11)) != 0;
         [[maybe_unused]] bool has_avx512_vpopcntdq = (ecx7 & (1 << 14)) != 0;
+        // Bit 12 = AVX512_BITALG, needed for the byte-wise popcount kernels.
+        [[maybe_unused]] bool has_avx512_bitalg = (ecx7 & (1 << 12)) != 0;
 
         uint64_t xcr0 = xgetbv0();
 
@@ -292,7 +294,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                         (1 << static_cast<int>(SIMDLevel::AVX512));
 
 #if defined(COMPILE_SIMD_AVX512_VPOPCNT)
-                if (has_avx512_vpopcntdq) {
+                if (has_avx512_vpopcntdq && has_avx512_bitalg) {
                     detected_level = SIMDLevel::AVX512_VPOPCNT;
                     supported_simd_levels |=
                             (1 << static_cast<int>(SIMDLevel::AVX512_VPOPCNT));
@@ -302,7 +304,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #if defined(COMPILE_SIMD_AVX512_SPR)
                 // Check for Sapphire Rapids features.
                 // The SPR code path is compiled with AVX512_VNNI, BF16,
-                // FP16, and VPOPCNTDQ, so all four features are required.
+                // FP16 and VPOPCNTDQ, and falls back to the VPOPCNT kernels,
+                // which need BITALG. All five features are required.
                 // AMD Zen 4 has VPOPCNTDQ and BF16 but not FP16, and must
                 // remain on the AVX512_VPOPCNT level.
                 // CPUID EAX=7, ECX=1: EAX bit 5 = AVX512_BF16
@@ -312,7 +315,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                 cpuid_count(7, 1, regs);
                 const bool has_avx512_bf16 = (regs[0] & (1 << 5)) != 0;
                 if (has_avx512_vnni && has_avx512_vpopcntdq &&
-                    has_avx512_bf16 && has_avx512_fp16) {
+                    has_avx512_bitalg && has_avx512_bf16 && has_avx512_fp16) {
                     detected_level = SIMDLevel::AVX512_SPR;
                     supported_simd_levels |=
                             (1 << static_cast<int>(SIMDLevel::AVX512_SPR));

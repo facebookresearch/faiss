@@ -17,4 +17,8 @@
 #include <faiss/impl/binary_hamming/IndexBinaryIVF_impl.h>
 // clang-format on
 
+// Fails the build if the batch path stops being selected for this computer.
+static_assert(faiss::has_hamming_batch<
+              faiss::HammingComputer20_tpl<faiss::SIMDLevel::AVX512_VPOPCNT>>);
+
 #endif // COMPILE_SIMD_AVX512_VPOPCNT
