@@ -51,6 +51,47 @@ void IndexRaBitQ::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexRaBitQ::add(idx_t n, const float* x) {
+    IndexFlatCodes::add(n, x);
+    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        rebuild_expanded_codes();
+    }
+}
+
+void IndexRaBitQ::add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids) {
+    IndexFlatCodes::add_sa_codes(n, x, xids);
+    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        rebuild_expanded_codes();
+    }
+}
+
+void IndexRaBitQ::reset() {
+    IndexFlatCodes::reset();
+    expanded_codes.clear();
+}
+
+size_t IndexRaBitQ::remove_ids(const IDSelector& sel) {
+    const size_t removed = IndexFlatCodes::remove_ids(sel);
+    if (removed > 0 && full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        rebuild_expanded_codes();
+    }
+    return removed;
+}
+
+void IndexRaBitQ::merge_from(Index& other_index, idx_t add_id) {
+    IndexFlatCodes::merge_from(other_index, add_id);
+    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        rebuild_expanded_codes();
+    }
+}
+
+void IndexRaBitQ::permute_entries(const idx_t* perm) {
+    IndexFlatCodes::permute_entries(perm);
+    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        rebuild_expanded_codes();
+    }
+}
+
 void IndexRaBitQ::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);
     rabitq.compute_codes_core(x, bytes, n, center.data());
@@ -62,6 +103,16 @@ void IndexRaBitQ::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 }
 
 FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
+    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        FAISS_THROW_IF_NOT_MSG(
+                expanded_codes.size() ==
+                        static_cast<size_t>(ntotal) * expanded_code_size(),
+                "stale expanded RaBitQ cache; call set_full_code_mode again");
+        return rabitq.get_expanded_distance_computer(
+                expanded_codes.data(),
+                center.data(),
+                full_code_mode == RABITQ_FULL_CODE_INT8);
+    }
     FlatCodesDistanceComputer* dc =
             rabitq.get_distance_computer(qb, center.data(), centered);
     dc->code_size = rabitq.code_size;
@@ -69,9 +120,43 @@ FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
     return dc;
 }
 
+size_t IndexRaBitQ::expanded_code_size() const {
+    return static_cast<size_t>(d) + sizeof(rabitq_utils::ExtraBitsFactors);
+}
+
+void IndexRaBitQ::rebuild_expanded_codes() {
+    if (full_code_mode == RABITQ_FULL_CODE_PACKED) {
+        expanded_codes.clear();
+        return;
+    }
+    expanded_codes.resize(static_cast<size_t>(ntotal) * expanded_code_size());
+    rabitq.expand_codes(codes.data(), ntotal, expanded_codes.data());
+}
+
+void IndexRaBitQ::set_full_code_mode(uint8_t mode) {
+    FAISS_THROW_IF_NOT_MSG(
+            mode == RABITQ_FULL_CODE_PACKED ||
+                    mode == RABITQ_FULL_CODE_EXPANDED ||
+                    mode == RABITQ_FULL_CODE_INT8,
+            "invalid RaBitQ full-code mode");
+    if (mode != RABITQ_FULL_CODE_PACKED) {
+        FAISS_THROW_IF_NOT_MSG(
+                metric_type == METRIC_L2,
+                "expanded RaBitQ ADC supports only L2");
+        FAISS_THROW_IF_NOT_MSG(
+                rabitq.nb_bits >= 2 && rabitq.nb_bits <= 8,
+                "expanded RaBitQ ADC requires 2..8 total bits");
+    }
+    full_code_mode = static_cast<RaBitQFullCodeMode>(mode);
+    rebuild_expanded_codes();
+}
+
 FlatCodesDistanceComputer* IndexRaBitQ::get_quantized_distance_computer(
         const uint8_t qb_in,
         bool centered_in) const {
+    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
+        return get_FlatCodesDistanceComputer();
+    }
     FlatCodesDistanceComputer* dc =
             rabitq.get_distance_computer(qb_in, center.data(), centered_in);
     dc->code_size = rabitq.code_size;
@@ -87,6 +172,7 @@ struct Run_search_with_dc_res {
     uint8_t qb = 0;
     bool centered = false;
     uint8_t nb_bits = 1; // Number of bits per dimension
+    bool full_only = false;
 
     template <class BlockResultHandler>
     void f(BlockResultHandler& res, const IndexRaBitQ* index, const float* xq) {
@@ -106,7 +192,7 @@ struct Run_search_with_dc_res {
                 resi.begin(q);
                 dc_base->set_query(xq + d * q);
 
-                if (ex_bits == 0) {
+                if (ex_bits == 0 || full_only) {
                     // 1-bit: Standard single-stage search
                     for (size_t i = 0; i < ntotal; i++) {
                         if (res.is_in_selection(i)) {
@@ -192,6 +278,7 @@ void IndexRaBitQ::search(
     r.qb = used_qb;
     r.centered = used_centered;
     r.nb_bits = rabitq.nb_bits; // Pass multi-bit info to functor
+    r.full_only = full_code_mode != RABITQ_FULL_CODE_PACKED;
 
     // Use Faiss framework for all cases (single-stage and two-stage)
     dispatch_knn_ResultHandler(
@@ -212,6 +299,9 @@ void IndexRaBitQ::range_search(
     const IDSelector* sel = (params_in != nullptr) ? params_in->sel : nullptr;
     Run_search_with_dc_res r;
     r.qb = used_qb;
+    r.centered = centered;
+    r.nb_bits = rabitq.nb_bits;
+    r.full_only = full_code_mode != RABITQ_FULL_CODE_PACKED;
 
     dispatch_range_ResultHandler(result, radius, metric_type, sel, r, this, x);
 }

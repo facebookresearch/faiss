@@ -15,6 +15,7 @@
 #include <faiss/Index.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexPQ.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/Panorama.h>
@@ -234,6 +235,14 @@ struct IndexHNSWRaBitQ : IndexHNSW {
             int M,
             uint8_t nb_bits = 1,
             MetricType metric = METRIC_L2);
+
+    /** Select an existing RaBitQ full-code scorer. Expanded modes use the
+     * ordinary HNSW path; packed mode restores the legacy staged policy.
+     */
+    void set_full_code_mode(uint8_t mode);
+
+    void add(idx_t n, const float* x) override;
+    void permute_entries(const idx_t* perm) override;
 
     IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
 
