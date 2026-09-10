@@ -410,7 +410,8 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
             if (!normalizers) {
                 dis[q] = idis[q];
             } else {
-                float one_a = 1 / normalizers[2 * q];
+                float a = normalizers[2 * q];
+                float one_a = a != 0 ? 1 / a : 0;
                 float b = normalizers[2 * q + 1];
                 dis[q] = b + idis[q] * one_a;
             }
@@ -549,7 +550,8 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
 
             float one_a = 1.0, b = 0.0;
             if (normalizers) {
-                one_a = 1 / normalizers[2 * q];
+                float a = normalizers[2 * q];
+                one_a = a != 0 ? 1 / a : 0;
                 b = normalizers[2 * q + 1];
             }
             for (int j = 0; j < k; j++) {
@@ -679,7 +681,8 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
 
             float one_a = 1.0, b = 0.0;
             if (normalizers) {
-                one_a = 1 / normalizers[2 * q];
+                float a = normalizers[2 * q];
+                one_a = a != 0 ? 1 / a : 0;
                 b = normalizers[2 * q + 1];
             }
             for (size_t i = 0; i < res.i; i++) {
@@ -807,7 +810,8 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         rres.lims[0] = 0;
 
         for (int q = 0; q < nq; q++) {
-            float one_a = 1 / normalizers[2 * q];
+            float a = normalizers[2 * q];
+            float one_a = a != 0 ? 1 / a : 0;
             float b = normalizers[2 * q + 1];
             for (size_t i = rres.lims[q]; i < rres.lims[q + 1]; i++) {
                 rres.distances[i] = rres.distances[i] * one_a + b;
@@ -873,7 +877,8 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map, SL> {
         size_t* lims = n_per_query.data();
 
         for (int q = 0; q < nq; q++) {
-            float one_a = 1 / normalizers[2 * q];
+            float a = normalizers[2 * q];
+            float one_a = a != 0 ? 1 / a : 0;
             float b = normalizers[2 * q + 1];
             RangeQueryResult& qres = pres.new_result(q + q0);
             for (size_t i = lims[q]; i < lims[q + 1]; i++) {
@@ -962,7 +967,8 @@ struct SingleQueryResultCollectHandler
 
     void end() override {
         if (normalizers) {
-            float one_a = 1 / normalizers[0];
+            float a = normalizers[0];
+            float one_a = a != 0 ? 1 / a : 0;
             float b = normalizers[1];
             for (size_t i = 0; i < collect.size(); i++) {
                 collect[i].second = collect[i].second * one_a + b;
