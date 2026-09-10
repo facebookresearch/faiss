@@ -140,6 +140,8 @@ struct RaBitQuantizer : Quantizer {
             const uint8_t* expanded_codes,
             const float* centroid,
             bool integer_query) const;
+
+    bool expanded_integer_uses_native_dotprod() const;
 };
 
 // RaBitQDistanceComputer: Base class for RaBitQ distance computers

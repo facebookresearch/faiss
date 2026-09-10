@@ -7,15 +7,19 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstring>
 #include <limits>
+#include <memory>
 #include <random>
 #include <unordered_set>
 #include <vector>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
@@ -819,4 +823,92 @@ TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     index->search(nq, xq->data(), k, Dmt.data(), Imt.data());
     EXPECT_EQ(I1, Imt);
     EXPECT_EQ(D1, Dmt);
+}
+
+TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatch4) {
+    std::mt19937 rng(83123);
+    size_t comparisons = 0;
+    for (int d : {1, 7, 8, 15, 16, 17, 31, 32, 33, 127, 768, 769, 1024, 4096}) {
+        for (int bits : {2, 4, 7, 8}) {
+            std::vector<float> training(size_t(8) * d);
+            std::vector<float> database(size_t(4) * d);
+            for (float& value : training) {
+                value = float(int(rng() % 2001) - 1000) / 997.0f;
+            }
+            for (float& value : database) {
+                value = float(int(rng() % 2001) - 1000) / 991.0f;
+            }
+
+            faiss::IndexRaBitQ index(d, faiss::METRIC_L2, bits);
+            index.train(8, training.data());
+            index.add(4, database.data());
+            index.set_full_code_mode(faiss::RABITQ_FULL_CODE_INT8);
+            std::unique_ptr<faiss::FlatCodesDistanceComputer> dc(
+                    index.get_FlatCodesDistanceComputer());
+
+            std::vector<float> query(d);
+            std::vector<float> residual(d);
+            std::vector<int8_t> quantized(d);
+            constexpr faiss::idx_t ids[4] = {3, 0, 2, 1};
+            for (int trial = 0; trial < 4; trial++) {
+                for (int j = 0; j < d; j++) {
+                    query[j] = trial == 0 ? index.center[j]
+                            : trial == 1
+                            ? index.center[j] + (j % 2 ? -1.0f : 1.0f)
+                            : float(int(rng() % 2001) - 1000) / 983.0f;
+                }
+                dc->set_query(query.data());
+
+                float query_norm = 0.0f;
+                float sum = 0.0f;
+                float maximum = 0.0f;
+                for (int j = 0; j < d; j++) {
+                    residual[j] = query[j] - index.center[j];
+                    query_norm += residual[j] * residual[j];
+                    sum += residual[j];
+                    maximum = std::max(maximum, std::abs(residual[j]));
+                }
+                const float scale = maximum > 0.0f ? maximum / 127.0f : 1.0f;
+                for (int j = 0; j < d; j++) {
+                    quantized[j] = static_cast<int8_t>(std::clamp(
+                            std::nearbyint(residual[j] / scale),
+                            -127.0f,
+                            127.0f));
+                }
+
+                float batch[4];
+                dc->distances_batch_4(
+                        ids[0],
+                        ids[1],
+                        ids[2],
+                        ids[3],
+                        batch[0],
+                        batch[1],
+                        batch[2],
+                        batch[3]);
+                const size_t stride = index.expanded_code_size();
+                for (int lane = 0; lane < 4; lane++) {
+                    const uint8_t* row = index.expanded_codes.data() +
+                            size_t(ids[lane]) * stride;
+                    const int8_t* levels = reinterpret_cast<const int8_t*>(row);
+                    int64_t integer_dot = 0;
+                    for (int j = 0; j < d; j++) {
+                        integer_dot += int64_t(quantized[j]) * levels[j];
+                    }
+                    faiss::rabitq_utils::ExtraBitsFactors factors;
+                    memcpy(&factors, row + d, sizeof(factors));
+                    const float expected = std::max(
+                            0.0f,
+                            query_norm + factors.f_add_ex +
+                                    factors.f_rescale_ex *
+                                            (scale * float(integer_dot) +
+                                             0.5f * sum));
+                    EXPECT_FLOAT_EQ((*dc)(ids[lane]), expected);
+                    EXPECT_FLOAT_EQ(batch[lane], expected);
+                    comparisons++;
+                }
+            }
+        }
+    }
+    EXPECT_EQ(comparisons, 896);
 }

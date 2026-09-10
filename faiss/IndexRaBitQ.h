@@ -84,6 +84,7 @@ struct IndexRaBitQ : IndexFlatCodes {
 
     size_t expanded_code_size() const;
     void rebuild_expanded_codes();
+    bool expanded_integer_uses_native_dotprod() const;
 
     // Don't rely on sa_decode(), bcz it is good for IP, but not for L2.
     //   As a result, use get_FlatCodesDistanceComputer() for the search.

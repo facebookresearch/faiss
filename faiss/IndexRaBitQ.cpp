@@ -151,6 +151,10 @@ void IndexRaBitQ::set_full_code_mode(uint8_t mode) {
     rebuild_expanded_codes();
 }
 
+bool IndexRaBitQ::expanded_integer_uses_native_dotprod() const {
+    return rabitq.expanded_integer_uses_native_dotprod();
+}
+
 FlatCodesDistanceComputer* IndexRaBitQ::get_quantized_distance_computer(
         const uint8_t qb_in,
         bool centered_in) const {
