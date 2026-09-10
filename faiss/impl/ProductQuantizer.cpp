@@ -491,7 +491,7 @@ void ProductQuantizer::compute_distance_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || defined(COMPILE_SIMD_RISCV_RVV)
     if (dsub == 2 && nbits < 8) { // interesting for a narrow range of settings
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, false, dis_tables);
@@ -526,7 +526,7 @@ void ProductQuantizer::compute_inner_prod_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || defined(COMPILE_SIMD_RISCV_RVV)
     if (dsub == 2 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, true, dis_tables);
@@ -865,44 +865,32 @@ void ProductQuantizer::search_sdc(
     size_t k = res->k;
     int64_t nq_signed = nq;
 
-#pragma omp parallel
-    {
-        // One allocation per OMP thread instead of one per query.
-        std::vector<const float*> q_row(M);
-#pragma omp for
-        for (int64_t i = 0; i < nq_signed; i++) {
-            idx_t* heap_ids = res->ids + i * k;
-            float* heap_dis = res->val + i * k;
-            const uint8_t* qcode = qcodes + i * code_size;
+#pragma omp parallel for
+    for (int64_t i = 0; i < nq_signed; i++) {
+        /* Compute distances and keep smallest values */
+        idx_t* heap_ids = res->ids + i * k;
+        float* heap_dis = res->val + i * k;
+        const uint8_t* qcode = qcodes + i * code_size;
 
-            if (init_finalize_heap)
-                maxheap_heapify(k, heap_dis, heap_ids);
+        if (init_finalize_heap)
+            maxheap_heapify(k, heap_dis, heap_ids);
 
-            // Precompute per-subquantizer row pointers: q_row[m] points to
-            // sdc_table[m*ksub^2 + qcode[m]*ksub], eliminating M
-            // multiplications and M pointer advances per database vector in the
-            // j-loop.
-            const float* sdc = sdc_table.data();
+        const uint8_t* bcode = bcodes;
+        for (size_t j = 0; j < nb; j++) {
+            float dis = 0;
+            const float* tab = sdc_table.data();
             for (size_t m = 0; m < M; m++) {
-                q_row[m] = sdc + m * (size_t)(ksub * ksub) +
-                        (size_t)qcode[m] * ksub;
+                dis += tab[bcode[m] + qcode[m] * ksub];
+                tab += ksub * ksub;
             }
-
-            const uint8_t* bcode = bcodes;
-            for (size_t j = 0; j < nb; j++) {
-                float dis = 0;
-                for (size_t m = 0; m < M; m++) {
-                    dis += q_row[m][bcode[m]];
-                }
-                if (dis < heap_dis[0]) {
-                    maxheap_replace_top(k, heap_dis, heap_ids, dis, j);
-                }
-                bcode += code_size;
+            if (dis < heap_dis[0]) {
+                maxheap_replace_top(k, heap_dis, heap_ids, dis, j);
             }
-
-            if (init_finalize_heap)
-                maxheap_reorder(k, heap_dis, heap_ids);
+            bcode += code_size;
         }
+
+        if (init_finalize_heap)
+            maxheap_reorder(k, heap_dis, heap_ids);
     }
 }
 
