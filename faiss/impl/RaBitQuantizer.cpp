@@ -708,6 +708,89 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
     }
 };
 
+/** Full-code scorer over byte-expanded existing RaBitQ levels.
+ *
+ * This deliberately does not implement RaBitQDistanceComputer's staged
+ * interface: integer query ADC changes the full score and has no proven bound
+ * for the one-bit pruning stage. Callers must use the ordinary full-code path.
+ */
+struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer {
+    size_t d = 0;
+    const float* centroid = nullptr;
+    bool integer_query = false;
+    std::vector<float> residual;
+    std::vector<int8_t> quantized;
+    float query_norm = 0.0f;
+    float half_sum = 0.0f;
+    float scale = 1.0f;
+
+    RaBitQExpandedDistanceComputer(
+            const uint8_t* codes,
+            size_t d_in,
+            const float* centroid_in,
+            bool integer_query_in)
+            : FlatCodesDistanceComputer(codes, d_in + sizeof(ExtraBitsFactors)),
+              d(d_in),
+              centroid(centroid_in),
+              integer_query(integer_query_in),
+              residual(d),
+              quantized(d) {}
+
+    void set_query(const float* x) final {
+        q = x;
+        FAISS_THROW_IF_NOT_MSG(x != nullptr, "null RaBitQ query");
+        query_norm = 0.0f;
+        float sum = 0.0f;
+        float maximum = 0.0f;
+        for (size_t j = 0; j < d; j++) {
+            const float value = x[j] - (centroid ? centroid[j] : 0.0f);
+            residual[j] = value;
+            query_norm += value * value;
+            sum += value;
+            maximum = std::max(maximum, std::abs(value));
+        }
+        half_sum = 0.5f * sum;
+        scale = maximum > 0.0f ? maximum / 127.0f : 1.0f;
+        if (integer_query) {
+            for (size_t j = 0; j < d; j++) {
+                quantized[j] = static_cast<int8_t>(std::clamp(
+                        std::nearbyint(residual[j] / scale), -127.0f, 127.0f));
+            }
+        }
+    }
+
+    float score(const uint8_t* code, float dot) const {
+        ExtraBitsFactors factors;
+        memcpy(&factors, code + d, sizeof(factors));
+        return std::max(
+                0.0f,
+                query_norm + factors.f_add_ex +
+                        factors.f_rescale_ex * (dot + half_sum));
+    }
+
+    float distance_to_code(const uint8_t* code) final {
+        const int8_t* levels = reinterpret_cast<const int8_t*>(code);
+        if (integer_query) {
+            int64_t dot = 0;
+            for (size_t j = 0; j < d; j++) {
+                dot += int64_t(quantized[j]) * int64_t(levels[j]);
+            }
+            return score(code, scale * static_cast<float>(dot));
+        }
+
+        float dot = 0.0f;
+        for (size_t j = 0; j < d; j++) {
+            dot += residual[j] * static_cast<float>(levels[j]);
+        }
+        return score(code, dot);
+    }
+
+    float symmetric_dis(idx_t, idx_t) final {
+        FAISS_THROW_MSG(
+                "expanded RaBitQ ADC does not support graph construction");
+    }
+};
+
 // Use shared constant from RaBitQUtils
 using rabitq_utils::Z_MAX_BY_QB;
 
@@ -747,6 +830,54 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
                     return dc.release();
                 }
             });
+}
+
+void RaBitQuantizer::expand_codes(
+        const uint8_t* packed_codes,
+        size_t n,
+        uint8_t* expanded_codes) const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits >= 2 && nb_bits <= 8,
+            "expanded RaBitQ ADC requires 2..8 total bits");
+    FAISS_THROW_IF_NOT_MSG(
+            n == 0 || (packed_codes && expanded_codes),
+            "null RaBitQ code buffer");
+
+    const size_t ex_bits = nb_bits - 1;
+    const size_t sign_bytes = (d + 7) / 8;
+    const size_t ex_offset = sign_bytes + sizeof(SignBitFactorsWithError);
+    const size_t ex_bytes = (d * ex_bits + 7) / 8;
+    const size_t expanded_size = d + sizeof(ExtraBitsFactors);
+    const int midpoint = 1 << ex_bits;
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t row = 0; row < static_cast<int64_t>(n); row++) {
+        const uint8_t* packed = packed_codes + size_t(row) * code_size;
+        const uint8_t* extra = packed + ex_offset;
+        uint8_t* expanded = expanded_codes + size_t(row) * expanded_size;
+        for (size_t j = 0; j < d; j++) {
+            const int sign = rabitq_utils::extract_bit_standard(packed, j);
+            const int low =
+                    rabitq_utils::extract_code_inline(extra, j, ex_bits);
+            const int level = (sign << ex_bits) + low - midpoint;
+            expanded[j] = static_cast<uint8_t>(static_cast<int8_t>(level));
+        }
+        memcpy(expanded + d, extra + ex_bytes, sizeof(ExtraBitsFactors));
+    }
+}
+
+FlatCodesDistanceComputer* RaBitQuantizer::get_expanded_distance_computer(
+        const uint8_t* expanded_codes,
+        const float* centroid_in,
+        bool integer_query) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == MetricType::METRIC_L2,
+            "expanded RaBitQ ADC supports only L2");
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits >= 2 && nb_bits <= 8,
+            "expanded RaBitQ ADC requires 2..8 total bits");
+    return new RaBitQExpandedDistanceComputer(
+            expanded_codes, d, centroid_in, integer_query);
 }
 
 } // namespace faiss
