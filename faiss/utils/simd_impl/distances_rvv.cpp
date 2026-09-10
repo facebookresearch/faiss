@@ -11,6 +11,7 @@
 
 #ifdef COMPILE_SIMD_RISCV_RVV
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/extra_distances.h>
 #include <riscv_vector.h>
 
@@ -336,6 +337,128 @@ int fvec_madd_and_argmin<SIMDLevel::RISCV_RVV>(
     fvec_madd<SIMDLevel::RISCV_RVV>(n, a, bf, b, c);
     const size_t j = rvv_argmin(c, n);
     return j < n ? static_cast<int>(j) : -1;
+}
+
+template <>
+void fvec_add<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        const float* a,
+        const float* b,
+        float* c) {
+    size_t i = 0;
+    while (i < d) {
+        size_t vl = __riscv_vsetvl_e32m8(d - i);
+        vfloat32m8_t va = __riscv_vle32_v_f32m8(a + i, vl);
+        vfloat32m8_t vb = __riscv_vle32_v_f32m8(b + i, vl);
+        va = __riscv_vfadd_vv_f32m8(va, vb, vl);
+        __riscv_vse32_v_f32m8(c + i, va, vl);
+        i += vl;
+    }
+}
+
+template <>
+void fvec_add<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        const float* a,
+        float b,
+        float* c) {
+    size_t i = 0;
+    while (i < d) {
+        size_t vl = __riscv_vsetvl_e32m8(d - i);
+        vfloat32m8_t va = __riscv_vle32_v_f32m8(a + i, vl);
+        va = __riscv_vfadd_vf_f32m8(va, b, vl);
+        __riscv_vse32_v_f32m8(c + i, va, vl);
+        i += vl;
+    }
+}
+
+template <>
+void fvec_sub<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        const float* a,
+        const float* b,
+        float* c) {
+    size_t i = 0;
+    while (i < d) {
+        size_t vl = __riscv_vsetvl_e32m8(d - i);
+        vfloat32m8_t va = __riscv_vle32_v_f32m8(a + i, vl);
+        vfloat32m8_t vb = __riscv_vle32_v_f32m8(b + i, vl);
+        va = __riscv_vfsub_vv_f32m8(va, vb, vl);
+        __riscv_vse32_v_f32m8(c + i, va, vl);
+        i += vl;
+    }
+}
+
+// Distances between one query sub-vector (x0, x1) and the ksub dsub=2
+// centroids of a sub-space. All-centroids layout is (m * ksub + k) * 2, the
+// output layout (i * M + m) * ksub + k. The chunk length comes from vsetvl,
+// so the kernel adapts to any VLEN. Each product/square is rounded before the
+// final add - like the NONE implementation, and unlike a fused vfmacc - so
+// the tables are bit-identical to the scalar ones. (c - x)^2 is computed
+// instead of (x - c)^2, which yields the same bits and saves the broadcast.
+template <bool is_inner_product>
+static void pq2_dis_table_rvv(
+        const float* cents,
+        float x0,
+        float x1,
+        size_t ksub,
+        float* out) {
+    constexpr size_t pair_stride = 2 * sizeof(float);
+    size_t k = 0;
+    while (k < ksub) {
+        size_t vl = __riscv_vsetvl_e32m8(ksub - k);
+        vfloat32m8_t c0 =
+                __riscv_vlse32_v_f32m8(cents + 2 * k, pair_stride, vl);
+        vfloat32m8_t c1 =
+                __riscv_vlse32_v_f32m8(cents + 2 * k + 1, pair_stride, vl);
+        if constexpr (is_inner_product) {
+            c0 = __riscv_vfmul_vf_f32m8(c0, x0, vl);
+            c1 = __riscv_vfmul_vf_f32m8(c1, x1, vl);
+            c0 = __riscv_vfadd_vv_f32m8(c0, c1, vl);
+        } else {
+            c0 = __riscv_vfsub_vf_f32m8(c0, x0, vl);
+            c1 = __riscv_vfsub_vf_f32m8(c1, x1, vl);
+            vfloat32m8_t s0 = __riscv_vfmul_vv_f32m8(c0, c0, vl);
+            vfloat32m8_t s1 = __riscv_vfmul_vv_f32m8(c1, c1, vl);
+            c0 = __riscv_vfadd_vv_f32m8(s0, s1, vl);
+        }
+        __riscv_vse32_v_f32m8(out + k, c0, vl);
+        k += vl;
+    }
+}
+
+template <>
+void compute_PQ_dis_tables_dsub2<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        size_t ksub,
+        const float* all_centroids,
+        size_t nx,
+        const float* x,
+        bool is_inner_product,
+        float* dis_tables) {
+    size_t M = d / 2;
+    FAISS_THROW_IF_NOT(ksub % 8 == 0);
+    for (size_t i = 0; i < nx; i++) {
+        const float* xi = x + i * d;
+        float* out_i = dis_tables + i * M * ksub;
+        for (size_t m = 0; m < M; m++) {
+            if (is_inner_product) {
+                pq2_dis_table_rvv<true>(
+                        all_centroids + m * 2 * ksub,
+                        xi[2 * m],
+                        xi[2 * m + 1],
+                        ksub,
+                        out_i + m * ksub);
+            } else {
+                pq2_dis_table_rvv<false>(
+                        all_centroids + m * 2 * ksub,
+                        xi[2 * m],
+                        xi[2 * m + 1],
+                        ksub,
+                        out_i + m * ksub);
+            }
+        }
+    }
 }
 
 #define DEFINE_VECTOR_DISTANCE_RVV_FALLBACK(metric)                 \

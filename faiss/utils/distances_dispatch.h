@@ -178,7 +178,7 @@ inline void fvec_sub_dispatch(
         const float* a,
         const float* b,
         float* c) {
-    with_simd_level_256bit(
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_NO_AVX512>(
             [&]<SIMDLevel level>() { fvec_sub<level>(d, a, b, c); });
 }
 
@@ -187,7 +187,7 @@ inline void fvec_add_dispatch(
         const float* a,
         const float* b,
         float* c) {
-    with_simd_level_256bit(
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_NO_AVX512>(
             [&]<SIMDLevel level>() { fvec_add<level>(d, a, b, c); });
 }
 
@@ -196,7 +196,7 @@ inline void fvec_add_scalar_dispatch(
         const float* a,
         float b,
         float* c) {
-    with_simd_level_256bit(
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_NO_AVX512>(
             [&]<SIMDLevel level>() { fvec_add<level>(d, a, b, c); });
 }
 
@@ -208,10 +208,17 @@ inline void compute_PQ_dis_tables_dsub2_dispatch(
         const float* x,
         bool is_inner_product,
         float* dis_tables) {
-    with_simd_level_256bit([&]<SIMDLevel level>() {
-        compute_PQ_dis_tables_dsub2<level>(
-                d, ksub, centroids, nx, x, is_inner_product, dis_tables);
-    });
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_NO_AVX512>(
+            [&]<SIMDLevel level>() {
+                compute_PQ_dis_tables_dsub2<level>(
+                        d,
+                        ksub,
+                        centroids,
+                        nx,
+                        x,
+                        is_inner_product,
+                        dis_tables);
+            });
 }
 
 /***************************************************************************
