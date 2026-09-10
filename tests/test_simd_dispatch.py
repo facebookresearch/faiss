@@ -256,7 +256,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         """SPR detection must agree with the CPU's real feature flags. The SPR
         code path is compiled with -mavx512fp16, so AVX512_SPR must be
         reported available if and only if the CPU actually has the full
-        AVX512 core feature set, VNNI, VPOPCNTDQ, BF16, and FP16.
+        AVX512 core feature set, VNNI, VPOPCNTDQ, BITALG, BF16 and FP16.
         """
         import platform
 
@@ -298,6 +298,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             avx512_core <= flags
             and "avx512_vnni" in flags
             and "avx512_vpopcntdq" in flags
+            and "avx512_bitalg" in flags
             and "avx512_bf16" in flags
             and "avx512_fp16" in flags
         )
@@ -314,6 +315,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             f"(avx512_core={avx512_core <= flags}, "
             f"vnni={'avx512_vnni' in flags}, "
             f"vpopcntdq={'avx512_vpopcntdq' in flags}, "
+            f"bitalg={'avx512_bitalg' in flags}, "
             f"bf16={'avx512_bf16' in flags}, "
             f"fp16={'avx512_fp16' in flags}). "
             "detected=True with fp16=False is the D107684495 regression "
@@ -321,7 +323,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         )
 
     def test_vpopcnt_detection_matches_cpu_features(self):
-        """The VPOPCNT level requires baseline AVX-512 and VPOPCNTDQ."""
+        """The VPOPCNT level requires baseline AVX-512, VPOPCNTDQ and BITALG."""
         import platform
 
         try:
@@ -358,7 +360,9 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             "avx512bw",
         }
         capable = (
-            avx512_core <= flags and "avx512_vpopcntdq" in flags
+            avx512_core <= flags
+            and "avx512_vpopcntdq" in flags
+            and "avx512_bitalg" in flags
         )
         detected = faiss.SIMDConfig.is_simd_level_available(
             faiss.SIMDLevel_AVX512_VPOPCNT

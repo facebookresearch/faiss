@@ -39,9 +39,9 @@ set(FAISS_SIMD_AVX512_SRC
   utils/simd_impl/rabitq_avx512.cpp
   utils/simd_impl/super_kmeans_kernels_avx512.cpp
 )
-# AVX-512 sources that only require AVX512_VPOPCNTDQ on top of the baseline
-# AVX-512F/CD/VL/DQ/BW feature set. In DD builds these are available on CPUs
-# such as Ice Lake and Zen 4 without requiring the full SPR feature set.
+# AVX-512 sources that require AVX512_VPOPCNTDQ and AVX512_BITALG on top of
+# the baseline AVX-512F/CD/VL/DQ/BW feature set. In DD builds these are
+# available on CPUs such as Ice Lake and Zen 4 without the full SPR set.
 set(FAISS_SIMD_AVX512_VPOPCNT_SRC
   utils/simd_impl/rabitq_avx512_vpopcnt.cpp
   utils/hamming_distance/hamming_avx512_vpopcnt.cpp
@@ -492,7 +492,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 -mprefer-vector-width=512 ${FAISS_BMI2_FLAGS}>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mavx512bitalg -mpopcnt -mavx512fp16 -mavx512bf16 -mprefer-vector-width=512 ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
@@ -567,17 +567,17 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         PROPERTIES COMPILE_OPTIONS
           "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt"
       )
-      # VPOPCNT sources only require VPOPCNTDQ in addition to baseline AVX-512.
+      # VPOPCNT sources require VPOPCNTDQ and BITALG on top of baseline AVX-512.
       set_source_files_properties(${FAISS_SIMD_AVX512_VPOPCNT_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt"
       )
       # The remaining SPR sources require the full SPR feature set.
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
       )
     else()
       # Per-file SIMD flags (MSVC)
@@ -590,7 +590,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
       )
-      # MSVC has no per-feature flag for VPOPCNTDQ.
+      # MSVC has no per-feature flag for VPOPCNTDQ or BITALG.
       set_source_files_properties(${FAISS_SIMD_AVX512_VPOPCNT_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
