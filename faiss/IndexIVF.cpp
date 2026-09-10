@@ -1498,6 +1498,9 @@ size_t InvertedListScanner::iterate_codes(
     if (!keep_max) {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
+            if (sel && !sel->is_member(id_and_codes.first)) {
+                continue;
+            }
             float dis = distance_to_code(id_and_codes.second);
             if (has_cb) {
                 it->on_distance_computed(id_and_codes.first, dis);
@@ -1514,6 +1517,9 @@ size_t InvertedListScanner::iterate_codes(
     } else {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
+            if (sel && !sel->is_member(id_and_codes.first)) {
+                continue;
+            }
             float dis = distance_to_code(id_and_codes.second);
             if (has_cb) {
                 it->on_distance_computed(id_and_codes.first, dis);
@@ -1561,6 +1567,9 @@ void InvertedListScanner::iterate_codes_range(
     list_size = 0;
     for (; it->is_available(); it->next()) {
         auto id_and_codes = it->get_id_and_codes();
+        if (sel && !sel->is_member(id_and_codes.first)) {
+            continue;
+        }
         float dis = distance_to_code(id_and_codes.second);
         bool keep = !keep_max
                 ? dis < radius
