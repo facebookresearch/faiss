@@ -97,7 +97,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>compute the distances to codes. (distances, labels) should be organized as a min- or max-heap</para>
+<para>compute the distances to codes. (distances, labels) should be organized as a max-heap: the scan accepts a code whose distance is below distances[0] and replaces the top. A min-heap caller reads its neutral value as a huge unsigned bound and gets wrong results.</para>
+<para>The heap top is the only bound. To keep the k nearest codes inside a radius, seed every heap slot with that radius instead of the neutral value; an unfilled slot keeps its label of -1.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
@@ -151,7 +152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="244" column="20"/>
+        <location file="faiss/IndexBinaryIVF.h" line="251" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1aa3efb4bb46f7dab5b8ac56727d624b17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -185,7 +186,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="252" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="259" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1afc7ad755907a2aba53cdd1ad034d9c04" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -199,14 +200,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="259" column="13" bodyfile="faiss/IndexBinaryIVF.h" bodystart="259" bodyend="259"/>
+        <location file="faiss/IndexBinaryIVF.h" line="266" column="13" bodyfile="faiss/IndexBinaryIVF.h" bodystart="266" bodyend="266"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexBinaryIVF.h" line="224" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="224" bodyend="260"/>
+    <location file="faiss/IndexBinaryIVF.h" line="224" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="224" bodyend="267"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1ac33be0f074b682e9afc44bd7cf0741b2" prot="public" virt="pure-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1a9ddb2bb0b513829b39528463c46f90f5" prot="public" virt="pure-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>scan_codes</name></member>

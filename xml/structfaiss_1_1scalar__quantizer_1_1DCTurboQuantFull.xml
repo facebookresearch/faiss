@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="68" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="68" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="76" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="76" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="69" column="29" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="69" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="77" column="29" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="77" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab20d78f8f6b880e8127ce98bf80f2e06" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -61,7 +61,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="70" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="78" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="78" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab9fd78bbce160a51a0dc46d87b71cce7" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="71" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="79" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="79" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a9efcc01d62d12d48668f8cc9bf0e9dff" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="72" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="72" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="80" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8a92e38e85f6be296666f12f8fffe865" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -105,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="73" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="73" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="81" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="81" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a733fce1836bcbf401aa32a9564d9cdc2" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="74" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="74" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="82" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="82" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a74e737f507b3bfd19b07f70ef8f7f8d0" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="77" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="77" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="85" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="85" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a26fe9592993959220f2d3a452cafffc4" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -150,7 +150,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="78" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="78" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="86" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="86" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a7647fa339437ee5201309b42496e843f" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="79" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="79" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="87" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="87" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ade586d7d5f64b5a38b84281286c8abec" prot="public" static="no" mutable="yes">
         <type>size_t</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="80" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="80" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="88" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="88" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a7c957ffff85535c9df680f22c7c9dc6f" prot="public" static="no" mutable="yes">
         <type>size_t</type>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="81" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="81" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="89" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="89" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2c03ffe0069ca1c90753885440b104af" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="84" column="13" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="84" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="92" column="13" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="92" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a44cc7f43d3762b2fc361497c30108e7a" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -225,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="85" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="93" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8bc226849324d7b7244ba72e8bf5d3ac" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -239,7 +239,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="86" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="86" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="94" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a0bce466722ca0c7b73bc108091e1a2a0" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -254,7 +254,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="87" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="87" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="95" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="95" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ad04ec98fc601af34459df8bf42514336" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -269,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="88" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="96" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a5e0163145794958c29a1c911c8e597d4" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -284,7 +284,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="89" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="97" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a78d47e70e3b4cb302310bad69055a546" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -298,7 +298,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="92" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="100" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="100" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a59575d69e345b0a20a6a2f57fdfc4cb7" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -313,7 +313,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="93" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="101" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="101" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a14efd5bde2591d68a6d20a1c2d55d265" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -328,7 +328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="94" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="102" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a19744e62f5a9fc130eff78127706446e" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -343,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="97" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="97" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="105" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aec496e168ef7b85f47df535f645ec167" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -358,7 +358,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="98" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="106" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8bf0c481f0543ba85af9f01e3b347e80" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -373,7 +373,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="99" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="99" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="107" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="107" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a63b8549e31f5398d804968b473c45546" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -388,7 +388,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="100" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="100" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="108" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aed21d760b448c67be631b521c41b9a82" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -403,7 +403,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="103" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="111" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="111" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a93b526d3a664f104bcebd76ca2e4c33c" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -418,7 +418,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="104" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="112" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="112" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1aa87ba26704918ef2ae226ffc1a5f5c09" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -433,7 +433,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="105" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="113" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="113" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a8a61f9ba7a7f2be0eb4c0f818775eb1c" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -448,7 +448,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="106" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="106" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="114" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="114" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ae0e90e4d14bab6d563953a8e34dc6f74" prot="public" static="no" mutable="yes">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -462,7 +462,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="107" column="25" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="107" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="115" column="25" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="115" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -529,7 +529,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="109" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="109" bodyend="112"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="117" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="117" bodyend="120"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a005e321a9696c5006670a127dc494af5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -552,7 +552,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="114" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="114" bodyend="117"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="122" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="122" bodyend="125"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a3e5b072c5705e762f4d2f4116e43748d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -575,7 +575,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="119" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="119" bodyend="122"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="127" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="127" bodyend="130"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a06b26a2a6b77115fce22d756b49ea6f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -590,7 +590,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="124" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="124" bodyend="126"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="132" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="132" bodyend="134"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a863b58ae95fe9f0d1191819e982b7715" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -610,7 +610,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="128" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="128" bodyend="246"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="136" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="136" bodyend="254"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a0344349ccda2289d15fd18976a8f7782" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -629,7 +629,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="248" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="248" bodyend="338"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="256" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="256" bodyend="350"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2e3b35dc7d1c02493ce7e5f127376058" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -653,7 +653,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="340" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="340" bodyend="342"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="352" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="352" bodyend="354"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1000,7 +1000,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="67" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="67" bodyend="343"/>
+    <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="75" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="75" bodyend="355"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a06b26a2a6b77115fce22d756b49ea6f4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>clear_prescreen_threshold</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTurboQuantFull</scope><name>code_size</name></member>

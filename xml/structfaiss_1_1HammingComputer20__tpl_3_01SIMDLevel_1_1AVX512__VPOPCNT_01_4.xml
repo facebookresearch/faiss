@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1HammingComputer20__tpl" prot="public" virt="non-virtual">faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512 &gt;</basecompoundref>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1af54f5fb594d7c7e3f42c1671a69ae047" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::batch_size</definition>
+        <argsstring></argsstring>
+        <name>batch_size</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::batch_size</qualifiedname>
+        <initializer>= 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="57" column="29" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a064690a07b139dd09d8e57214c54acc1" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::kStride</definition>
+        <argsstring></argsstring>
+        <name>kStride</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::kStride</qualifiedname>
+        <initializer>= get_code_size()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="58" column="29" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1accd121c120f6bef6c60983d72ee3ffc6" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr __mmask64</type>
+        <definition>constexpr __mmask64 faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::kTailMask</definition>
+        <argsstring></argsstring>
+        <name>kTailMask</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::kTailMask</qualifiedname>
+        <initializer>= 0xFFFFFFFFull</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="65" column="32" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a45ec9e1f02b151f8c28a02ddb8d78c24" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::build_batch_query</definition>
+        <argsstring>(const uint8_t *a8, uint8_t *tile)</argsstring>
+        <name>build_batch_query</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::build_batch_query</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>tile</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Writes the query repeated batch_size times. The caller owns the buffer, so a computer used only through hamming() carries no batch state. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="69" column="17" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="69" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a3302ad485852f14decdce4510073d297" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::hamming_batch</definition>
+        <argsstring>(const uint8_t *tile, const uint8_t *codes, int32_t *dis)</argsstring>
+        <name>hamming_batch</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;::hamming_batch</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>tile</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>dis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="75" column="17" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="75" bodyend="109"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1HammingComputer20__tpl"/>
+      </node>
+      <node id="1">
+        <label>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</label>
+        <link refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1HammingComputer20__tpl"/>
+      </node>
+      <node id="1">
+        <label>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</label>
+        <link refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="53" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="54" bodyend="110"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1af54f5fb594d7c7e3f42c1671a69ae047" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>batch_size</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a45ec9e1f02b151f8c28a02ddb8d78c24" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>build_batch_query</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a3302ad485852f14decdce4510073d297" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>hamming_batch</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a064690a07b139dd09d8e57214c54acc1" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>kStride</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1accd121c120f6bef6c60983d72ee3ffc6" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>kTailMask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

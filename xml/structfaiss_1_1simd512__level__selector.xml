@@ -16,7 +16,8 @@
         <argsstring></argsstring>
         <name>value</name>
         <qualifiedname>faiss::simd512_level_selector::value</qualifiedname>
-        <initializer>= (SL == SIMDLevel::AVX512_SPR)
+        <initializer>=
+            (SL == SIMDLevel::AVX512_SPR || SL == SIMDLevel::AVX512_VPOPCNT)
             ? SIMDLevel::AVX512
             : (SL == SIMDLevel::RISCV_RVV) ? SIMDLevel::NONE
                                            : SL</initializer>
@@ -26,14 +27,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="105" column="32" bodyfile="faiss/utils/simd_levels.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/utils/simd_levels.h" line="113" column="32" bodyfile="faiss/utils/simd_levels.h" bodystart="113" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/simd_levels.h" line="104" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="104" bodyend="109"/>
+    <location file="faiss/utils/simd_levels.h" line="112" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="112" bodyend="118"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd512__level__selector_1ad4e52a0bfa9a9b681a4d2a1f0b0f3ebd" prot="public" virt="non-virtual"><scope>faiss::simd512_level_selector</scope><name>value</name></member>
     </listofallmembers>

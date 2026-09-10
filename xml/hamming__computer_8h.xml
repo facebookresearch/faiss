@@ -131,8 +131,8 @@
         </childnode>
       </node>
       <node id="14">
-        <label>faiss/utils/hamming_distance/hamming_computer-avx512_spr.h</label>
-        <link refid="hamming__computer-avx512__spr_8h_source"/>
+        <label>faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h</label>
+        <link refid="hamming__computer-avx512__vpopcnt_8h_source"/>
       </node>
       <node id="11">
         <label>faiss/utils/hamming_distance/hamming_computer-generic.h</label>

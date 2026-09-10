@@ -195,6 +195,52 @@
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="29" column="21" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="29" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="sq-dispatch_8h_1a673ef60b968674e2e72d48568e45d338" prot="public" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL0</declname>
+            <defname>SL0</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::scalar_quantizer::rabitq_popcount_level</definition>
+        <argsstring></argsstring>
+        <name>rabitq_popcount_level</name>
+        <qualifiedname>faiss::scalar_quantizer::rabitq_popcount_level</qualifiedname>
+        <initializer>=
+        SL0 == SIMDLevel::AVX512_SPR ? SIMDLevel::AVX512_VPOPCNT : SL0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="36" column="28" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="sq-dispatch_8h_1a3206a9f2ab64b10be0f767b34f8848fd" prot="public" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL2</declname>
+            <defname>SL2</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::scalar_quantizer::is_avx512_family</definition>
+        <argsstring></argsstring>
+        <name>is_avx512_family</name>
+        <qualifiedname>faiss::scalar_quantizer::is_avx512_family</qualifiedname>
+        <initializer>= SL2 == SIMDLevel::AVX512 ||
+        SL2 == SIMDLevel::AVX512_VPOPCNT || SL2 == SIMDLevel::AVX512_SPR</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="361" column="16" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="361" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="func">
       <memberdef kind="function" id="distance__computers_8h_1ac6f2ec5777abf6638c5ae71909b0691f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -435,7 +481,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="39" column="7" declfile="faiss/impl/scalar_quantizer/sq-dispatch.h" declline="39" declcolumn="7"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="47" column="7" declfile="faiss/impl/scalar_quantizer/sq-dispatch.h" declline="47" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1acc653efcbe0d2b91e0a74ced595be3c0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -463,7 +509,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="42" column="8" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="42" bodyend="58"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="50" column="8" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="50" bodyend="66"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a9aafc3129d3bd359d2a36d1684100b28" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -488,7 +534,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="347" column="16" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="347" bodyend="355"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="366" column="16" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="366" bodyend="374"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1abe3d240b2efb670c775e45054fa874f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -516,7 +562,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="362" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="362" bodyend="458"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="381" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="381" bodyend="477"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1abe2e7ac2fd556dfc65f3c4633b25d231" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -552,7 +598,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="465" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="465" bodyend="629"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="484" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="484" bodyend="649"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a633a0625bc3ff5fb2e8a0f9813990208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -584,7 +630,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="636" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="636" bodyend="648"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="656" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="656" bodyend="668"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a18cda87f7f14bce99d80b0b2cf695df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -636,7 +682,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="655" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="655" bodyend="883"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="675" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="675" bodyend="903"/>
       </memberdef>
       <memberdef kind="function" id="training_8h_1a7832c78df26bd9df1561e07d4da31891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

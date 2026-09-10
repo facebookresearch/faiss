@@ -7,7 +7,7 @@
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="hamming__computer-generic_8h" local="no">faiss/utils/hamming_distance/hamming_computer-generic.h</includes>
     <includes local="no">immintrin.h</includes>
-    <includedby refid="hamming__computer-avx512__spr_8h" local="no">faiss/utils/hamming_distance/hamming_computer-avx512_spr.h</includedby>
+    <includedby refid="hamming__computer-avx512__vpopcnt_8h" local="no">faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h</includedby>
     <incdepgraph>
       <node id="4">
         <label>faiss/impl/platform_macros.h</label>
@@ -102,8 +102,8 @@
         </childnode>
       </node>
       <node id="2">
-        <label>faiss/utils/hamming_distance/hamming_computer-avx512_spr.h</label>
-        <link refid="hamming__computer-avx512__spr_8h_source"/>
+        <label>faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h</label>
+        <link refid="hamming__computer-avx512__vpopcnt_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::HammingComputer64_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
@@ -148,7 +148,7 @@
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Types<sp/>without<sp/>custom<sp/>AVX512<sp/>code<sp/>inherit<sp/>from<sp/>the<sp/>NONE<sp/>specializations</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>in<sp/>hamming_computer-generic.h.<sp/>HammingComputer64<sp/>and</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>HammingComputerDefault<sp/>use<sp/>scalar<sp/>popcount<sp/>here;<sp/>the<sp/>VPOPCNTDQ<sp/>fast</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>path<sp/>lives<sp/>in<sp/>hamming_computer-avx512_spr.h<sp/>(AVX512_SPR<sp/>level).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>path<sp/>lives<sp/>in<sp/>hamming_computer-avx512_vpopcnt.h<sp/>(AVX512_VPOPCNT<sp/>level).</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>GenHammingComputer<sp/>classes<sp/>leverage<sp/>SSE/AVX2<sp/>intrinsics.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cassert&gt;</highlight><highlight class="normal"></highlight></codeline>
