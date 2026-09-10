@@ -147,12 +147,12 @@ class TestHNSWRaBitQ(unittest.TestCase):
             for row in range(len(xb)):
                 expected = np.empty(d, dtype="int8")
                 for j in range(d):
-                    sign = (packed[row, j // 8] >> (j % 8)) & 1
+                    sign = (int(packed[row, j // 8]) >> (j % 8)) & 1
                     low = 0
                     for bit in range(ex_bits):
                         pos = j * ex_bits + bit
                         low |= (
-                            (packed[row, ex_offset + pos // 8] >> (pos % 8))
+                            (int(packed[row, ex_offset + pos // 8]) >> (pos % 8))
                             & 1
                         ) << bit
                     expected[j] = (sign << ex_bits) + low - (1 << ex_bits)
