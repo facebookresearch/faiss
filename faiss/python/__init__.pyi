@@ -1939,12 +1939,23 @@ class HNSWStats:
     n3: int
     ndis: int
     nreorder: int
+class RaBitQStats:
+    n_1bit: int
+    n_refine: int
+
+    def reset(self) -> None: ...
+    def add(self, other: RaBitQStats) -> None: ...
+    def refine_ratio(self) -> float: ...
 
 class HNSW:
+    SM_DEFAULT: int
+    SM_PANORAMA: int
+    SM_RABITQ: int
     max_level: int
     entry_point: int
     efConstruction: int
     efSearch: int
+    search_method: int
     hnsw_stats: HNSWStats
     assign_probas: Float32Vector
     cum_nneighbor_per_level: Int32Vector
@@ -2005,6 +2016,15 @@ class IndexHNSWSQ(IndexHNSW):
         d: int,
         sq: ScalarQuantizer,
         M: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+
+class IndexHNSWRaBitQ(IndexHNSW):
+    def __init__(
+        self,
+        d: int,
+        M: int,
+        nb_bits: int = 1,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
 

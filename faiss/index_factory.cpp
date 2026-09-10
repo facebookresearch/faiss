@@ -575,6 +575,13 @@ IndexHNSW* parse_IndexHNSW(
     if (match(sq_pattern)) {
         return new IndexHNSWSQ(d, sq_types[sm[1].str()], hnsw_M, mt);
     }
+    // Keep the bare RaBitQ token consistent with Flat and IVF: it means 1 bit.
+    // Use an explicit width such as RaBitQ4 to enable staged refinement.
+    if (match("RaBitQ([1-9])?")) {
+        // the capture is the bare digit, so no substr offset here
+        int nb_bits = mres_to_int(sm[1], 1);
+        return new IndexHNSWRaBitQ(d, hnsw_M, nb_bits, mt);
+    }
     if (match("([0-9]+)\\+PQ([0-9]+)?")) {
         int ncent = mres_to_int(sm[1]);
         int pq_m = mres_to_int(sm[2]);
