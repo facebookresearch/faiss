@@ -228,12 +228,31 @@ struct IndexHNSWSQ : IndexHNSW {
  * nb_bits = 1 has no error factor and uses ordinary HNSW search.
  */
 struct IndexHNSWRaBitQ : IndexHNSW {
+    /** True when the current topology was built with temporary FP32 storage.
+     *
+     * Such an index is batch-built: appending with add() would silently mix
+     * FP32 and RaBitQ construction distances, so it is rejected until reset().
+     */
+    bool fp32_graph_built = false;
+
     IndexHNSWRaBitQ();
     IndexHNSWRaBitQ(
             int d,
             int M,
             uint8_t nb_bits = 1,
             MetricType metric = METRIC_L2);
+
+    /** Add the first (and only) batch to RaBitQ storage while constructing the
+     * HNSW topology with exact FP32 L2 distances.
+     *
+     * The temporary FP32 storage is released before this function returns and
+     * is never used for serving. The index must be trained and empty. Further
+     * add() calls are rejected; reset() restores ordinary mutable behavior.
+     */
+    void add_with_fp32_graph(idx_t n, const float* x);
+
+    void add(idx_t n, const float* x) override;
+    void reset() override;
 
     IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
 

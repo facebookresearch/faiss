@@ -69,7 +69,8 @@ void hnsw_add_vertices(
         size_t n,
         const float* x,
         bool verbose,
-        bool preset_levels = false) {
+        bool preset_levels = false,
+        const Index* construction_storage = nullptr) {
     size_t d = index_hnsw.d;
     HNSW& hnsw = index_hnsw.hnsw;
     size_t ntotal = n0 + n;
@@ -156,8 +157,9 @@ void hnsw_add_vertices(
                 std::unique_ptr<VisitedTable> vt =
                         VisitedTable::create(ntotal, hnsw.use_visited_hashset);
 
-                std::unique_ptr<DistanceComputer> dis(
-                        storage_distance_computer(index_hnsw.storage));
+                std::unique_ptr<DistanceComputer> dis(storage_distance_computer(
+                        construction_storage ? construction_storage
+                                             : index_hnsw.storage));
                 bool do_display = verbose && omp_get_thread_num() == 0;
                 size_t prev_display = 0;
                 size_t counter = 0;
@@ -1182,6 +1184,59 @@ IndexHNSWRaBitQ::IndexHNSWRaBitQ(
     // 1-bit codes store plain SignBitFactors with no f_error, so there is no
     // bound to prune with and the staged path does not apply.
     hnsw.search_method = nb_bits >= 2 ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
+}
+
+void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !fp32_graph_built,
+            "cannot append to an IndexHNSWRaBitQ whose graph was batch-built "
+            "with FP32 distances; call reset() before rebuilding");
+    IndexHNSW::add(n, x);
+}
+
+void IndexHNSWRaBitQ::add_with_fp32_graph(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IndexHNSWRaBitQ is not trained");
+    FAISS_THROW_IF_NOT_MSG(
+            ntotal == 0 && storage && storage->ntotal == 0 &&
+                    hnsw.levels.empty() && hnsw.neighbors.size() == 0,
+            "add_with_fp32_graph requires an empty IndexHNSWRaBitQ");
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "number of vectors must be non-negative");
+
+    IndexFlatL2 construction_storage(d);
+    construction_storage.add(n, x);
+
+    storage->add(n, x);
+    ntotal = storage->ntotal;
+    // Set this before graph construction so an interrupted build cannot later
+    // append with a different construction-distance policy.
+    fp32_graph_built = n > 0;
+    bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    if (hnsw_deterministic_build) {
+        hnsw_add_vertices_deterministic(
+                hnsw,
+                0,
+                n,
+                d,
+                init_level0,
+                keep_max_size_level0,
+                preset_levels,
+                verbose,
+                [&construction_storage] {
+                    return storage_distance_computer(&construction_storage);
+                },
+                [this, x](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                    dc.set_query(x + size_t(pt_id) * d);
+                });
+    } else {
+        hnsw_add_vertices(
+                *this, 0, n, x, verbose, preset_levels, &construction_storage);
+    }
+}
+
+void IndexHNSWRaBitQ::reset() {
+    IndexHNSW::reset();
+    fp32_graph_built = false;
 }
 
 /**************************************************************

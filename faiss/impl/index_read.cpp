@@ -2523,7 +2523,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP") || h == fourcc("IHNr") || h == fourcc("IH00")) {
+            h == fourcc("IHfP") || h == fourcc("IHNr") || h == fourcc("IHNg") ||
+            h == fourcc("IH00")) {
         std::unique_ptr<IndexHNSW> idxhnsw;
         if (h == fourcc("IH00")) {
             idxhnsw = std::make_unique<IndexHNSW>();
@@ -2541,7 +2542,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
         } else if (h == fourcc("IHc2")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
-        } else if (h == fourcc("IHNr")) {
+        } else if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             idxhnsw = std::make_unique<IndexHNSWRaBitQ>();
         }
         read_index_header(*idxhnsw, f);
@@ -2611,10 +2612,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxhnsw->storage->d,
                     idxhnsw->d);
         }
-        if (h == fourcc("IHNr")) {
+        if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             auto* idx_rabitq = dynamic_cast<IndexHNSWRaBitQ*>(idxhnsw.get());
             FAISS_THROW_IF_NOT_MSG(
-                    idx_rabitq, "IHNr must deserialize to an IndexHNSWRaBitQ");
+                    idx_rabitq,
+                    "IHNr/IHNg must deserialize to an IndexHNSWRaBitQ");
+            idx_rabitq->fp32_graph_built = h == fourcc("IHNg");
             FAISS_THROW_IF_NOT_MSG(
                     idxhnsw->metric_type == METRIC_L2,
                     "IndexHNSWRaBitQ supports only the L2 metric");
