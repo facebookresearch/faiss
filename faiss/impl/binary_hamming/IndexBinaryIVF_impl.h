@@ -70,12 +70,15 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
             size_t k) const override {
         using C = CMax<int32_t, idx_t>;
 
+        uint32_t bound = static_cast<uint32_t>(simi[0]);
+
         size_t nup = 0;
         for (size_t j = 0; j < n; j++) {
             uint32_t dis = hc.hamming(codes);
-            if (dis < static_cast<uint32_t>(simi[0])) {
+            if (dis < bound) {
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 heap_replace_top<C>(k, simi, idxi, dis, id);
+                bound = static_cast<uint32_t>(simi[0]);
                 nup++;
             }
             codes += code_size;
