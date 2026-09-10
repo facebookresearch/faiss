@@ -620,6 +620,9 @@ void hnsw_search(
                         rq->stats.reset();
                     }
 
+                    // HNSW::search owns the per-query generation advance. The
+                    // reusable-table acquisition above only clears stale TLS
+                    // state before this thread starts processing queries.
                     HNSWStats stats =
                             hnsw.search(*dis, index, *res, *vt, params);
                     n1 += stats.n1;
@@ -631,7 +634,6 @@ void hnsw_search(
                         n_rabitq_refine += rq->stats.n_refine;
                     }
                     res->end();
-                    vt->advance();
                 } catch (...) {
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
