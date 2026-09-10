@@ -711,7 +711,7 @@ void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
 }
 
 void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
-    FAISS_THROW_IF_NOT(n == 0 || (i >= 0 && i + n <= ntotal));
+    FAISS_THROW_IF_NOT(i >= 0 && i <= ntotal && n >= 0 && n <= ntotal - i);
     Index::reconstruct_n(i, n, recons);
 }
 
