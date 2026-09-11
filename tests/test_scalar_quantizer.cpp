@@ -868,6 +868,8 @@ TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
 // VLMAX = VLEN / 4: 32 lanes on QEMU's default VLEN=128 and up to 512
 // lanes on VLEN=2048 hardware, so the dimensions below straddle those
 // chunk boundaries as well as tiny tails.
+// QT_fp16 is covered by the dedicated RVVFP16DistancePathParity test below
+// so that the Zvfhmin-dependent case is visible individually in test logs.
 TEST(ScalarQuantizer, RVVDistancePathParity) {
     if (!faiss::SIMDConfig::is_simd_level_available(
                 faiss::SIMDLevel::RISCV_RVV)) {
@@ -880,7 +882,6 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
             faiss::ScalarQuantizer::QT_6bit,
             faiss::ScalarQuantizer::QT_8bit_uniform,
             faiss::ScalarQuantizer::QT_4bit_uniform,
-            faiss::ScalarQuantizer::QT_fp16,
             faiss::ScalarQuantizer::QT_bf16,
             faiss::ScalarQuantizer::QT_8bit_direct,
             faiss::ScalarQuantizer::QT_8bit_direct_signed,
@@ -889,6 +890,14 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
             faiss::ScalarQuantizer::QT_3bit_eden,
             faiss::ScalarQuantizer::QT_4bit_eden,
             faiss::ScalarQuantizer::QT_8bit_eden,
+            // The QT_*_tqmse types currently alias QuantizerLloydMax, so
+            // they share the EDEN RVV kernels; listing them makes that
+            // dispatch coverage explicit for every metric and distance API.
+            faiss::ScalarQuantizer::QT_1bit_tqmse,
+            faiss::ScalarQuantizer::QT_2bit_tqmse,
+            faiss::ScalarQuantizer::QT_3bit_tqmse,
+            faiss::ScalarQuantizer::QT_4bit_tqmse,
+            faiss::ScalarQuantizer::QT_8bit_tqmse,
     };
     const std::vector<size_t> dims = {
             1,
@@ -921,6 +930,157 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
                 check_sq_distance_path_parity(
                         faiss::SIMDLevel::RISCV_RVV, qtype, metric, d);
             }
+        }
+    }
+}
+
+// QT_fp16 RVV-versus-scalar parity, split out of RVVDistancePathParity so
+// the Zvfhmin-dependent case shows up individually in test logs. The RVV
+// FP16 kernel emits Zvfhmin instructions, so this test only runs where the
+// CPU/emulator enables the extension (CI uses -cpu rv64,v=true,
+// x-zvfhmin=true); without it the process would die with SIGILL, which is
+// what makes this test a check that the FP16 case genuinely executes.
+TEST(ScalarQuantizer, RVVFP16DistancePathParity) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RISCV_RVV not available on this machine";
+    }
+
+    const std::vector<size_t> dims = {
+            1,
+            7,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            127,
+            128,
+            129,
+            255,
+            256,
+            257,
+            511,
+            512,
+            513};
+    const std::vector<faiss::MetricType> metrics = {
+            faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT};
+
+    for (size_t d : dims) {
+        for (auto metric : metrics) {
+            SCOPED_TRACE(
+                    testing::Message() << "d=" << d << " metric=" << metric);
+            check_sq_distance_path_parity(
+                    faiss::SIMDLevel::RISCV_RVV,
+                    faiss::ScalarQuantizer::QT_fp16,
+                    metric,
+                    d);
+        }
+    }
+}
+
+// Zero-dimensional regression for the d == 0 early returns in the RVV
+// DCTemplate distance loops: query_to_code, query_to_codes_batch_4 and
+// symmetric_dis must return exactly 0 without touching the query pointer or
+// the codes, matching the scalar (NONE) path. The parity dimension lists
+// above start at 1, so this case is covered here directly.
+TEST(ScalarQuantizer, RVVZeroDimDistancePathParity) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RISCV_RVV not available on this machine";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::RISCV_RVV);
+
+    // trained layouts each quantizer expects at d == 0: non-uniform
+    // templates take 2 * d (empty) values, uniform templates take {vmin,
+    // vdiff}, LloydMax takes 2^k - 1 centroids/boundaries, and the raw
+    // codecs (fp16/bf16/direct) ignore trained entirely.
+    const std::vector<std::pair<
+            faiss::ScalarQuantizer::QuantizerType,
+            std::vector<float>>>
+            cases = {
+                    {faiss::ScalarQuantizer::QT_8bit, {}},
+                    {faiss::ScalarQuantizer::QT_4bit, {}},
+                    {faiss::ScalarQuantizer::QT_6bit, {}},
+                    {faiss::ScalarQuantizer::QT_8bit_uniform, {0.0f, 1.0f}},
+                    {faiss::ScalarQuantizer::QT_4bit_uniform, {0.0f, 1.0f}},
+                    {faiss::ScalarQuantizer::QT_fp16, {}},
+                    {faiss::ScalarQuantizer::QT_bf16, {}},
+                    {faiss::ScalarQuantizer::QT_8bit_direct, {}},
+                    {faiss::ScalarQuantizer::QT_8bit_direct_signed, {}},
+                    {faiss::ScalarQuantizer::QT_1bit_eden,
+                     std::vector<float>(3, 0.0f)},
+                    {faiss::ScalarQuantizer::QT_2bit_eden,
+                     std::vector<float>(7, 0.0f)},
+                    {faiss::ScalarQuantizer::QT_3bit_eden,
+                     std::vector<float>(15, 0.0f)},
+                    {faiss::ScalarQuantizer::QT_4bit_eden,
+                     std::vector<float>(31, 0.0f)},
+                    {faiss::ScalarQuantizer::QT_8bit_eden,
+                     std::vector<float>(511, 0.0f)},
+            };
+    const std::vector<faiss::MetricType> metrics = {
+            faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT};
+
+    uint8_t dummy_code[8] = {};
+
+    for (const auto& [qtype, trained] : cases) {
+        for (auto metric : metrics) {
+            SCOPED_TRACE(
+                    testing::Message() << "qtype=" << static_cast<int>(qtype)
+                                       << " metric=" << metric);
+
+            faiss::ScalarQuantizer sq(0, qtype);
+            sq.trained = trained;
+
+            std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer>
+                    scalar_dc(
+                            faiss::scalar_quantizer::
+                                    sq_select_distance_computer<
+                                            faiss::SIMDLevel::NONE>(
+                                            metric, qtype, 0, sq.trained));
+            std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> simd_dc(
+                    sq.get_distance_computer(metric));
+            ASSERT_NE(scalar_dc, nullptr);
+            ASSERT_NE(simd_dc, nullptr);
+
+            scalar_dc->set_query(nullptr);
+            simd_dc->set_query(nullptr);
+
+            EXPECT_FLOAT_EQ(scalar_dc->query_to_code(dummy_code), 0.0f);
+            EXPECT_FLOAT_EQ(simd_dc->query_to_code(dummy_code), 0.0f);
+
+            float scalar_dis[4], simd_dis[4];
+            scalar_dc->query_to_codes_batch_4(
+                    dummy_code,
+                    dummy_code,
+                    dummy_code,
+                    dummy_code,
+                    scalar_dis[0],
+                    scalar_dis[1],
+                    scalar_dis[2],
+                    scalar_dis[3]);
+            simd_dc->query_to_codes_batch_4(
+                    dummy_code,
+                    dummy_code,
+                    dummy_code,
+                    dummy_code,
+                    simd_dis[0],
+                    simd_dis[1],
+                    simd_dis[2],
+                    simd_dis[3]);
+            for (int k = 0; k < 4; k++) {
+                EXPECT_FLOAT_EQ(scalar_dis[k], 0.0f);
+                EXPECT_FLOAT_EQ(simd_dis[k], 0.0f);
+            }
+
+            scalar_dc->codes = dummy_code;
+            scalar_dc->code_size = 0;
+            simd_dc->codes = dummy_code;
+            simd_dc->code_size = 0;
+            EXPECT_FLOAT_EQ(scalar_dc->symmetric_dis(0, 1), 0.0f);
+            EXPECT_FLOAT_EQ(simd_dc->symmetric_dis(0, 1), 0.0f);
         }
     }
 }
