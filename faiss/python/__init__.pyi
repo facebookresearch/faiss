@@ -4384,7 +4384,6 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
-    hnsw_deterministic_build: bool
 
 cvar: _SwigGlobals
 

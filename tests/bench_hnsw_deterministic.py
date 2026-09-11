@@ -251,7 +251,6 @@ def main() -> None:
     # thread count.
     faiss.omp_set_num_threads(faiss.omp_get_max_threads())
     threads = faiss.omp_get_max_threads()
-    faiss.cvar.hnsw_deterministic_build = True
     print("faiss HNSW deterministic-build benchmark")
 
     rss = RSSPeak()
