@@ -28,29 +28,15 @@
 #include <cstddef>
 #include <cstdio>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
-#include <optional>
 #include <type_traits>
 
 #include <cuvs/neighbors/all_neighbors.h>
-#include <cuvs/neighbors/all_neighbors.hpp>
-#include <cuvs/neighbors/cagra.hpp>
+#include <cuvs/neighbors/cagra.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <raft/core/device_mdarray.hpp>
 #include <raft/core/device_resources_snmg.hpp>
 #include <raft/core/resource/multi_gpu.hpp>
-// clang-format off
-#if __has_include(<cuvs/neighbors/cagra_optimize.hpp>)
-// Some cuVS versions put helpers::optimize in its own header.
-#include <cuvs/neighbors/cagra_optimize.hpp>
-#endif
-// Compatibility note: release/26.10 has no C API to prune an already-built
-// neighbor graph. Use the public C++ host helper by default, or the existing
-// private device helper when FAISS_CAGRA_DEVICE_OPTIMIZE is enabled.
-// Delete this and the branch it guards once that API ships upstream.
-#if defined(FAISS_CAGRA_DEVICE_OPTIMIZE)
-#include <neighbors/detail/cagra/graph_core.cuh>
-#endif
-// clang-format on
 
 namespace {
 
@@ -366,12 +352,6 @@ void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
         cParams->overlap_factor = overlapFactor;
         cParams->metric = metricFaissToCuvs(this->metric_type, false);
 
-        // Compatibility note: release/26.10's all-neighbors C parameters do
-        // not expose IVF-PQ search batch size or refinement rate and cannot
-        // derive IVF-PQ defaults from a caller-selected cluster size. Keep the
-        // IVF-PQ variant on C++ until those controls are available in C.
-        std::optional<cuvs::neighbors::all_neighbors::all_neighbors_params>
-                cppParams;
         const char* algoName = "nn_descent";
         switch (cagraConfig_.build_algo) {
             case graph_build_algo::BRUTE_FORCE:
@@ -379,12 +359,6 @@ void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
                 algoName = "brute_force";
                 break;
             case graph_build_algo::IVF_PQ: {
-                cppParams.emplace();
-                cppParams->n_clusters = nClusters;
-                cppParams->overlap_factor = overlapFactor;
-                cppParams->metric = static_cast<cuvs::distance::DistanceType>(
-                        metricFaissToCuvs(this->metric_type, false));
-
                 idx_t sizingRows = n;
                 if (an_config.ivf_pq_size_from_cluster) {
                     sizingRows = std::max<idx_t>(
@@ -392,27 +366,25 @@ void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
                             (idx_t)((double)n * overlapFactor /
                                     (double)nClusters));
                 }
-                auto datasetExtents = raft::make_extents<int64_t>(
-                        sizingRows, static_cast<int64_t>(this->d));
-                cuvs::neighbors::all_neighbors::graph_build_params::
-                        ivf_pq_params ivfPqParams(datasetExtents);
-                ivfPqParams.refinement_rate = an_config.refinement_rate;
+                cParams->algo = CUVS_ALL_NEIGHBORS_ALGO_IVF_PQ;
+                cParams->ivf_pq_sizing_rows = sizingRows;
+                cParams->ivf_pq_refinement_rate = an_config.refinement_rate;
+                cuvsCheck(
+                        cuvsIvfPqSearchParamsCreate(
+                                &cParams->ivf_pq_search_params),
+                        "cuvsIvfPqSearchParamsCreate");
                 if (an_config.ivf_pq_search_batch_size > 0) {
-                    ivfPqParams.search_params.max_internal_batch_size =
+                    cParams->ivf_pq_search_params->max_internal_batch_size =
                             an_config.ivf_pq_search_batch_size;
                 }
                 fprintf(stderr,
                         "  [trainAllNeighbors] IVF-PQ sized from %s "
-                        "(%ld rows): n_lists=%u n_probes=%u "
-                        "kmeans_trainset_fraction=%.4f refine=%.2f\n",
+                        "(%ld rows): refine=%.2f, search_batch=%u\n",
                         an_config.ivf_pq_size_from_cluster ? "cluster"
                                                            : "full dataset",
                         (long)sizingRows,
-                        ivfPqParams.build_params.n_lists,
-                        ivfPqParams.search_params.n_probes,
-                        ivfPqParams.build_params.kmeans_trainset_fraction,
-                        ivfPqParams.refinement_rate);
-                cppParams->graph_build_params = ivfPqParams;
+                        an_config.refinement_rate,
+                        an_config.ivf_pq_search_batch_size);
                 algoName = "ivf_pq";
                 break;
             }
@@ -449,29 +421,22 @@ void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
                         ? an_config.refinement_rate
                         : 0.0f);
 
-        if (cppParams) {
-            auto dataset = raft::make_host_matrix_view<const float, int64_t>(
-                    x, n, static_cast<int64_t>(this->d));
-            cuvs::neighbors::all_neighbors::build(
-                    clique, *cppParams, dataset, dIndices.view());
-        } else {
-            auto datasetTensor = makeCuvsTensor(
-                    const_cast<float*>(x), (int64_t)n, (int64_t)this->d);
-            auto indexTensor = makeCuvsTensor(
-                    dIndices.data_handle(),
-                    (int64_t)n,
-                    (int64_t)intermediate_degree);
-            cuvsCheck(
-                    cuvsAllNeighborsBuild(
-                            reinterpret_cast<cuvsResources_t>(&clique),
-                            cParams,
-                            datasetTensor.get(),
-                            indexTensor.get(),
-                            nullptr,
-                            nullptr,
-                            1.0f),
-                    "cuvsAllNeighborsBuild");
-        }
+        auto datasetTensor = makeCuvsTensor(
+                const_cast<float*>(x), (int64_t)n, (int64_t)this->d);
+        auto indexTensor = makeCuvsTensor(
+                dIndices.data_handle(),
+                (int64_t)n,
+                (int64_t)intermediate_degree);
+        cuvsCheck(
+                cuvsAllNeighborsBuild(
+                        reinterpret_cast<cuvsResources_t>(&clique),
+                        cParams,
+                        datasetTensor.get(),
+                        indexTensor.get(),
+                        nullptr,
+                        nullptr,
+                        1.0f),
+                "cuvsAllNeighborsBuild");
 
         auto t_now = std::chrono::high_resolution_clock::now();
         fprintf(stderr,
@@ -499,34 +464,19 @@ void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
     const size_t out_count = (size_t)n * graph_degree;
     std::vector<uint32_t> h_cagra(out_count);
 
-#if !defined(FAISS_CAGRA_DEVICE_OPTIMIZE)
-    // Public API: host matrices only, so the graph makes a round trip it does
-    // not need. Some cuVS versions also read the input as host memory whatever
-    // accessor you hand them, so passing device pointers here is not an option.
-    auto h_knn =
-            raft::make_host_matrix<uint32_t, int64_t>(n, intermediate_degree);
-    raft::copy(
-            h_knn.data_handle(),
-            d_knn.data_handle(),
-            knn_count,
-            raft::resource::get_cuda_stream(single_gpu_res));
-    raft::resource::sync_stream(single_gpu_res);
-
-    auto h_cagra_view = raft::make_host_matrix_view<uint32_t, int64_t>(
-            h_cagra.data(), n, graph_degree);
-    cuvs::neighbors::cagra::helpers::optimize(
-            single_gpu_res, h_knn.view(), h_cagra_view);
-    const char* optimize_where = "host (public API)";
-#else
     auto d_cagra = raft::make_device_matrix<uint32_t, int64_t>(
             single_gpu_res, n, graph_degree);
-
-    cuvs::neighbors::cagra::detail::graph::optimize<uint32_t>(
-            single_gpu_res,
-            d_knn.view(),
-            d_cagra.view(),
-            cagraConfig_.guarantee_connectivity);
-    raft::resource::sync_stream(single_gpu_res);
+    auto knnTensor = makeCuvsTensor(
+            d_knn.data_handle(), (int64_t)n, (int64_t)intermediate_degree);
+    auto cagraTensor = makeCuvsTensor(
+            d_cagra.data_handle(), (int64_t)n, (int64_t)graph_degree);
+    cuvsCheck(
+            cuvsCagraOptimizeGraph(
+                    reinterpret_cast<cuvsResources_t>(&single_gpu_res),
+                    knnTensor.get(),
+                    cagraTensor.get(),
+                    cagraConfig_.guarantee_connectivity),
+            "cuvsCagraOptimizeGraph");
     raft::copy(
             h_cagra.data(),
             d_cagra.data_handle(),
@@ -534,7 +484,6 @@ void GpuIndexCagra::trainAllNeighbors_(idx_t n, const float* x) {
             raft::resource::get_cuda_stream(single_gpu_res));
     raft::resource::sync_stream(single_gpu_res);
     const char* optimize_where = "device-resident";
-#endif
 
     t_now = std::chrono::high_resolution_clock::now();
     fprintf(stderr,

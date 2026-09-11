@@ -26,21 +26,13 @@
 #include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 
-#include <optional>
-#include <vector>
-
 #include <cuvs/neighbors/brute_force.h>
-#include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
-#include <raft/core/logger.hpp>
 #include <raft/linalg/unary_op.cuh>
 
 namespace faiss {
 namespace gpu {
 
-// Compatibility note: release/26.10's brute-force C API does not accept
-// caller-provided L2 norms. Preserve Faiss's cached-norm optimization through
-// C++ only for L2; all other flat searches use the C API below.
 template <typename T>
 void searchWithPrecomputedL2Norms(
         GpuResources* resources,
@@ -51,49 +43,42 @@ void searchWithPrecomputedL2Norms(
         Tensor<idx_t, 2, true>& outIndices,
         float metricArg,
         const IDSelector* sel) {
-    auto& handle = resources->getRaftHandleCurrentDevice();
-    auto databaseView = raft::make_device_matrix_view<const T, int64_t>(
+    auto databaseTensor = makeCuvsTensor(
             database.data(), database.getSize(0), database.getSize(1));
-    auto queryView = raft::make_device_matrix_view<const T, int64_t>(
+    auto normsTensor = makeCuvsTensor(norms.data(), norms.getSize(0));
+    auto queryTensor = makeCuvsTensor(
             queries.data(), queries.getSize(0), queries.getSize(1));
-    auto indexView = raft::make_device_matrix_view<idx_t, int64_t>(
+    auto indicesTensor = makeCuvsTensor(
             outIndices.data(), outIndices.getSize(0), outIndices.getSize(1));
-    auto distanceView = raft::make_device_matrix_view<float, int64_t>(
+    auto distancesTensor = makeCuvsTensor(
             outDistances.data(),
             outDistances.getSize(0),
             outDistances.getSize(1));
-    std::optional<raft::device_vector_view<const float, int64_t>> normsView =
-            raft::make_device_vector_view(norms.data(), norms.getSize(0));
-    cuvs::neighbors::brute_force::index<T, float> index(
-            handle,
-            databaseView,
-            normsView,
-            cuvs::distance::DistanceType::L2Expanded,
-            metricArg);
 
-    if (sel) {
-        raft::core::bitset<uint32_t, int64_t> bitset(
-                handle, database.getSize(0), false);
-        convert_to_bitset(resources, *sel, bitset.view());
-        cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t> filter(
-                bitset.view());
-        cuvs::neighbors::brute_force::search(
-                handle,
-                cuvs::neighbors::brute_force::search_params{},
-                index,
-                queryView,
-                indexView,
-                distanceView,
-                filter);
-    } else {
-        cuvs::neighbors::brute_force::search(
-                handle,
-                cuvs::neighbors::brute_force::search_params{},
-                index,
-                queryView,
-                indexView,
-                distanceView);
-    }
+    cuvsBruteForceIndex_t index = nullptr;
+    cuvsCheck(cuvsBruteForceIndexCreate(&index), "cuvsBruteForceIndexCreate");
+    CuvsUniquePtr<cuvsBruteForceIndex, cuvsBruteForceIndexDestroy> indexHolder(
+            index);
+    auto cuvsResources = cuvsResourcesFromGpuResources(resources);
+    cuvsCheck(
+            cuvsBruteForceBuildWithNorms(
+                    cuvsResources,
+                    databaseTensor.get(),
+                    normsTensor.get(),
+                    L2Expanded,
+                    metricArg,
+                    index),
+            "cuvsBruteForceBuildWithNorms");
+    CuvsFilter filter(resources, sel, database.getSize(0));
+    cuvsCheck(
+            cuvsBruteForceSearch(
+                    cuvsResources,
+                    index,
+                    queryTensor.get(),
+                    indicesTensor.get(),
+                    distancesTensor.get(),
+                    filter.get()),
+            "cuvsBruteForceSearch");
 }
 
 CuvsFlatIndex::CuvsFlatIndex(

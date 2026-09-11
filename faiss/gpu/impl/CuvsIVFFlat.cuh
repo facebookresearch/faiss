@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
@@ -128,22 +127,6 @@ class CuvsIVFFlat : public IVFFlat {
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     cuvsIvfFlatIndex_t cuvs_index{nullptr};
-};
-
-struct CuvsIVFFlatCodePackerInterleaved : CodePacker {
-    CuvsIVFFlatCodePackerInterleaved(
-            size_t list_size,
-            uint32_t dim,
-            uint32_t chunk_size);
-    CodePacker* clone() const final;
-    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-            const final;
-    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-            const final;
-
-   protected:
-    uint32_t chunk_size;
-    uint32_t dim;
 };
 
 } // namespace gpu

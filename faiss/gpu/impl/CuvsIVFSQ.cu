@@ -21,22 +21,18 @@
  * limitations under the License.
  */
 
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 
+#include <cuvs/neighbors/ivf_sq.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/CuvsFilterConvert.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
-#include <faiss/gpu/impl/CuvsIVFSQ.cuh>
-#include <faiss/gpu/impl/FlatIndex.cuh>
-#include <faiss/gpu/utils/CopyUtils.cuh>
-
-#include <cuvs/neighbors/ivf_sq.h>
-#include <cuvs/neighbors/ivf_sq.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
 #include <thrust/extrema.h>
+#include <faiss/gpu/impl/CuvsIVFSQ.cuh>
+#include <faiss/gpu/impl/FlatIndex.cuh>
 #include <raft/core/copy.cuh>
 #include <raft/linalg/map.cuh>
 #include <raft/linalg/norm.cuh>
@@ -51,20 +47,7 @@ namespace gpu {
 
 namespace {
 
-// Compatibility note: release/26.10 has no C API for resetting, constructing
-// from caller-provided coarse centers and scalar-quantizer state, or importing
-// and exporting, resizing, inspecting, and packing raw IVF-SQ list storage.
-// build, search, extend, total-size, and centers operations use C; these C++
-// types/helpers are retained only for Faiss inverted-list interoperability.
 constexpr float kFaissSQ8Levels = 255.0f;
-using CuvsSQListSpec =
-        cuvs::neighbors::ivf_sq::list_spec<uint32_t, uint8_t, int64_t>;
-constexpr uint32_t kCuvsSQVecLen = CuvsSQListSpec::kVecLen;
-using CuvsIVFSQCppIndex = cuvs::neighbors::ivf_sq::index<uint8_t>;
-
-CuvsIVFSQCppIndex* getCppIndex(cuvsIvfSqIndex_t index) {
-    return reinterpret_cast<CuvsIVFSQCppIndex*>(index->addr);
-}
 
 uint32_t roundUpTo(uint32_t value, uint32_t align) {
     return ((value + align - 1) / align) * align;
@@ -126,55 +109,12 @@ size_t CuvsIVFSQ::reclaimMemory() {
 void CuvsIVFSQ::reset() {
     maxVectorId_ = -1;
     hasNegativeVectorId_ = false;
-    if (cuvs_index == nullptr) {
-        return;
+    if (cuvs_index) {
+        cuvsCheck(
+                cuvsIvfSqIndexReset(
+                        cuvsResourcesFromGpuResources(resources_), cuvs_index),
+                "cuvsIvfSqIndexReset");
     }
-
-    // Compatibility note: release/26.10 has no IVF-SQ C reset operation.
-    // Reconstruct an empty C++ index with the existing training state, then
-    // place it back behind the public C handle used by the rest of this class.
-    const raft::device_resources& raftHandle =
-            resources_->getRaftHandleCurrentDevice();
-    auto* current = getCppIndex(cuvs_index);
-    auto replacement = std::make_unique<CuvsIVFSQCppIndex>(
-            raftHandle,
-            current->metric(),
-            current->n_lists(),
-            current->dim(),
-            current->conservative_memory_allocation());
-
-    CuvsOutputTensor centers;
-    cuvsCheck(
-            cuvsIvfSqIndexGetCenters(cuvs_index, centers.get()),
-            "cuvsIvfSqIndexGetCenters");
-    auto stream = raftHandle.get_stream();
-    raft::copy(
-            replacement->centers().data_handle(),
-            centers.data<float>(),
-            static_cast<size_t>(numLists_) * dim_,
-            stream);
-    raft::copy(
-            replacement->sq_vmin().data_handle(),
-            current->sq_vmin().data_handle(),
-            dim_,
-            stream);
-    raft::copy(
-            replacement->sq_delta().data_handle(),
-            current->sq_delta().data_handle(),
-            dim_,
-            stream);
-
-    cuvsIvfSqIndex_t newIndex = nullptr;
-    cuvsCheck(cuvsIvfSqIndexCreate(&newIndex), "cuvsIvfSqIndexCreate");
-    CuvsUniquePtr<cuvsIvfSqIndex, cuvsIvfSqIndexDestroy> newIndexHolder(
-            newIndex);
-    newIndex->addr = reinterpret_cast<uintptr_t>(replacement.release());
-    newIndex->dtype = cuvs_index->dtype;
-    raftHandle.sync_stream();
-
-    cuvsCheck(cuvsIvfSqIndexDestroy(cuvs_index), "cuvsIvfSqIndexDestroy");
-    cuvs_index = newIndexHolder.release();
-    computeCenterNorms_();
 }
 
 void CuvsIVFSQ::setCuvsIndex(cuvsIvfSqIndex_t index) {
@@ -182,11 +122,9 @@ void CuvsIVFSQ::setCuvsIndex(cuvsIvfSqIndex_t index) {
         cuvsCheck(cuvsIvfSqIndexDestroy(cuvs_index), "cuvsIvfSqIndexDestroy");
     }
     cuvs_index = index;
-    // Callers install a freshly-built index that has no vectors yet.
     maxVectorId_ = -1;
     hasNegativeVectorId_ = false;
     copyCuvsSQToFaiss_(faissSQ_);
-    computeCenterNorms_();
 }
 
 void CuvsIVFSQ::search(
@@ -339,46 +277,47 @@ idx_t CuvsIVFSQ::addVectors(
 
 idx_t CuvsIVFSQ::getListLength(idx_t listId) const {
     FAISS_ASSERT(cuvs_index != nullptr);
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    CuvsOutputTensor listSizes;
+    cuvsCheck(
+            cuvsIvfSqIndexGetListSizes(cuvs_index, listSizes.get()),
+            "cuvsIvfSqIndexGetListSizes");
 
     uint32_t size;
     raft::update_host(
             &size,
-            getCppIndex(cuvs_index)->list_sizes().data_handle() + listId,
+            listSizes.data<uint32_t>() + listId,
             1,
-            raft_handle.get_stream());
-    raft_handle.sync_stream();
+            raftHandle.get_stream());
+    raftHandle.sync_stream();
 
     return static_cast<idx_t>(size);
 }
 
 std::vector<idx_t> CuvsIVFSQ::getListIndices(idx_t listId) const {
     FAISS_ASSERT(cuvs_index != nullptr);
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
-
-    idx_t listSize = getListLength(listId);
-    std::vector<idx_t> vec(listSize);
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    const idx_t listSize = getListLength(listId);
+    std::vector<idx_t> indices(listSize);
     if (listSize == 0) {
-        return vec;
+        return indices;
     }
+    CuvsOutputTensor listIndices;
+    cuvsCheck(
+            cuvsIvfSqIndexGetListIndices(
+                    cuvs_index,
+                    static_cast<uint32_t>(listId),
+                    listIndices.get()),
+            "cuvsIvfSqIndexGetListIndices");
 
-    idx_t* list_indices_ptr;
     raft::update_host(
-            &list_indices_ptr,
-            const_cast<idx_t**>(
-                    getCppIndex(cuvs_index)->inds_ptrs().data_handle()) +
-                    listId,
-            1,
-            stream);
-    raft_handle.sync_stream();
+            indices.data(),
+            listIndices.data<idx_t>(),
+            listSize,
+            raftHandle.get_stream());
+    raftHandle.sync_stream();
 
-    raft::update_host(vec.data(), list_indices_ptr, listSize, stream);
-    raft_handle.sync_stream();
-
-    return vec;
+    return indices;
 }
 
 std::vector<uint8_t> CuvsIVFSQ::getListVectorData(idx_t listId, bool gpuFormat)
@@ -388,46 +327,45 @@ std::vector<uint8_t> CuvsIVFSQ::getListVectorData(idx_t listId, bool gpuFormat)
     }
     FAISS_ASSERT(cuvs_index != nullptr);
 
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
-
-    idx_t listSize = getListLength(listId);
-    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(listSize);
-    std::vector<uint8_t> flat_codes(cpuListSizeInBytes);
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    const idx_t listSize = getListLength(listId);
+    std::vector<uint8_t> flatCodes(getCpuVectorsEncodingSize_(listSize));
     if (listSize == 0) {
-        return flat_codes;
+        return flatCodes;
     }
 
-    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(listSize);
-    std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
+    auto codesDevice = raft::make_device_matrix<uint8_t, uint32_t>(
+            raftHandle,
+            static_cast<uint32_t>(listSize),
+            static_cast<uint32_t>(dim_));
+    auto codesTensor = makeCuvsTensor(
+            codesDevice.data_handle(), (int64_t)listSize, (int64_t)dim_);
+    cuvsCheck(
+            cuvsIvfSqIndexUnpackContiguousListData(
+                    cuvsResourcesFromGpuResources(resources_),
+                    cuvs_index,
+                    codesTensor.get(),
+                    static_cast<uint32_t>(listId),
+                    0),
+            "cuvsIvfSqIndexUnpackContiguousListData");
 
-    uint8_t* list_data_ptr;
     raft::update_host(
-            &list_data_ptr,
-            const_cast<uint8_t**>(
-                    getCppIndex(cuvs_index)->data_ptrs().data_handle()) +
-                    listId,
-            1,
-            stream);
-    raft_handle.sync_stream();
-
-    raft::update_host(
-            interleaved_codes.data(),
-            list_data_ptr,
-            gpuListSizeInBytes,
-            stream);
-    raft_handle.sync_stream();
-
-    CuvsIVFSQCodePackerInterleaved packer((size_t)listSize, dim_);
-    packer.unpack_all(interleaved_codes.data(), flat_codes.data());
-    return flat_codes;
+            flatCodes.data(),
+            codesDevice.data_handle(),
+            flatCodes.size(),
+            raftHandle.get_stream());
+    raftHandle.sync_stream();
+    return flatCodes;
 }
 
 void CuvsIVFSQ::updateQuantizer(Index* quantizer) {
     FAISS_THROW_IF_NOT(quantizer->is_trained);
     FAISS_THROW_IF_NOT(quantizer->d == getDim());
     FAISS_THROW_IF_NOT(quantizer->ntotal == getNumLists());
+    FAISS_ASSERT(faissSQ_ != nullptr);
+    FAISS_THROW_IF_NOT_MSG(
+            faissSQ_->trained.size() == 2 * static_cast<size_t>(dim_),
+            "cuVS IVF-SQ requires trained QT_8bit range data");
 
     int64_t indexSize = 0;
     if (cuvs_index) {
@@ -440,116 +378,111 @@ void CuvsIVFSQ::updateQuantizer(Index* quantizer) {
             "updateQuantizer() cannot be called after vectors have been added: "
             "it would discard the stored inverted lists");
 
-    // Compatibility note: release/26.10 has no C API that constructs an
-    // empty IVF-SQ index from caller-provided coarse centers and scalar
-    // quantizer state. Preserve that state with the C++ constructor, then put
-    // the replacement behind the C handle used by supported operations.
-    const raft::device_resources& raftHandle =
-            resources_->getRaftHandleCurrentDevice();
-    cuvs::neighbors::ivf_sq::index_params params;
-    params.add_data_on_build = false;
-    params.metric = static_cast<cuvs::distance::DistanceType>(
-            metricFaissToCuvs(metric_, false));
-    params.metric_arg = metricArg_;
-    params.n_lists = numLists_;
-    auto replacement = std::make_unique<CuvsIVFSQCppIndex>(
-            raftHandle, params, static_cast<uint32_t>(dim_));
-
     const size_t totalElements =
             static_cast<size_t>(quantizer->ntotal) * quantizer->d;
     auto stream = resources_->getDefaultStreamCurrentDevice();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    DeviceTensor<float, 2, true> centers(
+            resources_,
+            makeSpaceAlloc(AllocType::Quantizer, space_, stream),
+            {getNumLists(), getDim()});
     auto gpuQ = dynamic_cast<GpuIndexFlat*>(quantizer);
     if (gpuQ) {
         auto gpuData = gpuQ->getGpuData();
         if (gpuData->getUseFloat16()) {
-            DeviceTensor<float, 2, true> centroids(
-                    resources_,
-                    makeSpaceAlloc(AllocType::FlatData, space_, stream),
-                    {getNumLists(), getDim()});
-            gpuData->reconstruct(0, gpuData->getSize(), centroids);
-            raft::update_device(
-                    replacement->centers().data_handle(),
-                    centroids.data(),
-                    totalElements,
-                    stream);
+            gpuData->reconstruct(0, gpuData->getSize(), centers);
         } else {
-            auto centroids = gpuData->getVectorsFloat32Ref();
-            raft::update_device(
-                    replacement->centers().data_handle(),
-                    centroids.data(),
-                    totalElements,
-                    stream);
+            auto source = gpuData->getVectorsFloat32Ref();
+            raft::copy(centers.data(), source.data(), totalElements, stream);
         }
     } else {
-        std::vector<float> centroids(totalElements);
-        quantizer->reconstruct_n(0, quantizer->ntotal, centroids.data());
+        std::vector<float> hostCenters(totalElements);
+        quantizer->reconstruct_n(0, quantizer->ntotal, hostCenters.data());
         raft::update_device(
-                replacement->centers().data_handle(),
-                centroids.data(),
-                totalElements,
-                stream);
+                centers.data(), hostCenters.data(), totalElements, stream);
     }
-    raftHandle.sync_stream();
+
+    std::vector<float> hostVmin(dim_);
+    std::vector<float> hostDelta(dim_);
+    for (int d = 0; d < dim_; ++d) {
+        hostDelta[d] = faissSQ_->trained[dim_ + d] / kFaissSQ8Levels;
+        hostVmin[d] = faissSQ_->trained[d] + 0.5f * hostDelta[d];
+    }
+    DeviceTensor<float, 1, true> vmin(
+            resources_,
+            makeSpaceAlloc(AllocType::Quantizer, space_, stream),
+            {getDim()});
+    DeviceTensor<float, 1, true> delta(
+            resources_,
+            makeSpaceAlloc(AllocType::Quantizer, space_, stream),
+            {getDim()});
+    raft::update_device(vmin.data(), hostVmin.data(), dim_, stream);
+    raft::update_device(delta.data(), hostDelta.data(), dim_, stream);
+
+    DeviceTensor<float, 1, true> centerNorms;
+    std::unique_ptr<CuvsTensor<float, 1>> centerNormsTensor;
+    if (metric_ == faiss::METRIC_L2) {
+        centerNorms = DeviceTensor<float, 1, true>(
+                resources_,
+                makeSpaceAlloc(AllocType::Quantizer, space_, stream),
+                {getNumLists()});
+        raft::linalg::rowNorm<raft::linalg::L2Norm, true, float, uint32_t>(
+                centerNorms.data(),
+                centers.data(),
+                dim_,
+                static_cast<uint32_t>(numLists_),
+                stream);
+        centerNormsTensor = std::make_unique<CuvsTensor<float, 1>>(
+                centerNorms.data(), (int64_t)numLists_);
+    }
+
+    cuvsIvfSqIndexParams_t params = nullptr;
+    cuvsCheck(
+            cuvsIvfSqIndexParamsCreate(&params), "cuvsIvfSqIndexParamsCreate");
+    CuvsUniquePtr<cuvsIvfSqIndexParams, cuvsIvfSqIndexParamsDestroy>
+            paramsHolder(params);
+    params->add_data_on_build = false;
+    params->metric = metricFaissToCuvs(metric_, false);
+    params->metric_arg = metricArg_;
+    params->n_lists = numLists_;
+
+    auto centersTensor =
+            makeCuvsTensor(centers.data(), (int64_t)numLists_, (int64_t)dim_);
+    auto vminTensor = makeCuvsTensor(vmin.data(), (int64_t)dim_);
+    auto deltaTensor = makeCuvsTensor(delta.data(), (int64_t)dim_);
 
     cuvsIvfSqIndex_t index = nullptr;
     cuvsCheck(cuvsIvfSqIndexCreate(&index), "cuvsIvfSqIndexCreate");
     CuvsUniquePtr<cuvsIvfSqIndex, cuvsIvfSqIndexDestroy> indexHolder(index);
-    index->addr = reinterpret_cast<uintptr_t>(replacement.release());
-    index->dtype = cuvsDtype<float>();
-    if (cuvs_index) {
-        cuvsCheck(cuvsIvfSqIndexDestroy(cuvs_index), "cuvsIvfSqIndexDestroy");
-    }
-    cuvs_index = indexHolder.release();
-    maxVectorId_ = -1;
-    hasNegativeVectorId_ = false;
-    copyFaissSQToCuvs_();
-    computeCenterNorms_();
+    cuvsCheck(
+            cuvsIvfSqBuildFromCenters(
+                    cuvsResourcesFromGpuResources(resources_),
+                    params,
+                    cuvsDtype<float>(),
+                    centersTensor.get(),
+                    centerNormsTensor ? centerNormsTensor->get() : nullptr,
+                    vminTensor.get(),
+                    deltaTensor.get(),
+                    index),
+            "cuvsIvfSqBuildFromCenters");
+    raftHandle.sync_stream();
+    setCuvsIndex(indexHolder.release());
 }
 
 void CuvsIVFSQ::copyInvertedListsFrom(const InvertedLists* ivf) {
-    size_t nlist = ivf ? ivf->nlist : 0;
+    const size_t nlist = ivf ? ivf->nlist : 0;
 
     FAISS_ASSERT(cuvs_index != nullptr);
-    FAISS_ASSERT(faissSQ_ != nullptr);
     FAISS_THROW_IF_NOT(nlist == static_cast<size_t>(numLists_));
-    FAISS_THROW_IF_NOT_MSG(
-            faissSQ_->qtype == faiss::ScalarQuantizer::QT_8bit,
-            "cuVS IVF-SQ supports only QT_8bit scalar quantization");
-    FAISS_THROW_IF_NOT_MSG(
-            faissSQ_->trained.size() == 2 * static_cast<size_t>(dim_),
-            "cuVS IVF-SQ requires trained QT_8bit range data");
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    std::vector<uint32_t> listSizes(nlist);
-    auto& cuvsIndexLists = getCppIndex(cuvs_index)->lists();
-    CuvsSQListSpec listSpec{
-            static_cast<uint32_t>(dim_),
-            true /* conservative_memory_allocation */};
 
     for (size_t i = 0; i < nlist; ++i) {
-        size_t listSize = ivf->list_size(i);
+        const size_t listSize = ivf->list_size(i);
         FAISS_THROW_IF_NOT_FMT(
                 listSize <= (size_t)std::numeric_limits<int>::max(),
-                "GPU inverted list can only support "
-                "%zu entries; %zu found",
+                "GPU inverted list can only support %zu entries; %zu found",
                 (size_t)std::numeric_limits<int>::max(),
                 listSize);
-
-        listSizes[i] = static_cast<uint32_t>(listSize);
         FAISS_ASSERT(getListLength(i) == 0);
-        cuvs::neighbors::ivf::resize_list(
-                raft_handle,
-                cuvsIndexLists[i],
-                listSpec,
-                static_cast<uint32_t>(listSize),
-                static_cast<uint32_t>(0));
-    }
-
-    recomputeListState_(listSizes);
-
-    for (size_t i = 0; i < nlist; ++i) {
-        size_t listSize = ivf->list_size(i);
         const idx_t* ids = ivf->get_ids(i);
         for (size_t j = 0; j < listSize; ++j) {
             if (ids[j] < 0) {
@@ -560,8 +493,6 @@ void CuvsIVFSQ::copyInvertedListsFrom(const InvertedLists* ivf) {
         }
         addEncodedVectorsToList_(i, ivf->get_codes(i), ids, listSize);
     }
-
-    computeCenterNorms_();
 }
 
 void CuvsIVFSQ::setFaissSQFromCuvs(faiss::ScalarQuantizer* sq) const {
@@ -578,46 +509,8 @@ void CuvsIVFSQ::reconstruct_n(idx_t i0, idx_t ni, float* out) {
 
     std::fill(out, out + ni * dim_, 0.0f);
     auto centers = getCentersHost_();
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
-
-    // Read all per-list metadata in three batched copies rather than syncing
-    // once per list as getListLength()/getListIndices()/getListVectorData()
-    // would; those helpers each issue their own sync_stream().
-    std::vector<uint32_t> listSizes(numLists_);
-    std::vector<idx_t*> indsPtrs(numLists_);
-    std::vector<uint8_t*> dataPtrs(numLists_);
-    raft::update_host(
-            listSizes.data(),
-            getCppIndex(cuvs_index)->list_sizes().data_handle(),
-            numLists_,
-            stream);
-    raft::update_host(
-            indsPtrs.data(),
-            getCppIndex(cuvs_index)->inds_ptrs().data_handle(),
-            numLists_,
-            stream);
-    raft::update_host(
-            dataPtrs.data(),
-            getCppIndex(cuvs_index)->data_ptrs().data_handle(),
-            numLists_,
-            stream);
-    raft_handle.sync_stream();
-
     for (idx_t listId = 0; listId < numLists_; ++listId) {
-        idx_t listSize = listSizes[listId];
-        if (listSize == 0) {
-            continue;
-        }
-
-        std::vector<idx_t> ids(listSize);
-        raft::update_host(ids.data(), indsPtrs[listId], listSize, stream);
-        raft_handle.sync_stream();
-
-        // Skip the (expensive) code readback + decode unless this list holds at
-        // least one id in the requested [i0, i0 + ni) range.
+        auto ids = getListIndices(listId);
         bool hasIdInRange = false;
         for (idx_t id : ids) {
             if (id >= i0 && id < i0 + ni) {
@@ -629,26 +522,15 @@ void CuvsIVFSQ::reconstruct_n(idx_t i0, idx_t ni, float* out) {
             continue;
         }
 
-        auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(listSize);
-        std::vector<uint8_t> interleavedCodes(gpuListSizeInBytes);
-        raft::update_host(
-                interleavedCodes.data(),
-                dataPtrs[listId],
-                gpuListSizeInBytes,
-                stream);
-        raft_handle.sync_stream();
+        auto flatCodes = getListVectorData(listId, false);
 
-        std::vector<uint8_t> flatCodes(getCpuVectorsEncodingSize_(listSize));
-        CuvsIVFSQCodePackerInterleaved packer((size_t)listSize, dim_);
-        packer.unpack_all(interleavedCodes.data(), flatCodes.data());
-
-        std::vector<float> decoded(listSize * dim_);
-        faissSQ_->decode(flatCodes.data(), decoded.data(), listSize);
+        std::vector<float> decoded(ids.size() * dim_);
+        faissSQ_->decode(flatCodes.data(), decoded.data(), ids.size());
 
         const float* center = centers.data() + listId * dim_;
-        for (idx_t offset = 0; offset < listSize; ++offset) {
-            idx_t id = ids[offset];
-            if (!(id >= i0 && id < i0 + ni)) {
+        for (size_t offset = 0; offset < ids.size(); ++offset) {
+            const idx_t id = ids[offset];
+            if (id < i0 || id >= i0 + ni) {
                 continue;
             }
 
@@ -662,10 +544,11 @@ void CuvsIVFSQ::reconstruct_n(idx_t i0, idx_t ni, float* out) {
 }
 
 size_t CuvsIVFSQ::getGpuVectorsEncodingSize_(idx_t numVecs) const {
-    idx_t paddedDim = roundUpTo(dim_, kCuvsSQVecLen);
-    idx_t numBlocks =
-            utils::divUp(numVecs, cuvs::neighbors::ivf_sq::kIndexGroupSize);
-    return numBlocks * cuvs::neighbors::ivf_sq::kIndexGroupSize * paddedDim;
+    constexpr idx_t indexGroupSize = 32;
+    constexpr idx_t vectorLength = 16;
+    idx_t paddedDim = roundUpTo(dim_, vectorLength);
+    idx_t numBlocks = utils::divUp(numVecs, indexGroupSize);
+    return numBlocks * indexGroupSize * paddedDim;
 }
 
 void CuvsIVFSQ::addEncodedVectorsToList_(
@@ -680,90 +563,66 @@ void CuvsIVFSQ::addEncodedVectorsToList_(
     FAISS_ASSERT(cuvs_index != nullptr);
 
     auto stream = resources_->getDefaultStreamCurrentDevice();
-    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
-    FAISS_ASSERT(gpuListSizeInBytes <= (size_t)std::numeric_limits<int>::max());
-
-    std::vector<uint8_t> interleavedCodes(gpuListSizeInBytes);
-    CuvsIVFSQCodePackerInterleaved packer((size_t)numVecs, dim_);
-    packer.pack_all(
-            reinterpret_cast<const uint8_t*>(codes), interleavedCodes.data());
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-
-    uint8_t* listDataPtr;
-    raft::update_host(
-            &listDataPtr,
-            getCppIndex(cuvs_index)->data_ptrs().data_handle() + listId,
-            1,
-            stream);
-    raft_handle.sync_stream();
-
-    raft::update_device(
-            listDataPtr, interleavedCodes.data(), gpuListSizeInBytes, stream);
-
-    idx_t* listIndicesPtr;
-    raft::update_host(
-            &listIndicesPtr,
-            getCppIndex(cuvs_index)->inds_ptrs().data_handle() + listId,
-            1,
-            stream);
-    raft_handle.sync_stream();
-
-    raft::update_device(listIndicesPtr, indices, numVecs, stream);
-}
-
-void CuvsIVFSQ::copyFaissSQToCuvs_() {
-    FAISS_ASSERT(cuvs_index != nullptr);
-    FAISS_ASSERT(faissSQ_ != nullptr);
-    FAISS_THROW_IF_NOT_MSG(
-            faissSQ_->qtype == faiss::ScalarQuantizer::QT_8bit,
-            "cuVS IVF-SQ supports only QT_8bit scalar quantization");
-    FAISS_THROW_IF_NOT_MSG(
-            faissSQ_->trained.size() == 2 * static_cast<size_t>(dim_),
-            "cuVS IVF-SQ requires trained QT_8bit range data");
-
-    std::vector<float> vmin(dim_);
-    std::vector<float> delta(dim_);
-    for (int d = 0; d < dim_; ++d) {
-        delta[d] = faissSQ_->trained[dim_ + d] / kFaissSQ8Levels;
-        vmin[d] = faissSQ_->trained[d] + 0.5f * delta[d];
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    constexpr idx_t maxBatchSize = 4096;
+    for (idx_t offset = 0; offset < numVecs; offset += maxBatchSize) {
+        uint32_t batchSize = min(maxBatchSize, numVecs - offset);
+        auto codesDevice = raft::make_device_matrix<uint8_t, uint32_t>(
+                raftHandle, batchSize, static_cast<uint32_t>(dim_));
+        auto indicesDevice = raft::make_device_vector<idx_t, uint32_t>(
+                raftHandle, batchSize);
+        raft::update_device(
+                codesDevice.data_handle(),
+                static_cast<const uint8_t*>(codes) + offset * dim_,
+                static_cast<size_t>(batchSize) * dim_,
+                stream);
+        raft::update_device(
+                indicesDevice.data_handle(),
+                indices + offset,
+                batchSize,
+                stream);
+        auto codesTensor = makeCuvsTensor(
+                codesDevice.data_handle(), (int64_t)batchSize, (int64_t)dim_);
+        auto indicesTensor =
+                makeCuvsTensor(indicesDevice.data_handle(), (int64_t)batchSize);
+        cuvsCheck(
+                cuvsIvfSqIndexExtendList(
+                        cuvsResourcesFromGpuResources(resources_),
+                        cuvs_index,
+                        codesTensor.get(),
+                        indicesTensor.get(),
+                        static_cast<uint32_t>(listId)),
+                "cuvsIvfSqIndexExtendList");
     }
-
-    auto stream = resources_->getDefaultStreamCurrentDevice();
-    raft::update_device(
-            getCppIndex(cuvs_index)->sq_vmin().data_handle(),
-            vmin.data(),
-            dim_,
-            stream);
-    raft::update_device(
-            getCppIndex(cuvs_index)->sq_delta().data_handle(),
-            delta.data(),
-            dim_,
-            stream);
 }
 
 void CuvsIVFSQ::copyCuvsSQToFaiss_(faiss::ScalarQuantizer* sq) const {
     FAISS_ASSERT(cuvs_index != nullptr);
     FAISS_THROW_IF_NOT_MSG(sq, "ScalarQuantizer pointer cannot be null");
 
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    CuvsOutputTensor vminTensor;
+    CuvsOutputTensor deltaTensor;
+    cuvsCheck(
+            cuvsIvfSqIndexGetVMin(cuvs_index, vminTensor.get()),
+            "cuvsIvfSqIndexGetVMin");
+    cuvsCheck(
+            cuvsIvfSqIndexGetDelta(cuvs_index, deltaTensor.get()),
+            "cuvsIvfSqIndexGetDelta");
 
     std::vector<float> vmin(dim_);
     std::vector<float> delta(dim_);
     raft::update_host(
             vmin.data(),
-            getCppIndex(cuvs_index)->sq_vmin().data_handle(),
+            vminTensor.data<float>(),
             dim_,
-            stream);
+            raftHandle.get_stream());
     raft::update_host(
             delta.data(),
-            getCppIndex(cuvs_index)->sq_delta().data_handle(),
+            deltaTensor.data<float>(),
             dim_,
-            stream);
-    raft_handle.sync_stream();
+            raftHandle.get_stream());
+    raftHandle.sync_stream();
 
     sq->d = dim_;
     sq->qtype = faiss::ScalarQuantizer::QT_8bit;
@@ -773,74 +632,6 @@ void CuvsIVFSQ::copyCuvsSQToFaiss_(faiss::ScalarQuantizer* sq) const {
         sq->trained[d] = vmin[d] - 0.5f * delta[d];
         sq->trained[dim_ + d] = kFaissSQ8Levels * delta[d];
     }
-}
-
-void CuvsIVFSQ::computeCenterNorms_() {
-    FAISS_ASSERT(cuvs_index != nullptr);
-
-    if (metric_ != faiss::METRIC_L2) {
-        return;
-    }
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    getCppIndex(cuvs_index)->allocate_center_norms(raft_handle);
-    CuvsOutputTensor centers;
-    cuvsCheck(
-            cuvsIvfSqIndexGetCenters(cuvs_index, centers.get()),
-            "cuvsIvfSqIndexGetCenters");
-    raft::linalg::rowNorm<raft::linalg::L2Norm, true, float, uint32_t>(
-            getCppIndex(cuvs_index)->center_norms().value().data_handle(),
-            centers.data<float>(),
-            dim_,
-            static_cast<uint32_t>(numLists_),
-            raft_handle.get_stream());
-}
-
-void CuvsIVFSQ::recomputeListState_(const std::vector<uint32_t>& listSizes) {
-    FAISS_ASSERT(cuvs_index != nullptr);
-    FAISS_THROW_IF_NOT(listSizes.size() == static_cast<size_t>(numLists_));
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
-
-    std::vector<uint8_t*> dataPtrs(numLists_);
-    std::vector<idx_t*> indsPtrs(numLists_);
-    auto& lists = getCppIndex(cuvs_index)->lists();
-    for (idx_t i = 0; i < numLists_; ++i) {
-        dataPtrs[i] = lists[i] ? lists[i]->data_ptr() : nullptr;
-        indsPtrs[i] = lists[i] ? lists[i]->indices_ptr() : nullptr;
-    }
-
-    raft::update_device(
-            getCppIndex(cuvs_index)->data_ptrs().data_handle(),
-            dataPtrs.data(),
-            dataPtrs.size(),
-            stream);
-    raft::update_device(
-            getCppIndex(cuvs_index)->inds_ptrs().data_handle(),
-            indsPtrs.data(),
-            indsPtrs.size(),
-            stream);
-    raft::update_device(
-            getCppIndex(cuvs_index)->list_sizes().data_handle(),
-            listSizes.data(),
-            listSizes.size(),
-            stream);
-
-    auto sortedListSizes = listSizes;
-    std::sort(
-            sortedListSizes.begin(),
-            sortedListSizes.end(),
-            [](uint32_t a, uint32_t b) { return a > b; });
-
-    auto accumSortedSizes = getCppIndex(cuvs_index)->accum_sorted_sizes();
-    accumSortedSizes(0) = 0;
-    for (size_t i = 0; i < sortedListSizes.size(); ++i) {
-        accumSortedSizes(i + 1) = accumSortedSizes(i) + sortedListSizes[i];
-    }
-    raft_handle.sync_stream();
 }
 
 idx_t CuvsIVFSQ::getBitsetSizeForFiltering_() const {
@@ -886,62 +677,6 @@ std::vector<float> CuvsIVFSQ::getCentersHost_() const {
             stream);
     raft_handle.sync_stream();
     return centers;
-}
-
-CuvsIVFSQCodePackerInterleaved::CuvsIVFSQCodePackerInterleaved(
-        size_t list_size,
-        uint32_t dim) {
-    this->dim = dim;
-    this->padded_dim = roundUpTo(dim, kCuvsSQVecLen);
-    nvec = list_size;
-    code_size = dim;
-    block_size =
-            utils::roundUp(nvec, cuvs::neighbors::ivf_sq::kIndexGroupSize) *
-            padded_dim;
-}
-
-void CuvsIVFSQCodePackerInterleaved::pack_1(
-        const uint8_t* flat_code,
-        size_t offset,
-        uint8_t* block) const {
-    const uint32_t groupOffset =
-            (offset / cuvs::neighbors::ivf_sq::kIndexGroupSize) *
-            cuvs::neighbors::ivf_sq::kIndexGroupSize;
-    const uint32_t ingroupId =
-            offset % cuvs::neighbors::ivf_sq::kIndexGroupSize;
-    uint8_t* group = block + static_cast<size_t>(groupOffset) * padded_dim;
-
-    for (uint32_t d = 0; d < dim; ++d) {
-        uint32_t l = (d / kCuvsSQVecLen) * kCuvsSQVecLen;
-        uint32_t j = d % kCuvsSQVecLen;
-        group[l * cuvs::neighbors::ivf_sq::kIndexGroupSize +
-              ingroupId * kCuvsSQVecLen + j] = flat_code[d];
-    }
-}
-
-void CuvsIVFSQCodePackerInterleaved::unpack_1(
-        const uint8_t* block,
-        size_t offset,
-        uint8_t* flat_code) const {
-    const uint32_t groupOffset =
-            (offset / cuvs::neighbors::ivf_sq::kIndexGroupSize) *
-            cuvs::neighbors::ivf_sq::kIndexGroupSize;
-    const uint32_t ingroupId =
-            offset % cuvs::neighbors::ivf_sq::kIndexGroupSize;
-    const uint8_t* group =
-            block + static_cast<size_t>(groupOffset) * padded_dim;
-
-    for (uint32_t d = 0; d < dim; ++d) {
-        uint32_t l = (d / kCuvsSQVecLen) * kCuvsSQVecLen;
-        uint32_t j = d % kCuvsSQVecLen;
-        flat_code[d] =
-                group[l * cuvs::neighbors::ivf_sq::kIndexGroupSize +
-                      ingroupId * kCuvsSQVecLen + j];
-    }
-}
-
-CodePacker* CuvsIVFSQCodePackerInterleaved::clone() const {
-    return new CuvsIVFSQCodePackerInterleaved(*this);
 }
 
 } // namespace gpu

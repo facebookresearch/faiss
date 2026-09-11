@@ -129,9 +129,6 @@ class CuvsIVFPQ : public IVFPQ {
             const idx_t* indices,
             idx_t numVecs) override;
 
-    /// Returns the encoding size for a PQ-encoded IVF list
-    size_t getGpuListEncodingSize_(idx_t listId);
-
     /// Copy the PQ centroids to the cuVS index. The data is already in the
     /// preferred format with the transpose performed by the IVFPQ class helper.
     void setPQCentroids_();

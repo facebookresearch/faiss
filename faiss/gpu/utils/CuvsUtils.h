@@ -107,6 +107,47 @@ constexpr DLDataType cuvsDtype() {
     }
 }
 
+inline DLDevice cuvsDlDeviceForAddress(const void* data) {
+    if (!data) {
+        return DLDevice{kDLCPU, 0};
+    }
+
+    cudaPointerAttributes attributes{};
+    cudaError_t error = cudaPointerGetAttributes(&attributes, data);
+    if (error == cudaErrorInvalidValue) {
+        cudaGetLastError();
+        return DLDevice{kDLCPU, 0};
+    }
+    FAISS_THROW_IF_NOT_FMT(
+            error == cudaSuccess,
+            "cudaPointerGetAttributes failed: %s",
+            cudaGetErrorString(error));
+
+#if CUDA_VERSION >= 10000
+    switch (attributes.type) {
+        case cudaMemoryTypeDevice:
+            return DLDevice{kDLCUDA, attributes.device};
+        case cudaMemoryTypeManaged:
+            return DLDevice{kDLCUDAManaged, attributes.device};
+        case cudaMemoryTypeHost:
+            return DLDevice{kDLCUDAHost, 0};
+        default:
+            return DLDevice{kDLCPU, 0};
+    }
+#else
+    if (attributes.isManaged) {
+        return DLDevice{kDLCUDAManaged, attributes.device};
+    }
+    if (attributes.memoryType == cudaMemoryTypeDevice) {
+        return DLDevice{kDLCUDA, attributes.device};
+    }
+    if (attributes.memoryType == cudaMemoryTypeHost) {
+        return DLDevice{kDLCUDAHost, 0};
+    }
+    return DLDevice{kDLCPU, 0};
+#endif
+}
+
 enum class CuvsTensorLayout { RowMajor, ColumnMajor };
 
 /// A non-owning DLPack view whose metadata remains valid for this object's
@@ -139,12 +180,9 @@ class CuvsTensor {
             }
         }
 
-        auto device = getDeviceForAddress(data);
         tensor_.dl_tensor = DLTensor{
                 const_cast<std::remove_const_t<T>*>(data),
-                DLDevice{
-                        device >= 0 ? kDLCUDA : kDLCPU,
-                        device >= 0 ? device : 0},
+                cuvsDlDeviceForAddress(data),
                 static_cast<int32_t>(Rank),
                 cuvsDtype<T>(),
                 shape_.data(),

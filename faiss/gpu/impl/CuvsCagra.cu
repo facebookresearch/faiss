@@ -29,8 +29,6 @@
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 
 #include <cuvs/neighbors/cagra.h>
-#include <cuvs/neighbors/cagra.hpp>
-#include <cuvs/neighbors/ivf_pq.hpp>
 #include <raft/core/bitset.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
@@ -38,55 +36,13 @@
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
 
-#include <algorithm>
 #include <memory>
-#include <optional>
 #include <vector>
 
 namespace faiss {
 namespace gpu {
 
 namespace {
-
-cuvs::distance::DistanceType cppMetric(faiss::MetricType metric) {
-    return static_cast<cuvs::distance::DistanceType>(
-            metricFaissToCuvs(metric, false));
-}
-
-void configureCppIvfPqParams(
-        cuvs::neighbors::ivf_pq::index_params& params,
-        const IVFPQBuildCagraConfig* config,
-        faiss::MetricType metric) {
-    if (!config) {
-        return;
-    }
-
-    params.metric = cppMetric(metric);
-    params.n_lists = config->n_lists;
-    params.kmeans_n_iters = config->kmeans_n_iters;
-    params.kmeans_trainset_fraction = config->kmeans_trainset_fraction;
-    params.pq_bits = config->pq_bits;
-    params.pq_dim = config->pq_dim;
-    params.codebook_kind = static_cast<cuvs::neighbors::ivf_pq::codebook_gen>(
-            config->codebook_kind);
-    params.force_random_rotation = config->force_random_rotation;
-    params.conservative_memory_allocation =
-            config->conservative_memory_allocation;
-}
-
-void configureCppIvfPqSearchParams(
-        cuvs::neighbors::ivf_pq::search_params& params,
-        const IVFPQSearchCagraConfig* config) {
-    if (!config) {
-        return;
-    }
-
-    params.n_probes = config->n_probes;
-    params.lut_dtype = config->lut_dtype;
-    params.internal_distance_dtype = config->internal_distance_dtype;
-    params.preferred_shmem_carveout = config->preferred_shmem_carveout;
-    params.max_internal_batch_size = config->max_internal_batch_size;
-}
 
 void configureCIvfPqParams(
         cuvsIvfPqIndexParams_t params,
@@ -288,94 +244,6 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
 
     const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
 
-    // Compatibility note: release/26.10 has no C API field corresponding to
-    // cagra::index_params::guarantee_connectivity, and its CAGRA bridge does
-    // not propagate IVF-PQ search_params::max_internal_batch_size. Use C++
-    // only to build graphs needing either setting, then put the result back
-    // behind a C API index handle.
-    const bool needsCppGraphBuild = guarantee_connectivity_ ||
-            (graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ &&
-             ivf_pq_search_params_);
-    if (needsCppGraphBuild) {
-        cuvs::neighbors::cagra::index_params params;
-        params.metric = cppMetric(metric_);
-        params.intermediate_graph_degree = intermediate_graph_degree_;
-        params.graph_degree = graph_degree_;
-        params.attach_dataset_on_build = false;
-        params.guarantee_connectivity = guarantee_connectivity_;
-
-        if (graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
-            cuvs::neighbors::cagra::graph_build_params::ivf_pq_params build(
-                    raft::make_extents<uint32_t>(
-                            static_cast<uint32_t>(n_),
-                            static_cast<uint32_t>(dim_)),
-                    cppMetric(metric_));
-            configureCppIvfPqParams(
-                    build.build_params, ivf_pq_params_, metric_);
-            configureCppIvfPqSearchParams(
-                    build.search_params, ivf_pq_search_params_);
-            build.refinement_rate = refine_rate_;
-            params.graph_build_params = build;
-            if (params.graph_degree == params.intermediate_graph_degree) {
-                params.intermediate_graph_degree =
-                        static_cast<size_t>(1.5 * params.graph_degree);
-            }
-        } else {
-            cuvs::neighbors::cagra::graph_build_params::nn_descent_params build(
-                    params.intermediate_graph_degree);
-            build.max_iterations = nn_descent_niter_;
-            build.metric = cppMetric(metric_);
-            params.graph_build_params = build;
-        }
-
-        ownedDataset_ = DeviceTensor<data_t, 2, true>(
-                resources_,
-                AllocInfo(
-                        AllocType::Other,
-                        getCurrentDevice(),
-                        MemorySpace::Device,
-                        raftHandle.get_stream()),
-                {n, dim_});
-        raft::copy(
-                ownedDataset_.data(),
-                x,
-                ownedDataset_.numElements(),
-                raftHandle.get_stream());
-        storage_ = ownedDataset_.data();
-
-        auto sourceView = raft::make_device_matrix_view<const data_t, int64_t>(
-                storage_, n, dim_);
-        auto paddedDataset = cuvs::neighbors::make_device_padded_dataset(
-                raftHandle, sourceView);
-        auto cppIndex = cuvs::neighbors::cagra::build(
-                raftHandle, params, paddedDataset->as_dataset_view());
-        auto graph = cppIndex.graph();
-        auto graphTensor = makeCuvsTensor(
-                graph.data_handle(),
-                static_cast<int64_t>(graph.extent(0)),
-                static_cast<int64_t>(graph.extent(1)));
-        auto datasetTensor =
-                makeCuvsTensor(ownedDataset_.data(), (int64_t)n, (int64_t)dim_);
-
-        cuvsCagraIndex_t index = nullptr;
-        cuvsCheck(cuvsCagraIndexCreate(&index), "cuvsCagraIndexCreate");
-        CuvsUniquePtr<cuvsCagraIndex, cuvsCagraIndexDestroy> indexHolder(index);
-        cuvsCheck(
-                cuvsCagraIndexFromArgs(
-                        cuvsResourcesFromGpuResources(resources_),
-                        metricFaissToCuvs(metric_, false),
-                        graphTensor.get(),
-                        datasetTensor.get(),
-                        index),
-                "cuvsCagraIndexFromArgs");
-        cuvs_dataset_ = makeAndAttachPaddedDataset(
-                resources_, storage_, (int64_t)n_, (int64_t)dim_, index);
-        raftHandle.sync_stream();
-        cuvs_index = indexHolder.release();
-        store_dataset_ = true;
-        return;
-    }
-
     const data_t* buildData = x;
     if (store_dataset_ && cuvsPaddedDatasetNeedsView(x, dim_)) {
         ownedDataset_ = DeviceTensor<data_t, 2, true>(
@@ -426,6 +294,7 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
     params->intermediate_graph_degree = intermediate_graph_degree_;
     params->graph_degree = graph_degree_;
     params->nn_descent_niter = nn_descent_niter_;
+    params->guarantee_connectivity = guarantee_connectivity_;
 
     cuvsIvfPqIndexParams_t ivfBuildParams = nullptr;
     cuvsIvfPqSearchParams_t ivfSearchParams = nullptr;

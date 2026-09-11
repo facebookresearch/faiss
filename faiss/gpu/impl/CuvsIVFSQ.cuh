@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
@@ -138,10 +137,7 @@ class CuvsIVFSQ : public IVFFlat {
     /// this is the size for an entire IVF list
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
 
-    void copyFaissSQToCuvs_();
     void copyCuvsSQToFaiss_(faiss::ScalarQuantizer* sq) const;
-    void computeCenterNorms_();
-    void recomputeListState_(const std::vector<uint32_t>& listSizes);
     idx_t getBitsetSizeForFiltering_() const;
     std::vector<float> getCentersHost_() const;
 
@@ -157,19 +153,6 @@ class CuvsIVFSQ : public IVFFlat {
     bool hasNegativeVectorId_{false};
 
     cuvsIvfSqIndex_t cuvs_index{nullptr};
-};
-
-struct CuvsIVFSQCodePackerInterleaved : CodePacker {
-    CuvsIVFSQCodePackerInterleaved(size_t list_size, uint32_t dim);
-    CodePacker* clone() const final;
-    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-            const final;
-    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-            const final;
-
-   protected:
-    uint32_t dim;
-    uint32_t padded_dim;
 };
 
 } // namespace gpu

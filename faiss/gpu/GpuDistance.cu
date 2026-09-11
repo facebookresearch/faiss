@@ -31,11 +31,8 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
-#include <optional>
-
 #if defined USE_NVIDIA_CUVS
 #include <cuvs/neighbors/brute_force.h>
-#include <cuvs/neighbors/brute_force.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
@@ -293,6 +290,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 static_cast<int64_t>(k));
         auto cuvsResources = cuvsResourcesFromGpuResources(res);
         auto searchCuvs = [&](DLManagedTensor* indexTensor,
+                              DLManagedTensor* normsTensor,
                               DLManagedTensor* queryTensor) {
             cuvsBruteForceIndex_t index = nullptr;
             cuvsCheck(
@@ -300,14 +298,26 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     "cuvsBruteForceIndexCreate");
             CuvsUniquePtr<cuvsBruteForceIndex, cuvsBruteForceIndexDestroy>
                     indexHolder(index);
-            cuvsCheck(
-                    cuvsBruteForceBuild(
-                            cuvsResources,
-                            indexTensor,
-                            distance,
-                            metric_arg,
-                            index),
-                    "cuvsBruteForceBuild");
+            if (normsTensor) {
+                cuvsCheck(
+                        cuvsBruteForceBuildWithNorms(
+                                cuvsResources,
+                                indexTensor,
+                                normsTensor,
+                                distance,
+                                metric_arg,
+                                index),
+                        "cuvsBruteForceBuildWithNorms");
+            } else {
+                cuvsCheck(
+                        cuvsBruteForceBuild(
+                                cuvsResources,
+                                indexTensor,
+                                distance,
+                                metric_arg,
+                                index),
+                        "cuvsBruteForceBuild");
+            }
             cuvsCheck(
                     cuvsBruteForceSearch(
                             cuvsResources,
@@ -338,9 +348,10 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                             reinterpret_cast<const float*>(args.queries)),
                     raft::matrix_extent<int64_t>(num_queries, dims));
 
-            // Compatibility note: release/26.10's brute-force C API does not
-            // accept caller-provided L2 norms. Preserve that optimization via
-            // C++ only when vectorNorms is explicitly supplied.
+            auto indexTensor = makeCuvsTensor(
+                    index.view().data_handle(), num_vectors, dims);
+            auto queryTensor = makeCuvsTensor(
+                    search.view().data_handle(), num_queries, dims);
             if (args.vectorNorms) {
                 auto norms = raft::make_readonly_temporary_device_buffer<
                         const float,
@@ -348,28 +359,14 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                         handle,
                         args.vectorNorms,
                         raft::vector_extent<int64_t>(num_vectors));
-                std::optional<raft::device_vector_view<const float, int64_t>>
-                        normsView = norms.view();
-                cuvs::neighbors::brute_force::index<float> indexCpp(
-                        handle,
-                        index.view(),
-                        normsView,
-                        static_cast<cuvs::distance::DistanceType>(distance),
-                        metric_arg);
-                cuvs::neighbors::brute_force::search_params searchParams;
-                cuvs::neighbors::brute_force::search(
-                        handle,
-                        searchParams,
-                        indexCpp,
-                        search.view(),
-                        inds.view(),
-                        dists.view());
+                auto normsTensor =
+                        makeCuvsTensor(norms.view().data_handle(), num_vectors);
+                searchCuvs(
+                        indexTensor.get(),
+                        normsTensor.get(),
+                        queryTensor.get());
             } else {
-                auto indexTensor = makeCuvsTensor(
-                        index.view().data_handle(), num_vectors, dims);
-                auto queryTensor = makeCuvsTensor(
-                        search.view().data_handle(), num_queries, dims);
-                searchCuvs(indexTensor.get(), queryTensor.get());
+                searchCuvs(indexTensor.get(), nullptr, queryTensor.get());
             }
         } else {
             auto index = raft::make_readonly_temporary_device_buffer<
@@ -390,6 +387,16 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                             reinterpret_cast<const float*>(args.queries)),
                     raft::matrix_extent<int64_t>(num_queries, dims));
 
+            CuvsTensor<const float, 2> indexTensor(
+                    index.view().data_handle(),
+                    CuvsTensorLayout::ColumnMajor,
+                    num_vectors,
+                    dims);
+            CuvsTensor<const float, 2> queryTensor(
+                    search.view().data_handle(),
+                    CuvsTensorLayout::ColumnMajor,
+                    num_queries,
+                    dims);
             if (args.vectorNorms) {
                 auto norms = raft::make_readonly_temporary_device_buffer<
                         const float,
@@ -397,34 +404,14 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                         handle,
                         args.vectorNorms,
                         raft::vector_extent<int64_t>(num_vectors));
-                std::optional<raft::device_vector_view<const float, int64_t>>
-                        normsView = norms.view();
-                cuvs::neighbors::brute_force::index<float> indexCpp(
-                        handle,
-                        index.view(),
-                        normsView,
-                        static_cast<cuvs::distance::DistanceType>(distance),
-                        metric_arg);
-                cuvs::neighbors::brute_force::search_params searchParams;
-                cuvs::neighbors::brute_force::search(
-                        handle,
-                        searchParams,
-                        indexCpp,
-                        search.view(),
-                        inds.view(),
-                        dists.view());
+                auto normsTensor =
+                        makeCuvsTensor(norms.view().data_handle(), num_vectors);
+                searchCuvs(
+                        indexTensor.get(),
+                        normsTensor.get(),
+                        queryTensor.get());
             } else {
-                CuvsTensor<const float, 2> indexTensor(
-                        index.view().data_handle(),
-                        CuvsTensorLayout::ColumnMajor,
-                        num_vectors,
-                        dims);
-                CuvsTensor<const float, 2> queryTensor(
-                        search.view().data_handle(),
-                        CuvsTensorLayout::ColumnMajor,
-                        num_queries,
-                        dims);
-                searchCuvs(indexTensor.get(), queryTensor.get());
+                searchCuvs(indexTensor.get(), nullptr, queryTensor.get());
             }
         }
 

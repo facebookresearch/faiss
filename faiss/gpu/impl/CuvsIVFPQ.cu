@@ -30,7 +30,6 @@
 #include <faiss/gpu/utils/Transpose.cuh>
 
 #include <cuvs/neighbors/ivf_pq.h>
-#include <cuvs/neighbors/ivf_pq.hpp>
 #include <raft/util/cudart_utils.hpp>
 #include <raft/linalg/map.cuh>
 #include <raft/linalg/norm.cuh>
@@ -40,16 +39,6 @@
 
 namespace faiss {
 namespace gpu {
-
-// Compatibility note: release/26.10 has no C API for resetting,
-// importing/exporting, resizing, recomputing, or packing raw IVF-PQ list
-// storage. Public build, search, extend, and getter operations use C except for
-// the selector-only search fallback documented below.
-using CuvsIVFPQCppIndex = cuvs::neighbors::ivf_pq::index<idx_t>;
-
-static CuvsIVFPQCppIndex* getCppIndex(cuvsIvfPqIndex_t index) {
-    return reinterpret_cast<CuvsIVFPQCppIndex*>(index->addr);
-}
 
 CuvsIVFPQ::CuvsIVFPQ(
         GpuResources* resources,
@@ -98,9 +87,10 @@ void CuvsIVFPQ::reserveMemory(idx_t numVecs) {
 
 void CuvsIVFPQ::reset() {
     if (cuvs_index) {
-        const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
-        cuvs::neighbors::ivf_pq::helpers::reset_index(
-                raftHandle, getCppIndex(cuvs_index));
+        cuvsCheck(
+                cuvsIvfPqIndexReset(
+                        cuvsResourcesFromGpuResources(resources_), cuvs_index),
+                "cuvsIvfPqIndexReset");
     }
 }
 
@@ -269,6 +259,11 @@ void CuvsIVFPQ::updateQuantizer(Index* quantizer) {
 /// Return the list indices of a particular list back to the CPU
 std::vector<idx_t> CuvsIVFPQ::getListIndices(idx_t listId) const {
     FAISS_ASSERT(cuvs_index);
+    idx_t listSize = getListLength(listId);
+    if (listSize == 0) {
+        return {};
+    }
+
     const raft::device_resources& raftHandle =
             resources_->getRaftHandleCurrentDevice();
     auto stream = raftHandle.get_stream();
@@ -277,8 +272,6 @@ std::vector<idx_t> CuvsIVFPQ::getListIndices(idx_t listId) const {
             cuvsIvfPqIndexGetListIndices(
                     cuvs_index, (uint32_t)listId, listIndices.get()),
             "cuvsIvfPqIndexGetListIndices");
-
-    idx_t listSize = getListLength(listId);
     std::vector<idx_t> vec(listSize);
     raft::update_host(vec.data(), listIndices.data<idx_t>(), listSize, stream);
     raftHandle.sync_stream();
@@ -300,11 +293,6 @@ void CuvsIVFPQ::searchPreassigned(
     // TODO: Fill this in!
     // Reference issue: https://github.com/facebookresearch/faiss/issues/3243
     FAISS_THROW_MSG("searchPreassigned is not implemented for cuVS index");
-}
-
-size_t CuvsIVFPQ::getGpuListEncodingSize_(idx_t listId) {
-    return static_cast<size_t>(
-            getCppIndex(cuvs_index)->get_list_size_in_bytes(listId));
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
@@ -387,60 +375,32 @@ void CuvsIVFPQ::search(
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= numLists_);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    // Compatibility note: release/26.10's IVF-PQ C search has no filter
-    // argument. Retain C++ search only when a Faiss IDSelector is supplied.
-    if (sel) {
-        cuvs::neighbors::ivf_pq::search_params searchParams;
-        searchParams.n_probes = nprobe;
-        searchParams.lut_dtype =
-                useFloat16LookupTables_ ? CUDA_R_16F : CUDA_R_32F;
+    cuvsIvfPqSearchParams_t searchParams = nullptr;
+    cuvsCheck(
+            cuvsIvfPqSearchParamsCreate(&searchParams),
+            "cuvsIvfPqSearchParamsCreate");
+    CuvsUniquePtr<cuvsIvfPqSearchParams, cuvsIvfPqSearchParamsDestroy>
+            searchParamsHolder(searchParams);
+    searchParams->n_probes = nprobe;
+    searchParams->lut_dtype = useFloat16LookupTables_ ? CUDA_R_16F : CUDA_R_32F;
 
-        auto queryView = raft::make_device_matrix_view<const float, idx_t>(
-                queries.data(), (idx_t)numQueries, (idx_t)cols);
-        auto indexView = raft::make_device_matrix_view<idx_t, idx_t>(
-                outIndices.data(), (idx_t)numQueries, k_);
-        auto distanceView = raft::make_device_matrix_view<float, idx_t>(
-                outDistances.data(), (idx_t)numQueries, k_);
-        raft::core::bitset<uint32_t, int64_t> bitset(
-                raft_handle, indexSize, false);
-        convert_to_bitset(resources_, *sel, bitset.view());
-        cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t> filter(
-                bitset.view());
-        cuvs::neighbors::ivf_pq::search(
-                raft_handle,
-                searchParams,
-                *getCppIndex(cuvs_index),
-                queryView,
-                indexView,
-                distanceView,
-                filter);
-    } else {
-        cuvsIvfPqSearchParams_t searchParams = nullptr;
-        cuvsCheck(
-                cuvsIvfPqSearchParamsCreate(&searchParams),
-                "cuvsIvfPqSearchParamsCreate");
-        CuvsUniquePtr<cuvsIvfPqSearchParams, cuvsIvfPqSearchParamsDestroy>
-                searchParamsHolder(searchParams);
-        searchParams->n_probes = nprobe;
-        searchParams->lut_dtype =
-                useFloat16LookupTables_ ? CUDA_R_16F : CUDA_R_32F;
-
-        auto queriesTensor = makeCuvsTensor(
-                queries.data(), (int64_t)numQueries, (int64_t)cols);
-        auto indicesTensor = makeCuvsTensor(
-                outIndices.data(), (int64_t)numQueries, (int64_t)k_);
-        auto distancesTensor = makeCuvsTensor(
-                outDistances.data(), (int64_t)numQueries, (int64_t)k_);
-        cuvsCheck(
-                cuvsIvfPqSearch(
-                        cuvsResourcesFromGpuResources(resources_),
-                        searchParams,
-                        cuvs_index,
-                        queriesTensor.get(),
-                        indicesTensor.get(),
-                        distancesTensor.get()),
-                "cuvsIvfPqSearch");
-    }
+    auto queriesTensor =
+            makeCuvsTensor(queries.data(), (int64_t)numQueries, (int64_t)cols);
+    auto indicesTensor =
+            makeCuvsTensor(outIndices.data(), (int64_t)numQueries, (int64_t)k_);
+    auto distancesTensor = makeCuvsTensor(
+            outDistances.data(), (int64_t)numQueries, (int64_t)k_);
+    CuvsFilter filter(resources_, sel, indexSize);
+    cuvsCheck(
+            cuvsIvfPqSearchWithFilter(
+                    cuvsResourcesFromGpuResources(resources_),
+                    searchParams,
+                    cuvs_index,
+                    queriesTensor.get(),
+                    indicesTensor.get(),
+                    distancesTensor.get(),
+                    filter.get()),
+            "cuvsIvfPqSearchWithFilter");
 
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
@@ -502,64 +462,18 @@ idx_t CuvsIVFPQ::addVectors(
 }
 
 void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
-    size_t nlist = ivf ? ivf->nlist : 0;
-    size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-
-    std::vector<uint32_t> list_sizes_(nlist);
-    std::vector<idx_t> indices_(ntotal);
-
-    // the index must already exist
+    const size_t nlist = ivf ? ivf->nlist : 0;
+    FAISS_THROW_IF_NOT(nlist <= static_cast<size_t>(numLists_));
     FAISS_ASSERT(cuvs_index);
 
-    auto& cuvs_index_lists = getCppIndex(cuvs_index)->lists();
-
-    // conservative memory alloc for cloning cpu inverted lists
-    cuvs::neighbors::ivf_pq::list_spec_interleaved<uint32_t, idx_t>
-            ivf_list_spec{
-                    static_cast<uint32_t>(bitsPerSubQuantizer_),
-                    static_cast<uint32_t>(numSubQuantizers_),
-                    true};
-
     for (size_t i = 0; i < nlist; ++i) {
-        size_t listSize = ivf->list_size(i);
-
-        // GPU index can only support max int entries per list
+        const size_t listSize = ivf->list_size(i);
         FAISS_THROW_IF_NOT_FMT(
                 listSize <= (size_t)std::numeric_limits<int>::max(),
-                "GPU inverted list can only support "
-                "%zu entries; %zu found",
+                "GPU inverted list can only support %zu entries; %zu found",
                 (size_t)std::numeric_limits<int>::max(),
                 listSize);
-
-        // store the list size
-        list_sizes_[i] = static_cast<uint32_t>(listSize);
-
-        // This cuVS list must currently be empty
         FAISS_ASSERT(getListLength(i) == 0);
-
-        cuvs::neighbors::ivf_pq::helpers::resize_list(
-                raft_handle,
-                cuvs_index_lists[i],
-                ivf_list_spec,
-                static_cast<uint32_t>(listSize),
-                static_cast<uint32_t>(0));
-    }
-
-    raft::update_device(
-            getCppIndex(cuvs_index)->list_sizes().data_handle(),
-            list_sizes_.data(),
-            nlist,
-            raft_handle.get_stream());
-
-    //     Update the pointers and the sizes
-    cuvs::neighbors::ivf_pq::helpers::recompute_internal_state(
-            raft_handle, getCppIndex(cuvs_index));
-
-    for (size_t i = 0; i < nlist; ++i) {
-        size_t listSize = ivf->list_size(i);
         addEncodedVectorsToList_(
                 i, ivf->get_codes(i), ivf->get_ids(i), listSize);
     }
@@ -578,58 +492,46 @@ void CuvsIVFPQ::addEncodedVectorsToList_(
         const void* codes,
         const idx_t* indices,
         idx_t numVecs) {
-    auto stream = resources_->getDefaultStreamCurrentDevice();
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-
-    // If there's nothing to add, then there's nothing we have to do
     if (numVecs == 0) {
         return;
     }
 
-    // The GPU might have a different layout of the memory
-    auto gpuListSizeInBytes = getGpuListEncodingSize_(listId);
-
-    // We only have int32 length representations on the GPU per each
-    // list; the length is in sizeof(char)
-    FAISS_ASSERT(gpuListSizeInBytes <= (size_t)std::numeric_limits<int>::max());
-
-    idx_t maxBatchSize = 4096;
-    for (idx_t offset_b = 0; offset_b < numVecs; offset_b += maxBatchSize) {
-        uint32_t batchSize = min(maxBatchSize, numVecs - offset_b);
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    constexpr idx_t maxBatchSize = 4096;
+    for (idx_t offset = 0; offset < numVecs; offset += maxBatchSize) {
+        uint32_t batchSize = min(maxBatchSize, numVecs - offset);
         uint32_t bufferSize = getCpuVectorsEncodingSize_(batchSize);
-        uint32_t codesOffset = getCpuVectorsEncodingSize_(offset_b);
-
-        // Translate the codes as needed to our preferred form
-        auto codes_d = raft::make_device_vector<uint8_t>(
-                raft_handle, static_cast<uint32_t>(bufferSize));
+        uint32_t codesOffset = getCpuVectorsEncodingSize_(offset);
+        auto codesDevice = raft::make_device_vector<uint8_t>(
+                raftHandle, static_cast<uint32_t>(bufferSize));
+        auto indicesDevice = raft::make_device_vector<idx_t>(
+                raftHandle, static_cast<uint32_t>(batchSize));
         raft::update_device(
-                codes_d.data_handle(),
+                codesDevice.data_handle(),
                 static_cast<const uint8_t*>(codes) + codesOffset,
                 bufferSize,
                 stream);
-
-        cuvs::neighbors::ivf_pq::helpers::codepacker::pack_contiguous_list_data(
-                raft_handle,
-                getCppIndex(cuvs_index),
-                codes_d.data_handle(),
+        raft::update_device(
+                indicesDevice.data_handle(),
+                indices + offset,
                 batchSize,
-                listId,
-                offset_b);
+                stream);
+        auto codesTensor = makeCuvsTensor(
+                codesDevice.data_handle(),
+                (int64_t)batchSize,
+                (int64_t)(bufferSize / batchSize));
+        auto indicesTensor =
+                makeCuvsTensor(indicesDevice.data_handle(), (int64_t)batchSize);
+        cuvsCheck(
+                cuvsIvfPqIndexExtendList(
+                        cuvsResourcesFromGpuResources(resources_),
+                        cuvs_index,
+                        codesTensor.get(),
+                        indicesTensor.get(),
+                        static_cast<uint32_t>(listId)),
+                "cuvsIvfPqIndexExtendList");
     }
-
-    /// Handle the indices as well
-    idx_t* list_indices_ptr;
-
-    // fetch the list indices ptr on host
-    raft::update_host(
-            &list_indices_ptr,
-            getCppIndex(cuvs_index)->inds_ptrs().data_handle() + listId,
-            1,
-            stream);
-    raft_handle.sync_stream();
-
-    raft::update_device(list_indices_ptr, indices, numVecs, stream);
 }
 
 void CuvsIVFPQ::setPQCentroids_() {
