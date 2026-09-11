@@ -270,9 +270,11 @@ struct FlatIPDis : FlatCodesDistanceComputer {
 FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
     FlatCodesDistanceComputer* dc = nullptr;
     if (metric_type == METRIC_L2) {
-        with_simd_level([&]<SIMDLevel SL>() { dc = new FlatL2Dis<SL>(*this); });
+        with_simd_level_with_sve(
+                [&]<SIMDLevel SL>() { dc = new FlatL2Dis<SL>(*this); });
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        with_simd_level([&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
+        with_simd_level_with_sve(
+                [&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
     } else {
         dc = get_extra_distance_computer(d, metric_type, metric_arg, get_xb());
     }
@@ -404,7 +406,7 @@ FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
     if (metric_type == METRIC_L2) {
         if (!cached_l2norms.empty()) {
             FlatCodesDistanceComputer* dc = nullptr;
-            with_simd_level([&]<SIMDLevel SL>() {
+            with_simd_level_with_sve([&]<SIMDLevel SL>() {
                 dc = new FlatL2WithNormsDis<SL>(*this);
             });
             return dc;
@@ -704,10 +706,12 @@ void IndexFlatPanorama::reset() {
 }
 
 void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     pano.reconstruct(key, recons, codes.data());
 }
 
 void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
+    FAISS_THROW_IF_NOT(n == 0 || (i >= 0 && i + n <= ntotal));
     Index::reconstruct_n(i, n, recons);
 }
 
@@ -784,7 +788,7 @@ void IndexFlatPanorama::search_subset(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         with_metric_type(metric_type, [&]<MetricType M>() {
             constexpr bool is_sim = is_similarity_metric(M);
             using C = std::conditional_t<
