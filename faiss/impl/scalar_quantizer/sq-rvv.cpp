@@ -14,6 +14,7 @@
 #include <faiss/impl/scalar_quantizer/similarities.h>
 
 #include <riscv_vector.h>
+#include <algorithm>
 #include <cmath>
 
 namespace faiss {
@@ -168,6 +169,12 @@ struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
             : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
 
+// Zvfhmin is part of the RISCV_RVV level's minimum ISA (see
+// faiss/utils/simd_levels.h); this translation unit is compiled with
+// -march=rv64gcv_zvfhmin, so the RVV FP16 reconstruction below is always
+// emitted in faiss builds. The preprocessor fallback keeps the scalar FP16
+// path for out-of-tree builds that compile this file without the extension;
+// has_reconstruct_m8_v then resolves to false and QT_fp16 stays scalar.
 #if defined(__riscv_zvfhmin) || defined(__riscv_zvfh)
     FAISS_ALWAYS_INLINE vfloat32m8_t
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
