@@ -281,13 +281,13 @@ std::vector<uint8_t> CuvsIVFFlat::getListVectorData(
     auto vectorsTensor = makeCuvsTensor(
             vectorsDevice.data_handle(), (int64_t)listSize, (int64_t)dim_);
     cuvsCheck(
-            cuvsIvfFlatIndexUnpackContiguousListData(
+            cuvsIvfFlatIndexUnpackListData(
                     cuvsResourcesFromGpuResources(resources_),
                     cuvs_index,
                     vectorsTensor.get(),
                     static_cast<uint32_t>(listId),
                     0),
-            "cuvsIvfFlatIndexUnpackContiguousListData");
+            "cuvsIvfFlatIndexUnpackListData");
 
     raft::update_host(
             flatCodes.data(),

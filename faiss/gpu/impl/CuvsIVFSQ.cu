@@ -341,13 +341,13 @@ std::vector<uint8_t> CuvsIVFSQ::getListVectorData(idx_t listId, bool gpuFormat)
     auto codesTensor = makeCuvsTensor(
             codesDevice.data_handle(), (int64_t)listSize, (int64_t)dim_);
     cuvsCheck(
-            cuvsIvfSqIndexUnpackContiguousListData(
+            cuvsIvfSqIndexUnpackListData(
                     cuvsResourcesFromGpuResources(resources_),
                     cuvs_index,
                     codesTensor.get(),
                     static_cast<uint32_t>(listId),
                     0),
-            "cuvsIvfSqIndexUnpackContiguousListData");
+            "cuvsIvfSqIndexUnpackListData");
 
     raft::update_host(
             flatCodes.data(),
