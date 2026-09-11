@@ -97,6 +97,25 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
   endif()
 endif()
 
+# test_sq_rvv_tail_and_semantics.cpp references
+# sq_select_distance_computer<SIMDLevel::RISCV_RVV>, whose specialization is
+# only instantiated by sq-rvv.cpp when the RVV implementation is compiled
+# (riscv64 builds). Referencing it unconditionally breaks linking on other
+# architectures — a runtime GTEST_SKIP() cannot remove the link-time symbol
+# requirement — so add the source only inside the RISC-V condition. It uses
+# raw RVV intrinsics (guarded in-source by __riscv && COMPILE_SIMD_RISCV_RVV).
+# The faiss target's COMPILE_SIMD_RISCV_RVV is PRIVATE and does not propagate,
+# so give this TU the same flags the library's RVV sources get — otherwise the
+# compile-time-intrinsic cases (D5b) skip on riscv64.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  list(APPEND FAISS_TEST_SRC test_sq_rvv_tail_and_semantics.cpp)
+  set_source_files_properties(test_sq_rvv_tail_and_semantics.cpp
+    PROPERTIES
+      COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+      COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"
+  )
+endif()
+
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
 if(FAISS_ENABLE_SVS)
