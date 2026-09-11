@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -304,6 +305,83 @@ void check_eden_roundtrip(
 }
 
 } // namespace
+
+namespace {
+
+void expect_rvv_fp16_codes(const std::vector<float>& values) {
+    for (size_t d : {0, 1, 15, 16, 17, 31, 32, 33, 65}) {
+        SCOPED_TRACE(d);
+        const size_t n = 3;
+        std::vector<float> input(d * n + 1);
+        for (size_t i = 0; i < d * n; ++i) {
+            input[i] = values[i % values.size()];
+        }
+        std::vector<uint16_t> expected(d * n + 16, 0xa55a);
+        std::vector<uint16_t> actual = expected;
+        faiss::scalar_quantizer::QuantizerFP16<faiss::SIMDLevel::NONE> scalar(
+                d, {});
+        for (size_t i = 0; i < n; ++i) {
+            scalar.encode_vector(
+                    input.data() + i * d,
+                    reinterpret_cast<uint8_t*>(expected.data() + 8 + i * d));
+        }
+        faiss::ScalarQuantizer sq(d, faiss::ScalarQuantizer::QT_fp16);
+        sq.compute_codes(
+                input.data(), reinterpret_cast<uint8_t*>(actual.data() + 8), n);
+        EXPECT_EQ(actual, expected);
+    }
+}
+
+} // namespace
+
+TEST(ScalarQuantizer, RVVFP16FiniteEncodingMatchesScalar) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RVV is not available";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::RISCV_RVV);
+    // Keep finite inputs separate so a NaN/Inf fallback cannot hide a bug
+    // in the vector path. Include ties, subnormals and overflow boundaries.
+    std::vector<float> values;
+    for (uint32_t bits :
+         {0u,
+          1u,
+          0x007fffffu,
+          0x00800000u,
+          0x33000000u,
+          0x33800000u,
+          0x387fc000u,
+          0x38800000u,
+          0x3f801000u,
+          0x3f803000u,
+          0x477fe000u,
+          0x477ff000u,
+          0x47800000u,
+          0x7f7fffffu}) {
+        values.push_back(std::bit_cast<float>(bits));
+        values.push_back(std::bit_cast<float>(bits | 0x80000000u));
+    }
+    expect_rvv_fp16_codes(values);
+}
+
+TEST(ScalarQuantizer, RVVFP16NonFiniteEncodingMatchesScalar) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RVV is not available";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::RISCV_RVV);
+    std::vector<float> values = {1.0f, -0.0f, 0.25f};
+    for (uint32_t bits :
+         {0x7f800000u,
+          0xff800000u,
+          0x7fc12345u,
+          0xffc12345u,
+          0x7f800001u,
+          0xff800001u}) {
+        values.push_back(std::bit_cast<float>(bits));
+    }
+    expect_rvv_fp16_codes(values);
+}
 
 TEST(ScalarQuantizer, RSQuantilesClamping) {
     int d = 8;
