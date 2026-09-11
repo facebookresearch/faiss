@@ -28,9 +28,8 @@
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
-#include <cuvs/neighbors/ivf_sq.hpp>
+#include <cuvs/neighbors/ivf_sq.h>
 
-#include <memory>
 #include <vector>
 
 #pragma GCC visibility push(default)
@@ -114,7 +113,7 @@ class CuvsIVFSQ : public IVFFlat {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the cuVS index
-    void setCuvsIndex(cuvs::neighbors::ivf_sq::index<uint8_t>&& idx);
+    void setCuvsIndex(cuvsIvfSqIndex_t index);
 
     /// Copy the cuVS SQ range state back to a FAISS scalar quantizer
     void setFaissSQFromCuvs(faiss::ScalarQuantizer* sq) const;
@@ -157,8 +156,7 @@ class CuvsIVFSQ : public IVFFlat {
     /// Whether any stored vector has a negative id (unsupported for filtering)
     bool hasNegativeVectorId_{false};
 
-    std::shared_ptr<cuvs::neighbors::ivf_sq::index<uint8_t>> cuvs_index{
-            nullptr};
+    cuvsIvfSqIndex_t cuvs_index{nullptr};
 };
 
 struct CuvsIVFSQCodePackerInterleaved : CodePacker {

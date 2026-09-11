@@ -14,13 +14,12 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
 #if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_IVFSQ)
-#include <cuvs/neighbors/ivf_sq.hpp>
+#include <cuvs/neighbors/ivf_sq.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFSQ.cuh>
 #endif
 
 #include <limits>
-#include <optional>
 #include <vector>
 
 namespace faiss {
@@ -347,45 +346,61 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
                 ivfSQConfig_.indicesOptions,
                 config_.memorySpace);
 
-        auto cuvsIndex_ = std::static_pointer_cast<CuvsIVFSQ, IVFFlat>(index_);
-
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        cuvs::neighbors::ivf_sq::index_params cuvs_index_params;
-        cuvs_index_params.n_lists = nlist;
-        cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
-        cuvs_index_params.add_data_on_build = false;
+        cuvsIvfSqIndexParams_t indexParams = nullptr;
+        cuvsCheck(
+                cuvsIvfSqIndexParamsCreate(&indexParams),
+                "cuvsIvfSqIndexParamsCreate");
+        CuvsUniquePtr<cuvsIvfSqIndexParams, cuvsIvfSqIndexParamsDestroy>
+                indexParamsHolder(indexParams);
+        indexParams->n_lists = nlist;
+        indexParams->metric = metricFaissToCuvs(metric_type, false);
+        indexParams->metric_arg = metric_arg;
+        indexParams->add_data_on_build = false;
 
-        std::optional<cuvs::neighbors::ivf_sq::index<uint8_t>> cuvs_ivfsq_index;
+        cuvsIvfSqIndex_t cuvsIndex = nullptr;
+        cuvsCheck(cuvsIvfSqIndexCreate(&cuvsIndex), "cuvsIvfSqIndexCreate");
+        CuvsUniquePtr<cuvsIvfSqIndex, cuvsIvfSqIndexDestroy> cuvsIndexHolder(
+                cuvsIndex);
+        auto trainingData = toDeviceTemporary<float, 2>(
+                resources_.get(),
+                config_.device,
+                const_cast<float*>(x),
+                raft_handle.get_stream(),
+                {n, d});
+        auto datasetTensor = makeCuvsTensor(
+                trainingData.data(),
+                static_cast<int64_t>(n),
+                static_cast<int64_t>(d));
+        cuvsCheck(
+                cuvsIvfSqBuild(
+                        cuvsResourcesFromGpuResources(resources_.get()),
+                        indexParams,
+                        datasetTensor.get(),
+                        cuvsIndex),
+                "cuvsIvfSqBuild");
 
-        if (getDeviceForAddress(x) >= 0) {
-            auto dataset_d =
-                    raft::make_device_matrix_view<const float, idx_t>(x, n, d);
-            cuvs_ivfsq_index = cuvs::neighbors::ivf_sq::build(
-                    raft_handle, cuvs_index_params, dataset_d);
-        } else {
-            auto dataset_h =
-                    raft::make_host_matrix_view<const float, idx_t>(x, n, d);
-            cuvs_ivfsq_index = cuvs::neighbors::ivf_sq::build(
-                    raft_handle, cuvs_index_params, dataset_h);
-        }
-
+        CuvsOutputTensor centers;
+        cuvsCheck(
+                cuvsIvfSqIndexGetCenters(cuvsIndex, centers.get()),
+                "cuvsIvfSqIndexGetCenters");
         if (isGpuIndex(quantizer)) {
-            quantizer->train(
-                    nlist, cuvs_ivfsq_index.value().centers().data_handle());
-            quantizer->add(
-                    nlist, cuvs_ivfsq_index.value().centers().data_handle());
+            quantizer->train(nlist, centers.data<float>());
+            quantizer->add(nlist, centers.data<float>());
         } else {
-            auto host_centroids = toHost<float, 2>(
-                    cuvs_ivfsq_index.value().centers().data_handle(),
+            auto hostCentroids = toHost<float, 2>(
+                    centers.data<float>(),
                     raft_handle.get_stream(),
                     {idx_t(nlist), this->d});
-            quantizer->train(nlist, host_centroids.data());
-            quantizer->add(nlist, host_centroids.data());
+            quantizer->train(nlist, hostCentroids.data());
+            quantizer->add(nlist, hostCentroids.data());
         }
 
-        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfsq_index));
+        auto faissCuvsIndex =
+                std::static_pointer_cast<CuvsIVFSQ, IVFFlat>(index_);
+        faissCuvsIndex->setCuvsIndex(cuvsIndexHolder.release());
 #else
         FAISS_THROW_MSG(
                 "cuVS has not been compiled into the current version so it cannot be used.");

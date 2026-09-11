@@ -29,8 +29,7 @@
 #include <optional>
 #include <vector>
 
-#include <cuvs/core/bitset.hpp>
-#include <cuvs/distance/distance.h>
+#include <cuvs/neighbors/brute_force.h>
 #include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>
@@ -39,8 +38,63 @@
 namespace faiss {
 namespace gpu {
 
-using namespace cuvs::distance;
-using namespace cuvs::neighbors;
+// Compatibility note: release/26.10's brute-force C API does not accept
+// caller-provided L2 norms. Preserve Faiss's cached-norm optimization through
+// C++ only for L2; all other flat searches use the C API below.
+template <typename T>
+void searchWithPrecomputedL2Norms(
+        GpuResources* resources,
+        Tensor<T, 2, true>& database,
+        Tensor<float, 1, true>& norms,
+        Tensor<T, 2, true>& queries,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        float metricArg,
+        const IDSelector* sel) {
+    auto& handle = resources->getRaftHandleCurrentDevice();
+    auto databaseView = raft::make_device_matrix_view<const T, int64_t>(
+            database.data(), database.getSize(0), database.getSize(1));
+    auto queryView = raft::make_device_matrix_view<const T, int64_t>(
+            queries.data(), queries.getSize(0), queries.getSize(1));
+    auto indexView = raft::make_device_matrix_view<idx_t, int64_t>(
+            outIndices.data(), outIndices.getSize(0), outIndices.getSize(1));
+    auto distanceView = raft::make_device_matrix_view<float, int64_t>(
+            outDistances.data(),
+            outDistances.getSize(0),
+            outDistances.getSize(1));
+    std::optional<raft::device_vector_view<const float, int64_t>> normsView =
+            raft::make_device_vector_view(norms.data(), norms.getSize(0));
+    cuvs::neighbors::brute_force::index<T, float> index(
+            handle,
+            databaseView,
+            normsView,
+            cuvs::distance::DistanceType::L2Expanded,
+            metricArg);
+
+    if (sel) {
+        raft::core::bitset<uint32_t, int64_t> bitset(
+                handle, database.getSize(0), false);
+        convert_to_bitset(resources, *sel, bitset.view());
+        cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t> filter(
+                bitset.view());
+        cuvs::neighbors::brute_force::search(
+                handle,
+                cuvs::neighbors::brute_force::search_params{},
+                index,
+                queryView,
+                indexView,
+                distanceView,
+                filter);
+    } else {
+        cuvs::neighbors::brute_force::search(
+                handle,
+                cuvs::neighbors::brute_force::search_params{},
+                index,
+                queryView,
+                indexView,
+                distanceView);
+    }
+}
 
 CuvsFlatIndex::CuvsFlatIndex(
         GpuResources* res,
@@ -76,11 +130,6 @@ void CuvsFlatIndex::query(
         raft::device_resources& handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        auto index = raft::make_device_matrix_view<const float, int64_t>(
-                vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));
-        auto search = raft::make_device_matrix_view<const float, int64_t>(
-                input.data(), input.getSize(0), input.getSize(1));
-
         auto inds = raft::make_device_matrix_view<idx_t, int64_t>(
                 outIndices.data(),
                 outIndices.getSize(0),
@@ -91,37 +140,56 @@ void CuvsFlatIndex::query(
                 outDistances.getSize(1));
 
         auto distance = metricFaissToCuvs(metric, exactDistance);
+        if (metric == MetricType::METRIC_L2) {
+            searchWithPrecomputedL2Norms(
+                    resources_,
+                    vectors_,
+                    norms_,
+                    input,
+                    outDistances,
+                    outIndices,
+                    metricArg,
+                    sel);
+        } else {
+            auto indexTensor = makeCuvsTensor(
+                    vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));
+            auto queryTensor = makeCuvsTensor(
+                    input.data(), input.getSize(0), input.getSize(1));
+            auto indicesTensor = makeCuvsTensor(
+                    outIndices.data(),
+                    outIndices.getSize(0),
+                    outIndices.getSize(1));
+            auto distancesTensor = makeCuvsTensor(
+                    outDistances.data(),
+                    outDistances.getSize(0),
+                    outDistances.getSize(1));
 
-        std::optional<raft::device_vector_view<const float, int64_t>>
-                norms_view = raft::make_device_vector_view(
-                        norms_.data(), norms_.getSize(0));
-
-        cuvs::neighbors::brute_force::index idx(
-                handle, index, norms_view, distance, metricArg);
-
-        std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_cuvs;
-        std::optional<
-                cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
-                bitset_filter_cuvs;
-        cuvs::neighbors::filtering::none_sample_filter none_filter;
-
-        if (sel) {
-            bitset_cuvs = cuvs::core::bitset<uint32_t, int64_t>(
-                    handle, vectors_.getSize(0), false);
-            faiss::gpu::convert_to_bitset(
-                    resources_, *sel, bitset_cuvs->view());
-            bitset_filter_cuvs.emplace(bitset_cuvs->view());
+            cuvsBruteForceIndex_t index = nullptr;
+            cuvsCheck(
+                    cuvsBruteForceIndexCreate(&index),
+                    "cuvsBruteForceIndexCreate");
+            CuvsUniquePtr<cuvsBruteForceIndex, cuvsBruteForceIndexDestroy>
+                    indexHolder(index);
+            auto cuvsResources = cuvsResourcesFromGpuResources(resources_);
+            cuvsCheck(
+                    cuvsBruteForceBuild(
+                            cuvsResources,
+                            indexTensor.get(),
+                            distance,
+                            metricArg,
+                            index),
+                    "cuvsBruteForceBuild");
+            CuvsFilter filter(resources_, sel, vectors_.getSize(0));
+            cuvsCheck(
+                    cuvsBruteForceSearch(
+                            cuvsResources,
+                            index,
+                            queryTensor.get(),
+                            indicesTensor.get(),
+                            distancesTensor.get(),
+                            filter.get()),
+                    "cuvsBruteForceSearch");
         }
-        const cuvs::neighbors::filtering::base_filter& filter_ref = sel
-                ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                          bitset_filter_cuvs.value())
-                : static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                          none_filter);
-        cuvs::neighbors::brute_force::search_params search_params_bf;
-
-        cuvs::neighbors::brute_force::search(
-                handle, search_params_bf, idx, search, inds, dists, filter_ref);
-
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(
                     handle,
@@ -153,15 +221,6 @@ void CuvsFlatIndex::query(
 
     raft::device_resources& handle = resources_->getRaftHandleCurrentDevice();
 
-    auto index = raft::make_device_matrix_view<const half, int64_t>(
-            vectorsHalf_.data(),
-            vectorsHalf_.getSize(0),
-            vectorsHalf_.getSize(1));
-    auto search = raft::make_device_matrix_view<const half, int64_t>(
-            vecs.data(), vecs.getSize(0), vecs.getSize(1));
-
-    auto inds = raft::make_device_matrix_view<idx_t, int64_t>(
-            outIndices.data(), outIndices.getSize(0), outIndices.getSize(1));
     auto dists = raft::make_device_matrix_view<float, int64_t>(
             outDistances.data(),
             outDistances.getSize(0),
@@ -169,33 +228,57 @@ void CuvsFlatIndex::query(
 
     auto distance = metricFaissToCuvs(metric, exactDistance);
 
-    std::optional<raft::device_vector_view<const float, int64_t>> norms_view =
-            raft::make_device_vector_view(norms_.data(), norms_.getSize(0));
+    if (metric == MetricType::METRIC_L2) {
+        searchWithPrecomputedL2Norms(
+                resources_,
+                vectorsHalf_,
+                norms_,
+                vecs,
+                outDistances,
+                outIndices,
+                metricArg,
+                sel);
+    } else {
+        auto indexTensor = makeCuvsTensor(
+                vectorsHalf_.data(),
+                vectorsHalf_.getSize(0),
+                vectorsHalf_.getSize(1));
+        auto queryTensor =
+                makeCuvsTensor(vecs.data(), vecs.getSize(0), vecs.getSize(1));
+        auto indicesTensor = makeCuvsTensor(
+                outIndices.data(),
+                outIndices.getSize(0),
+                outIndices.getSize(1));
+        auto distancesTensor = makeCuvsTensor(
+                outDistances.data(),
+                outDistances.getSize(0),
+                outDistances.getSize(1));
 
-    cuvs::neighbors::brute_force::index<half, float> idx(
-            handle, index, norms_view, distance, metricArg);
-
-    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_cuvs;
-    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
-            bitset_filter_cuvs;
-    cuvs::neighbors::filtering::none_sample_filter none_filter;
-
-    if (sel) {
-        bitset_cuvs = cuvs::core::bitset<uint32_t, int64_t>(
-                handle, vectorsHalf_.getSize(0), false);
-        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_cuvs->view());
-        bitset_filter_cuvs.emplace(bitset_cuvs->view());
+        cuvsBruteForceIndex_t index = nullptr;
+        cuvsCheck(
+                cuvsBruteForceIndexCreate(&index), "cuvsBruteForceIndexCreate");
+        CuvsUniquePtr<cuvsBruteForceIndex, cuvsBruteForceIndexDestroy>
+                indexHolder(index);
+        auto cuvsResources = cuvsResourcesFromGpuResources(resources_);
+        cuvsCheck(
+                cuvsBruteForceBuild(
+                        cuvsResources,
+                        indexTensor.get(),
+                        distance,
+                        metricArg,
+                        index),
+                "cuvsBruteForceBuild");
+        CuvsFilter filter(resources_, sel, vectorsHalf_.getSize(0));
+        cuvsCheck(
+                cuvsBruteForceSearch(
+                        cuvsResources,
+                        index,
+                        queryTensor.get(),
+                        indicesTensor.get(),
+                        distancesTensor.get(),
+                        filter.get()),
+                "cuvsBruteForceSearch");
     }
-    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
-            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                      bitset_filter_cuvs.value())
-            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                      none_filter);
-    cuvs::neighbors::brute_force::search_params search_params_bf;
-
-    cuvs::neighbors::brute_force::search(
-            handle, search_params_bf, idx, search, inds, dists, filter_ref);
-
     if (metric == MetricType::METRIC_Lp) {
         raft::linalg::unary_op(
                 handle,

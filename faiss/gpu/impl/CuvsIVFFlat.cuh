@@ -28,9 +28,7 @@
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
-#include <cuvs/neighbors/ivf_flat.hpp>
-
-#include <optional>
+#include <cuvs/neighbors/ivf_flat.h>
 
 #pragma GCC visibility push(default)
 namespace faiss {
@@ -110,7 +108,7 @@ class CuvsIVFFlat : public IVFFlat {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the cuVS index
-    void setCuvsIndex(cuvs::neighbors::ivf_flat::index<float, idx_t>&& idx);
+    void setCuvsIndex(cuvsIvfFlatIndex_t index);
 
    private:
     /// Adds a set of codes and indices to a list, with the representation
@@ -129,8 +127,7 @@ class CuvsIVFFlat : public IVFFlat {
     /// this is the size for an entire IVF list
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
 
-    std::shared_ptr<cuvs::neighbors::ivf_flat::index<float, idx_t>> cuvs_index{
-            nullptr};
+    cuvsIvfFlatIndex_t cuvs_index{nullptr};
 };
 
 struct CuvsIVFFlatCodePackerInterleaved : CodePacker {

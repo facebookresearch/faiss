@@ -21,7 +21,6 @@
  * limitations under the License.
  */
 
-#include <cuvs/core/bitset.hpp>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/impl/IDSelector.h>
 #include <omp.h>
@@ -68,7 +67,7 @@ RAFT_KERNEL set_range_kernel(
 void convert_to_bitset_range(
         raft::resources const& res,
         const faiss::IDSelectorRange& selector,
-        cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
+        raft::core::bitset_view<uint32_t, int64_t> bitset) {
     const uint32_t nbits = sizeof(uint32_t) * 8;
     auto original_nbits = bitset.get_original_nbits();
     if (original_nbits == 0) {
@@ -109,7 +108,7 @@ void convert_to_bitset_range(
 void convert_to_bitset_array(
         raft::resources const& res,
         const faiss::IDSelectorArray& selector,
-        cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
+        raft::core::bitset_view<uint32_t, int64_t> bitset) {
     // Ids outside [0, bitset.size()) cannot correspond to any stored vector, so
     // drop them rather than indexing out of the bitset. Selecting an id that is
     // not in the index simply matches nothing.
@@ -165,7 +164,7 @@ RAFT_KERNEL set_bitmap_kernel(
 void convert_to_bitset_bitmap(
         raft::resources const& res,
         const faiss::IDSelectorBitmap& selector,
-        cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
+        raft::core::bitset_view<uint32_t, int64_t> bitset) {
     // IDSelectorBitmap.n is the byte count of the bitmap array (number of
     // uint8_t elements). This matches the documented C++ API:
     //   @param n size of the bitmap array
@@ -201,7 +200,7 @@ void convert_to_bitset_bitmap(
 void convert_to_bitset_bruteforce(
         raft::resources const& res,
         const faiss::IDSelector& selector,
-        cuvs::core::bitset_view<uint32_t, int64_t> bitset,
+        raft::core::bitset_view<uint32_t, int64_t> bitset,
         int num_threads = 0) {
     auto bitset_cpu =
             raft::make_host_vector<uint32_t, int64_t>(bitset.n_elements());
@@ -226,7 +225,7 @@ void convert_to_bitset_bruteforce(
 void convert_to_bitset(
         faiss::gpu::GpuResources* res,
         const faiss::IDSelector& selector,
-        cuvs::core::bitset_view<uint32_t, int64_t> bitset,
+        raft::core::bitset_view<uint32_t, int64_t> bitset,
         int num_threads) {
     raft::device_resources& raft_handle = res->getRaftHandleCurrentDevice();
     // If the selector is simple, we can use the specialized functions
