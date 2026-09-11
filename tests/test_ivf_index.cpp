@@ -511,3 +511,46 @@ TEST(IVF, search_callbacks) {
     EXPECT_GE(distance_count, heap_count)
             << "not every distance computation leads to a heap change";
 }
+
+// Test: range search applies the SearchParametersIVF::max_codes scan budget.
+// The parameter was read and validated but never handed to the scanner, so
+// every probed list was scanned in full no matter what budget was asked for.
+TEST(IVF, range_search_respects_max_codes) {
+    int d = 4;
+    int nlist = 4;
+    int nb = 200; // >= 39 * nlist, so training does not warn
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat idx(&quantizer, d, nlist);
+    idx.own_fields = false;
+
+    std::mt19937 rng(1234);
+    std::uniform_real_distribution<float> u(0.0f, 1.0f);
+    std::vector<float> xb(nb * d);
+    for (size_t i = 0; i < xb.size(); i++) {
+        xb[i] = u(rng);
+    }
+
+    idx.train(nb, xb.data());
+    idx.add(nb, xb.data());
+
+    std::vector<float> xq(d, 0.5f);
+    // With a radius this large every scanned code is in radius, so the number
+    // of results is exactly the number of codes scanned.
+    const float radius = std::numeric_limits<float>::max();
+
+    faiss::SearchParametersIVF params;
+    params.nprobe = nlist;
+
+    // Without a budget the whole database is scanned.
+    faiss::RangeSearchResult unlimited(1);
+    idx.range_search(1, xq.data(), radius, &unlimited, &params);
+    EXPECT_EQ(unlimited.lims[1], (size_t)nb);
+
+    // With a budget the scan stops once it is spent.
+    params.max_codes = 10;
+    faiss::RangeSearchResult limited(1);
+    idx.range_search(1, xq.data(), radius, &limited, &params);
+    EXPECT_LE(limited.lims[1], params.max_codes);
+    EXPECT_GT(limited.lims[1], (size_t)0);
+}

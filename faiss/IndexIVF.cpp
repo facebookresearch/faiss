@@ -854,6 +854,15 @@ void IndexIVF::range_search_preassigned(
             max_empty_result_buckets == 0 || parallel_mode == 0,
             "max_empty_result_buckets supported only for parallel_mode = 0");
 
+    FAISS_THROW_IF_NOT_MSG(
+            cur_max_codes == 0 || parallel_mode == 0,
+            "max_codes supported only for parallel_mode = 0");
+
+    const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
+    if (cur_max_codes == 0) {
+        cur_max_codes = unlimited_list_size;
+    }
+
     size_t nlistv = 0, ndis = 0;
 
     std::exception_ptr ex;
@@ -884,10 +893,11 @@ void IndexIVF::range_search_preassigned(
 
             auto scan_list_func = [&](size_t i,
                                       size_t ik,
-                                      RangeQueryResult& qres) {
+                                      RangeQueryResult& qres,
+                                      idx_t list_size_max) -> size_t {
                 idx_t key = keys[i * cur_nprobe + ik]; /* select the list */
                 if (key < 0) {
-                    return;
+                    return 0;
                 }
 
                 FAISS_THROW_IF_NOT_FMT(
@@ -898,7 +908,7 @@ void IndexIVF::range_search_preassigned(
                         nlist);
 
                 if (invlists->is_empty(key, inverted_list_context)) {
-                    return;
+                    return 0;
                 }
 
                 scanner->set_list(key, coarse_dis[i * cur_nprobe + ik]);
@@ -915,12 +925,18 @@ void IndexIVF::range_search_preassigned(
                     InvertedLists::ScopedCodes scodes(invlists, key);
                     InvertedLists::ScopedIds ids(invlists, key);
                     size_t list_size = invlists->list_size(key);
+                    if (list_size > (size_t)list_size_max) {
+                        // Truncate to what is left of the max_codes budget.
+                        list_size = (size_t)list_size_max;
+                    }
 
                     scanner->scan_codes_range(
                             list_size, scodes.get(), ids.get(), radius, qres);
                 }
                 nlistv++;
-                ndis += qres.stats.scan_cnt - scan_cnt0;
+                const size_t nscanned = qres.stats.scan_cnt - scan_cnt0;
+                ndis += nscanned;
+                return nscanned;
             };
 
             if (parallel_mode == 0) {
@@ -934,8 +950,16 @@ void IndexIVF::range_search_preassigned(
                         // results. A hit resets the counter.
                         size_t prev_nres = qres.nres;
                         size_t ndup = 0;
+                        idx_t nscan = 0;
                         for (idx_t ik = 0; ik < cur_nprobe; ik++) {
-                            scan_list_func(i, ik, qres);
+                            nscan += scan_list_func(
+                                    i, ik, qres, cur_max_codes - nscan);
+                            // Early-stop check: apply max_codes after each
+                            // list. nscan is the number of codes actually
+                            // scanned.
+                            if (nscan >= cur_max_codes) {
+                                break;
+                            }
                             if (max_empty_result_buckets > 0) {
                                 // Early-stop check: stop range search after
                                 // enough consecutive empty probes.
@@ -960,7 +984,7 @@ void IndexIVF::range_search_preassigned(
 #pragma omp for schedule(dynamic)
                     for (int64_t ik = 0; ik < cur_nprobe; ik++) {
                         try {
-                            scan_list_func(i, ik, qres);
+                            scan_list_func(i, ik, qres, unlimited_list_size);
                         } catch (...) {
                             omp_capture_exception(ex);
                         }
@@ -978,7 +1002,7 @@ void IndexIVF::range_search_preassigned(
                             qres = &pres.new_result(i);
                             scanner->set_query(x + i * d);
                         }
-                        scan_list_func(i, ik, *qres);
+                        scan_list_func(i, ik, *qres, unlimited_list_size);
                     } catch (...) {
                         omp_capture_exception(ex);
                     }
