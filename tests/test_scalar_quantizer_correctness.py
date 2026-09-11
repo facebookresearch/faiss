@@ -607,20 +607,33 @@ class TestTurboQFullDistances(unittest.TestCase):
 
 @for_all_simd_levels
 class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
-    """QT_8bit_direct{,_signed} distances are exact integers, so every SIMD
-    level must agree with NONE bit for bit.
+    """Every SIMD level must return the exact QT_8bit_direct{,_signed}
+    distances.
 
-    d = 16 and 32 hit the d % 16 == 0 gate in sq-dispatch.h that routes to the
-    byte-domain DistanceComputerByte / DistanceComputerByteSigned kernels. The
-    two tests cover the two independent dispatch chains those kernels are
-    reached from: search() goes through sq_select_InvertedListScanner, and
-    get_distance_computer() through sq_select_distance_computer (the chain
-    Refine(SQ8) uses).
+    The distances are integers, so this class computes them from the
+    definition and compares. An earlier version measured a second time at
+    SIMDLevel.NONE and compared the two runs. A static build reports only the
+    one level it compiles, and omits NONE, so that version skipped itself in
+    the build shape that ships.
+
+    d = 16 and d = 32 pass the d % 16 == 0 test in sq-dispatch.h. That test
+    routes the query to DistanceComputerByte and DistanceComputerByteSigned.
+    Two dispatch chains reach those kernels, and this class covers both.
+    search() uses sq_select_InvertedListScanner. get_distance_computer() uses
+    sq_select_distance_computer, which is the chain Refine(SQ8) follows.
     """
 
-    def do_test(self, measure):
-        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
-            self.skipTest("SIMDLevel.NONE not available")
+    def reference(self, xq, xb, metric):
+        """Returns the exact distances. The values are small integers. Every
+        product and sum stays below 2**24, so the float32 result loses
+        nothing."""
+        a = xq.astype("int64")
+        b = xb.astype("int64")
+        if metric == faiss.METRIC_L2:
+            return ((a[:, None, :] - b[None, :, :]) ** 2).sum(-1)
+        return a @ b.T
+
+    def do_test(self, measure, expect):
         rng = np.random.RandomState(1234)
         for qtype in (
             faiss.ScalarQuantizer.QT_8bit_direct,
@@ -639,12 +652,23 @@ class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
                         index = faiss.IndexScalarQuantizer(d, qtype, metric)
                         index.add(xb)
                         got = measure(index, xq)
-                        with NoneSIMDLevel():
-                            expect = measure(index, xq)
-                        np.testing.assert_array_equal(got, expect)
+                        truth = self.reference(xq, xb, metric)
+                        np.testing.assert_array_equal(got, expect(truth, metric))
 
     def test_scanner(self):
-        self.do_test(lambda index, xq: np.hstack(index.search(xq, 10)))
+        k = 10
+
+        def measure(index, xq):
+            return index.search(xq, k)[0]
+
+        def expect(truth, metric):
+            # search returns L2 ascending and inner product descending.
+            ordered = np.sort(truth, axis=1)
+            if metric == faiss.METRIC_INNER_PRODUCT:
+                ordered = ordered[:, ::-1]
+            return ordered[:, :k]
+
+        self.do_test(measure, expect)
 
     def test_distance_computer(self):
         def measure(index, xq):
@@ -656,4 +680,4 @@ class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
                     out[q, i] = dc(int(i))
             return out
 
-        self.do_test(measure)
+        self.do_test(measure, lambda truth, metric: truth)
