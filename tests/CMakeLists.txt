@@ -69,6 +69,8 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     list(APPEND FAISS_TEST_SRC
+      test_rabitq_simd.cpp
+      test_rabitq_simd_dd.cpp
       test_simd_levels_x86_avx2.cpp
       test_simd_levels_x86_avx512.cpp
     )

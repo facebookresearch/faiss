@@ -914,6 +914,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
     DOWNCAST ( IndexHNSWCagra )
+    DOWNCAST ( IndexHNSWRaBitQ )
     DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )

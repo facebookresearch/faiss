@@ -8,6 +8,7 @@
 #include <faiss/utils/simd_levels.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 
 #if defined(_MSC_VER)
@@ -146,11 +147,37 @@ void detect_x86_uarch_flags() {}
 
 } // namespace
 
-#ifdef FAISS_ENABLE_DD
+/// Must mirror the case labels in with_selected_simd_levels. A static build
+/// defines a COMPILE_SIMD_* macro for every level whose sources it compiles,
+/// not only for SINGLE_SIMD_LEVEL, so this reports a correct set in both
+/// modes and the result is not a single level.
+uint64_t compiled_simd_levels() {
+    uint64_t mask = uint64_t(1) << static_cast<int>(SIMDLevel::NONE);
+#ifdef COMPILE_SIMD_AVX2
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX2);
+#endif
+#ifdef COMPILE_SIMD_AVX512
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX512);
+#endif
+#ifdef COMPILE_SIMD_AVX512_VPOPCNT
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX512_VPOPCNT);
+#endif
+#ifdef COMPILE_SIMD_AVX512_SPR
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::AVX512_SPR);
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::ARM_NEON);
+#endif
+#ifdef COMPILE_SIMD_ARM_SVE
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::ARM_SVE);
+#endif
+#ifdef COMPILE_SIMD_RISCV_RVV
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::RISCV_RVV);
+#endif
+    return mask;
+}
 
-// =============================================================================
-// Dynamic Dispatch (DD) mode implementation
-// =============================================================================
+#ifdef FAISS_ENABLE_DD
 
 // Static initializer to run constructor at load time
 // NOLINTNEXTLINE(facebook-avoid-non-const-global-variables)
@@ -164,7 +191,22 @@ SIMDConfig::SIMDConfig(const char** faiss_simd_level_env) {
     if (!env_var) {
         level = auto_detect_simd_level();
     } else {
-        level = to_simd_level(env_var);
+        // Forcing a level the CPU lacks is allowed. Forcing one the binary
+        // does not hold is not: dispatch would fall to NONE and skip every
+        // level between. Walk down to the nearest compiled level instead.
+        const uint64_t compiled = compiled_simd_levels();
+        const SIMDLevel requested = to_simd_level(env_var);
+        level = requested;
+        while (((compiled >> static_cast<int>(level)) & 1) == 0) {
+            level = get_simd_fallback(level);
+        }
+        if (level != requested) {
+            fprintf(stderr,
+                    "faiss: FAISS_SIMD_LEVEL=%s is not compiled into this "
+                    "build, using %s instead\n",
+                    to_string(requested).c_str(),
+                    to_string(level).c_str());
+        }
         supported_simd_levels = (1 << static_cast<int>(level));
     }
     supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::NONE));
@@ -220,6 +262,13 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
         // needed for the SPR detection below. Kept in a local so a later
         // xgetbv cannot clobber it.
         unsigned int cpuid7_edx = regs[3];
+        // Leaf 7 subleaf 0, not leaf 1: leaf 1 ECX holds unrelated bits at
+        // these positions.
+        unsigned int ecx7 = regs[2];
+        [[maybe_unused]] bool has_avx512_vnni = (ecx7 & (1 << 11)) != 0;
+        [[maybe_unused]] bool has_avx512_vpopcntdq = (ecx7 & (1 << 14)) != 0;
+        // Bit 12 = AVX512_BITALG, needed for the byte-wise popcount kernels.
+        [[maybe_unused]] bool has_avx512_bitalg = (ecx7 & (1 << 12)) != 0;
 
         uint64_t xcr0 = xgetbv0();
 
@@ -244,19 +293,29 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
                 supported_simd_levels |=
                         (1 << static_cast<int>(SIMDLevel::AVX512));
 
+#if defined(COMPILE_SIMD_AVX512_VPOPCNT)
+                if (has_avx512_vpopcntdq && has_avx512_bitalg) {
+                    detected_level = SIMDLevel::AVX512_VPOPCNT;
+                    supported_simd_levels |=
+                            (1 << static_cast<int>(SIMDLevel::AVX512_VPOPCNT));
+                }
+#endif
+
 #if defined(COMPILE_SIMD_AVX512_SPR)
                 // Check for Sapphire Rapids features.
-                // The SPR code path is compiled with -mavx512fp16, so we
-                // must verify both AVX512_BF16 and AVX512_FP16 before
-                // dispatching to it. AMD Zen 4 (bergamo) has BF16 but
-                // not FP16 — using SPR code there causes SIGILL.
+                // The SPR code path is compiled with AVX512_VNNI, BF16,
+                // FP16 and VPOPCNTDQ, and falls back to the VPOPCNT kernels,
+                // which need BITALG. All five features are required.
+                // AMD Zen 4 has VPOPCNTDQ and BF16 but not FP16, and must
+                // remain on the AVX512_VPOPCNT level.
                 // CPUID EAX=7, ECX=1: EAX bit 5 = AVX512_BF16
                 // CPUID EAX=7, ECX=0: EDX bit 23 = AVX512_FP16
                 // (Linux: X86_FEATURE_AVX512_FP16 = 18*32+23)
                 bool has_avx512_fp16 = (cpuid7_edx & (1 << 23)) != 0;
                 cpuid_count(7, 1, regs);
                 const bool has_avx512_bf16 = (regs[0] & (1 << 5)) != 0;
-                if (has_avx512_bf16 && has_avx512_fp16) {
+                if (has_avx512_vnni && has_avx512_vpopcntdq &&
+                    has_avx512_bitalg && has_avx512_bf16 && has_avx512_fp16) {
                     detected_level = SIMDLevel::AVX512_SPR;
                     supported_simd_levels |=
                             (1 << static_cast<int>(SIMDLevel::AVX512_SPR));
@@ -350,6 +409,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     // In static mode, return the compiled-in level
 #if defined(COMPILE_SIMD_AVX512_SPR)
     return SIMDLevel::AVX512_SPR;
+#elif defined(COMPILE_SIMD_AVX512_VPOPCNT)
+    return SIMDLevel::AVX512_VPOPCNT;
 #elif defined(COMPILE_SIMD_AVX512)
     return SIMDLevel::AVX512;
 #elif defined(COMPILE_SIMD_AVX2)
@@ -384,6 +445,8 @@ std::string to_string(SIMDLevel level) {
             return "AVX2";
         case SIMDLevel::AVX512:
             return "AVX512";
+        case SIMDLevel::AVX512_VPOPCNT:
+            return "AVX512_VPOPCNT";
         case SIMDLevel::AVX512_SPR:
             return "AVX512_SPR";
         case SIMDLevel::ARM_NEON:
@@ -407,6 +470,9 @@ SIMDLevel to_simd_level(const std::string& level_str) {
     }
     if (level_str == "AVX512") {
         return SIMDLevel::AVX512;
+    }
+    if (level_str == "AVX512_VPOPCNT") {
+        return SIMDLevel::AVX512_VPOPCNT;
     }
     if (level_str == "AVX512_SPR") {
         return SIMDLevel::AVX512_SPR;
