@@ -631,7 +631,9 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
 endif()
 
-# RVV is the baseline SIMD on rv64 builds compiled with rv64gcv. Compile RVV
+# RVV is the baseline SIMD on rv64 builds; the RVV translation units require
+# rv64gcv + Zvfhmin (see the RISCV_RVV contract in utils/simd_levels.h), so
+# they are compiled with -march=rv64gcv_zvfhmin. Compile RVV
 # sources into the main faiss target, mirroring the ARM NEON story on aarch64.
 # Guard against DD mode: in dd builds, FAISS_SIMD_SRC already contains
 # FAISS_SIMD_RVV_SRC and is added via target_sources above, so we must not

@@ -464,10 +464,15 @@ jobs:
       - name: Run scalar quantizer RVV parity tests (via QEMU)
         run: |
           # v=true makes the vector extension explicit (VLEN defaults to
-          # 128). QEMU 8.2 (Ubuntu 24.04) already implements the zvfhmin
-          # FP16 vector instructions needed by the QT_fp16 RVV kernels.
+          # 128). x-zvfhmin=true is required as well: the RISCV_RVV level's
+          # minimum ISA is rv64gcv + Zvfhmin (the QT_fp16 RVV kernel emits
+          # Zvfhmin instructions), but the property defaults to false on
+          # QEMU 8.2's rv64 CPU even though QEMU implements the extension.
+          # ScalarQuantizer.RVVFP16DistancePathParity in the filter output
+          # below is the FP16 case; it would die with SIGILL here if the
+          # extension were not enabled.
           qemu-riscv64-static \
-            -cpu rv64,v=true \
+            -cpu rv64,v=true,x-zvfhmin=true \
             -L /usr/riscv64-linux-gnu \
             build/tests/faiss_test \
             --gtest_filter="ScalarQuantizer.*DistancePathParity*"
@@ -477,8 +482,9 @@ jobs:
           # VLEN=1024 gives VLMAX=256 lanes for e32m8; together with the
           # default VLEN=128 run this exercises chunk-tail boundaries at
           # both ends of the dimensions used by the parity tests.
+          # x-zvfhmin=true is required for the QT_fp16 case, as above.
           qemu-riscv64-static \
-            -cpu rv64,v=true,vlen=1024 \
+            -cpu rv64,v=true,vlen=1024,x-zvfhmin=true \
             -L /usr/riscv64-linux-gnu \
             build/tests/faiss_test \
             --gtest_filter="ScalarQuantizer.*DistancePathParity*"
