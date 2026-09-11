@@ -208,7 +208,10 @@ float VectorDistance<METRIC_Canberra, SL>::operator()(
     float accu = 0;
     for (size_t i = 0; i < this->d; i++) {
         float xi = x[i], yi = y[i];
-        accu += fabs(xi - yi) / (fabs(xi) + fabs(yi));
+        float denominator = fabs(xi) + fabs(yi);
+        if (denominator != 0.0f) {
+            accu += fabs(xi - yi) / denominator;
+        }
     }
     return accu;
 }
