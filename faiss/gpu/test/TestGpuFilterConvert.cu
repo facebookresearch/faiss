@@ -89,8 +89,8 @@ void run_complex() {
     auto xor_selector =
             faiss::IDSelectorXOr(&or_selector, &not_bitmap_selector);
 
-    // convert to cuVS bitset
-    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
+    // convert to RAFT bitset
+    auto bitset = raft::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), xor_selector, bitset.view());
 
@@ -98,7 +98,7 @@ void run_complex() {
     auto bitset_converted_cpu =
             raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<bitset_t, indexing_t>(
+            raft::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), spec.bitset_len);
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
@@ -128,7 +128,7 @@ void run_range() {
     if (imin > imax)
         std::swap(imin, imax);
     auto selector = faiss::IDSelectorRange(imin, imax);
-    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
+    auto bitset = raft::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     auto nbits = sizeof(bitset_t) * 8;
 
@@ -137,7 +137,7 @@ void run_range() {
             raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
-    auto bitset_view_cpu = cuvs::core::bitset_view<bitset_t, indexing_t>(
+    auto bitset_view_cpu = raft::core::bitset_view<bitset_t, indexing_t>(
             bitset_converted_cpu.data_handle(), spec.bitset_len);
     for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_view_cpu.test(i) != selector.is_member(i)) {
@@ -169,7 +169,7 @@ void run_bitmap() {
     }
     auto bitmap_selector = faiss::IDSelectorBitmap(
             bitmap_faiss_cpu.size(), bitmap_faiss_cpu.data());
-    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
+    auto bitset = raft::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), bitmap_selector, bitset.view());
 
@@ -178,7 +178,7 @@ void run_bitmap() {
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<bitset_t, indexing_t>(
+            raft::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), spec.bitset_len);
     for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_converted_cpu_view.test(i) != bitmap_selector.is_member(i)) {
@@ -210,7 +210,7 @@ void run_array() {
     }
     auto array_selector =
             faiss::IDSelectorArray(n, array_selector_indices.data());
-    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
+    auto bitset = raft::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), array_selector, bitset.view());
 
@@ -219,7 +219,7 @@ void run_array() {
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<bitset_t, indexing_t>(
+            raft::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), spec.bitset_len);
     for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_converted_cpu_view.test(i) != array_selector.is_member(i)) {
@@ -261,7 +261,7 @@ void run_bitmap_byte_convention() {
             faiss::IDSelectorBitmap(byte_count, bitmap_faiss_cpu.data());
 
     // Create bitset with the actual number of bits
-    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
+    auto bitset = raft::core::bitset<bitset_t, indexing_t>(
             raft_handle, bit_count, false);
 
     faiss::gpu::convert_to_bitset(gpuRes.get(), bitmap_selector, bitset.view());
@@ -272,7 +272,7 @@ void run_bitmap_byte_convention() {
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<bitset_t, indexing_t>(
+            raft::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), bit_count);
     for (indexing_t i = 0; i < static_cast<indexing_t>(bit_count); i++) {
         if (bitset_converted_cpu_view.test(i) != bitmap_selector.is_member(i)) {

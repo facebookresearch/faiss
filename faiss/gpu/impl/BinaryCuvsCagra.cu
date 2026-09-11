@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2025, NVIDIA CORPORATION.
+ * Copyright (c) 2025-2026, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,41 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/BinaryCuvsCagra.cuh>
 
-#include <cuvs/core/bitset.hpp>
-#include <cuvs/neighbors/cagra.hpp>
-#include <raft/core/device_mdspan.hpp>
+#include <cuvs/neighbors/cagra.h>
 #include <raft/core/device_resources.hpp>
-#include <raft/core/resource/thrust_policy.hpp>
 #include <raft/linalg/map.cuh>
 
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
 
+#include <algorithm>
+#include <memory>
+#include <vector>
+
 namespace faiss {
 namespace gpu {
+
+namespace {
+
+cuvsDataset_t makeAndAttachPaddedDataset(
+        GpuResources* resources,
+        const uint8_t* data,
+        int64_t rows,
+        int64_t cols,
+        cuvsCagraIndex_t index) {
+    cuvsDataset_t paddedDataset =
+            makeCuvsPaddedDataset(resources, data, rows, cols);
+    CuvsUniquePtr<cuvsDataset, cuvsDatasetDestroy> paddedHolder(paddedDataset);
+    cuvsCheck(
+            cuvsCagraUpdateDataset(
+                    cuvsResourcesFromGpuResources(resources),
+                    paddedDataset,
+                    index),
+            "cuvsCagraUpdateDataset");
+    return paddedHolder.release();
+}
+
+} // namespace
 
 BinaryCuvsCagra::BinaryCuvsCagra(
         GpuResources* resources,
@@ -50,28 +73,23 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         bool store_dataset,
         IndicesOptions indicesOptions)
         : resources_(resources),
+          storage_(nullptr),
+          n_(0),
           dim_(dim),
           store_dataset_(store_dataset),
           graph_build_algo_(graph_build_algo),
+          intermediate_graph_degree_(intermediate_graph_degree),
+          graph_degree_(graph_degree),
           nn_descent_niter_(nn_descent_niter) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
-    index_params_.intermediate_graph_degree = intermediate_graph_degree;
-    index_params_.graph_degree = graph_degree;
-    index_params_.attach_dataset_on_build = store_dataset;
-
-    index_params_.metric = cuvs::distance::DistanceType::BitwiseHamming;
-
-    // default to NN_DESCENT if IVF_PQ is set
     if (graph_build_algo == faiss::cagra_build_algo::IVF_PQ) {
         fprintf(stderr,
                 "WARNING: IVF_PQ is not supported for binary CAGRA. "
                 "Defaulting to NN_DESCENT\n");
     }
-
-    reset();
 }
 
 BinaryCuvsCagra::BinaryCuvsCagra(
@@ -82,109 +100,160 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         const uint8_t* train_dataset,
         const idx_t* knn_graph,
         IndicesOptions indicesOptions)
-        : resources_(resources), dim_(dim) {
+        : resources_(resources),
+          storage_(train_dataset),
+          n_(n),
+          dim_(dim),
+          graph_build_algo_(faiss::cagra_build_algo::NN_DESCENT),
+          intermediate_graph_degree_(graph_degree),
+          graph_degree_(graph_degree) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
-    bool distances_on_gpu = getDeviceForAddress(train_dataset) >= 0;
-    bool knn_graph_on_gpu = getDeviceForAddress(knn_graph) >= 0;
+    const bool datasetOnGpu = getDeviceForAddress(train_dataset) >= 0;
+    const bool graphOnGpu = getDeviceForAddress(knn_graph) >= 0;
+    FAISS_THROW_IF_NOT_MSG(
+            datasetOnGpu == graphOnGpu,
+            "dataset and knn_graph must both be in device or host memory");
 
-    FAISS_ASSERT(distances_on_gpu == knn_graph_on_gpu);
-
-    storage_ = train_dataset;
-    n_ = n;
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-
-    if (distances_on_gpu && knn_graph_on_gpu) {
-        raft_handle.sync_stream();
-        // Copying to host so that cuvs::neighbors::cagra::index
-        // creates an owning copy of the knn graph on device
-        auto knn_graph_copy =
-                raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    std::vector<uint32_t> hostGraph(n * graph_degree);
+    if (graphOnGpu) {
+        raftHandle.sync_stream();
         thrust::copy(
                 thrust::device_ptr<const idx_t>(knn_graph),
-                thrust::device_ptr<const idx_t>(knn_graph + (n * graph_degree)),
-                knn_graph_copy.data_handle());
-
-        auto dataset_mds =
-                raft::make_device_matrix_view<const uint8_t, int64_t>(
-                        train_dataset, n, dim / 8);
-
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
-                raft_handle,
-                cuvs::distance::DistanceType::BitwiseHamming,
-                dataset_mds,
-                raft::make_const_mdspan(knn_graph_copy.view()));
-    } else if (!distances_on_gpu && !knn_graph_on_gpu) {
-        // copy idx_t (int64_t) host knn_graph to uint32_t host knn_graph
-        auto knn_graph_copy =
-                raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
-        std::copy(
-                knn_graph,
-                knn_graph + (n * graph_degree),
-                knn_graph_copy.data_handle());
-
-        auto dataset_mds = raft::make_host_matrix_view<const uint8_t, int64_t>(
-                train_dataset, n, dim / 8);
-
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
-                raft_handle,
-                cuvs::distance::DistanceType::BitwiseHamming,
-                dataset_mds,
-                raft::make_const_mdspan(knn_graph_copy.view()));
+                thrust::device_ptr<const idx_t>(knn_graph + n * graph_degree),
+                hostGraph.data());
     } else {
-        FAISS_THROW_MSG(
-                "distances and knn_graph must both be in device or host memory");
+        std::transform(
+                knn_graph,
+                knn_graph + n * graph_degree,
+                hostGraph.begin(),
+                [](idx_t value) { return static_cast<uint32_t>(value); });
+    }
+
+    if (!datasetOnGpu || cuvsPaddedDatasetNeedsView(train_dataset, dim_ / 8)) {
+        ownedDataset_ = DeviceTensor<uint8_t, 2, true>(
+                resources_,
+                AllocInfo(
+                        AllocType::Other,
+                        getCurrentDevice(),
+                        MemorySpace::Device,
+                        raftHandle.get_stream()),
+                {n, dim_ / 8});
+        raft::copy(
+                ownedDataset_.data(),
+                train_dataset,
+                ownedDataset_.numElements(),
+                raftHandle.get_stream());
+        storage_ = ownedDataset_.data();
+    }
+
+    auto graphTensor =
+            makeCuvsTensor(hostGraph.data(), (int64_t)n, (int64_t)graph_degree);
+    auto datasetTensor = makeCuvsTensor(
+            const_cast<uint8_t*>(storage_), (int64_t)n, (int64_t)(dim_ / 8));
+
+    cuvsCagraIndex_t index = nullptr;
+    cuvsCheck(cuvsCagraIndexCreate(&index), "cuvsCagraIndexCreate");
+    CuvsUniquePtr<cuvsCagraIndex, cuvsCagraIndexDestroy> indexHolder(index);
+    cuvsCheck(
+            cuvsCagraIndexFromArgs(
+                    cuvsResourcesFromGpuResources(resources_),
+                    BitwiseHamming,
+                    graphTensor.get(),
+                    datasetTensor.get(),
+                    index),
+            "cuvsCagraIndexFromArgs");
+    cuvs_dataset_ = makeAndAttachPaddedDataset(
+            resources_,
+            datasetOnGpu ? storage_ : train_dataset,
+            (int64_t)n_,
+            (int64_t)(dim_ / 8),
+            index);
+    raftHandle.sync_stream();
+    cuvs_index = indexHolder.release();
+}
+
+BinaryCuvsCagra::~BinaryCuvsCagra() {
+    if (cuvs_index) {
+        cuvsCagraIndexDestroy(cuvs_index);
+    }
+    if (cuvs_dataset_) {
+        cuvsDatasetDestroy(cuvs_dataset_);
     }
 }
 
 void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
+    reset();
     storage_ = x;
     n_ = n;
 
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-
-    // IVF-PQ is not supported as the graph building algorithm
-    if (graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT ||
-        graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
-        cuvs::neighbors::cagra::graph_build_params::nn_descent_params
-                graph_build_params(index_params_.intermediate_graph_degree);
-        graph_build_params.max_iterations = nn_descent_niter_;
-        graph_build_params.metric =
-                cuvs::distance::DistanceType::BitwiseHamming;
-        index_params_.graph_build_params = graph_build_params;
-    } else {
-        cuvs::neighbors::cagra::graph_build_params::iterative_search_params
-                graph_build_params;
-        index_params_.graph_build_params = graph_build_params;
-        if (index_params_.graph_degree ==
-            index_params_.intermediate_graph_degree) {
-            index_params_.intermediate_graph_degree =
-                    1.5 * index_params_.graph_degree;
-        }
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    const uint8_t* buildData = x;
+    if (store_dataset_ && cuvsPaddedDatasetNeedsView(x, dim_ / 8)) {
+        ownedDataset_ = DeviceTensor<uint8_t, 2, true>(
+                resources_,
+                AllocInfo(
+                        AllocType::Other,
+                        getCurrentDevice(),
+                        MemorySpace::Device,
+                        raftHandle.get_stream()),
+                {n, dim_ / 8});
+        raft::copy(
+                ownedDataset_.data(),
+                x,
+                ownedDataset_.numElements(),
+                raftHandle.get_stream());
+        storage_ = ownedDataset_.data();
+        buildData = storage_;
     }
 
-    if (getDeviceForAddress(x) >= 0) {
-        auto dataset = raft::make_device_matrix_view<const uint8_t, int64_t>(
-                x, n, dim_ / 8);
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
-                cuvs::neighbors::cagra::build(
-                        raft_handle, index_params_, dataset));
+    auto sourceTensor = makeCuvsTensor(
+            const_cast<uint8_t*>(buildData), (int64_t)n, (int64_t)(dim_ / 8));
+    cuvsDataset_t dataset = nullptr;
+    if (store_dataset_) {
+        dataset = makeCuvsPaddedDataset(
+                resources_, buildData, (int64_t)n, (int64_t)(dim_ / 8));
     } else {
-        auto dataset = raft::make_host_matrix_view<const uint8_t, int64_t>(
-                x, n, dim_ / 8);
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
-                cuvs::neighbors::cagra::build(
-                        raft_handle, index_params_, dataset));
+        cuvsCheck(
+                cuvsDatasetMakeStandardView(
+                        cuvsResourcesFromGpuResources(resources_),
+                        sourceTensor.get(),
+                        &dataset),
+                "cuvsDatasetMakeStandardView");
     }
+    CuvsUniquePtr<cuvsDataset, cuvsDatasetDestroy> datasetHolder(dataset);
+
+    cuvsCagraIndexParams_t params = nullptr;
+    cuvsCheck(
+            cuvsCagraIndexParamsCreate(&params), "cuvsCagraIndexParamsCreate");
+    CuvsUniquePtr<cuvsCagraIndexParams, cuvsCagraIndexParamsDestroy>
+            paramsHolder(params);
+    // The C factory preallocates an IVF-PQ block, but binary CAGRA always uses
+    // NN-descent. Detach and destroy the unused block explicitly.
+    std::unique_ptr<cuvsIvfPqParams> unusedIvfPqParams(
+            static_cast<cuvsIvfPqParams*>(params->graph_build_params));
+    params->graph_build_params = nullptr;
+    params->metric = BitwiseHamming;
+    params->intermediate_graph_degree = intermediate_graph_degree_;
+    params->graph_degree = graph_degree_;
+    params->build_algo = NN_DESCENT;
+    params->nn_descent_niter = nn_descent_niter_;
+
+    cuvsCagraIndex_t index = nullptr;
+    cuvsCheck(cuvsCagraIndexCreate(&index), "cuvsCagraIndexCreate");
+    CuvsUniquePtr<cuvsCagraIndex, cuvsCagraIndexDestroy> indexHolder(index);
+    cuvsCheck(
+            cuvsCagraBuild(
+                    cuvsResourcesFromGpuResources(resources_),
+                    params,
+                    dataset,
+                    index),
+            "cuvsCagraBuild");
+    cuvs_dataset_ = datasetHolder.release();
+    cuvs_index = indexHolder.release();
 }
 
 void BinaryCuvsCagra::search(
@@ -206,134 +275,144 @@ void BinaryCuvsCagra::search(
         idx_t num_random_samplings,
         idx_t rand_xor_mask,
         const IDSelector* sel) {
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    idx_t numQueries = queries.getSize(0);
-    idx_t cols = queries.getSize(1);
-    idx_t k_ = k;
-    auto distances_float =
-            raft::make_device_matrix<float>(raft_handle, numQueries, k_);
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    const idx_t numQueries = queries.getSize(0);
+    const idx_t cols = queries.getSize(1);
 
     FAISS_ASSERT(cuvs_index);
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_ / 8);
 
     if (!store_dataset_) {
-        if (getDeviceForAddress(storage_) >= 0) {
-            auto dataset =
-                    raft::make_device_matrix_view<const uint8_t, int64_t>(
-                            storage_, n_, dim_ / 8);
-            cuvs_index->update_dataset(raft_handle, dataset);
-        } else {
-            auto dataset = raft::make_host_matrix_view<const uint8_t, int64_t>(
-                    storage_, n_, dim_ / 8);
-            cuvs_index->update_dataset(raft_handle, dataset);
+        if (cuvsPaddedDatasetNeedsView(storage_, dim_ / 8)) {
+            ownedDataset_ = DeviceTensor<uint8_t, 2, true>(
+                    resources_,
+                    AllocInfo(
+                            AllocType::Other,
+                            getCurrentDevice(),
+                            MemorySpace::Device,
+                            raftHandle.get_stream()),
+                    {n_, dim_ / 8});
+            raft::copy(
+                    ownedDataset_.data(),
+                    storage_,
+                    ownedDataset_.numElements(),
+                    raftHandle.get_stream());
+            storage_ = ownedDataset_.data();
         }
+        auto paddedDataset = makeAndAttachPaddedDataset(
+                resources_,
+                storage_,
+                (int64_t)n_,
+                (int64_t)(dim_ / 8),
+                cuvs_index);
+        if (cuvs_dataset_) {
+            cuvsCheck(cuvsDatasetDestroy(cuvs_dataset_), "cuvsDatasetDestroy");
+        }
+        cuvs_dataset_ = paddedDataset;
         store_dataset_ = true;
     }
 
-    auto indices_view = raft::make_device_matrix_view<idx_t, int64_t>(
-            outIndices.data(), numQueries, k_);
+    cuvsCagraSearchParams_t params = nullptr;
+    cuvsCheck(
+            cuvsCagraSearchParamsCreate(&params),
+            "cuvsCagraSearchParamsCreate");
+    CuvsUniquePtr<cuvsCagraSearchParams, cuvsCagraSearchParamsDestroy>
+            paramsHolder(params);
+    params->max_queries = max_queries;
+    params->itopk_size = itopk_size;
+    params->max_iterations = max_iterations;
+    params->algo = static_cast<cuvsCagraSearchAlgo>(graph_search_algo);
+    params->team_size = team_size;
+    params->search_width = search_width;
+    params->min_iterations = min_iterations;
+    params->thread_block_size = thread_block_size;
+    params->hashmap_mode = static_cast<cuvsCagraHashMode>(hash_mode);
+    params->hashmap_min_bitlen = hashmap_min_bitlen;
+    params->hashmap_max_fill_rate = hashmap_max_fill_rate;
+    params->num_random_samplings = num_random_samplings;
+    params->rand_xor_mask = rand_xor_mask;
 
-    cuvs::neighbors::cagra::search_params search_pams;
-    search_pams.max_queries = max_queries;
-    search_pams.itopk_size = itopk_size;
-    search_pams.max_iterations = max_iterations;
-    search_pams.algo =
-            static_cast<cuvs::neighbors::cagra::search_algo>(graph_search_algo);
-    search_pams.team_size = team_size;
-    search_pams.search_width = search_width;
-    search_pams.min_iterations = min_iterations;
-    search_pams.thread_block_size = thread_block_size;
-    search_pams.hashmap_mode =
-            static_cast<cuvs::neighbors::cagra::hash_mode>(hash_mode);
-    search_pams.hashmap_min_bitlen = hashmap_min_bitlen;
-    search_pams.hashmap_max_fill_rate = hashmap_max_fill_rate;
-    search_pams.num_random_samplings = num_random_samplings;
-    search_pams.rand_xor_mask = rand_xor_mask;
+    auto indexCopy = raft::make_device_matrix<uint32_t, int64_t>(
+            raftHandle, numQueries, k);
+    auto distanceCopy =
+            raft::make_device_matrix<float, int64_t>(raftHandle, numQueries, k);
+    auto queryTensor =
+            makeCuvsTensor(queries.data(), (int64_t)numQueries, (int64_t)cols);
+    auto indexTensor = makeCuvsTensor(
+            indexCopy.data_handle(), (int64_t)numQueries, (int64_t)k);
+    auto distanceTensor = makeCuvsTensor(
+            distanceCopy.data_handle(), (int64_t)numQueries, (int64_t)k);
+    CuvsFilter filter(resources_, sel, n_);
 
-    auto queries_view = raft::make_device_matrix_view<const uint8_t, int64_t>(
-            queries.data(), numQueries, cols);
-    auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
-            raft_handle, numQueries, k_);
-    auto distances_float_view = distances_float.view();
-
-    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_holder;
-    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
-            bitset_filter;
-    cuvs::neighbors::filtering::none_sample_filter none_filter;
-
-    if (sel) {
-        bitset_holder =
-                cuvs::core::bitset<uint32_t, int64_t>(raft_handle, n_, false);
-        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_holder->view());
-        bitset_filter.emplace(bitset_holder->view());
-    }
-    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
-            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                      bitset_filter.value())
-            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                      none_filter);
-
-    cuvs::neighbors::cagra::search(
-            raft_handle,
-            search_pams,
-            *cuvs_index,
-            queries_view,
-            indices_copy.view(),
-            distances_float_view,
-            filter_ref);
-
-    faiss::gpu::sanitizeCuvsIndices(
+    cuvsCheck(
+            cuvsCagraSearch(
+                    cuvsResourcesFromGpuResources(resources_),
+                    params,
+                    cuvs_index,
+                    queryTensor.get(),
+                    indexTensor.get(),
+                    distanceTensor.get(),
+                    filter.get()),
+            "cuvsCagraSearch");
+    sanitizeCuvsIndices(
             resources_,
-            indices_copy.data_handle(),
-            indices_view.data_handle(),
-            indices_copy.size(),
+            indexCopy.data_handle(),
+            outIndices.data(),
+            indexCopy.size(),
             n_);
-    auto distances_view = raft::make_device_matrix_view(
-            outDistances.data(),
-            static_cast<int64_t>(numQueries),
-            static_cast<int64_t>(k));
 
+    auto distancesView = raft::make_device_matrix_view(
+            outDistances.data(), (int64_t)numQueries, (int64_t)k);
+    auto distanceCopyView = distanceCopy.view();
     raft::linalg::map_offset(
-            raft_handle,
-            distances_view,
-            [distances_float_view, k_] __device__(size_t i) {
-                int row_idx = i / k_;
-                int col_idx = i % k_;
-                return static_cast<int>(distances_float_view(row_idx, col_idx));
+            raftHandle,
+            distancesView,
+            [distanceCopyView, k] __device__(size_t i) {
+                const int row = i / k;
+                const int col = i % k;
+                return static_cast<int>(distanceCopyView(row, col));
             });
 }
 
 void BinaryCuvsCagra::reset() {
-    cuvs_index.reset();
+    if (cuvs_index) {
+        cuvsCheck(cuvsCagraIndexDestroy(cuvs_index), "cuvsCagraIndexDestroy");
+        cuvs_index = nullptr;
+    }
+    if (cuvs_dataset_) {
+        cuvsCheck(cuvsDatasetDestroy(cuvs_dataset_), "cuvsDatasetDestroy");
+        cuvs_dataset_ = nullptr;
+    }
 }
 
 idx_t BinaryCuvsCagra::get_knngraph_degree() const {
     FAISS_ASSERT(cuvs_index);
-    return static_cast<idx_t>(cuvs_index->graph_degree());
+    int64_t degree = 0;
+    cuvsCheck(
+            cuvsCagraIndexGetGraphDegree(cuvs_index, &degree),
+            "cuvsCagraIndexGetGraphDegree");
+    return static_cast<idx_t>(degree);
 }
 
 std::vector<idx_t> BinaryCuvsCagra::get_knngraph() const {
     FAISS_ASSERT(cuvs_index);
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
 
-    auto device_graph = cuvs_index->graph();
+    CuvsOutputTensor graphTensor;
+    cuvsCheck(
+            cuvsCagraIndexGetGraph(cuvs_index, graphTensor.get()),
+            "cuvsCagraIndexGetGraph");
+    const uint32_t* graphData = graphTensor.data<uint32_t>();
+    const size_t graphSize = graphTensor.extent(0) * graphTensor.extent(1);
 
-    std::vector<idx_t> host_graph(
-            device_graph.extent(0) * device_graph.extent(1));
-
-    raft_handle.sync_stream();
-
+    std::vector<idx_t> hostGraph(graphSize);
+    raftHandle.sync_stream();
     thrust::copy(
-            thrust::device_ptr<const uint32_t>(device_graph.data_handle()),
-            thrust::device_ptr<const uint32_t>(
-                    device_graph.data_handle() + device_graph.size()),
-            host_graph.data());
-
-    return host_graph;
+            thrust::device_ptr<const uint32_t>(graphData),
+            thrust::device_ptr<const uint32_t>(graphData + graphSize),
+            hostGraph.data());
+    return hostGraph;
 }
 
 const uint8_t* BinaryCuvsCagra::get_training_dataset() const {

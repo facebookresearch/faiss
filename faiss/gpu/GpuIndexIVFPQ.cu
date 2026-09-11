@@ -16,8 +16,10 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
 #if defined USE_NVIDIA_CUVS
-#include <cuvs/neighbors/ivf_pq.hpp>
+#include <cuvs/neighbors/ivf_pq.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
+#include <raft/core/device_mdarray.hpp>
+#include <raft/util/cudart_utils.hpp>
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
 #endif
 
@@ -389,61 +391,90 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        cuvs::neighbors::ivf_pq::index_params cuvs_index_params;
-        cuvs_index_params.n_lists = nlist;
-        cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
-        // kmeans_trainset_fraction and kmeans_n_iters intentionally left
-        // at cuVS defaults (0.5 and 20). Faiss's cp.max_points_per_centroid
-        // (256) was designed for CPU k-means and produces severely
-        // underparameterized training at scale through cuVS.
-        cuvs_index_params.pq_bits = bitsPerCode_;
-        cuvs_index_params.pq_dim = subQuantizers_;
-        cuvs_index_params.conservative_memory_allocation = false;
-        cuvs_index_params.add_data_on_build = false;
+        cuvsIvfPqIndexParams_t indexParams = nullptr;
+        cuvsCheck(
+                cuvsIvfPqIndexParamsCreate(&indexParams),
+                "cuvsIvfPqIndexParamsCreate");
+        CuvsUniquePtr<cuvsIvfPqIndexParams, cuvsIvfPqIndexParamsDestroy>
+                indexParamsHolder(indexParams);
+        indexParams->n_lists = nlist;
+        indexParams->metric = metricFaissToCuvs(metric_type, false);
+        indexParams->metric_arg = metric_arg;
+        // kmeans_trainset_fraction and kmeans_n_iters intentionally remain
+        // at the cuVS defaults (0.5 and 20).
+        indexParams->pq_bits = bitsPerCode_;
+        indexParams->pq_dim = subQuantizers_;
+        indexParams->codebook_kind = CUVS_IVF_PQ_CODEBOOK_GEN_PER_SUBSPACE;
+        indexParams->conservative_memory_allocation = false;
+        indexParams->add_data_on_build = false;
+        indexParams->codes_layout = CUVS_IVF_PQ_LIST_LAYOUT_INTERLEAVED;
 
-        auto cuvsIndex_ = std::static_pointer_cast<CuvsIVFPQ, IVFPQ>(index_);
+        cuvsIvfPqIndex_t cuvsIndex = nullptr;
+        cuvsCheck(cuvsIvfPqIndexCreate(&cuvsIndex), "cuvsIvfPqIndexCreate");
+        CuvsUniquePtr<cuvsIvfPqIndex, cuvsIvfPqIndexDestroy> cuvsIndexHolder(
+                cuvsIndex);
+        auto trainingData = toDeviceTemporary<float, 2>(
+                resources_.get(),
+                config_.device,
+                const_cast<float*>(x),
+                raft_handle.get_stream(),
+                {n, d});
+        auto datasetTensor = makeCuvsTensor(
+                trainingData.data(),
+                static_cast<int64_t>(n),
+                static_cast<int64_t>(d));
+        cuvsCheck(
+                cuvsIvfPqBuild(
+                        cuvsResourcesFromGpuResources(resources_.get()),
+                        indexParams,
+                        datasetTensor.get(),
+                        cuvsIndex),
+                "cuvsIvfPqBuild");
 
-        std::optional<cuvs::neighbors::ivf_pq::index<idx_t>> cuvs_ivfpq_index;
-
-        if (getDeviceForAddress(x) >= 0) {
-            auto dataset_d =
-                    raft::make_device_matrix_view<const float, idx_t>(x, n, d);
-            cuvs_ivfpq_index = cuvs::neighbors::ivf_pq::build(
-                    raft_handle, cuvs_index_params, dataset_d);
-        } else {
-            auto dataset_h =
-                    raft::make_host_matrix_view<const float, idx_t>(x, n, d);
-            cuvs_ivfpq_index = cuvs::neighbors::ivf_pq::build(
-                    raft_handle, cuvs_index_params, dataset_h);
-        }
-
-        auto cluster_centers = raft::make_device_matrix<float>(
-                raft_handle,
-                cuvs_ivfpq_index.value().n_lists(),
-                cuvs_ivfpq_index.value().dim());
-        cuvs::neighbors::ivf_pq::helpers::extract_centers(
-                raft_handle, cuvs_ivfpq_index.value(), cluster_centers.view());
+        CuvsOutputTensor centersView;
+        cuvsCheck(
+                cuvsIvfPqIndexGetCenters(cuvsIndex, centersView.get()),
+                "cuvsIvfPqIndexGetCenters");
+        auto clusterCenters = raft::make_device_matrix<float, int64_t>(
+                raft_handle, (int64_t)nlist, (int64_t)d);
+        auto centerStride = centersView.get()->dl_tensor.strides
+                ? centersView.get()->dl_tensor.strides[0]
+                : centersView.extent(1);
+        raft::copy_matrix(
+                clusterCenters.data_handle(),
+                d,
+                centersView.data<float>(),
+                centerStride,
+                d,
+                nlist,
+                raft_handle.get_stream());
 
         if (isGpuIndex(quantizer)) {
-            quantizer->train(nlist, cluster_centers.data_handle());
-            quantizer->add(nlist, cluster_centers.data_handle());
+            quantizer->train(nlist, clusterCenters.data_handle());
+            quantizer->add(nlist, clusterCenters.data_handle());
         } else {
-            // transfer centroids to host
-            auto host_centroids = toHost<float, 2>(
-                    cluster_centers.data_handle(),
+            auto hostCentroids = toHost<float, 2>(
+                    clusterCenters.data_handle(),
                     raft_handle.get_stream(),
                     {idx_t(nlist), this->d});
-            quantizer->train(nlist, host_centroids.data());
-            quantizer->add(nlist, host_centroids.data());
+            quantizer->train(nlist, hostCentroids.data());
+            quantizer->add(nlist, hostCentroids.data());
         }
 
+        CuvsOutputTensor pqCenters;
+        cuvsCheck(
+                cuvsIvfPqIndexGetPqCenters(cuvsIndex, pqCenters.get()),
+                "cuvsIvfPqIndexGetPqCenters");
         raft::copy(
                 pq.get_centroids(0, 0),
-                cuvs_ivfpq_index.value().pq_centers().data_handle(),
-                cuvs_ivfpq_index.value().pq_centers().size(),
+                pqCenters.data<float>(),
+                pqCenters.extent(0) * pqCenters.extent(1) * pqCenters.extent(2),
                 raft_handle.get_stream());
         raft_handle.sync_stream();
-        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfpq_index));
+
+        auto faissCuvsIndex =
+                std::static_pointer_cast<CuvsIVFPQ, IVFPQ>(index_);
+        faissCuvsIndex->setCuvsIndex(cuvsIndexHolder.release());
 #else
         FAISS_THROW_MSG(
                 "cuVS has not been compiled into the current version so it cannot be used.");

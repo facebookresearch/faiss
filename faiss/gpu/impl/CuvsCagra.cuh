@@ -23,17 +23,17 @@
 
 #pragma once
 
+#include <cuvs/core/dataset.h>
+#include <cuvs/neighbors/cagra.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
-#include <cstddef>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include <optional>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
 
-#include <cuvs/neighbors/cagra.hpp>
-#include <cuvs/neighbors/ivf_pq.hpp>
+#include <cstddef>
 
 namespace faiss {
 
@@ -51,6 +51,9 @@ enum class cagra_hash_mode { HASH = 0, SMALL = 1, AUTO = 100 };
 
 namespace gpu {
 
+struct IVFPQBuildCagraConfig;
+struct IVFPQSearchCagraConfig;
+
 template <typename data_t = float>
 class CuvsCagra {
    public:
@@ -65,10 +68,8 @@ class CuvsCagra {
             faiss::MetricType metric,
             float metricArg,
             IndicesOptions indicesOptions,
-            std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params =
-                    std::nullopt,
-            std::optional<cuvs::neighbors::ivf_pq::search_params>
-                    ivf_pq_search_params = std::nullopt,
+            const IVFPQBuildCagraConfig* ivf_pq_params = nullptr,
+            const IVFPQSearchCagraConfig* ivf_pq_search_params = nullptr,
             float refine_rate = 2.0f,
             bool guarantee_connectivity = false);
 
@@ -83,7 +84,7 @@ class CuvsCagra {
             float metricArg,
             IndicesOptions indicesOptions);
 
-    ~CuvsCagra() = default;
+    ~CuvsCagra();
 
     void train(idx_t n, const data_t* x);
 
@@ -141,22 +142,30 @@ class CuvsCagra {
 
     /// Parameters to build cuVS CAGRA index
     faiss::cagra_build_algo graph_build_algo_;
-    cuvs::neighbors::cagra::index_params index_params_;
+    size_t intermediate_graph_degree_;
+    size_t graph_degree_;
 
     /// Parameters to build CAGRA graph using IVF PQ
-    std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params_;
-    std::optional<cuvs::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
-    std::optional<float> refine_rate_;
+    const IVFPQBuildCagraConfig* ivf_pq_params_;
+    const IVFPQSearchCagraConfig* ivf_pq_search_params_;
+    float refine_rate_;
 
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
-    /// Parameter to use MST optimization to guarantee graph connectivity
+    /// release/26.10 has no C parameter for guarantee_connectivity and its
+    /// CAGRA bridge omits IVF-PQ max_internal_batch_size. train() uses a
+    /// narrow C++ graph-build fallback when either setting is requested.
     bool guarantee_connectivity_ = false;
 
+    /// Device storage used when cuvsCagraIndexFromArgs receives host data.
+    DeviceTensor<data_t, 2, true> ownedDataset_;
+
+    /// Dataset object whose storage/view is referenced by the CAGRA index.
+    cuvsDataset_t cuvs_dataset_{nullptr};
+
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
-            nullptr};
+    cuvsCagraIndex_t cuvs_index{nullptr};
 };
 } // namespace gpu
 } // namespace faiss

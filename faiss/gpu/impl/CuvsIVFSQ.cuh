@@ -23,14 +23,12 @@
 
 #pragma once
 
-#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
-#include <cuvs/neighbors/ivf_sq.hpp>
+#include <cuvs/neighbors/ivf_sq.h>
 
-#include <memory>
 #include <vector>
 
 #pragma GCC visibility push(default)
@@ -114,7 +112,7 @@ class CuvsIVFSQ : public IVFFlat {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the cuVS index
-    void setCuvsIndex(cuvs::neighbors::ivf_sq::index<uint8_t>&& idx);
+    void setCuvsIndex(cuvsIvfSqIndex_t index);
 
     /// Copy the cuVS SQ range state back to a FAISS scalar quantizer
     void setFaissSQFromCuvs(faiss::ScalarQuantizer* sq) const;
@@ -139,10 +137,7 @@ class CuvsIVFSQ : public IVFFlat {
     /// this is the size for an entire IVF list
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
 
-    void copyFaissSQToCuvs_();
     void copyCuvsSQToFaiss_(faiss::ScalarQuantizer* sq) const;
-    void computeCenterNorms_();
-    void recomputeListState_(const std::vector<uint32_t>& listSizes);
     idx_t getBitsetSizeForFiltering_() const;
     std::vector<float> getCentersHost_() const;
 
@@ -157,21 +152,7 @@ class CuvsIVFSQ : public IVFFlat {
     /// Whether any stored vector has a negative id (unsupported for filtering)
     bool hasNegativeVectorId_{false};
 
-    std::shared_ptr<cuvs::neighbors::ivf_sq::index<uint8_t>> cuvs_index{
-            nullptr};
-};
-
-struct CuvsIVFSQCodePackerInterleaved : CodePacker {
-    CuvsIVFSQCodePackerInterleaved(size_t list_size, uint32_t dim);
-    CodePacker* clone() const final;
-    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-            const final;
-    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-            const final;
-
-   protected:
-    uint32_t dim;
-    uint32_t padded_dim;
+    cuvsIvfSqIndex_t cuvs_index{nullptr};
 };
 
 } // namespace gpu

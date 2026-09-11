@@ -23,17 +23,19 @@
 
 #pragma once
 
+#include <cuvs/core/dataset.h>
+#include <cuvs/neighbors/cagra.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
-#include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include <optional>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
 
-#include <cuvs/neighbors/cagra.hpp>
+#include <cstddef>
+#include <vector>
 
 namespace faiss {
 
@@ -60,7 +62,7 @@ class BinaryCuvsCagra {
             const idx_t* knn_graph,
             IndicesOptions indicesOptions);
 
-    ~BinaryCuvsCagra() = default;
+    ~BinaryCuvsCagra();
 
     void train(idx_t n, const uint8_t* x);
 
@@ -112,14 +114,20 @@ class BinaryCuvsCagra {
 
     /// Parameters to build cuVS CAGRA index
     faiss::cagra_build_algo graph_build_algo_;
-    cuvs::neighbors::cagra::index_params index_params_;
+    size_t intermediate_graph_degree_;
+    size_t graph_degree_;
 
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
+    /// Device storage used when cuvsCagraIndexFromArgs receives host data.
+    DeviceTensor<uint8_t, 2, true> ownedDataset_;
+
+    /// Dataset object whose storage/view is referenced by the CAGRA index.
+    cuvsDataset_t cuvs_dataset_{nullptr};
+
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
-            cuvs_index{nullptr};
+    cuvsCagraIndex_t cuvs_index{nullptr};
 };
 
 } // namespace gpu

@@ -26,10 +26,7 @@
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFPQ.cuh>
 
-#include <cuvs/neighbors/ivf_pq.hpp>
-
-#include <memory>
-#include <optional>
+#include <cuvs/neighbors/ivf_pq.h>
 
 #pragma GCC visibility push(default)
 namespace faiss {
@@ -103,7 +100,7 @@ class CuvsIVFPQ : public IVFPQ {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the cuVS index
-    void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx);
+    void setCuvsIndex(cuvsIvfPqIndex_t index);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
@@ -132,9 +129,6 @@ class CuvsIVFPQ : public IVFPQ {
             const idx_t* indices,
             idx_t numVecs) override;
 
-    /// Returns the encoding size for a PQ-encoded IVF list
-    size_t getGpuListEncodingSize_(idx_t listId);
-
     /// Copy the PQ centroids to the cuVS index. The data is already in the
     /// preferred format with the transpose performed by the IVFPQ class helper.
     void setPQCentroids_();
@@ -143,8 +137,14 @@ class CuvsIVFPQ : public IVFPQ {
     /// Used when the cuVS index was updated externally.
     void setBasePQCentroids_();
 
+    /// Storage referenced by cuvsIvfPqBuildPrecomputed. Faiss PQ dimensions
+    /// divide the input dimension, so the rotation is square and identity.
+    DeviceTensor<float, 2, true> cuvsPaddedCenters_;
+    DeviceTensor<float, 2, true> cuvsRotatedCenters_;
+    DeviceTensor<float, 2, true> cuvsRotationMatrix_;
+
     /// cuVS IVF-PQ index
-    std::shared_ptr<cuvs::neighbors::ivf_pq::index<idx_t>> cuvs_index{nullptr};
+    cuvsIvfPqIndex_t cuvs_index{nullptr};
 };
 
 } // namespace gpu

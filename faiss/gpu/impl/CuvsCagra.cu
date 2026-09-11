@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024-2025, NVIDIA CORPORATION.
+ * Copyright (c) 2024-2026, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +21,76 @@
  * limitations under the License.
  */
 
+#include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/CuvsFilterConvert.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 
-#include <cuvs/core/bitset.hpp>
-#include <cuvs/neighbors/cagra.hpp>
+#include <cuvs/neighbors/cagra.h>
+#include <raft/core/bitset.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
-#include <raft/core/resource/thrust_policy.hpp>
 
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
-#include <optional>
+
+#include <memory>
+#include <vector>
 
 namespace faiss {
 namespace gpu {
+
+namespace {
+
+void configureCIvfPqParams(
+        cuvsIvfPqIndexParams_t params,
+        const IVFPQBuildCagraConfig& config,
+        faiss::MetricType metric) {
+    params->metric = metricFaissToCuvs(metric, false);
+    params->n_lists = config.n_lists;
+    params->kmeans_n_iters = config.kmeans_n_iters;
+    params->kmeans_trainset_fraction = config.kmeans_trainset_fraction;
+    params->pq_bits = config.pq_bits;
+    params->pq_dim = config.pq_dim;
+    params->codebook_kind =
+            static_cast<cuvsIvfPqCodebookGen>(config.codebook_kind);
+    params->force_random_rotation = config.force_random_rotation;
+    params->conservative_memory_allocation =
+            config.conservative_memory_allocation;
+}
+
+void configureCIvfPqSearchParams(
+        cuvsIvfPqSearchParams_t params,
+        const IVFPQSearchCagraConfig& config) {
+    params->n_probes = config.n_probes;
+    params->lut_dtype = config.lut_dtype;
+    params->internal_distance_dtype = config.internal_distance_dtype;
+    params->preferred_shmem_carveout = config.preferred_shmem_carveout;
+    params->max_internal_batch_size = config.max_internal_batch_size;
+}
+
+template <typename T>
+cuvsDataset_t makeAndAttachPaddedDataset(
+        GpuResources* resources,
+        const T* data,
+        int64_t rows,
+        int64_t cols,
+        cuvsCagraIndex_t index) {
+    cuvsDataset_t paddedDataset =
+            makeCuvsPaddedDataset(resources, data, rows, cols);
+    CuvsUniquePtr<cuvsDataset, cuvsDatasetDestroy> paddedHolder(paddedDataset);
+    cuvsCheck(
+            cuvsCagraUpdateDataset(
+                    cuvsResourcesFromGpuResources(resources),
+                    paddedDataset,
+                    index),
+            "cuvsCagraUpdateDataset");
+    return paddedHolder.release();
+}
+
+} // namespace
 
 template <typename data_t>
 CuvsCagra<data_t>::CuvsCagra(
@@ -52,22 +104,24 @@ CuvsCagra<data_t>::CuvsCagra(
         faiss::MetricType metric,
         float metricArg,
         IndicesOptions indicesOptions,
-        std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params,
-        std::optional<cuvs::neighbors::ivf_pq::search_params>
-                ivf_pq_search_params,
+        const IVFPQBuildCagraConfig* ivf_pq_params,
+        const IVFPQSearchCagraConfig* ivf_pq_search_params,
         float refine_rate,
         bool guarantee_connectivity)
         : resources_(resources),
+          storage_(nullptr),
+          n_(0),
           dim_(dim),
-          graph_build_algo_(graph_build_algo),
-          nn_descent_niter_(nn_descent_niter),
           store_dataset_(store_dataset),
           metric_(metric),
           metricArg_(metricArg),
-          index_params_(),
+          graph_build_algo_(graph_build_algo),
+          intermediate_graph_degree_(intermediate_graph_degree),
+          graph_degree_(graph_degree),
           ivf_pq_params_(ivf_pq_params),
           ivf_pq_search_params_(ivf_pq_search_params),
           refine_rate_(refine_rate),
+          nn_descent_niter_(nn_descent_niter),
           guarantee_connectivity_(guarantee_connectivity) {
     FAISS_THROW_IF_NOT_MSG(
             metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
@@ -75,19 +129,6 @@ CuvsCagra<data_t>::CuvsCagra(
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
-
-    index_params_.intermediate_graph_degree = intermediate_graph_degree;
-    index_params_.graph_degree = graph_degree;
-    index_params_.attach_dataset_on_build = store_dataset;
-    index_params_.guarantee_connectivity = guarantee_connectivity;
-
-    if (!ivf_pq_search_params_) {
-        ivf_pq_search_params_ =
-                std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
-    }
-    index_params_.metric = metricFaissToCuvs(metric_, false);
-
-    reset();
 }
 
 template <typename data_t>
@@ -102,9 +143,17 @@ CuvsCagra<data_t>::CuvsCagra(
         float metricArg,
         IndicesOptions indicesOptions)
         : resources_(resources),
+          storage_(dataset),
+          n_(n),
           dim_(dim),
           metric_(metric),
-          metricArg_(metricArg) {
+          metricArg_(metricArg),
+          graph_build_algo_(faiss::cagra_build_algo::IVF_PQ),
+          intermediate_graph_degree_(graph_degree),
+          graph_degree_(graph_degree),
+          ivf_pq_params_(nullptr),
+          ivf_pq_search_params_(nullptr),
+          refine_rate_(2.0f) {
     FAISS_THROW_IF_NOT_MSG(
             metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
             "CAGRA currently only supports L2 or Inner Product metric.");
@@ -112,112 +161,193 @@ CuvsCagra<data_t>::CuvsCagra(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
-    auto dataset_on_gpu = getDeviceForAddress(dataset) >= 0;
-    auto knn_graph_on_gpu = getDeviceForAddress(knn_graph) >= 0;
+    const bool datasetOnGpu = getDeviceForAddress(dataset) >= 0;
+    const bool graphOnGpu = getDeviceForAddress(knn_graph) >= 0;
+    FAISS_THROW_IF_NOT_MSG(
+            datasetOnGpu == graphOnGpu,
+            "dataset and knn_graph must both be in device or host memory");
 
-    FAISS_ASSERT(dataset_on_gpu == knn_graph_on_gpu);
-
-    storage_ = dataset;
-    n_ = n;
-
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-
-    if (dataset_on_gpu && knn_graph_on_gpu) {
-        raft_handle.sync_stream();
-        // Copying to host so that cuvs::neighbors::cagra::index
-        // creates an owning copy of the knn graph on device
-        auto knn_graph_copy =
-                raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    std::vector<uint32_t> hostGraph(n * graph_degree);
+    if (graphOnGpu) {
+        raftHandle.sync_stream();
         thrust::copy(
                 thrust::device_ptr<const idx_t>(knn_graph),
-                thrust::device_ptr<const idx_t>(knn_graph + (n * graph_degree)),
-                knn_graph_copy.data_handle());
-
-        auto dataset_mds = raft::make_device_matrix_view<const data_t, int64_t>(
-                dataset, n, dim);
-
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                raft_handle,
-                metricFaissToCuvs(metric_, false),
-                dataset_mds,
-                raft::make_const_mdspan(knn_graph_copy.view()));
-    } else if (!dataset_on_gpu && !knn_graph_on_gpu) {
-        // copy idx_t (int64_t) host knn_graph to uint32_t host knn_graph
-        auto knn_graph_copy =
-                raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
-        std::copy(
-                knn_graph,
-                knn_graph + (n * graph_degree),
-                knn_graph_copy.data_handle());
-
-        auto dataset_mds = raft::make_host_matrix_view<const data_t, int64_t>(
-                dataset, n, dim);
-
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                raft_handle,
-                metricFaissToCuvs(metric_, false),
-                dataset_mds,
-                raft::make_const_mdspan(knn_graph_copy.view()));
+                thrust::device_ptr<const idx_t>(knn_graph + n * graph_degree),
+                hostGraph.data());
     } else {
-        FAISS_THROW_MSG(
-                "dataset and knn_graph must both be in device or host memory");
+        std::transform(
+                knn_graph,
+                knn_graph + n * graph_degree,
+                hostGraph.begin(),
+                [](idx_t value) { return static_cast<uint32_t>(value); });
+    }
+
+    if (!datasetOnGpu || cuvsPaddedDatasetNeedsView(dataset, dim_)) {
+        ownedDataset_ = DeviceTensor<data_t, 2, true>(
+                resources_,
+                AllocInfo(
+                        AllocType::Other,
+                        getCurrentDevice(),
+                        MemorySpace::Device,
+                        raftHandle.get_stream()),
+                {n, dim_});
+        raft::copy(
+                ownedDataset_.data(),
+                dataset,
+                ownedDataset_.numElements(),
+                raftHandle.get_stream());
+        storage_ = ownedDataset_.data();
+    }
+
+    auto graphTensor =
+            makeCuvsTensor(hostGraph.data(), (int64_t)n, (int64_t)graph_degree);
+    auto datasetTensor = makeCuvsTensor(
+            const_cast<data_t*>(storage_), (int64_t)n, (int64_t)dim_);
+
+    cuvsCagraIndex_t index = nullptr;
+    cuvsCheck(cuvsCagraIndexCreate(&index), "cuvsCagraIndexCreate");
+    CuvsUniquePtr<cuvsCagraIndex, cuvsCagraIndexDestroy> indexHolder(index);
+    cuvsCheck(
+            cuvsCagraIndexFromArgs(
+                    cuvsResourcesFromGpuResources(resources_),
+                    metricFaissToCuvs(metric_, false),
+                    graphTensor.get(),
+                    datasetTensor.get(),
+                    index),
+            "cuvsCagraIndexFromArgs");
+    cuvs_dataset_ = makeAndAttachPaddedDataset(
+            resources_,
+            datasetOnGpu ? storage_ : dataset,
+            (int64_t)n_,
+            (int64_t)dim_,
+            index);
+    raftHandle.sync_stream();
+    cuvs_index = indexHolder.release();
+}
+
+template <typename data_t>
+CuvsCagra<data_t>::~CuvsCagra() {
+    if (cuvs_index) {
+        cuvsCagraIndexDestroy(cuvs_index);
+    }
+    if (cuvs_dataset_) {
+        cuvsDatasetDestroy(cuvs_dataset_);
     }
 }
 
 template <typename data_t>
 void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
+    reset();
     storage_ = x;
     n_ = n;
 
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
 
-    if (!ivf_pq_params_) {
-        ivf_pq_params_ = cuvs::neighbors::ivf_pq::index_params::from_dataset(
-                raft::make_extents<uint32_t>(
-                        static_cast<uint32_t>(n_), static_cast<uint32_t>(dim_)),
-                metricFaissToCuvs(metric_, false));
+    const data_t* buildData = x;
+    if (store_dataset_ && cuvsPaddedDatasetNeedsView(x, dim_)) {
+        ownedDataset_ = DeviceTensor<data_t, 2, true>(
+                resources_,
+                AllocInfo(
+                        AllocType::Other,
+                        getCurrentDevice(),
+                        MemorySpace::Device,
+                        raftHandle.get_stream()),
+                {n, dim_});
+        raft::copy(
+                ownedDataset_.data(),
+                x,
+                ownedDataset_.numElements(),
+                raftHandle.get_stream());
+        storage_ = ownedDataset_.data();
+        buildData = storage_;
     }
+
+    auto sourceTensor = makeCuvsTensor(
+            const_cast<data_t*>(buildData), (int64_t)n, (int64_t)dim_);
+    cuvsDataset_t dataset = nullptr;
+    if (store_dataset_) {
+        dataset = makeCuvsPaddedDataset(
+                resources_, buildData, (int64_t)n, (int64_t)dim_);
+    } else {
+        cuvsCheck(
+                cuvsDatasetMakeStandardView(
+                        cuvsResourcesFromGpuResources(resources_),
+                        sourceTensor.get(),
+                        &dataset),
+                "cuvsDatasetMakeStandardView");
+    }
+    CuvsUniquePtr<cuvsDataset, cuvsDatasetDestroy> datasetHolder(dataset);
+
+    cuvsCagraIndexParams_t params = nullptr;
+    cuvsCheck(
+            cuvsCagraIndexParamsCreate(&params), "cuvsCagraIndexParamsCreate");
+    CuvsUniquePtr<cuvsCagraIndexParams, cuvsCagraIndexParamsDestroy>
+            paramsHolder(params);
+    // The C factory owns and preallocates this nested IVF-PQ block. Detach it
+    // while selecting the build algorithm so destruction follows C ownership.
+    std::unique_ptr<cuvsIvfPqParams> ivfPqParams(
+            static_cast<cuvsIvfPqParams*>(params->graph_build_params));
+    params->graph_build_params = nullptr;
+    ivfPqParams->refinement_rate = refine_rate_;
+    params->metric = metricFaissToCuvs(metric_, false);
+    params->intermediate_graph_degree = intermediate_graph_degree_;
+    params->graph_degree = graph_degree_;
+    params->nn_descent_niter = nn_descent_niter_;
+    params->guarantee_connectivity = guarantee_connectivity_;
+
+    cuvsIvfPqIndexParams_t ivfBuildParams = nullptr;
+    cuvsIvfPqSearchParams_t ivfSearchParams = nullptr;
+    std::unique_ptr<
+            cuvsIvfPqIndexParams,
+            CuvsDeleter<cuvsIvfPqIndexParams, cuvsIvfPqIndexParamsDestroy>>
+            ivfBuildHolder;
+    std::unique_ptr<
+            cuvsIvfPqSearchParams,
+            CuvsDeleter<cuvsIvfPqSearchParams, cuvsIvfPqSearchParamsDestroy>>
+            ivfSearchHolder;
     if (graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
-        cuvs::neighbors::cagra::graph_build_params::ivf_pq_params
-                graph_build_params;
-        graph_build_params.build_params = ivf_pq_params_.value();
-        graph_build_params.build_params.metric =
-                metricFaissToCuvs(metric_, false);
-        graph_build_params.search_params = ivf_pq_search_params_.value();
-        graph_build_params.refinement_rate = refine_rate_.value();
-        index_params_.graph_build_params = graph_build_params;
-        if (index_params_.graph_degree ==
-            index_params_.intermediate_graph_degree) {
-            index_params_.intermediate_graph_degree =
-                    1.5 * index_params_.graph_degree;
+        params->build_algo = IVF_PQ;
+        if (params->graph_degree == params->intermediate_graph_degree) {
+            params->intermediate_graph_degree =
+                    static_cast<size_t>(1.5 * params->graph_degree);
         }
+        if (ivf_pq_params_) {
+            cuvsCheck(
+                    cuvsIvfPqIndexParamsCreate(&ivfBuildParams),
+                    "cuvsIvfPqIndexParamsCreate");
+            ivfBuildHolder.reset(ivfBuildParams);
+            configureCIvfPqParams(ivfBuildParams, *ivf_pq_params_, metric_);
+            ivfPqParams->ivf_pq_build_params = ivfBuildParams;
+        }
+        if (ivf_pq_search_params_) {
+            cuvsCheck(
+                    cuvsIvfPqSearchParamsCreate(&ivfSearchParams),
+                    "cuvsIvfPqSearchParamsCreate");
+            ivfSearchHolder.reset(ivfSearchParams);
+            configureCIvfPqSearchParams(
+                    ivfSearchParams, *ivf_pq_search_params_);
+            ivfPqParams->ivf_pq_search_params = ivfSearchParams;
+        }
+        params->graph_build_params = ivfPqParams.release();
     } else {
-        cuvs::neighbors::cagra::graph_build_params::nn_descent_params
-                graph_build_params(index_params_.intermediate_graph_degree);
-        graph_build_params.max_iterations = nn_descent_niter_;
-        graph_build_params.metric = metricFaissToCuvs(metric_, false);
-        index_params_.graph_build_params = graph_build_params;
+        params->build_algo = NN_DESCENT;
+        params->graph_build_params = nullptr;
     }
 
-    if (getDeviceForAddress(x) >= 0) {
-        auto dataset = raft::make_device_matrix_view<const data_t, int64_t>(
-                x, n, dim_);
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                cuvs::neighbors::cagra::build(
-                        raft_handle, index_params_, dataset));
-    } else {
-        auto dataset =
-                raft::make_host_matrix_view<const data_t, int64_t>(x, n, dim_);
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                cuvs::neighbors::cagra::build(
-                        raft_handle, index_params_, dataset));
-    }
+    cuvsCagraIndex_t index = nullptr;
+    cuvsCheck(cuvsCagraIndexCreate(&index), "cuvsCagraIndexCreate");
+    CuvsUniquePtr<cuvsCagraIndex, cuvsCagraIndexDestroy> indexHolder(index);
+    cuvsCheck(
+            cuvsCagraBuild(
+                    cuvsResourcesFromGpuResources(resources_),
+                    params,
+                    dataset,
+                    index),
+            "cuvsCagraBuild");
+
+    cuvs_dataset_ = datasetHolder.release();
+    cuvs_index = indexHolder.release();
 }
 
 template <typename data_t>
@@ -240,121 +370,130 @@ void CuvsCagra<data_t>::search(
         idx_t num_random_samplings,
         idx_t rand_xor_mask,
         const IDSelector* sel) {
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    idx_t numQueries = queries.getSize(0);
-    idx_t cols = queries.getSize(1);
-    idx_t k_ = k;
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
+    const idx_t numQueries = queries.getSize(0);
+    const idx_t cols = queries.getSize(1);
 
     FAISS_ASSERT(cuvs_index);
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
 
     if (!store_dataset_) {
-        if (getDeviceForAddress(storage_) >= 0) {
-            auto dataset = raft::make_device_matrix_view<const data_t, int64_t>(
-                    storage_, n_, dim_);
-            cuvs_index->update_dataset(raft_handle, dataset);
-        } else {
-            auto dataset = raft::make_host_matrix_view<const data_t, int64_t>(
-                    storage_, n_, dim_);
-            cuvs_index->update_dataset(raft_handle, dataset);
+        if (cuvsPaddedDatasetNeedsView(storage_, dim_)) {
+            ownedDataset_ = DeviceTensor<data_t, 2, true>(
+                    resources_,
+                    AllocInfo(
+                            AllocType::Other,
+                            getCurrentDevice(),
+                            MemorySpace::Device,
+                            raftHandle.get_stream()),
+                    {n_, dim_});
+            raft::copy(
+                    ownedDataset_.data(),
+                    storage_,
+                    ownedDataset_.numElements(),
+                    raftHandle.get_stream());
+            storage_ = ownedDataset_.data();
         }
+        auto paddedDataset = makeAndAttachPaddedDataset(
+                resources_, storage_, (int64_t)n_, (int64_t)dim_, cuvs_index);
+        if (cuvs_dataset_) {
+            cuvsCheck(cuvsDatasetDestroy(cuvs_dataset_), "cuvsDatasetDestroy");
+        }
+        cuvs_dataset_ = paddedDataset;
         store_dataset_ = true;
     }
 
-    auto queries_view = raft::make_device_matrix_view<const data_t, int64_t>(
-            queries.data(), numQueries, cols);
-    auto distances_view = raft::make_device_matrix_view<float, int64_t>(
-            outDistances.data(), numQueries, k_);
-    auto indices_view = raft::make_device_matrix_view<idx_t, int64_t>(
-            outIndices.data(), numQueries, k_);
+    cuvsCagraSearchParams_t params = nullptr;
+    cuvsCheck(
+            cuvsCagraSearchParamsCreate(&params),
+            "cuvsCagraSearchParamsCreate");
+    CuvsUniquePtr<cuvsCagraSearchParams, cuvsCagraSearchParamsDestroy>
+            paramsHolder(params);
+    params->max_queries = max_queries;
+    params->itopk_size = itopk_size;
+    params->max_iterations = max_iterations;
+    params->algo = static_cast<cuvsCagraSearchAlgo>(graph_search_algo);
+    params->team_size = team_size;
+    params->search_width = search_width;
+    params->min_iterations = min_iterations;
+    params->thread_block_size = thread_block_size;
+    params->hashmap_mode = static_cast<cuvsCagraHashMode>(hash_mode);
+    params->hashmap_min_bitlen = hashmap_min_bitlen;
+    params->hashmap_max_fill_rate = hashmap_max_fill_rate;
+    params->num_random_samplings = num_random_samplings;
+    params->rand_xor_mask = rand_xor_mask;
 
-    cuvs::neighbors::cagra::search_params search_pams;
-    search_pams.max_queries = max_queries;
-    search_pams.itopk_size = itopk_size;
-    search_pams.max_iterations = max_iterations;
-    search_pams.algo =
-            static_cast<cuvs::neighbors::cagra::search_algo>(graph_search_algo);
-    search_pams.team_size = team_size;
-    search_pams.search_width = search_width;
-    search_pams.min_iterations = min_iterations;
-    search_pams.thread_block_size = thread_block_size;
-    search_pams.hashmap_mode =
-            static_cast<cuvs::neighbors::cagra::hash_mode>(hash_mode);
-    search_pams.hashmap_min_bitlen = hashmap_min_bitlen;
-    search_pams.hashmap_max_fill_rate = hashmap_max_fill_rate;
-    search_pams.num_random_samplings = num_random_samplings;
-    search_pams.rand_xor_mask = rand_xor_mask;
+    auto indexCopy = raft::make_device_matrix<uint32_t, int64_t>(
+            raftHandle, numQueries, k);
+    auto queryTensor =
+            makeCuvsTensor(queries.data(), (int64_t)numQueries, (int64_t)cols);
+    auto indexTensor = makeCuvsTensor(
+            indexCopy.data_handle(), (int64_t)numQueries, (int64_t)k);
+    auto distanceTensor = makeCuvsTensor(
+            outDistances.data(), (int64_t)numQueries, (int64_t)k);
+    CuvsFilter filter(resources_, sel, n_);
 
-    auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
-            raft_handle, numQueries, k_);
-
-    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_holder;
-    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
-            bitset_filter;
-    cuvs::neighbors::filtering::none_sample_filter none_filter;
-
-    if (sel) {
-        bitset_holder =
-                cuvs::core::bitset<uint32_t, int64_t>(raft_handle, n_, false);
-        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_holder->view());
-        bitset_filter.emplace(bitset_holder->view());
-    }
-    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
-            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                      bitset_filter.value())
-            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
-                      none_filter);
-
-    cuvs::neighbors::cagra::search(
-            raft_handle,
-            search_pams,
-            *cuvs_index,
-            queries_view,
-            indices_copy.view(),
-            distances_view,
-            filter_ref);
-    faiss::gpu::sanitizeCuvsIndices(
+    cuvsCheck(
+            cuvsCagraSearch(
+                    cuvsResourcesFromGpuResources(resources_),
+                    params,
+                    cuvs_index,
+                    queryTensor.get(),
+                    indexTensor.get(),
+                    distanceTensor.get(),
+                    filter.get()),
+            "cuvsCagraSearch");
+    sanitizeCuvsIndices(
             resources_,
-            indices_copy.data_handle(),
-            indices_view.data_handle(),
-            indices_copy.size(),
+            indexCopy.data_handle(),
+            outIndices.data(),
+            indexCopy.size(),
             n_);
 }
 
 template <typename data_t>
 void CuvsCagra<data_t>::reset() {
-    cuvs_index.reset();
+    if (cuvs_index) {
+        cuvsCheck(cuvsCagraIndexDestroy(cuvs_index), "cuvsCagraIndexDestroy");
+        cuvs_index = nullptr;
+    }
+    if (cuvs_dataset_) {
+        cuvsCheck(cuvsDatasetDestroy(cuvs_dataset_), "cuvsDatasetDestroy");
+        cuvs_dataset_ = nullptr;
+    }
 }
 
 template <typename data_t>
 idx_t CuvsCagra<data_t>::get_knngraph_degree() const {
     FAISS_ASSERT(cuvs_index);
-    return static_cast<idx_t>(cuvs_index->graph_degree());
+
+    int64_t degree = 0;
+    cuvsCheck(
+            cuvsCagraIndexGetGraphDegree(cuvs_index, &degree),
+            "cuvsCagraIndexGetGraphDegree");
+    return static_cast<idx_t>(degree);
 }
 
 template <typename data_t>
 std::vector<idx_t> CuvsCagra<data_t>::get_knngraph() const {
     FAISS_ASSERT(cuvs_index);
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
+    const auto& raftHandle = resources_->getRaftHandleCurrentDevice();
 
-    auto device_graph = cuvs_index->graph();
+    CuvsOutputTensor graphTensor;
+    cuvsCheck(
+            cuvsCagraIndexGetGraph(cuvs_index, graphTensor.get()),
+            "cuvsCagraIndexGetGraph");
+    const uint32_t* graphData = graphTensor.data<uint32_t>();
+    const size_t graphSize = graphTensor.extent(0) * graphTensor.extent(1);
 
-    std::vector<idx_t> host_graph(
-            device_graph.extent(0) * device_graph.extent(1));
-
-    raft_handle.sync_stream();
-
+    std::vector<idx_t> hostGraph(graphSize);
+    raftHandle.sync_stream();
     thrust::copy(
-            thrust::device_ptr<const uint32_t>(device_graph.data_handle()),
-            thrust::device_ptr<const uint32_t>(
-                    device_graph.data_handle() + device_graph.size()),
-            host_graph.data());
-
-    return host_graph;
+            thrust::device_ptr<const uint32_t>(graphData),
+            thrust::device_ptr<const uint32_t>(graphData + graphSize),
+            hostGraph.data());
+    return hostGraph;
 }
 
 template <typename data_t>
