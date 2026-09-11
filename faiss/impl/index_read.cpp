@@ -1164,8 +1164,7 @@ void read_ScalarQuantizer(
         }
     }
 
-    // TurboQ full types: extract seed and qjl_type from trained,
-    // regenerate projection matrix.
+    // TurboQ full types: extract seed and qjl_type from trained.
     if (ScalarQuantizer::TurboQuantRefine::is_turboq_full(ivsc->qtype) &&
         ivsc->trained.size() >= 3) {
         size_t n = ivsc->trained.size();
@@ -1174,7 +1173,6 @@ void read_ScalarQuantizer(
         ivsc->turboq_refine.seed =
                 ScalarQuantizer::TurboQuantRefine::unpack_seed(
                         ivsc->trained[n - 3], ivsc->trained[n - 2]);
-        ivsc->turboq_refine.init_projection(ivsc->d);
     }
 }
 
@@ -1692,6 +1690,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         int d;
         size_t n_levels, batch_size;
         READ1(d);
+        // This branch does not go through read_index_header, so the range
+        // check that guards `d` for every other index type has to be
+        // repeated here.
+        FAISS_CHECK_RANGE(d, 0, (1 << 20) + 1);
         READ1(n_levels);
         FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
@@ -1706,6 +1708,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     d, n_levels, batch_size);
         }
         READ1(idxp->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxp->ntotal >= 0,
+                "invalid ntotal %" PRId64 " read from IxFP index",
+                (int64_t)idxp->ntotal);
         READ1_BOOL(idxp->is_trained);
         READVECTOR(idxp->codes);
         READVECTOR(idxp->cum_sums);
@@ -2384,8 +2390,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Validate transform chain dimension consistency:
         // chain[0].d_in must equal the outer index d, consecutive
         // transforms must have matching d_out/d_in, and the last
-        // transform's d_out must equal the sub-index d.
-        if (nt > 0) {
+        // transform's d_out must equal the sub-index d. With an empty
+        // chain the sub-index d must equal the outer d directly, because
+        // reconstruct() then hands the caller's buffer -- sized from the
+        // outer d -- straight to the sub-index.
+        if (nt == 0 && ixpt->index) {
+            FAISS_THROW_IF_NOT_FMT(
+                    ixpt->index->d == ixpt->d,
+                    "IndexPreTransform empty chain: sub-index d=%d "
+                    "!= index d=%d",
+                    ixpt->index->d,
+                    ixpt->d);
+        } else if (nt > 0) {
             FAISS_THROW_IF_NOT_FMT(
                     ixpt->chain[0]->d_in == ixpt->d,
                     "IndexPreTransform chain[0] d_in=%d != index d=%d",
@@ -2507,7 +2523,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP") || h == fourcc("IH00")) {
+            h == fourcc("IHfP") || h == fourcc("IHNr") || h == fourcc("IH00")) {
         std::unique_ptr<IndexHNSW> idxhnsw;
         if (h == fourcc("IH00")) {
             idxhnsw = std::make_unique<IndexHNSW>();
@@ -2525,6 +2541,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
         } else if (h == fourcc("IHc2")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
+        } else if (h == fourcc("IHNr")) {
+            idxhnsw = std::make_unique<IndexHNSWRaBitQ>();
         }
         read_index_header(*idxhnsw, f);
         if (h == fourcc("IHfP")) {
@@ -2535,10 +2553,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     "dynamic_cast to IndexHNSWFlatPanorama failed");
             size_t nlevels;
             READ1(nlevels);
+            FAISS_THROW_IF_NOT_FMT(
+                    nlevels > 0, "invalid IHfP n_levels %zd", nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
             const_cast<Panorama&>(idx_panorama->pano) =
                     Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
             READVECTOR(idx_panorama->cum_sums);
+            // Both the search path and get_cum_sum() index cum_sums at
+            // stride pano.n_levels + 1, which may be lower than the
+            // serialized nlevels if set_derived_values() truncated it.
+            FAISS_THROW_IF_NOT(
+                    idx_panorama->cum_sums.size() ==
+                    mul_no_overflow(
+                            (size_t)idx_panorama->ntotal,
+                            idx_panorama->pano.n_levels + 1,
+                            "IndexHNSWFlatPanorama cum_sums"));
         } else if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1_BOOL(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw.get());
@@ -2559,7 +2588,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "HNSW levels size %zu != index ntotal %" PRId64,
                 idxhnsw->hnsw.levels.size(),
                 idxhnsw->ntotal);
-        idxhnsw->hnsw.is_panorama = (h == fourcc("IHfP"));
+        idxhnsw->hnsw.search_method =
+                h == fourcc("IHfP") ? HNSW::SM_PANORAMA : HNSW::SM_DEFAULT;
         // `HNSW::is_similarity` is intentionally not serialized, so we
         // re-derive it here from the persisted metric type. Without this,
         // a saved IP/similarity index would come back configured as a
@@ -2580,6 +2610,57 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     "HNSW storage d %d != index d %d",
                     idxhnsw->storage->d,
                     idxhnsw->d);
+        }
+        if (h == fourcc("IHNr")) {
+            auto* idx_rabitq = dynamic_cast<IndexHNSWRaBitQ*>(idxhnsw.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    idx_rabitq, "IHNr must deserialize to an IndexHNSWRaBitQ");
+            FAISS_THROW_IF_NOT_MSG(
+                    idxhnsw->metric_type == METRIC_L2,
+                    "IndexHNSWRaBitQ supports only the L2 metric");
+            bool staged;
+            READ1_BOOL(staged);
+            idxhnsw->hnsw.search_method =
+                    staged ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
+            if (idxhnsw->storage) {
+                auto* rq = dynamic_cast<IndexRaBitQ*>(idxhnsw->storage);
+                FAISS_THROW_IF_NOT_MSG(
+                        rq, "IndexHNSWRaBitQ storage must be an IndexRaBitQ");
+                FAISS_THROW_IF_NOT_MSG(
+                        rq->metric_type == idxhnsw->metric_type &&
+                                rq->rabitq.metric_type == idxhnsw->metric_type,
+                        "IndexHNSWRaBitQ storage metric mismatch");
+                FAISS_THROW_IF_NOT_MSG(
+                        rq->is_trained == idxhnsw->is_trained,
+                        "IndexHNSWRaBitQ storage training state mismatch");
+                FAISS_THROW_IF_NOT_FMT(
+                        rq->rabitq.nb_bits >= 1 && rq->rabitq.nb_bits <= 9,
+                        "invalid RaBitQ nb_bits=%zu",
+                        rq->rabitq.nb_bits);
+                const size_t expected_code_size =
+                        rq->rabitq.compute_code_size(rq->d, rq->rabitq.nb_bits);
+                validate_code_size_match(
+                        rq->rabitq.code_size,
+                        expected_code_size,
+                        "IndexHNSWRaBitQ quantizer");
+                validate_code_size_match(
+                        rq->code_size,
+                        expected_code_size,
+                        "IndexHNSWRaBitQ storage");
+                FAISS_THROW_IF_NOT(
+                        rq->codes.size() ==
+                        mul_no_overflow(
+                                static_cast<size_t>(rq->ntotal),
+                                rq->code_size,
+                                "IndexHNSWRaBitQ codes"));
+                FAISS_THROW_IF_NOT_MSG(
+                        !rq->is_trained ||
+                                rq->center.size() == static_cast<size_t>(rq->d),
+                        "IndexHNSWRaBitQ center size mismatch");
+                FAISS_THROW_IF_NOT_MSG(
+                        staged == (rq->rabitq.nb_bits >= 2),
+                        "IndexHNSWRaBitQ staged-search metadata mismatch");
+            }
         }
         if (h == fourcc("IHN2")) {
             FAISS_THROW_IF_NOT_MSG(
@@ -3402,7 +3483,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         auto idxhnsw = std::make_unique<IndexBinaryHNSW>();
         read_index_binary_header(*idxhnsw, f);
         read_HNSW(idxhnsw->hnsw, f);
-        idxhnsw->hnsw.is_panorama = false;
+        idxhnsw->hnsw.search_method = HNSW::SM_DEFAULT;
         FAISS_THROW_IF_NOT_FMT(
                 idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
                 "IndexBinaryHNSW HNSW levels size %zu != ntotal %" PRId64,
@@ -3426,7 +3507,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         READ1_BOOL(idxhnsw->base_level_only);
         READ1(idxhnsw->num_base_level_search_entrypoints);
         read_HNSW(idxhnsw->hnsw, f);
-        idxhnsw->hnsw.is_panorama = false;
+        idxhnsw->hnsw.search_method = HNSW::SM_DEFAULT;
         FAISS_THROW_IF_NOT_FMT(
                 idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
                 "IndexBinaryHNSWCagra HNSW levels size %zu != ntotal %" PRId64,

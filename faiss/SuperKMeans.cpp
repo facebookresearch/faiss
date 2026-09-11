@@ -621,7 +621,7 @@ void super_kmeans_assign_iteration(
             }
 
             // One SIMD dispatch per (xi, yj) tile.
-            with_simd_level([&]<SIMDLevel SL>() {
+            with_simd_level_with_sve([&]<SIMDLevel SL>() {
                 [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
                 int64_t tile_total = 0;
                 int64_t tile_pruned = 0;

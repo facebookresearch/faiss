@@ -216,6 +216,36 @@ struct IndexHNSWSQ : IndexHNSW {
             MetricType metric = METRIC_L2);
 };
 
+/** HNSW index whose storage is RaBitQ-compressed.
+ *
+ * The graph is built directly from the compressed codes. Neighbor-diversity
+ * pruning uses a fast 1-bit symmetric L2 estimator, including when the storage
+ * contains multi-bit codes.
+ *
+ * With nb_bits >= 2 the codes carry a per-vector error factor, so search uses
+ * the staged search method: a 1-bit estimate for every neighbor and the full
+ * multi-bit distance only for candidates the error bound cannot rule out.
+ * nb_bits = 1 has no error factor and uses ordinary HNSW search.
+ */
+struct IndexHNSWRaBitQ : IndexHNSW {
+    IndexHNSWRaBitQ();
+    IndexHNSWRaBitQ(
+            int d,
+            int M,
+            uint8_t nb_bits = 1,
+            MetricType metric = METRIC_L2);
+
+    IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
+
+   private:
+    // clone_index() replaces the shallow-copied storage with a deep copy
+    // before returning it. Keep ordinary C++ copies from sharing ownership.
+    IndexHNSWRaBitQ(const IndexHNSWRaBitQ&) = default;
+#ifndef SWIG
+    friend IndexHNSW* clone_IndexHNSW(const IndexHNSW* index);
+#endif
+};
+
 /** 2-level code structure with fast random access
  */
 struct IndexHNSW2Level : IndexHNSW {
