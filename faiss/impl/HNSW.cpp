@@ -1651,10 +1651,21 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         DistanceComputer& qdis,
         int ef,
         VTType& vt,
-        HNSWStats& stats) {
+        HNSWStats& stats,
+        const IDSelector* sel) {
     int ndis = 0;
     TopCandidatesQueue<C> top_candidates;
     reservePriorityQueue(top_candidates, ef);
+
+    TopCandidatesQueue<C> result_candidates;
+    if (sel) {
+        // Keep rejected nodes in top_candidates so they can still be used
+        // for graph traversal, but never return them as search results.
+        reservePriorityQueue(result_candidates, ef);
+        if (sel->is_member(node.second)) {
+            result_candidates.push(node);
+        }
+    }
 
     CandidatesQueue<C> candidates;
     reservePriorityQueue(candidates, ef);
@@ -1695,6 +1706,19 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         size_t saved_j[4];
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
+            if (sel) {
+                // Check the size before top(): the starting node may be
+                // rejected, leaving result_candidates empty.
+                if (sel->is_member(idx) &&
+                    (result_candidates.size() < static_cast<size_t>(ef) ||
+                     C::cmp(result_candidates.top().first, dis))) {
+                    result_candidates.emplace(dis, idx);
+                    if (result_candidates.size() > static_cast<size_t>(ef)) {
+                        result_candidates.pop();
+                    }
+                }
+            }
+
             if (C::cmp(top_candidates.top().first, dis) ||
                 top_candidates.size() < static_cast<size_t>(ef)) {
                 candidates.emplace(dis, idx);
@@ -1750,7 +1774,11 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     }
     stats.ndis += ndis;
 
-    return top_candidates;
+    if (sel) {
+        return result_candidates;
+    } else {
+        return top_candidates;
+    }
 }
 
 } // namespace
@@ -1769,7 +1797,7 @@ std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
     using C = HNSW::C_distance;
     auto call = [&]<typename VTType>(VTType& vt_concrete) {
         return search_from_candidate_unbounded_fixVT<VTType, C>(
-                hnsw, node, qdis, ef, vt_concrete, stats);
+                hnsw, node, qdis, ef, vt_concrete, stats, nullptr);
     };
     if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(vt)) {
         return call(*vtv);
@@ -1868,6 +1896,7 @@ HNSWStats search_impl(
                 hnsw.search_method == HNSW::SM_DEFAULT ||
                         hnsw.search_method == HNSW::SM_PANORAMA,
                 "invalid HNSW search method");
+        const IDSelector* sel = params ? params->sel : nullptr;
         auto call = [&]<typename VTType>(VTType& vt_concrete) {
             return search_from_candidate_unbounded_fixVT<VTType, C>(
                     hnsw,
@@ -1875,7 +1904,8 @@ HNSWStats search_impl(
                     qdis,
                     ef,
                     vt_concrete,
-                    stats);
+                    stats,
+                    sel);
         };
         TopCandidatesQueue<C> top_candidates;
         if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
