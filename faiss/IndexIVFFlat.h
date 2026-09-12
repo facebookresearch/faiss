@@ -110,6 +110,8 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
     /// also dedups the training set
     void train(idx_t n, const float* x) override;
 
+    void reset() override;
+
     /// implemented for all IndexIVF* classes
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
