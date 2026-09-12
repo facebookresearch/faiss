@@ -22,6 +22,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
+#include <faiss/utils/prefetch.h>
 
 namespace faiss {
 
@@ -1165,6 +1166,15 @@ struct RaBitQCandidateDistanceEvaluator {
             GetThreshold&& get_threshold,
             AddResult&& add_result) {
         size_t ndis = 0;
+
+        for (int i = 0; i < count; ++i) {
+            const uint8_t* code =
+                    rq.codes + static_cast<size_t>(ids[i]) * rq.code_size;
+            for (size_t off = 0; off < rq.code_size; off += 64) {
+                prefetch_L1(code + off);
+            }
+        }
+
         for (int i = 0; i < count; ++i) {
             const uint8_t* code =
                     rq.codes + static_cast<size_t>(ids[i]) * rq.code_size;
