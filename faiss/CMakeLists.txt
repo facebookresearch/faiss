@@ -49,6 +49,7 @@ set(FAISS_SIMD_AVX512_VPOPCNT_SRC
 # AVX-512 sources that require the full Sapphire Rapids feature set.
 set(FAISS_SIMD_AVX512_SPR_SRC
   impl/scalar_quantizer/sq-avx512-spr.cpp
+  utils/simd_impl/rabitq_integer_adc_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
