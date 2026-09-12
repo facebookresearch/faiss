@@ -269,9 +269,7 @@ struct QuantizerBF16<SIMDLevel::RISCV_RVV> : QuantizerBF16<SIMDLevel::NONE> {
             vuint32m8_t w = __riscv_vzext_vf2_u32m8(v, vl);
             w = __riscv_vsll_vx_u32m8(w, 16, vl);
             __riscv_vse32_v_f32m8(
-                    x + i,
-                    __riscv_vreinterpret_v_u32m8_f32m8(w),
-                    vl);
+                    x + i, __riscv_vreinterpret_v_u32m8_f32m8(w), vl);
             i += vl;
         }
     }
