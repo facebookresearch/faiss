@@ -1715,21 +1715,29 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1_BOOL(idxp->is_trained);
         READVECTOR(idxp->codes);
         READVECTOR(idxp->cum_sums);
-        size_t num_slots = mul_no_overflow(
-                ((size_t)idxp->ntotal + idxp->batch_size - 1) /
-                        idxp->batch_size,
+        const size_t ntotal = (size_t)idxp->ntotal;
+        const size_t num_batches =
+                ntotal / idxp->batch_size + (ntotal % idxp->batch_size != 0);
+        const size_t num_slots = mul_no_overflow(
+                num_batches,
                 idxp->batch_size,
                 "IndexFlatPanorama num_batches*batch_size");
-        FAISS_THROW_IF_NOT(
-                idxp->codes.size() ==
-                mul_no_overflow(
-                        num_slots, idxp->code_size, "IndexFlatPanorama codes"));
-        FAISS_THROW_IF_NOT(
-                idxp->cum_sums.size() ==
-                mul_no_overflow(
-                        num_slots,
-                        idxp->pano.n_levels + 1,
-                        "IndexFlatPanorama cum_sums"));
+        const size_t expected_codes_size = mul_no_overflow(
+                num_slots, idxp->code_size, "IndexFlatPanorama codes");
+        FAISS_THROW_IF_NOT_FMT(
+                idxp->codes.size() == expected_codes_size,
+                "IndexFlatPanorama codes size mismatch: got %zu, expected %zu",
+                idxp->codes.size(),
+                expected_codes_size);
+        const size_t expected_cum_sums_size = mul_no_overflow(
+                num_slots,
+                idxp->pano.n_levels + 1,
+                "IndexFlatPanorama cum_sums");
+        FAISS_THROW_IF_NOT_FMT(
+                idxp->cum_sums.size() == expected_cum_sums_size,
+                "IndexFlatPanorama cum_sums size mismatch: got %zu, expected %zu",
+                idxp->cum_sums.size(),
+                expected_cum_sums_size);
         idxp->verbose = false;
         idx = std::move(idxp);
     } else if (
