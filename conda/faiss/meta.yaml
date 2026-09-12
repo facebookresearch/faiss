@@ -84,7 +84,6 @@ outputs:
         - python_abi =3.12
         {% endif %}
         - openblas =0.3.34  # [not x86_64]
-        - libopenblas =0.3.34  # [osx]
     test:
       requires:
         - conda-build =25.3.1
@@ -153,7 +152,6 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - libopenblas =0.3.34  # [osx]
     test:
       requires:
         - numpy >=2.0,<3.0
