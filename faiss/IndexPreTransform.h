@@ -15,9 +15,12 @@
 namespace faiss {
 
 struct SearchParametersPreTransform : SearchParameters {
-    // nothing to add here.
-    // as such, encapsulating the search params is considered optional
     SearchParameters* index_params = nullptr;
+
+    /** Use a prepared FP16 cache for a single-query transform.
+     * Larger batches retain the ordinary FP32 transform path.
+     */
+    bool use_fp16_transform = false;
 };
 
 /** Index that applies a LinearTransform transform on vectors before
@@ -90,6 +93,9 @@ struct IndexPreTransform : Index {
     /// apply the transforms in the chain. The returned float * may be
     /// equal to x, otherwise it should be deallocated.
     const float* apply_chain(idx_t n, const float* x) const;
+
+    /// Apply a chain of prepared FP16 linear transforms.
+    const float* apply_chain_fp16(idx_t n, const float* x) const;
 
     /// Reverse the transforms in the chain. May not be implemented for
     /// all transforms in the chain or may return approximate results.

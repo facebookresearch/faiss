@@ -135,6 +135,28 @@ const float* IndexPreTransform::apply_chain(idx_t n, const float* x) const {
     return prev_x;
 }
 
+const float* IndexPreTransform::apply_chain_fp16(idx_t n, const float* x)
+        const {
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "negative vector count");
+    if (chain.empty()) {
+        return x;
+    }
+    const float* prev_x = x;
+    std::unique_ptr<const float[]> previous_owner;
+    for (const VectorTransform* transform : chain) {
+        const auto* linear = dynamic_cast<const LinearTransform*>(transform);
+        FAISS_THROW_IF_NOT_MSG(
+                linear != nullptr,
+                "FP16 query transforms require a LinearTransform chain");
+        auto transformed = std::make_unique<float[]>(size_t(n) * linear->d_out);
+        linear->apply_noalloc_fp16(n, prev_x, transformed.get());
+        previous_owner.reset();
+        prev_x = transformed.get();
+        previous_owner = std::move(transformed);
+    }
+    return previous_owner.release();
+}
+
 void IndexPreTransform::reverse_chain(idx_t n, const float* xt, float* x)
         const {
     const float* next_x = xt;
@@ -174,6 +196,18 @@ const SearchParameters* extract_index_search_params(
     return params ? params->index_params : params_in;
 }
 
+const float* apply_chain_for_search(
+        const IndexPreTransform& index,
+        idx_t n,
+        const float* x,
+        const SearchParameters* params_in) {
+    auto params = dynamic_cast<const SearchParametersPreTransform*>(params_in);
+    if (params && params->use_fp16_transform && n == 1) {
+        return index.apply_chain_fp16(n, x);
+    }
+    return index.apply_chain(n, x);
+}
+
 } // namespace
 
 void IndexPreTransform::search(
@@ -185,7 +219,7 @@ void IndexPreTransform::search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
-    const float* xt = apply_chain(n, x);
+    const float* xt = apply_chain_for_search(*this, n, x, params);
     std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
     index->search(
             n, xt, k, distances, labels, extract_index_search_params(params));
@@ -198,7 +232,7 @@ void IndexPreTransform::range_search(
         RangeSearchResult* result,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(is_trained);
-    TransformedVectors tv(x, apply_chain(n, x));
+    TransformedVectors tv(x, apply_chain_for_search(*this, n, x, params));
     index->range_search(
             n, tv.x, radius, result, extract_index_search_params(params));
 }
@@ -261,7 +295,7 @@ void IndexPreTransform::search_and_reconstruct(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
-    TransformedVectors trans(x, apply_chain(n, x));
+    TransformedVectors trans(x, apply_chain_for_search(*this, n, x, params));
 
     float* recons_temp = chain.empty() ? recons : new float[n * k * index->d];
     std::unique_ptr<float[]> del2(

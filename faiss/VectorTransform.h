@@ -80,6 +80,11 @@ struct LinearTransform : VectorTransform {
     /// bias vector, size d_out
     std::vector<float> b;
 
+    /** Optional FP16 copy of A for the ARM single-query transform path. This
+     * derived runtime cache must be refreshed after A changes.
+     */
+    std::vector<uint16_t> A_fp16;
+
     /// both d_in > d_out and d_out < d_in are supported
     explicit LinearTransform(
             int din = 0,
@@ -88,6 +93,15 @@ struct LinearTransform : VectorTransform {
 
     /// same as apply, but result is pre-allocated
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+
+    /// Return whether the running CPU supports the FP16 FML path.
+    bool fp16_supported() const;
+
+    /// Build the derived FP16 matrix cache used by apply_noalloc_fp16().
+    void prepare_fp16();
+
+    /// Apply the cached FP16 matrix with FP32 accumulation.
+    void apply_noalloc_fp16(idx_t n, const float* x, float* xt) const;
 
     /// compute x = A^T * (x - b)
     /// is reverse transform if A has orthonormal lines
