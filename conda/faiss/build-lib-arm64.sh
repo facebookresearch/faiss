@@ -8,7 +8,12 @@ set -e
 
 
 # Build libfaiss.so
+# Use Apple Accelerate for BLAS/LAPACK on arm64 macOS instead of OpenBLAS.
+# Without an explicit vendor, cmake may fail to locate BLAS when openblas
+# is absent from the conda build environment.
 cmake -B _build \
+      -DFAISS_ENABLE_MKL=OFF \
+      -DBLA_VENDOR=Apple \
       -DBUILD_SHARED_LIBS=ON \
       -DFAISS_ENABLE_C_API=ON \
       -DBUILD_TESTING=OFF \
