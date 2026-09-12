@@ -48,4 +48,25 @@ FAISS_API void dot_product_batch_4_arm(
         int64_t& dot3);
 #endif
 
+#ifdef COMPILE_SIMD_AVX512_SPR
+FAISS_API int64_t dot_product_avx512_vnni(
+        const int8_t* query,
+        const int8_t* levels,
+        size_t d,
+        int64_t query_correction);
+
+FAISS_API void dot_product_batch_4_avx512_vnni(
+        const int8_t* query,
+        const int8_t* levels0,
+        const int8_t* levels1,
+        const int8_t* levels2,
+        const int8_t* levels3,
+        size_t d,
+        int64_t query_correction,
+        int64_t& dot0,
+        int64_t& dot1,
+        int64_t& dot2,
+        int64_t& dot3);
+#endif
+
 } // namespace faiss::rabitq_integer_adc
