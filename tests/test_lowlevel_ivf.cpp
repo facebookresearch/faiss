@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <random>
 #include <thread>
@@ -17,6 +19,7 @@
 
 #include <faiss/AutoTune.h>
 #include <faiss/IVFlib.h>
+#include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -560,6 +563,72 @@ void test_lowlevel_access_binary(const char* index_key) {
 
 TEST(TestLowLevelIVF, IVFBinary) {
     test_lowlevel_access_binary("BIVF32");
+}
+
+TEST(TestLowLevelIVF, IVFBinaryCountMaxCodesZero) {
+    constexpr size_t dimension = 8;
+    constexpr idx_t k = 4;
+    const std::array<uint8_t, 2> centroids = {0, 255};
+    const std::array<uint8_t, 4> xb = {0, 15, 51, 255};
+    const std::array<uint8_t, 1> xq = {15};
+
+    IndexBinaryFlat quantizer(dimension);
+    quantizer.add(centroids.size(), centroids.data());
+    IndexBinaryIVF index(&quantizer, dimension, centroids.size());
+    index.is_trained = true;
+    index.nprobe = centroids.size();
+    index.add(xb.size(), xb.data());
+    EXPECT_GT(index.invlists->list_size(0), size_t{0});
+    EXPECT_GT(index.invlists->list_size(1), size_t{0});
+
+    using Result = std::vector<std::pair<int32_t, idx_t>>;
+    auto search = [&](bool use_heap, const SearchParametersIVF* params) {
+        index.use_heap = use_heap;
+        std::array<int32_t, k> distances{};
+        std::array<idx_t, k> labels{};
+        index.search(1, xq.data(), k, distances.data(), labels.data(), params);
+        Result result;
+        for (idx_t i = 0; i < k; ++i) {
+            result.emplace_back(distances[i], labels[i]);
+        }
+        std::sort(result.begin(), result.end());
+        return result;
+    };
+
+    IndexBinaryFlat flat(dimension);
+    flat.add(xb.size(), xb.data());
+    std::array<int32_t, k> flat_distances{};
+    std::array<idx_t, k> flat_labels{};
+    flat.search(1, xq.data(), k, flat_distances.data(), flat_labels.data());
+    Result flat_result;
+    for (idx_t i = 0; i < k; ++i) {
+        flat_result.emplace_back(flat_distances[i], flat_labels[i]);
+    }
+    std::sort(flat_result.begin(), flat_result.end());
+
+    index.max_codes = 0;
+    EXPECT_EQ(search(false, nullptr), flat_result);
+    EXPECT_EQ(search(true, nullptr), flat_result);
+
+    index.max_codes = 1;
+    SearchParametersIVF unlimited_params;
+    unlimited_params.nprobe = centroids.size();
+    unlimited_params.max_codes = 0;
+    EXPECT_EQ(search(false, &unlimited_params), flat_result);
+    EXPECT_EQ(search(true, &unlimited_params), flat_result);
+
+    SearchParametersIVF limited_params;
+    limited_params.nprobe = centroids.size();
+    limited_params.max_codes = 2;
+    Result count_limited = search(false, &limited_params);
+    Result heap_limited = search(true, &limited_params);
+    EXPECT_EQ(count_limited, heap_limited);
+    EXPECT_EQ(
+            std::count_if(
+                    count_limited.begin(),
+                    count_limited.end(),
+                    [](const auto& result) { return result.second != -1; }),
+            2);
 }
 
 namespace {
