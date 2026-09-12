@@ -262,6 +262,10 @@ Index* clone_AdditiveQuantizerIndex(const Index* index) {
 namespace {
 
 InvertedLists* clone_InvertedLists(const InvertedLists* invlists) {
+    if (auto* ails =
+                dynamic_cast<const ArrayInvertedListsPanorama*>(invlists)) {
+        return new ArrayInvertedListsPanorama(*ails);
+    }
     if (auto* ails = dynamic_cast<const ArrayInvertedLists*>(invlists)) {
         return new ArrayInvertedLists(*ails);
     }
