@@ -1117,11 +1117,24 @@ inline void extract_search_params(
     }
 }
 
+template <bool UseTailBatch>
 struct DefaultCandidateDistanceEvaluator {
     DistanceComputer& qdis;
-    DistanceComputerBatch* qdis_batch =
-            dynamic_cast<DistanceComputerBatch*>(&qdis);
-    int preferred_batch = qdis_batch ? qdis_batch->preferred_batch_size() : 4;
+    DistanceComputerBatch* qdis_batch;
+    int preferred_batch;
+    int max_tail_batch;
+
+    DefaultCandidateDistanceEvaluator(
+            DistanceComputer& qdis_in,
+            DistanceComputerBatch* qdis_batch_in)
+            : qdis(qdis_in),
+              qdis_batch(qdis_batch_in),
+              preferred_batch(
+                      qdis_batch ? qdis_batch->preferred_batch_size() : 4),
+              max_tail_batch(
+                      UseTailBatch && qdis_batch
+                              ? qdis_batch->max_tail_batch_size()
+                              : 0) {}
 
     int batch_size() const {
         return preferred_batch;
@@ -1149,6 +1162,17 @@ struct DefaultCandidateDistanceEvaluator {
                 add_result(ids[evaluated + i], distances[evaluated + i]);
             }
             evaluated += 8;
+        }
+        if constexpr (UseTailBatch) {
+            const int tail = count - evaluated;
+            if (qdis_batch && tail <= max_tail_batch && tail > 1 && tail != 4) {
+                qdis_batch->distances_batch_tail(
+                        ids + evaluated, tail, distances + evaluated);
+                for (int i = 0; i < tail; ++i) {
+                    add_result(ids[evaluated + i], distances[evaluated + i]);
+                }
+                return count;
+            }
         }
         if (count - evaluated >= 4) {
             qdis.distances_batch_4(
@@ -1386,7 +1410,21 @@ int search_from_candidates_dispatch(
         int level,
         int nres_in,
         const SearchParameters* params) {
-    DefaultCandidateDistanceEvaluator evaluator{qdis};
+    auto* qdis_batch = dynamic_cast<DistanceComputerBatch*>(&qdis);
+    if (qdis_batch && qdis_batch->max_tail_batch_size() > 0) {
+        DefaultCandidateDistanceEvaluator<true> evaluator{qdis, qdis_batch};
+        return search_from_candidates_evaluator_dispatch<C>(
+                hnsw,
+                evaluator,
+                res,
+                candidates,
+                vt,
+                stats,
+                level,
+                nres_in,
+                params);
+    }
+    DefaultCandidateDistanceEvaluator<false> evaluator{qdis, qdis_batch};
     return search_from_candidates_evaluator_dispatch<C>(
             hnsw,
             evaluator,
@@ -1692,7 +1730,8 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     candidates.push(node);
 
     vt.set(node.second);
-    DefaultCandidateDistanceEvaluator evaluator{qdis};
+    auto* qdis_batch = dynamic_cast<DistanceComputerBatch*>(&qdis);
+    DefaultCandidateDistanceEvaluator<true> evaluator{qdis, qdis_batch};
     const int batch_size = evaluator.batch_size();
 
     while (!candidates.empty()) {

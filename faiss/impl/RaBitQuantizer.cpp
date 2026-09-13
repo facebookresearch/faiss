@@ -100,6 +100,23 @@ void dot_product_batch_16_scalar(
     }
 }
 
+void dot_product_batch_tail_scalar(
+        const int8_t* query,
+        const int8_t* const* levels,
+        int count,
+        size_t d,
+        int64_t* dots) {
+    for (int k = 0; k < count; ++k) {
+        dots[k] = 0;
+    }
+    for (size_t j = 0; j < d; ++j) {
+        const int64_t q = query[j];
+        for (int k = 0; k < count; ++k) {
+            dots[k] += q * levels[k][j];
+        }
+    }
+}
+
 } // namespace rabitq_integer_adc
 
 RaBitQuantizer::RaBitQuantizer(
@@ -981,6 +998,18 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         return 4;
     }
 
+    int max_tail_batch_size() const final {
+        if (!integer_query) {
+            return 0;
+        }
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_dotprod) {
+            return 7;
+        }
+#endif
+        return 0;
+    }
+
     void distances_batch_8(const int32_t* ids, float* distances) final {
         const uint8_t* code_rows[8];
         for (size_t k = 0; k < 8; ++k) {
@@ -1048,6 +1077,43 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
                     quantized.data(), levels, d, dots);
         }
         for (size_t k = 0; k < 16; ++k) {
+            distances[k] =
+                    score(code_rows[k], scale * static_cast<float>(dots[k]));
+        }
+    }
+
+    void distances_batch_tail(const int32_t* ids, int count, float* distances)
+            final {
+        FAISS_THROW_IF_NOT_MSG(
+                count >= 1 && count <= 7,
+                "RaBitQ tail batch size must be between 1 and 7");
+        const uint8_t* code_rows[7];
+        for (int k = 0; k < count; ++k) {
+            code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
+        }
+        if (!integer_query) {
+            for (int k = 0; k < count; ++k) {
+                distances[k] = distance_to_code(code_rows[k]);
+            }
+            return;
+        }
+
+        const int8_t* levels[7];
+        for (int k = 0; k < count; ++k) {
+            levels[k] = reinterpret_cast<const int8_t*>(code_rows[k]);
+        }
+        int64_t dots[7];
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_dotprod) {
+            rabitq_integer_adc::dot_product_batch_tail_arm(
+                    quantized.data(), levels, count, d, dots);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_tail_scalar(
+                    quantized.data(), levels, count, d, dots);
+        }
+        for (int k = 0; k < count; ++k) {
             distances[k] =
                     score(code_rows[k], scale * static_cast<float>(dots[k]));
         }

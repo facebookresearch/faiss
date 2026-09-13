@@ -9,6 +9,8 @@
 
 #include <arm_neon.h>
 #include <algorithm>
+#include <type_traits>
+#include <utility>
 
 #if defined(__linux__)
 #include <asm/hwcap.h>
@@ -31,6 +33,50 @@ namespace {
 // unusually high dimensions. One lane receives at most 1024 products per
 // 4096-dimensional chunk, well below INT32_MAX for signed bytes.
 constexpr size_t kDotChunk = 4096;
+
+template <typename Function, size_t... Indices>
+inline void for_fixed_lanes_impl(
+        Function&& function,
+        std::index_sequence<Indices...>) {
+    (function(std::integral_constant<size_t, Indices>{}), ...);
+}
+
+template <int N, typename Function>
+inline void for_fixed_lanes(Function&& function) {
+    for_fixed_lanes_impl(
+            std::forward<Function>(function), std::make_index_sequence<N>{});
+}
+
+template <int N>
+void dot_product_batch_fixed_arm(
+        const int8_t* query,
+        const int8_t* const* levels,
+        size_t d,
+        int64_t* dots) {
+    for_fixed_lanes<N>([&](auto lane) { dots[lane] = 0; });
+    size_t j = 0;
+    while (j + 16 <= d) {
+        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
+        int32x4_t accumulators[N];
+        for_fixed_lanes<N>(
+                [&](auto lane) { accumulators[lane] = vdupq_n_s32(0); });
+        for (; j + 16 <= end; j += 16) {
+            const int8x16_t q = vld1q_s8(query + j);
+            for_fixed_lanes<N>([&](auto lane) {
+                accumulators[lane] = vdotq_s32(
+                        accumulators[lane], q, vld1q_s8(levels[lane] + j));
+            });
+        }
+        for_fixed_lanes<N>([&](auto lane) {
+            dots[lane] += static_cast<int64_t>(vaddvq_s32(accumulators[lane]));
+        });
+    }
+    for (; j < d; ++j) {
+        for_fixed_lanes<N>([&](auto lane) {
+            dots[lane] += int64_t(query[j]) * int64_t(levels[lane][j]);
+        });
+    }
+}
 
 } // namespace
 
@@ -227,6 +273,31 @@ void dot_product_batch_16_arm(
     for (size_t k = 0; k < 16; ++k) {
         dots[k] += tails[k];
     }
+}
+
+void dot_product_batch_tail_arm(
+        const int8_t* query,
+        const int8_t* const* levels,
+        int count,
+        size_t d,
+        int64_t* dots) {
+    switch (count) {
+        case 1:
+            return dot_product_batch_fixed_arm<1>(query, levels, d, dots);
+        case 2:
+            return dot_product_batch_fixed_arm<2>(query, levels, d, dots);
+        case 3:
+            return dot_product_batch_fixed_arm<3>(query, levels, d, dots);
+        case 4:
+            return dot_product_batch_fixed_arm<4>(query, levels, d, dots);
+        case 5:
+            return dot_product_batch_fixed_arm<5>(query, levels, d, dots);
+        case 6:
+            return dot_product_batch_fixed_arm<6>(query, levels, d, dots);
+        case 7:
+            return dot_product_batch_fixed_arm<7>(query, levels, d, dots);
+    }
+    dot_product_batch_tail_scalar(query, levels, count, d, dots);
 }
 
 } // namespace faiss::rabitq_integer_adc
