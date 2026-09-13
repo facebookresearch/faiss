@@ -105,4 +105,128 @@ void dot_product_batch_4_arm(
     dot3 += tail3;
 }
 
+void dot_product_batch_8_arm(
+        const int8_t* query,
+        const int8_t* const levels[8],
+        size_t d,
+        int64_t dots[8]) {
+    for (size_t k = 0; k < 8; ++k) {
+        dots[k] = 0;
+    }
+    size_t j = 0;
+    while (j + 16 <= d) {
+        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
+        int32x4_t acc0 = vdupq_n_s32(0);
+        int32x4_t acc1 = vdupq_n_s32(0);
+        int32x4_t acc2 = vdupq_n_s32(0);
+        int32x4_t acc3 = vdupq_n_s32(0);
+        int32x4_t acc4 = vdupq_n_s32(0);
+        int32x4_t acc5 = vdupq_n_s32(0);
+        int32x4_t acc6 = vdupq_n_s32(0);
+        int32x4_t acc7 = vdupq_n_s32(0);
+        for (; j + 16 <= end; j += 16) {
+            const int8x16_t q = vld1q_s8(query + j);
+            acc0 = vdotq_s32(acc0, q, vld1q_s8(levels[0] + j));
+            acc1 = vdotq_s32(acc1, q, vld1q_s8(levels[1] + j));
+            acc2 = vdotq_s32(acc2, q, vld1q_s8(levels[2] + j));
+            acc3 = vdotq_s32(acc3, q, vld1q_s8(levels[3] + j));
+            acc4 = vdotq_s32(acc4, q, vld1q_s8(levels[4] + j));
+            acc5 = vdotq_s32(acc5, q, vld1q_s8(levels[5] + j));
+            acc6 = vdotq_s32(acc6, q, vld1q_s8(levels[6] + j));
+            acc7 = vdotq_s32(acc7, q, vld1q_s8(levels[7] + j));
+        }
+        dots[0] += vaddvq_s32(acc0);
+        dots[1] += vaddvq_s32(acc1);
+        dots[2] += vaddvq_s32(acc2);
+        dots[3] += vaddvq_s32(acc3);
+        dots[4] += vaddvq_s32(acc4);
+        dots[5] += vaddvq_s32(acc5);
+        dots[6] += vaddvq_s32(acc6);
+        dots[7] += vaddvq_s32(acc7);
+    }
+    const int8_t* tail_levels[8];
+    for (size_t k = 0; k < 8; ++k) {
+        tail_levels[k] = levels[k] + j;
+    }
+    int64_t tails[8];
+    dot_product_batch_8_scalar(query + j, tail_levels, d - j, tails);
+    for (size_t k = 0; k < 8; ++k) {
+        dots[k] += tails[k];
+    }
+}
+
+void dot_product_batch_16_arm(
+        const int8_t* query,
+        const int8_t* const levels[16],
+        size_t d,
+        int64_t dots[16]) {
+    for (size_t k = 0; k < 16; ++k) {
+        dots[k] = 0;
+    }
+    size_t j = 0;
+    while (j + 16 <= d) {
+        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
+        int32x4_t acc0 = vdupq_n_s32(0);
+        int32x4_t acc1 = vdupq_n_s32(0);
+        int32x4_t acc2 = vdupq_n_s32(0);
+        int32x4_t acc3 = vdupq_n_s32(0);
+        int32x4_t acc4 = vdupq_n_s32(0);
+        int32x4_t acc5 = vdupq_n_s32(0);
+        int32x4_t acc6 = vdupq_n_s32(0);
+        int32x4_t acc7 = vdupq_n_s32(0);
+        int32x4_t acc8 = vdupq_n_s32(0);
+        int32x4_t acc9 = vdupq_n_s32(0);
+        int32x4_t acc10 = vdupq_n_s32(0);
+        int32x4_t acc11 = vdupq_n_s32(0);
+        int32x4_t acc12 = vdupq_n_s32(0);
+        int32x4_t acc13 = vdupq_n_s32(0);
+        int32x4_t acc14 = vdupq_n_s32(0);
+        int32x4_t acc15 = vdupq_n_s32(0);
+        for (; j + 16 <= end; j += 16) {
+            const int8x16_t q = vld1q_s8(query + j);
+            acc0 = vdotq_s32(acc0, q, vld1q_s8(levels[0] + j));
+            acc1 = vdotq_s32(acc1, q, vld1q_s8(levels[1] + j));
+            acc2 = vdotq_s32(acc2, q, vld1q_s8(levels[2] + j));
+            acc3 = vdotq_s32(acc3, q, vld1q_s8(levels[3] + j));
+            acc4 = vdotq_s32(acc4, q, vld1q_s8(levels[4] + j));
+            acc5 = vdotq_s32(acc5, q, vld1q_s8(levels[5] + j));
+            acc6 = vdotq_s32(acc6, q, vld1q_s8(levels[6] + j));
+            acc7 = vdotq_s32(acc7, q, vld1q_s8(levels[7] + j));
+            acc8 = vdotq_s32(acc8, q, vld1q_s8(levels[8] + j));
+            acc9 = vdotq_s32(acc9, q, vld1q_s8(levels[9] + j));
+            acc10 = vdotq_s32(acc10, q, vld1q_s8(levels[10] + j));
+            acc11 = vdotq_s32(acc11, q, vld1q_s8(levels[11] + j));
+            acc12 = vdotq_s32(acc12, q, vld1q_s8(levels[12] + j));
+            acc13 = vdotq_s32(acc13, q, vld1q_s8(levels[13] + j));
+            acc14 = vdotq_s32(acc14, q, vld1q_s8(levels[14] + j));
+            acc15 = vdotq_s32(acc15, q, vld1q_s8(levels[15] + j));
+        }
+        dots[0] += vaddvq_s32(acc0);
+        dots[1] += vaddvq_s32(acc1);
+        dots[2] += vaddvq_s32(acc2);
+        dots[3] += vaddvq_s32(acc3);
+        dots[4] += vaddvq_s32(acc4);
+        dots[5] += vaddvq_s32(acc5);
+        dots[6] += vaddvq_s32(acc6);
+        dots[7] += vaddvq_s32(acc7);
+        dots[8] += vaddvq_s32(acc8);
+        dots[9] += vaddvq_s32(acc9);
+        dots[10] += vaddvq_s32(acc10);
+        dots[11] += vaddvq_s32(acc11);
+        dots[12] += vaddvq_s32(acc12);
+        dots[13] += vaddvq_s32(acc13);
+        dots[14] += vaddvq_s32(acc14);
+        dots[15] += vaddvq_s32(acc15);
+    }
+    const int8_t* tail_levels[16];
+    for (size_t k = 0; k < 16; ++k) {
+        tail_levels[k] = levels[k] + j;
+    }
+    int64_t tails[16];
+    dot_product_batch_16_scalar(query + j, tail_levels, d - j, tails);
+    for (size_t k = 0; k < 16; ++k) {
+        dots[k] += tails[k];
+    }
+}
+
 } // namespace faiss::rabitq_integer_adc

@@ -68,6 +68,38 @@ void dot_product_batch_4_scalar(
     }
 }
 
+void dot_product_batch_8_scalar(
+        const int8_t* query,
+        const int8_t* const levels[8],
+        size_t d,
+        int64_t dots[8]) {
+    for (size_t k = 0; k < 8; ++k) {
+        dots[k] = 0;
+    }
+    for (size_t j = 0; j < d; ++j) {
+        const int64_t q = query[j];
+        for (size_t k = 0; k < 8; ++k) {
+            dots[k] += q * levels[k][j];
+        }
+    }
+}
+
+void dot_product_batch_16_scalar(
+        const int8_t* query,
+        const int8_t* const levels[16],
+        size_t d,
+        int64_t dots[16]) {
+    for (size_t k = 0; k < 16; ++k) {
+        dots[k] = 0;
+    }
+    for (size_t j = 0; j < d; ++j) {
+        const int64_t q = query[j];
+        for (size_t k = 0; k < 16; ++k) {
+            dots[k] += q * levels[k][j];
+        }
+    }
+}
+
 } // namespace rabitq_integer_adc
 
 RaBitQuantizer::RaBitQuantizer(
@@ -751,7 +783,8 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
  * interface: integer query ADC changes the full score and has no proven bound
  * for the one-bit pruning stage. Callers must use the ordinary full-code path.
  */
-struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer {
+struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
+                                              DistanceComputerBatch {
     size_t d = 0;
     const float* centroid = nullptr;
     bool integer_query = false;
@@ -926,6 +959,98 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer {
         dis1 = score(code1, scale * static_cast<float>(dot1));
         dis2 = score(code2, scale * static_cast<float>(dot2));
         dis3 = score(code3, scale * static_cast<float>(dot3));
+    }
+
+    int preferred_batch_size() const final {
+        if (!integer_query) {
+            return 4;
+        }
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_dotprod && d >= 256) {
+            return 16;
+        }
+        if (use_arm_dotprod) {
+            return 8;
+        }
+#endif
+#ifdef COMPILE_SIMD_AVX512_SPR
+        if (use_avx512_vnni) {
+            return 8;
+        }
+#endif
+        return 4;
+    }
+
+    void distances_batch_8(const int32_t* ids, float* distances) final {
+        const uint8_t* code_rows[8];
+        for (size_t k = 0; k < 8; ++k) {
+            code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
+        }
+        if (!integer_query) {
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = distance_to_code(code_rows[k]);
+            }
+            return;
+        }
+
+        const int8_t* levels[8];
+        for (size_t k = 0; k < 8; ++k) {
+            levels[k] = reinterpret_cast<const int8_t*>(code_rows[k]);
+        }
+        int64_t dots[8];
+#ifdef COMPILE_SIMD_AVX512_SPR
+        if (use_avx512_vnni) {
+            rabitq_integer_adc::dot_product_batch_8_avx512_vnni(
+                    quantized.data(), levels, d, query_correction, dots);
+        } else
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+                if (use_arm_dotprod) {
+            rabitq_integer_adc::dot_product_batch_8_arm(
+                    quantized.data(), levels, d, dots);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_8_scalar(
+                    quantized.data(), levels, d, dots);
+        }
+        for (size_t k = 0; k < 8; ++k) {
+            distances[k] =
+                    score(code_rows[k], scale * static_cast<float>(dots[k]));
+        }
+    }
+
+    void distances_batch_16(const int32_t* ids, float* distances) final {
+        const uint8_t* code_rows[16];
+        for (size_t k = 0; k < 16; ++k) {
+            code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
+        }
+        if (!integer_query) {
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = distance_to_code(code_rows[k]);
+            }
+            return;
+        }
+
+        const int8_t* levels[16];
+        for (size_t k = 0; k < 16; ++k) {
+            levels[k] = reinterpret_cast<const int8_t*>(code_rows[k]);
+        }
+        int64_t dots[16];
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_dotprod) {
+            rabitq_integer_adc::dot_product_batch_16_arm(
+                    quantized.data(), levels, d, dots);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_16_scalar(
+                    quantized.data(), levels, d, dots);
+        }
+        for (size_t k = 0; k < 16; ++k) {
+            distances[k] =
+                    score(code_rows[k], scale * static_cast<float>(dots[k]));
+        }
     }
 
     float symmetric_dis(idx_t, idx_t) final {
