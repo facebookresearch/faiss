@@ -122,6 +122,26 @@ struct RaBitQuantizer : Quantizer {
             uint8_t qb = 0,
             const float* centroid = nullptr,
             bool centered = false) const;
+
+    /** Expand existing multi-bit RaBitQ codes without changing their levels or
+     * correction factors. Each output row is d signed level bytes followed by
+     * the original ExtraBitsFactors bytes.
+     */
+    void expand_codes(
+            const uint8_t* packed_codes,
+            size_t n,
+            uint8_t* expanded_codes) const;
+
+    /** Create a full-code L2 distance computer over expanded rows. Floating
+     * mode is a parity control; integer mode quantizes each query residual to
+     * signed int8 once in set_query().
+     */
+    FlatCodesDistanceComputer* get_expanded_distance_computer(
+            const uint8_t* expanded_codes,
+            const float* centroid,
+            bool integer_query) const;
+
+    bool expanded_integer_uses_native_dotprod() const;
 };
 
 // RaBitQDistanceComputer: Base class for RaBitQ distance computers
