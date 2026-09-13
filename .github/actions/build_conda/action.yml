@@ -46,6 +46,16 @@ runs:
         conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0,<25.7"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
+    - name: Pin libopenblas to known-good build (osx-arm64)
+      if: runner.os == 'macOS' && runner.arch == 'ARM64'
+      shell: bash
+      run: |
+        # libopenblas==0.3.34=openmp_h5e6e99c_1 is not installable in conda-forge
+        # and causes the faiss-cpu test-env solve to fail. Pin to the last known-
+        # good build string. conda-meta/pinned only covers the current prefix;
+        # conda config --append pinned_packages writes to ~/.condarc and is
+        # inherited by every env conda-build creates, fixing the isolated solves.
+        conda config --append pinned_packages "libopenblas==0.3.34=openmp_h4f80526_1"
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
