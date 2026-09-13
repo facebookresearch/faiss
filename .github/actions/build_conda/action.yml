@@ -46,6 +46,15 @@ runs:
         conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0,<25.7"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
+    - name: Pin libopenblas to known-good build (osx-arm64)
+      if: runner.os == 'macOS' && runner.arch == 'ARM64'
+      shell: bash
+      run: |
+        # conda-forge published libopenblas=0.3.34=openmp_h5e6e99c_1, which is
+        # not installable in the osx-arm64 conda build environment. Force the
+        # solver to use the last known-good build string to prevent the solver
+        # from failing when building faiss-cpu after libfaiss.
+        echo "libopenblas ==0.3.34=openmp_h4f80526_1" >> "${CONDA_PREFIX}/conda-meta/pinned"
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
