@@ -1119,6 +1119,13 @@ inline void extract_search_params(
 
 struct DefaultCandidateDistanceEvaluator {
     DistanceComputer& qdis;
+    DistanceComputerBatch* qdis_batch =
+            dynamic_cast<DistanceComputerBatch*>(&qdis);
+    int preferred_batch = qdis_batch ? qdis_batch->preferred_batch_size() : 4;
+
+    int batch_size() const {
+        return preferred_batch;
+    }
 
     template <typename GetThreshold, typename AddResult>
     size_t evaluate(
@@ -1126,24 +1133,40 @@ struct DefaultCandidateDistanceEvaluator {
             int count,
             GetThreshold&& /* get_threshold */,
             AddResult&& add_result) {
-        if (count == 4) {
-            float distances[4];
-            qdis.distances_batch_4(
-                    ids[0],
-                    ids[1],
-                    ids[2],
-                    ids[3],
-                    distances[0],
-                    distances[1],
-                    distances[2],
-                    distances[3]);
-            for (int i = 0; i < 4; ++i) {
+        float distances[16];
+        int evaluated = 0;
+        if (count >= 16 && qdis_batch && preferred_batch == 16) {
+            qdis_batch->distances_batch_16(ids, distances);
+            for (int i = 0; i < 16; ++i) {
                 add_result(ids[i], distances[i]);
             }
-        } else {
-            for (int i = 0; i < count; ++i) {
-                add_result(ids[i], qdis(ids[i]));
+            evaluated = 16;
+        }
+        if (count - evaluated >= 8 && qdis_batch) {
+            qdis_batch->distances_batch_8(
+                    ids + evaluated, distances + evaluated);
+            for (int i = 0; i < 8; ++i) {
+                add_result(ids[evaluated + i], distances[evaluated + i]);
             }
+            evaluated += 8;
+        }
+        if (count - evaluated >= 4) {
+            qdis.distances_batch_4(
+                    ids[evaluated + 0],
+                    ids[evaluated + 1],
+                    ids[evaluated + 2],
+                    ids[evaluated + 3],
+                    distances[evaluated + 0],
+                    distances[evaluated + 1],
+                    distances[evaluated + 2],
+                    distances[evaluated + 3]);
+            for (int i = 0; i < 4; ++i) {
+                add_result(ids[evaluated + i], distances[evaluated + i]);
+            }
+            evaluated += 4;
+        }
+        for (int i = evaluated; i < count; ++i) {
+            add_result(ids[i], qdis(ids[i]));
         }
         return count;
     }
@@ -1157,6 +1180,10 @@ struct DefaultCandidateDistanceEvaluator {
 struct RaBitQCandidateDistanceEvaluator {
     RaBitQDistanceComputer& rq;
     const bool is_similarity;
+
+    int batch_size() const {
+        return 4;
+    }
 
     template <typename GetThreshold, typename AddResult>
     size_t evaluate(
@@ -1246,7 +1273,8 @@ int search_from_candidates_fixVT(
         hnsw.neighbor_range(v0, level, &begin, &end);
 
         // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
+        // Batch-capable distance computers amortize query loads across
+        // multiple arbitrary neighbors.
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
@@ -1259,7 +1287,8 @@ int search_from_candidates_fixVT(
         }
 
         int counter = 0;
-        storage_idx_t saved_j[4];
+        storage_idx_t saved_j[16];
+        const int batch_size = evaluator.batch_size();
 
         threshold = res.threshold;
 
@@ -1281,7 +1310,7 @@ int search_from_candidates_fixVT(
             saved_j[counter] = v1;
             counter += vt.set(v1) ? 1 : 0;
 
-            if (counter == 4) {
+            if (counter == batch_size) {
                 ndis += evaluator.evaluate(
                         saved_j,
                         counter,
@@ -1663,6 +1692,8 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     candidates.push(node);
 
     vt.set(node.second);
+    DefaultCandidateDistanceEvaluator evaluator{qdis};
+    const int batch_size = evaluator.batch_size();
 
     while (!candidates.empty()) {
         float d0;
@@ -1679,7 +1710,8 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         hnsw.neighbor_range(v0, 0, &begin, &end);
 
         // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
+        // Batch-capable distance computers amortize query loads across
+        // multiple arbitrary neighbors.
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
@@ -1692,7 +1724,7 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         }
 
         int counter = 0;
-        size_t saved_j[4];
+        storage_idx_t saved_j[16];
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (C::cmp(top_candidates.top().first, dis) ||
@@ -1712,33 +1744,16 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
             saved_j[counter] = v1;
             counter += vt.set(v1) ? 1 : 0;
 
-            if (counter == 4) {
-                float dis[4];
-                qdis.distances_batch_4(
-                        saved_j[0],
-                        saved_j[1],
-                        saved_j[2],
-                        saved_j[3],
-                        dis[0],
-                        dis[1],
-                        dis[2],
-                        dis[3]);
-
-                for (size_t id4 = 0; id4 < 4; id4++) {
-                    add_to_heap(saved_j[id4], dis[id4]);
-                }
-
-                ndis += 4;
-
+            if (counter == batch_size) {
+                ndis += evaluator.evaluate(
+                        saved_j, counter, []() { return 0.0f; }, add_to_heap);
                 counter = 0;
             }
         }
 
-        for (int icnt = 0; icnt < counter; icnt++) {
-            float dis = qdis(saved_j[icnt]);
-            add_to_heap(saved_j[icnt], dis);
-
-            ndis += 1;
+        if (counter > 0) {
+            ndis += evaluator.evaluate(
+                    saved_j, counter, []() { return 0.0f; }, add_to_heap);
         }
 
         stats.nhops += 1;

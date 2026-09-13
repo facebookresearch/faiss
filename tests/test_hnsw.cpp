@@ -825,7 +825,7 @@ TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     EXPECT_EQ(D1, Dmt);
 }
 
-TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatch4) {
+TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatches) {
     std::mt19937 rng(83123);
     size_t comparisons = 0;
     for (int d : {1, 7, 8, 15, 16, 17, 31, 32, 33, 127, 768, 769, 1024, 4096}) {
@@ -845,11 +845,17 @@ TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatch4) {
             index.set_full_code_mode(faiss::RABITQ_FULL_CODE_INT8);
             std::unique_ptr<faiss::FlatCodesDistanceComputer> dc(
                     index.get_FlatCodesDistanceComputer());
+            auto* batch_dc =
+                    dynamic_cast<faiss::DistanceComputerBatch*>(dc.get());
+            ASSERT_NE(batch_dc, nullptr);
 
             std::vector<float> query(d);
             std::vector<float> residual(d);
             std::vector<int8_t> quantized(d);
             constexpr faiss::idx_t ids[4] = {3, 0, 2, 1};
+            constexpr int32_t ids8[8] = {3, 0, 2, 1, 1, 3, 0, 2};
+            constexpr int32_t ids16[16] = {
+                    2, 0, 3, 1, 0, 2, 1, 3, 3, 1, 2, 0, 1, 0, 3, 2};
             for (int trial = 0; trial < 4; trial++) {
                 for (int j = 0; j < d; j++) {
                     query[j] = trial == 0 ? index.center[j]
@@ -887,6 +893,7 @@ TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatch4) {
                         batch[2],
                         batch[3]);
                 const size_t stride = index.expanded_code_size();
+                float expected_by_id[4];
                 for (int lane = 0; lane < 4; lane++) {
                     const uint8_t* row = index.expanded_codes.data() +
                             size_t(ids[lane]) * stride;
@@ -903,12 +910,27 @@ TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatch4) {
                                     factors.f_rescale_ex *
                                             (scale * float(integer_dot) +
                                              0.5f * sum));
+                    expected_by_id[ids[lane]] = expected;
                     EXPECT_FLOAT_EQ((*dc)(ids[lane]), expected);
                     EXPECT_FLOAT_EQ(batch[lane], expected);
+                    comparisons++;
+                }
+
+                float batch8[8];
+                batch_dc->distances_batch_8(ids8, batch8);
+                for (int lane = 0; lane < 8; lane++) {
+                    EXPECT_FLOAT_EQ(batch8[lane], expected_by_id[ids8[lane]]);
+                    comparisons++;
+                }
+
+                float batch16[16];
+                batch_dc->distances_batch_16(ids16, batch16);
+                for (int lane = 0; lane < 16; lane++) {
+                    EXPECT_FLOAT_EQ(batch16[lane], expected_by_id[ids16[lane]]);
                     comparisons++;
                 }
             }
         }
     }
-    EXPECT_EQ(comparisons, 896);
+    EXPECT_EQ(comparisons, 6272);
 }

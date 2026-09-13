@@ -107,4 +107,84 @@ void dot_product_batch_4_avx512_vnni(
     }
 }
 
+void dot_product_batch_8_avx512_vnni(
+        const int8_t* query,
+        const int8_t* const levels[8],
+        size_t d,
+        int64_t query_correction,
+        int64_t dots[8]) {
+    const __m512i sign_bit = _mm512_set1_epi32(0x80808080);
+    for (size_t k = 0; k < 8; ++k) {
+        dots[k] = query_correction;
+    }
+    size_t j = 0;
+    while (j + 64 <= d) {
+        const size_t end = std::min(d - (d - j) % 64, j + kDotChunk);
+        __m512i acc0 = _mm512_setzero_si512();
+        __m512i acc1 = _mm512_setzero_si512();
+        __m512i acc2 = _mm512_setzero_si512();
+        __m512i acc3 = _mm512_setzero_si512();
+        __m512i acc4 = _mm512_setzero_si512();
+        __m512i acc5 = _mm512_setzero_si512();
+        __m512i acc6 = _mm512_setzero_si512();
+        __m512i acc7 = _mm512_setzero_si512();
+        for (; j + 64 <= end; j += 64) {
+            const __m512i q = _mm512_loadu_si512(query + j);
+            acc0 = _mm512_dpbusd_epi32(
+                    acc0,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[0] + j), sign_bit),
+                    q);
+            acc1 = _mm512_dpbusd_epi32(
+                    acc1,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[1] + j), sign_bit),
+                    q);
+            acc2 = _mm512_dpbusd_epi32(
+                    acc2,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[2] + j), sign_bit),
+                    q);
+            acc3 = _mm512_dpbusd_epi32(
+                    acc3,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[3] + j), sign_bit),
+                    q);
+            acc4 = _mm512_dpbusd_epi32(
+                    acc4,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[4] + j), sign_bit),
+                    q);
+            acc5 = _mm512_dpbusd_epi32(
+                    acc5,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[5] + j), sign_bit),
+                    q);
+            acc6 = _mm512_dpbusd_epi32(
+                    acc6,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[6] + j), sign_bit),
+                    q);
+            acc7 = _mm512_dpbusd_epi32(
+                    acc7,
+                    _mm512_xor_si512(
+                            _mm512_loadu_si512(levels[7] + j), sign_bit),
+                    q);
+        }
+        dots[0] += reduce(acc0);
+        dots[1] += reduce(acc1);
+        dots[2] += reduce(acc2);
+        dots[3] += reduce(acc3);
+        dots[4] += reduce(acc4);
+        dots[5] += reduce(acc5);
+        dots[6] += reduce(acc6);
+        dots[7] += reduce(acc7);
+    }
+    for (; j < d; ++j) {
+        for (size_t k = 0; k < 8; ++k) {
+            dots[k] += biased_tail_product(query[j], levels[k][j]);
+        }
+    }
+}
+
 } // namespace faiss::rabitq_integer_adc

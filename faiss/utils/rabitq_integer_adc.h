@@ -29,6 +29,18 @@ FAISS_API void dot_product_batch_4_scalar(
         int64_t& dot2,
         int64_t& dot3);
 
+FAISS_API void dot_product_batch_8_scalar(
+        const int8_t* query,
+        const int8_t* const levels[8],
+        size_t d,
+        int64_t dots[8]);
+
+FAISS_API void dot_product_batch_16_scalar(
+        const int8_t* query,
+        const int8_t* const levels[16],
+        size_t d,
+        int64_t dots[16]);
+
 #ifdef COMPILE_SIMD_ARM_NEON
 FAISS_API bool arm_dotprod_supported();
 
@@ -46,6 +58,18 @@ FAISS_API void dot_product_batch_4_arm(
         int64_t& dot1,
         int64_t& dot2,
         int64_t& dot3);
+
+FAISS_API void dot_product_batch_8_arm(
+        const int8_t* query,
+        const int8_t* const levels[8],
+        size_t d,
+        int64_t dots[8]);
+
+FAISS_API void dot_product_batch_16_arm(
+        const int8_t* query,
+        const int8_t* const levels[16],
+        size_t d,
+        int64_t dots[16]);
 #endif
 
 #ifdef COMPILE_SIMD_AVX512_SPR
@@ -67,6 +91,13 @@ FAISS_API void dot_product_batch_4_avx512_vnni(
         int64_t& dot1,
         int64_t& dot2,
         int64_t& dot3);
+
+FAISS_API void dot_product_batch_8_avx512_vnni(
+        const int8_t* query,
+        const int8_t* const levels[8],
+        size_t d,
+        int64_t query_correction,
+        int64_t dots[8]);
 #endif
 
 } // namespace faiss::rabitq_integer_adc
