@@ -854,6 +854,7 @@ TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatches) {
             std::vector<int8_t> quantized(d);
             constexpr faiss::idx_t ids[4] = {3, 0, 2, 1};
             constexpr int32_t ids8[8] = {3, 0, 2, 1, 1, 3, 0, 2};
+            constexpr int32_t ids_tail[7] = {2, 0, 3, 1, 1, 3, 0};
             constexpr int32_t ids16[16] = {
                     2, 0, 3, 1, 0, 2, 1, 3, 3, 1, 2, 0, 1, 0, 3, 2};
             for (int trial = 0; trial < 4; trial++) {
@@ -923,6 +924,16 @@ TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatches) {
                     comparisons++;
                 }
 
+                for (int count = 1; count <= 7; ++count) {
+                    float tail[7];
+                    batch_dc->distances_batch_tail(ids_tail, count, tail);
+                    for (int lane = 0; lane < count; ++lane) {
+                        EXPECT_FLOAT_EQ(
+                                tail[lane], expected_by_id[ids_tail[lane]]);
+                        comparisons++;
+                    }
+                }
+
                 float batch16[16];
                 batch_dc->distances_batch_16(ids16, batch16);
                 for (int lane = 0; lane < 16; lane++) {
@@ -932,5 +943,5 @@ TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatches) {
             }
         }
     }
-    EXPECT_EQ(comparisons, 6272);
+    EXPECT_EQ(comparisons, 12544);
 }

@@ -41,6 +41,13 @@ FAISS_API void dot_product_batch_16_scalar(
         size_t d,
         int64_t dots[16]);
 
+FAISS_API void dot_product_batch_tail_scalar(
+        const int8_t* query,
+        const int8_t* const* levels,
+        int count,
+        size_t d,
+        int64_t* dots);
+
 #ifdef COMPILE_SIMD_ARM_NEON
 FAISS_API bool arm_dotprod_supported();
 
@@ -70,6 +77,13 @@ FAISS_API void dot_product_batch_16_arm(
         const int8_t* const levels[16],
         size_t d,
         int64_t dots[16]);
+
+FAISS_API void dot_product_batch_tail_arm(
+        const int8_t* query,
+        const int8_t* const* levels,
+        int count,
+        size_t d,
+        int64_t* dots);
 #endif
 
 #ifdef COMPILE_SIMD_AVX512_SPR
