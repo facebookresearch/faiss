@@ -34,6 +34,8 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      ignore_run_exports:
+        - libopenblas
     requirements:
       build:
         - python {{ python }}
@@ -83,8 +85,7 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34  # [not x86_64]
-        - libopenblas =0.3.34  # [osx]
+        - libopenblas >=0.3.34,<0.4  # [osx]
     test:
       requires:
         - conda-build =25.3.1
@@ -103,6 +104,8 @@ outputs:
     script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
+      ignore_run_exports:
+        - libopenblas
     requirements:
       build:
         - python {{ python }}
@@ -153,12 +156,12 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - libopenblas =0.3.34  # [osx]
+        - libopenblas >=0.3.34,<0.4  # [osx]
     test:
       requires:
         - numpy >=2.0,<3.0
         - scipy
-        - pytorch-cpu >=2.7  # [not win]
+        - pytorch-cpu >=2.7  # [linux]
         - pytorch >=2.7      # [win]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl >=2024.2.2,<2026  # [x86_64]
@@ -170,7 +173,7 @@ outputs:
         {% endif %}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
-        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"  # [linux]
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]
