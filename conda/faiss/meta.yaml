@@ -56,7 +56,7 @@ outputs:
         - mkl-devel >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi
         {% endif %}
-        - libopenblas =0.3.34  # [osx]
+        - libopenblas >=0.3.34,<1  # [osx]
       host:
         - python {{ python }}
         - libcxx =20.1.1  # [osx and arm64]
@@ -69,8 +69,8 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34  # [not x86_64]
-        - libopenblas =0.3.34  # [osx]
+        - openblas >=0.3.34,<1  # [not x86_64]
+        - libopenblas >=0.3.34,<1  # [osx]
       run:
         - python {{ python }}
         - libcxx =20.1.1  # [osx and arm64]
@@ -83,8 +83,8 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34  # [not x86_64]
-        - libopenblas =0.3.34  # [osx]
+        - openblas >=0.3.34,<1  # [not x86_64]
+        - libopenblas >=0.3.34,<1  # [osx]
     test:
       requires:
         - conda-build =25.3.1
@@ -122,7 +122,7 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - libopenblas =0.3.34  # [osx]
+        - libopenblas >=0.3.34,<1  # [osx]
       host:
         - python {{ python }}
         - numpy >=2.0,<3.0
@@ -138,7 +138,7 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - libopenblas =0.3.34  # [osx]
+        - libopenblas >=0.3.34,<1  # [osx]
       run:
         - python {{ python }}
         - numpy >=2.0,<3.0
@@ -153,12 +153,12 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - libopenblas =0.3.34  # [osx]
+        - libopenblas >=0.3.34,<1  # [osx]
     test:
       requires:
         - numpy >=2.0,<3.0
         - scipy
-        - pytorch-cpu >=2.7  # [not win]
+        - pytorch-cpu >=2.7  # [linux64]
         - pytorch >=2.7      # [win]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl >=2024.2.2,<2026  # [x86_64]
@@ -170,7 +170,7 @@ outputs:
         {% endif %}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
-        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"  # [linux64]
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]
