@@ -19,6 +19,7 @@
 #include <faiss/IndexSQFastScan.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_factory.h>
@@ -544,44 +545,42 @@ TEST(IndexSQFastScan, DistanceComputer) {
 }
 
 // ---------------------------------------------------------------------------
-// range_search
+// unsupported operations throw (match IndexPQFastScan)
 // ---------------------------------------------------------------------------
 
-TEST(IndexSQFastScan, RangeSearch) {
+TEST(IndexSQFastScan, UnsupportedOperationsThrow) {
     const int d = 64;
-    const int nb = 1000;
-    const int nq = 10;
+    const int nb = 500;
+    const int nq = 4;
+    const int k = 10;
     auto xb = make_random_vectors(nb, d, 42);
     auto xq = make_random_vectors(nq, d, 43);
     auto xt = make_random_vectors(1000, d, 44);
 
-    for (auto qtype : kNative4bit) {
-        SCOPED_TRACE(qtype);
+    faiss::IndexSQFastScan index(d, faiss::ScalarQuantizer::QT_4bit);
+    index.train(xt.size() / d, xt.data());
+    index.add(nb, xb.data());
 
-        faiss::IndexScalarQuantizer sq(d, qtype);
-        sq.train(xt.size() / d, xt.data());
-        sq.add(nb, xb.data());
+    std::vector<float> D(nq * k);
+    std::vector<faiss::idx_t> I(nq * k);
 
-        faiss::IndexSQFastScan fs(d, qtype);
-        fs.train(xt.size() / d, xt.data());
-        fs.add(nb, xb.data());
+    // search with an IDSelector is not supported: the packed layout would have
+    // to be decoded per query. Fail loudly rather than silently do that.
+    faiss::IDSelectorRange sel(0, nb / 2);
+    faiss::SearchParameters params;
+    params.sel = &sel;
+    EXPECT_THROW(
+            index.search(nq, xq.data(), k, D.data(), I.data(), &params),
+            faiss::FaissException);
 
-        // Pick a reasonable radius
-        std::vector<float> D(nb);
-        std::vector<faiss::idx_t> I(nb);
-        sq.search(1, xq.data(), nb, D.data(), I.data());
-        float radius = D[nb / 2];
+    // range_search is not implemented (inherited base throws).
+    faiss::RangeSearchResult rr(nq);
+    EXPECT_THROW(
+            index.range_search(nq, xq.data(), 1.0f, &rr),
+            faiss::FaissException);
 
-        faiss::RangeSearchResult rr_sq(nq), rr_fs(nq);
-        sq.range_search(nq, xq.data(), radius, &rr_sq);
-        fs.range_search(nq, xq.data(), radius, &rr_fs);
-
-        size_t total_sq = rr_sq.lims[nq];
-        size_t total_fs = rr_fs.lims[nq];
-        EXPECT_GT(total_sq, 0);
-        EXPECT_GT(total_fs, 0);
-        EXPECT_NEAR(total_sq, total_fs, 2);
-    }
+    // plain kNN search (no params) still works.
+    EXPECT_NO_THROW(index.search(nq, xq.data(), k, D.data(), I.data()));
 }
 
 // ---------------------------------------------------------------------------

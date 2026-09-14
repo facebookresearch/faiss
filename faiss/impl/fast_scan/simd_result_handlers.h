@@ -410,6 +410,12 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
             if (!normalizers) {
                 dis[q] = idis[q];
             } else {
+                // normalizers[2*q] is the LUT quantization scale a; the
+                // stored value is a (not 1/a) so it stays exact across
+                // (de)serialization. The a==0 guard avoids inf/nan when a
+                // query yields a degenerate (zero-range) LUT, which can
+                // happen for scalar quantizers but not for PQ. The extra
+                // reciprocal is per-query, not per-database-vector.
                 float a = normalizers[2 * q];
                 float one_a = a != 0 ? 1 / a : 0;
                 float b = normalizers[2 * q + 1];

@@ -990,15 +990,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivfsqfs->bbs);
         WRITE1(ivfsqfs->M2);
         WRITE1(ivfsqfs->implem);
-        WRITE1(ivfsqfs->rerank_factor);
         write_ScalarQuantizer(&ivfsqfs->sq, f);
         write_InvertedLists(ivfsqfs->invlists, f);
-        // Write orig_codes_invlists if present
-        bool has_orig = (ivfsqfs->orig_codes_invlists != nullptr);
-        WRITE1(has_orig);
-        if (has_orig) {
-            write_InvertedLists(ivfsqfs->orig_codes_invlists, f);
-        }
     } else if (
             const IndexIVFPQFastScan* ivpq_2 =
                     dynamic_cast<const IndexIVFPQFastScan*>(idx)) {

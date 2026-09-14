@@ -19,7 +19,7 @@ Tests cover:
   - I/O round-trip
   - Factory strings
   - get_distance_computer
-  - range_search
+  - unsupported operations (selector search, range_search) throw
 """
 
 from __future__ import absolute_import, division, print_function
@@ -388,32 +388,37 @@ class TestSQFastScanDistanceComputer(unittest.TestCase):
                 self.assertIsNotNone(dc)
 
 
-class TestSQFastScanRangeSearch(unittest.TestCase):
-    """range_search produces results consistent with kNN search."""
+class TestSQFastScanUnsupported(unittest.TestCase):
+    """Selector search and range_search are not supported (match
+    IndexPQFastScan): they would require decoding the whole packed index, so
+    they fail loudly rather than doing so silently."""
 
-    def test_range_search(self):
+    def test_search_with_selector_throws(self):
         d = 64
-        ds = SyntheticDataset(d=d, nt=1000, nb=1000, nq=10, seed=42)
-        for name, qtype in NATIVE_4BIT:
-            with self.subTest(qtype=name):
-                sq = faiss.IndexScalarQuantizer(d, qtype)
-                sq.train(ds.get_train())
-                sq.add(ds.get_database())
+        ds = SyntheticDataset(d=d, nt=1000, nb=500, nq=4, seed=42)
+        index = faiss.IndexSQFastScan(d, faiss.ScalarQuantizer.QT_4bit)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
 
-                fs = faiss.IndexSQFastScan(d, qtype)
-                fs.train(ds.get_train())
-                fs.add(ds.get_database())
+        sel = faiss.IDSelectorRange(0, 250)
+        params = faiss.SearchParameters()
+        params.sel = sel
+        with self.assertRaises(RuntimeError):
+            index.search(ds.get_queries(), 10, params=params)
 
-                D, _ = sq.search(ds.get_queries()[:1], 1000)
-                radius = float(D[0, 500])
+        # plain kNN search (no params) still works.
+        D, I = index.search(ds.get_queries(), 10)
+        self.assertEqual(D.shape, (4, 10))
 
-                lims_sq, D_sq, I_sq = sq.range_search(
-                    ds.get_queries(), radius)
-                lims_fs, D_fs, I_fs = fs.range_search(
-                    ds.get_queries(), radius)
+    def test_range_search_throws(self):
+        d = 64
+        ds = SyntheticDataset(d=d, nt=1000, nb=500, nq=4, seed=42)
+        index = faiss.IndexSQFastScan(d, faiss.ScalarQuantizer.QT_4bit)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
 
-                np.testing.assert_array_equal(lims_sq, lims_fs,
-                    err_msg=f"{name}: lims differ")
+        with self.assertRaises(RuntimeError):
+            index.range_search(ds.get_queries(), 1.0)
 
 
 class TestSQFastScanIO(unittest.TestCase):

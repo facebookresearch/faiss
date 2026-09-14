@@ -4,7 +4,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Tests for IndexIVFSQFastScan."""
+"""Tests for IndexIVFSQFastScan (native 4-bit only)."""
 
 import numpy as np
 import unittest
@@ -25,13 +25,16 @@ class TestIndexIVFSQFastScanBasic(unittest.TestCase):
         self.assertEqual(idx.d, d)
         self.assertEqual(idx.nlist, nlist)
 
-    def test_construct_rerank_8bit(self):
+    def test_construct_unsupported_throws(self):
+        # Only native 4-bit types are supported; higher-precision and
+        # fallback types must throw (use IndexRefine / IndexIVFScalarQuantizer).
         d, nlist = 32, 8
         quantizer = faiss.IndexFlatL2(d)
-        idx = faiss.IndexIVFSQFastScan(
-            quantizer, d, nlist, faiss.ScalarQuantizer.QT_8bit
-        )
-        self.assertEqual(idx.d, d)
+        for qtype in (faiss.ScalarQuantizer.QT_8bit,
+                      faiss.ScalarQuantizer.QT_6bit,
+                      faiss.ScalarQuantizer.QT_fp16):
+            with self.assertRaises(RuntimeError):
+                faiss.IndexIVFSQFastScan(quantizer, d, nlist, qtype)
 
     def test_train_add_search_4bit(self):
         ds = SyntheticDataset(d=32, nt=1000, nb=1000, nq=10, seed=42)
@@ -49,36 +52,6 @@ class TestIndexIVFSQFastScanBasic(unittest.TestCase):
         D, I = idx.search(ds.get_queries(), 10)
         self.assertEqual(D.shape, (10, 10))
         self.assertEqual(I.shape, (10, 10))
-        self.assertTrue(np.all(I >= 0))
-
-    def test_train_add_search_8bit(self):
-        ds = SyntheticDataset(d=32, nt=1000, nb=1000, nq=10, seed=42)
-
-        quantizer = faiss.IndexFlatL2(ds.d)
-        idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_8bit
-        )
-        idx.train(ds.get_train())
-        idx.add(ds.get_database())
-        self.assertEqual(idx.ntotal, ds.nb)
-
-        idx.nprobe = 8
-        D, I = idx.search(ds.get_queries(), 10)
-        self.assertTrue(np.all(I >= 0))
-
-    def test_train_add_search_fp16_fallback(self):
-        ds = SyntheticDataset(d=32, nt=1000, nb=1000, nq=10, seed=42)
-
-        quantizer = faiss.IndexFlatL2(ds.d)
-        idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_fp16
-        )
-        idx.train(ds.get_train())
-        idx.add(ds.get_database())
-        self.assertEqual(idx.ntotal, ds.nb)
-
-        idx.nprobe = 8
-        D, I = idx.search(ds.get_queries(), 10)
         self.assertTrue(np.all(I >= 0))
 
 
@@ -134,58 +107,25 @@ class TestIndexIVFSQFastScanRecall(unittest.TestCase):
         )
         self.assertGreater(recall_test, 0.5)
 
-    def test_recall_8bit(self):
-        recall_ref, recall_test = self._compare_recall(
-            faiss.ScalarQuantizer.QT_8bit
-        )
-        self.assertGreater(recall_test, 0.7)
-
-    def test_recall_6bit(self):
-        recall_ref, recall_test = self._compare_recall(
-            faiss.ScalarQuantizer.QT_6bit
-        )
-        self.assertGreater(recall_test, 0.6)
-
-    def test_recall_fp16(self):
-        recall_ref, recall_test = self._compare_recall(
-            faiss.ScalarQuantizer.QT_fp16
-        )
-        self.assertGreater(recall_test, 0.9)
-
 
 class TestIndexIVFSQFastScanFactory(unittest.TestCase):
     """Factory string tests."""
-
-    def test_factory_sq8fs(self):
-        d = 32
-        idx = faiss.index_factory(d, "IVF16,SQ8fs")
-        self.assertIsInstance(idx, faiss.IndexIVFSQFastScan)
 
     def test_factory_sq4fs(self):
         d = 32
         idx = faiss.index_factory(d, "IVF16,SQ4fs")
         self.assertIsInstance(idx, faiss.IndexIVFSQFastScan)
 
-    def test_factory_sqfp16fs(self):
-        d = 32
-        idx = faiss.index_factory(d, "IVF16,SQfp16fs")
-        self.assertIsInstance(idx, faiss.IndexIVFSQFastScan)
-
-    def test_factory_sq6fs(self):
-        d = 32
-        idx = faiss.index_factory(d, "IVF16,SQ6fs")
-        self.assertIsInstance(idx, faiss.IndexIVFSQFastScan)
-
     def test_factory_with_bbs(self):
         d = 32
-        idx = faiss.index_factory(d, "IVF16,SQ8fs_64")
+        idx = faiss.index_factory(d, "IVF16,SQ4fs_64")
         self.assertIsInstance(idx, faiss.IndexIVFSQFastScan)
         self.assertEqual(idx.bbs, 64)
 
     def test_factory_train_search(self):
         ds = SyntheticDataset(d=32, nt=1000, nb=1000, nq=10, seed=42)
 
-        idx = faiss.index_factory(ds.d, "IVF16,SQ8fs")
+        idx = faiss.index_factory(ds.d, "IVF16,SQ4fs")
         idx.train(ds.get_train())
         idx.add(ds.get_database())
         idx.nprobe = 16
@@ -202,20 +142,6 @@ class TestIndexIVFSQFastScanIP(unittest.TestCase):
         quantizer = faiss.IndexFlatIP(ds.d)
         idx = faiss.IndexIVFSQFastScan(
             quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_4bit,
-            faiss.METRIC_INNER_PRODUCT
-        )
-        idx.train(ds.get_train())
-        idx.add(ds.get_database())
-        idx.nprobe = 8
-        D, I = idx.search(ds.get_queries(), 10)
-        self.assertTrue(np.all(I >= 0))
-
-    def test_inner_product_8bit(self):
-        ds = SyntheticDataset(d=32, nt=1000, nb=1000, nq=10, seed=42)
-
-        quantizer = faiss.IndexFlatIP(ds.d)
-        idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_8bit,
             faiss.METRIC_INNER_PRODUCT
         )
         idx.train(ds.get_train())
@@ -247,25 +173,6 @@ class TestIndexIVFSQFastScanIO(unittest.TestCase):
         np.testing.assert_array_equal(I1, I2)
         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
-    def test_io_roundtrip_8bit(self):
-        ds = SyntheticDataset(d=32, nt=500, nb=500, nq=5, seed=42)
-
-        quantizer = faiss.IndexFlatL2(ds.d)
-        idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_8bit
-        )
-        idx.train(ds.get_train())
-        idx.add(ds.get_database())
-        idx.nprobe = 8
-
-        D1, I1 = idx.search(ds.get_queries(), 5)
-
-        idx2 = faiss.deserialize_index(faiss.serialize_index(idx))
-        idx2.nprobe = 8
-        D2, I2 = idx2.search(ds.get_queries(), 5)
-        np.testing.assert_array_equal(I1, I2)
-        np.testing.assert_allclose(D1, D2, rtol=1e-5)
-
 
 class TestIndexIVFSQFastScanReset(unittest.TestCase):
     """Reset and re-add tests."""
@@ -275,7 +182,7 @@ class TestIndexIVFSQFastScanReset(unittest.TestCase):
 
         quantizer = faiss.IndexFlatL2(ds.d)
         idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_8bit
+            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_4bit
         )
         idx.train(ds.get_train())
         idx.add(ds.get_database())
@@ -307,22 +214,6 @@ class TestIndexIVFSQFastScanReconstruct(unittest.TestCase):
         err = np.linalg.norm(recon - ds.get_database()[0])
         self.assertLess(err, 5.0)
 
-    def test_reconstruct_8bit(self):
-        ds = SyntheticDataset(d=32, nt=200, nb=200, nq=0, seed=42)
-
-        quantizer = faiss.IndexFlatL2(ds.d)
-        idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_8bit
-        )
-        idx.train(ds.get_train())
-        idx.add(ds.get_database())
-        idx.make_direct_map()
-
-        recon = idx.reconstruct(0)
-        self.assertEqual(recon.shape, (ds.d,))
-        err = np.linalg.norm(recon - ds.get_database()[0])
-        self.assertLess(err, 1.0)
-
 
 class TestIndexIVFSQFastScanEdgeCases(unittest.TestCase):
     """Edge cases and special scenarios."""
@@ -345,7 +236,7 @@ class TestIndexIVFSQFastScanEdgeCases(unittest.TestCase):
 
         quantizer = faiss.IndexFlatL2(ds.d)
         idx = faiss.IndexIVFSQFastScan(
-            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_8bit
+            quantizer, ds.d, 8, faiss.ScalarQuantizer.QT_4bit
         )
         idx.train(ds.get_train())
         idx.add(ds.get_database())

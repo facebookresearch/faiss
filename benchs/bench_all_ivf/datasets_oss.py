@@ -15,7 +15,8 @@ from faiss.contrib import datasets as faiss_datasets
 
 print("path:", faiss_datasets.__file__)
 
-faiss_datasets.dataset_basedir = "/checkpoint/matthijs/simsearch/"
+#faiss_datasets.dataset_basedir = "/checkpoint/matthijs/simsearch/"
+faiss_datasets.dataset_basedir = "./"
 
 
 def sanitize(x):

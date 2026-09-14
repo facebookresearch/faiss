@@ -308,6 +308,7 @@ set(FAISS_HEADERS
   impl/ProductAdditiveQuantizer.h
   impl/fast_scan/LookupTableScaler.h
   impl/fast_scan/FastScanDistancePostProcessing.h
+  impl/fast_scan/sq_fastscan_lut.h
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h

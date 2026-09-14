@@ -181,9 +181,8 @@ const std::string sq_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
 // Native 4-bit types with "fs" suffix for IndexSQFastScan, optional _bbs
 const std::string sq_fs_pattern = "(SQ4)fs(_[0-9]+)?";
-// All SQ types with "fs" suffix for IndexIVFSQFastScan, optional _bbs
-const std::string ivf_sq_fs_pattern =
-        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)fs(_[0-9]+)?";
+// Native 4-bit types with "fs" suffix for IndexIVFSQFastScan, optional _bbs
+const std::string ivf_sq_fs_pattern = "(SQ4)fs(_[0-9]+)?";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -399,13 +398,7 @@ IndexIVF* parse_IndexIVF(
     if (match(ivf_sq_fs_pattern)) {
         int bbs = mres_to_int(sm[2], 32, 1);
         return new IndexIVFSQFastScan(
-                get_q(),
-                d,
-                nlist,
-                sq_types[sm[1].str()],
-                mt,
-                bbs,
-                /*by_residual=*/true);
+                get_q(), d, nlist, sq_types[sm[1].str()], mt, bbs);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(

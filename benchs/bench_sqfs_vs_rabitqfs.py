@@ -40,8 +40,6 @@ parser.add_argument("--dataset", default="sift1m",
 parser.add_argument("--threads", type=int, default=1)
 parser.add_argument("--repeat", type=int, default=3,
                     help="timed repetitions, report fastest")
-parser.add_argument("--rerank-factor", type=float, default=1.0,
-                    help="overselection factor for SQfs reranking (6/8 bit)")
 parser.add_argument("--k", type=int, default=10,
                     help="number of nearest neighbors")
 args = parser.parse_args()
@@ -130,31 +128,6 @@ def index_memory(index):
         return None
 
 
-def set_rerank_factor(index, factor):
-    """Set rerank_factor on IndexIVFSQFastScan."""
-    # Try direct access first, then downcast
-    if hasattr(index, 'rerank_factor'):
-        index.rerank_factor = factor
-        return
-    try:
-        ivf = faiss.downcast_index(index)
-        if hasattr(ivf, 'rerank_factor'):
-            ivf.rerank_factor = factor
-            return
-    except Exception:
-        pass
-    # Try extracting the IVF sub-index from a pre-transform chain
-    try:
-        vec_transform = faiss.downcast_VectorTransform(index)
-        sub = faiss.downcast_index(vec_transform.index)
-        if hasattr(sub, 'rerank_factor'):
-            sub.rerank_factor = factor
-            return
-    except Exception:
-        pass
-    print("  WARNING: could not set rerank_factor on %s" % type(index))
-
-
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -169,7 +142,6 @@ print()
 print("Configuration:")
 print("  dataset=%s  d=%d  nb=%d  nq=%d  k=%d  threads=%d" % (
     args.dataset, d, nb, nq, k, args.threads))
-print("  rerank_factor=%.1f (for SQfs 6/8-bit IVF)" % args.rerank_factor)
 print()
 
 # ===========================================================================
@@ -256,104 +228,6 @@ for label, factory in ivf4_configs:
     del index
 
 # ===========================================================================
-# IVF COMPARISON — 6-bit
-# ===========================================================================
-
-print("=" * 100)
-print("IVF COMPARISON — %s — 6-bit (nlist=%d)" % (args.dataset.upper(), nlist))
-print("=" * 100)
-print("%-50s %7s %7s %7s %7s %7s" % (
-    "index", "nprobe", "ms/q", "R@1", "R@10", "MB"))
-print("-" * 105)
-
-ivf6_configs = [
-    ("IVF%d,SQ6fs (rerank=%.0f)" % (nlist, args.rerank_factor),
-     "IVF%d,SQ6fs" % nlist),
-    ("IVF%d,RaBitQfs6" % nlist, "IVF%d,RaBitQfs6" % nlist),
-]
-
-for label, factory in ivf6_configs:
-    try:
-        index = build_index(factory)
-    except Exception as e:
-        print("%-50s  SKIP (%s)" % (label, e))
-        continue
-
-    if "SQ6fs" in factory:
-        set_rerank_factor(index, args.rerank_factor)
-
-    mem = index_memory(index)
-    is_rabitq = "RaBitQ" in factory
-
-    for nprobe in nprobes:
-        if is_rabitq:
-            params = faiss.IVFRaBitQSearchParameters()
-            params.qb = 8
-            params.nprobe = nprobe
-            ms, I = timed_search(index, xq, k, params=params, repeat=args.repeat)
-        else:
-            index.nprobe = nprobe
-            ms, I = timed_search(index, xq, k, repeat=args.repeat)
-
-        r1 = recall_at_1(I, gt_k)
-        r10 = recall_at(I, gt_k, k)
-        mem_str = "%7.1f" % (mem / 1e6) if mem and nprobe == nprobes[0] else "       "
-        print("%-50s %7d %7.3f %7.4f %7.4f %s" % (
-            label, nprobe, ms, r1, r10, mem_str))
-
-    print()
-    del index
-
-# ===========================================================================
-# IVF COMPARISON — 8-bit
-# ===========================================================================
-
-print("=" * 100)
-print("IVF COMPARISON — %s — 8-bit (nlist=%d)" % (args.dataset.upper(), nlist))
-print("=" * 100)
-print("%-50s %7s %7s %7s %7s %7s" % (
-    "index", "nprobe", "ms/q", "R@1", "R@10", "MB"))
-print("-" * 105)
-
-ivf8_configs = [
-    ("IVF%d,SQ8fs (rerank=%.0f)" % (nlist, args.rerank_factor),
-     "IVF%d,SQ8fs" % nlist),
-    ("IVF%d,RaBitQfs8" % nlist, "IVF%d,RaBitQfs8" % nlist),
-]
-
-for label, factory in ivf8_configs:
-    try:
-        index = build_index(factory)
-    except Exception as e:
-        print("%-50s  SKIP (%s)" % (label, e))
-        continue
-
-    if "SQ8fs" in factory:
-        set_rerank_factor(index, args.rerank_factor)
-
-    mem = index_memory(index)
-    is_rabitq = "RaBitQ" in factory
-
-    for nprobe in nprobes:
-        if is_rabitq:
-            params = faiss.IVFRaBitQSearchParameters()
-            params.qb = 8
-            params.nprobe = nprobe
-            ms, I = timed_search(index, xq, k, params=params, repeat=args.repeat)
-        else:
-            index.nprobe = nprobe
-            ms, I = timed_search(index, xq, k, repeat=args.repeat)
-
-        r1 = recall_at_1(I, gt_k)
-        r10 = recall_at(I, gt_k, k)
-        mem_str = "%7.1f" % (mem / 1e6) if mem and nprobe == nprobes[0] else "       "
-        print("%-50s %7d %7.3f %7.4f %7.4f %s" % (
-            label, nprobe, ms, r1, r10, mem_str))
-
-    print()
-    del index
-
-# ===========================================================================
 # Summary
 # ===========================================================================
 
@@ -362,8 +236,8 @@ print("Done.")
 print()
 print("Notes:")
 print("  - SQ4fs: native 4-bit scalar quantizer on FastScan SIMD path")
-print("  - SQ6fs/SQ8fs: 4-bit fast-scan pre-filter + rerank against original codes")
+print("    (IndexSQFastScan / IndexIVFSQFastScan support 4-bit only; for higher")
+print("    precision wrap a 4-bit index with IndexRefine)")
 print("  - RaBitQfs{N}: RaBitQ with N-bit codes on FastScan SIMD path")
 print("  - RaBitQ uses qb=8 (query quantization bits) for all IVF runs")
-print("  - rerank_factor=%.1f for SQ6fs/SQ8fs" % args.rerank_factor)
 print("  - Memory reported is approximate (code bytes only, excludes metadata)")

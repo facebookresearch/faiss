@@ -13,37 +13,23 @@
 
 namespace faiss {
 
-/** Fast scan version of IndexIVFScalarQuantizer.
+/** Fast scan version of IndexIVFScalarQuantizer, for native 4-bit types only.
  *
- * Uses the PQ4 FastScan SIMD infrastructure (vpshufb) for accelerated
- * scanning within inverted lists.  Supported quantizer types:
+ * Supports QT_4bit and QT_4bit_uniform: the 4-bit codes are packed directly
+ * into the PQ4 FastScan SIMD block layout (vpshufb) and scanned within the
+ * inverted lists.  This mirrors IndexIVFPQFastScan.
  *
- *   - QT_4bit, QT_4bit_uniform: native 4-bit codes are packed directly
- *     into the SIMD block layout.  No precision loss.
+ * For higher-precision scalar quantizers, wrap a 4-bit IndexIVFSQFastScan with
+ * IndexRefine, or use IndexIVFScalarQuantizer directly.
  *
- *   - QT_6bit, QT_8bit, QT_8bit_uniform, QT_8bit_direct,
- *     QT_8bit_direct_signed: re-quantised to 4-bit for the SIMD scan,
- *     then reranked with exact original-precision distances.
- *
- *   - All other types (QT_fp16, QT_bf16, TurboQuant): fall back to the
- *     ScalarQuantizer's own SIMD-optimised InvertedListScanner (same
- *     behavior as IndexIVFScalarQuantizer, no fast-scan acceleration).
- *
- * For reranked types, both the original full-precision codes and the
- * packed 4-bit codes are stored in the inverted lists.  The block
- * inverted lists hold packed 4-bit codes; original codes are stored
- * in a parallel ArrayInvertedLists (orig_codes_invlists).
+ * M = d subquantizers with 16 levels and uint16 SIMD accumulators.  Each LUT
+ * entry is a uint8 in [0, 255], so the per-query accumulator d * 255 must fit
+ * in a uint16; d is therefore limited to <= 257 (the constructors throw
+ * otherwise).  by_residual is always false (the 2D LUT cannot handle per-probe
+ * residuals, same rationale as IndexIVFPQFastScan).
  */
 struct IndexIVFSQFastScan : IndexIVFFastScan {
     ScalarQuantizer sq;
-
-    /// Overselection ratio for reranking (default 2).
-    float rerank_factor = 2;
-
-    /// Parallel inverted lists storing original SQ codes (for rerank
-    /// types).  Owned by this index.  nullptr for native 4-bit and
-    /// fallback types.
-    InvertedLists* orig_codes_invlists = nullptr;
 
     IndexIVFSQFastScan(
             Index* quantizer,
@@ -51,17 +37,14 @@ struct IndexIVFSQFastScan : IndexIVFFastScan {
             size_t nlist,
             ScalarQuantizer::QuantizerType qtype,
             MetricType metric = METRIC_L2,
-            int bbs = 32,
-            bool by_residual = true);
+            int bbs = 32);
 
     IndexIVFSQFastScan();
 
-    /// Build from an existing IndexIVFScalarQuantizer.
+    /// Build from an existing IndexIVFScalarQuantizer (must be QT_4bit*).
     explicit IndexIVFSQFastScan(
             const IndexIVFScalarQuantizer& orig,
             int bbs = 32);
-
-    ~IndexIVFSQFastScan() override;
 
     size_t fast_scan_code_size() const override;
 
@@ -85,47 +68,6 @@ struct IndexIVFSQFastScan : IndexIVFFastScan {
             AlignedTable<float>& dis_tables,
             AlignedTable<float>& biases,
             const FastScanDistancePostProcessing& context) const override;
-
-    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
-
-    void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
-            const override;
-
-    InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs,
-            const IDSelector* sel,
-            const IVFSearchParameters*) const override;
-
-    void search(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const SearchParameters* params = nullptr) const override;
-
-    void search_preassigned(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            const idx_t* assign,
-            const float* centroid_dis,
-            float* distances,
-            idx_t* labels,
-            bool store_pairs,
-            const IVFSearchParameters* params = nullptr,
-            IndexIVFStats* stats = nullptr) const override;
-
-    void range_search(
-            idx_t n,
-            const float* x,
-            float radius,
-            RangeSearchResult* result,
-            const SearchParameters* params = nullptr) const override;
-
-    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
-
-    void reset() override;
 };
 
 } // namespace faiss

@@ -24,6 +24,7 @@
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/impl/fast_scan/sq_fastscan_lut.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
@@ -58,6 +59,12 @@ IndexSQFastScan::IndexSQFastScan(
             "IndexSQFastScan only supports QT_4bit and QT_4bit_uniform. "
             "For higher-precision types, use "
             "IndexRefine(IndexSQFastScan(...), IndexScalarQuantizer(...)).");
+    // M = d subquantizers accumulate into uint16 SIMD registers, each LUT
+    // entry is a uint8 in [0, 255], so d * 255 must fit in a uint16.
+    FAISS_THROW_IF_NOT_MSG(
+            d_in <= 257,
+            "IndexSQFastScan supports at most d = 257: the uint16 fast-scan "
+            "accumulators would overflow for larger dimensions.");
     init_fastscan(d_in, d_in, 4, metric, bbs_in);
 }
 
@@ -69,6 +76,11 @@ IndexSQFastScan::IndexSQFastScan(const IndexScalarQuantizer& orig, int bbs_in)
             is_native_4bit(sq.qtype),
             "IndexSQFastScan conversion constructor only supports "
             "QT_4bit and QT_4bit_uniform.");
+    // See the primary constructor: d * 255 must fit in a uint16 accumulator.
+    FAISS_THROW_IF_NOT_MSG(
+            orig.d <= 257,
+            "IndexSQFastScan supports at most d = 257: the uint16 fast-scan "
+            "accumulators would overflow for larger dimensions.");
     init_fastscan(orig.d, orig.d, 4, orig.metric_type, bbs_in);
     ntotal = orig.ntotal;
     is_trained = orig.is_trained;
@@ -80,7 +92,7 @@ IndexSQFastScan::IndexSQFastScan(const IndexScalarQuantizer& orig, int bbs_in)
 }
 
 // -----------------------------------------------------------------------
-// train / add / reset
+// train / add
 // -----------------------------------------------------------------------
 
 void IndexSQFastScan::train(idx_t n, const float* x) {
@@ -96,66 +108,10 @@ void IndexSQFastScan::add(idx_t n, const float* x) {
     IndexFastScan::add(n, x);
 }
 
-void IndexSQFastScan::reset() {
-    IndexFastScan::reset();
-}
-
-// -----------------------------------------------------------------------
-// search
-// -----------------------------------------------------------------------
-
-void IndexSQFastScan::search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT(is_trained);
-
-    const IDSelector* sel = params ? params->sel : nullptr;
-
-    if (!sel) {
-        IndexFastScan::search(n, x, k, distances, labels, nullptr);
-        return;
-    }
-
-    // IDSelector path: unpack codes and use SQ scanner
-    std::vector<uint8_t> flat_codes(ntotal * sq.code_size);
-    {
-        std::unique_ptr<CodePacker> packer(get_CodePacker());
-        for (idx_t i = 0; i < ntotal; i++) {
-            packer->unpack_1(
-                    codes.data(), i, flat_codes.data() + i * sq.code_size);
-        }
-    }
-
-#pragma omp parallel
-    {
-        std::unique_ptr<InvertedListScanner> scanner(
-                sq.select_InvertedListScanner(metric_type, nullptr, true, sel));
-        scanner->list_no = 0;
-
-#pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            float* D = distances + k * i;
-            idx_t* I = labels + k * i;
-            if (metric_type == METRIC_L2) {
-                maxheap_heapify(k, D, I);
-            } else {
-                minheap_heapify(k, D, I);
-            }
-            scanner->set_query(x + i * d);
-            scanner->scan_codes(ntotal, flat_codes.data(), nullptr, D, I, k);
-            if (metric_type == METRIC_L2) {
-                maxheap_reorder(k, D, I);
-            } else {
-                minheap_reorder(k, D, I);
-            }
-        }
-    }
-}
+// Note: no search() override. IndexFastScan::search is inherited; it throws
+// on any SearchParameters (including an IDSelector), matching IndexPQFastScan.
+// Selector-based search would require decoding the whole packed index, so use
+// IndexScalarQuantizer for that instead.
 
 // -----------------------------------------------------------------------
 // compute_codes  -- called by IndexFastScan::add
@@ -175,62 +131,9 @@ void IndexSQFastScan::compute_float_LUT(
         idx_t n,
         const float* x,
         const FastScanDistancePostProcessing&) const {
-    const size_t dim = d;
-    const size_t ksub_val = 16;
-
-    bool is_uniform = (sq.qtype == ScalarQuantizer::QT_4bit_uniform);
-
-    std::vector<float> recon_table(dim * ksub_val);
-
-    if (is_uniform) {
-        float vmin = sq.trained[0];
-        float vdiff = sq.trained[1];
-        for (size_t c = 0; c < ksub_val; c++) {
-            float recon = vmin + ((c + 0.5f) / 15.0f) * vdiff;
-            for (size_t m = 0; m < dim; m++) {
-                recon_table[m * ksub_val + c] = recon;
-            }
-        }
-    } else {
-        // QT_4bit: per-dimension ranges
-        const float* vmin = sq.trained.data();
-        const float* vdiff = sq.trained.data() + dim;
-        for (size_t m = 0; m < dim; m++) {
-            for (size_t c = 0; c < ksub_val; c++) {
-                recon_table[m * ksub_val + c] =
-                        vmin[m] + ((c + 0.5f) / 15.0f) * vdiff[m];
-            }
-        }
-    }
-
-    if (metric_type == METRIC_L2) {
-        for (idx_t i = 0; i < n; i++) {
-            const float* xi = x + i * dim;
-            float* lut_i = lut + i * dim * ksub_val;
-            for (size_t m = 0; m < dim; m++) {
-                float qi = xi[m];
-                const float* recon_m = recon_table.data() + m * ksub_val;
-                float* lut_m = lut_i + m * ksub_val;
-                for (size_t c = 0; c < ksub_val; c++) {
-                    float diff = qi - recon_m[c];
-                    lut_m[c] = diff * diff;
-                }
-            }
-        }
-    } else {
-        for (idx_t i = 0; i < n; i++) {
-            const float* xi = x + i * dim;
-            float* lut_i = lut + i * dim * ksub_val;
-            for (size_t m = 0; m < dim; m++) {
-                float qi = xi[m];
-                const float* recon_m = recon_table.data() + m * ksub_val;
-                float* lut_m = lut_i + m * ksub_val;
-                for (size_t c = 0; c < ksub_val; c++) {
-                    lut_m[c] = qi * recon_m[c];
-                }
-            }
-        }
-    }
+    std::vector<float> recon_table;
+    sq_fastscan::build_recon_table(sq, d, recon_table);
+    sq_fastscan::fill_lut(recon_table.data(), x, lut, n, d, metric_type);
 }
 
 void IndexSQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
@@ -316,138 +219,16 @@ void IndexSQFastScan::permute_entries(const idx_t* perm) {
     pq4_pack_codes(flat_new.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
 }
 
-// -----------------------------------------------------------------------
-// get_distance_computer / get_FlatCodesDistanceComputer
-// -----------------------------------------------------------------------
+// Note: no get_distance_computer() override. Index::get_distance_computer is
+// inherited: for METRIC_L2 it returns a GenericDistanceComputer that
+// reconstructs vectors on demand via IndexFastScan::reconstruct (packed-layout
+// aware), so nothing is decoded eagerly; for other metrics it throws. This
+// matches IndexPQFastScan, which also does not implement a random-access
+// distance computer over the packed codes.
 
-namespace {
-
-/// Wrapper that owns an unpacked code buffer and delegates distance
-/// computation to an underlying SQDistanceComputer.
-struct OwningFlatCodesDistanceComputer : FlatCodesDistanceComputer {
-    std::vector<uint8_t> owned_codes;
-    std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc;
-
-    OwningFlatCodesDistanceComputer(
-            std::vector<uint8_t>&& codes_buf,
-            ScalarQuantizer::SQDistanceComputer* dc_in)
-            : owned_codes(std::move(codes_buf)), dc(dc_in) {
-        this->codes = owned_codes.data();
-        this->code_size = dc->code_size;
-        dc->codes = owned_codes.data();
-    }
-
-    void set_query(const float* x) override {
-        dc->set_query(x);
-    }
-
-    float distance_to_code(const uint8_t* code) override {
-        return dc->distance_to_code(code);
-    }
-
-    void distance_to_code_batch_4(
-            const uint8_t* c0,
-            const uint8_t* c1,
-            const uint8_t* c2,
-            const uint8_t* c3,
-            float& d0,
-            float& d1,
-            float& d2,
-            float& d3) override {
-        dc->distance_to_code_batch_4(c0, c1, c2, c3, d0, d1, d2, d3);
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return dc->symmetric_dis(i, j);
-    }
-};
-
-} // anonymous namespace
-
-FlatCodesDistanceComputer* IndexSQFastScan::get_FlatCodesDistanceComputer()
-        const {
-    std::unique_ptr<CodePacker> packer(get_CodePacker());
-    size_t cs = sq.code_size;
-    std::vector<uint8_t> flat(ntotal * cs);
-    for (idx_t i = 0; i < ntotal; i++) {
-        packer->unpack_1(codes.data(), i, flat.data() + i * cs);
-    }
-
-    ScalarQuantizer::SQDistanceComputer* dc =
-            sq.get_distance_computer(metric_type);
-    dc->code_size = cs;
-
-    return new OwningFlatCodesDistanceComputer(std::move(flat), dc);
-}
-
-DistanceComputer* IndexSQFastScan::get_distance_computer() const {
-    return get_FlatCodesDistanceComputer();
-}
-
-// -----------------------------------------------------------------------
-// range_search
-// -----------------------------------------------------------------------
-
-void IndexSQFastScan::range_search(
-        idx_t n,
-        const float* x,
-        float radius,
-        RangeSearchResult* result,
-        const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT(is_trained);
-    const IDSelector* sel = params ? params->sel : nullptr;
-
-    // Unpack codes for range search
-    std::vector<uint8_t> flat_codes(ntotal * sq.code_size);
-    {
-        std::unique_ptr<CodePacker> packer(get_CodePacker());
-        for (idx_t i = 0; i < ntotal; i++) {
-            packer->unpack_1(
-                    codes.data(), i, flat_codes.data() + i * sq.code_size);
-        }
-    }
-
-    std::vector<RangeSearchPartialResult*> partial_results(
-            omp_get_max_threads());
-
-    size_t cs = sq.code_size;
-
-#pragma omp parallel
-    {
-        int rank = omp_get_thread_num();
-        RangeSearchPartialResult* pres = new RangeSearchPartialResult(result);
-        partial_results[rank] = pres;
-
-        std::vector<float> decoded(d);
-
-#pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            const float* qi = x + i * d;
-            RangeQueryResult& qres = pres->new_result(i);
-
-            for (idx_t j = 0; j < ntotal; j++) {
-                if (sel && !sel->is_member(j)) {
-                    continue;
-                }
-                sq.decode(flat_codes.data() + j * cs, decoded.data(), 1);
-                float dis;
-                if (metric_type == METRIC_INNER_PRODUCT) {
-                    dis = fvec_inner_product(qi, decoded.data(), d);
-                    if (dis > radius) {
-                        qres.add(dis, j);
-                    }
-                } else {
-                    dis = fvec_L2sqr(qi, decoded.data(), d);
-                    if (dis < radius) {
-                        qres.add(dis, j);
-                    }
-                }
-            }
-        }
-    }
-
-    RangeSearchPartialResult::merge(partial_results);
-}
+// Note: no range_search() override; Index::range_search (throws) is inherited,
+// as in IndexPQFastScan. Range search would require decoding the whole packed
+// index; use IndexScalarQuantizer if range search is needed.
 
 // -----------------------------------------------------------------------
 // remove_ids
@@ -481,24 +262,7 @@ void IndexSQFastScan::merge_from(Index& otherIndex, idx_t add_id) {
     IndexFastScan::merge_from(otherIndex, add_id);
 }
 
-// -----------------------------------------------------------------------
-// search1
-// -----------------------------------------------------------------------
-
-void IndexSQFastScan::search1(
-        const float* x,
-        ResultHandler& handler,
-        SearchParameters* params) const {
-    const IDSelector* sel = params ? params->sel : nullptr;
-    std::unique_ptr<DistanceComputer> dc(get_distance_computer());
-    dc->set_query(x);
-    for (idx_t i = 0; i < ntotal; i++) {
-        if (sel && !sel->is_member(i)) {
-            continue;
-        }
-        float dis = (*dc)(i);
-        handler.add_result(dis, i);
-    }
-}
+// Note: no search1() override; Index::search1 (throws) is inherited, as in
+// IndexPQFastScan. It depended on the removed get_distance_computer().
 
 } // namespace faiss

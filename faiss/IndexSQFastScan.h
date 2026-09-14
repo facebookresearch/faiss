@@ -28,8 +28,10 @@ namespace faiss {
  * to get fast-scan with reranking.  For fallback types (QT_fp16,
  * QT_bf16), use IndexScalarQuantizer directly.
  *
- * M = d subquantizers with 16 levels and uint16 SIMD accumulators
- * (safe for d <= 257).
+ * M = d subquantizers with 16 levels and uint16 SIMD accumulators.
+ * Each LUT entry is a uint8 in [0, 255], so the per-query accumulator
+ * d * 255 must fit in a uint16; d is therefore limited to <= 257
+ * (the constructors throw otherwise).
  */
 struct IndexSQFastScan : IndexFastScan {
     ScalarQuantizer sq;
@@ -56,16 +58,6 @@ struct IndexSQFastScan : IndexFastScan {
 
     void add(idx_t n, const float* x) override;
 
-    void reset() override;
-
-    void search(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const SearchParameters* params = nullptr) const override;
-
     void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
 
     void check_compatible_for_merge(const Index& otherIndex) const override;
@@ -89,25 +81,9 @@ struct IndexSQFastScan : IndexFastScan {
 
     void permute_entries(const idx_t* perm);
 
-    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const;
-
-    DistanceComputer* get_distance_computer() const override;
-
-    void range_search(
-            idx_t n,
-            const float* x,
-            float radius,
-            RangeSearchResult* result,
-            const SearchParameters* params = nullptr) const override;
-
     size_t remove_ids(const IDSelector& sel) override;
 
     void merge_from(Index& otherIndex, idx_t add_id = 0) override;
-
-    void search1(
-            const float* x,
-            ResultHandler& handler,
-            SearchParameters* params = nullptr) const override;
 
     size_t sa_code_size() const override;
 

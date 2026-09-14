@@ -2816,35 +2816,15 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivfsqfs->bbs);
         READ1(ivfsqfs->M2);
         READ1(ivfsqfs->implem);
-        READ1(ivfsqfs->rerank_factor);
         read_ScalarQuantizer(&ivfsqfs->sq, f, *ivfsqfs);
         read_InvertedLists(*ivfsqfs, f, io_flags);
 
         ivfsqfs->M = ivfsqfs->d;
         ivfsqfs->nbits = 4;
         ivfsqfs->ksub = 16;
+        // fine_quantizer drives the base sa_decode/reconstruct path.
+        ivfsqfs->fine_quantizer = &ivfsqfs->sq;
         ivfsqfs->init_code_packer();
-
-        bool has_orig;
-        READ1(has_orig);
-        if (has_orig) {
-            ivfsqfs->orig_codes_invlists = read_InvertedLists(f, io_flags);
-            // Rebuild direct_map from orig_codes_invlists for reranking
-            ivfsqfs->direct_map.set_type(
-                    DirectMap::Hashtable, ivfsqfs->invlists, 0);
-            for (size_t list_no = 0; list_no < ivfsqfs->nlist; list_no++) {
-                size_t list_size =
-                        ivfsqfs->orig_codes_invlists->list_size(list_no);
-                if (list_size == 0) {
-                    continue;
-                }
-                InvertedLists::ScopedIds ids(
-                        ivfsqfs->orig_codes_invlists, list_no);
-                for (size_t j = 0; j < list_size; j++) {
-                    ivfsqfs->direct_map.add_single_id(ids[j], list_no, j);
-                }
-            }
-        }
 
         idx = std::move(ivfsqfs);
 
