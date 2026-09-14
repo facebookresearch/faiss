@@ -17,7 +17,10 @@ namespace faiss::fp16_linear_transform {
 #if defined(COMPILE_SIMD_ARM_NEON) || defined(COMPILE_SIMD_AVX512_SPR)
 FAISS_API bool supported();
 
-FAISS_API void apply(
+/** Return true after applying the transform. Return false without writing the
+ * output when an input value cannot be safely converted to finite FP16.
+ */
+FAISS_API bool apply(
         const uint16_t* matrix,
         size_t rows,
         size_t columns,

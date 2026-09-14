@@ -27,21 +27,30 @@ bool supported() {
 #endif
 }
 
-void apply(
+bool apply(
         const uint16_t* matrix,
         size_t rows,
         size_t columns,
         const float* input,
         float* output) {
     std::vector<uint16_t> input_fp16(columns);
+    const float32x4_t max_fp16 = vdupq_n_f32(65504.0f);
     size_t column = 0;
     for (; column + 8 <= columns; column += 8) {
+        const float32x4_t input0 = vld1q_f32(input + column);
+        const float32x4_t input1 = vld1q_f32(input + column + 4);
+        if (vminvq_u32(vcleq_f32(vabsq_f32(input0), max_fp16)) == 0 ||
+            vminvq_u32(vcleq_f32(vabsq_f32(input1), max_fp16)) == 0) {
+            return false;
+        }
         const float16x8_t converted = vcombine_f16(
-                vcvt_f16_f32(vld1q_f32(input + column)),
-                vcvt_f16_f32(vld1q_f32(input + column + 4)));
+                vcvt_f16_f32(input0), vcvt_f16_f32(input1));
         vst1q_u16(input_fp16.data() + column, vreinterpretq_u16_f16(converted));
     }
     for (; column < columns; ++column) {
+        if (!(input[column] >= -65504.0f && input[column] <= 65504.0f)) {
+            return false;
+        }
         const float32x4_t value = vdupq_n_f32(input[column]);
         input_fp16[column] =
                 vget_lane_u16(vreinterpret_u16_f16(vcvt_f16_f32(value)), 0);
@@ -71,6 +80,7 @@ void apply(
         }
         output[row] = sum;
     }
+    return true;
 }
 
 } // namespace faiss::fp16_linear_transform

@@ -306,19 +306,13 @@ void LinearTransform::apply_noalloc_fp16(idx_t n, const float* x, float* xt)
     for (idx_t i = 0; i < n; ++i) {
         const float* input = x + size_t(i) * d_in;
         float* output = xt + size_t(i) * d_out;
-        // Half conversion would turn finite magnitudes above 65504 into
-        // infinities. NaN/Inf inputs also retain the ordinary FP32 transform's
-        // behavior by taking the same fallback.
-        if (!fp16_vector_is_safe(input, d_in)) {
+        // The kernel folds input validation into FP32-to-FP16 conversion and
+        // returns before writing output when conversion would be unsafe.
+        if (!fp16_linear_transform::apply(
+                    A_fp16.data(), d_out, d_in, input, output)) {
             apply_noalloc(1, input, output);
             continue;
         }
-        fp16_linear_transform::apply(
-                A_fp16.data(),
-                d_out,
-                d_in,
-                input,
-                output);
         if (have_bias) {
             for (int j = 0; j < d_out; ++j) {
                 output[j] += b[j];

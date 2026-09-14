@@ -18,16 +18,24 @@ bool supported() {
     return true;
 }
 
-void apply(
+bool apply(
         const uint16_t* matrix,
         size_t rows,
         size_t columns,
         const float* input,
         float* output) {
     std::vector<uint16_t> input_fp16(columns);
+    const __m512 max_fp16 = _mm512_set1_ps(65504.0f);
+    const __m512i absolute_value_mask = _mm512_set1_epi32(0x7fffffff);
     size_t column = 0;
     for (; column + 16 <= columns; column += 16) {
         const __m512 values = _mm512_loadu_ps(input + column);
+        const __m512 absolute_values = _mm512_castsi512_ps(_mm512_and_si512(
+                _mm512_castps_si512(values), absolute_value_mask));
+        if (_mm512_cmp_ps_mask(absolute_values, max_fp16, _CMP_LE_OQ) !=
+            0xffff) {
+            return false;
+        }
         const __m256i converted =
                 _mm512_cvtps_ph(values, _MM_FROUND_TO_NEAREST_INT);
         _mm256_storeu_si256(
@@ -35,6 +43,9 @@ void apply(
                 converted);
     }
     for (; column < columns; ++column) {
+        if (!(input[column] >= -65504.0f && input[column] <= 65504.0f)) {
+            return false;
+        }
         input_fp16[column] = encode_fp16(input[column]);
     }
 
@@ -60,6 +71,7 @@ void apply(
         }
         output[row] = sum;
     }
+    return true;
 }
 
 } // namespace faiss::fp16_linear_transform
