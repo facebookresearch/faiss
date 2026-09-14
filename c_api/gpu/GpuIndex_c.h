@@ -22,6 +22,8 @@ FAISS_DECLARE_GETTER(GpuIndexConfig, int, device)
 
 FAISS_DECLARE_CLASS_INHERITED(GpuIndex, Index)
 
+int faiss_GpuIndex_getDevice(const FaissGpuIndex* index);
+
 #ifdef __cplusplus
 }
 #endif
