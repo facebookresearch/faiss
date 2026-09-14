@@ -303,7 +303,7 @@ struct IVFPQScannerT : QueryTables {
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        int ht = ivfpq.polysemous_ht;
+        int ht = this->polysemous_ht;
         size_t n_hamming_pass = 0;
 
         int code_size = static_cast<int>(pq.code_size);
@@ -453,8 +453,11 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             const IndexIVFPQ& ivfpq_in,
             bool store_pairs_in,
             int precompute_mode_in,
-            const IDSelector* sel_in)
-            : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>(ivfpq_in, nullptr),
+            const IDSelector* sel_in,
+            const IVFSearchParameters* params_in)
+            : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>(
+                      ivfpq_in,
+                      params_in),
               precompute_mode(precompute_mode_in),
               sel(sel_in) {
         this->store_pairs = store_pairs_in;
@@ -511,27 +514,29 @@ template <SIMDLevel SL>
 InvertedListScanner* make_IVFPQInvertedListScanner(
         const IndexIVFPQ& ivfpq,
         bool store_pairs,
-        const IDSelector* sel);
+        const IDSelector* sel,
+        const IVFSearchParameters* params);
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
 InvertedListScanner* make_IVFPQInvertedListScanner<THE_SIMD_LEVEL>(
         const IndexIVFPQ& ivfpq,
         bool store_pairs,
-        const IDSelector* sel) {
+        const IDSelector* sel,
+        const IVFSearchParameters* params) {
     auto make = [&]<class PQCodeDist, bool use_sel>() -> InvertedListScanner* {
         if (ivfpq.metric_type == METRIC_INNER_PRODUCT) {
             return new IVFPQScanner<
                     METRIC_INNER_PRODUCT,
                     CMin<float, idx_t>,
                     PQCodeDist,
-                    use_sel>(ivfpq, store_pairs, 2, sel);
+                    use_sel>(ivfpq, store_pairs, 2, sel, params);
         } else if (ivfpq.metric_type == METRIC_L2) {
             return new IVFPQScanner<
                     METRIC_L2,
                     CMax<float, idx_t>,
                     PQCodeDist,
-                    use_sel>(ivfpq, store_pairs, 2, sel);
+                    use_sel>(ivfpq, store_pairs, 2, sel, params);
         } else {
             FAISS_THROW_MSG("unsupported metric type");
         }
