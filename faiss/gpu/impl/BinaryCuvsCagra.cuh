@@ -124,7 +124,8 @@ class BinaryCuvsCagra {
             device_padded_dataset_;
 
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
             cuvs_index{nullptr};
 };
 

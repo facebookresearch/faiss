@@ -161,8 +161,9 @@ class CuvsCagra {
             device_padded_dataset_;
 
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
-            nullptr};
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
+            cuvs_index{nullptr};
 };
 } // namespace gpu
 } // namespace faiss
