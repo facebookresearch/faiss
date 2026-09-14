@@ -2,5 +2,15 @@ python:
   - 3.12
   - 3.13
   - 3.14
+# Pin libopenblas to a known-good build string on osx-arm64.
+# openmp_h5e6e99c_1 conflicts in the faiss-cpu test environment (conda solver
+# reports it as not installable due to cross-dependency conflicts). Because
+# libopenblas propagates its exact build string via run_exports, libfaiss
+# compiled against h5e6e99c_1 embeds that exact pin in its output metadata;
+# the faiss-cpu test-env solve then fails trying to install h5e6e99c_1.
+# Pinning the build variant here forces conda-build to use the known-good
+# openmp_h4f80526_1 variant, which the solver confirms as installable.
+libopenblas:  # [osx and arm64]
+  - "0.3.34 openmp_h4f80526_1"  # [osx and arm64]
 numpy:
   - 2.3.3
