@@ -139,6 +139,38 @@ class TestRemove(unittest.TestCase):
         else:
             raise AssertionError("should have raised an exception")
 
+    def test_reset_id_map(self):
+        # regression for #5578: IndexIDMap2.reset() must also clear rev_map,
+        # otherwise old external IDs stay reconstructable and
+        # check_consistency() fails after a subsequent add.
+        index = faiss.IndexIDMap2(faiss.IndexFlatL2(2))
+        index.add_with_ids(
+            np.array([[1.0, 2.0], [3.0, 4.0]], dtype="float32"),
+            np.array([10, 20], dtype="int64"),
+        )
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+
+        index.add_with_ids(
+            np.array([[9.0, 9.0]], dtype="float32"),
+            np.array([30], dtype="int64"),
+        )
+
+        # the reset IDs must no longer resolve
+        try:
+            index.reconstruct(10)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError("should have raised an exception")
+
+        # the newly added ID must reconstruct correctly
+        np.testing.assert_array_equal(index.reconstruct(30), [9.0, 9.0])
+
+        # rev_map and id_map must be back in sync
+        index.check_consistency()
+
     def test_factory_idmap2_suffix(self):
         xb = np.zeros((10, 5), dtype="float32")
         xb[:, 0] = np.arange(10) + 1000
