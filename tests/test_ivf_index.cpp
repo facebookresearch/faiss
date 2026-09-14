@@ -7,9 +7,11 @@
 
 #include <omp.h>
 #include <algorithm>
+#include <atomic>
 #include <cstddef>
 #include <limits>
 #include <map>
+#include <memory>
 #include <random>
 #include <set>
 
@@ -510,4 +512,217 @@ TEST(IVF, search_callbacks) {
             << "on_heap_changed should fire when vectors enter the heap";
     EXPECT_GE(distance_count, heap_count)
             << "not every distance computation leads to a heap change";
+}
+
+namespace {
+
+struct SetupCountingScanner : faiss::InvertedListScanner {
+    std::unique_ptr<faiss::InvertedListScanner> inner;
+    std::atomic<size_t>& setup_count;
+    std::atomic<size_t>& range_codes;
+
+    SetupCountingScanner(
+            faiss::InvertedListScanner* inner_in,
+            std::atomic<size_t>& setup_count_in,
+            std::atomic<size_t>& range_codes_in)
+            : inner(inner_in),
+              setup_count(setup_count_in),
+              range_codes(range_codes_in) {}
+
+    void set_query(const float* query) override {
+        inner->set_query(query);
+    }
+
+    void set_list(faiss::idx_t list, float coarse_distance) override {
+        setup_count.fetch_add(1, std::memory_order_relaxed);
+        inner->set_list(list, coarse_distance);
+    }
+
+    void scan_codes_range(
+            size_t n,
+            const uint8_t* codes,
+            const faiss::idx_t* ids,
+            float radius,
+            faiss::RangeQueryResult& result) const override {
+        range_codes.fetch_add(n, std::memory_order_relaxed);
+        inner->scan_codes_range(n, codes, ids, radius, result);
+    }
+
+    float distance_to_code(const uint8_t* code) const override {
+        return inner->distance_to_code(code);
+    }
+
+    size_t scan_codes(
+            size_t n,
+            const uint8_t* codes,
+            const faiss::idx_t* ids,
+            faiss::ResultHandler& handler) const override {
+        return inner->scan_codes(n, codes, ids, handler);
+    }
+};
+
+struct SetupCountingIVF : faiss::IndexIVFFlat {
+    using faiss::IndexIVFFlat::IndexIVFFlat;
+    mutable std::atomic<size_t> setup_count{0};
+    mutable std::atomic<size_t> range_codes{0};
+
+    faiss::InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs,
+            const faiss::IDSelector* selector,
+            const faiss::IVFSearchParameters* params) const override {
+        return new SetupCountingScanner(
+                faiss::IndexIVFFlat::get_InvertedListScanner(
+                        store_pairs, selector, params),
+                setup_count,
+                range_codes);
+    }
+};
+
+} // namespace
+
+TEST(IVF, sorted_range_bounds_range_scan) {
+    omp_set_num_threads(2);
+    faiss::IndexFlatL2 quantizer(1);
+    const float centroids[] = {0, 10};
+    quantizer.add(2, centroids);
+    SetupCountingIVF index(&quantizer, 1, 2);
+    index.is_trained = true;
+    const float database[] = {0, 1, 10, 11};
+    index.add(4, database);
+    const float query = 0;
+    faiss::IDSelectorRange selector(0, 2, true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = 2;
+    params.sel = &selector;
+    for (int mode : {0, 1, 2}) {
+        index.parallel_mode = mode;
+        for (const auto& bounds : std::vector<std::pair<int, int>>{
+                     {-1, 5},
+                     {0, 2},
+                     {2, 4},
+                     {1, 3},
+                     {1, 2},
+                     {2, 2},
+                     {0, 0},
+                     {4, 5}}) {
+            selector.imin = bounds.first;
+            selector.imax = bounds.second;
+            index.setup_count = 0;
+            index.range_codes = 0;
+            faiss::RangeSearchResult results(1);
+            index.range_search(1, &query, 1000, &results, &params);
+            std::set<faiss::idx_t> expected;
+            std::set<faiss::idx_t> lists;
+            for (faiss::idx_t id = 0; id < 4; id++) {
+                if (selector.is_member(id)) {
+                    expected.insert(id);
+                    lists.insert(id / 2);
+                }
+            }
+            EXPECT_EQ(index.setup_count.load(), lists.size());
+            EXPECT_EQ(index.range_codes.load(), expected.size());
+            ASSERT_EQ(results.lims[1], expected.size());
+            std::set<faiss::idx_t> labels;
+            for (size_t i = 0; i < results.lims[1]; i++) {
+                const auto id = results.labels[i];
+                ASSERT_GE(id, 0);
+                ASSERT_LT(id, 4);
+                labels.insert(id);
+                EXPECT_FLOAT_EQ(
+                        results.distances[i], database[id] * database[id]);
+            }
+            EXPECT_EQ(labels, expected);
+        }
+    }
+    index.parallel_mode = 0;
+    faiss::IDSelectorRange empty(4, 5, true);
+    params.sel = &empty;
+    index.setup_count = 0;
+    index.range_codes = 0;
+    faiss::indexIVF_stats.reset();
+    faiss::RangeSearchResult no_results(1);
+    index.range_search(1, &query, 1000, &no_results, &params);
+    EXPECT_EQ(no_results.lims[1], 0);
+    EXPECT_EQ(index.setup_count.load(), 0);
+    EXPECT_EQ(index.range_codes.load(), 0);
+    EXPECT_EQ(faiss::indexIVF_stats.nlist, 2);
+
+    // A subclass can expose context membership unrelated to its range fields.
+    // Preserve that dispatch instead of bypassing it with sorted bounds.
+    struct EvenContext : faiss::IDSelectorWithContext {
+        bool is_member(faiss::idx_t id) const override {
+            return id % 2 == 0;
+        }
+        bool is_member_with_context(
+                faiss::idx_t id,
+                const faiss::IDScanContext&) const override {
+            return id % 2 == 0;
+        }
+    };
+    struct CustomRange : faiss::IDSelectorRange, EvenContext {
+        CustomRange() : faiss::IDSelectorRange(0, 2, true) {}
+    } custom;
+    params.sel = static_cast<faiss::IDSelectorRange*>(&custom);
+    index.setup_count = 0;
+    index.range_codes = 0;
+    faiss::RangeSearchResult custom_results(1);
+    index.range_search(1, &query, 1000, &custom_results, &params);
+    EXPECT_EQ(index.setup_count.load(), 2);
+    EXPECT_EQ(index.range_codes.load(), 4);
+    ASSERT_EQ(custom_results.lims[1], 2);
+    std::set<faiss::idx_t> labels(
+            custom_results.labels, custom_results.labels + 2);
+    EXPECT_EQ(labels, (std::set<faiss::idx_t>{0, 2}));
+}
+
+TEST(IVF, sorted_range_preserves_iterator_and_pair_paths) {
+    omp_set_num_threads(1);
+    faiss::IndexFlatL2 quantizer(1);
+    const float centroids[] = {0, 10};
+    quantizer.add(2, centroids);
+    const float database[] = {0, 1, 10, 11};
+    const float query = 0;
+    faiss::IDSelectorRange selector(1, 3, true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = 2;
+    params.sel = &selector;
+
+    faiss::IndexIVFFlat array_index(&quantizer, 1, 2);
+    array_index.is_trained = true;
+    array_index.add(4, database);
+    const faiss::idx_t keys[] = {0, 1};
+    const float coarse_distances[] = {0, 100};
+    faiss::RangeSearchResult pairs(1);
+    array_index.range_search_preassigned(
+            1, &query, 1000, keys, coarse_distances, &pairs, true, &params);
+    // With store_pairs, the native selector sees encoded pair labels rather
+    // than database IDs. Only list 0, offset 1 lies inside [1, 3).
+    ASSERT_EQ(pairs.lims[1], 1);
+    EXPECT_EQ(pairs.labels[0], 1);
+
+    faiss::IndexIVFFlat iterator_index(&quantizer, 1, 2);
+    TestInvertedLists inverted_lists(2, iterator_index.code_size);
+    iterator_index.replace_invlists(&inverted_lists);
+    iterator_index.is_trained = true;
+    iterator_index.ntotal = 4;
+    TestContext context;
+    for (size_t i = 0; i < 4; i++) {
+        context.save_code(
+                i / 2,
+                reinterpret_cast<const uint8_t*>(database + i),
+                sizeof(float));
+    }
+    params.inverted_list_context = &context;
+    // Sorted-range dispatch must preserve the generic iterator path.
+    faiss::RangeSearchResult results(1), reference(1);
+    iterator_index.range_search(1, &query, 1000, &results, &params);
+    selector.assume_sorted = false;
+    iterator_index.range_search(1, &query, 1000, &reference, &params);
+    ASSERT_EQ(results.lims[1], reference.lims[1]);
+    std::map<faiss::idx_t, float> actual, expected;
+    for (size_t i = 0; i < results.lims[1]; i++) {
+        actual[results.labels[i]] = results.distances[i];
+        expected[reference.labels[i]] = reference.distances[i];
+    }
+    EXPECT_EQ(actual, expected);
 }
