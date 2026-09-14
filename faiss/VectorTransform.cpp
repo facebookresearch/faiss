@@ -18,7 +18,10 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/fp16.h>
+#include <faiss/utils/fp16_linear_transform.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 
 using namespace faiss;
@@ -172,6 +175,25 @@ void VectorTransform::check_identical(const VectorTransform& other) const {
  * LinearTransform
  *********************************************/
 
+namespace {
+
+constexpr float kMaxFiniteFp16 = 65504.0f;
+
+bool fp16_value_is_safe(float value) {
+    return std::isfinite(value) && std::abs(value) <= kMaxFiniteFp16;
+}
+
+bool fp16_vector_is_safe(const float* values, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        if (!fp16_value_is_safe(values[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+} // namespace
+
 /// both d_in > d_out and d_out < d_in are supported
 LinearTransform::LinearTransform(int din, int dout, bool have_bias_in)
         : VectorTransform(din, dout),
@@ -237,6 +259,69 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
            &c_factor,
            xt,
            &nbiti);
+}
+
+bool LinearTransform::fp16_supported() const {
+#if defined(COMPILE_SIMD_AVX512_SPR)
+    return SIMDConfig::get_dispatched_level() == SIMDLevel::AVX512_SPR &&
+            fp16_linear_transform::supported();
+#elif defined(COMPILE_SIMD_ARM_NEON)
+    return fp16_linear_transform::supported();
+#else
+    return false;
+#endif
+}
+
+void LinearTransform::prepare_fp16() {
+    // A_fp16 is a derived cache. Any failed refresh must make it unusable
+    // instead of silently retaining values derived from an older matrix.
+    A_fp16.clear();
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(
+            fp16_supported(), "FP16 linear transforms are unavailable");
+    FAISS_THROW_IF_NOT_MSG(
+            A.size() == static_cast<size_t>(d_out) * d_in,
+            "Transformation matrix not initialized");
+    FAISS_THROW_IF_NOT_MSG(
+            fp16_vector_is_safe(A.data(), A.size()),
+            "FP16 transformation matrix contains a non-finite or out-of-range value");
+    A_fp16.resize(A.size());
+    for (size_t i = 0; i < A.size(); ++i) {
+        A_fp16[i] = encode_fp16(A[i]);
+    }
+}
+
+void LinearTransform::apply_noalloc_fp16(idx_t n, const float* x, float* xt)
+        const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(
+            !have_bias || b.size() == static_cast<size_t>(d_out),
+            "Bias not initialized");
+    FAISS_THROW_IF_NOT_MSG(
+            A_fp16.size() == static_cast<size_t>(d_out) * d_in,
+            "FP16 transformation cache is missing or stale");
+#if defined(COMPILE_SIMD_ARM_NEON) || defined(COMPILE_SIMD_AVX512_SPR)
+    FAISS_THROW_IF_NOT_MSG(
+            fp16_supported(), "FP16 linear transforms are unavailable");
+    for (idx_t i = 0; i < n; ++i) {
+        const float* input = x + size_t(i) * d_in;
+        float* output = xt + size_t(i) * d_out;
+        // The kernel folds input validation into FP32-to-FP16 conversion and
+        // returns before writing output when conversion would be unsafe.
+        if (!fp16_linear_transform::apply(
+                    A_fp16.data(), d_out, d_in, input, output)) {
+            apply_noalloc(1, input, output);
+            continue;
+        }
+        if (have_bias) {
+            for (int j = 0; j < d_out; ++j) {
+                output[j] += b[j];
+            }
+        }
+    }
+#else
+    FAISS_THROW_MSG("FP16 linear transforms are unavailable in this build");
+#endif
 }
 
 void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
