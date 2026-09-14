@@ -577,6 +577,16 @@ class HadamardRotation(VectorTransform):
     def __init__(self, d: int, seed: int = 12345) -> None: ...
     def init(self, seed: int) -> None: ...
 
+class BlockHadamardRotation(VectorTransform):
+    """Dimension-preserving randomized block Hadamard transform."""
+
+    seed: int
+    permutation: Int32Vector
+    signs: Float32Vector
+
+    def __init__(self, d: int, seed: int = 12345) -> None: ...
+    def init(self, seed: int) -> None: ...
+
 class PCAMatrix(LinearTransform):
     eigen_power: float
     epsilon: float

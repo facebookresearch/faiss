@@ -152,6 +152,41 @@ struct HadamardRotation : VectorTransform {
     HadamardRotation() {}
 };
 
+/** Dimension-preserving randomized block Hadamard transform.
+ *
+ * Applies one saved random permutation and sign flip, followed by normalized
+ * Hadamard transforms over the descending power-of-two decomposition of d.
+ * For example, d=960 uses blocks 512+256+128+64. Unlike HadamardRotation,
+ * this transform neither pads the input nor applies three Hadamard rounds.
+ */
+struct BlockHadamardRotation : VectorTransform {
+    uint32_t seed{12345};
+
+    /** Saved explicitly so serialized transforms do not depend on a
+     * platform's shuffle implementation.
+     *
+     * These vectors are authoritative serialized state. Direct mutation is
+     * unsupported: callers must preserve a permutation of [0, d_in) and signs
+     * in {-1, +1}. Serialized metadata is fully validated when it is read.
+     */
+    std::vector<int32_t> permutation;
+    std::vector<float> signs;
+
+    explicit BlockHadamardRotation(int d, uint32_t seed = 12345);
+
+    void init(uint32_t seed_in);
+
+    void train(idx_t n, const float* x) override;
+
+    void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+
+    void reverse_transform(idx_t n, const float* xt, float* x) const override;
+
+    void check_identical(const VectorTransform& other) const override;
+
+    BlockHadamardRotation() {}
+};
+
 /** Applies a principal component analysis on a set of vectors,
  *  with optionally whitening and random rotation. */
 struct PCAMatrix : LinearTransform {

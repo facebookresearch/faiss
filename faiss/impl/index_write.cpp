@@ -111,8 +111,16 @@ static void write_index_header(const Index* idx, IOWriter* f) {
 }
 
 void write_VectorTransform(const VectorTransform* vt, IOWriter* f) {
-    if (const HadamardRotation* hr =
-                dynamic_cast<const HadamardRotation*>(vt)) {
+    if (const BlockHadamardRotation* bhr =
+                dynamic_cast<const BlockHadamardRotation*>(vt)) {
+        uint32_t h = fourcc("BHRt");
+        WRITE1(h);
+        WRITE1(bhr->seed);
+        WRITEVECTOR(bhr->permutation);
+        WRITEVECTOR(bhr->signs);
+    } else if (
+            const HadamardRotation* hr =
+                    dynamic_cast<const HadamardRotation*>(vt)) {
         uint32_t h = fourcc("HRot");
         WRITE1(h);
         WRITE1(hr->seed);
