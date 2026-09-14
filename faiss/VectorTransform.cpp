@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 #include <memory>
 
 #include <faiss/IndexPQ.h>
@@ -561,6 +562,234 @@ void HadamardRotation::check_identical(const VectorTransform& other) const {
             "HadamardRotation output dimensions must match");
     FAISS_THROW_IF_NOT_MSG(
             seed == hr->seed, "HadamardRotation seeds must match");
+}
+
+/*********************************************
+ * BlockHadamardRotation
+ *********************************************/
+
+static size_t largest_power_of_two_not_above(size_t n) {
+    FAISS_THROW_IF_NOT_MSG(n > 0, "Hadamard block dimension must be positive");
+    size_t result = 1;
+    while (result <= n / 2) {
+        result *= 2;
+    }
+    return result;
+}
+
+struct BlockHadamardPlan {
+    static constexpr size_t max_blocks = std::numeric_limits<size_t>::digits;
+    size_t offsets[max_blocks];
+    size_t sizes[max_blocks];
+    float scales[max_blocks];
+    size_t count = 0;
+};
+
+static BlockHadamardPlan make_block_hadamard_plan(size_t d) {
+    BlockHadamardPlan plan;
+    size_t offset = 0;
+    size_t remaining = d;
+    while (remaining > 0) {
+        const size_t block_size = largest_power_of_two_not_above(remaining);
+        plan.offsets[plan.count] = offset;
+        plan.sizes[plan.count] = block_size;
+        plan.scales[plan.count] =
+                1.0f / std::sqrt(static_cast<float>(block_size));
+        ++plan.count;
+        offset += block_size;
+        remaining -= block_size;
+    }
+    return plan;
+}
+
+static void normalized_fwht_inplace(float* values, size_t n, float scale) {
+    if (n == 1) {
+        values[0] *= scale;
+        return;
+    }
+    for (size_t step = 1; step < n; step *= 2) {
+        const bool final_stage = step == n / 2;
+        for (size_t base = 0; base < n; base += 2 * step) {
+            for (size_t j = 0; j < step; ++j) {
+                const float first = values[base + j];
+                const float second = values[base + j + step];
+                if (final_stage) {
+                    values[base + j] = (first + second) * scale;
+                    values[base + j + step] = (first - second) * scale;
+                } else {
+                    values[base + j] = first + second;
+                    values[base + j + step] = first - second;
+                }
+            }
+        }
+    }
+}
+
+static void normalized_fwht_safe_inplace(
+        float* values,
+        size_t n,
+        float scale,
+        bool may_overflow) {
+    if (!may_overflow) {
+        normalized_fwht_inplace(values, n, scale);
+        return;
+    }
+
+    // Scale before any additions on the exceptional path. The usual path
+    // keeps the scale fused into the last butterfly stage.
+    for (size_t j = 0; j < n; ++j) {
+        values[j] *= scale;
+    }
+    fwht_inplace(values, n);
+}
+
+static void check_block_hadamard_metadata_shape(
+        int d_in,
+        int d_out,
+        const std::vector<int32_t>& permutation,
+        const std::vector<float>& signs) {
+    FAISS_THROW_IF_NOT_MSG(
+            d_in > 0 && d_in == d_out,
+            "BlockHadamardRotation requires matching positive dimensions");
+    const size_t d = static_cast<size_t>(d_in);
+    FAISS_THROW_IF_NOT_MSG(
+            permutation.size() == d,
+            "BlockHadamardRotation permutation size must match dimension");
+    FAISS_THROW_IF_NOT_MSG(
+            signs.size() == d,
+            "BlockHadamardRotation sign size must match dimension");
+}
+
+BlockHadamardRotation::BlockHadamardRotation(int d, uint32_t seed_in)
+        : VectorTransform(d, d), seed(seed_in) {
+    init(seed_in);
+}
+
+void BlockHadamardRotation::init(uint32_t seed_in) {
+    FAISS_THROW_IF_NOT_MSG(
+            d_in > 0 && d_in == d_out,
+            "BlockHadamardRotation requires matching positive dimensions");
+    seed = seed_in;
+    const size_t d = static_cast<size_t>(d_in);
+    std::vector<int32_t> new_permutation(d);
+    std::vector<float> new_signs(d);
+    for (size_t j = 0; j < d; ++j) {
+        new_permutation[j] = static_cast<int32_t>(j);
+    }
+
+    SplitMix64RandomGenerator rng(seed);
+    for (size_t j = 0; j + 1 < d; ++j) {
+        const size_t other =
+                j + static_cast<size_t>(rng.rand_int(static_cast<int>(d - j)));
+        std::swap(new_permutation[j], new_permutation[other]);
+    }
+    for (size_t j = 0; j < d; ++j) {
+        new_signs[j] = rng.rand_int(2) == 0 ? -1.0f : 1.0f;
+    }
+
+    permutation.swap(new_permutation);
+    signs.swap(new_signs);
+    is_trained = true;
+}
+
+void BlockHadamardRotation::train(idx_t, const float*) {
+    init(seed);
+}
+
+void BlockHadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt)
+        const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "negative vector count");
+    check_block_hadamard_metadata_shape(d_in, d_out, permutation, signs);
+    const size_t d = static_cast<size_t>(d_in);
+    const BlockHadamardPlan plan = make_block_hadamard_plan(d);
+
+    std::vector<float> aliased_input;
+    if (x == xt && n > 0) {
+        aliased_input.resize(d);
+    }
+    for (idx_t i = 0; i < n; ++i) {
+        const float* input = x + static_cast<size_t>(i) * d;
+        float* output = xt + static_cast<size_t>(i) * d;
+        if (x == xt) {
+            std::memcpy(aliased_input.data(), input, d * sizeof(float));
+            input = aliased_input.data();
+        }
+        for (size_t block = 0; block < plan.count; ++block) {
+            const size_t offset = plan.offsets[block];
+            const size_t block_size = plan.sizes[block];
+            const float scale = plan.scales[block];
+            const float unscaled_limit =
+                    std::numeric_limits<float>::max() /
+                    static_cast<float>(block_size);
+            bool may_overflow = false;
+            for (size_t j = offset; j < offset + block_size; ++j) {
+                const float value = signs[j] * input[permutation[j]];
+                output[j] = value;
+                may_overflow |= std::fabs(value) > unscaled_limit;
+            }
+            normalized_fwht_safe_inplace(
+                    output + offset,
+                    block_size,
+                    scale,
+                    may_overflow);
+        }
+    }
+}
+
+void BlockHadamardRotation::reverse_transform(
+        idx_t n,
+        const float* xt,
+        float* x) const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "negative vector count");
+    check_block_hadamard_metadata_shape(d_in, d_out, permutation, signs);
+    const size_t d = static_cast<size_t>(d_in);
+    const BlockHadamardPlan plan = make_block_hadamard_plan(d);
+    std::vector<float> scratch(d);
+
+    for (idx_t i = 0; i < n; ++i) {
+        const float* input = xt + static_cast<size_t>(i) * d;
+        float* output = x + static_cast<size_t>(i) * d;
+        for (size_t block = 0; block < plan.count; ++block) {
+            const size_t offset = plan.offsets[block];
+            const size_t block_size = plan.sizes[block];
+            const float scale = plan.scales[block];
+            const float unscaled_limit =
+                    std::numeric_limits<float>::max() /
+                    static_cast<float>(block_size);
+            bool may_overflow = false;
+            for (size_t j = offset; j < offset + block_size; ++j) {
+                const float value = input[j];
+                scratch[j] = value;
+                may_overflow |= std::fabs(value) > unscaled_limit;
+            }
+            normalized_fwht_safe_inplace(
+                    scratch.data() + offset,
+                    block_size,
+                    scale,
+                    may_overflow);
+        }
+        for (size_t j = 0; j < d; ++j) {
+            output[permutation[j]] = signs[j] * scratch[j];
+        }
+    }
+}
+
+void BlockHadamardRotation::check_identical(
+        const VectorTransform& other) const {
+    const auto* bhr = dynamic_cast<const BlockHadamardRotation*>(&other);
+    FAISS_THROW_IF_NOT_MSG(bhr, "failed to cast to BlockHadamardRotation");
+    FAISS_THROW_IF_NOT_MSG(
+            d_in == bhr->d_in && d_out == bhr->d_out,
+            "BlockHadamardRotation dimensions must match");
+    FAISS_THROW_IF_NOT_MSG(
+            seed == bhr->seed, "BlockHadamardRotation seeds must match");
+    FAISS_THROW_IF_NOT_MSG(
+            permutation == bhr->permutation,
+            "BlockHadamardRotation permutations must match");
+    FAISS_THROW_IF_NOT_MSG(
+            signs == bhr->signs, "BlockHadamardRotation signs must match");
 }
 
 /*********************************************

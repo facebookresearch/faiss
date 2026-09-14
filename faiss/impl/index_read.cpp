@@ -377,6 +377,12 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
             itqt->pca_then_itq = *pi;
         }
         vt = std::move(itqt);
+    } else if (h == fourcc("BHRt")) {
+        auto bhr = std::make_unique<BlockHadamardRotation>();
+        READ1(bhr->seed);
+        READVECTOR(bhr->permutation);
+        READVECTOR(bhr->signs);
+        vt = std::move(bhr);
     } else if (h == fourcc("HRot")) {
         auto hr = std::make_unique<HadamardRotation>();
         READ1(hr->seed);
@@ -399,7 +405,10 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
             vt->d_out >= 0,
             "invalid VectorTransform d_out=%d (must be >= 0)",
             vt->d_out);
-    {
+    // Most transforms may own or derive dense d_in-by-d_out storage. BHRt is
+    // represented by two O(d) vectors, which READVECTOR already bounds, and
+    // is validated against its actual dimensions below.
+    if (h != fourcc("BHRt")) {
         size_t dim_product = mul_no_overflow(
                 vt->d_in, vt->d_out, "VectorTransform d_in * d_out");
         FAISS_THROW_IF_NOT_MSG(
@@ -407,6 +416,48 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                         get_deserialization_vector_byte_limit() / sizeof(float),
                 "VectorTransform d_in * d_out would exceed "
                 "deserialization vector byte limit");
+    }
+    if (h == fourcc("BHRt")) {
+        auto* bhr = dynamic_cast<BlockHadamardRotation*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(
+                bhr, "dynamic_cast to BlockHadamardRotation failed");
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_in > 0 && vt->d_in == vt->d_out,
+                "invalid BlockHadamardRotation dimensions %d -> %d",
+                vt->d_in,
+                vt->d_out);
+        const size_t d = static_cast<size_t>(vt->d_in);
+        FAISS_THROW_IF_NOT_FMT(
+                bhr->permutation.size() == d,
+                "invalid BlockHadamardRotation permutation size %zu for dimension %zu",
+                bhr->permutation.size(),
+                d);
+        FAISS_THROW_IF_NOT_FMT(
+                bhr->signs.size() == d,
+                "invalid BlockHadamardRotation sign size %zu for dimension %zu",
+                bhr->signs.size(),
+                d);
+        FAISS_THROW_IF_NOT_MSG(
+                d <= get_deserialization_vector_byte_limit(),
+                "BlockHadamardRotation metadata exceeds deserialization byte limit");
+        std::vector<uint8_t> seen(d, 0);
+        for (size_t j = 0; j < d; ++j) {
+            const int32_t source = bhr->permutation[j];
+            FAISS_THROW_IF_NOT_FMT(
+                    source >= 0 && static_cast<size_t>(source) < d,
+                    "invalid BlockHadamardRotation permutation entry %d at %zu",
+                    source,
+                    j);
+            FAISS_THROW_IF_NOT_FMT(
+                    seen[static_cast<size_t>(source)] == 0,
+                    "duplicate BlockHadamardRotation permutation entry %d",
+                    source);
+            seen[static_cast<size_t>(source)] = 1;
+            FAISS_THROW_IF_NOT_FMT(
+                    bhr->signs[j] == -1.0f || bhr->signs[j] == 1.0f,
+                    "invalid BlockHadamardRotation sign at %zu",
+                    j);
+        }
     }
     if (h == fourcc("HRot")) {
         FAISS_THROW_IF_NOT_FMT(

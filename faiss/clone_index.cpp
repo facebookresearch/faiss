@@ -80,6 +80,7 @@ VectorTransform* Cloner::clone_VectorTransform(const VectorTransform* vt) {
     TRYCLONE(PCAMatrix, vt)
     TRYCLONE(ITQMatrix, vt)
     TRYCLONE(RandomRotationMatrix, vt)
+    TRYCLONE(BlockHadamardRotation, vt)
     TRYCLONE(HadamardRotation, vt)
     TRYCLONE(LinearTransform, vt) {
         FAISS_THROW_MSG("clone not supported for this type of VectorTransform");

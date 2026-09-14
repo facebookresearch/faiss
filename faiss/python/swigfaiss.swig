@@ -988,6 +988,7 @@ typedef int cudaDataType_t;
     DOWNCAST (OPQMatrix)
     DOWNCAST (PCAMatrix)
     DOWNCAST (ITQMatrix)
+    DOWNCAST (BlockHadamardRotation)
     DOWNCAST (HadamardRotation)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
