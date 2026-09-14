@@ -110,7 +110,7 @@ class BinaryCuvsCagra {
     /// the index.
     /// NB: This is also required to be set to true for deserializing
     /// an IndexHNSWCagra object.
-    bool store_dataset_ = true;
+    bool searchable_index_ = true;
 
     /// Parameters to build cuVS CAGRA index
     faiss::cagra_build_algo graph_build_algo_;
