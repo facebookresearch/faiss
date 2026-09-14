@@ -96,6 +96,93 @@ class TestFp16LinearTransform(unittest.TestCase):
         )
         np.testing.assert_array_equal(output, query + bias)
 
+    def test_matrix_range_and_failed_cache_refresh(self):
+        self.require_fp16()
+        d = 8
+        transform = faiss.LinearTransform(d, d)
+        matrix = np.eye(d, dtype="float32")
+        faiss.copy_array_to_vector(matrix.ravel(), transform.A)
+        transform.is_trained = True
+        transform.prepare_fp16()
+
+        query = np.ones(d, dtype="float32")
+        output = np.empty(d, dtype="float32")
+        for invalid in (100000.0, -100000.0, np.inf, -np.inf, np.nan):
+            broken = matrix.copy()
+            broken[0, 0] = invalid
+            faiss.copy_array_to_vector(broken.ravel(), transform.A)
+            with self.assertRaisesRegex(
+                RuntimeError, "non-finite or out-of-range"
+            ):
+                transform.prepare_fp16()
+            with self.assertRaisesRegex(RuntimeError, "cache is missing or stale"):
+                transform.apply_noalloc_fp16(
+                    1, faiss.swig_ptr(query), faiss.swig_ptr(output)
+                )
+
+        boundary = np.zeros((d, d), dtype="float32")
+        boundary[0, 0] = 65504.0
+        boundary[1, 1] = -65504.0
+        faiss.copy_array_to_vector(boundary.ravel(), transform.A)
+        transform.prepare_fp16()
+        transform.apply_noalloc_fp16(
+            1, faiss.swig_ptr(query), faiss.swig_ptr(output)
+        )
+        np.testing.assert_array_equal(output, boundary @ query)
+
+    def test_query_range_falls_back_per_row(self):
+        self.require_fp16()
+        d = 7
+        transform = faiss.LinearTransform(d, d)
+        matrix = np.eye(d, dtype="float32")
+        faiss.copy_array_to_vector(matrix.ravel(), transform.A)
+        transform.is_trained = True
+        transform.prepare_fp16()
+
+        queries = np.array(
+            [
+                np.linspace(-1.0, 1.0, d),
+                np.full(d, 100000.0),
+                np.full(d, -100000.0),
+                np.full(d, 65504.0),
+                np.full(d, -65504.0),
+                np.zeros(d),
+            ],
+            dtype="float32",
+        )
+        expected = np.empty_like(queries)
+        actual = np.empty_like(queries)
+        transform.apply_noalloc(
+            len(queries), faiss.swig_ptr(queries), faiss.swig_ptr(expected)
+        )
+        transform.apply_noalloc_fp16(
+            len(queries), faiss.swig_ptr(queries), faiss.swig_ptr(actual)
+        )
+        np.testing.assert_allclose(actual, expected, rtol=5e-4, atol=5e-4)
+
+        non_finite = np.zeros((4, d), dtype="float32")
+        non_finite[0, 0] = np.inf
+        non_finite[1, 0] = -np.inf
+        non_finite[2, 0] = np.nan
+        non_finite[3, 0] = -0.0
+        transform.apply_noalloc(
+            len(non_finite),
+            faiss.swig_ptr(non_finite),
+            faiss.swig_ptr(expected[: len(non_finite)]),
+        )
+        transform.apply_noalloc_fp16(
+            len(non_finite),
+            faiss.swig_ptr(non_finite),
+            faiss.swig_ptr(actual[: len(non_finite)]),
+        )
+        np.testing.assert_allclose(
+            actual[: len(non_finite)],
+            expected[: len(non_finite)],
+            rtol=5e-4,
+            atol=5e-4,
+            equal_nan=True,
+        )
+
     def test_batched_search_retains_fp32_path(self):
         rs = np.random.RandomState(99)
         d = 65
@@ -135,6 +222,30 @@ class TestFp16LinearTransform(unittest.TestCase):
         )
         expected_distances, expected_ids = storage.search(transformed, 10)
 
+        params = faiss.SearchParametersPreTransform()
+        params.use_fp16_transform = True
+        actual_distances, actual_ids = index.search(xq, 10, params=params)
+        np.testing.assert_array_equal(actual_ids, expected_ids)
+        np.testing.assert_array_equal(actual_distances, expected_distances)
+
+    def test_single_large_query_search_falls_back_to_fp32(self):
+        self.require_fp16()
+        rs = np.random.RandomState(303)
+        d = 17
+        xb = rs.randn(200, d).astype("float32")
+        xq = np.full((1, d), 100000.0, dtype="float32")
+        transform = faiss.LinearTransform(d, d)
+        faiss.copy_array_to_vector(
+            np.eye(d, dtype="float32").ravel(), transform.A
+        )
+        transform.is_trained = True
+        transform.prepare_fp16()
+        storage = faiss.IndexFlatL2(d)
+        index = faiss.IndexPreTransform(transform, storage)
+        index.own_fields = False
+        index.add(xb)
+
+        expected_distances, expected_ids = index.search(xq, 10)
         params = faiss.SearchParametersPreTransform()
         params.use_fp16_transform = True
         actual_distances, actual_ids = index.search(xq, 10, params=params)

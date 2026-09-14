@@ -97,10 +97,15 @@ struct LinearTransform : VectorTransform {
     /// Return whether the running CPU supports the FP16 FML path.
     bool fp16_supported() const;
 
-    /// Build the derived FP16 matrix cache used by apply_noalloc_fp16().
+    /** Build the derived FP16 matrix cache used by apply_noalloc_fp16().
+     * Matrix values must be finite and representable as finite FP16 values.
+     * A failed refresh leaves the cache empty.
+     */
     void prepare_fp16();
 
-    /// Apply the cached FP16 matrix with FP32 accumulation.
+    /** Apply the cached FP16 matrix with FP32 accumulation. Queries containing
+     * non-finite or out-of-range FP16 values use the ordinary FP32 path.
+     */
     void apply_noalloc_fp16(idx_t n, const float* x, float* xt) const;
 
     /// compute x = A^T * (x - b)
