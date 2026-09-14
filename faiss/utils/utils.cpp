@@ -561,22 +561,17 @@ namespace {
 
 template <typename T>
 int64_t count_lt(int64_t n, const T* row, T threshold) {
-    for (int64_t i = 0; i < n; i++) {
-        if (!(row[i] < threshold)) {
-            return i;
-        }
-    }
-    return n;
+    // Data is sorted ascending (caller contract). std::lower_bound compiles to
+    // branchless cmov, avoiding mispredictions and O(p) scan at high hit rates.
+    return std::lower_bound(row, row + n, threshold) - row;
 }
 
 template <typename T>
 int64_t count_gt(int64_t n, const T* row, T threshold) {
-    for (int64_t i = 0; i < n; i++) {
-        if (!(row[i] > threshold)) {
-            return i;
-        }
-    }
-    return n;
+    // Data is sorted descending (caller contract). lower_bound with greater<T>
+    // finds the first position where row[i] <= threshold (upper_bound would
+    // miss equal elements).
+    return std::lower_bound(row, row + n, threshold, std::greater<T>()) - row;
 }
 
 } // namespace
