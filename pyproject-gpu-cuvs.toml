@@ -44,8 +44,8 @@ dependencies = [
   "nvidia-cublas>=13.2,<14",
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
-  "libcuvs-cu13==26.10.*,>=0.0.0a0",
-  "librmm-cu13==26.10.*,>=0.0.0a0",
+  "libcuvs-cu13>=26.10,<27",
+  "librmm-cu13>=26.10,<27",
 ]
 
 [project.urls]
@@ -93,7 +93,7 @@ BUILD_SHARED_LIBS = "ON"
 # mirroring the conda build — no explicit *_DIR, agnostic to lib/ vs lib64/.
 
 # Stable ABI (abi3): one cp311 wheel covers all 3.11+.
-# Floor is 3.11 because the nightly libcuvs-cu13 26.10 dependency (RAPIDS) requires
+# Floor is 3.11 because the runtime dep libcuvs-cu13>=26.10 (RAPIDS) requires
 # Python >=3.11 — RAPIDS dropped 3.10 in the 26.04 release.
 # GPU is Linux-only; free-threaded Python (cp3*t) cannot use abi3.
 [[tool.scikit-build.overrides]]
