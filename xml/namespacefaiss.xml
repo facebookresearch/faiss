@@ -1568,23 +1568,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="330" column="28" declfile="faiss/impl/HNSW.h" declline="330" declcolumn="28"/>
-      </memberdef>
-      <memberdef kind="variable" id="namespacefaiss_1a425b13a639db2a4b0a65b7b7b81ab032" prot="public" static="no" extern="yes" mutable="no">
-        <type>FAISS_API bool</type>
-        <definition>FAISS_API bool faiss::hnsw_deterministic_build</definition>
-        <argsstring></argsstring>
-        <name>hnsw_deterministic_build</name>
-        <qualifiedname>faiss::hnsw_deterministic_build</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Use the lock-free deterministic graph build in add() rather than the lock-based one. Transitional: it will become the only path.</para>
-<para>NOT thread-safe: set before calling add(). Sampled once per add(). </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="336" column="23" declfile="faiss/impl/HNSW.h" declline="336" declcolumn="23"/>
+        <location file="faiss/impl/HNSW.h" line="321" column="28" declfile="faiss/impl/HNSW.h" declline="321" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -5754,11 +5738,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Deterministic, lock-free <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> graph build, shared by <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> and <ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref>. The callbacks let both share the algorithm: <computeroutput>make_distance_computer()</computeroutput> returns a fresh <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> per thread (caller-owned) and <computeroutput>set_query(dc, pt_id)</computeroutput> points it at pt_id&apos;s vector. </para>
+<para>Deterministic, lock-free <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> graph build. This is the only graph build that add() uses, and it is shared by <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> and <ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref>. The callbacks let both share the algorithm: <computeroutput>make_distance_computer()</computeroutput> returns a fresh <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> per thread (caller-owned) and <computeroutput>set_query(dc, pt_id)</computeroutput> points it at pt_id&apos;s vector. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="295" column="6" declfile="faiss/impl/HNSW.h" declline="295" declcolumn="6"/>
+        <location file="faiss/impl/HNSW.h" line="286" column="6" declfile="faiss/impl/HNSW.h" declline="286" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

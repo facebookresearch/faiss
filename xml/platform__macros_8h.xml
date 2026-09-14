@@ -1364,10 +1364,6 @@
       <node id="182">
         <label>faiss/impl/hnsw/LockVector.h</label>
         <link refid="LockVector_8h_source"/>
-        <childnode refid="108" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
       </node>
       <node id="214">
         <label>faiss/impl/hnsw/MinimaxHeap.h</label>

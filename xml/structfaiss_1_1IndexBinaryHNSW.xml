@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="23" column="5" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="22" column="5" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" prot="public" static="no">
         <type>uint8_t</type>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="26" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="26" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="25" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1a66ef25000227ce004b285cfa39dadb24" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="29" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="28" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="30" column="17" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="29" column="17" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -107,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="36" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="35" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -122,36 +122,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="42" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="42" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1a7cc8448ea12bdf71d411e9756b7d4839" prot="public" static="no" mutable="no">
-        <type><ref refid="classfaiss_1_1LockVector" kindref="compound">LockVector</ref></type>
-        <definition>LockVector faiss::IndexBinaryHNSW::locks</definition>
-        <argsstring></argsstring>
-        <name>locks</name>
-        <qualifiedname>faiss::IndexBinaryHNSW::locks</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="45" column="16" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="45" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1ac89d9c097e3fa143a93160f0a12a2d1d" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexBinaryHNSW::retain_locks</definition>
-        <argsstring></argsstring>
-        <name>retain_locks</name>
-        <qualifiedname>faiss::IndexBinaryHNSW::retain_locks</qualifiedname>
-        <initializer>= false</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="47" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="41" column="10" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -263,7 +234,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="49" column="14"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="43" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1ae16b61a8deba0c838dc014f37d3e2bdf" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -286,7 +257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="50" column="14"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="44" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1a302d59e8290c617242da789a79ff0831" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -309,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="51" column="14"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="45" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1ab327c861a19dbbb033852008cd4c8b62" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -323,7 +294,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="53" column="5"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="47" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1a7e5fd2b6a03e56690293ae8a1dae3ea1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
@@ -337,7 +308,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="55" column="22"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="49" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1aca2c449410d48edb72228016463aed5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -372,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="57" column="10"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="51" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -396,7 +367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="60" column="10"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="54" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1ae8d7ab52b6ff6b3b43e6b2122f94424e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -438,7 +409,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="63" column="10"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="57" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -480,7 +451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="71" column="10"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="65" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -496,7 +467,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="73" column="10"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="67" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1ae9f0fc632373aec59f5c836caa33ed10" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1051,20 +1022,13 @@
         <childnode refid="2" relation="usage">
           <edgelabel>storage</edgelabel>
         </childnode>
-        <childnode refid="6" relation="usage">
-          <edgelabel>locks</edgelabel>
-        </childnode>
-      </node>
-      <node id="6">
-        <label>faiss::LockVector</label>
-        <link refid="classfaiss_1_1LockVector"/>
       </node>
       <node id="5">
         <label>faiss::RandomGenerator</label>
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryHNSW.h" line="22" column="1" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="22" bodyend="74"/>
+    <location file="faiss/IndexBinaryHNSW.h" line="21" column="1" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="21" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1aca2c449410d48edb72228016463aed5d" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a82123e0426b5ca631c644ddd35d159e7" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>add_ex</name></member>
@@ -1087,7 +1051,6 @@
       <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>init_level0</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a132119ae93e240b54621c5c669853c7f" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>keep_max_size_level0</name></member>
-      <member refid="structfaiss_1_1IndexBinaryHNSW_1a7cc8448ea12bdf71d411e9756b7d4839" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>locks</name></member>
       <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>ntotal</name></member>
@@ -1097,7 +1060,6 @@
       <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>reconstruct_n</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a5ea7dee38e40f66b86d892bab2b6b80e" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>remove_ids</name></member>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>reset</name></member>
-      <member refid="structfaiss_1_1IndexBinaryHNSW_1ac89d9c097e3fa143a93160f0a12a2d1d" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSW</scope><name>retain_locks</name></member>
       <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>sa_code_size</name></member>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1ae8d7ab52b6ff6b3b43e6b2122f94424e" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>search_and_reconstruct</name></member>

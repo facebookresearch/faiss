@@ -4,8 +4,6 @@
     <compoundname>LockVector.h</compoundname>
     <includes local="no">omp.h</includes>
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
-    <includedby refid="IndexBinaryHNSW_8h" local="no">faiss/IndexBinaryHNSW.h</includedby>
-    <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>faiss/impl/FaissAssert.h</label>
@@ -84,30 +82,6 @@
         <label>vector</label>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="2">
-        <label>faiss/IndexBinaryHNSW.h</label>
-        <link refid="IndexBinaryHNSW_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss/IndexHNSW.h</label>
-        <link refid="IndexHNSW_8h_source"/>
-      </node>
-      <node id="3">
-        <label>faiss/gpu/GpuIndexBinaryCagra.h</label>
-        <link refid="GpuIndexBinaryCagra_8h_source"/>
-      </node>
-      <node id="1">
-        <label>faiss/impl/hnsw/LockVector.h</label>
-        <link refid="LockVector_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-    </invincdepgraph>
     <innerclass refid="classfaiss_1_1LockVector" prot="public">faiss::LockVector</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>

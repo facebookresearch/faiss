@@ -2692,7 +2692,6 @@
     <member refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" kind="function"><name>random_level</name></member>
     <member refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" kind="function"><name>fill_with_random_links</name></member>
     <member refid="structfaiss_1_1HNSW_1a9a4d48d862f771f049d26d984347d170" kind="function"><name>add_links_starting_from</name></member>
-    <member refid="structfaiss_1_1HNSW_1a4015f2928d3465decfbeff8835b49954" kind="function"><name>add_with_locks</name></member>
     <member refid="structfaiss_1_1HNSW_1a367cf77f34df5dcde9fb4938a2ad9f55" kind="function"><name>compute_forward_links_deterministic</name></member>
     <member refid="structfaiss_1_1HNSW_1a105707ed0eee42e61dc5cba23651783b" kind="function"><name>merge_reverse_links_deterministic</name></member>
     <member refid="structfaiss_1_1HNSW_1a6bcbb9a5f201e8a2514420535c5679ed" kind="function"><name>search</name></member>
@@ -3245,8 +3244,6 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" kind="variable"><name>keep_max_size_level0</name></member>
-    <member refid="structfaiss_1_1IndexBinaryHNSW_1a7cc8448ea12bdf71d411e9756b7d4839" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexBinaryHNSW_1ac89d9c097e3fa143a93160f0a12a2d1d" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
@@ -3287,8 +3284,6 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" kind="variable"><name>keep_max_size_level0</name></member>
-    <member refid="structfaiss_1_1IndexBinaryHNSW_1a7cc8448ea12bdf71d411e9756b7d4839" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexBinaryHNSW_1ac89d9c097e3fa143a93160f0a12a2d1d" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
@@ -3936,8 +3931,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4031,8 +4024,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4050,8 +4041,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4148,8 +4137,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4167,8 +4154,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4264,8 +4249,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4323,8 +4306,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -4379,8 +4360,6 @@
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a3fca48ac412fe74ad83c3342c84f13d1" kind="variable"><name>locks</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a668b5880d8491333afcd07e664efe931" kind="variable"><name>retain_locks</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -13741,7 +13720,6 @@
     <member refid="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" kind="typedef"><name>float_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" kind="typedef"><name>int_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" kind="variable"><name>hnsw_stats</name></member>
-    <member refid="namespacefaiss_1a425b13a639db2a4b0a65b7b7b81ab032" kind="variable"><name>hnsw_deterministic_build</name></member>
     <member refid="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" kind="variable"><name>indexPanorama_stats</name></member>
     <member refid="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" kind="variable"><name>product_quantizer_compute_codes_bs</name></member>
     <member refid="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" kind="variable"><name>rabitq_stats</name></member>
