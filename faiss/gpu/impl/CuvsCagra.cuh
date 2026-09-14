@@ -158,7 +158,7 @@ class CuvsCagra {
 
     /// Device padded copy when `storage_` is host memory (KNN-graph ctor path).
     std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
-            host_to_device_dataset_;
+            device_padded_dataset_;
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
