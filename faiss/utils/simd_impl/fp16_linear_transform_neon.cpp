@@ -43,8 +43,8 @@ bool apply(
             vminvq_u32(vcleq_f32(vabsq_f32(input1), max_fp16)) == 0) {
             return false;
         }
-        const float16x8_t converted = vcombine_f16(
-                vcvt_f16_f32(input0), vcvt_f16_f32(input1));
+        const float16x8_t converted =
+                vcombine_f16(vcvt_f16_f32(input0), vcvt_f16_f32(input1));
         vst1q_u16(input_fp16.data() + column, vreinterpretq_u16_f16(converted));
     }
     for (; column < columns; ++column) {
