@@ -2076,6 +2076,36 @@ TEST(ReadIndexDeserialize, PreTransformChainDimensionMismatch) {
     expect_read_throws_with(buf, "d_out=4");
 }
 
+// Test: IndexPreTransform with an *empty* chain must still agree with its
+// sub-index on d. With no transform, reconstruct() hands the caller's
+// buffer -- sized from the outer d -- straight to the sub-index, so a
+// larger sub-index d is a heap overflow (T287094917).
+TEST(ReadIndexDeserialize, PreTransformEmptyChainDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, 0); // nt = 0, empty chain
+    push_minimal_flat(buf, /*d=*/8);
+
+    expect_read_throws_with(buf, "IndexPreTransform empty chain");
+}
+
+// A well-formed empty-chain IxPT still deserializes.
+TEST(ReadIndexDeserialize, PreTransformEmptyChainMatchingDimensionAccepted) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    push_val<int>(buf, 0); // nt = 0, empty chain
+    push_minimal_flat(buf, /*d=*/8);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW({
+        auto idx = read_index_up(&reader);
+        EXPECT_NE(idx, nullptr);
+    });
+}
+
 TEST(ReadIndexDeserialize, HadamardRotationInvalidDout) {
     // HRot format: fourcc("HRot") + seed(int) + d_in(int) + d_out(int) +
     //              is_trained(bool)
@@ -4762,4 +4792,212 @@ TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
     EXPECT_NO_THROW(
             idmap.search(1, xq.data(), 1, distances.data(), labels.data()));
     EXPECT_EQ(labels[0], -1);
+}
+
+// -----------------------------------------------------------------------
+// Panorama deserialization and reconstruct bounds (T287094917).
+//
+// "IxFP"/"IxFp" format: fourcc + d(int) + n_levels + batch_size +
+// ntotal(int64) + is_trained(bool) + codes vec + cum_sums vec.
+// Unlike every other index type this branch does not go through
+// read_index_header, so its own range checks are all that guard d and
+// ntotal.
+// -----------------------------------------------------------------------
+static void push_flat_panorama(
+        std::vector<uint8_t>& buf,
+        int d,
+        size_t n_levels,
+        size_t batch_size,
+        int64_t ntotal,
+        size_t codes_bytes,
+        size_t cum_sums_count) {
+    push_fourcc(buf, "IxFP");
+    push_val<int>(buf, d);
+    push_val<size_t>(buf, n_levels);
+    push_val<size_t>(buf, batch_size);
+    push_val<int64_t>(buf, ntotal);
+    push_val<bool>(buf, true);
+    push_val<size_t>(buf, codes_bytes);
+    buf.resize(buf.size() + codes_bytes, 0);
+    push_val<size_t>(buf, cum_sums_count);
+    buf.resize(buf.size() + cum_sums_count * sizeof(float), 0);
+}
+
+// A d large enough to make code_size = d * 4 overflow into gigabytes must
+// be rejected at read time, as it is for every other index type.
+TEST(ReadIndexDeserialize, FlatPanoramaDimensionOutOfRange) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/1280725833,
+            /*n_levels=*/1,
+            /*batch_size=*/1024,
+            /*ntotal=*/0,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    expect_read_throws_with(buf, "out of range");
+}
+
+TEST(ReadIndexDeserialize, FlatPanoramaNegativeNtotal) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/8,
+            /*n_levels=*/1,
+            /*batch_size=*/4,
+            /*ntotal=*/-1,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    expect_read_throws_with(buf, "invalid ntotal");
+}
+
+// End-to-end shape of the fuzzer crash: an IndexPreTransform with an empty
+// chain wrapping an empty IndexFlatPanorama. Everything deserializes, and
+// reconstruct() must then reject the out-of-range key instead of memcpy'ing
+// code_size bytes out of a zero-length codes buffer.
+TEST(ReadIndexDeserialize, PreTransformOverEmptyFlatPanoramaReconstruct) {
+    constexpr int d = 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_val<int>(buf, 0); // nt = 0, empty chain
+    push_flat_panorama(
+            buf,
+            d,
+            /*n_levels=*/1,
+            /*batch_size=*/4,
+            /*ntotal=*/0,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> idx;
+    ASSERT_NO_THROW({ idx = read_index_up(&reader); });
+    ASSERT_NE(idx, nullptr);
+
+    std::vector<float> recons(d, 0.0f);
+    EXPECT_THROW(idx->reconstruct(0, recons.data()), FaissException);
+}
+
+// "IHfP" format: fourcc + index_header + n_levels(size_t) + cum_sums vec +
+// HNSW graph + storage index. cum_sums must hold ntotal * (n_levels + 1)
+// floats; a short vector is an out-of-bounds read on the search path.
+TEST(ReadIndexDeserialize, HNSWFlatPanoramaCumSumsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHfP");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/1);
+    push_val<size_t>(buf, size_t(1)); // n_levels
+    push_vector<float>(buf, {0.0f});  // cum_sums: 1 float, needs 2
+
+    expect_read_throws_with(buf, "IndexHNSWFlatPanorama cum_sums");
+}
+
+TEST(ReadIndexDeserialize, HNSWFlatPanoramaZeroLevels) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHfP");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<size_t>(buf, size_t(0)); // n_levels = 0
+
+    expect_read_throws_with(buf, "invalid IHfP n_levels");
+}
+
+// IndexFlatPanorama overrides reconstruct()/reconstruct_n() and so does not
+// inherit the range guards in IndexFlat / IndexFlatCodes. Panorama's
+// level-major layout means an out-of-range key reads whole batch strides
+// past the end of `codes`.
+TEST(IndexFlatPanoramaSafety, ReconstructRejectsOutOfRangeKey) {
+    constexpr int d = 8;
+    IndexFlatL2Panorama index(d, /*n_levels_in=*/2, /*batch_size_in=*/4);
+    std::vector<float> recons(2 * d, 0.0f);
+
+    EXPECT_THROW(index.reconstruct(0, recons.data()), FaissException);
+
+    std::vector<float> xb(2 * d, 1.0f);
+    index.add(2, xb.data());
+
+    EXPECT_NO_THROW(index.reconstruct(1, recons.data()));
+    EXPECT_THROW(index.reconstruct(2, recons.data()), FaissException);
+    EXPECT_THROW(index.reconstruct(-1, recons.data()), FaissException);
+    EXPECT_NO_THROW(index.reconstruct_n(0, 2, recons.data()));
+    EXPECT_THROW(index.reconstruct_n(1, 2, recons.data()), FaissException);
+}
+
+namespace {
+
+constexpr size_t kTurboQFullDimension = 16;
+constexpr uint64_t kTurboQFullSeed = 0x0123456789abcdefULL;
+constexpr auto kTurboQFullQtype = ScalarQuantizer::QT_3bit_tq;
+
+// Total TurboQ bits/component for a QT_*_tq qtype (matches the mapping in
+// ScalarQuantizer::set_derived_sizes). Full TurboQ splits these into
+// (bits - 1) MSE bits + 1 QJL bit, so the reader-side trained-vector
+// centroid count is k = 1 << (bits - 1).
+constexpr size_t turboq_full_nb_bits(ScalarQuantizer::QuantizerType qt) {
+    return qt == ScalarQuantizer::QT_2bit_tq    ? 2
+            : qt == ScalarQuantizer::QT_3bit_tq ? 3
+            : qt == ScalarQuantizer::QT_4bit_tq ? 4
+            : qt == ScalarQuantizer::QT_5bit_tq ? 5
+                                                : 0;
+}
+
+// Derived rather than hardcoded so that changing kTurboQFullQtype (e.g. to
+// QT_4bit_tq) automatically resizes the payload; hardcoding kept the two
+// constants coupled and a mismatch would fail the read for an unrelated
+// reason (trained.size() != k + (k-1) + 3).
+//
+// `turboq_full_nb_bits` returns 0 for qtypes it does not recognise; guard
+// against that sentinel here so a future change to `kTurboQFullQtype` that
+// forgets to extend the mapping fails loudly at compile time instead of
+// tripping UB via `size_t{1} << (0 - 1)`.
+static_assert(
+        turboq_full_nb_bits(kTurboQFullQtype) != 0,
+        "kTurboQFullQtype must be a QT_*_tq qtype recognised by "
+        "turboq_full_nb_bits; extend the mapping when adding new tq qtypes.");
+constexpr size_t kTurboQFullCentroids = size_t{1}
+        << (turboq_full_nb_bits(kTurboQFullQtype) - 1);
+
+std::vector<uint8_t> make_turboq_full_sq_payload(
+        uint8_t qjl_type,
+        size_t d = kTurboQFullDimension) {
+    float seed[2];
+    ScalarQuantizer::TurboQuantRefine::pack_seed(kTurboQFullSeed, seed);
+    std::vector<float> trained(
+            kTurboQFullCentroids + (kTurboQFullCentroids - 1) + 3, 0.0f);
+    trained[trained.size() - 3] = seed[0];
+    trained[trained.size() - 2] = seed[1];
+    trained[trained.size() - 1] = static_cast<float>(qjl_type);
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, static_cast<int>(d), /*ntotal=*/0);
+    push_val<int>(buf, kTurboQFullQtype);
+    push_val<int>(buf, 0);      // rangestat
+    push_val<float>(buf, 0.0f); // rangestat_arg
+    push_val<size_t>(buf, d);
+    push_val<size_t>(buf, 0); // code_size is recomputed on read
+    push_vector<float>(buf, trained);
+    push_vector<uint8_t>(buf, {}); // codes
+    return buf;
+}
+
+} // namespace
+
+TEST(ReadIndexDeserialize, SQTurboQuantFullRecoversConfigFromTrained) {
+    for (const uint8_t qjl_type : {uint8_t{0}, uint8_t{2}}) {
+        SCOPED_TRACE(testing::Message() << "qjl_type = " << int(qjl_type));
+
+        VectorIOReader reader;
+        reader.data = make_turboq_full_sq_payload(qjl_type);
+        std::unique_ptr<Index> index;
+        ASSERT_NO_THROW(index = read_index_up(&reader));
+
+        const auto* sq_index = dynamic_cast<IndexScalarQuantizer*>(index.get());
+        ASSERT_NE(sq_index, nullptr);
+        EXPECT_EQ(sq_index->sq.d, kTurboQFullDimension);
+        EXPECT_EQ(sq_index->sq.turboq_refine.qjl_type, qjl_type);
+        EXPECT_EQ(sq_index->sq.turboq_refine.seed, kTurboQFullSeed);
+    }
 }

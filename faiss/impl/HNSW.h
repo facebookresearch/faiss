@@ -154,8 +154,14 @@ struct HNSW {
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
 
-    /// use Panorama progressive pruning in search
-    bool is_panorama = false;
+    /// Specialized level-0 search implementations. This state is derived from
+    /// the owning IndexHNSW subtype after construction or deserialization.
+    enum Search_method_t : uint8_t {
+        SM_DEFAULT,
+        SM_PANORAMA,
+        SM_RABITQ,
+    };
+    Search_method_t search_method = SM_DEFAULT;
 
     /// distance comparison semantics: when true, distances are treated as
     /// similarity scores (larger is better). Default false matches the
