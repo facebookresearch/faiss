@@ -27,6 +27,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <memory>
 #include <optional>
 
 #include <faiss/MetricType.h>
@@ -34,6 +35,7 @@
 
 #include <cuvs/neighbors/cagra.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
+#include <raft/core/device_mdarray.hpp>
 
 namespace faiss {
 
@@ -153,6 +155,10 @@ class CuvsCagra {
 
     /// Parameter to use MST optimization to guarantee graph connectivity
     bool guarantee_connectivity_ = false;
+
+    /// Device padded copy when `storage_` is host memory (KNN-graph ctor path).
+    std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
+            host_to_device_dataset_;
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
