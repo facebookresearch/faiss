@@ -67,6 +67,35 @@ class TestFp16LinearTransform(unittest.TestCase):
                 1, faiss.swig_ptr(query), faiss.swig_ptr(output)
             )
 
+    def test_invalid_bias_fails_before_writing_output(self):
+        self.require_fp16()
+        d = 8
+        transform = faiss.LinearTransform(d, d, True)
+        faiss.copy_array_to_vector(np.eye(d, dtype="float32").ravel(), transform.A)
+        transform.is_trained = True
+        transform.prepare_fp16()
+        query = np.ones(d, dtype="float32")
+
+        for bias in (
+            np.empty(0, dtype="float32"),
+            np.arange(d - 1, dtype="float32"),
+        ):
+            faiss.copy_array_to_vector(bias, transform.b)
+            output = np.full(d, np.float32(12345.0))
+            with self.assertRaisesRegex(RuntimeError, "Bias not initialized"):
+                transform.apply_noalloc_fp16(
+                    1, faiss.swig_ptr(query), faiss.swig_ptr(output)
+                )
+            np.testing.assert_array_equal(output, np.float32(12345.0))
+
+        bias = np.arange(d, dtype="float32")
+        faiss.copy_array_to_vector(bias, transform.b)
+        output = np.empty(d, dtype="float32")
+        transform.apply_noalloc_fp16(
+            1, faiss.swig_ptr(query), faiss.swig_ptr(output)
+        )
+        np.testing.assert_array_equal(output, query + bias)
+
     def test_batched_search_retains_fp32_path(self):
         rs = np.random.RandomState(99)
         d = 65

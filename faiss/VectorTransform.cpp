@@ -270,6 +270,9 @@ void LinearTransform::apply_noalloc_fp16(idx_t n, const float* x, float* xt)
         const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
     FAISS_THROW_IF_NOT_MSG(
+            !have_bias || b.size() == static_cast<size_t>(d_out),
+            "Bias not initialized");
+    FAISS_THROW_IF_NOT_MSG(
             A_fp16.size() == static_cast<size_t>(d_out) * d_in,
             "FP16 transformation cache is missing or stale");
 #if defined(COMPILE_SIMD_ARM_NEON) || defined(COMPILE_SIMD_AVX512_SPR)
