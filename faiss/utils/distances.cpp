@@ -49,7 +49,70 @@ int sgemm_(
         float* beta,
         float* c,
         FINTEGER* ldc);
+
+#ifdef FAISS_SME_CBLAS_SGEMM
+void cblas_sgemm(
+        int Order,
+        int TransA,
+        int TransB,
+        int M,
+        int N,
+        int K,
+        float alpha,
+        const float* A,
+        int lda,
+        const float* B,
+        int ldb,
+        float beta,
+        float* C,
+        int ldc);
+#endif
 }
+
+#ifdef FAISS_SME_CBLAS_SGEMM
+namespace {
+
+constexpr int kCblasRowMajor = 101;
+constexpr int kCblasNoTrans = 111;
+
+void sme_cblas_sgemm_tn(
+        FINTEGER M,
+        FINTEGER N,
+        FINTEGER K,
+        float alpha,
+        const float* A,
+        FINTEGER ldA,
+        const float* B,
+        FINTEGER ldB,
+        float beta,
+        float* C,
+        FINTEGER ldC) {
+    std::vector<float> At((size_t)K * (size_t)M);
+    for (FINTEGER i = 0; i < M; i++) {
+        const float* row = A + (size_t)i * (size_t)ldA;
+        for (FINTEGER l = 0; l < K; l++) {
+            At[(size_t)l * (size_t)M + i] = row[l];
+        }
+    }
+    cblas_sgemm(
+            kCblasRowMajor,
+            kCblasNoTrans,
+            kCblasNoTrans,
+            (int)N,
+            (int)M,
+            (int)K,
+            alpha,
+            B,
+            (int)ldB,
+            At.data(),
+            (int)M,
+            beta,
+            C,
+            (int)ldC);
+}
+
+} // namespace
+#endif
 
 namespace faiss {
 
@@ -397,6 +460,20 @@ void exhaustive_inner_product_blas(
             {
                 float one = 1, zero = 0;
                 FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+#ifdef FAISS_SME_CBLAS_SGEMM
+                sme_cblas_sgemm_tn(
+                        nyi,
+                        nxi,
+                        di,
+                        one,
+                        y + j0 * d,
+                        di,
+                        x + i0 * d,
+                        di,
+                        zero,
+                        ip_block.get(),
+                        nyi);
+#else
                 sgemm_("Transpose",
                        "Not transpose",
                        &nyi,
@@ -410,6 +487,7 @@ void exhaustive_inner_product_blas(
                        &zero,
                        ip_block.get(),
                        &nyi);
+#endif
             }
 
             res.add_results(j0, j1, ip_block.get());
