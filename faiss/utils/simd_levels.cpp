@@ -342,7 +342,10 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #endif
 
 #if defined(__riscv) && defined(COMPILE_SIMD_RISCV_RVV)
-    // RVV is always available on RISC-V builds compiled with rv64gcv.
+    // RVV is always available on RISC-V builds compiled with
+    // rv64gcv_zvfhmin: that ISA (including Zvfhmin, used by the QT_fp16
+    // kernels) is the minimum requirement to run such binaries at all,
+    // so no runtime feature check is needed beyond the build contract.
     supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::RISCV_RVV));
     detected_level = SIMDLevel::RISCV_RVV;
 #endif
