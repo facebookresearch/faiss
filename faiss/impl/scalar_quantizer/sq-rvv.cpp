@@ -85,6 +85,46 @@ template <>
 struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
             : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
+
+    void encode_vector(const float* x, uint8_t* code) const final {
+        auto* dst = reinterpret_cast<uint16_t*>(code);
+        size_t i = 0;
+        while (i < this->d) {
+            const size_t vl = __riscv_vsetvl_e32m4(this->d - i);
+            const vfloat32m4_t input = __riscv_vle32_v_f32m4(x + i, vl);
+            const vuint32m4_t bits = __riscv_vreinterpret_v_f32m4_u32m4(input);
+            const vuint32m4_t magnitude =
+                    __riscv_vand_vx_u32m4(bits, 0x7fffffffu, vl);
+            const vbool8_t special =
+                    __riscv_vmsgeu_vx_u32m4_b8(magnitude, 0x7f800000u, vl);
+            // Use the scalar codec for NaN and infinity.
+            if (__riscv_vcpop_m_b8(special, vl)) {
+                for (size_t j = 0; j < vl; ++j) {
+                    dst[i + j] = encode_fp16(x[i + j]);
+                }
+                i += vl;
+                continue;
+            }
+            // The generic codec uses ryg's scale-and-round operation, whose
+            // halfway behavior differs from IEEE round-to-nearest-even FP16.
+            const vuint32m4_t truncated =
+                    __riscv_vand_vx_u32m4(magnitude, 0xfffff000u, vl);
+            const vfloat32m4_t value =
+                    __riscv_vreinterpret_v_u32m4_f32m4(truncated);
+            vfloat32m4_t scaled = __riscv_vfmul_vf_f32m4(value, 0x1p-112f, vl);
+            const vfloat32m4_t limit = __riscv_vreinterpret_v_u32m4_f32m4(
+                    __riscv_vmv_v_x_u32m4((31u << 23) - 0x1000u, vl));
+            scaled = __riscv_vfmin_vv_f32m4(scaled, limit, vl);
+            const vuint32m4_t rounded = __riscv_vadd_vx_u32m4(
+                    __riscv_vreinterpret_v_f32m4_u32m4(scaled), 0x1000u, vl);
+            vuint16m2_t result = __riscv_vnsrl_wx_u16m2(rounded, 13, vl);
+            const vuint16m2_t sign = __riscv_vand_vx_u16m2(
+                    __riscv_vnsrl_wx_u16m2(bits, 16, vl), 0x8000u, vl);
+            result = __riscv_vor_vv_u16m2(result, sign, vl);
+            __riscv_vse16_v_u16m2(dst + i, result, vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
