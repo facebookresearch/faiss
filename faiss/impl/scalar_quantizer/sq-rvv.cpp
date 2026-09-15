@@ -66,58 +66,22 @@ struct Codec4bit<SIMDLevel::RISCV_RVV> : Codec4bit<SIMDLevel::NONE> {
     }
 };
 
+// The RVV 6-bit decoder's gather loads made the distance path 12-22%
+// slower than scalar when benchmarked for PR #5535, so the 6-bit codec
+// stays scalar: this marker provides no decode_m8_components, which routes
+// QT_6bit to the scalar QuantizerTemplate fallback below (and from there to
+// the scalar DCTemplate, since has_reconstruct_m8_v resolves to false).
 template <>
-struct Codec6bit<SIMDLevel::RISCV_RVV> : Codec6bit<SIMDLevel::NONE> {
-    static FAISS_ALWAYS_INLINE vfloat32m8_t
-    decode_m8_components(const uint8_t* code, size_t i, size_t vl) {
-        size_t last = i + vl - 1;
-        size_t last_used = 3 * (last >> 2) + ((last & 3) < 2 ? (last & 3) : 2);
-        vuint32m8_t idx = __riscv_vid_v_u32m8(vl);
-        idx = __riscv_vadd_vx_u32m8(idx, i, vl);
-        vuint32m8_t block = __riscv_vsrl_vx_u32m8(idx, 2, vl);
-        vuint32m8_t lane = __riscv_vand_vx_u32m8(idx, 3, vl);
-        vuint32m8_t base = __riscv_vadd_vv_u32m8(block, block, vl);
-        base = __riscv_vadd_vv_u32m8(base, block, vl);
-        vuint8m2_t b0 = __riscv_vluxei32_v_u8m2(code, base, vl);
-        vuint8m2_t b1 = __riscv_vluxei32_v_u8m2(
-                code,
-                __riscv_vminu_vx_u32m8(
-                        __riscv_vadd_vx_u32m8(base, 1, vl), last_used, vl),
-                vl);
-        vuint8m2_t b2 = __riscv_vluxei32_v_u8m2(
-                code,
-                __riscv_vminu_vx_u32m8(
-                        __riscv_vadd_vx_u32m8(base, 2, vl), last_used, vl),
-                vl);
-        vuint32m8_t wb0 = __riscv_vzext_vf4_u32m8(b0, vl);
-        vuint32m8_t wb1 = __riscv_vzext_vf4_u32m8(b1, vl);
-        vuint32m8_t wb2 = __riscv_vzext_vf4_u32m8(b2, vl);
-        vuint32m8_t x0 = __riscv_vand_vx_u32m8(wb0, 0x3f, vl);
-        vuint32m8_t x1 = __riscv_vor_vv_u32m8(
-                __riscv_vsrl_vx_u32m8(wb0, 6, vl),
-                __riscv_vsll_vx_u32m8(
-                        __riscv_vand_vx_u32m8(wb1, 0xf, vl), 2, vl),
-                vl);
-        vuint32m8_t x2 = __riscv_vor_vv_u32m8(
-                __riscv_vsrl_vx_u32m8(wb1, 4, vl),
-                __riscv_vsll_vx_u32m8(__riscv_vand_vx_u32m8(wb2, 3, vl), 4, vl),
-                vl);
-        vuint32m8_t x3 = __riscv_vsrl_vx_u32m8(wb2, 2, vl);
-        vbool4_t m0 = __riscv_vmseq_vx_u32m8_b4(lane, 0, vl);
-        vbool4_t m1 = __riscv_vmseq_vx_u32m8_b4(lane, 1, vl);
-        vbool4_t m2 = __riscv_vmseq_vx_u32m8_b4(lane, 2, vl);
-        vuint32m8_t bits = x3;
-        bits = __riscv_vmerge_vvm_u32m8(bits, x2, m2, vl);
-        bits = __riscv_vmerge_vvm_u32m8(bits, x1, m1, vl);
-        bits = __riscv_vmerge_vvm_u32m8(bits, x0, m0, vl);
-        vfloat32m8_t out = __riscv_vfcvt_f_xu_v_f32m8(bits, vl);
-        out = __riscv_vfadd_vf_f32m8(out, 0.5f, vl);
-        out = __riscv_vfdiv_vf_f32m8(out, 63.0f, vl);
-        return out;
-    }
-};
+struct Codec6bit<SIMDLevel::RISCV_RVV> : Codec6bit<SIMDLevel::NONE> {};
 
 template <class Codec>
+inline constexpr bool codec_has_decode_m8_v =
+        requires(const uint8_t* code, size_t i, size_t vl) {
+            Codec::decode_m8_components(code, i, vl);
+        };
+
+template <class Codec>
+    requires(codec_has_decode_m8_v<Codec>)
 struct QuantizerTemplate<
         Codec,
         QuantizerTemplateScaling::UNIFORM,
@@ -141,6 +105,7 @@ struct QuantizerTemplate<
 };
 
 template <class Codec>
+    requires(codec_has_decode_m8_v<Codec>)
 struct QuantizerTemplate<
         Codec,
         QuantizerTemplateScaling::NON_UNIFORM,
@@ -162,6 +127,16 @@ struct QuantizerTemplate<
         vfloat32m8_t vdiffv = __riscv_vle32_v_f32m8(this->vdiff + i, vl);
         return __riscv_vfmadd_vv_f32m8(xi, vdiffv, vminv, vl);
     }
+};
+
+// Codecs without an RVV decode kernel (currently the 6-bit codec above)
+// keep the scalar quantizer implementation, mirroring the marker-special-
+// ization fallback used by the other RVV translation units.
+template <class Codec, QuantizerTemplateScaling SCALING>
+    requires(!codec_has_decode_m8_v<Codec>)
+struct QuantizerTemplate<Codec, SCALING, SIMDLevel::RISCV_RVV>
+        : QuantizerTemplate<Codec, SCALING, SIMDLevel::NONE> {
+    using QuantizerTemplate<Codec, SCALING, SIMDLevel::NONE>::QuantizerTemplate;
 };
 
 template <>

@@ -879,7 +879,10 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
     const std::vector<faiss::ScalarQuantizer::QuantizerType> qtypes = {
             faiss::ScalarQuantizer::QT_8bit,
             faiss::ScalarQuantizer::QT_4bit,
-            faiss::ScalarQuantizer::QT_6bit,
+            // QT_6bit is absent: its RVV decoder (gather-based) measured
+            // slower than scalar, so the codec is a scalar marker under
+            // RISCV_RVV and dispatches to the scalar implementation;
+            // there is no RVV kernel to parity-check.
             faiss::ScalarQuantizer::QT_8bit_uniform,
             faiss::ScalarQuantizer::QT_4bit_uniform,
             faiss::ScalarQuantizer::QT_bf16,
@@ -1002,6 +1005,9 @@ TEST(ScalarQuantizer, RVVZeroDimDistancePathParity) {
             cases = {
                     {faiss::ScalarQuantizer::QT_8bit, {}},
                     {faiss::ScalarQuantizer::QT_4bit, {}},
+                    // QT_6bit dispatches to scalar under RISCV_RVV (see
+                    // RVVDistancePathParity); kept here so the d == 0
+                    // contract of the RVV-level dispatch stays covered.
                     {faiss::ScalarQuantizer::QT_6bit, {}},
                     {faiss::ScalarQuantizer::QT_8bit_uniform, {0.0f, 1.0f}},
                     {faiss::ScalarQuantizer::QT_4bit_uniform, {0.0f, 1.0f}},
