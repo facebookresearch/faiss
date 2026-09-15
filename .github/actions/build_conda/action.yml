@@ -65,7 +65,7 @@ runs:
       working-directory: conda
       run: |
         conda list --show-channel-urls
-        conda build faiss --python 3.12 -c pytorch
+        conda build faiss --python 3.12 -c conda-forge -c pytorch
     - name: Conda build (CPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -74,7 +74,7 @@ runs:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda list --show-channel-urls
-        conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c pytorch
+        conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c conda-forge -c pytorch
     - name: Conda build (GPU)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
