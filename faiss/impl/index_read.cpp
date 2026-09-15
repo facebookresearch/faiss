@@ -2929,7 +2929,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
         read_RaBitQuantizer(idxq->rabitq, f, idxq->d, false);
-        READVECTOR(idxq->codes);
+        read_vector(idxq->codes, f);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
         // qb=0: Not quantized - direct distance computation on given float32s.
@@ -2948,7 +2948,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_index_header(*idxq, f);
         read_RaBitQuantizer(
                 idxq->rabitq, f, idxq->d, true); // Reads nb_bits from file
-        READVECTOR(idxq->codes);
+        read_vector(idxq->codes, f);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
         // qb=0: Not quantized - direct distance computation on given float32s.
