@@ -19,6 +19,11 @@
 
 namespace faiss {
 
+enum class IVFPQScannerMode {
+    Precomputed,
+    OnTheFly,
+};
+
 struct IVFPQSearchParameters : IVFSearchParameters {
     size_t scan_table_threshold; ///< use table computation or on-the-fly?
     int polysemous_ht;           ///< Hamming thresh for polysemous filtering
@@ -143,6 +148,12 @@ struct IndexIVFPQ : IndexIVF {
             bool store_pairs,
             const IDSelector* sel,
             const IVFSearchParameters* params) const override;
+
+    /** Returns a scanner with a fixed PQ distance-computation strategy. */
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs,
+            const IDSelector* sel,
+            IVFPQScannerMode mode) const;
 
     /// build precomputed table
     void precompute_table();
