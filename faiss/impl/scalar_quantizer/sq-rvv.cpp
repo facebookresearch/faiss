@@ -140,6 +140,124 @@ struct DistanceComputerByte<Similarity, SIMDLevel::RISCV_RVV>
 };
 
 /*************************************************************************
+ * Fast path — QT_8bit_direct_signed (IP and L2)
+ *
+ * Reconstruct signed bytes in float, accumulate in vector registers, and
+ * reduce once after the loop. Tail-undisturbed accumulation preserves
+ * earlier lanes during short final iterations.
+ ************************************************************************/
+
+template <class Similarity>
+struct DCTemplate<
+        Quantizer8bitDirectSigned<SIMDLevel::RISCV_RVV>,
+        Similarity,
+        SIMDLevel::RISCV_RVV> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    size_t d;
+
+    DCTemplate(size_t d_in, const std::vector<float>& /* trained */)
+            : d(d_in) {}
+
+    void set_query(const float* x) final {
+        this->q = x;
+    }
+
+    /// Vectorized reconstruction of code bytes (stored as value+128) into
+    /// the float domain (code[i] - 128), one AVL-sized chunk per iteration.
+    template <bool IS_L2>
+    float distance_to_xf(const float* x, const uint8_t* code) const {
+        const size_t vlmax = __riscv_vsetvlmax_e32m4();
+        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
+        size_t i = 0;
+        while (i < d) {
+            size_t vl = __riscv_vsetvl_e8m1(d - i);
+            // byte = value + 128, so reconstruct as signed (byte - 128).
+            vuint8m1_t cb = __riscv_vle8_v_u8m1(code + i, vl);
+            vuint32m4_t cu = __riscv_vzext_vf4_u32m4(cb, vl);
+            vint32m4_t cs = __riscv_vreinterpret_v_u32m4_i32m4(cu);
+            cs = __riscv_vsub_vx_i32m4(cs, 128, vl);
+            vfloat32m4_t cf = __riscv_vfcvt_f_x_v_f32m4(cs, vl);
+            vfloat32m4_t vx = __riscv_vle32_v_f32m4(x + i, vl);
+            if constexpr (IS_L2) {
+                vfloat32m4_t diff = __riscv_vfsub_vv_f32m4(vx, cf, vl);
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, diff, diff, vl);
+            } else {
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, vx, cf, vl);
+            }
+            i += vl;
+        }
+        // Single final reduction over the whole loop range.
+        vfloat32m1_t init = __riscv_vfmv_s_f_f32m1(0.0f, 1);
+        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(acc, init, vlmax);
+        return __riscv_vfmv_f_s_f32m1_f32(red);
+    }
+
+    template <bool IS_L2>
+    float code_to_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        const size_t vlmax = __riscv_vsetvlmax_e32m4();
+        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
+        size_t i = 0;
+        while (i < d) {
+            size_t vl = __riscv_vsetvl_e8m1(d - i);
+            vuint8m1_t a8 = __riscv_vle8_v_u8m1(code1 + i, vl);
+            vuint8m1_t b8 = __riscv_vle8_v_u8m1(code2 + i, vl);
+            vuint32m4_t au = __riscv_vzext_vf4_u32m4(a8, vl);
+            vuint32m4_t bu = __riscv_vzext_vf4_u32m4(b8, vl);
+            vint32m4_t as = __riscv_vreinterpret_v_u32m4_i32m4(au);
+            vint32m4_t bs = __riscv_vreinterpret_v_u32m4_i32m4(bu);
+            as = __riscv_vsub_vx_i32m4(as, 128, vl);
+            bs = __riscv_vsub_vx_i32m4(bs, 128, vl);
+            vfloat32m4_t af = __riscv_vfcvt_f_x_v_f32m4(as, vl);
+            vfloat32m4_t bf = __riscv_vfcvt_f_x_v_f32m4(bs, vl);
+            if constexpr (IS_L2) {
+                // (a - 128) - (b - 128) == a - b
+                vfloat32m4_t diff = __riscv_vfsub_vv_f32m4(af, bf, vl);
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, diff, diff, vl);
+            } else {
+                acc = __riscv_vfmacc_vv_f32m4_tu(acc, af, bf, vl);
+            }
+            i += vl;
+        }
+        // Single final reduction over the whole loop range.
+        vfloat32m1_t init = __riscv_vfmv_s_f_f32m1(0.0f, 1);
+        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(acc, init, vlmax);
+        return __riscv_vfmv_f_s_f32m1_f32(red);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        if constexpr (Sim::metric_type == METRIC_L2) {
+            return distance_to_xf<true>(this->q, code);
+        } else {
+            return distance_to_xf<false>(this->q, code);
+        }
+    }
+
+    float compute_distance(const float* x, const uint8_t* code) const {
+        if constexpr (Sim::metric_type == METRIC_L2) {
+            return distance_to_xf<true>(x, code);
+        } else {
+            return distance_to_xf<false>(x, code);
+        }
+    }
+
+    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        if constexpr (Sim::metric_type == METRIC_L2) {
+            return code_to_code_distance<true>(code1, code2);
+        } else {
+            return code_to_code_distance<false>(code1, code2);
+        }
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+};
+
+/*************************************************************************
  * Fast path — QT_4bit_uniform + L2
  *
  * 4-bit UNIFORM scaling: every component reconstructs as an affine function
