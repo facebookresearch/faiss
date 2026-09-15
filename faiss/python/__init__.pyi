@@ -3087,7 +3087,10 @@ SIMDLevel_AVX512_SPR: int
 SIMDLevel_ARM_NEON: int
 SIMDLevel_ARM_SVE: int
 SIMDLevel_RISCV_RVV: int
+SIMDLevel_AVX512_VPOPCNT: int
 SIMDLevel_COUNT: int
+
+def compiled_simd_levels() -> int: ...
 
 class SIMDConfig:
     level: int
@@ -4381,7 +4384,6 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
-    hnsw_deterministic_build: bool
 
 cvar: _SwigGlobals
 
