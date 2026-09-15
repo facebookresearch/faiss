@@ -31,6 +31,11 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexShardsIVF.h>
 
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif
+
 namespace faiss {
 
 AutoTuneCriterion::AutoTuneCriterion(idx_t nq_in, idx_t nnn_in)
@@ -484,6 +489,139 @@ void ParameterSpace::set_index_parameters(
             });
 }
 
+#ifdef FAISS_ENABLE_SVS
+
+namespace {
+
+size_t svs_size_param(const std::string& name, double val) {
+    FAISS_THROW_IF_NOT_FMT(
+            val >= 0,
+            "ParameterSpace::set_index_parameter: %s cannot be negative (%g)",
+            name.c_str(),
+            val);
+    return size_t(val);
+}
+
+/* The SVS build parameters are consumed when the backend index is created (on
+   the first add(), or already at train() for LeanVec), so setting them later
+   would be silently ignored. */
+void check_svs_not_built(const IndexSVSVamana* ix, const std::string& name) {
+    FAISS_THROW_IF_NOT_FMT(
+            ix->impl == nullptr,
+            "ParameterSpace::set_index_parameter: %s is a build-time "
+            "parameter, it cannot be changed after the SVS index is built",
+            name.c_str());
+}
+
+/* Sets a parameter of IndexSVSVamana or of its LVQ / LeanVec subclasses.
+   Returns false if the name is not an SVS Vamana parameter. */
+bool set_svs_vamana_parameter(
+        IndexSVSVamana* ix,
+        const std::string& name,
+        double val) {
+    // Search parameters: re-read on every search(), hence tunable at any point
+    // in the index lifetime.
+    if (name == "search_window_size") {
+        ix->search_window_size = svs_size_param(name, val);
+        return true;
+    }
+    if (name == "search_buffer_capacity") {
+        ix->search_buffer_capacity = svs_size_param(name, val);
+        return true;
+    }
+
+    // Graph build parameters.
+    if (name == "graph_max_degree") {
+        check_svs_not_built(ix, name);
+        ix->graph_max_degree = svs_size_param(name, val);
+        return true;
+    }
+    if (name == "prune_to") {
+        check_svs_not_built(ix, name);
+        ix->prune_to = svs_size_param(name, val);
+        return true;
+    }
+    if (name == "alpha") {
+        check_svs_not_built(ix, name);
+        ix->alpha = float(val);
+        return true;
+    }
+    if (name == "construction_window_size") {
+        check_svs_not_built(ix, name);
+        ix->construction_window_size = svs_size_param(name, val);
+        return true;
+    }
+    if (name == "max_candidate_pool_size") {
+        check_svs_not_built(ix, name);
+        ix->max_candidate_pool_size = svs_size_param(name, val);
+        return true;
+    }
+    if (name == "use_full_search_history") {
+        check_svs_not_built(ix, name);
+        ix->use_full_search_history = val != 0;
+        return true;
+    }
+
+    // Vector storage, which includes the LVQ and LeanVec compression levels.
+    if (name == "storage_kind") {
+        check_svs_not_built(ix, name);
+        FAISS_THROW_IF_NOT_FMT(
+                val >= 0 && val < SVS_count,
+                "ParameterSpace::set_index_parameter: %g is not a valid "
+                "SVSStorageKind",
+                val);
+        auto kind = SVSStorageKind(int(val));
+        // Reject a kind that this build or machine does not support here
+        // rather than at build time, like the IndexSVSVamana constructor does.
+        auto svs_kind = to_svs_storage_kind(kind);
+        auto status = ix->is_static
+                ? svs_runtime::VamanaIndex::check_storage_kind(svs_kind)
+                : svs_runtime::DynamicVamanaIndex::check_storage_kind(svs_kind);
+        if (!status.ok()) {
+            FAISS_THROW_MSG(status.message());
+        }
+        ix->storage_kind = kind;
+        return true;
+    }
+    if (name == "is_static") {
+        check_svs_not_built(ix, name);
+        ix->is_static = val != 0;
+        return true;
+    }
+    if (name == "store_vectors") {
+        // Dropping the copy of the added vectors is always possible, but it
+        // cannot be undone: the copy left would not line up with the ids.
+        FAISS_THROW_IF_MSG(
+                val != 0 && !ix->stored_vectors_valid,
+                "ParameterSpace::set_index_parameter: store_vectors cannot be "
+                "re-enabled once the stored vectors have been dropped");
+        ix->store_vectors = val != 0;
+        return true;
+    }
+
+    // LeanVec only: dimensionality of the reduced (primary) vectors.
+    if (name == "leanvec_d") {
+        auto* lv = dynamic_cast<IndexSVSVamanaLeanVec*>(ix);
+        FAISS_THROW_IF_NOT_MSG(
+                lv,
+                "ParameterSpace::set_index_parameter: leanvec_d only applies "
+                "to IndexSVSVamanaLeanVec");
+        check_svs_not_built(lv, name);
+        FAISS_THROW_IF_MSG(
+                lv->training_data,
+                "ParameterSpace::set_index_parameter: leanvec_d cannot be "
+                "changed after the LeanVec index has been trained");
+        lv->leanvec_d = svs_size_param(name, val);
+        return true;
+    }
+
+    return false;
+}
+
+} // anonymous namespace
+
+#endif // FAISS_ENABLE_SVS
+
 // non-const version
 // Do not use this macro if ix will be unused
 #define DC(classname) classname* ix_ = dynamic_cast<classname*>(index)
@@ -612,6 +750,15 @@ void ParameterSpace::set_index_parameter(
             }
         }
     }
+
+#ifdef FAISS_ENABLE_SVS
+    // Covers IndexSVSVamanaLVQ and IndexSVSVamanaLeanVec as well
+    if (DC(IndexSVSVamana)) {
+        if (set_svs_vamana_parameter(ix_, name, val)) {
+            return;
+        }
+    }
+#endif
 
     if (name.find("quantizer_") == 0) {
         if (DC(IndexIVF)) {
