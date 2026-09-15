@@ -115,6 +115,33 @@ void IndexScalarQuantizer::sa_decode(idx_t n, const uint8_t* bytes, float* x)
     sq.decode(bytes, x, n);
 }
 
+void IndexScalarQuantizer::check_compatible_for_merge(
+        const Index& otherIndex) const {
+    IndexFlatCodes::check_compatible_for_merge(otherIndex);
+    // minimal sanity checks
+    const IndexScalarQuantizer* other =
+            dynamic_cast<const IndexScalarQuantizer*>(&otherIndex);
+    FAISS_THROW_IF_NOT_MSG(
+            sq.trained.size() == other->sq.trained.size(),
+            "cannot merge scalar quantizers with different trained state");
+    FAISS_THROW_IF_NOT_MSG(
+            sq.qtype == other->sq.qtype,
+            "cannot merge scalar quantizers with different quantizer types");
+    FAISS_THROW_IF_NOT_MSG(
+            sq.rangestat == other->sq.rangestat,
+            "cannot merge scalar quantizers with different range statistics");
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == other->metric_type,
+            "cannot merge scalar quantizers with different metrics");
+    FAISS_THROW_IF_NOT_MSG(
+            sq.trained.empty() ||
+                    std::memcmp(
+                            sq.trained.data(),
+                            other->sq.trained.data(),
+                            sq.trained.size() * sizeof(float)) == 0,
+            "cannot merge scalar quantizers with different trained state");
+}
+
 /*******************************************************************
  * IndexIVFScalarQuantizer implementation
  ********************************************************************/
