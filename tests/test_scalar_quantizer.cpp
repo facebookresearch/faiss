@@ -939,10 +939,12 @@ TEST(ScalarQuantizer, RVVDistancePathParity) {
 
 // QT_fp16 RVV-versus-scalar parity, split out of RVVDistancePathParity so
 // the Zvfhmin-dependent case shows up individually in test logs. The RVV
-// FP16 kernel emits Zvfhmin instructions, so this test only runs where the
-// CPU/emulator enables the extension (CI uses -cpu rv64,v=true,
-// x-zvfhmin=true); without it the process would die with SIGILL, which is
-// what makes this test a check that the FP16 case genuinely executes.
+// FP16 kernel is compiled unconditionally (a build without Zvfhmin fails
+// in sq-rvv.cpp rather than silently dropping the kernel), and it emits
+// Zvfhmin instructions, so this test only runs where the CPU/emulator
+// enables the extension (CI uses -cpu rv64,v=true, x-zvfhmin=true); without
+// it the process would die with SIGILL, which is what makes this test a
+// check that the FP16 case genuinely executes.
 TEST(ScalarQuantizer, RVVFP16DistancePathParity) {
     if (!faiss::SIMDConfig::is_simd_level_available(
                 faiss::SIMDLevel::RISCV_RVV)) {

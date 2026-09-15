@@ -17,6 +17,16 @@
 #include <algorithm>
 #include <cmath>
 
+// Zvfhmin is part of the RISCV_RVV level's minimum ISA (see the SIMDLevel
+// contract in faiss/utils/simd_levels.h): the QT_fp16 reconstruction below
+// emits Zvfhmin instructions, so this translation unit must be compiled with
+// an ISA that includes it (faiss uses -march=rv64gcv_zvfhmin). Fail the
+// build when the extension is missing instead of silently dropping the RVV
+// FP16 kernel and dispatching QT_fp16 to the scalar path.
+#if !defined(__riscv_zvfhmin) && !defined(__riscv_zvfh)
+#error "RISCV_RVV scalar quantizers require Zvfhmin; compile this file with -march including _zvfhmin (e.g. rv64gcv_zvfhmin)"
+#endif
+
 namespace faiss {
 
 namespace scalar_quantizer {
@@ -144,20 +154,15 @@ struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
             : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
 
-// Zvfhmin is part of the RISCV_RVV level's minimum ISA (see
-// faiss/utils/simd_levels.h); this translation unit is compiled with
-// -march=rv64gcv_zvfhmin, so the RVV FP16 reconstruction below is always
-// emitted in faiss builds. The preprocessor fallback keeps the scalar FP16
-// path for out-of-tree builds that compile this file without the extension;
-// has_reconstruct_m8_v then resolves to false and QT_fp16 stays scalar.
-#if defined(__riscv_zvfhmin) || defined(__riscv_zvfh)
+    // Unconditional: Zvfhmin is enforced at the top of this file, so the
+    // RVV FP16 kernel can never be silently dropped (which would make
+    // has_reconstruct_m8_v false and quietly dispatch QT_fp16 to scalar).
     FAISS_ALWAYS_INLINE vfloat32m8_t
     reconstruct_m8_components(const uint8_t* code, size_t i, size_t vl) const {
         vfloat16m4_t vh =
                 __riscv_vle16_v_f16m4((const _Float16*)(code + 2 * i), vl);
         return __riscv_vfwcvt_f_f_v_f32m8(vh, vl);
     }
-#endif
 };
 
 template <>
