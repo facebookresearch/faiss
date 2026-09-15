@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <faiss/utils/prefetch.h>
 
 namespace faiss {
 
@@ -29,6 +30,9 @@ struct DistanceComputer {
 
     /// compute distance of vector i to current query
     virtual float operator()(idx_t i) = 0;
+
+    /// prefetch data for vector i, if the implementation supports it
+    virtual void prefetch(idx_t i) {}
 
     /// compute distances of current query to 4 stored vectors.
     /// certain DistanceComputer implementations may benefit
@@ -71,6 +75,10 @@ struct NegativeDistanceComputer : DistanceComputer {
 
     void set_query(const float* x) override {
         basedis->set_query(x);
+    }
+
+    void prefetch(idx_t i) override {
+        basedis->prefetch(i);
     }
 
     /// compute distance of vector i to current query
@@ -148,6 +156,27 @@ struct FlatCodesDistanceComputer : DistanceComputer {
                 dis1,
                 dis2,
                 dis3);
+    }
+
+    void prefetch(idx_t i) override {
+        if (codes == nullptr || code_size == 0) {
+            return;
+        }
+
+        const uint8_t* code = codes + i * code_size;
+
+        // Prefetch a few cache lines. Do not prefetch the whole vector/code;
+        // the distance loop itself will stream through the rest.
+        prefetch_L2(code);
+        if (code_size > 64) {
+            prefetch_L2(code + 64);
+        }
+        if (code_size > 128) {
+            prefetch_L2(code + 128);
+        }
+        if (code_size > 192) {
+            prefetch_L2(code + 192);
+        }
     }
 
     /// Computes a partial dot product over a slice of the query vector.
