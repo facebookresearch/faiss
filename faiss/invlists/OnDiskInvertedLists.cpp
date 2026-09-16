@@ -11,6 +11,7 @@
 
 #include <pthread.h>
 
+#include <memory>
 #include <unordered_set>
 
 #include <sys/mman.h>
@@ -714,12 +715,17 @@ void OnDiskInvertedListsIOHook::write(const InvertedLists* ils, IOWriter* f)
 
 InvertedLists* OnDiskInvertedListsIOHook::read(IOReader* f, int io_flags)
         const {
-    OnDiskInvertedLists* od = new OnDiskInvertedLists();
+    auto od = std::make_unique<OnDiskInvertedLists>();
     od->read_only = io_flags & IO_FLAG_READ_ONLY;
     READ1(od->nlist);
     READ1(od->code_size);
     // this is a POD object
     READVECTOR(od->lists);
+    FAISS_THROW_IF_NOT_FMT(
+            od->lists.size() == od->nlist,
+            "OnDisk inverted lists: read %zu lists for nlist %zu",
+            od->lists.size(),
+            od->nlist);
     {
         std::vector<OnDiskInvertedLists::Slot> v;
         READVECTOR(v);
@@ -759,7 +765,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read(IOReader* f, int io_flags)
     if (!(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         od->do_mmap();
     }
-    return od;
+    return od.release();
 }
 
 /** read from a ArrayInvertedLists into this invertedlist type */
@@ -769,7 +775,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
         size_t nlist,
         size_t code_size,
         const std::vector<size_t>& sizes) const {
-    auto ails = new OnDiskInvertedLists();
+    auto ails = std::make_unique<OnDiskInvertedLists>();
     ails->nlist = nlist;
     ails->code_size = code_size;
     ails->read_only = true;
@@ -819,7 +825,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
     // resume normal reading of file
     fseek(fdesc, o, SEEK_SET);
 
-    return ails;
+    return ails.release();
 }
 
 } // namespace faiss
