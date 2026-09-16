@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [1.15.1] - 2026-09-15
 
 Added
+- 3b3711c112fbf7dfb9c64b6fcf90ffc3ca412548 Add explicit IVFPQ scanner distance modes (#5632)
 - 4fdbc9dc18adbfef3cd410a2446aa4c757320a8a Support ZeroCopyIOReader for IndexRaBitQ deserialization (#5629)
 - b5a14632a6f2bfdc824c86d683b9d6e9205c2604 Run the eight SIMD kernel tests that no build executed (#5620)
 - e6bd1d252caa5b9315a04390269d382845984ae2 Add AVX512 VPOPCNT dynamic dispatch level (#5531)
