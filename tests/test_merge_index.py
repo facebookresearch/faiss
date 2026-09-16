@@ -216,6 +216,16 @@ class TestMerge2(unittest.TestCase):
     def test_merge_IndexFastScan_even_M(self):
         self.do_fast_scan_test("PQ10x4fs", 500)
 
+    def test_merge_IndexFastScan_rejects_add_id(self):
+        self.assertRaisesRegex(
+            RuntimeError,
+            ".*cannot set ids in FastScan index.*",
+            self.do_fast_scan_test,
+            "PQ5x4fs",
+            320,
+            True,
+        )
+
     def test_merge_IndexAdditiveQuantizerFastScan(self):
         self.do_fast_scan_test("RQ10x4fs_32_Nrq2x4", 330)
 
