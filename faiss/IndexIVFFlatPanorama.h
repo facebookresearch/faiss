@@ -58,6 +58,8 @@ struct IndexIVFFlatPanorama : IndexIVFFlat {
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
 
+    void check_compatible_for_merge(const Index& otherIndex) const override;
+
     IndexIVFFlatPanorama();
 };
 
