@@ -800,40 +800,36 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
  * interface: integer query ADC changes the full score and has no proven bound
  * for the one-bit pruning stage. Callers must use the ordinary full-code path.
  */
+constexpr int EXPANDED_INTEGER_ADC_SIMD_LEVELS = AVAILABLE_SIMD_LEVELS_NONE |
+        (1 << int(SIMDLevel::ARM_NEON)) |
+        (1 << int(SIMDLevel::AVX512_SPR));
+
+template <SIMDLevel SL, bool IntegerQuery>
 struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
                                               DistanceComputerBatch {
+    static_assert(
+            SL == SIMDLevel::NONE || SL == SIMDLevel::ARM_NEON ||
+                    SL == SIMDLevel::AVX512_SPR,
+            "unsupported expanded RaBitQ ADC backend");
+
     size_t d = 0;
     const float* centroid = nullptr;
-    bool integer_query = false;
     std::vector<float> residual;
     std::vector<int8_t> quantized;
     float query_norm = 0.0f;
     float half_sum = 0.0f;
     float scale = 1.0f;
-    bool use_arm_dotprod = false;
-    bool use_avx512_vnni = false;
     int64_t query_correction = 0;
 
     RaBitQExpandedDistanceComputer(
             const uint8_t* codes,
             size_t d_in,
-            const float* centroid_in,
-            bool integer_query_in)
+            const float* centroid_in)
             : FlatCodesDistanceComputer(codes, d_in + sizeof(ExtraBitsFactors)),
               d(d_in),
               centroid(centroid_in),
-              integer_query(integer_query_in),
               residual(d),
-              quantized(d) {
-#ifdef COMPILE_SIMD_ARM_NEON
-        use_arm_dotprod =
-                integer_query && rabitq_integer_adc::arm_dotprod_supported();
-#endif
-#ifdef COMPILE_SIMD_AVX512_SPR
-        use_avx512_vnni = integer_query &&
-                SIMDConfig::get_dispatched_level() == SIMDLevel::AVX512_SPR;
-#endif
-    }
+              quantized(d) {}
 
     void set_query(const float* x) final {
         q = x;
@@ -850,20 +846,25 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         }
         half_sum = 0.5f * sum;
         scale = maximum > 0.0f ? maximum / 127.0f : 1.0f;
-        if (integer_query) {
-#ifdef COMPILE_SIMD_AVX512_SPR
-            int64_t quantized_sum = 0;
-#endif
-            for (size_t j = 0; j < d; j++) {
-                quantized[j] = static_cast<int8_t>(std::clamp(
-                        std::nearbyint(residual[j] / scale), -127.0f, 127.0f));
-#ifdef COMPILE_SIMD_AVX512_SPR
-                quantized_sum += quantized[j];
-#endif
+        if constexpr (IntegerQuery) {
+            if constexpr (SL == SIMDLevel::AVX512_SPR) {
+                int64_t quantized_sum = 0;
+                for (size_t j = 0; j < d; j++) {
+                    quantized[j] = static_cast<int8_t>(std::clamp(
+                            std::nearbyint(residual[j] / scale),
+                            -127.0f,
+                            127.0f));
+                    quantized_sum += quantized[j];
+                }
+                query_correction = -128 * quantized_sum;
+            } else {
+                for (size_t j = 0; j < d; j++) {
+                    quantized[j] = static_cast<int8_t>(std::clamp(
+                            std::nearbyint(residual[j] / scale),
+                            -127.0f,
+                            127.0f));
+                }
             }
-#ifdef COMPILE_SIMD_AVX512_SPR
-            query_correction = -128 * quantized_sum;
-#endif
         }
     }
 
@@ -878,16 +879,16 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
 
     float distance_to_code(const uint8_t* code) final {
         const int8_t* levels = reinterpret_cast<const int8_t*>(code);
-        if (integer_query) {
+        if constexpr (IntegerQuery) {
             int64_t dot;
 #ifdef COMPILE_SIMD_AVX512_SPR
-            if (use_avx512_vnni) {
+            if constexpr (SL == SIMDLevel::AVX512_SPR) {
                 dot = rabitq_integer_adc::dot_product_avx512_vnni(
                         quantized.data(), levels, d, query_correction);
             } else
 #endif
 #ifdef COMPILE_SIMD_ARM_NEON
-                    if (use_arm_dotprod) {
+                    if constexpr (SL == SIMDLevel::ARM_NEON) {
                 dot = rabitq_integer_adc::dot_product_arm(
                         quantized.data(), levels, d);
             } else
@@ -915,7 +916,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
             float& dis1,
             float& dis2,
             float& dis3) final {
-        if (!integer_query) {
+        if constexpr (!IntegerQuery) {
             dis0 = distance_to_code(code0);
             dis1 = distance_to_code(code1);
             dis2 = distance_to_code(code2);
@@ -929,7 +930,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         const auto* levels3 = reinterpret_cast<const int8_t*>(code3);
         int64_t dot0, dot1, dot2, dot3;
 #ifdef COMPILE_SIMD_AVX512_SPR
-        if (use_avx512_vnni) {
+        if constexpr (SL == SIMDLevel::AVX512_SPR) {
             rabitq_integer_adc::dot_product_batch_4_avx512_vnni(
                     quantized.data(),
                     levels0,
@@ -945,7 +946,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         } else
 #endif
 #ifdef COMPILE_SIMD_ARM_NEON
-                if (use_arm_dotprod) {
+                if constexpr (SL == SIMDLevel::ARM_NEON) {
             rabitq_integer_adc::dot_product_batch_4_arm(
                     quantized.data(),
                     levels0,
@@ -979,34 +980,22 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
     }
 
     int preferred_batch_size() const final {
-        if (!integer_query) {
+        if constexpr (!IntegerQuery) {
             return 4;
         }
-#ifdef COMPILE_SIMD_ARM_NEON
-        if (use_arm_dotprod && d >= 256) {
-            return 16;
+        if constexpr (SL == SIMDLevel::ARM_NEON) {
+            return d >= 256 ? 16 : 8;
         }
-        if (use_arm_dotprod) {
+        if constexpr (SL == SIMDLevel::AVX512_SPR) {
             return 8;
         }
-#endif
-#ifdef COMPILE_SIMD_AVX512_SPR
-        if (use_avx512_vnni) {
-            return 8;
-        }
-#endif
         return 4;
     }
 
     int max_tail_batch_size() const final {
-        if (!integer_query) {
-            return 0;
-        }
-#ifdef COMPILE_SIMD_ARM_NEON
-        if (use_arm_dotprod) {
+        if constexpr (IntegerQuery && SL == SIMDLevel::ARM_NEON) {
             return 7;
         }
-#endif
         return 0;
     }
 
@@ -1015,7 +1004,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         for (size_t k = 0; k < 8; ++k) {
             code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
         }
-        if (!integer_query) {
+        if constexpr (!IntegerQuery) {
             for (size_t k = 0; k < 8; ++k) {
                 distances[k] = distance_to_code(code_rows[k]);
             }
@@ -1028,13 +1017,13 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         }
         int64_t dots[8];
 #ifdef COMPILE_SIMD_AVX512_SPR
-        if (use_avx512_vnni) {
+        if constexpr (SL == SIMDLevel::AVX512_SPR) {
             rabitq_integer_adc::dot_product_batch_8_avx512_vnni(
                     quantized.data(), levels, d, query_correction, dots);
         } else
 #endif
 #ifdef COMPILE_SIMD_ARM_NEON
-                if (use_arm_dotprod) {
+                if constexpr (SL == SIMDLevel::ARM_NEON) {
             rabitq_integer_adc::dot_product_batch_8_arm(
                     quantized.data(), levels, d, dots);
         } else
@@ -1054,7 +1043,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         for (size_t k = 0; k < 16; ++k) {
             code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
         }
-        if (!integer_query) {
+        if constexpr (!IntegerQuery) {
             for (size_t k = 0; k < 16; ++k) {
                 distances[k] = distance_to_code(code_rows[k]);
             }
@@ -1067,7 +1056,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         }
         int64_t dots[16];
 #ifdef COMPILE_SIMD_ARM_NEON
-        if (use_arm_dotprod) {
+        if constexpr (SL == SIMDLevel::ARM_NEON) {
             rabitq_integer_adc::dot_product_batch_16_arm(
                     quantized.data(), levels, d, dots);
         } else
@@ -1091,7 +1080,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         for (int k = 0; k < count; ++k) {
             code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
         }
-        if (!integer_query) {
+        if constexpr (!IntegerQuery) {
             for (int k = 0; k < count; ++k) {
                 distances[k] = distance_to_code(code_rows[k]);
             }
@@ -1104,7 +1093,7 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         }
         int64_t dots[7];
 #ifdef COMPILE_SIMD_ARM_NEON
-        if (use_arm_dotprod) {
+        if constexpr (SL == SIMDLevel::ARM_NEON) {
             rabitq_integer_adc::dot_product_batch_tail_arm(
                     quantized.data(), levels, count, d, dots);
         } else
@@ -1210,21 +1199,45 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_expanded_distance_computer(
     FAISS_THROW_IF_NOT_MSG(
             nb_bits >= 2 && nb_bits <= 8,
             "expanded RaBitQ ADC requires 2..8 total bits");
-    return new RaBitQExpandedDistanceComputer(
-            expanded_codes, d, centroid_in, integer_query);
+    if (!integer_query) {
+        return new RaBitQExpandedDistanceComputer<SIMDLevel::NONE, false>(
+                expanded_codes, d, centroid_in);
+    }
+
+    // Bind one backend when the distance computer is created. The hot scoring
+    // methods contain no runtime SIMD-level or feature checks.
+    return with_selected_simd_levels<EXPANDED_INTEGER_ADC_SIMD_LEVELS>(
+            [&]<SIMDLevel Selected>() -> FlatCodesDistanceComputer* {
+#ifdef COMPILE_SIMD_ARM_NEON
+                // NEON is mandatory on AArch64, but SDOT is not. Resolve that
+                // extra capability once here and use the scalar backend when
+                // the CPU does not advertise ASIMDDP.
+                if constexpr (Selected == SIMDLevel::ARM_NEON) {
+                    if (!rabitq_integer_adc::arm_dotprod_supported()) {
+                        return new RaBitQExpandedDistanceComputer<
+                                SIMDLevel::NONE,
+                                true>(expanded_codes, d, centroid_in);
+                    }
+                }
+#endif
+                return new RaBitQExpandedDistanceComputer<Selected, true>(
+                        expanded_codes, d, centroid_in);
+            });
 }
 
 bool RaBitQuantizer::expanded_integer_uses_native_dotprod() const {
-#ifdef COMPILE_SIMD_AVX512_SPR
-    if (SIMDConfig::get_dispatched_level() == SIMDLevel::AVX512_SPR) {
-        return true;
-    }
-#endif
+    return with_selected_simd_levels<EXPANDED_INTEGER_ADC_SIMD_LEVELS>(
+            []<SIMDLevel Selected>() {
+                if constexpr (Selected == SIMDLevel::AVX512_SPR) {
+                    return true;
+                }
 #ifdef COMPILE_SIMD_ARM_NEON
-    return rabitq_integer_adc::arm_dotprod_supported();
-#else
-    return false;
+                if constexpr (Selected == SIMDLevel::ARM_NEON) {
+                    return rabitq_integer_adc::arm_dotprod_supported();
+                }
 #endif
+                return false;
+            });
 }
 
 } // namespace faiss
