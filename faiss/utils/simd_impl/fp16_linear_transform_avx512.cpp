@@ -14,11 +14,13 @@
 
 namespace faiss::fp16_linear_transform {
 
-bool supported() {
+template <>
+bool supported<SIMDLevel::AVX512_SPR>() {
     return true;
 }
 
-bool apply(
+template <>
+bool apply<SIMDLevel::AVX512_SPR>(
         const uint16_t* matrix,
         size_t rows,
         size_t columns,

@@ -17,11 +17,11 @@
 
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/fp16.h>
 #include <faiss/utils/fp16_linear_transform.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 
 using namespace faiss;
@@ -262,14 +262,14 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 }
 
 bool LinearTransform::fp16_supported() const {
-#if defined(COMPILE_SIMD_AVX512_SPR)
-    return SIMDConfig::get_dispatched_level() == SIMDLevel::AVX512_SPR &&
-            fp16_linear_transform::supported();
-#elif defined(COMPILE_SIMD_ARM_NEON)
-    return fp16_linear_transform::supported();
-#else
-    return false;
-#endif
+    return with_selected_simd_levels<fp16_linear_transform::SIMD_LEVELS>(
+            []<SIMDLevel SL>() {
+                if constexpr (SL == SIMDLevel::NONE) {
+                    return false;
+                } else {
+                    return fp16_linear_transform::supported<SL>();
+                }
+            });
 }
 
 void LinearTransform::prepare_fp16() {
@@ -300,28 +300,38 @@ void LinearTransform::apply_noalloc_fp16(idx_t n, const float* x, float* xt)
     FAISS_THROW_IF_NOT_MSG(
             A_fp16.size() == static_cast<size_t>(d_out) * d_in,
             "FP16 transformation cache is missing or stale");
-#if defined(COMPILE_SIMD_ARM_NEON) || defined(COMPILE_SIMD_AVX512_SPR)
-    FAISS_THROW_IF_NOT_MSG(
-            fp16_supported(), "FP16 linear transforms are unavailable");
-    for (idx_t i = 0; i < n; ++i) {
-        const float* input = x + size_t(i) * d_in;
-        float* output = xt + size_t(i) * d_out;
-        // The kernel folds input validation into FP32-to-FP16 conversion and
-        // returns before writing output when conversion would be unsafe.
-        if (!fp16_linear_transform::apply(
-                    A_fp16.data(), d_out, d_in, input, output)) {
-            apply_noalloc(1, input, output);
-            continue;
-        }
-        if (have_bias) {
-            for (int j = 0; j < d_out; ++j) {
-                output[j] += b[j];
-            }
-        }
-    }
-#else
-    FAISS_THROW_MSG("FP16 linear transforms are unavailable in this build");
-#endif
+    with_selected_simd_levels<fp16_linear_transform::SIMD_LEVELS>(
+            [&]<SIMDLevel SL>() {
+                if constexpr (SL == SIMDLevel::NONE) {
+                    FAISS_THROW_MSG(
+                            "FP16 linear transforms are unavailable");
+                } else {
+                    FAISS_THROW_IF_NOT_MSG(
+                            fp16_linear_transform::supported<SL>(),
+                            "FP16 linear transforms are unavailable");
+                    for (idx_t i = 0; i < n; ++i) {
+                        const float* input = x + size_t(i) * d_in;
+                        float* output = xt + size_t(i) * d_out;
+                        // The kernel folds input validation into FP32-to-FP16
+                        // conversion and returns before writing output when
+                        // conversion would be unsafe.
+                        if (!fp16_linear_transform::apply<SL>(
+                                    A_fp16.data(),
+                                    d_out,
+                                    d_in,
+                                    input,
+                                    output)) {
+                            apply_noalloc(1, input, output);
+                            continue;
+                        }
+                        if (have_bias) {
+                            for (int j = 0; j < d_out; ++j) {
+                                output[j] += b[j];
+                            }
+                        }
+                    }
+                }
+            });
 }
 
 void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)

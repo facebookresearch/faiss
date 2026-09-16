@@ -17,7 +17,8 @@
 
 namespace faiss::fp16_linear_transform {
 
-bool supported() {
+template <>
+bool supported<SIMDLevel::ARM_NEON>() {
 #if defined(__linux__) && defined(HWCAP_FPHP) && defined(HWCAP_ASIMDFHM)
     const unsigned long capabilities = getauxval(AT_HWCAP);
     return (capabilities & HWCAP_FPHP) != 0 &&
@@ -27,7 +28,8 @@ bool supported() {
 #endif
 }
 
-bool apply(
+template <>
+bool apply<SIMDLevel::ARM_NEON>(
         const uint16_t* matrix,
         size_t rows,
         size_t columns,
