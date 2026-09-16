@@ -216,41 +216,41 @@ struct IVFPQScannerT : QueryTables {
         }
     }
 
+    float on_the_fly_dis0 = 0;
+
+    void prepare_on_the_fly_distance() {
+        on_the_fly_dis0 = 0;
+        if (!by_residual) {
+            return;
+        }
+        if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
+            ivfpq.quantizer->reconstruct(key, residual_vec);
+            on_the_fly_dis0 = fvec_inner_product_dispatch(residual_vec, qi, d);
+        } else {
+            ivfpq.quantizer->compute_residual(qi, residual_vec, key);
+        }
+    }
+
+    float distance_to_code_on_the_fly(const uint8_t* code) const {
+        pq.decode(code, decoded_vec);
+        if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
+            return on_the_fly_dis0 +
+                    fvec_inner_product_dispatch(decoded_vec, qi, d);
+        }
+        const float* dvec = by_residual ? residual_vec : qi;
+        return fvec_L2sqr_dispatch(decoded_vec, dvec, d);
+    }
+
     /// nothing is precomputed: access residuals on-the-fly
     template <class SearchResultType>
     void scan_on_the_fly_dist(
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        const float* dvec;
-        float local_dis0 = 0;
-        if (by_residual) {
-            if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
-                ivfpq.quantizer->reconstruct(key, residual_vec);
-                local_dis0 = fvec_inner_product_dispatch(residual_vec, qi, d);
-            } else {
-                ivfpq.quantizer->compute_residual(qi, residual_vec, key);
-            }
-            dvec = residual_vec;
-        } else {
-            dvec = qi;
-            local_dis0 = 0;
-        }
-
         for (size_t j = 0; j < ncode; j++, codes += pq.code_size) {
-            if (res.skip_entry(j)) {
-                continue;
+            if (!res.skip_entry(j)) {
+                res.add(j, distance_to_code_on_the_fly(codes));
             }
-            pq.decode(codes, decoded_vec);
-
-            float dis;
-            if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
-                dis = local_dis0 +
-                        fvec_inner_product_dispatch(decoded_vec, qi, d);
-            } else {
-                dis = fvec_L2sqr_dispatch(decoded_vec, dvec, d);
-            }
-            res.add(j, dis);
         }
     }
 
@@ -438,7 +438,6 @@ struct IVFPQScannerT : QueryTables {
  *
  * precompute_mode is how much we precompute (2 = precompute distance tables,
  * 1 = precompute pointers to distances, 0 = compute distances one by one).
- * Currently only 2 is supported
  *
  * use_sel: store or ignore the IDSelector
  */
@@ -463,20 +462,29 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
     }
 
     void set_query(const float* query) override {
-        this->init_query(query);
+        if (precompute_mode == 0) {
+            this->qi = query;
+        } else {
+            this->init_query(query);
+        }
     }
 
     void set_list(idx_t list_no_in, float coarse_dis_in) override {
         this->list_no = list_no_in;
         this->init_list(list_no_in, coarse_dis_in, precompute_mode);
+        if (precompute_mode == 0) {
+            this->prepare_on_the_fly_distance();
+        }
     }
 
     float distance_to_code(const uint8_t* code) const override {
+        if (precompute_mode == 0) {
+            return this->distance_to_code_on_the_fly(code);
+        }
         FAISS_THROW_IF_NOT(precompute_mode == 2);
-        float dis = this->dis0 +
+        return this->dis0 +
                 PQCodeDist::distance_single_code(
-                            this->pq.M, this->pq.nbits, this->sim_table, code);
-        return dis;
+                        this->pq.M, this->pq.nbits, this->sim_table, code);
     }
 
     size_t scan_codes(
@@ -511,27 +519,40 @@ template <SIMDLevel SL>
 InvertedListScanner* make_IVFPQInvertedListScanner(
         const IndexIVFPQ& ivfpq,
         bool store_pairs,
-        const IDSelector* sel);
+        const IDSelector* sel,
+        IndexIVFPQ::ScannerMode mode);
+
+template <SIMDLevel SL>
+inline InvertedListScanner* make_IVFPQInvertedListScanner(
+        const IndexIVFPQ& ivfpq,
+        bool store_pairs,
+        const IDSelector* sel) {
+    return make_IVFPQInvertedListScanner<SL>(
+            ivfpq, store_pairs, sel, IndexIVFPQ::ScannerMode::Precomputed);
+}
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
 InvertedListScanner* make_IVFPQInvertedListScanner<THE_SIMD_LEVEL>(
         const IndexIVFPQ& ivfpq,
         bool store_pairs,
-        const IDSelector* sel) {
+        const IDSelector* sel,
+        IndexIVFPQ::ScannerMode mode) {
+    const int precompute_mode =
+            mode == IndexIVFPQ::ScannerMode::Precomputed ? 2 : 0;
     auto make = [&]<class PQCodeDist, bool use_sel>() -> InvertedListScanner* {
         if (ivfpq.metric_type == METRIC_INNER_PRODUCT) {
             return new IVFPQScanner<
                     METRIC_INNER_PRODUCT,
                     CMin<float, idx_t>,
                     PQCodeDist,
-                    use_sel>(ivfpq, store_pairs, 2, sel);
+                    use_sel>(ivfpq, store_pairs, precompute_mode, sel);
         } else if (ivfpq.metric_type == METRIC_L2) {
             return new IVFPQScanner<
                     METRIC_L2,
                     CMax<float, idx_t>,
                     PQCodeDist,
-                    use_sel>(ivfpq, store_pairs, 2, sel);
+                    use_sel>(ivfpq, store_pairs, precompute_mode, sel);
         } else {
             FAISS_THROW_MSG("unsupported metric type");
         }
