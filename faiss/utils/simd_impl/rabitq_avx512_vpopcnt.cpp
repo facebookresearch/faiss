@@ -63,6 +63,43 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
 template <>
 uint64_t popcount<SIMDLevel::AVX512>(const uint8_t* data, size_t size);
 
+template <>
+void bitwise_q4_batch_4<SIMDLevel::AVX512_VPOPCNT>(
+        const uint8_t* query,
+        const uint8_t* const* data,
+        size_t size,
+        BitwiseAndDotProductResult* results) {
+    __m512i dots[4], pops[4];
+    for (int i = 0; i < 4; ++i) {
+        dots[i] = pops[i] = _mm512_setzero_si512();
+    }
+    for (size_t off = 0; off < size; off += 64) {
+        const size_t count = std::min(size - off, size_t(64));
+        const __mmask64 mask =
+                count == 64 ? ~__mmask64(0) : (__mmask64(1) << count) - 1;
+        __m512i x[4];
+        for (int i = 0; i < 4; ++i) {
+            x[i] = _mm512_maskz_loadu_epi8(mask, data[i] + off);
+            pops[i] = _mm512_add_epi64(pops[i], _mm512_popcnt_epi64(x[i]));
+        }
+        for (int bit = 0; bit < 4; ++bit) {
+            // Load each query plane once for four independent database codes.
+            const __m512i q =
+                    _mm512_maskz_loadu_epi8(mask, query + bit * size + off);
+            for (int i = 0; i < 4; ++i) {
+                const __m512i p =
+                        _mm512_popcnt_epi64(_mm512_and_si512(q, x[i]));
+                dots[i] = _mm512_add_epi64(dots[i], _mm512_slli_epi64(p, bit));
+            }
+        }
+    }
+    for (int i = 0; i < 4; ++i) {
+        results[i] = {
+                static_cast<uint64_t>(_mm512_reduce_add_epi64(dots[i])),
+                static_cast<uint64_t>(_mm512_reduce_add_epi64(pops[i]))};
+    }
+}
+
 namespace {
 
 // 512-bit popcount using AVX-512 VPOPCNTDQ (vpopcntq).
@@ -114,8 +151,8 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_VPOPCNT>(
             __m512i v_x = _mm512_loadu_si512(
                     reinterpret_cast<const __m512i*>(data + offset));
             for (size_t j = 0; j < qb; j++) {
-                __m512i v_q = _mm512_loadu_si512(
-                        reinterpret_cast<const __m512i*>(
+                __m512i v_q =
+                        _mm512_loadu_si512(reinterpret_cast<const __m512i*>(
                                 query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
                 __m512i v_popcnt = popcount_512_vpopcntdq(v_and);
@@ -133,8 +170,8 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_VPOPCNT>(
             __m256i v_x = _mm256_loadu_si256(
                     reinterpret_cast<const __m256i*>(data + offset));
             for (size_t j = 0; j < qb; j++) {
-                __m256i v_q = _mm256_loadu_si256(
-                        reinterpret_cast<const __m256i*>(
+                __m256i v_q =
+                        _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
                                 query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
                 __m256i v_popcnt = popcount_256_vpopcntdq(v_and);
@@ -151,9 +188,8 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_VPOPCNT>(
         __m128i v_x = _mm_loadu_si128(
                 reinterpret_cast<const __m128i*>(data + offset));
         for (size_t j = 0; j < qb; j++) {
-            __m128i v_q = _mm_loadu_si128(
-                    reinterpret_cast<const __m128i*>(
-                            query + j * size + offset));
+            __m128i v_q = _mm_loadu_si128(reinterpret_cast<const __m128i*>(
+                    query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
             __m128i v_popcnt = popcount_128_vpopcntdq(v_and);
             __m128i v_shifted = _mm_slli_epi64(v_popcnt, j);
@@ -164,10 +200,11 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_VPOPCNT>(
 
     // 64-bit scalar tail.
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         for (size_t j = 0; j < qb; j++) {
-            const auto qv = *reinterpret_cast<const uint64_t*>(
-                    query + j * size + offset);
+            uint64_t qv;
+            std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += static_cast<uint64_t>(popcount64(qv & yv)) << j;
         }
     }
@@ -201,8 +238,8 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
                     reinterpret_cast<const __m512i*>(data + offset));
             pop_512 = _mm512_add_epi64(pop_512, popcount_512_vpopcntdq(v_x));
             for (size_t j = 0; j < qb; j++) {
-                __m512i v_q = _mm512_loadu_si512(
-                        reinterpret_cast<const __m512i*>(
+                __m512i v_q =
+                        _mm512_loadu_si512(reinterpret_cast<const __m512i*>(
                                 query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
                 __m512i v_popcnt = popcount_512_vpopcntdq(v_and);
@@ -222,8 +259,8 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
                     reinterpret_cast<const __m256i*>(data + offset));
             pop_256 = _mm256_add_epi64(pop_256, popcount_256_vpopcntdq(v_x));
             for (size_t j = 0; j < qb; j++) {
-                __m256i v_q = _mm256_loadu_si256(
-                        reinterpret_cast<const __m256i*>(
+                __m256i v_q =
+                        _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
                                 query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
                 __m256i v_popcnt = popcount_256_vpopcntdq(v_and);
@@ -242,9 +279,8 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
                 reinterpret_cast<const __m128i*>(data + offset));
         pop_128 = _mm_add_epi64(pop_128, popcount_128_vpopcntdq(v_x));
         for (size_t j = 0; j < qb; j++) {
-            __m128i v_q = _mm_loadu_si128(
-                    reinterpret_cast<const __m128i*>(
-                            query + j * size + offset));
+            __m128i v_q = _mm_loadu_si128(reinterpret_cast<const __m128i*>(
+                    query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
             __m128i v_popcnt = popcount_128_vpopcntdq(v_and);
             __m128i v_shifted = _mm_slli_epi64(v_popcnt, j);
@@ -255,11 +291,12 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     popcount_sum += reduce_add_128(pop_128);
 
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         popcount_sum += popcount64(yv);
         for (size_t j = 0; j < qb; j++) {
-            const auto qv = *reinterpret_cast<const uint64_t*>(
-                    query + j * size + offset);
+            uint64_t qv;
+            std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             dot_product += static_cast<uint64_t>(popcount64(qv & yv)) << j;
         }
     }
@@ -289,8 +326,8 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_VPOPCNT>(
             __m512i v_x = _mm512_loadu_si512(
                     reinterpret_cast<const __m512i*>(data + offset));
             for (size_t j = 0; j < qb; j++) {
-                __m512i v_q = _mm512_loadu_si512(
-                        reinterpret_cast<const __m512i*>(
+                __m512i v_q =
+                        _mm512_loadu_si512(reinterpret_cast<const __m512i*>(
                                 query + j * size + offset));
                 __m512i v_xor = _mm512_xor_si512(v_q, v_x);
                 __m512i v_popcnt = popcount_512_vpopcntdq(v_xor);
@@ -307,8 +344,8 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_VPOPCNT>(
             __m256i v_x = _mm256_loadu_si256(
                     reinterpret_cast<const __m256i*>(data + offset));
             for (size_t j = 0; j < qb; j++) {
-                __m256i v_q = _mm256_loadu_si256(
-                        reinterpret_cast<const __m256i*>(
+                __m256i v_q =
+                        _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
                                 query + j * size + offset));
                 __m256i v_xor = _mm256_xor_si256(v_q, v_x);
                 __m256i v_popcnt = popcount_256_vpopcntdq(v_xor);
@@ -324,9 +361,8 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_VPOPCNT>(
         __m128i v_x = _mm_loadu_si128(
                 reinterpret_cast<const __m128i*>(data + offset));
         for (size_t j = 0; j < qb; j++) {
-            __m128i v_q = _mm_loadu_si128(
-                    reinterpret_cast<const __m128i*>(
-                            query + j * size + offset));
+            __m128i v_q = _mm_loadu_si128(reinterpret_cast<const __m128i*>(
+                    query + j * size + offset));
             __m128i v_xor = _mm_xor_si128(v_q, v_x);
             __m128i v_popcnt = popcount_128_vpopcntdq(v_xor);
             __m128i v_shifted = _mm_slli_epi64(v_popcnt, j);
@@ -336,10 +372,11 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_VPOPCNT>(
     sum += reduce_add_128(sum_128);
 
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         for (size_t j = 0; j < qb; j++) {
-            const auto qv = *reinterpret_cast<const uint64_t*>(
-                    query + j * size + offset);
+            uint64_t qv;
+            std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += static_cast<uint64_t>(popcount64(qv ^ yv)) << j;
         }
     }
@@ -389,7 +426,8 @@ uint64_t popcount<SIMDLevel::AVX512_VPOPCNT>(const uint8_t* data, size_t size) {
     sum += reduce_add_128(sum_128);
 
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         sum += popcount64(yv);
     }
     for (; offset < size; ++offset) {
