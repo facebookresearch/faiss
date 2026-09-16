@@ -212,16 +212,6 @@ struct HNSW {
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
-    /** add point pt_id on all levels <= pt_level and build the link
-     * structure for them. */
-    void add_with_locks(
-            DistanceComputer& ptdis,
-            int pt_level,
-            int pt_id,
-            LockVector& locks,
-            VisitedTable& vt,
-            bool keep_max_size_level0 = false);
-
     /** Deterministic build, phase A: write pt_id's forward links against an
      * immutable snapshot, touching only pt_id's own slots. Reciprocal edges
      * are collected in `pt_reverse_edges` for phase B, not applied. Requires
@@ -288,7 +278,8 @@ struct HNSW {
     void permute_entries(const idx_t* map);
 };
 
-/** Deterministic, lock-free HNSW graph build, shared by IndexHNSW and
+/** Deterministic, lock-free HNSW graph build. This is the only graph build
+ * that add() uses, and it is shared by IndexHNSW and
  * IndexBinaryHNSW. The callbacks let both share the algorithm:
  * `make_distance_computer()` returns a fresh DistanceComputer per thread
  * (caller-owned) and `set_query(dc, pt_id)` points it at pt_id's vector. */
@@ -328,12 +319,6 @@ struct HNSWStats {
 
 // global var that collects them all
 FAISS_API extern HNSWStats hnsw_stats;
-
-/** Use the lock-free deterministic graph build in add() rather than the
- * lock-based one. Transitional: it will become the only path.
- *
- * NOT thread-safe: set before calling add(). Sampled once per add(). */
-FAISS_API extern bool hnsw_deterministic_build;
 
 /// Internal HNSW algorithm helpers. These are not part of the public API; they
 /// are exposed here only so that unit tests (and a few cross-TU callers such as
