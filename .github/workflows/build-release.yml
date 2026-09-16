@@ -3,12 +3,34 @@ on:
     secrets:
       ANACONDA_API_TOKEN:
         required: true
+  # Manual trigger for recovering a single platform's conda packages when one
+  # leg of a tag-triggered release fails. Builds from the checked-out ref, so
+  # the conda version still comes from `git describe` (same version, next
+  # build number).
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "Which platform packages to build and upload"
+        type: choice
+        default: all
+        options:
+          - all
+          - linux-x86_64
+          - linux-x86_64-gpu
+          - linux-x86_64-gpu-cuvs
+          - windows-x86_64
+          - osx-arm64
+          - linux-arm64
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
   linux-x86_64-packages:
     name: Linux x86_64 packages
+    if: >-
+      github.event_name != 'workflow_dispatch'
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'linux-x86_64'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,6 +46,10 @@ jobs:
           label: main
   linux-x86_64-GPU-packages-CUDA-13-2-0:
     name: Linux x86_64 GPU packages (CUDA 13.2)
+    if: >-
+      github.event_name != 'workflow_dispatch'
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'linux-x86_64-gpu'
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "75-real;80;86-real;90;100;120"
@@ -42,6 +68,10 @@ jobs:
           cuda: "13.2"
   linux-x86_64-GPU-CUVS-packages-CUDA13-2-0:
     name: Linux x86_64 GPU w/ cuVS packages (CUDA 13.2)
+    if: >-
+      github.event_name != 'workflow_dispatch'
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'linux-x86_64-gpu-cuvs'
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "75-real;80;90;100;120"
@@ -61,6 +91,10 @@ jobs:
           cuda: "13.2"
   windows-x86_64-packages:
     name: Windows x86_64 packages
+    if: >-
+      github.event_name != 'workflow_dispatch'
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'windows-x86_64'
     runs-on: windows-2022
     steps:
       - name: Checkout
@@ -76,6 +110,10 @@ jobs:
           label: main
   osx-arm64-packages:
     name: OSX arm64 packages
+    if: >-
+      github.event_name != 'workflow_dispatch'
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'osx-arm64'
     runs-on: macos-14
     steps:
       - name: Checkout
@@ -91,6 +129,10 @@ jobs:
           label: main
   linux-arm64-packages:
     name: Linux arm64 packages
+    if: >-
+      github.event_name != 'workflow_dispatch'
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'linux-arm64'
     runs-on: 2-core-ubuntu-arm
     steps:
       - name: Checkout
