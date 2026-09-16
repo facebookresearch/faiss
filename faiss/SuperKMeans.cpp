@@ -266,9 +266,9 @@ float adapt_d_prime(
 }
 
 /// Pre-loop setup: subsample, rotate, Forgy init, build ADSampling table,
-/// size the label scratch. Returned `sampled_x_owner` keeps the subsampled
-/// buffer alive when subsampling occurred (otherwise empty).
-std::unique_ptr<uint8_t[]> setup_train_state(
+/// and size the label scratch. The subsampled input only needs to remain alive
+/// through the rotation and is released before the iteration loop starts.
+void setup_train_state(
         TrainState& state,
         std::vector<int64_t>& labels64,
         std::vector<float>& hassign,
@@ -316,6 +316,7 @@ std::unique_ptr<uint8_t[]> setup_train_state(
 
     state.X_tilde.resize(static_cast<size_t>(state.n) * d);
     state.R->apply_noalloc(state.n, x_sampled, state.X_tilde.data());
+    sampled_x_owner.reset();
 
     // Forgy init: pick k random rows from the rotated pool as initial
     // centroids. These remain in rotated space; un-rotation happens
@@ -351,8 +352,6 @@ std::unique_ptr<uint8_t[]> setup_train_state(
     hassign.assign(k, 0.0f);
 
     labels64.resize(state.n);
-
-    return sampled_x_owner;
 }
 
 /// Un-rotate centroids into output buffer. R orthogonal, so
@@ -435,8 +434,7 @@ void SuperKMeans::train(idx_t n, const float* x) {
     std::vector<int64_t> labels64;
     SuperKMeansAssignScratch assign_scratch;
     std::vector<float> hassign;
-    [[maybe_unused]] auto sampled_x_owner =
-            setup_train_state(state, labels64, hassign, cp, d, k, n, x);
+    setup_train_state(state, labels64, hassign, cp, d, k, n, x);
 
     iteration_stats.clear();
     iteration_stats.reserve(cp.niter);
