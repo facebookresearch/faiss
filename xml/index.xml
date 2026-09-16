@@ -5376,6 +5376,11 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFPQ" kind="struct"><name>faiss::IndexIVFPQ</name>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a129c300ca3a391cc7acf68fbe480b161" kind="enum"><name>ScannerMode</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a129c300ca3a391cc7acf68fbe480b161a04021d95a37003c16d27a38d407e3304" kind="enumvalue"><name>Precomputed</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a129c300ca3a391cc7acf68fbe480b161a90454013d6adfb8285ad4af579a064cd" kind="enumvalue"><name>OnTheFly</name></member>
+    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1a007303be116c8da65b6d058e3fc77d16" kind="variable"><name>pq</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1a9d5373633df7a9bec4de69400b9adeed" kind="variable"><name>do_polysemous_training</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1a2b14cbb5acb3fc28a4df8fde3f5567cd" kind="variable"><name>polysemous_training</name></member>
@@ -5418,6 +5423,7 @@
     <member refid="structfaiss_1_1IndexIVFPQ_1a5c52e3a7cf6d5c13b54395f8c646587c" kind="function"><name>encode_multiple</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1ad074686c530454b0138f30a488078236" kind="function"><name>decode_multiple</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c" kind="function"><name>get_InvertedListScanner</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a1d246fc08c09758e93d43a9b55110f4d" kind="function"><name>get_InvertedListScanner</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" kind="function"><name>precompute_table</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1a4821a0d1daec7a39abdc5d3e5762c7af" kind="function"><name>IndexIVFPQ</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
@@ -5462,8 +5468,6 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
-    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
-    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFPQFastScan" kind="struct"><name>faiss::IndexIVFPQFastScan</name>
     <member refid="structfaiss_1_1IndexIVFPQFastScan_1a2ee24b9bdc286a5abf9f12d4e46c5f08" kind="variable"><name>pq</name></member>
@@ -5628,6 +5632,7 @@
     <member refid="structfaiss_1_1IndexIVFPQ_1a5c52e3a7cf6d5c13b54395f8c646587c" kind="function"><name>encode_multiple</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1ad074686c530454b0138f30a488078236" kind="function"><name>decode_multiple</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c" kind="function"><name>get_InvertedListScanner</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a1d246fc08c09758e93d43a9b55110f4d" kind="function"><name>get_InvertedListScanner</name></member>
     <member refid="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" kind="function"><name>precompute_table</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -5666,6 +5671,9 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a129c300ca3a391cc7acf68fbe480b161" kind="enum"><name>ScannerMode</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a129c300ca3a391cc7acf68fbe480b161a04021d95a37003c16d27a38d407e3304" kind="enumvalue"><name>Precomputed</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQ_1a129c300ca3a391cc7acf68fbe480b161a90454013d6adfb8285ad4af579a064cd" kind="enumvalue"><name>OnTheFly</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
@@ -9151,6 +9159,7 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" kind="variable"><name>list_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" kind="variable"><name>list_ids</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" kind="variable"><name>list_size</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a5966393133c0879e7db11ac936cd519f" kind="variable"><name>on_the_fly_dis0</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" kind="variable"><name>ivfpq</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" kind="variable"><name>params</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" kind="variable"><name>d</name></member>
@@ -9184,6 +9193,8 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a9f01f56555294a395bd527f761f32ab0" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" kind="function"><name>scan_list_with_table</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" kind="function"><name>scan_list_with_pointer</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1aa952d1db606a7a277fdf4ec61d813c6d" kind="function"><name>prepare_on_the_fly_distance</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a022568aac24e404f9c26725c434f3490" kind="function"><name>distance_to_code_on_the_fly</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" kind="function"><name>scan_on_the_fly_dist</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" kind="function"><name>scan_list_polysemous_hc</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" kind="function"><name>scan_list_polysemous</name></member>
@@ -9206,6 +9217,7 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" kind="variable"><name>list_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" kind="variable"><name>list_ids</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" kind="variable"><name>list_size</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a5966393133c0879e7db11ac936cd519f" kind="variable"><name>on_the_fly_dis0</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" kind="variable"><name>ivfpq</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" kind="variable"><name>params</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" kind="variable"><name>d</name></member>
@@ -9229,6 +9241,8 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a2d120f24c307a815fe7263fea003c984" kind="function"><name>IVFPQScannerT</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" kind="function"><name>scan_list_with_table</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" kind="function"><name>scan_list_with_pointer</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1aa952d1db606a7a277fdf4ec61d813c6d" kind="function"><name>prepare_on_the_fly_distance</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a022568aac24e404f9c26725c434f3490" kind="function"><name>distance_to_code_on_the_fly</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" kind="function"><name>scan_on_the_fly_dist</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" kind="function"><name>scan_list_polysemous_hc</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" kind="function"><name>scan_list_polysemous</name></member>
@@ -14580,8 +14594,9 @@
     <member refid="polysemous__training_2dispatch_8h_1a65adecb39acda39bc07518fb00bd66fa" kind="function"><name>distances_cost_update&lt; SIMDLevel::AVX512 &gt;</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1pq__code__distance" kind="namespace"><name>faiss::pq_code_distance</name>
+    <member refid="IVFPQScanner__impl_8h_1ace0b9d251c207f412bc85ce02eb63543" kind="function"><name>make_IVFPQInvertedListScanner</name></member>
     <member refid="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" kind="function"><name>make_IVFPQInvertedListScanner</name></member>
-    <member refid="IVFPQScanner__impl_8h_1af6a7d6a634808cfff4adb38078cb54a4" kind="function"><name>make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="IVFPQScanner__impl_8h_1a8b7d516c0e893c41329d32f46c52a7ea" kind="function"><name>make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" kind="function"><name>pq_code_distance_8bit_single_impl&lt; SIMDLevel::AVX2 &gt;</name></member>
     <member refid="pq__code__distance-avx2_8h_1a10a1e541baf4537ece501bda4cb42f05" kind="function"><name>pq_code_distance_8bit_four_impl&lt; SIMDLevel::AVX2 &gt;</name></member>
     <member refid="pq__code__distance-avx512_8h_1a1eaddce4085fab8aa65f9cdea89485a5" kind="function"><name>pq_code_distance_8bit_single_impl&lt; SIMDLevel::AVX512 &gt;</name></member>

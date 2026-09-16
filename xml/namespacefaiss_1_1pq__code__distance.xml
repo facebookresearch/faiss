@@ -10,7 +10,44 @@
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1QueryTables" prot="public">faiss::pq_code_distance::QueryTables</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult" prot="public">faiss::pq_code_distance::WrappedSearchResult</innerclass>
     <sectiondef kind="func">
-      <memberdef kind="function" id="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="IVFPQScanner__impl_8h_1ace0b9d251c207f412bc85ce02eb63543" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
+        <definition>InvertedListScanner * faiss::pq_code_distance::make_IVFPQInvertedListScanner</definition>
+        <argsstring>(const IndexIVFPQ &amp;ivfpq, bool store_pairs, const IDSelector *sel, IndexIVFPQ::ScannerMode mode)</argsstring>
+        <name>make_IVFPQInvertedListScanner</name>
+        <qualifiedname>faiss::pq_code_distance::make_IVFPQInvertedListScanner</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref> &amp;</type>
+          <declname>ivfpq</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>IndexIVFPQ::ScannerMode</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="519" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="519" declcolumn="21"/>
+      </memberdef>
+      <memberdef kind="function" id="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>SIMDLevel</type>
@@ -41,14 +78,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="511" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="511" declcolumn="21"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="526" column="28" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="526" bodyend="532"/>
       </memberdef>
-      <memberdef kind="function" id="IVFPQScanner__impl_8h_1af6a7d6a634808cfff4adb38078cb54a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="IVFPQScanner__impl_8h_1a8b7d516c0e893c41329d32f46c52a7ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
         </templateparamlist>
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
         <definition>InvertedListScanner * faiss::pq_code_distance::make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</definition>
-        <argsstring>(const IndexIVFPQ &amp;ivfpq, bool store_pairs, const IDSelector *sel)</argsstring>
+        <argsstring>(const IndexIVFPQ &amp;ivfpq, bool store_pairs, const IDSelector *sel, IndexIVFPQ::ScannerMode mode)</argsstring>
         <name>make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</name>
         <qualifiedname>faiss::pq_code_distance::make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</qualifiedname>
         <param>
@@ -63,13 +100,17 @@
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
           <declname>sel</declname>
         </param>
+        <param>
+          <type>IndexIVFPQ::ScannerMode</type>
+          <declname>mode</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="518" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="518" bodyend="559"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="536" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="536" bodyend="580"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
