@@ -215,18 +215,25 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
             }
         } else {
             auto dataset_view =
-                    cuvs::neighbors::make_device_standard_dataset_view(
-                            raft_handle, dataset);
+                    cuvs::neighbors::make_device_standard_dataset_view(dataset);
+            // cuVS preserves the dataset-view type in the type returned by
+            // build(), but CAGRA search only accepts a device-padded index.
+            // Move the graph into that type now with an empty dataset; the
+            // first search attaches the real padded dataset via
+            // update_dataset() without copying the graph.
             cuvs_index = std::make_shared<
                     cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
+                    raft_handle,
                     cuvs::neighbors::cagra::build(
-                            raft_handle, index_params_, dataset_view));
+                            raft_handle, index_params_, dataset_view),
+                    cuvs::neighbors::
+                            device_padded_dataset_view<uint8_t, int64_t>{});
         }
     } else {
         auto dataset = raft::make_host_matrix_view<const uint8_t, int64_t>(
                 x, n, dim_ / 8);
-        auto dataset_view = cuvs::neighbors::make_host_standard_dataset_view(
-                raft_handle, dataset);
+        auto dataset_view =
+                cuvs::neighbors::make_host_standard_dataset_view(dataset);
         if (searchable_index_) {
             device_padded_dataset_ =
                     cuvs::neighbors::make_device_padded_dataset(
@@ -237,12 +244,20 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
                     cuvs::neighbors::cagra::build(
                             raft_handle, index_params_, dataset_view));
         } else {
-            dataset_view = cuvs::neighbors::make_host_standard_dataset_view(
-                    raft_handle, dataset);
+            dataset_view =
+                    cuvs::neighbors::make_host_standard_dataset_view(dataset);
+            // cuVS preserves the dataset-view type in the type returned by
+            // build(), but CAGRA search only accepts a device-padded index.
+            // Move the graph into that type now with an empty dataset; the
+            // first search attaches the real padded dataset via
+            // update_dataset() without copying the graph.
             cuvs_index = std::make_shared<
                     cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
+                    raft_handle,
                     cuvs::neighbors::cagra::build(
-                            raft_handle, index_params_, dataset_view));
+                            raft_handle, index_params_, dataset_view),
+                    cuvs::neighbors::
+                            device_padded_dataset_view<uint8_t, int64_t>{});
         }
     }
 }

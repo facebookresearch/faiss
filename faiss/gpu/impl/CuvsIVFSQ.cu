@@ -742,7 +742,7 @@ void CuvsIVFSQ::computeCenterNorms_() {
             cuvs_index->centers().data_handle(),
             cuvs_index->dim(),
             static_cast<uint32_t>(numLists_),
-            raft_handle.get_stream());
+            raft_handle.get_stream().get());
 }
 
 void CuvsIVFSQ::recomputeListState_(const std::vector<uint32_t>& listSizes) {
