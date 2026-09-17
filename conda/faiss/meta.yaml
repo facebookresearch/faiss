@@ -34,6 +34,8 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      ignore_run_exports_from:
+        - libopenblas  # [osx]
     requirements:
       build:
         - python {{ python }}
