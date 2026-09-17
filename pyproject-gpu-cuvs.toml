@@ -48,6 +48,7 @@ dependencies = [
   # which does not satisfy >=26.10 (that is 26.10.0). 26.10.0a0 admits
   # those prereleases, and <26.11 keeps the pin on this RAPIDS series.
   "libcuvs-cu13>=26.10.0a0,<26.11",
+  "libraft-cu13>=26.10.0a0,<26.11",
   "librmm-cu13>=26.10.0a0,<26.11",
 ]
 
@@ -119,6 +120,7 @@ test-requires = [
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
   "libcuvs-cu13>=26.10.0a0,<26.11",
+  "libraft-cu13>=26.10.0a0,<26.11",
   "librmm-cu13>=26.10.0a0,<26.11",
 ]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
