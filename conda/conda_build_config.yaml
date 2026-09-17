@@ -4,3 +4,15 @@ python:
   - 3.14
 numpy:
   - 2.3.3
+# Override the conda-forge global pin_run_as_build for libopenblas so that the
+# exact build-string (e.g. openmp_h5e6e99c_1) is NOT baked into libfaiss's
+# run-deps.  The global conda-forge pin uses max_pin='x.x.x.x' which includes
+# the ABI-specific build hash; a build hash that was valid when the package was
+# compiled can become unresolvable when conda-forge drops or supersedes that
+# variant.  Switching to max_pin='x.x' produces a version-range-only run-dep
+# (libopenblas >=0.3,<0.4) so the solver can pick any installable libopenblas
+# 0.3.x build variant in the target environment.
+pin_run_as_build:
+  libopenblas:
+    max_pin: 'x.x'
+    min_pin: 'x.x'
