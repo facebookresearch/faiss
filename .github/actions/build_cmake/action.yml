@@ -119,13 +119,16 @@ runs:
             # an older libnvJitLink.so.13 is left in the env and libcuvs fails to
             # load at import. PyTorch via pip supports cu132, avoiding the
             # conda-forge pytorch-gpu CUDA-12 limit.
+            # libcuvs 26.10 is only on rapidsai-nightly until GA. Nightly
+            # must be first: with strict channel priority, listing rapidsai
+            # first makes conda refuse 26.10 even though nightly has it.
             conda install -y -q -p "$CONDA" \
               cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 \
               'libnvjitlink>=13.3,<14' \
               libcublas-dev libcusolver-dev libcusparse-dev \
               gxx_linux-64=14.2 \
               libcuvs=26.10 'cuda-version>=13.2,<14' sysroot_linux-64=2.34 \
-              -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+              -c rapidsai-nightly -c rapidsai -c conda-forge -c nvidia
             conda clean --index-cache 2>/dev/null || true
           else
             conda install -y -q -p "$CONDA" cuda-libraries-dev=13.2 cuda-nvcc=13.2 cuda-nvtx=13.2 cuda-cupti=13.2 cuda-cudart-dev=13.2 gxx_linux-64=14.2 -c "nvidia/label/cuda-13.2"
