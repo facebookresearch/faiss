@@ -4,3 +4,14 @@ python:
   - 3.14
 numpy:
   - 2.3.3
+# Pin the libopenblas build variant for osx-arm64 to the openmp build that is
+# compatible with the current conda-forge llvm-openmp stack.  Without this pin,
+# conda-forge's global pin_run_as_build machinery bakes whichever libopenblas
+# build was resolved at compile time (historically openmp_h5e6e99c_1) into the
+# libfaiss run-deps.  That variant is incompatible with the current
+# llvm-openmp, causing the faiss-cpu test-env solve to fail with
+# "libopenblas =0.3.34 openmp_h5e6e99c_1 is not installable".  Pinning here
+# forces the build env — and therefore the baked run-dep — to use the
+# installable openmp_h4f80526_1 variant.
+libopenblas:
+  - 0.3.34 openmp_h4f80526_1  # [osx and arm64]
