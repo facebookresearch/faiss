@@ -458,6 +458,12 @@ jobs:
             build/tests/faiss_test \
             --gtest_filter="SIMDConfig.*:SIMDLevel.*:CompileOptions.*"
 
+      - name: Run test_sq_rvv_tail_and_semantics (via QEMU)
+        run: |
+          qemu-riscv64-static -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="*SQRVV*:*D5Overflow*:*D5bLargeDim*:*D10FloatQuery*"
+
   index-io-backward-compatibility:
     needs: linux-x86_64-cmake
     name: Index serialization backward compatibility
