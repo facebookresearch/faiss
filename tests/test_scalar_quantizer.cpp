@@ -693,3 +693,57 @@ TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
                 level, faiss::ScalarQuantizer::QT_8bit_eden);
     }
 }
+
+TEST(ScalarQuantizer, RVVDirectSignedDistances) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::RISCV_RVV)) {
+        GTEST_SKIP() << "RVV is not available";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::RISCV_RVV);
+    const std::array<uint8_t, 4> values = {0, 127, 128, 255};
+    const std::array<float, 4> queries = {-127.75f, -0.5f, 0.25f, 126.75f};
+    for (size_t d : {1, 15, 16, 17, 31, 32, 33, 65}) {
+        SCOPED_TRACE(d);
+        std::vector<uint8_t> codes(2 * d);
+        std::vector<float> query(d);
+        for (size_t i = 0; i < d; ++i) {
+            codes[i] = values[i % values.size()];
+            codes[d + i] = values[(i + 1) % values.size()];
+            query[i] = queries[i % queries.size()];
+        }
+        for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+            SCOPED_TRACE(static_cast<int>(metric));
+            faiss::ScalarQuantizer sq(
+                    d, faiss::ScalarQuantizer::QT_8bit_direct_signed);
+            std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> dc(
+                    sq.get_distance_computer(metric));
+            dc->codes = codes.data();
+            dc->code_size = sq.code_size;
+            dc->set_query(query.data());
+            for (size_t k = 0; k < 2; ++k) {
+                double expected = 0;
+                for (size_t i = 0; i < d; ++i) {
+                    const double decoded = int(codes[k * d + i]) - 128;
+                    const double diff = double(query[i]) - decoded;
+                    expected += metric == faiss::METRIC_L2
+                            ? diff * diff
+                            : double(query[i]) * decoded;
+                }
+                EXPECT_NEAR(
+                        dc->query_to_code(codes.data() + k * d),
+                        expected,
+                        2e-6 * std::max(1.0, std::abs(expected)));
+            }
+            double expected = 0;
+            for (size_t i = 0; i < d; ++i) {
+                const double a = int(codes[i]) - 128;
+                const double b = int(codes[d + i]) - 128;
+                expected +=
+                        metric == faiss::METRIC_L2 ? (a - b) * (a - b) : a * b;
+            }
+            // These integer sums are exactly representable in float.
+            EXPECT_EQ(dc->symmetric_dis(0, 1), float(expected));
+            EXPECT_EQ(dc->symmetric_dis(1, 0), float(expected));
+        }
+    }
+}
