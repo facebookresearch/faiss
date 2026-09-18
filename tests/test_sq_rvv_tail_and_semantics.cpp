@@ -3,6 +3,9 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ */
+
+/*
  *
  * SQ-RVV review-response tests (see
  * docs/sq_rvv_review_analysis_and_test_plan.md for the full analysis):
