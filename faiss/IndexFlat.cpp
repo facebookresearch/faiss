@@ -459,11 +459,14 @@ size_t IndexFlat1D::remove_ids(const IDSelector& sel) {
 }
 
 void IndexFlat1D::merge_from(Index& otherIndex, idx_t add_id) {
+    idx_t other_ntotal = otherIndex.ntotal;
     IndexFlatL2::merge_from(otherIndex, add_id);
-    if (continuous_update) {
-        update_permutation();
-    } else {
-        perm.clear();
+    if (other_ntotal > 0) {
+        if (continuous_update) {
+            update_permutation();
+        } else {
+            perm.clear();
+        }
     }
 }
 
