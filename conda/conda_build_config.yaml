@@ -4,3 +4,8 @@ python:
   - 3.14
 numpy:
   - 2.3.3
+# Pin libopenblas to the known-good osx-arm64 build. conda-forge published
+# openmp_h5e6e99c_1 which conflicts with numpy/scipy in the faiss-cpu host env.
+# Remove this pin once h5e6e99c_1 (or its successor) is compatible again.
+libopenblas:
+  - 0.3.34=openmp_h4f80526_1
