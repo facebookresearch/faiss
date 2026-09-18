@@ -49,6 +49,7 @@ set(FAISS_SIMD_AVX512_VPOPCNT_SRC
 # AVX-512 sources that require the full Sapphire Rapids feature set.
 set(FAISS_SIMD_AVX512_SPR_SRC
   impl/scalar_quantizer/sq-avx512-spr.cpp
+  utils/simd_impl/rabitq_integer_adc_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
@@ -61,6 +62,7 @@ set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
+  utils/simd_impl/rabitq_integer_adc_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -381,6 +383,7 @@ set(FAISS_HEADERS
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
+  utils/rabitq_integer_adc.h
   utils/random.h
   utils/sorting.h
   impl/simdlib/simdlib.h
@@ -439,6 +442,13 @@ endif()
 
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
+  # Keep optional dot-product instructions isolated in one runtime-gated TU;
+  # ordinary NEON builds must remain executable on CPUs without ASIMDDP.
+  set_source_files_properties(utils/simd_impl/rabitq_integer_adc_neon.cpp
+    PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+dotprod")
+endif()
 
 # Detect BMI2 compiler support.
 include(CheckCXXCompilerFlag)

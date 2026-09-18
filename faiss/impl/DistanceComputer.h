@@ -59,6 +59,29 @@ struct DistanceComputer {
     virtual ~DistanceComputer() {}
 };
 
+#ifndef SWIG
+/** Optional HNSW interface for evaluating arbitrary 32-bit storage IDs in
+ * implementation-selected batches. Kept separate so DistanceComputer's ABI
+ * remains unchanged.
+ */
+struct DistanceComputerBatch {
+    virtual int preferred_batch_size() const = 0;
+
+    virtual int max_tail_batch_size() const = 0;
+
+    virtual void distances_batch_8(const int32_t* ids, float* distances) = 0;
+
+    virtual void distances_batch_16(const int32_t* ids, float* distances) = 0;
+
+    virtual void distances_batch_tail(
+            const int32_t* ids,
+            int count,
+            float* distances) = 0;
+
+    virtual ~DistanceComputerBatch() {}
+};
+#endif
+
 /* Wrap the distance computer into one that negates the
    distances. This makes supporting INNER_PRODUCT search easier */
 

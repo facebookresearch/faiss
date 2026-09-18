@@ -12,6 +12,12 @@
 
 namespace faiss {
 
+enum RaBitQFullCodeMode : uint8_t {
+    RABITQ_FULL_CODE_PACKED = 0,
+    RABITQ_FULL_CODE_EXPANDED = 1,
+    RABITQ_FULL_CODE_INT8 = 2,
+};
+
 struct RaBitQSearchParameters : SearchParameters {
     uint8_t qb = 4;
     bool centered = false;
@@ -32,6 +38,15 @@ struct IndexRaBitQ : IndexFlatCodes {
     // quantize the query with a zero-centered scalar quantizer.
     bool centered = false;
 
+    /** Optional runtime cache of existing RaBitQ full levels.
+     *
+     * Each row contains d signed level bytes followed by the original
+     * ExtraBitsFactors. Packed codes remain authoritative and unchanged.
+     * The cache and selected mode are deliberately not serialized.
+     */
+    std::vector<uint8_t> expanded_codes;
+    RaBitQFullCodeMode full_code_mode = RABITQ_FULL_CODE_PACKED;
+
     IndexRaBitQ();
 
     explicit IndexRaBitQ(
@@ -40,6 +55,13 @@ struct IndexRaBitQ : IndexFlatCodes {
             uint8_t nb_bits = 1);
 
     void train(idx_t n, const float* x) override;
+
+    void add(idx_t n, const float* x) override;
+    void add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids) override;
+    void reset() override;
+    size_t remove_ids(const IDSelector& sel) override;
+    void merge_from(Index& other_index, idx_t add_id = 0) override;
+    void permute_entries(const idx_t* perm);
 
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
@@ -53,6 +75,16 @@ struct IndexRaBitQ : IndexFlatCodes {
     FlatCodesDistanceComputer* get_quantized_distance_computer(
             const uint8_t qb_in,
             bool centered) const;
+
+    /** Select the full-code scorer. Expanded modes support L2 and 2..8 total
+     * RaBitQ bits. They preserve the packed codes and derive a d+8 byte cache
+     * per vector. Calling this method again rebuilds a potentially stale cache.
+     */
+    void set_full_code_mode(uint8_t mode);
+
+    size_t expanded_code_size() const;
+    void rebuild_expanded_codes();
+    bool expanded_integer_uses_native_dotprod() const;
 
     // Don't rely on sa_decode(), bcz it is good for IP, but not for L2.
     //   As a result, use get_FlatCodesDistanceComputer() for the search.
