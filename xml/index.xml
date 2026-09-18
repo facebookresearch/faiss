@@ -9354,6 +9354,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a35e0e0dd17881bf2350ef7aff22ac628" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1ad0e44119153ba72e078d01b1d64232be" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a799c381d6dc4c1ce219ce21b9706415e" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a3094fb8480c1638be3376bdbdbc0d192" kind="function"><name>distance_to_codes_batch_4</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1af4602275509ac492f5e37de3ede50b2a" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
@@ -9375,6 +9376,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a255923afc0c80b1041e51d2c37047031" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a15a9254cb50839bbae6ef8e70091f82e" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a92a120a2b6f83a9a1037771e134e15f5" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a62b52ca8400928bddbb99bfb83d03a1a" kind="function"><name>distance_to_codes_batch_4</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1aa0a064413a7205841ad31070dc839901" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
@@ -14704,6 +14706,7 @@
     <member refid="sq-dispatch_8h_1a3206a9f2ab64b10be0f767b34f8848fd" kind="variable"><name>is_avx512_family</name></member>
     <member refid="distance__computers_8h_1ac6f2ec5777abf6638c5ae71909b0691f" kind="function"><name>sq_select_distance_computer</name></member>
     <member refid="quantizers_8h_1a58372b4312405a8863e41082b9bd9c92" kind="function"><name>sq_select_quantizer</name></member>
+    <member refid="scanners_8h_1af1bd640b0cf7fcd8824123c8ab99d38c" kind="function"><name>sq_batch_4_is_exact</name></member>
     <member refid="scanners_8h_1a93720e4ec0d8f806eb62c46db3e0ab04" kind="function"><name>sq_select_InvertedListScanner</name></member>
     <member refid="sq-avx512-impl_8h_1a7ae9a9d98ba3aeefb29adb1ce7378205" kind="function"><name>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</name></member>
     <member refid="sq-avx512-impl_8h_1a28d1f8d12d40bfa0329dfe15fc42f274" kind="function"><name>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</name></member>

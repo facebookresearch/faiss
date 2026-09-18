@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/scanners.h" line="165" column="11" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="165" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/scanners.h" line="218" column="11" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="218" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListScanner_1a843a53d7df43c6dd9f6c550708e3a7fc" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -124,7 +124,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/scanners.h" line="167" column="5" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="167" bodyend="174"/>
+        <location file="faiss/impl/scalar_quantizer/scanners.h" line="220" column="5" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="220" bodyend="227"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1ae8219353ae254850009f1da6e7cb2b09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -144,7 +144,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/scanners.h" line="176" column="10" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="176" bodyend="176"/>
+        <location file="faiss/impl/scalar_quantizer/scanners.h" line="229" column="10" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="229" bodyend="229"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a531a6f0124c2aa32c2481e8083a56529" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -168,7 +168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/scanners.h" line="178" column="10" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="178" bodyend="181"/>
+        <location file="faiss/impl/scalar_quantizer/scanners.h" line="231" column="10" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="231" bodyend="234"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a68fae4e9b4fe7721b3d78cc5eaa5134f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -188,7 +188,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/scanners.h" line="183" column="11" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="183" bodyend="185"/>
+        <location file="faiss/impl/scalar_quantizer/scanners.h" line="236" column="11" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="236" bodyend="238"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -453,7 +453,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/scanners.h" line="164" column="1" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="164" bodyend="186"/>
+    <location file="faiss/impl/scalar_quantizer/scanners.h" line="217" column="1" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="217" bodyend="239"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1aaedb3256330589647f8d7acd07b11ef1" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFCoarseDistanceScanner</scope><name>coarse_dis</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a5f1aeb6b7f06f79c3a2b2fc9e1404b3c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFCoarseDistanceScanner</scope><name>code_size</name></member>
