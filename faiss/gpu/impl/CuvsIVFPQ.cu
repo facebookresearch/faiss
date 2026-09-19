@@ -33,9 +33,14 @@
 #include <cuvs/neighbors/common.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
 #include <raft/linalg/map.cuh>
+#include <raft/matrix/gather.cuh>
 
+#include <thrust/gather.h>
+
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <optional>
 
 namespace faiss {
@@ -450,17 +455,115 @@ idx_t CuvsIVFPQ::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
-    /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to update the cuVS index if the quantizer was
-    /// modified externally
-
     FAISS_ASSERT(cuvs_index);
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
+    auto stream = resources_->getDefaultStreamCurrentDevice();
 
     /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
+
+    if (n_rows_valid == 0) {
+        return 0;
+    }
+
+    if (metric_ == faiss::METRIC_INNER_PRODUCT) {
+        // cuVS classifies vectors with L2 during IVF-PQ extend even when the
+        // index metric is inner product. A Faiss index imported here uses its
+        // inner-product coarse quantizer, so bulk extend would place newly
+        // added vectors in different lists from the existing vectors. Preserve
+        // the Faiss assignments and let cuVS encode each assigned list.
+        DeviceTensor<float, 2, true> unusedIVFDistances(
+                resources_,
+                makeTempAlloc(AllocType::Other, stream),
+                {n_rows_valid, 1});
+        DeviceTensor<idx_t, 2, true> ivfAssignments(
+                resources_,
+                makeTempAlloc(AllocType::Other, stream),
+                {n_rows_valid, 1});
+
+        Tensor<float, 2, true> validVecs(vecs.data(), {n_rows_valid, dim_});
+        searchCoarseQuantizer_(
+                coarseQuantizer,
+                1,
+                validVecs,
+                unusedIVFDistances,
+                ivfAssignments,
+                nullptr,
+                nullptr);
+
+        auto assignments = ivfAssignments.copyToVector(stream);
+        std::vector<idx_t> gatherIndices(n_rows_valid);
+        std::iota(gatherIndices.begin(), gatherIndices.end(), 0);
+        std::stable_sort(
+                gatherIndices.begin(),
+                gatherIndices.end(),
+                [&assignments](idx_t a, idx_t b) {
+                    return assignments[a] < assignments[b];
+                });
+
+        std::vector<idx_t> sortedAssignments(n_rows_valid);
+        for (idx_t i = 0; i < n_rows_valid; ++i) {
+            sortedAssignments[i] = assignments[gatherIndices[i]];
+            FAISS_THROW_IF_NOT_FMT(
+                    sortedAssignments[i] >= 0 &&
+                            sortedAssignments[i] < numLists_,
+                    "IVF list id %ld is out of bounds (nlist %ld)",
+                    sortedAssignments[i],
+                    numLists_);
+        }
+
+        auto gatherIndicesDevice = raft::make_device_vector<idx_t, idx_t>(
+                raft_handle, n_rows_valid);
+        raft::update_device(
+                gatherIndicesDevice.data_handle(),
+                gatherIndices.data(),
+                n_rows_valid,
+                raft_handle.get_stream());
+        auto sortedVecs = raft::make_device_matrix<float, idx_t>(
+                raft_handle, n_rows_valid, dim_);
+        raft::matrix::gather(
+                raft_handle,
+                raft::make_device_matrix_view<const float, idx_t>(
+                        vecs.data(), n_rows_valid, dim_),
+                raft::make_const_mdspan(gatherIndicesDevice.view()),
+                sortedVecs.view());
+
+        auto sortedIndices = raft::make_device_vector<idx_t, idx_t>(
+                raft_handle, n_rows_valid);
+        thrust::gather(
+                raft_handle.get_thrust_policy(),
+                gatherIndicesDevice.data_handle(),
+                gatherIndicesDevice.data_handle() + n_rows_valid,
+                indices.data(),
+                sortedIndices.data_handle());
+
+        for (idx_t begin = 0; begin < n_rows_valid;) {
+            idx_t end = begin + 1;
+            while (end < n_rows_valid &&
+                   sortedAssignments[end] == sortedAssignments[begin]) {
+                ++end;
+            }
+
+            FAISS_THROW_IF_NOT(
+                    end - begin <= std::numeric_limits<uint32_t>::max());
+            auto count = static_cast<uint32_t>(end - begin);
+            cuvs::neighbors::ivf_pq::helpers::codepacker::extend_list(
+                    raft_handle,
+                    cuvs_index.get(),
+                    raft::make_device_matrix_view<const float, uint32_t>(
+                            sortedVecs.data_handle() + begin * dim_,
+                            count,
+                            dim_),
+                    raft::make_device_vector_view<const idx_t, uint32_t>(
+                            sortedIndices.data_handle() + begin, count),
+                    static_cast<uint32_t>(sortedAssignments[begin]));
+            begin = end;
+        }
+
+        return n_rows_valid;
+    }
 
     cuvs::neighbors::ivf_pq::extend(
             raft_handle,
