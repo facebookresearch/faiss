@@ -213,6 +213,10 @@ struct IndexFlat1D : IndexFlatL2 {
 
     void reset() override;
 
+    size_t remove_ids(const IDSelector& sel) override;
+
+    void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+
     /// Warn: the distances returned are L1 not L2
     void search(
             idx_t n,
