@@ -219,6 +219,13 @@ void IndexShardsTemplate<IndexT>::search(
         }
     }
 
+    FAISS_THROW_IF_NOT_MSG(
+            !(params && params->sel && !translations.empty() &&
+              translations.back() != 0),
+            "IDSelector search is not supported when "
+            "successive_ids shifts shard IDs; use successive_ids=false "
+            "with globally assigned shard IDs");
+
     auto fn = [n, k, x, params, &all_distances, &all_labels, &translations](
                       int no, const IndexT* index) {
         if (index->verbose) {
