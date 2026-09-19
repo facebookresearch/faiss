@@ -1021,6 +1021,55 @@ IndexHNSWRaBitQ::IndexHNSWRaBitQ(
     hnsw.search_method = nb_bits >= 2 ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
 }
 
+void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !fp32_graph_built,
+            "cannot append to an IndexHNSWRaBitQ whose graph was batch-built "
+            "with FP32 distances; call reset() before rebuilding");
+    IndexHNSW::add(n, x);
+}
+
+void IndexHNSWRaBitQ::add_with_fp32_graph(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IndexHNSWRaBitQ is not trained");
+    FAISS_THROW_IF_NOT_MSG(
+            ntotal == 0 && storage && storage->ntotal == 0 &&
+                    hnsw.levels.empty() && hnsw.neighbors.size() == 0,
+            "add_with_fp32_graph requires an empty IndexHNSWRaBitQ");
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "number of vectors must be non-negative");
+
+    IndexFlatL2 construction_storage(d);
+    construction_storage.add(n, x);
+
+    storage->add(n, x);
+    ntotal = storage->ntotal;
+    // Set this before graph construction so an interrupted build cannot later
+    // append with a different construction-distance policy.
+    fp32_graph_built = n > 0;
+    const bool preset_levels =
+            hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    hnsw_add_vertices_deterministic(
+            hnsw,
+            0,
+            n,
+            d,
+            init_level0,
+            keep_max_size_level0,
+            preset_levels,
+            verbose,
+            [&construction_storage] {
+                return storage_distance_computer(&construction_storage);
+            },
+            [this, x](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                dc.set_query(x + static_cast<size_t>(pt_id) * d);
+            });
+}
+
+void IndexHNSWRaBitQ::reset() {
+    IndexHNSW::reset();
+    fp32_graph_built = false;
+}
+
 /**************************************************************
  * IndexHNSW2Level implementation
  **************************************************************/
