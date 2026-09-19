@@ -177,6 +177,7 @@
     <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan" prot="public">faiss::IndexIVFResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFScalarQuantizer" prot="public">faiss::IndexIVFScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFSpectralHash" prot="public">faiss::IndexIVFSpectralHash</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFSQFastScan" prot="public">faiss::IndexIVFSQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFStats" prot="public">faiss::IndexIVFStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexLattice" prot="public">faiss::IndexLattice</innerclass>
     <innerclass refid="structfaiss_1_1IndexLocalSearchQuantizer" prot="public">faiss::IndexLocalSearchQuantizer</innerclass>
@@ -215,6 +216,7 @@
     <innerclass refid="structfaiss_1_1IndexShardsIVF" prot="public">faiss::IndexShardsIVF</innerclass>
     <innerclass refid="structfaiss_1_1IndexShardsTemplate" prot="public">faiss::IndexShardsTemplate</innerclass>
     <innerclass refid="structfaiss_1_1IndexSplitVectors" prot="public">faiss::IndexSplitVectors</innerclass>
+    <innerclass refid="structfaiss_1_1IndexSQFastScan" prot="public">faiss::IndexSQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexSVSFlat" prot="public">faiss::IndexSVSFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexSVSIVF" prot="public">faiss::IndexSVSIVF</innerclass>
     <innerclass refid="structfaiss_1_1IndexSVSIVFLeanVec" prot="public">faiss::IndexSVSIVFLeanVec</innerclass>

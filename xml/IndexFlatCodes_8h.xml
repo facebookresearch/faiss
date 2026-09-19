@@ -15,6 +15,7 @@
     <includedby refid="IndexNeuralNetCodec_8h" local="no">faiss/IndexNeuralNetCodec.h</includedby>
     <includedby refid="IndexPQ_8h" local="no">faiss/IndexPQ.h</includedby>
     <includedby refid="IndexRaBitQ_8h" local="no">faiss/IndexRaBitQ.h</includedby>
+    <includedby refid="IndexSQFastScan_8h" local="no">faiss/IndexSQFastScan.h</includedby>
     <includedby refid="IndexScalarQuantizer_8h" local="no">faiss/IndexScalarQuantizer.h</includedby>
     <incdepgraph>
       <node id="3">
@@ -202,6 +203,8 @@
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
       </node>
       <node id="7">
         <label>faiss/IndexHNSW.h</label>
@@ -244,6 +247,10 @@
         <link refid="IndexIVFRaBitQFastScan_8h_source"/>
         <childnode refid="33" relation="include">
         </childnode>
+      </node>
+      <node id="36">
+        <label>faiss/IndexIVFSQFastScan.h</label>
+        <link refid="IndexIVFSQFastScan_8h_source"/>
       </node>
       <node id="17">
         <label>faiss/IndexLSH.h</label>
@@ -304,20 +311,28 @@
         </childnode>
       </node>
       <node id="34">
+        <label>faiss/IndexSQFastScan.h</label>
+        <link refid="IndexSQFastScan_8h_source"/>
+      </node>
+      <node id="35">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="14">
         <label>faiss/gpu/GpuIcmEncoder.h</label>
         <link refid="GpuIcmEncoder_8h_source"/>
       </node>
-      <node id="35">
+      <node id="37">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>

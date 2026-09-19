@@ -47,6 +47,7 @@
     <innerfile refid="IndexIVFRaBitQ_8h">IndexIVFRaBitQ.h</innerfile>
     <innerfile refid="IndexIVFRaBitQFastScan_8h">IndexIVFRaBitQFastScan.h</innerfile>
     <innerfile refid="IndexIVFSpectralHash_8h">IndexIVFSpectralHash.h</innerfile>
+    <innerfile refid="IndexIVFSQFastScan_8h">IndexIVFSQFastScan.h</innerfile>
     <innerfile refid="IndexLattice_8h">IndexLattice.h</innerfile>
     <innerfile refid="IndexLSH_8h">IndexLSH.h</innerfile>
     <innerfile refid="IndexNeuralNetCodec_8h">IndexNeuralNetCodec.h</innerfile>
@@ -63,6 +64,7 @@
     <innerfile refid="IndexScalarQuantizer_8h">IndexScalarQuantizer.h</innerfile>
     <innerfile refid="IndexShards_8h">IndexShards.h</innerfile>
     <innerfile refid="IndexShardsIVF_8h">IndexShardsIVF.h</innerfile>
+    <innerfile refid="IndexSQFastScan_8h">IndexSQFastScan.h</innerfile>
     <innerfile refid="IVFlib_8h">IVFlib.h</innerfile>
     <innerfile refid="MatrixStats_8h">MatrixStats.h</innerfile>
     <innerfile refid="MetaIndexes_8h">MetaIndexes.h</innerfile>

@@ -8,7 +8,9 @@
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes refid="ScalarQuantizer_8h" local="no">faiss/impl/ScalarQuantizer.h</includes>
     <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
+    <includedby refid="IndexIVFSQFastScan_8h" local="no">faiss/IndexIVFSQFastScan.h</includedby>
     <includedby refid="IndexNSG_8h" local="no">faiss/IndexNSG.h</includedby>
+    <includedby refid="IndexSQFastScan_8h" local="no">faiss/IndexSQFastScan.h</includedby>
     <includedby refid="GpuIndexIVFScalarQuantizer_8h" local="no">faiss/gpu/GpuIndexIVFScalarQuantizer.h</includedby>
     <incdepgraph>
       <node id="24">
@@ -380,8 +382,16 @@
         <link refid="IndexHNSW_8h_source"/>
       </node>
       <node id="3">
+        <label>faiss/IndexIVFSQFastScan.h</label>
+        <link refid="IndexIVFSQFastScan_8h_source"/>
+      </node>
+      <node id="4">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/IndexSQFastScan.h</label>
+        <link refid="IndexSQFastScan_8h_source"/>
       </node>
       <node id="1">
         <label>faiss/IndexScalarQuantizer.h</label>
@@ -392,8 +402,12 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="6">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>

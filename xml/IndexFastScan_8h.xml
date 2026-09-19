@@ -10,6 +10,7 @@
     <includedby refid="IndexAdditiveQuantizerFastScan_8h" local="no">faiss/IndexAdditiveQuantizerFastScan.h</includedby>
     <includedby refid="IndexPQFastScan_8h" local="no">faiss/IndexPQFastScan.h</includedby>
     <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
+    <includedby refid="IndexSQFastScan_8h" local="no">faiss/IndexSQFastScan.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>faiss/Index.h</label>
@@ -194,6 +195,8 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="5">
         <label>faiss/IndexIVFRaBitQFastScan.h</label>
@@ -212,6 +215,10 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/IndexSQFastScan.h</label>
+        <link refid="IndexSQFastScan_8h_source"/>
       </node>
       <node id="6">
         <label>faiss/impl/fast_scan/rabitq_dispatching.h</label>
