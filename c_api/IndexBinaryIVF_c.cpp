@@ -10,6 +10,9 @@
 #include "IndexBinaryIVF_c.h"
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/invlists/DirectMap.h>
+#include "invlists/DirectMap_c.h"
 #include "macros_impl.h"
 
 extern "C" {
@@ -91,6 +94,22 @@ int faiss_IndexBinaryIVF_make_direct_map(
     try {
         reinterpret_cast<IndexBinaryIVF*>(index)->make_direct_map(
                 static_cast<bool>(new_maintain_direct_map));
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_IndexBinaryIVF_set_direct_map_type(
+        FaissIndexBinaryIVF* index,
+        FaissDirectMapType direct_map_type) {
+    try {
+        FAISS_THROW_IF_NOT_FMT(
+                direct_map_type == DIRECT_MAP_NO_MAP ||
+                        direct_map_type == DIRECT_MAP_ARRAY ||
+                        direct_map_type == DIRECT_MAP_HASHTABLE,
+                "unknown direct map type %d",
+                (int)direct_map_type);
+        reinterpret_cast<IndexBinaryIVF*>(index)->set_direct_map_type(
+                static_cast<faiss::DirectMap::Type>(direct_map_type));
     }
     CATCH_AND_HANDLE
 }

@@ -17,7 +17,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 15
-#define FAISS_VERSION_PATCH 0
+#define FAISS_VERSION_PATCH 1
 
 // Macro to combine the version components into a single string
 #ifndef FAISS_STRINGIFY
