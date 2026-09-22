@@ -105,6 +105,8 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexSQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -612,8 +614,6 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/hnsw/MinimaxHeap.h>
 %include  <faiss/impl/HNSW.h>
-%ignore faiss::IndexHNSW::locks;
-%ignore faiss::IndexBinaryHNSW::locks;
 %include  <faiss/IndexHNSW.h>
 
 %include <faiss/impl/kmeans1d.h>
@@ -683,12 +683,14 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexSQFastScan.h>
 
 // NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
 // class template. SWIG cannot handle this, and the Python API doesn't need
 // the internal SIMD handler types.
 // %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFSQFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
 
@@ -870,6 +872,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFPQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizer )
@@ -893,6 +896,8 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
+    DOWNCAST ( IndexSQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )
