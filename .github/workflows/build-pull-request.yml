@@ -391,11 +391,16 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq \
             cmake \
-            gcc-riscv64-linux-gnu \
-            g++-riscv64-linux-gnu \
+            gcc-14-riscv64-linux-gnu \
+            g++-14-riscv64-linux-gnu \
             libopenblas-dev:riscv64 \
             libgomp1:riscv64 \
             qemu-user-static
+
+          # GCC 13's <riscv_vector.h> lacks the RVV tuple types (e.g.
+          # vuint8m1x3_t) and the zvfhmin f16 intrinsics the SQ kernels use;
+          # GCC 14 is required. Fail fast if the default still points at 13.
+          riscv64-linux-gnu-g++-14 --version
 
           # Bridge Ubuntu's multiarch library directory into the sysroot so
           # that CMake's find_library() (ONLY mode, root=/usr/riscv64-linux-gnu)
@@ -457,6 +462,12 @@ jobs:
           qemu-riscv64-static -L /usr/riscv64-linux-gnu \
             build/tests/faiss_test \
             --gtest_filter="SIMDConfig.*:SIMDLevel.*:CompileOptions.*"
+
+      - name: Run test_sq_rvv_tail_and_semantics (via QEMU)
+        run: |
+          qemu-riscv64-static -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="*SQRVV*:*D5Overflow*:*D5bLargeDim*:*D10FloatQuery*"
 
   index-io-backward-compatibility:
     needs: linux-x86_64-cmake
