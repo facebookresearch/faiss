@@ -487,11 +487,8 @@ void hnsw_search(
         InterruptCallback::check();
     }
 
-#pragma omp critical
-    {
-        hnsw_stats.combine({n1, n2, ndis, nhops});
-        rabitq_stats.add({n_rabitq_1bit, n_rabitq_refine});
-    }
+    hnsw_stats.combine({n1, n2, ndis, nhops});
+    rabitq_stats.add({n_rabitq_1bit, n_rabitq_refine});
 }
 
 } // anonymous namespace
@@ -1233,10 +1230,7 @@ void IndexHNSW2Level::search(
         }
         omp_rethrow_if_exception(ex);
 
-#pragma omp critical
-        {
-            hnsw_stats.combine({n1, n2, ndis, nhops});
-        }
+        hnsw_stats.combine({n1, n2, ndis, nhops});
     }
 }
 
@@ -1438,10 +1432,7 @@ void IndexHNSWCagra::range_search(
         result->do_allocation();
         pres.copy_result();
 
-#pragma omp critical
-        {
-            hnsw_stats.combine({n1, n2, ndis, nhops});
-        }
+        hnsw_stats.combine({n1, n2, ndis, nhops});
     };
 
     if (is_similarity_metric(metric_type)) {
