@@ -211,6 +211,30 @@ class TestRounding(unittest.TestCase):
         self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
 
+class TestManyPQSubQuantizers(unittest.TestCase):
+    def do_test_recall_matches_pq(self, d):
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 50)
+        # M = d gives one dimension per sub-quantizer.
+        pq = faiss.IndexPQ(d, d, 4)
+        pq.train(ds.get_train())
+        pq.add(ds.get_database())
+
+        fs = faiss.IndexPQFastScan(d, d, 4)
+        fs.train(ds.get_train())
+        fs.add(ds.get_database())
+
+        Dref, Iref = pq.search(ds.get_queries(), 10)
+        D, I = fs.search(ds.get_queries(), 10)
+        agree = (Iref[:, :1] == I[:, :1]).sum() / Iref.shape[0]
+        self.assertGreater(agree, 0.9)
+
+    def test_m_768(self):
+        self.do_test_recall_matches_pq(768)
+
+    def test_m_1024(self):
+        self.do_test_recall_matches_pq(1024)
+
+
 @for_all_simd_levels
 class TestReconstruct(unittest.TestCase):
 
