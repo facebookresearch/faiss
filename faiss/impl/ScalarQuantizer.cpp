@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <cmath>
 #include <cstring>
 #include <memory>
 
@@ -425,14 +426,29 @@ const LloydMaxTable kLloydMaxTables[] = {
         {kLloydMaxCentroids8, kLloydMaxBoundaries8}, // 8
 };
 
-void populate_lloyd_max_trained(size_t mse_bits, std::vector<float>& trained) {
+// The tables are Lloyd-Max optimal for N(0, 1) input. Callers whose input has
+// a different standard deviation pass it as `scale` to stretch the table.
+void populate_lloyd_max_trained(
+        size_t mse_bits,
+        std::vector<float>& trained,
+        float scale = 1.0f) {
     FAISS_THROW_IF_NOT(mse_bits >= 1 && mse_bits <= 8);
     FAISS_THROW_IF_NOT(kLloydMaxTables[mse_bits].centroids);
     size_t k = size_t(1) << mse_bits;
     const auto& t = kLloydMaxTables[mse_bits];
     trained.resize(k + (k - 1));
-    std::copy(t.centroids, t.centroids + k, trained.begin());
-    std::copy(t.boundaries, t.boundaries + k - 1, trained.begin() + k);
+    for (size_t i = 0; i < k; i++) {
+        trained[i] = t.centroids[i] * scale;
+    }
+    for (size_t i = 0; i + 1 < k; i++) {
+        trained[k + i] = t.boundaries[i] * scale;
+    }
+}
+
+// Component scale of a unit-norm vector in R^d.
+float unit_norm_component_scale(size_t d) {
+    FAISS_THROW_IF_NOT(d > 0);
+    return 1.0f / std::sqrt(static_cast<float>(d));
 }
 
 } // namespace
@@ -588,19 +604,24 @@ void ScalarQuantizer::train(size_t n, const float* x) {
             populate_lloyd_max_trained(bits, trained);
             break;
         case QT_1bit_tqmse:
-            populate_lloyd_max_trained(1, trained);
+            populate_lloyd_max_trained(
+                    1, trained, unit_norm_component_scale(d));
             break;
         case QT_2bit_tqmse:
-            populate_lloyd_max_trained(2, trained);
+            populate_lloyd_max_trained(
+                    2, trained, unit_norm_component_scale(d));
             break;
         case QT_3bit_tqmse:
-            populate_lloyd_max_trained(3, trained);
+            populate_lloyd_max_trained(
+                    3, trained, unit_norm_component_scale(d));
             break;
         case QT_4bit_tqmse:
-            populate_lloyd_max_trained(4, trained);
+            populate_lloyd_max_trained(
+                    4, trained, unit_norm_component_scale(d));
             break;
         case QT_8bit_tqmse:
-            populate_lloyd_max_trained(8, trained);
+            populate_lloyd_max_trained(
+                    8, trained, unit_norm_component_scale(d));
             break;
         case QT_2bit_tq:
         case QT_3bit_tq:
@@ -614,7 +635,6 @@ void ScalarQuantizer::train(size_t n, const float* x) {
             trained.push_back(seed_f[0]);
             trained.push_back(seed_f[1]);
             trained.push_back(static_cast<float>(turboq_refine.qjl_type));
-            turboq_refine.init_projection(d);
             break;
         }
         default:
@@ -622,29 +642,11 @@ void ScalarQuantizer::train(size_t n, const float* x) {
     }
 }
 
-void ScalarQuantizer::TurboQuantRefine::init_projection(size_t d) {
-    if (use_fwht()) {
-        padded_d = 1;
-        while (padded_d < d) {
-            padded_d <<= 1;
-        }
-        fwht_signs.resize(padded_d);
-        RandomGenerator rng(seed);
-        for (size_t i = 0; i < padded_d; i++) {
-            fwht_signs[i] = (rng.rand_int(2) == 0) ? 1.0f : -1.0f;
-        }
-    } else {
-        rr_matrix.resize(d * d);
-        float_randn(rr_matrix.data(), d * d, seed);
-        matrix_qr(static_cast<int>(d), static_cast<int>(d), rr_matrix.data());
-    }
-}
-
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     // A SIMD level's factory returns nullptr when the dimension is
     // incompatible (e.g. AVX-512 needs d % 16 == 0); the dispatcher then falls
     // back to the next-lower level (AVX-512 -> AVX2 -> scalar).
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> SQuantizer* {
                 return scalar_quantizer::sq_select_quantizer<SL>(
                         qtype, d, trained);
@@ -681,7 +683,7 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> SQDistanceComputer* {
                 return scalar_quantizer::sq_select_distance_computer<SL>(
                         metric, qtype, d, trained);
@@ -694,7 +696,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> InvertedListScanner* {
                 return scalar_quantizer::sq_select_InvertedListScanner<SL>(
                         qtype,

@@ -194,6 +194,57 @@ class TestExhaustiveSearch(unittest.TestCase):
             ref_lims, ref_D, ref_I, new_lims, new_D, new_I
         )
 
+    def test_query_iterator_similarity_metric(self):
+        """range_search_max_results must keep the highest-scoring results
+        (and raise the radius) for any similarity metric, not just
+        METRIC_INNER_PRODUCT. Regression test for a bug where pruning
+        for METRIC_Jaccard (also a similarity metric, see
+        faiss.is_similarity_metric) kept the lowest-scoring results
+        instead of the highest-scoring ones."""
+
+        class FakeSimilarityIndex:
+            """Stands in for an Index using a similarity metric (higher
+            score = better match), exposing only what
+            range_search_max_results touches."""
+
+            def __init__(self, sims, metric_type):
+                self.sims = sims
+                self.metric_type = metric_type
+
+            def range_search(self, xq, radius):
+                lims = [0]
+                D = []
+                I = []
+                for i in range(len(xq)):
+                    s = self.sims[i]
+                    idx = np.nonzero(s > radius)[0]
+                    D.append(s[idx])
+                    I.append(idx.astype("int64"))
+                    lims.append(lims[-1] + len(idx))
+                return (
+                    np.array(lims, dtype="uint64"),
+                    np.hstack(D).astype("float32"),
+                    np.hstack(I).astype("int64"),
+                )
+
+        rs = np.random.RandomState(1)
+        nq, ndb = 5, 200
+        sims = [rs.rand(ndb).astype("float32") for _ in range(nq)]
+        index = FakeSimilarityIndex(sims, faiss.METRIC_Jaccard)
+
+        xq = np.zeros((nq, 1), dtype="float32")  # unused by the fake index
+        radius = 0.0  # keep everything initially
+        total = sum(len(s) for s in sims)
+        max_results = total // 2
+
+        new_radius, lims, D, I = range_search_max_results(
+            index, iter([xq]), radius, max_results=max_results
+        )
+
+        self.assertGreaterEqual(new_radius, radius)
+        self.assertGreater(len(D), 0)
+        self.assertGreaterEqual(D.min(), new_radius - 1e-6)
+
 
 class TestInspect(unittest.TestCase):
 
@@ -969,6 +1020,56 @@ class TestFactoryTools(unittest.TestCase):
         # get_code_size(reverse_index_factory(index)) must not raise for any M
         code_size = factory_tools.get_code_size(d, factory_str)
         self.assertEqual(code_size, d * 4 + 16 * 2 * 4)
+
+    def test_hnsw_storage_reverse_index_factory(self):
+        d = 128
+        # flat storage stays implicit, everything else must be spelled out
+        cases = {
+            "HNSW32,Flat": "HNSW32",
+            "HNSW32,SQ8": "HNSW32,SQ8",
+            "HNSW32,SQfp16": "HNSW32,SQfp16",
+            "HNSW32,PQ16x8": "HNSW32,PQ16x8",
+        }
+        for key, expected in cases.items():
+            index = faiss.index_factory(d, key)
+            factory_str = factory_tools.reverse_index_factory(index)
+            self.assertEqual(factory_str, expected)
+            # the string must rebuild the same index class
+            rebuilt = faiss.index_factory(d, factory_str)
+            self.assertEqual(type(rebuilt), type(index))
+
+    def test_get_code_size_hnsw_non_flat_storage(self):
+        d = 128
+        graph = 32 * 2 * 4
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32,SQ8"), d + graph
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32,SQfp16"), d * 2 + graph
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32,PQ16x8"), 16 + graph
+        )
+
+    def test_get_code_size_imi(self):
+        # the coarse quantizer adds no per-vector bytes
+        d = 64
+        self.assertEqual(factory_tools.get_code_size(d, "IMI2x10,PQ16"), 16)
+        self.assertEqual(factory_tools.get_code_size(d, "IMI2x5,Flat"), d * 4)
+        # round-trip: get_code_size must parse what reverse emits
+        index = faiss.index_factory(d, "IMI2x5,PQ8")
+        factory_str = factory_tools.reverse_index_factory(index)
+        self.assertEqual(factory_str, "IMI2x5,PQ8x8")
+        self.assertEqual(factory_tools.get_code_size(d, factory_str), 8)
+
+    def test_ivfpqr_reverse_index_factory(self):
+        d = 128
+        index = faiss.index_factory(d, "IVF64,PQ8+16")
+        factory_str = factory_tools.reverse_index_factory(index)
+        self.assertEqual(factory_str, "IVF64,PQ8+16")
+        rebuilt = faiss.index_factory(d, factory_str)
+        self.assertEqual(type(rebuilt), type(index))
+        self.assertEqual(factory_tools.get_code_size(d, factory_str), 8 + 16)
 
     def test_rabitq_reverse_index_factory(self):
         d = 64

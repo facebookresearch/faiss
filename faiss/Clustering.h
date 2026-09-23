@@ -75,6 +75,14 @@ struct ClusteringParameters {
     /// so the training process stops only if an error
     /// is unchanged from the previous iteration.
     double early_stop_threshold = 0.0;
+
+    /// Whether to use the SuperKMeans (super fast k-means) variant instead of
+    /// the vanilla Clustering implementation. Only honored by callers that
+    /// explicitly support it (e.g. IVF level-1 quantizer training). Cannot be
+    /// combined with a user-provided clustering index: SuperKMeans assigns
+    /// with its own index, so callers that supply both get an exception rather
+    /// than a silent downgrade to vanilla Clustering.
+    bool use_super_kmeans = false;
 };
 
 struct ClusteringIterationStats {

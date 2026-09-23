@@ -347,7 +347,7 @@ def range_search_max_results(
             radius, totres = apply_maxres(
                 res_batches,
                 min_results,
-                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT,
+                keep_max=faiss.is_similarity_metric(index.metric_type),
             )
         t2 = time.time()
         t_search += t1 - t0
@@ -366,7 +366,7 @@ def range_search_max_results(
         radius, totres = apply_maxres(
             res_batches,
             min_results,
-            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT,
+            keep_max=faiss.is_similarity_metric(index.metric_type),
         )
 
     nres = np.hstack([nres_i for nres_i, dis_i, ids_i in res_batches])

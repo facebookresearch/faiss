@@ -67,11 +67,13 @@ IndexSVSVamana::IndexSVSVamana(
         size_t degree,
         MetricType metric,
         SVSStorageKind storage,
-        bool is_static)
+        bool is_static,
+        bool store_vectors)
         : Index(d, metric),
           graph_max_degree{degree},
           is_static{is_static},
-          storage_kind{storage} {
+          storage_kind{storage},
+          store_vectors{store_vectors} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 
@@ -124,6 +126,14 @@ IndexSVSVamana::~IndexSVSVamana() {
 }
 
 void IndexSVSVamana::add(idx_t n, const float* x) {
+    // Opting out after data has been added would leave stored_vectors
+    // misaligned with the ids in the index, so release it instead of growing.
+    if (!store_vectors && stored_vectors_valid) {
+        stored_vectors.clear();
+        stored_vectors.shrink_to_fit();
+        stored_vectors_valid = false;
+    }
+
     if (is_static) {
         FAISS_THROW_IF_MSG(
                 impl,
@@ -167,7 +177,8 @@ void IndexSVSVamana::reconstruct(idx_t key, float* recons) const {
     FAISS_THROW_IF_NOT_MSG(
             stored_vectors_valid && !stored_vectors.empty(),
             "IndexSVSVamana::reconstruct: stored_vectors unavailable "
-            "(invalidated by remove_ids or not restored after deserialization)");
+            "(store_vectors disabled, invalidated by remove_ids, or not "
+            "restored after deserialization)");
     std::memcpy(recons, stored_vectors.data() + key * d, sizeof(float) * d);
 }
 
@@ -187,7 +198,8 @@ void IndexSVSVamana::reset() {
         }
     }
     stored_vectors.clear();
-    stored_vectors_valid = true;
+    stored_vectors.shrink_to_fit();
+    stored_vectors_valid = store_vectors;
     mmap_owner.reset(); // Release the memory mapping
     is_trained = false;
     ntotal = 0;

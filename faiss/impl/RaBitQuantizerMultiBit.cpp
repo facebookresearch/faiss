@@ -302,9 +302,9 @@ void quantize_ex_bits(
     }
 
     // Step 6: Handle negative dimensions (flip bits)
-    // For negative residuals, flip all bits: code' = ~code & max_code
+    // For negative or zero residuals, flip all bits: code' = ~code & max_code
     for (size_t i = 0; i < d; i++) {
-        if (residual[i] < 0) {
+        if (residual[i] <= 0) {
             tmp_code[i] = (~tmp_code[i]) & max_code;
         }
     }
