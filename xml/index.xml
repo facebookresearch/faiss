@@ -14969,6 +14969,10 @@
   </compound>
   <compound refid="GpuIndexCagra_8h" kind="file"><name>GpuIndexCagra.h</name>
   </compound>
+  <compound refid="gpu_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
+  </compound>
+  <compound refid="gpu__metal_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
+  </compound>
   <compound refid="GpuIndexIVF_8h" kind="file"><name>GpuIndexIVF.h</name>
   </compound>
   <compound refid="GpuIndexIVFFlat_8h" kind="file"><name>GpuIndexIVFFlat.h</name>
@@ -15142,10 +15146,6 @@
   <compound refid="WarpSelectKernel_8cuh" kind="file"><name>WarpSelectKernel.cuh</name>
   </compound>
   <compound refid="WarpShuffles_8cuh" kind="file"><name>WarpShuffles.cuh</name>
-  </compound>
-  <compound refid="gpu_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
-  </compound>
-  <compound refid="gpu__metal_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
   </compound>
   <compound refid="MetalIVFFlat_8h" kind="file"><name>MetalIVFFlat.h</name>
   </compound>
