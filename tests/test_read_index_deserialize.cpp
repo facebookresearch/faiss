@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <limits>
 #include <numeric>
 #include <random>
 #include <string>
@@ -2258,6 +2259,18 @@ TEST(ReadIndexDeserialize, InvertedListOversizedEntry) {
     expect_read_throws_with(buf, "deserialization byte limit");
 
     set_deserialization_vector_byte_limit(old_limit);
+}
+
+TEST(ReadIndexDeserialize, OnDiskInvertedListsShortListsVectorRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwFl");
+    push_ivf_header(buf, /*d=*/4);
+    push_fourcc(buf, "ilod");
+    push_val<size_t>(buf, 1);  // nlist = 1
+    push_val<size_t>(buf, 16); // code_size = 16
+    push_val<size_t>(buf, 0);  // lists: empty, inconsistent with nlist = 1
+
+    expect_read_throws_with(buf, "read 0 lists for nlist 1");
 }
 
 // -- Ixrq (IndexRaBitQ, single-bit) --
@@ -4853,6 +4866,57 @@ TEST(ReadIndexDeserialize, FlatPanoramaNegativeNtotal) {
     expect_read_throws_with(buf, "invalid ntotal");
 }
 
+TEST(ReadIndexDeserialize, FlatPanoramaZeroBatchSizeRejected) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/8,
+            /*n_levels=*/1,
+            /*batch_size=*/0,
+            /*ntotal=*/2,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    expect_read_throws_with(buf, "invalid IxFP batch_size");
+}
+
+TEST(ReadIndexDeserialize, FlatPanoramaCodesSizeOverflowRejected) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/8,
+            /*n_levels=*/1,
+            /*batch_size=*/(std::numeric_limits<size_t>::max)(),
+            /*ntotal=*/2,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    // With batch_size=SIZE_MAX and ntotal=2, num_batches computes to 1 and
+    // num_slots=1*SIZE_MAX does not overflow. The throw actually originates
+    // from the later num_slots * code_size multiplication in mul_no_overflow,
+    // which emits "integer overflow in IndexFlatPanorama codes: ...". Match
+    // on that full prefix so this test cannot be silently satisfied by the
+    // sibling "IndexFlatPanorama codes size mismatch" throw.
+    expect_read_throws_with(buf, "integer overflow in IndexFlatPanorama codes");
+}
+
+TEST(ReadIndexDeserialize, FlatPanoramaCodesSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_flat_panorama(
+            buf,
+            /*d=*/8,
+            /*n_levels=*/1,
+            /*batch_size=*/4,
+            /*ntotal=*/2,
+            /*codes_bytes=*/0,
+            /*cum_sums_count=*/0);
+
+    // Match on the explicit FAISS_THROW_IF_NOT_FMT message so the test is
+    // pinned to the intended error rather than a stringified condition
+    // expression that would break on trivial refactors.
+    expect_read_throws_with(buf, "IndexFlatPanorama codes size mismatch");
+}
+
 // End-to-end shape of the fuzzer crash: an IndexPreTransform with an empty
 // chain wrapping an empty IndexFlatPanorama. Everything deserializes, and
 // reconstruct() must then reject the out-of-range key instead of memcpy'ing
@@ -4922,7 +4986,15 @@ TEST(IndexFlatPanoramaSafety, ReconstructRejectsOutOfRangeKey) {
     EXPECT_THROW(index.reconstruct(2, recons.data()), FaissException);
     EXPECT_THROW(index.reconstruct(-1, recons.data()), FaissException);
     EXPECT_NO_THROW(index.reconstruct_n(0, 2, recons.data()));
+    EXPECT_THROW(index.reconstruct_n(-1, 1, recons.data()), FaissException);
+    EXPECT_THROW(index.reconstruct_n(0, -1, recons.data()), FaissException);
+    EXPECT_THROW(
+            index.reconstruct_n(
+                    1, (std::numeric_limits<idx_t>::max)(), recons.data()),
+            FaissException);
     EXPECT_THROW(index.reconstruct_n(1, 2, recons.data()), FaissException);
+    EXPECT_THROW(index.reconstruct_n(-1, 0, recons.data()), FaissException);
+    EXPECT_THROW(index.reconstruct_n(3, 0, recons.data()), FaissException);
 }
 
 namespace {
