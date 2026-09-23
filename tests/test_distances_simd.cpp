@@ -46,7 +46,10 @@ TEST(TestFvecL2sqrNy, D2) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> u(0, 32);
 
-    for (const auto dim : {2, 4, 8, 12}) {
+    // 1/2/4/8 hit the dedicated per-dimension kernels; the multiples of 4, 8
+    // and 16 reach the `lanes1`..`lanes4` kernels on 128/256/512-bit SVE
+    // respectively, and 3/5 fall through to the scalar tail.
+    for (const auto dim : {1, 2, 3, 4, 5, 8, 12, 16, 24, 32, 48, 64}) {
         std::vector<float> x(dim, 0);
         for (size_t i = 0; i < x.size(); i++) {
             x[i] = u(rng);
@@ -112,47 +115,51 @@ TEST(TestFvecL2sqr, distances_L2_squared_y_transposed) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> uniform(0, 32);
 
-    // modulo 8 results - 16 is to repeat the loop in the function
-    int ny = 11; // this value will hit all the codepaths
-    for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 16}) {
-        // initialize inputs
-        std::vector<float> x(d);
-        float x_sqlen = 0;
-        for (size_t i = 0; i < x.size(); i++) {
-            x[i] = uniform(rng);
-            x_sqlen += x[i] * x[i];
-        }
-        std::vector<float> y(d * ny);
-        std::vector<float> y_sqlens(ny, 0);
-        for (int i = 0; i < ny; i++) {
-            for (size_t j = 0; j < y.size(); j++) {
-                y[j] = uniform(rng);
-                y_sqlens[i] += y[j] * y[j];
+    // ny = 8/16/32 are exact multiples of the SVE vector length on 256/512/1024
+    // bit implementations, so they leave no partial-predicate tail; 5 and 11
+    // do.
+    for (const auto ny : {5, 8, 11, 16, 32}) {
+        for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 16}) {
+            // initialize inputs
+            std::vector<float> x(d);
+            float x_sqlen = 0;
+            for (size_t i = 0; i < x.size(); i++) {
+                x[i] = uniform(rng);
+                x_sqlen += x[i] * x[i];
             }
-        }
-
-        // perform function
-        std::vector<float> true_distances(ny, 0);
-        for (int i = 0; i < ny; i++) {
-            float dp = 0;
-            for (int j = 0; j < d; j++) {
-                dp += x[j] * y[i + j * ny];
+            std::vector<float> y(d * ny);
+            std::vector<float> y_sqlens(ny, 0);
+            for (int i = 0; i < ny; i++) {
+                for (size_t j = 0; j < y.size(); j++) {
+                    y[j] = uniform(rng);
+                    y_sqlens[i] += y[j] * y[j];
+                }
             }
-            true_distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
+
+            // perform function
+            std::vector<float> true_distances(ny, 0);
+            for (int i = 0; i < ny; i++) {
+                float dp = 0;
+                for (int j = 0; j < d; j++) {
+                    dp += x[j] * y[i + j * ny];
+                }
+                true_distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
+            }
+
+            std::vector<float> distances(ny);
+            faiss::fvec_L2sqr_ny_transposed(
+                    distances.data(),
+                    x.data(),
+                    y.data(),
+                    y_sqlens.data(),
+                    d,
+                    ny, // no need for special offset to test all lines of code
+                    ny);
+
+            ASSERT_EQ(distances, true_distances)
+                    << "Mismatching fvec_L2sqr_ny_transposed results for d = "
+                    << d << ", ny = " << ny;
         }
-
-        std::vector<float> distances(ny);
-        faiss::fvec_L2sqr_ny_transposed(
-                distances.data(),
-                x.data(),
-                y.data(),
-                y_sqlens.data(),
-                d,
-                ny, // no need for special offset to test all lines of code
-                ny);
-
-        ASSERT_EQ(distances, true_distances)
-                << "Mismatching fvec_L2sqr_ny_transposed results for d = " << d;
     }
 }
 
@@ -161,57 +168,60 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> uniform(0, 32);
 
-    // modulo 8 results - 16 is to repeat the loop in the function
-    int ny = 11; // this value will hit all the codepaths
-    for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 16}) {
-        // initialize inputs
-        std::vector<float> x(d);
-        float x_sqlen = 0;
-        for (size_t i = 0; i < x.size(); i++) {
-            x[i] = uniform(rng);
-            x_sqlen += x[i] * x[i];
-        }
-        std::vector<float> y(d * ny);
-        std::vector<float> y_sqlens(ny, 0);
-        for (int i = 0; i < ny; i++) {
-            for (size_t j = 0; j < y.size(); j++) {
-                y[j] = uniform(rng);
-                y_sqlens[i] += y[j] * y[j];
+    // ny = 8/16/32 are exact multiples of the SVE vector length on 256/512/1024
+    // bit implementations, so they leave no partial-predicate tail; 5 and 11
+    // do.
+    for (const auto ny : {5, 8, 11, 16, 32}) {
+        for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 16}) {
+            // initialize inputs
+            std::vector<float> x(d);
+            float x_sqlen = 0;
+            for (size_t i = 0; i < x.size(); i++) {
+                x[i] = uniform(rng);
+                x_sqlen += x[i] * x[i];
             }
-        }
-
-        // get distances
-        std::vector<float> distances(ny, 0);
-        for (int i = 0; i < ny; i++) {
-            float dp = 0;
-            for (int j = 0; j < d; j++) {
-                dp += x[j] * y[i + j * ny];
+            std::vector<float> y(d * ny);
+            std::vector<float> y_sqlens(ny, 0);
+            for (int i = 0; i < ny; i++) {
+                for (size_t j = 0; j < y.size(); j++) {
+                    y[j] = uniform(rng);
+                    y_sqlens[i] += y[j] * y[j];
+                }
             }
-            distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
-        }
-        // find nearest
-        size_t true_nearest_idx = 0;
-        float min_dis = HUGE_VALF;
-        for (int i = 0; i < ny; i++) {
-            if (distances[i] < min_dis) {
-                min_dis = distances[i];
-                true_nearest_idx = i;
+
+            // get distances
+            std::vector<float> distances(ny, 0);
+            for (int i = 0; i < ny; i++) {
+                float dp = 0;
+                for (int j = 0; j < d; j++) {
+                    dp += x[j] * y[i + j * ny];
+                }
+                distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
             }
+            // find nearest
+            size_t true_nearest_idx = 0;
+            float min_dis = HUGE_VALF;
+            for (int i = 0; i < ny; i++) {
+                if (distances[i] < min_dis) {
+                    min_dis = distances[i];
+                    true_nearest_idx = i;
+                }
+            }
+
+            std::vector<float> buffer(ny);
+            size_t nearest_idx = faiss::fvec_L2sqr_ny_nearest_y_transposed(
+                    buffer.data(),
+                    x.data(),
+                    y.data(),
+                    y_sqlens.data(),
+                    d,
+                    ny, // no need for special offset to test all lines of code
+                    ny);
+
+            ASSERT_EQ(nearest_idx, true_nearest_idx)
+                    << "Mismatching fvec_L2sqr_ny_nearest_y_transposed results for d = "
+                    << d << ", ny = " << ny;
         }
-
-        std::vector<float> buffer(ny);
-        size_t nearest_idx = faiss::fvec_L2sqr_ny_nearest_y_transposed(
-                buffer.data(),
-                x.data(),
-                y.data(),
-                y_sqlens.data(),
-                d,
-                ny, // no need for special offset to test all lines of code
-                ny);
-
-        ASSERT_EQ(nearest_idx, true_nearest_idx)
-                << "Mismatching fvec_L2sqr_ny_nearest_y_transposed results for d = "
-                << d;
     }
 }
 

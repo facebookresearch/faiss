@@ -39,12 +39,8 @@ struct GpuClonerOptions {
     /// Set verbose options on the index
     bool verbose = false;
 
-    /// use the cuVS implementation
-#if defined USE_NVIDIA_CUVS
-    bool use_cuvs = true;
-#else
+    /// Use the cuVS implementation. Opt-in: see GpuIndexConfig::use_cuvs.
     bool use_cuvs = false;
-#endif
 
     /// This flag controls the CPU fallback logic for coarse quantizer
     /// component of the index. When set to false (default), the cloner will

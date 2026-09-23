@@ -36,7 +36,8 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
             SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4,
-            bool is_static = false);
+            bool is_static = false,
+            bool store_vectors = true);
 
     ~IndexSVSVamanaLeanVec() override;
 

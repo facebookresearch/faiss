@@ -210,12 +210,23 @@ inline void hammings_impl(
         size_t n2,
         hamdis_t* __restrict dis) {
     size_t i, j;
-    const size_t nwords = nbits / 64;
+    constexpr size_t nwords = nbits / 64;
     for (i = 0; i < n1; i++) {
         const uint64_t* __restrict bs1_ = bs1 + i * nwords;
         hamdis_t* __restrict dis_ = dis + i * n2;
-        for (j = 0; j < n2; j++) {
-            dis_[j] = hamming<nbits>(bs1_, bs2 + j * nwords);
+        if constexpr (nwords >= 4) {
+            // Wide codes are quicker one candidate at a time; otherwise the
+            // compiler batches candidates and must gather scattered bytes.
+#if defined(__clang__)
+#pragma clang loop vectorize(disable)
+#endif
+            for (j = 0; j < n2; j++) {
+                dis_[j] = hamming<nbits>(bs1_, bs2 + j * nwords);
+            }
+        } else {
+            for (j = 0; j < n2; j++) {
+                dis_[j] = hamming<nbits>(bs1_, bs2 + j * nwords);
+            }
         }
     }
 }

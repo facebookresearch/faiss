@@ -16,7 +16,7 @@ namespace detail {
 
 // Squared L2 over `n` dimensions; n in [1, pdx_block_size].
 // Primary template is the scalar fallback; SIMDLevels without a dedicated
-// specialization (ARM_NEON, ARM_SVE, NONE, ...) use it directly.
+// specialization (ARM_NEON, NONE, ...) use it directly.
 template <SIMDLevel Level>
 inline float block_l2(const float* x, const float* y, int n) {
     float s = 0.0f;
@@ -37,6 +37,11 @@ float block_l2<SIMDLevel::AVX2>(const float* x, const float* y, int n);
 #ifdef COMPILE_SIMD_AVX512
 template <>
 float block_l2<SIMDLevel::AVX512>(const float* x, const float* y, int n);
+#endif
+
+#ifdef COMPILE_SIMD_ARM_SVE
+template <>
+float block_l2<SIMDLevel::ARM_SVE>(const float* x, const float* y, int n);
 #endif
 
 } // namespace detail

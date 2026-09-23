@@ -40,6 +40,7 @@ void kernel_accumulate_block(
 #ifdef __AVX512F__
     if constexpr (
             KernelSL == SIMDLevel::AVX512 ||
+            KernelSL == SIMDLevel::AVX512_VPOPCNT ||
             KernelSL == SIMDLevel::AVX512_SPR) {
         pq4_kernel_qbs_512<NQ>(nsq, codes, LUT, res, scaler);
     } else {

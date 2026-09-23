@@ -111,7 +111,7 @@ FAISS_API extern size_t hamming_batch_size;
  *
  * @param  a             size na * nbytespercode
  * @param  b             size nb * nbytespercode
- * @param  nbytespercode should be multiple of 8
+ * @param  nbytespercode any size; multiples of 8 take a faster kernel
  * @param  dis           output distances, size na * nb
  */
 void hammings(
@@ -326,6 +326,15 @@ void hamming_range_search_fixSL(
         size_t code_size,
         RangeSearchResult* result,
         const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hammings_ragged_fixSL(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* dis);
 
 template <SIMDLevel SL>
 void hammings_fixSL(

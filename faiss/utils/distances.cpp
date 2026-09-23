@@ -541,17 +541,19 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
         return;
     }
 
-    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>([&]<SIMDLevel SL>() {
-        if constexpr (
-                SL == SIMDLevel::AVX2 || SL == SIMDLevel::AVX512 ||
-                SL == SIMDLevel::ARM_SVE) {
-            exhaustive_L2sqr_blas_cmax<SL>(x, y, d, nx, ny, res, y_norms);
-        } else {
-            exhaustive_L2sqr_blas_default_impl<
-                    Top1BlockResultHandler<CMax<float, int64_t>>>(
-                    x, y, d, nx, ny, res, y_norms);
-        }
-    });
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE>(
+            [&]<SIMDLevel SL>() {
+                if constexpr (
+                        SL == SIMDLevel::AVX2 || SL == SIMDLevel::AVX512 ||
+                        SL == SIMDLevel::ARM_SVE) {
+                    exhaustive_L2sqr_blas_cmax<SL>(
+                            x, y, d, nx, ny, res, y_norms);
+                } else {
+                    exhaustive_L2sqr_blas_default_impl<
+                            Top1BlockResultHandler<CMax<float, int64_t>>>(
+                            x, y, d, nx, ny, res, y_norms);
+                }
+            });
 }
 
 struct Run_search_inner_product {
@@ -563,7 +565,11 @@ struct Run_search_inner_product {
            size_t d,
            size_t nx,
            size_t ny) {
-        if (res.sel ||
+        // ny == 0 goes to the sequential path: it guards only on nx, so its
+        // per-query begin()/end() still runs and each handler writes its own
+        // neutral distance and -1 label. The BLAS path instead returns early
+        // on ny == 0, before the handler is initialized.
+        if (res.sel || ny == 0 ||
             nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
@@ -582,7 +588,8 @@ struct Run_search_L2sqr {
            size_t nx,
            size_t ny,
            const float* y_norm2) {
-        if (res.sel ||
+        // See the note on ny == 0 in Run_search_inner_product.
+        if (res.sel || ny == 0 ||
             nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
         } else {

@@ -248,58 +248,56 @@ class TestIDMapCagra(unittest.TestCase):
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
 )
+class TestCagraConfig(unittest.TestCase):
+    """Config surface for the multi-GPU build, checkable without 2 GPUs."""
+
+    def test_multi_gpu_knobs_survive_swig(self):
+        devices = faiss.Int32Vector()
+        devices.push_back(0)
+        devices.push_back(1)
+
+        all_neighbors = faiss.AllNeighborsCagraConfig()
+        all_neighbors.n_clusters = 16
+        all_neighbors.overlap_factor = 3
+        all_neighbors.ivf_pq_search_batch_size = 8192
+
+        config = faiss.GpuIndexCagraConfig()
+        config.devices = devices
+        config.all_neighbors_params = all_neighbors
+
+        self.assertEqual(config.devices.size(), 2)
+        self.assertEqual(config.devices.at(1), 1)
+        stored = config.all_neighbors_params
+        self.assertEqual(
+            (
+                stored.n_clusters,
+                stored.overlap_factor,
+                stored.ivf_pq_search_batch_size,
+            ),
+            (16, 3, 8192),
+        )
+
+    def test_brute_force_rejected_without_multiple_devices(self):
+        ds = datasets.SyntheticDataset(32, 0, 1000, 1)
+        config = faiss.GpuIndexCagraConfig()
+        config.build_algo = faiss.graph_build_algo_BRUTE_FORCE
+        res = faiss.StandardGpuResources()
+        index = faiss.GpuIndexCagra(res, ds.d, faiss.METRIC_L2, config)
+
+        with self.assertRaises(RuntimeError):
+            index.train(ds.get_database())
+
+
+@unittest.skipIf(
+    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
+)
 @unittest.skipIf(
     faiss.get_num_gpus() < 2, "need at least 2 GPUs for multi-GPU test"
 )
 class TestMultiGpuCagra(unittest.TestCase):
 
-    def test_multi_gpu_build_and_search(self):
-        ds = datasets.SyntheticDataset(128, 0, 100_000, 1000)
-        xb = ds.get_database()
-        xq = ds.get_queries()
-        k = 10
-
-        gt_index = faiss.IndexFlatL2(ds.d)
-        gt_index.add(xb)
-        Dref, Iref = gt_index.search(xq, k)
-
-        num_gpus = min(faiss.get_num_gpus(), 4)
-        resources = faiss.GpuResourcesVector()
-        devices = faiss.Int32Vector()
-        res_list = []
-        for i in range(num_gpus):
-            res = faiss.StandardGpuResources()
-            res_list.append(res)
-            resources.push_back(res)
-            devices.push_back(i)
-
-        config = faiss.GpuIndexCagraConfig()
-        config.graph_degree = 32
-        index = faiss.GpuIndexCagra(res_list[0], ds.d, faiss.METRIC_L2, config)
-        index.trainMultiGpu(ds.nb, faiss.swig_ptr(xb), resources, devices, 0, 2)
-
-        cpu_index = faiss.IndexHNSWCagra()
-        index.copyTo(cpu_index)
-        self.assertEqual(cpu_index.ntotal, ds.nb)
-
-        cpu_index.hnsw.efSearch = 128
-        Dnew, Inew = cpu_index.search(xq, k)
-
-        recall = np.mean(
-            [len(set(Inew[i]) & set(Iref[i])) / k for i in range(ds.nq)]
-        )
-        self.assertGreater(
-            recall, 0.80, f"Multi-GPU recall@{k} too low: {recall:.4f}"
-        )
-
-        # Serialization roundtrip
-        data = faiss.serialize_index(cpu_index)
-        loaded = faiss.deserialize_index(data)
-        loaded.hnsw.efSearch = 128
-        Dnew2, Inew2 = loaded.search(xq, k)
-        np.testing.assert_array_equal(Inew, Inew2)
-
     def test_all_neighbors_build(self):
+        """train() on a multi-device config builds a unified CAGRA graph."""
         ds = datasets.SyntheticDataset(32, 0, 50_000, 100)
         xb = ds.get_database()
         xq = ds.get_queries()
@@ -309,19 +307,22 @@ class TestMultiGpuCagra(unittest.TestCase):
         gt_index.add(xb)
         Dref, Iref = gt_index.search(xq, k)
 
-        num_gpus = min(faiss.get_num_gpus(), 4)
         devices = faiss.Int32Vector()
-        for i in range(num_gpus):
+        for i in range(min(faiss.get_num_gpus(), 4)):
             devices.push_back(i)
 
-        res = faiss.StandardGpuResources()
+        all_neighbors = faiss.AllNeighborsCagraConfig()
+
         config = faiss.GpuIndexCagraConfig()
         config.graph_degree = 32
         config.intermediate_graph_degree = 48
+        config.build_algo = faiss.graph_build_algo_NN_DESCENT
+        config.devices = devices
+        config.all_neighbors_params = all_neighbors
+
+        res = faiss.StandardGpuResources()
         index = faiss.GpuIndexCagra(res, ds.d, faiss.METRIC_L2, config)
-        index.trainAllNeighbors(
-            ds.nb, faiss.swig_ptr(xb), devices, 0, 0, True, 0
-        )
+        index.train(xb)
 
         cpu_index = faiss.IndexHNSWCagra()
         cpu_index.base_level_only = True
@@ -337,3 +338,9 @@ class TestMultiGpuCagra(unittest.TestCase):
         self.assertGreater(
             recall, 0.70, f"all_neighbors recall@{k} too low: {recall:.4f}"
         )
+
+        # Serialization roundtrip
+        loaded = faiss.deserialize_index(faiss.serialize_index(cpu_index))
+        loaded.hnsw.efSearch = 128
+        _, Inew2 = loaded.search(xq, k)
+        np.testing.assert_array_equal(Inew, Inew2)
