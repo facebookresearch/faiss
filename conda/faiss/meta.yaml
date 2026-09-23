@@ -169,10 +169,12 @@ outputs:
         - python_abi =3.12
         {% endif %}
       commands:
-        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"  # [x86_64]
+        - python -X faulthandler run_tests_arm64.py                              # [not x86_64]
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]
+        - run_tests_arm64.py    # [not x86_64]
       source_files:
         - tests/
