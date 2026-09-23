@@ -286,6 +286,13 @@ IndexIVFSQFastScan::~IndexIVFSQFastScan() {
 // Virtual method implementations
 // -----------------------------------------------------------------------
 
+void IndexIVFSQFastScan::use_array_direct_map() {
+    if (direct_map.type == DirectMap::NoMap) {
+        return; // no rerank, so no map
+    }
+    direct_map.set_type(DirectMap::Array, invlists, ntotal);
+}
+
 size_t IndexIVFSQFastScan::fast_scan_code_size() const {
     return M2 / 2;
 }

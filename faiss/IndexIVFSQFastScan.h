@@ -63,6 +63,10 @@ struct IndexIVFSQFastScan : IndexIVFFastScan {
 
     ~IndexIVFSQFastScan() override;
 
+    /// Switch the rerank direct map from the hashtable (~49 B/vector) to the
+    /// array form (8 B/vector). Throws unless the ids are sequential.
+    void use_array_direct_map();
+
     size_t fast_scan_code_size() const override;
 
     void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
