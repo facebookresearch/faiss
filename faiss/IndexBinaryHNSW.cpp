@@ -121,7 +121,10 @@ void IndexBinaryHNSW::search(
         }
     }
 
-    hnsw_stats.combine({n1, n2, ndis, nhops});
+#pragma omp critical
+    {
+        hnsw_stats.combine({n1, n2, ndis, nhops});
+    }
 
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; ++i) {
