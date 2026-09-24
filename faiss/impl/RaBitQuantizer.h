@@ -40,6 +40,8 @@ struct RaBitQStats {
         n_refine += other.n_refine;
     }
 
+    void add_atomic(const RaBitQStats& other);
+
     double refine_ratio() const {
         return n_1bit ? double(n_refine) / double(n_1bit) : 0.0;
     }

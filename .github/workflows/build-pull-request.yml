@@ -469,6 +469,22 @@ jobs:
             build/tests/faiss_test \
             --gtest_filter="*SQRVV*:*D5Overflow*:*D5bLargeDim*:*D10FloatQuery*"
 
+      - name: Run scalar quantizer RVV parity tests (via QEMU)
+        run: |
+          qemu-riscv64-static \
+            -cpu rv64,v=true,x-zvfhmin=true \
+            -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="ScalarQuantizer.*DistancePathParity*"
+
+      - name: Run scalar quantizer RVV parity tests (VLEN=1024, via QEMU)
+        run: |
+          qemu-riscv64-static \
+            -cpu rv64,v=true,vlen=1024,x-zvfhmin=true \
+            -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="ScalarQuantizer.*DistancePathParity*"
+
   index-io-backward-compatibility:
     needs: linux-x86_64-cmake
     name: Index serialization backward compatibility
