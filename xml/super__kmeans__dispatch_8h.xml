@@ -12,15 +12,15 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -42,13 +42,15 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/impl/simd_dispatch.h</label>
         <link refid="simd__dispatch_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -56,46 +58,49 @@
         <link refid="super__kmeans__dispatch_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/utils/simd_impl/super_kmeans_kernels.h</label>
+        <link refid="super__kmeans__kernels_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="16">
-        <label>faiss/utils/simd_impl/super_kmeans_kernels.h</label>
-        <link refid="super__kmeans__kernels_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
         <label>faiss/utils/simd_levels.h</label>
         <link refid="simd__levels_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>cinttypes</label>
-      </node>
-      <node id="17">
-        <label>cstddef</label>
-      </node>
       <node id="10">
-        <label>cstdint</label>
-      </node>
-      <node id="11">
-        <label>cstdio</label>
+        <label>atomic</label>
       </node>
       <node id="13">
+        <label>cinttypes</label>
+      </node>
+      <node id="18">
+        <label>cstddef</label>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>cstdio</label>
+      </node>
+      <node id="14">
         <label>cstdlib</label>
       </node>
       <node id="5">
         <label>exception</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>limits</label>
       </node>
       <node id="6">

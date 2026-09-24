@@ -31,6 +31,8 @@
       <node id="16">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
@@ -77,6 +79,9 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+      </node>
+      <node id="17">
+        <label>atomic</label>
       </node>
       <node id="2">
         <label>cassert</label>

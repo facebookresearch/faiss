@@ -509,6 +509,33 @@
         </inbodydescription>
         <location file="faiss/impl/PdxLayout.h" line="38" column="6" declfile="faiss/impl/PdxLayout.h" declline="38" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1detail_1afe2cf857b32a6c27c26807fe72472d4e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::detail::atomic_fetch_add_relaxed</definition>
+        <argsstring>(T &amp;target, T value)</argsstring>
+        <name>atomic_fetch_add_relaxed</name>
+        <qualifiedname>faiss::detail::atomic_fetch_add_relaxed</qualifiedname>
+        <param>
+          <type>T &amp;</type>
+          <declname>target</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/platform_macros.h" line="154" column="13" bodyfile="faiss/impl/platform_macros.h" bodystart="154" bodyend="160"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1aa233c0a54aee4ea6ece0c73d8db01d67" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::detail::block_l2_dispatch</definition>

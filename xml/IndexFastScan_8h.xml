@@ -29,11 +29,11 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -48,7 +48,7 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss/impl/CodePacker.h</label>
         <link refid="CodePacker_8h_source"/>
         <childnode refid="4" relation="include">
@@ -61,7 +61,7 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
@@ -69,7 +69,7 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -84,13 +84,13 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss/impl/fast_scan/FastScanDistancePostProcessing.h</label>
         <link refid="FastScanDistancePostProcessing_8h_source"/>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/impl/fast_scan/fast_scan.h</label>
         <link refid="fast__scan_8h_source"/>
         <childnode refid="5" relation="include">
@@ -99,36 +99,38 @@
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="14">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="23">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
-        <childnode refid="23" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
         <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/utils/simd_levels.h</label>
         <link refid="simd__levels_8h_source"/>
         <childnode refid="5" relation="include">
@@ -138,16 +140,19 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>algorithm</label>
       </node>
-      <node id="23">
+      <node id="15">
+        <label>atomic</label>
+      </node>
+      <node id="24">
         <label>cassert</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>cinttypes</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>cstddef</label>
       </node>
       <node id="5">
@@ -159,13 +164,13 @@
       <node id="7">
         <label>cstdlib</label>
       </node>
-      <node id="24">
+      <node id="25">
         <label>cstring</label>
       </node>
       <node id="10">
         <label>exception</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>limits</label>
       </node>
       <node id="2">

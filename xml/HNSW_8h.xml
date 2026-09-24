@@ -39,7 +39,7 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss/impl/DistanceComputer.h</label>
         <link refid="DistanceComputer_8h_source"/>
         <childnode refid="8" relation="include">
@@ -52,7 +52,7 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
@@ -60,7 +60,7 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="14">
@@ -92,27 +92,27 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="31" relation="include">
+        <childnode refid="32" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
         <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
@@ -122,64 +122,69 @@
       <node id="17">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="26" relation="include">
-        </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
         <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="30">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
       <node id="31">
-        <label>faiss/utils/random.h</label>
-        <link refid="random_8h_source"/>
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="29">
-        <label>cassert</label>
+      <node id="32">
+        <label>faiss/utils/random.h</label>
+        <link refid="random_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
       </node>
       <node id="18">
+        <label>atomic</label>
+      </node>
+      <node id="30">
+        <label>cassert</label>
+      </node>
+      <node id="19">
         <label>cinttypes</label>
       </node>
-      <node id="26">
+      <node id="27">
         <label>climits</label>
       </node>
-      <node id="27">
+      <node id="28">
         <label>cmath</label>
       </node>
-      <node id="22">
+      <node id="23">
         <label>cstddef</label>
       </node>
       <node id="10">
@@ -191,7 +196,7 @@
       <node id="12">
         <label>cstdlib</label>
       </node>
-      <node id="23">
+      <node id="24">
         <label>cstring</label>
       </node>
       <node id="15">
@@ -200,10 +205,10 @@
       <node id="2">
         <label>functional</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>limits</label>
       </node>
-      <node id="24">
+      <node id="25">
         <label>memory</label>
       </node>
       <node id="7">
@@ -215,10 +220,10 @@
       <node id="4">
         <label>queue</label>
       </node>
-      <node id="32">
+      <node id="33">
         <label>random</label>
       </node>
-      <node id="28">
+      <node id="29">
         <label>stdint.h</label>
       </node>
       <node id="16">
@@ -584,71 +589,73 @@
 <codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref>;</highlight></codeline>
 <codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref>;</highlight></codeline>
 <codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="318"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="319"><highlight class="normal"></highlight></codeline>
-<codeline lineno="320"><highlight class="normal"></highlight><highlight class="comment">//<sp/>global<sp/>var<sp/>that<sp/>collects<sp/>them<sp/>all</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="321"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>HNSWStats<sp/>hnsw_stats;</highlight></codeline>
-<codeline lineno="322"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="323"><highlight class="comment">///<sp/>Internal<sp/>HNSW<sp/>algorithm<sp/>helpers.<sp/>These<sp/>are<sp/>not<sp/>part<sp/>of<sp/>the<sp/>public<sp/>API;<sp/>they</highlight></codeline>
-<codeline lineno="324"><highlight class="comment">///<sp/>are<sp/>exposed<sp/>here<sp/>only<sp/>so<sp/>that<sp/>unit<sp/>tests<sp/>(and<sp/>a<sp/>few<sp/>cross-TU<sp/>callers<sp/>such<sp/>as</highlight></codeline>
-<codeline lineno="325"><highlight class="comment">///<sp/>the<sp/>Panorama<sp/>search<sp/>variant)<sp/>can<sp/>reach<sp/>them.</highlight></codeline>
-<codeline lineno="326" refid="namespacefaiss_1_1hnsw__detail" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">hnsw_detail<sp/>{</highlight></codeline>
-<codeline lineno="327"><highlight class="normal"></highlight></codeline>
-<codeline lineno="328"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>search_from_candidates(</highlight></codeline>
-<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
-<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeap</ref>&amp;<sp/>candidates,</highlight></codeline>
-<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats,</highlight></codeline>
-<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="338"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="339"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>`search_from_candidates`,<sp/>but<sp/>applies<sp/>pruning<sp/>with<sp/>progressive</highlight></codeline>
-<codeline lineno="340"><highlight class="comment">///<sp/>refinement<sp/>bounds.</highlight></codeline>
-<codeline lineno="341"><highlight class="comment">///<sp/>This<sp/>is<sp/>used<sp/>in<sp/>`IndexHNSWFlatPanorama`<sp/>to<sp/>improve<sp/>the<sp/>search<sp/>performance</highlight></codeline>
-<codeline lineno="342"><highlight class="comment">///<sp/>for<sp/>higher<sp/>dimensional<sp/>vectors.</highlight></codeline>
-<codeline lineno="343" refid="namespacefaiss_1_1hnsw__detail_1aea80280a8c656ea616f7a1bd61be1396" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1hnsw__detail_1aea80280a8c656ea616f7a1bd61be1396" kindref="member">search_from_candidates_panorama</ref>(</highlight></codeline>
-<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref>*<sp/>index,</highlight></codeline>
-<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
-<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeap</ref>&amp;<sp/>candidates,</highlight></codeline>
-<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats,</highlight></codeline>
-<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="354"><highlight class="normal"></highlight></codeline>
-<codeline lineno="355"><highlight class="normal"><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/>greedy_update_nearest(</highlight></codeline>
-<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref>&amp;<sp/>nearest,</highlight></codeline>
-<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>d_nearest);</highlight></codeline>
-<codeline lineno="361"><highlight class="normal"></highlight></codeline>
-<codeline lineno="362"><highlight class="normal">std::priority_queue&lt;HNSW::Node&gt;<sp/>search_from_candidate_unbounded(</highlight></codeline>
-<codeline lineno="363"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW::Node&amp;<sp/>node,</highlight></codeline>
-<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ef,</highlight></codeline>
-<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>*<sp/>vt,</highlight></codeline>
-<codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats);</highlight></codeline>
-<codeline lineno="369"><highlight class="normal"></highlight></codeline>
-<codeline lineno="370"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_neighbors_to_add(</highlight></codeline>
-<codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="372"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;HNSW::NodeDistCloser&gt;&amp;<sp/>results,</highlight></codeline>
-<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>entry_point,</highlight></codeline>
-<codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_entry_point,</highlight></codeline>
-<codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>reference_version<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="379"><highlight class="normal"></highlight></codeline>
-<codeline lineno="380"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>hnsw_detail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="318"><highlight class="normal"></highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>combine_atomic(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSWStats&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="320"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"></highlight><highlight class="comment">//<sp/>global<sp/>var<sp/>that<sp/>collects<sp/>them<sp/>all</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="323"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>HNSWStats<sp/>hnsw_stats;</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="325"><highlight class="comment">///<sp/>Internal<sp/>HNSW<sp/>algorithm<sp/>helpers.<sp/>These<sp/>are<sp/>not<sp/>part<sp/>of<sp/>the<sp/>public<sp/>API;<sp/>they</highlight></codeline>
+<codeline lineno="326"><highlight class="comment">///<sp/>are<sp/>exposed<sp/>here<sp/>only<sp/>so<sp/>that<sp/>unit<sp/>tests<sp/>(and<sp/>a<sp/>few<sp/>cross-TU<sp/>callers<sp/>such<sp/>as</highlight></codeline>
+<codeline lineno="327"><highlight class="comment">///<sp/>the<sp/>Panorama<sp/>search<sp/>variant)<sp/>can<sp/>reach<sp/>them.</highlight></codeline>
+<codeline lineno="328" refid="namespacefaiss_1_1hnsw__detail" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">hnsw_detail<sp/>{</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>search_from_candidates(</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeap</ref>&amp;<sp/>candidates,</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats,</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="341"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>`search_from_candidates`,<sp/>but<sp/>applies<sp/>pruning<sp/>with<sp/>progressive</highlight></codeline>
+<codeline lineno="342"><highlight class="comment">///<sp/>refinement<sp/>bounds.</highlight></codeline>
+<codeline lineno="343"><highlight class="comment">///<sp/>This<sp/>is<sp/>used<sp/>in<sp/>`IndexHNSWFlatPanorama`<sp/>to<sp/>improve<sp/>the<sp/>search<sp/>performance</highlight></codeline>
+<codeline lineno="344"><highlight class="comment">///<sp/>for<sp/>higher<sp/>dimensional<sp/>vectors.</highlight></codeline>
+<codeline lineno="345" refid="namespacefaiss_1_1hnsw__detail_1aea80280a8c656ea616f7a1bd61be1396" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1hnsw__detail_1aea80280a8c656ea616f7a1bd61be1396" kindref="member">search_from_candidates_panorama</ref>(</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MinimaxHeapT" kindref="compound">MinimaxHeap</ref>&amp;<sp/>candidates,</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats,</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"></highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/>greedy_update_nearest(</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref>&amp;<sp/>nearest,</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>d_nearest);</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"></highlight></codeline>
+<codeline lineno="364"><highlight class="normal">std::priority_queue&lt;HNSW::Node&gt;<sp/>search_from_candidate_unbounded(</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW::Node&amp;<sp/>node,</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ef,</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>*<sp/>vt,</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats);</highlight></codeline>
+<codeline lineno="371"><highlight class="normal"></highlight></codeline>
+<codeline lineno="372"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_neighbors_to_add(</highlight></codeline>
+<codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;HNSW::NodeDistCloser&gt;&amp;<sp/>results,</highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>entry_point,</highlight></codeline>
+<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_entry_point,</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="379"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="380"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>reference_version<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="381"><highlight class="normal"></highlight></codeline>
-<codeline lineno="382"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="382"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>hnsw_detail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="383"><highlight class="normal"></highlight></codeline>
+<codeline lineno="384"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/HNSW.h"/>
   </compounddef>

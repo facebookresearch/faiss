@@ -68,6 +68,24 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQuantizer.h" line="38" column="10" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="38" bodyend="41"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1a853d9970e1dccb59af087d32a9c1d65d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQStats::add_atomic</definition>
+        <argsstring>(const RaBitQStats &amp;other)</argsstring>
+        <name>add_atomic</name>
+        <qualifiedname>faiss::RaBitQStats::add_atomic</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1RaBitQStats" kindref="compound">RaBitQStats</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="43" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1adbc539ee7fa2db38e96ed54a19e852e6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
         <definition>double faiss::RaBitQStats::refine_ratio</definition>
@@ -80,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="43" column="12" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="43" bodyend="45"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="45" column="12" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="45" bodyend="47"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -89,9 +107,10 @@
 <para>Statistics for staged RaBitQ distance evaluation.</para>
 <para>These counters belong to the quantizer rather than to a particular ANN graph. They are currently populated by <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&apos;s staged search path. </para>
     </detaileddescription>
-    <location file="faiss/impl/RaBitQuantizer.h" line="30" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="30" bodyend="46"/>
+    <location file="faiss/impl/RaBitQuantizer.h" line="30" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="30" bodyend="48"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RaBitQStats_1a0669a4a1bf92ee9b8b3826c483e91757" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>add</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a853d9970e1dccb59af087d32a9c1d65d" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>add_atomic</name></member>
       <member refid="structfaiss_1_1RaBitQStats_1a919fcd126620e419b760a83b71ab2d05" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>n_1bit</name></member>
       <member refid="structfaiss_1_1RaBitQStats_1a5bf3c0f5caf5ce3900dd4c00909efebc" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>n_refine</name></member>
       <member refid="structfaiss_1_1RaBitQStats_1adbc539ee7fa2db38e96ed54a19e852e6" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>refine_ratio</name></member>

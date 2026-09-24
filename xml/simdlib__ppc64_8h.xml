@@ -11,9 +11,11 @@
       <node id="8">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -21,10 +23,10 @@
         <link refid="simdlib_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/impl/simdlib/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h_source"/>
         <childnode refid="2" relation="include">
@@ -65,10 +67,13 @@
       <node id="2">
         <label>algorithm</label>
       </node>
+      <node id="9">
+        <label>atomic</label>
+      </node>
       <node id="3">
         <label>cstdint</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>cstdio</label>
       </node>
       <node id="4">

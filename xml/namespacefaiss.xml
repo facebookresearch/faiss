@@ -1570,7 +1570,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="321" column="28" declfile="faiss/impl/HNSW.h" declline="321" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="323" column="28" declfile="faiss/impl/HNSW.h" declline="323" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -1612,7 +1612,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="48" column="30" declfile="faiss/impl/RaBitQuantizer.h" declline="48" declcolumn="30"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="50" column="30" declfile="faiss/impl/RaBitQuantizer.h" declline="50" declcolumn="30"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>

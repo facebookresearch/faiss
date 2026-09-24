@@ -14,25 +14,25 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss/cppcontrib/detail/CoarseBitType.h</label>
         <link refid="CoarseBitType_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/cppcontrib/sa_decode/Level2-inl.h</label>
         <link refid="Level2-inl_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
@@ -55,7 +55,7 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/cppcontrib/sa_decode/PQ-inl.h</label>
         <link refid="PQ-inl_8h_source"/>
         <childnode refid="3" relation="include">
@@ -66,15 +66,17 @@
       <node id="7">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/utils/fp16-inl.h</label>
         <link refid="fp16-inl_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -86,11 +88,14 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>algorithm</label>
+      </node>
+      <node id="8">
+        <label>atomic</label>
       </node>
       <node id="3">
         <label>cstddef</label>
@@ -98,7 +103,7 @@
       <node id="4">
         <label>cstdint</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>cstdio</label>
       </node>
     </incdepgraph>

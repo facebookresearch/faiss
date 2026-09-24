@@ -12,6 +12,8 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/utils/sorting.h</label>
@@ -20,9 +22,12 @@
         </childnode>
       </node>
       <node id="3">
-        <label>cstdint</label>
+        <label>atomic</label>
       </node>
       <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
         <label>cstdio</label>
       </node>
     </incdepgraph>

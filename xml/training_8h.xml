@@ -4,7 +4,7 @@
     <compoundname>training.h</compoundname>
     <includes refid="ScalarQuantizer_8h" local="no">faiss/impl/ScalarQuantizer.h</includes>
     <incdepgraph>
-      <node id="24">
+      <node id="25">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
         <childnode refid="11" relation="include">
@@ -46,10 +46,10 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="24">
         <label>faiss/impl/DistanceComputer.h</label>
         <link refid="DistanceComputer_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
       <node id="15">
@@ -59,7 +59,7 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -67,7 +67,7 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="16">
@@ -88,7 +88,7 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="5" relation="include">
@@ -101,14 +101,16 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
       <node id="20">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
@@ -121,6 +123,9 @@
         </childnode>
       </node>
       <node id="21">
+        <label>atomic</label>
+      </node>
+      <node id="22">
         <label>cinttypes</label>
       </node>
       <node id="10">
@@ -141,7 +146,7 @@
       <node id="17">
         <label>exception</label>
       </node>
-      <node id="22">
+      <node id="23">
         <label>limits</label>
       </node>
       <node id="6">

@@ -11,9 +11,11 @@
       <node id="7">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -27,9 +29,9 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -44,21 +46,24 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/utils/popcount.h</label>
         <link refid="popcount_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/utils/simd_levels.h</label>
         <link refid="simd__levels_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+      </node>
+      <node id="8">
+        <label>atomic</label>
       </node>
       <node id="4">
         <label>cassert</label>
@@ -69,10 +74,10 @@
       <node id="6">
         <label>cstdint</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>cstdio</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>string</label>
       </node>
     </incdepgraph>

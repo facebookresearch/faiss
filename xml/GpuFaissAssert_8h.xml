@@ -20,15 +20,15 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -50,17 +50,22 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-      </node>
-      <node id="12">
-        <label>cinttypes</label>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="10">
-        <label>cstdint</label>
-      </node>
-      <node id="11">
-        <label>cstdio</label>
+        <label>atomic</label>
       </node>
       <node id="13">
+        <label>cinttypes</label>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>cstdio</label>
+      </node>
+      <node id="14">
         <label>cstdlib</label>
       </node>
       <node id="2">
@@ -69,7 +74,7 @@
       <node id="5">
         <label>exception</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>limits</label>
       </node>
       <node id="6">

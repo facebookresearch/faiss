@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="519" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="519" declcolumn="21"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="518" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="518" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="526" column="28" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="526" bodyend="532"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="525" column="28" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="525" bodyend="531"/>
       </memberdef>
       <memberdef kind="function" id="IVFPQScanner__impl_8h_1a8b7d516c0e893c41329d32f46c52a7ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -110,7 +110,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="536" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="536" bodyend="580"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="535" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="535" bodyend="579"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

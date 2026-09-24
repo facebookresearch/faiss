@@ -19,15 +19,15 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -45,20 +45,22 @@
       <node id="14">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="15" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/impl/simdlib/simdlib.h</label>
         <link refid="simdlib_8h_source"/>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
         </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/impl/simdlib/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h_source"/>
         <childnode refid="2" relation="include">
@@ -69,7 +71,7 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -91,10 +93,10 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss/utils/simd_levels.h</label>
         <link refid="simd__levels_8h_source"/>
         <childnode refid="4" relation="include">
@@ -110,7 +112,10 @@
       <node id="8">
         <label>arm_neon.h</label>
       </node>
-      <node id="16">
+      <node id="15">
+        <label>atomic</label>
+      </node>
+      <node id="17">
         <label>cinttypes</label>
       </node>
       <node id="3">
@@ -119,10 +124,10 @@
       <node id="4">
         <label>cstdint</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>cstdio</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>cstdlib</label>
       </node>
       <node id="5">
@@ -131,7 +136,7 @@
       <node id="11">
         <label>exception</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>limits</label>
       </node>
       <node id="6">

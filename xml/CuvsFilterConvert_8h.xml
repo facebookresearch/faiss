@@ -6,14 +6,14 @@
     <includes refid="GpuResources_8h" local="no">faiss/gpu/GpuResources.h</includes>
     <includes refid="IDSelector_8h" local="no">faiss/impl/IDSelector.h</includes>
     <incdepgraph>
-      <node id="21">
+      <node id="22">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
@@ -27,7 +27,7 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -41,7 +41,7 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -51,15 +51,15 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="7">
@@ -74,14 +74,14 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -91,17 +91,22 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-      </node>
-      <node id="15">
-        <label>cinttypes</label>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="13">
-        <label>cstdint</label>
-      </node>
-      <node id="14">
-        <label>cstdio</label>
+        <label>atomic</label>
       </node>
       <node id="16">
+        <label>cinttypes</label>
+      </node>
+      <node id="14">
+        <label>cstdint</label>
+      </node>
+      <node id="15">
+        <label>cstdio</label>
+      </node>
+      <node id="17">
         <label>cstdlib</label>
       </node>
       <node id="4">
@@ -116,16 +121,16 @@
       <node id="8">
         <label>exception</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>limits</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>memory</label>
       </node>
       <node id="9">
         <label>string</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>unordered_set</label>
       </node>
       <node id="10">

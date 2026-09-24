@@ -33,7 +33,7 @@
         <link refid="GpuIndex_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -41,19 +41,19 @@
         <link refid="gpu_2GpuIndexFlat_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss/gpu/GpuResources.h</label>
         <link refid="GpuResources_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -67,7 +67,7 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
@@ -75,7 +75,7 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -93,12 +93,17 @@
       <node id="14">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
       <node id="15">
+        <label>atomic</label>
+      </node>
+      <node id="16">
         <label>cinttypes</label>
       </node>
       <node id="5">
@@ -110,19 +115,19 @@
       <node id="7">
         <label>cstdlib</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>cublas_v2.h</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>cuda_runtime.h</label>
       </node>
       <node id="10">
         <label>exception</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>limits</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>memory</label>
       </node>
       <node id="11">

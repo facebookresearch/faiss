@@ -2710,6 +2710,7 @@
     <member refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kind="variable"><name>nhops</name></member>
     <member refid="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1HNSWStats_1adafef04e7a01e5688c2ced24019d65a7" kind="function"><name>combine</name></member>
+    <member refid="structfaiss_1_1HNSWStats_1a64afdb3ff6d3afdbec4abf0262cc69ec" kind="function"><name>combine_atomic</name></member>
   </compound>
   <compound refid="structfaiss_1_1HStackInvertedLists" kind="struct"><name>faiss::HStackInvertedLists</name>
     <member refid="structfaiss_1_1HStackInvertedLists_1a1e13f4a3dd344dbaf679d5f40fd328d6" kind="variable"><name>ils</name></member>
@@ -11533,6 +11534,7 @@
     <member refid="structfaiss_1_1RaBitQStats_1a5bf3c0f5caf5ce3900dd4c00909efebc" kind="variable"><name>n_refine</name></member>
     <member refid="structfaiss_1_1RaBitQStats_1a071b8230bddb32d8ab04dfde726e7f9f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1RaBitQStats_1a0669a4a1bf92ee9b8b3826c483e91757" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1RaBitQStats_1a853d9970e1dccb59af087d32a9c1d65d" kind="function"><name>add_atomic</name></member>
     <member refid="structfaiss_1_1RaBitQStats_1adbc539ee7fa2db38e96ed54a19e852e6" kind="function"><name>refine_ratio</name></member>
   </compound>
   <compound refid="structfaiss_1_1RaBitQuantizer" kind="struct"><name>faiss::RaBitQuantizer</name>
@@ -14519,6 +14521,7 @@
     <member refid="namespacefaiss_1_1detail_1a7ac15bd4c2cdcd899265c3c2e3fb17c8" kind="function"><name>pdxify</name></member>
     <member refid="namespacefaiss_1_1detail_1a9c5d9a9deae725066456d7f760b67b2c" kind="function"><name>de_pdxify</name></member>
     <member refid="namespacefaiss_1_1detail_1ac244b84c3439d065c674c7eacd5dc3f0" kind="function"><name>compute_partial_norms</name></member>
+    <member refid="namespacefaiss_1_1detail_1afe2cf857b32a6c27c26807fe72472d4e" kind="function"><name>atomic_fetch_add_relaxed</name></member>
     <member refid="namespacefaiss_1_1detail_1aa233c0a54aee4ea6ece0c73d8db01d67" kind="function"><name>block_l2_dispatch</name></member>
     <member refid="namespacefaiss_1_1detail_1afcf5bb279cd6668c2e4e88ec8d7d4098" kind="function"><name>block_l2</name></member>
   </compound>
