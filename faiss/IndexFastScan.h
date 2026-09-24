@@ -155,7 +155,8 @@ struct IndexFastScan : Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const FastScanDistancePostProcessing& context) const;
+            const FastScanDistancePostProcessing& context,
+            const IDSelector* sel = nullptr) const;
 
     template <class Cfloat>
     void search_implem_234(
@@ -174,7 +175,8 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const FastScanDistancePostProcessing& context) const;
+            const FastScanDistancePostProcessing& context,
+            const IDSelector* sel = nullptr) const;
 
     template <class C>
     void search_implem_14(
@@ -184,7 +186,8 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const FastScanDistancePostProcessing& context) const;
+            const FastScanDistancePostProcessing& context,
+            const IDSelector* sel = nullptr) const;
 
     /** Reconstruct a vector from its code
      *
