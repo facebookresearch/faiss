@@ -12,6 +12,7 @@
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/utils/distances.h>
@@ -26,6 +27,11 @@
 namespace faiss {
 
 RaBitQStats rabitq_stats;
+
+void RaBitQStats::add_atomic(const RaBitQStats& other) {
+    detail::atomic_fetch_add_relaxed(n_1bit, other.n_1bit);
+    detail::atomic_fetch_add_relaxed(n_refine, other.n_refine);
+}
 
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
