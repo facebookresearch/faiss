@@ -253,12 +253,11 @@ class TestCuvsCagra(unittest.TestCase):
         np.testing.assert_array_equal(I[:, 0], np.arange(nq))
 
 
-# Keep in step with the `libcuvs-cu13==<series>.*` pins in
-# pyproject-gpu-cuvs.toml. The wheel does not ship that file, so nothing else
-# ties the two together. Compared via SpecifierSet, never by string prefix:
-# PEP 440 strips the leading zero, so the series pinned as `26.06` installs as
-# `26.6.0`.
-_RAPIDS_SERIES = SpecifierSet("==26.06.*")
+# Keep in step with the libcuvs-cu13 pin in pyproject-gpu-cuvs.toml. The
+# wheel does not ship that file, so nothing else ties the two together.
+# Compared via SpecifierSet, never by string prefix: PEP 440 strips a
+# leading zero, so a series pinned as `26.06` installs as `26.6.0`.
+_RAPIDS_SERIES = SpecifierSet("==26.10.*")
 
 # RAPIDS >=26.08 wraps RMM in a per-release inline namespace
 # (rmm::_RMM_26_8::), so a neighbouring series renames every rmm:: symbol
@@ -348,7 +347,9 @@ class TestCuvsRapidsPinning(unittest.TestCase):
             except importlib.metadata.PackageNotFoundError:
                 self.fail(f"{dist} is declared but not installed")
             self.assertTrue(
-                _RAPIDS_SERIES.contains(version),
+                # Nightlies version as 26.10.0a*; SpecifierSet drops
+                # prereleases unless asked.
+                _RAPIDS_SERIES.contains(version, prereleases=True),
                 f"{dist} {version} is outside the {_RAPIDS_SERIES} series "
                 f"the wheel was built against",
             )

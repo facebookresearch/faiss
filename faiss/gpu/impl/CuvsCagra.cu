@@ -32,6 +32,7 @@
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
+#include <utility>
 
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
@@ -48,7 +49,7 @@ CuvsCagra<data_t>::CuvsCagra(
         idx_t graph_degree,
         faiss::cagra_build_algo graph_build_algo,
         size_t nn_descent_niter,
-        bool store_dataset,
+        bool searchable_index,
         faiss::MetricType metric,
         float metricArg,
         IndicesOptions indicesOptions,
@@ -61,7 +62,7 @@ CuvsCagra<data_t>::CuvsCagra(
           dim_(dim),
           graph_build_algo_(graph_build_algo),
           nn_descent_niter_(nn_descent_niter),
-          store_dataset_(store_dataset),
+          searchable_index_(searchable_index),
           metric_(metric),
           metricArg_(metricArg),
           index_params_(),
@@ -78,7 +79,6 @@ CuvsCagra<data_t>::CuvsCagra(
 
     index_params_.intermediate_graph_degree = intermediate_graph_degree;
     index_params_.graph_degree = graph_degree;
-    index_params_.attach_dataset_on_build = store_dataset;
     index_params_.guarantee_connectivity = guarantee_connectivity;
 
     if (!ivf_pq_search_params_) {
@@ -119,6 +119,8 @@ CuvsCagra<data_t>::CuvsCagra(
 
     storage_ = dataset;
     n_ = n;
+    // this constructor is used to create a search compatible index
+    searchable_index_ = true;
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -136,13 +138,29 @@ CuvsCagra<data_t>::CuvsCagra(
 
         auto dataset_mds = raft::make_device_matrix_view<const data_t, int64_t>(
                 dataset, n, dim);
-
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                raft_handle,
-                metricFaissToCuvs(metric_, false),
-                dataset_mds,
-                raft::make_const_mdspan(knn_graph_copy.view()));
+        if (cuvs::neighbors::matrix_row_width_matches_cagra_required(
+                    dataset_mds)) {
+            auto dataset_view =
+                    cuvs::neighbors::make_device_padded_dataset_view(
+                            raft_handle, dataset_mds);
+            cuvs_index = std::make_shared<
+                    cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                    raft_handle,
+                    metricFaissToCuvs(metric_, false),
+                    dataset_view,
+                    raft::make_const_mdspan(knn_graph_copy.view()));
+        } else {
+            device_padded_dataset_ =
+                    cuvs::neighbors::make_device_padded_dataset(
+                            raft_handle, dataset_mds);
+            auto dataset_view = device_padded_dataset_->as_dataset_view();
+            cuvs_index = std::make_shared<
+                    cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                    raft_handle,
+                    metricFaissToCuvs(metric_, false),
+                    dataset_view,
+                    raft::make_const_mdspan(knn_graph_copy.view()));
+        }
     } else if (!dataset_on_gpu && !knn_graph_on_gpu) {
         // copy idx_t (int64_t) host knn_graph to uint32_t host knn_graph
         auto knn_graph_copy =
@@ -154,12 +172,14 @@ CuvsCagra<data_t>::CuvsCagra(
 
         auto dataset_mds = raft::make_host_matrix_view<const data_t, int64_t>(
                 dataset, n, dim);
+        device_padded_dataset_ = cuvs::neighbors::make_device_padded_dataset(
+                raft_handle, dataset_mds);
 
         cuvs_index = std::make_shared<
                 cuvs::neighbors::cagra::index<data_t, uint32_t>>(
                 raft_handle,
                 metricFaissToCuvs(metric_, false),
-                dataset_mds,
+                device_padded_dataset_->as_dataset_view(),
                 raft::make_const_mdspan(knn_graph_copy.view()));
     } else {
         FAISS_THROW_MSG(
@@ -206,17 +226,72 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
     if (getDeviceForAddress(x) >= 0) {
         auto dataset = raft::make_device_matrix_view<const data_t, int64_t>(
                 x, n, dim_);
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                cuvs::neighbors::cagra::build(
-                        raft_handle, index_params_, dataset));
+        if (searchable_index_) {
+            if (cuvs::neighbors::matrix_row_width_matches_cagra_required(
+                        dataset)) {
+                auto dataset_view =
+                        cuvs::neighbors::make_device_padded_dataset_view(
+                                raft_handle, dataset);
+                cuvs_index = std::make_shared<
+                        cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                        cuvs::neighbors::cagra::build(
+                                raft_handle, index_params_, dataset_view));
+            } else {
+                device_padded_dataset_ =
+                        cuvs::neighbors::make_device_padded_dataset(
+                                raft_handle, dataset);
+                auto dataset_view = device_padded_dataset_->as_dataset_view();
+                cuvs_index = std::make_shared<
+                        cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                        cuvs::neighbors::cagra::build(
+                                raft_handle, index_params_, dataset_view));
+            }
+        } else {
+            auto dataset_view =
+                    cuvs::neighbors::make_device_standard_dataset_view(dataset);
+            // cuVS preserves the dataset-view type in the type returned by
+            // build(), but CAGRA search only accepts a device-padded index.
+            // Move the graph into that type now with an empty dataset; the
+            // first search attaches the real padded dataset via
+            // update_dataset() without copying the graph.
+            cuvs_index = std::make_shared<
+                    cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                    raft_handle,
+                    cuvs::neighbors::cagra::build(
+                            raft_handle, index_params_, dataset_view),
+                    cuvs::neighbors::
+                            device_padded_dataset_view<data_t, int64_t>{});
+        }
     } else {
         auto dataset =
                 raft::make_host_matrix_view<const data_t, int64_t>(x, n, dim_);
-        cuvs_index = std::make_shared<
-                cuvs::neighbors::cagra::index<data_t, uint32_t>>(
-                cuvs::neighbors::cagra::build(
-                        raft_handle, index_params_, dataset));
+        auto dataset_view =
+                cuvs::neighbors::make_host_standard_dataset_view(dataset);
+        if (searchable_index_) {
+            device_padded_dataset_ =
+                    cuvs::neighbors::make_device_padded_dataset(
+                            raft_handle, dataset);
+            auto dataset_view = device_padded_dataset_->as_dataset_view();
+            cuvs_index = std::make_shared<
+                    cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                    cuvs::neighbors::cagra::build(
+                            raft_handle, index_params_, dataset_view));
+        } else {
+            dataset_view =
+                    cuvs::neighbors::make_host_standard_dataset_view(dataset);
+            // cuVS preserves the dataset-view type in the type returned by
+            // build(), but CAGRA search only accepts a device-padded index.
+            // Move the graph into that type now with an empty dataset; the
+            // first search attaches the real padded dataset via
+            // update_dataset() without copying the graph.
+            cuvs_index = std::make_shared<
+                    cuvs::neighbors::cagra::index<data_t, uint32_t>>(
+                    raft_handle,
+                    cuvs::neighbors::cagra::build(
+                            raft_handle, index_params_, dataset_view),
+                    cuvs::neighbors::
+                            device_padded_dataset_view<data_t, int64_t>{});
+        }
     }
 }
 
@@ -250,17 +325,39 @@ void CuvsCagra<data_t>::search(
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
 
-    if (!store_dataset_) {
+    if (!searchable_index_) {
         if (getDeviceForAddress(storage_) >= 0) {
+            device_padded_dataset_.reset();
             auto dataset = raft::make_device_matrix_view<const data_t, int64_t>(
                     storage_, n_, dim_);
-            cuvs_index->update_dataset(raft_handle, dataset);
+            if (cuvs::neighbors::matrix_row_width_matches_cagra_required(
+                        dataset)) {
+                auto dataset_view =
+                        cuvs::neighbors::make_device_padded_dataset_view(
+                                raft_handle, dataset);
+                *cuvs_index = cuvs::neighbors::cagra::update_dataset(
+                        raft_handle, std::move(*cuvs_index), dataset_view);
+            } else {
+                device_padded_dataset_ =
+                        cuvs::neighbors::make_device_padded_dataset(
+                                raft_handle, dataset);
+                auto dataset_view = device_padded_dataset_->as_dataset_view();
+                *cuvs_index = cuvs::neighbors::cagra::update_dataset(
+                        raft_handle, std::move(*cuvs_index), dataset_view);
+            }
         } else {
-            auto dataset = raft::make_host_matrix_view<const data_t, int64_t>(
-                    storage_, n_, dim_);
-            cuvs_index->update_dataset(raft_handle, dataset);
+            auto host_dataset =
+                    raft::make_host_matrix_view<const data_t, int64_t>(
+                            storage_, n_, dim_);
+            device_padded_dataset_ =
+                    cuvs::neighbors::make_device_padded_dataset(
+                            raft_handle, host_dataset);
+            *cuvs_index = cuvs::neighbors::cagra::update_dataset(
+                    raft_handle,
+                    std::move(*cuvs_index),
+                    device_padded_dataset_->as_dataset_view());
         }
-        store_dataset_ = true;
+        searchable_index_ = true;
     }
 
     auto queries_view = raft::make_device_matrix_view<const data_t, int64_t>(
@@ -326,6 +423,7 @@ void CuvsCagra<data_t>::search(
 template <typename data_t>
 void CuvsCagra<data_t>::reset() {
     cuvs_index.reset();
+    device_padded_dataset_.reset();
 }
 
 template <typename data_t>
