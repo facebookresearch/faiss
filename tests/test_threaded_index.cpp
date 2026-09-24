@@ -5,14 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/IndexShards.h>
+#include <faiss/IndexShardsIVF.h>
 #include <faiss/impl/ThreadedIndex.h>
 
 #include <gtest/gtest.h>
 #include <chrono>
 #include <memory>
+#include <string>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 namespace {
@@ -258,3 +263,181 @@ TEST(ThreadedIndex, TestShards) {
         }
     }
 }
+
+namespace {
+
+class ShardsIVFTest
+        : public ::testing::TestWithParam<std::tuple<bool, faiss::MetricType>> {
+   protected:
+    faiss::MetricType metric = std::get<1>(GetParam());
+    faiss::IndexFlat quantizer{1, metric};
+    std::vector<std::unique_ptr<faiss::IndexIVFFlat>> children;
+    faiss::IndexShardsIVF shards{&quantizer, 1, std::get<0>(GetParam()), false};
+
+    ShardsIVFTest() {
+        const float centroid = 0;
+        quantizer.add(1, &centroid);
+    }
+
+    void addShard(
+            const std::vector<float>& vectors,
+            const std::vector<idx_t>& ids = {}) {
+        auto child =
+                std::make_unique<faiss::IndexIVFFlat>(&quantizer, 1, 1, metric);
+        if (ids.empty()) {
+            child->add(vectors.size(), vectors.data());
+        } else {
+            child->add_with_ids(vectors.size(), vectors.data(), ids.data());
+        }
+        shards.addIndex(child.get());
+        children.push_back(std::move(child));
+    }
+
+    // Compare against an exact index containing only the expected candidates.
+    void expectMatchesFlat(
+            const std::vector<float>& vectors,
+            const std::vector<idx_t>& ids,
+            const faiss::SearchParametersIVF* params = nullptr) {
+        faiss::IndexFlat reference(1, metric);
+        reference.add(vectors.size(), vectors.data());
+        const float queries[] = {1, -1};
+        constexpr idx_t nq = 2, k = 4;
+        std::vector<float> expected_distances(nq * k), distances(nq * k);
+        std::vector<idx_t> expected_labels(nq * k), labels(nq * k);
+        reference.search(
+                nq,
+                queries,
+                k,
+                expected_distances.data(),
+                expected_labels.data());
+        for (auto& label : expected_labels) {
+            if (label >= 0) {
+                label = ids[label];
+            }
+        }
+        shards.search(nq, queries, k, distances.data(), labels.data(), params);
+        EXPECT_EQ(labels, expected_labels);
+        EXPECT_EQ(distances, expected_distances);
+    }
+};
+
+} // namespace
+
+TEST_P(ShardsIVFTest, SelectorUsesGlobalIds) {
+    addShard({-3, 0.5}, {100, 101});
+    addShard({});
+    addShard({2, 6}, {200, 201});
+    faiss::SearchParametersIVF params;
+
+    const idx_t allowed = 100;
+    faiss::IDSelectorArray single(1, &allowed);
+    params.sel = &single;
+    expectMatchesFlat({-3}, {100}, &params);
+    EXPECT_EQ(params.sel, &single);
+
+    const idx_t allowed_ids[] = {101, 201};
+    faiss::IDSelectorBatch across_shards(2, allowed_ids);
+    params.sel = &across_shards;
+    expectMatchesFlat({0.5, 6}, {101, 201}, &params);
+
+    faiss::IDSelectorRange sorted_range(200, 202, true);
+    params.sel = &sorted_range;
+    expectMatchesFlat({2, 6}, {200, 201}, &params);
+
+    faiss::IDSelectorRange no_matches(500, 600);
+    params.sel = &no_matches;
+    expectMatchesFlat({}, {}, &params);
+
+    params.sel = nullptr;
+    expectMatchesFlat({-3, 0.5, 2, 6}, {100, 101, 200, 201}, &params);
+    expectMatchesFlat({-3, 0.5, 2, 6}, {100, 101, 200, 201});
+}
+
+TEST_P(ShardsIVFTest, MaxCodesIsAppliedPerShard) {
+    addShard({-3, 0.5}, {100, 101});
+    addShard({2, 6}, {200, 201});
+    faiss::SearchParametersIVF params;
+    params.max_codes = 1;
+    expectMatchesFlat({-3, 2}, {100, 200}, &params);
+    EXPECT_EQ(params.max_codes, 1);
+
+    // A per-call budget must not change subsequent default searches.
+    expectMatchesFlat({-3, 0.5, 2, 6}, {100, 101, 200, 201});
+}
+
+TEST_P(ShardsIVFTest, NoSelectorWithShiftedIds) {
+    shards.successive_ids = true;
+    addShard({-3, 0.5});
+    addShard({2, 6});
+    expectMatchesFlat({-3, 0.5, 2, 6}, {0, 1, 2, 3});
+
+    faiss::SearchParametersIVF params;
+    expectMatchesFlat({-3, 0.5, 2, 6}, {0, 1, 2, 3}, &params);
+    params.max_codes = 1;
+    expectMatchesFlat({-3, 2}, {0, 2}, &params);
+}
+
+TEST_P(ShardsIVFTest, SelectorWithSingleShard) {
+    shards.successive_ids = true;
+    addShard({-3, 0.5});
+    faiss::IDSelectorRange selector(1, 2);
+    faiss::SearchParametersIVF params;
+    params.sel = &selector;
+    expectMatchesFlat({0.5}, {1}, &params);
+}
+
+TEST_P(ShardsIVFTest, SelectorWithZeroOffsets) {
+    shards.successive_ids = true;
+    addShard({});
+    addShard({});
+    faiss::IDSelectorRange selector(1, 2);
+    faiss::SearchParametersIVF params;
+    params.sel = &selector;
+    expectMatchesFlat({}, {}, &params);
+
+    addShard({-3, 0.5});
+    expectMatchesFlat({0.5}, {1}, &params);
+}
+
+TEST_P(ShardsIVFTest, RejectsSelectorWithShiftedIds) {
+    shards.successive_ids = true;
+    addShard({-3, 0.5});
+    addShard({2, 6});
+    faiss::IDSelectorRange selector(2, 3);
+    faiss::SearchParametersIVF params;
+    params.sel = &selector;
+    const float query = 1;
+
+    for (bool empty_last_shard : {false, true}) {
+        SCOPED_TRACE(empty_last_shard);
+        if (empty_last_shard) {
+            shards.runOnIndex([](int i, faiss::Index* index) {
+                if (i == 1) {
+                    index->reset();
+                }
+            });
+        }
+        float distance = -123;
+        idx_t label = -456;
+        try {
+            shards.search(1, &query, 1, &distance, &label, &params);
+            FAIL() << "Expected rejection of a selector with shifted IDs";
+        } catch (const faiss::FaissException& error) {
+            EXPECT_NE(
+                    std::string(error.what()).find("nonzero shard ID offsets"),
+                    std::string::npos);
+        }
+        EXPECT_EQ(distance, -123);
+        EXPECT_EQ(label, -456);
+        EXPECT_EQ(params.sel, &selector);
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+        SerialAndThreaded,
+        ShardsIVFTest,
+        ::testing::Combine(
+                ::testing::Bool(),
+                ::testing::Values(
+                        faiss::METRIC_L2,
+                        faiss::METRIC_INNER_PRODUCT)));

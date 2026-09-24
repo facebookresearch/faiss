@@ -175,6 +175,19 @@ void IndexShardsIVF::search(
         FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
     }
 
+    int nshard = this->count();
+    std::vector<int64_t> translations(nshard, 0);
+    if (successive_ids) {
+        for (int s = 0; s + 1 < nshard; s++) {
+            translations[s + 1] = translations[s] + this->at(s)->ntotal;
+            FAISS_THROW_IF_NOT_MSG(
+                    !(params && params->sel && translations[s + 1] != 0),
+                    "IndexShardsIVF cannot apply an ID selector with "
+                    "nonzero shard ID offsets; use successive_ids=false "
+                    "with globally assigned IDs");
+        }
+    }
+
     auto index0 = dynamic_cast<const IndexIVFInterface*>(at(0));
     idx_t nprobe = params ? params->nprobe : index0->nprobe;
 
@@ -184,18 +197,8 @@ void IndexShardsIVF::search(
 
     quantizer->search(n, x, nprobe, Dq.data(), Iq.data());
 
-    int nshard = this->count();
-
     std::vector<distance_t> all_distances(nshard * k * n);
     std::vector<idx_t> all_labels(nshard * k * n);
-    std::vector<int64_t> translations(nshard, 0);
-
-    if (successive_ids) {
-        translations[0] = 0;
-        for (int s = 0; s + 1 < nshard; s++) {
-            translations[s + 1] = translations[s] + this->at(s)->ntotal;
-        }
-    }
 
     auto fn = [&](int no, const Index* indexIn) {
         if (indexIn->verbose) {
@@ -216,7 +219,8 @@ void IndexShardsIVF::search(
                 Dq.data(),
                 all_distances.data() + no * k * n,
                 all_labels.data() + no * k * n,
-                false);
+                false,
+                params);
 
         translate_labels(
                 n * k, all_labels.data() + no * k * n, translations[no]);
