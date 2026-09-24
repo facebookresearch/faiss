@@ -647,6 +647,26 @@ class TestIORoundTrip(unittest.TestCase):
         np.testing.assert_array_equal(Iref, I2)
         np.testing.assert_array_equal(Dref, D2)
 
+    def test_index_ivfpq_polysemous_ht(self):
+        """IndexIVFPQ must preserve do_polysemous_training/polysemous_ht
+        across a write/read round-trip (see GH issue #2120)."""
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        index = faiss.index_factory(d, "IVF32,PQ4np")
+        index.train(xt)
+        index.add(xb)
+        index.do_polysemous_training = True
+        index.polysemous_ht = 42
+        index.nprobe = 4
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertEqual(index2.do_polysemous_training, index.do_polysemous_training)
+        self.assertEqual(index2.polysemous_ht, index.polysemous_ht)
+
+        Dref, Iref = index.search(xq, 5)
+        D2, I2 = index2.search(xq, 5)
+        np.testing.assert_array_equal(Iref, I2)
+        np.testing.assert_array_equal(Dref, D2)
+
     def test_index_sq8(self):
         """IndexScalarQuantizer with SQ8."""
         xt, xb, xq = get_dataset_2(d, nt, nb, nq)
