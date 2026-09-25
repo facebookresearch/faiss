@@ -7,12 +7,53 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 #include <random>
 
 #include <gtest/gtest.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
+
+TEST(IVFPQ, onTheFlyDistanceToCodeMatchesPrecomputedTable) {
+    constexpr int d = 4;
+    constexpr size_t nt = 256;
+    faiss::IndexFlatL2 coarse_quantizer(d);
+    faiss::IndexIVFPQ index(&coarse_quantizer, d, 2, 2, 4);
+
+    std::mt19937 rng(1234);
+    std::uniform_real_distribution<float> distrib(-1.0f, 1.0f);
+    std::vector<float> training(nt * d);
+    for (float& value : training) {
+        value = distrib(rng);
+    }
+    index.train(nt, training.data());
+
+    const std::vector<float> query = {0.2f, -0.4f, 0.6f, -0.8f};
+    const std::vector<float> value = {-0.1f, 0.3f, 0.7f, -0.5f};
+    faiss::idx_t list_no;
+    float coarse_distance;
+    index.quantizer->search(1, query.data(), 1, &coarse_distance, &list_no);
+    ASSERT_GE(list_no, 0);
+
+    std::vector<uint8_t> code(index.code_size);
+    index.encode(list_no, value.data(), code.data());
+    std::unique_ptr<faiss::InvertedListScanner> table_scanner(
+            index.get_InvertedListScanner(false, nullptr, nullptr));
+    std::unique_ptr<faiss::InvertedListScanner> on_the_fly_scanner(
+            index.get_InvertedListScanner(
+                    false, nullptr, faiss::IndexIVFPQ::ScannerMode::OnTheFly));
+
+    for (auto* scanner : {table_scanner.get(), on_the_fly_scanner.get()}) {
+        scanner->set_query(query.data());
+        scanner->set_list(list_no, coarse_distance);
+    }
+
+    EXPECT_NEAR(
+            on_the_fly_scanner->distance_to_code(code.data()),
+            table_scanner->distance_to_code(code.data()),
+            1e-4);
+}
 
 TEST(IVFPQ, accuracy) {
     // dimension of the vectors to index

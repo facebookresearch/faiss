@@ -118,6 +118,9 @@ TEST(SIMDLevel, to_string_all_levels) {
     EXPECT_EQ("NONE", faiss::to_string(faiss::SIMDLevel::NONE));
     EXPECT_EQ("AVX2", faiss::to_string(faiss::SIMDLevel::AVX2));
     EXPECT_EQ("AVX512", faiss::to_string(faiss::SIMDLevel::AVX512));
+    EXPECT_EQ(
+            "AVX512_VPOPCNT",
+            faiss::to_string(faiss::SIMDLevel::AVX512_VPOPCNT));
     EXPECT_EQ("AVX512_SPR", faiss::to_string(faiss::SIMDLevel::AVX512_SPR));
     EXPECT_EQ("ARM_NEON", faiss::to_string(faiss::SIMDLevel::ARM_NEON));
     EXPECT_EQ("ARM_SVE", faiss::to_string(faiss::SIMDLevel::ARM_SVE));
@@ -132,6 +135,9 @@ TEST(SIMDLevel, to_simd_level_all_strings) {
     EXPECT_EQ(faiss::SIMDLevel::NONE, faiss::to_simd_level("NONE"));
     EXPECT_EQ(faiss::SIMDLevel::AVX2, faiss::to_simd_level("AVX2"));
     EXPECT_EQ(faiss::SIMDLevel::AVX512, faiss::to_simd_level("AVX512"));
+    EXPECT_EQ(
+            faiss::SIMDLevel::AVX512_VPOPCNT,
+            faiss::to_simd_level("AVX512_VPOPCNT"));
     EXPECT_EQ(faiss::SIMDLevel::AVX512_SPR, faiss::to_simd_level("AVX512_SPR"));
     EXPECT_EQ(faiss::SIMDLevel::ARM_NEON, faiss::to_simd_level("ARM_NEON"));
     EXPECT_EQ(faiss::SIMDLevel::ARM_SVE, faiss::to_simd_level("ARM_SVE"));
