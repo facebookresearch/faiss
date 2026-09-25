@@ -30,6 +30,11 @@ struct IndexShardsIVF : public IndexShards, Level1Quantizer {
 
     void train(idx_t n, const component_t* x) override;
 
+    /** Search with optional IVF parameters, forwarded to each shard.
+     * ID selectors are not supported when successive_ids applies nonzero
+     * shard ID offsets. To filter in a global ID space, use
+     * successive_ids=false and assign global IDs to the shard entries.
+     */
     void search(
             idx_t n,
             const component_t* x,
