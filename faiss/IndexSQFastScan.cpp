@@ -14,7 +14,6 @@
 #include <memory>
 #include <vector>
 
-#include <faiss/IndexIVF.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/CodePacker.h>
@@ -24,7 +23,6 @@
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
@@ -113,48 +111,8 @@ void IndexSQFastScan::search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
-
-    const IDSelector* sel = params ? params->sel : nullptr;
-
-    if (!sel) {
-        IndexFastScan::search(n, x, k, distances, labels, nullptr);
-        return;
-    }
-
-    // IDSelector path: unpack codes and use SQ scanner
-    std::vector<uint8_t> flat_codes(ntotal * sq.code_size);
-    {
-        std::unique_ptr<CodePacker> packer(get_CodePacker());
-        for (idx_t i = 0; i < ntotal; i++) {
-            packer->unpack_1(
-                    codes.data(), i, flat_codes.data() + i * sq.code_size);
-        }
-    }
-
-#pragma omp parallel
-    {
-        std::unique_ptr<InvertedListScanner> scanner(
-                sq.select_InvertedListScanner(metric_type, nullptr, true, sel));
-        scanner->list_no = 0;
-
-#pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            float* D = distances + k * i;
-            idx_t* I = labels + k * i;
-            if (metric_type == METRIC_L2) {
-                maxheap_heapify(k, D, I);
-            } else {
-                minheap_heapify(k, D, I);
-            }
-            scanner->set_query(x + i * d);
-            scanner->scan_codes(ntotal, flat_codes.data(), nullptr, D, I, k);
-            if (metric_type == METRIC_L2) {
-                maxheap_reorder(k, D, I);
-            } else {
-                minheap_reorder(k, D, I);
-            }
-        }
-    }
+    // The kernel applies the selector itself, so no generic-scanner fallback.
+    IndexFastScan::search(n, x, k, distances, labels, params);
 }
 
 // -----------------------------------------------------------------------
