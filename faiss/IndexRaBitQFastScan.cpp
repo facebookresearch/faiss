@@ -512,6 +512,7 @@ void IndexRaBitQFastScan::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
+    // The kernel gains its selector test in the next diff.
     FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     // Create query factors array on stack - memory managed by caller
