@@ -19,7 +19,9 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/index_factory.h>
 
 namespace {
 
@@ -510,4 +512,82 @@ TEST(IVF, search_callbacks) {
             << "on_heap_changed should fire when vectors enter the heap";
     EXPECT_GE(distance_count, heap_count)
             << "not every distance computation leads to a heap change";
+}
+
+// Test: search, search_and_reconstruct, and search_and_return_codes must
+// return the same neighbors when given the same SearchParametersIVF with a
+// nested quantizer_params, on an IVF index with an HNSW coarse quantizer
+// whose result is sensitive to efSearch. The two helper methods searched
+// the coarse quantizer without forwarding quantizer_params, so at a low
+// efSearch they silently used the class-level (higher) efSearch instead
+// and could return a different neighbor than search() for the same params
+// object. d/nt/nb/nq/nlist/efSearch mirror
+// TestSearchParams.test_quantizer_hnsw in tests/test_search_params.py,
+// which already establishes in CI that this combination reliably changes
+// the result relative to the class-level default.
+TEST(IVF, quantizer_params_consistent_across_helpers) {
+    constexpr int d = 32;
+    constexpr int nlist = 200;
+    constexpr int nt = 1000;
+    constexpr int nb = 100;
+    constexpr int nq = 20;
+    constexpr int k = 10;
+
+    std::mt19937 rng(123);
+    std::uniform_real_distribution<float> distrib;
+
+    std::vector<float> xt(nt * d);
+    for (float& v : xt) {
+        v = distrib(rng);
+    }
+    std::vector<float> xb(nb * d);
+    for (float& v : xb) {
+        v = distrib(rng);
+    }
+    std::vector<float> xq(nq * d);
+    for (float& v : xq) {
+        v = distrib(rng);
+    }
+
+    std::unique_ptr<faiss::IndexIVF> index(dynamic_cast<faiss::IndexIVF*>(
+            faiss::index_factory(d, "IVF200_HNSW,Flat")));
+    ASSERT_TRUE(index != nullptr)
+            << "IVF200_HNSW,Flat did not build an IndexIVF";
+
+    index->train(nt, xt.data());
+    index->add(nb, xb.data());
+
+    faiss::SearchParametersHNSW quantizer_params;
+    quantizer_params.efSearch = 5;
+
+    faiss::SearchParametersIVF params;
+    params.nprobe = 10;
+    params.quantizer_params = &quantizer_params;
+
+    std::vector<float> Dref(nq * k);
+    std::vector<faiss::idx_t> Iref(nq * k);
+    index->search(nq, xq.data(), k, Dref.data(), Iref.data(), &params);
+
+    std::vector<float> Drec(nq * k);
+    std::vector<faiss::idx_t> Irec(nq * k);
+    std::vector<float> recons(nq * k * d);
+    index->search_and_reconstruct(
+            nq, xq.data(), k, Drec.data(), Irec.data(), recons.data(), &params);
+    EXPECT_EQ(Iref, Irec);
+    EXPECT_EQ(Dref, Drec);
+
+    std::vector<float> Dcodes(nq * k);
+    std::vector<faiss::idx_t> Icodes(nq * k);
+    std::vector<uint8_t> codes(nq * k * index->code_size);
+    index->search_and_return_codes(
+            nq,
+            xq.data(),
+            k,
+            Dcodes.data(),
+            Icodes.data(),
+            codes.data(),
+            false,
+            &params);
+    EXPECT_EQ(Iref, Icodes);
+    EXPECT_EQ(Dref, Dcodes);
 }

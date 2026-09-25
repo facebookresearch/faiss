@@ -1160,7 +1160,13 @@ void IndexIVF::search_and_reconstruct(
     std::unique_ptr<idx_t[]> idx(new idx_t[n * cur_nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * cur_nprobe]);
 
-    quantizer->search(n, x, cur_nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(
+            n,
+            x,
+            cur_nprobe,
+            coarse_dis.get(),
+            idx.get(),
+            params ? params->quantizer_params : nullptr);
 
     invlists->prefetch_lists(idx.get(), static_cast<int>(n * cur_nprobe));
 
@@ -1216,7 +1222,13 @@ void IndexIVF::search_and_return_codes(
     std::unique_ptr<idx_t[]> idx(new idx_t[n * cur_nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * cur_nprobe]);
 
-    quantizer->search(n, x, cur_nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(
+            n,
+            x,
+            cur_nprobe,
+            coarse_dis.get(),
+            idx.get(),
+            params ? params->quantizer_params : nullptr);
 
     invlists->prefetch_lists(idx.get(), static_cast<int>(n * cur_nprobe));
 
