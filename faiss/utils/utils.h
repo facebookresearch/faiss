@@ -48,6 +48,14 @@ size_t get_mem_usage_kb();
 
 uint64_t get_cycles();
 
+/** Enable or disable the collection of global search statistics (enabled by
+ * default). The flag is process-wide. When it is disabled, searches may skip
+ * updates to global stats objects, so their values are unspecified. At the
+ * moment, the flag controls hnsw_stats and rabitq_stats.
+ */
+void set_search_stats_enabled(bool enabled);
+bool get_search_stats_enabled();
+
 /***************************************************************************
  * Misc  matrix and vector manipulation functions
  ***************************************************************************/

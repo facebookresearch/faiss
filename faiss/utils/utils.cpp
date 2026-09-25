@@ -28,6 +28,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <atomic>
 #include <set>
 #include <type_traits>
 #include <unordered_set>
@@ -173,6 +174,18 @@ uint64_t get_cycles() {
 #else
     return 0;
 #endif
+}
+
+namespace {
+std::atomic<bool> search_stats_enabled{true};
+} // namespace
+
+void set_search_stats_enabled(bool enabled) {
+    search_stats_enabled.store(enabled, std::memory_order_relaxed);
+}
+
+bool get_search_stats_enabled() {
+    return search_stats_enabled.load(std::memory_order_relaxed);
 }
 
 #ifdef __linux__
