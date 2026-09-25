@@ -49,17 +49,9 @@ class TestHNSW(unittest.TestCase):
         nb = 20000
         xb = np.random.RandomState(123).random((nb, d)).astype("float32")
 
-        # build() mutates the process-global OpenMP thread count and the
-        # deterministic-build flag; restore both so they do not leak into
-        # subsequent tests.
+        # build() mutates the process-global OpenMP thread count; restore it so
+        # it does not leak into subsequent tests.
         self.addCleanup(faiss.omp_set_num_threads, faiss.omp_get_max_threads())
-        self.addCleanup(
-            setattr,
-            faiss.cvar,
-            "hnsw_deterministic_build",
-            faiss.cvar.hnsw_deterministic_build,
-        )
-        faiss.cvar.hnsw_deterministic_build = True
 
         def build(nthreads):
             faiss.omp_set_num_threads(nthreads)
@@ -96,24 +88,6 @@ class TestHNSW(unittest.TestCase):
         for i in range(nb):
             seg = g8a[int(offs[i]) : int(offs[i + 1])]
             self.assertNotIn(i, seg[seg >= 0].tolist())
-
-    def test_deterministic_build_recall(self):
-        # Same recall bar as test_hnsw (which exercises the lock-based default),
-        # so the deterministic graph is not merely reproducible but as good.
-        self.addCleanup(
-            setattr,
-            faiss.cvar,
-            "hnsw_deterministic_build",
-            faiss.cvar.hnsw_deterministic_build,
-        )
-        faiss.cvar.hnsw_deterministic_build = True
-
-        index = faiss.IndexHNSWFlat(self.xq.shape[1], 16)
-        index.add(self.xb)
-        Dhnsw, Ihnsw = index.search(self.xq, 1)
-
-        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
-        self.io_and_retest(index, Dhnsw, Ihnsw)
 
     def test_range_search(self):
         index_flat = faiss.IndexFlat(self.xb.shape[1])

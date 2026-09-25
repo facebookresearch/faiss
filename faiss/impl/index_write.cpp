@@ -40,6 +40,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -52,6 +53,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -873,12 +875,22 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
                 : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
+                : dynamic_cast<const IndexHNSWRaBitQ*>(idx) ? fourcc("IHNr")
                 : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
                                                             : 0;
         FAISS_THROW_IF_NOT_FMT(
                 h != 0,
                 "don't know how to serialize this IndexHNSW subtype: %s",
                 typeid(*idx).name());
+        const IndexRaBitQ* storage_rabitq = nullptr;
+        if (h == fourcc("IHNr")) {
+            storage_rabitq = dynamic_cast<const IndexRaBitQ*>(idxhnsw->storage);
+            FAISS_THROW_IF_NOT_MSG(
+                    storage_rabitq ||
+                            ((io_flags & IO_FLAG_SKIP_STORAGE) &&
+                             idxhnsw->storage == nullptr),
+                    "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+        }
         WRITE1(h);
         write_index_header(idxhnsw, f);
         if (h == fourcc("IHfP")) {
@@ -900,6 +912,16 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITE1(n4);
         } else {
             write_index(idxhnsw->storage, f);
+        }
+        if (h == fourcc("IHNr")) {
+            // The staged flag is graph-traversal state, so it has to live here:
+            // with IO_FLAG_SKIP_STORAGE there is no storage to derive it from.
+            // Storage-owned settings are not duplicated in this payload;
+            // IndexRaBitQ serializes whatever it owns.
+            const bool staged = storage_rabitq
+                    ? storage_rabitq->rabitq.nb_bits >= 2
+                    : idxhnsw->hnsw.search_method == HNSW::SM_RABITQ;
+            WRITE1(staged);
         }
     } else if (const IndexNSG* idxnsg = dynamic_cast<const IndexNSG*>(idx)) {
         uint32_t h = dynamic_cast<const IndexNSGFlat*>(idx) ? fourcc("INSf")
@@ -932,6 +954,19 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_NNDescent(&idxnnd->nndescent, f);
         write_index(idxnnd->storage, f);
     } else if (
+            const IndexSQFastScan* idxsqfs =
+                    dynamic_cast<const IndexSQFastScan*>(idx)) {
+        uint32_t h = fourcc("ISfs");
+        WRITE1(h);
+        write_index_header(idxsqfs, f);
+        write_ScalarQuantizer(&idxsqfs->sq, f);
+        WRITE1(idxsqfs->implem);
+        WRITE1(idxsqfs->bbs);
+        WRITE1(idxsqfs->qbs);
+        WRITE1(idxsqfs->ntotal2);
+        WRITE1(idxsqfs->M2);
+        WRITEVECTOR(idxsqfs->codes);
+    } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {
         uint32_t h = fourcc("IPfs");
@@ -944,6 +979,26 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxpqfs->ntotal2);
         WRITE1(idxpqfs->M2);
         WRITEVECTOR(idxpqfs->codes);
+    } else if (
+            const IndexIVFSQFastScan* ivfsqfs =
+                    dynamic_cast<const IndexIVFSQFastScan*>(idx)) {
+        uint32_t h = fourcc("IwSf");
+        WRITE1(h);
+        write_ivf_header(ivfsqfs, f);
+        WRITE1(ivfsqfs->by_residual);
+        WRITE1(ivfsqfs->code_size);
+        WRITE1(ivfsqfs->bbs);
+        WRITE1(ivfsqfs->M2);
+        WRITE1(ivfsqfs->implem);
+        WRITE1(ivfsqfs->rerank_factor);
+        write_ScalarQuantizer(&ivfsqfs->sq, f);
+        write_InvertedLists(ivfsqfs->invlists, f);
+        // Write orig_codes_invlists if present
+        bool has_orig = (ivfsqfs->orig_codes_invlists != nullptr);
+        WRITE1(has_orig);
+        if (has_orig) {
+            write_InvertedLists(ivfsqfs->orig_codes_invlists, f);
+        }
     } else if (
             const IndexIVFPQFastScan* ivpq_2 =
                     dynamic_cast<const IndexIVFPQFastScan*>(idx)) {
