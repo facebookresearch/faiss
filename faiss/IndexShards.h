@@ -81,6 +81,10 @@ struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;
 
+    /// Forward search parameters unchanged to each shard. A non-null
+    /// params->sel is unsupported if successive_ids gives any shard a
+    /// nonzero ID offset. To filter globally assigned IDs, assign them to
+    /// the shards first and use successive_ids=false.
     void search(
             idx_t n,
             const component_t* x,
