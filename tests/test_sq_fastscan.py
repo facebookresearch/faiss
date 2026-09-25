@@ -3,27 +3,10 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""
-Unit tests for IndexSQFastScan.
-
-Tests cover:
-  - Construction for native 4-bit types only
-  - Rejection of non-4-bit types
-  - Train / add / search round-trip
-  - Recall parity with IndexScalarQuantizer (within expected bounds)
-  - Conversion constructor from IndexScalarQuantizer
-  - Reset clears state
-  - Edge cases: k=1, single vector, zero vectors, odd dimensions
-  - Inner product metric
-  - sa_encode / sa_decode consistency
-  - I/O round-trip
-  - Factory strings
-  - get_distance_computer
-  - range_search
-"""
 
 from __future__ import absolute_import, division, print_function
 
+import math
 import os
 import tempfile
 import unittest
@@ -137,6 +120,36 @@ class TestSQFastScanRecallParity(unittest.TestCase):
                 r_fs = recall_at_k(self.I_gt, I_fs, 1)
                 self.assertAlmostEqual(r_sq, r_fs, delta=0.05,
                     msg=f"{name}: SQ={r_sq:.3f} FS={r_fs:.3f}")
+
+
+class TestSQFastScanHighDimension(unittest.TestCase):
+    """IndexSQFastScan sets M to d, so it reaches the uint16 accumulator bound.
+
+    See TestManyPQSubQuantizers in test_fast_scan.py for the generic case.
+    """
+
+    def test_matches_scalar_quantizer(self):
+        d=1024
+        ds = SyntheticDataset(d=d, nt=2000, nb=5000, nq=50, seed=42)
+        gt_index = faiss.IndexFlatL2(d)
+        gt_index.add(ds.get_database())
+        _, I_gt = gt_index.search(ds.get_queries(), 10)
+
+        sq = faiss.IndexScalarQuantizer(d, SQ.QT_4bit)
+        sq.train(ds.get_train())
+        sq.add(ds.get_database())
+
+        fs = faiss.IndexSQFastScan(d, SQ.QT_4bit)
+        fs.train(ds.get_train())
+        fs.add(ds.get_database())
+
+        _, I_sq = sq.search(ds.get_queries(), 10)
+        _, I_fs = fs.search(ds.get_queries(), 10)
+        r_sq = recall_at_k(I_gt, I_sq, 1)
+        r_fs = recall_at_k(I_gt, I_fs, 1)
+        self.assertAlmostEqual(
+            r_sq, r_fs, delta=0.05,
+            msg=f"d={d}: SQ={r_sq:.3f} FS={r_fs:.3f}")
 
 
 class TestSQFastScanConversionConstructor(unittest.TestCase):
@@ -485,5 +498,91 @@ class TestSQFastScanFactory(unittest.TestCase):
         self.assertIsInstance(index, faiss.IndexSQFastScan)
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestFastScanLUTScaleRounding(unittest.TestCase):
+    """Rounding must not push the summed table over the uint16 limit.
+
+    Each entry is rounded up by as much as 0.5, so M entries can add M/2 on
+    top of the sum the scale was chosen to fit. The scale has to leave room
+    for that.
+    """
+
+    def test_equal_spans_do_not_overflow_the_accumulator(self):
+        # M equal spans is the worst case: with a scale of 65535 / total the
+        # per-column maximum lands just under an integer and every one of them
+        # rounds up together.
+        for m in (256, 512, 1024, 2048):
+            scale = faiss.fastscan_lut_scale(1.0, float(m), m)
+            per_entry = math.floor(1.0 * scale + 0.5)
+            self.assertLessEqual(
+                per_entry * m,
+                65535,
+                f"M={m}: {m} entries of {per_entry} sum to {per_entry * m}",
+            )
+            self.assertLessEqual(per_entry, 255, f"M={m} overflows the uint8")
+
+    def test_scale_still_uses_the_range_it_has(self):
+        # The headroom must not collapse the scale: a 1024-column table should
+        # still reach most of the accumulator.
+        scale = faiss.fastscan_lut_scale(1.0, 1024.0, 1024)
+        total = math.floor(1.0 * scale + 0.5) * 1024
+        self.assertGreater(total, 60000, f"scale too conservative, total {total}")
+
+    def test_sq_fastscan_recall_at_d1024(self):
+        # d = 1024 means M = 1024, four times the M = 257 point where the
+        # accumulator can wrap. A wrap makes the ranking noise, so R@1 collapses.
+        d, n, nq = 1024, 2000, 50
+        rng = np.random.default_rng(123)
+        xb = rng.standard_normal((n, d), dtype=np.float32)
+        xq = xb[:nq].copy()
+        index = faiss.index_factory(d, "SQ4fs")
+        index.train(xb)
+        index.add(xb)
+        _, ids = index.search(xq, 1)
+        self.assertGreater(
+            (ids[:, 0] == np.arange(nq)).mean(), 0.9, "R@1 collapsed, LUT wrapped"
+        )
+
+
+class TestRaBitQFastScanBiasBound(unittest.TestCase):
+    """The per-probe bias is rounded into the same uint16 as the entries.
+
+    The scale must bound span_j + probe_b[j] - glob_b, not span_j alone. A
+    query whose probed lists have very different biases makes the difference
+    large enough to wrap if only the span is bounded.
+    """
+
+    def test_matches_non_fastscan_with_uneven_probe_biases(self):
+        """Guards the biased path at a dimension where the sum bound binds.
+
+        At d = 1024 the scale comes from the sum constraint rather than the
+        per-entry one, which is the regime where the per-probe bias added by
+        simd_result_handlers (d0 += dbias16, into the same uint16) can push the
+        accumulator over. This passes both with and without that bias in the
+        bound, so it does NOT isolate the overflow; it is a regression guard on
+        the path, not a boundary test. See the known limitation on large bias
+        spreads below.
+        """
+        d, nlist, per, nq = 1024, 16, 40, 40
+        rng = np.random.default_rng(7)
+        centers = (np.arange(nlist, dtype=np.float32)[:, None] * 10.0) * np.ones(
+            (1, d), dtype=np.float32
+        )
+        xb = np.repeat(centers, per, axis=0) + rng.standard_normal(
+            (nlist * per, d)
+        ).astype(np.float32)
+        xq = xb[:nq].copy()
+
+        def recall_at_1(factory):
+            index = faiss.index_factory(d, factory)
+            index.train(xb)
+            index.add(xb)
+            ivf = faiss.try_extract_index_ivf(index)
+            ivf.nprobe = nlist
+            _, ids = index.search(xq, 1)
+            return (ids[:, 0] == np.arange(nq)).mean()
+
+        ref = recall_at_1(f"HR,IVF{nlist},RaBitQ4")
+        fs = recall_at_1(f"HR,IVF{nlist},RaBitQfs4")
+        self.assertGreaterEqual(
+            fs, ref - 0.1, f"fast scan R@1 {fs:.2f} trails the reference {ref:.2f}"
+        )

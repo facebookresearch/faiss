@@ -27,9 +27,6 @@ namespace faiss {
  * IndexRefine(IndexSQFastScan(QT_4bit), IndexScalarQuantizer(QT_8bit))
  * to get fast-scan with reranking.  For fallback types (QT_fp16,
  * QT_bf16), use IndexScalarQuantizer directly.
- *
- * M = d subquantizers with 16 levels and uint16 SIMD accumulators
- * (safe for d <= 257).
  */
 struct IndexSQFastScan : IndexFastScan {
     ScalarQuantizer sq;
