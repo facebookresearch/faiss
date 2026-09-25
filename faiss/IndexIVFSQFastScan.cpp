@@ -6,6 +6,7 @@
  */
 
 #include <faiss/IndexIVFSQFastScan.h>
+#include <faiss/impl/sq_fastscan_utils.h>
 
 #include <omp.h>
 
@@ -29,107 +30,7 @@
 
 namespace faiss {
 
-namespace {
-
-size_t roundup(size_t a, size_t b) {
-    return (a + b - 1) / b * b;
-}
-
-bool is_native_4bit(ScalarQuantizer::QuantizerType qtype) {
-    return qtype == ScalarQuantizer::QT_4bit ||
-            qtype == ScalarQuantizer::QT_4bit_uniform;
-}
-
-bool needs_rerank(ScalarQuantizer::QuantizerType qtype) {
-    return qtype == ScalarQuantizer::QT_6bit ||
-            qtype == ScalarQuantizer::QT_8bit ||
-            qtype == ScalarQuantizer::QT_8bit_uniform ||
-            qtype == ScalarQuantizer::QT_8bit_direct ||
-            qtype == ScalarQuantizer::QT_8bit_direct_signed;
-}
-
-bool is_fallback(ScalarQuantizer::QuantizerType qtype) {
-    return !is_native_4bit(qtype) && !needs_rerank(qtype);
-}
-
-bool is_uniform_range(ScalarQuantizer::QuantizerType qtype) {
-    return qtype == ScalarQuantizer::QT_8bit_uniform ||
-            qtype == ScalarQuantizer::QT_8bit_direct ||
-            qtype == ScalarQuantizer::QT_8bit_direct_signed;
-}
-
-void get_uniform_range(const ScalarQuantizer& sq, float& vmin, float& vdiff) {
-    if (sq.qtype == ScalarQuantizer::QT_8bit_direct) {
-        vmin = 0;
-        vdiff = 255;
-    } else if (sq.qtype == ScalarQuantizer::QT_8bit_direct_signed) {
-        vmin = -128;
-        vdiff = 255;
-    } else {
-        vmin = sq.trained[0];
-        vdiff = sq.trained[1];
-    }
-}
-
-void float_to_4bit_nibbles(
-        const float* x,
-        uint8_t* nibbles,
-        idx_t n,
-        int d,
-        int M2,
-        const ScalarQuantizer& sq) {
-    const bool is_uniform = is_uniform_range(sq.qtype) ||
-            sq.qtype == ScalarQuantizer::QT_4bit_uniform;
-    const float* vmin_arr = nullptr;
-    const float* vdiff_arr = nullptr;
-    float vmin_s = 0, inv_vdiff_s = 0;
-
-    if (is_uniform) {
-        float vdiff;
-        get_uniform_range(sq, vmin_s, vdiff);
-        inv_vdiff_s = (vdiff > 0) ? (1.0f / vdiff) : 0;
-    } else {
-        vmin_arr = sq.trained.data();
-        vdiff_arr = sq.trained.data() + d;
-    }
-
-    const int half = M2 / 2;
-    for (idx_t i = 0; i < n; i++) {
-        const float* xi = x + i * d;
-        uint8_t* dst = nibbles + i * half;
-        memset(dst, 0, half);
-        for (int m = 0; m + 1 < d; m += 2) {
-            float f0, f1;
-            if (is_uniform) {
-                f0 = (xi[m] - vmin_s) * inv_vdiff_s;
-                f1 = (xi[m + 1] - vmin_s) * inv_vdiff_s;
-            } else {
-                f0 = (vdiff_arr[m] > 0) ? (xi[m] - vmin_arr[m]) / vdiff_arr[m]
-                                        : 0;
-                f1 = (vdiff_arr[m + 1] > 0)
-                        ? (xi[m + 1] - vmin_arr[m + 1]) / vdiff_arr[m + 1]
-                        : 0;
-            }
-            uint8_t lo = (uint8_t)std::min(15, std::max(0, (int)(f0 * 15.0f)));
-            uint8_t hi = (uint8_t)std::min(15, std::max(0, (int)(f1 * 15.0f)));
-            dst[m / 2] = lo | (hi << 4);
-        }
-        if (d & 1) {
-            float f;
-            if (is_uniform) {
-                f = (xi[d - 1] - vmin_s) * inv_vdiff_s;
-            } else {
-                f = (vdiff_arr[d - 1] > 0)
-                        ? (xi[d - 1] - vmin_arr[d - 1]) / vdiff_arr[d - 1]
-                        : 0;
-            }
-            dst[(d - 1) / 2] =
-                    (uint8_t)std::min(15, std::max(0, (int)(f * 15.0f)));
-        }
-    }
-}
-
-} // anonymous namespace
+using namespace faiss::sq_fastscan;
 
 // -----------------------------------------------------------------------
 // Constructors
@@ -500,10 +401,10 @@ void IndexIVFSQFastScan::search(
     if (is_fallback(sq.qtype)) {
         IndexIVF::search(n, x, k, distances, labels, params);
     } else if (needs_rerank(sq.qtype)) {
-        idx_t k_coarse = idx_t(k * rerank_factor);
-        if (k_coarse < k) {
-            k_coarse = k;
-        }
+        idx_t k_coarse = idx_t(double(k) * rerank_factor);
+        FAISS_THROW_IF_NOT(k_coarse >= k);
+        FAISS_THROW_IF_NOT_MSG(
+                n <= INT64_MAX / k_coarse, "n * k_coarse would overflow int64");
 
         std::vector<float> coarse_dis(n * k_coarse);
         std::vector<idx_t> coarse_ids(n * k_coarse);
@@ -592,10 +493,10 @@ void IndexIVFSQFastScan::search_preassigned(
                 params,
                 stats);
     } else if (needs_rerank(sq.qtype)) {
-        idx_t k_coarse = idx_t(k * rerank_factor);
-        if (k_coarse < k) {
-            k_coarse = k;
-        }
+        idx_t k_coarse = idx_t(double(k) * rerank_factor);
+        FAISS_THROW_IF_NOT(k_coarse >= k);
+        FAISS_THROW_IF_NOT_MSG(
+                n <= INT64_MAX / k_coarse, "n * k_coarse would overflow int64");
 
         std::vector<float> coarse_dis(n * k_coarse);
         std::vector<idx_t> coarse_ids(n * k_coarse);

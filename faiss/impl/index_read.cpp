@@ -2773,6 +2773,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxsqfs->ntotal2);
         READ1(idxsqfs->M2);
         READVECTOR(idxsqfs->codes);
+        READ1(idxsqfs->rerank_factor);
+        READVECTOR(idxsqfs->lo_codes);
 
         // Restore FastScan base-class fields from the SQ
         idxsqfs->M = idxsqfs->sq.d;
