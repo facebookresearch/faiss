@@ -2838,18 +2838,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool has_orig;
         READ1(has_orig);
         if (has_orig) {
-            ivfsqfs->orig_codes_invlists = read_InvertedLists(f, io_flags);
-            // Rebuild direct_map from orig_codes_invlists for reranking
+            ivfsqfs->lo_codes_invlists = read_InvertedLists(f, io_flags);
+            // Rebuild direct_map from lo_codes_invlists for reranking
             ivfsqfs->direct_map.set_type(
                     DirectMap::Hashtable, ivfsqfs->invlists, 0);
             for (size_t list_no = 0; list_no < ivfsqfs->nlist; list_no++) {
                 size_t list_size =
-                        ivfsqfs->orig_codes_invlists->list_size(list_no);
+                        ivfsqfs->lo_codes_invlists->list_size(list_no);
                 if (list_size == 0) {
                     continue;
                 }
                 InvertedLists::ScopedIds ids(
-                        ivfsqfs->orig_codes_invlists, list_no);
+                        ivfsqfs->lo_codes_invlists, list_no);
                 for (size_t j = 0; j < list_size; j++) {
                     ivfsqfs->direct_map.add_single_id(ids[j], list_no, j);
                 }

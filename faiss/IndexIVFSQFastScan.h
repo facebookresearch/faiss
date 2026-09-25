@@ -10,6 +10,7 @@
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/impl/sq_fastscan_utils.h>
 
 namespace faiss {
 
@@ -29,10 +30,8 @@ namespace faiss {
  *     ScalarQuantizer's own SIMD-optimised InvertedListScanner (same
  *     behavior as IndexIVFScalarQuantizer, no fast-scan acceleration).
  *
- * For reranked types, both the original full-precision codes and the
- * packed 4-bit codes are stored in the inverted lists.  The block
- * inverted lists hold packed 4-bit codes; original codes are stored
- * in a parallel ArrayInvertedLists (orig_codes_invlists).
+ * For reranked types the block inverted lists hold the packed high nibbles
+ * and a parallel ArrayInvertedLists (lo_codes_invlists) holds the low ones.
  */
 struct IndexIVFSQFastScan : IndexIVFFastScan {
     ScalarQuantizer sq;
@@ -40,10 +39,25 @@ struct IndexIVFSQFastScan : IndexIVFFastScan {
     /// Overselection ratio for reranking (default 2).
     float rerank_factor = 2;
 
-    /// Parallel inverted lists storing original SQ codes (for rerank
-    /// types).  Owned by this index.  nullptr for native 4-bit and
-    /// fallback types.
-    InvertedLists* orig_codes_invlists = nullptr;
+    /// Parallel inverted lists holding the leftover low bits of each code.
+    /// The top 4 bits of every code live in the packed scan blocks.
+    /// Owned by this index. nullptr for native 4-bit and fallback types.
+    InvertedLists* lo_codes_invlists = nullptr;
+
+    /// Bytes per vector in lo_codes_invlists: the bits of each code left
+    /// over once the scan has taken the top 4.
+    size_t lo_code_size() const {
+        return sq_fastscan::sq_rerank_size(d, sq.qtype);
+    }
+
+    /// Rebuild the code at (list_no, offset) from its two halves. `scratch`
+    /// needs M2 / 2 bytes, `code_out` needs sq.code_size.
+    void recombine_code(
+            int64_t list_no,
+            int64_t offset,
+            uint8_t* scratch,
+            int* values,
+            uint8_t* code_out) const;
 
     IndexIVFSQFastScan(
             Index* quantizer,

@@ -995,11 +995,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivfsqfs->rerank_factor);
         write_ScalarQuantizer(&ivfsqfs->sq, f);
         write_InvertedLists(ivfsqfs->invlists, f);
-        // Write orig_codes_invlists if present
-        bool has_orig = (ivfsqfs->orig_codes_invlists != nullptr);
+        // Write lo_codes_invlists if present
+        bool has_orig = (ivfsqfs->lo_codes_invlists != nullptr);
         WRITE1(has_orig);
         if (has_orig) {
-            write_InvertedLists(ivfsqfs->orig_codes_invlists, f);
+            write_InvertedLists(ivfsqfs->lo_codes_invlists, f);
         }
     } else if (
             const IndexIVFPQFastScan* ivpq_2 =
