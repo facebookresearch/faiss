@@ -512,8 +512,8 @@ void IndexRaBitQFastScan::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    // The kernel gains its selector test in the next diff.
-    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
+    // The kernel applies the selector after each SIMD block.
+    const IDSelector* rabitq_sel = params ? params->sel : nullptr;
 
     // Create query factors array on stack - memory managed by caller
     std::vector<rabitq_utils::QueryFactorsData> query_factors_storage(n);
@@ -524,9 +524,11 @@ void IndexRaBitQFastScan::search(
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, context);
+        search_dispatch_implem<true>(
+                n, x, k, distances, labels, context, rabitq_sel);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, context);
+        search_dispatch_implem<false>(
+                n, x, k, distances, labels, context, rabitq_sel);
     }
 }
 

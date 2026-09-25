@@ -966,6 +966,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxsqfs->ntotal2);
         WRITE1(idxsqfs->M2);
         WRITEVECTOR(idxsqfs->codes);
+        WRITE1(idxsqfs->rerank_factor);
+        WRITEVECTOR(idxsqfs->lo_codes);
     } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {

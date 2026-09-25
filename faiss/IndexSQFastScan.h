@@ -16,25 +16,33 @@
 
 namespace faiss {
 
-/** Fast scan version of IndexScalarQuantizer for native 4-bit types.
+/** Fast scan version of IndexScalarQuantizer.
  *
  * Supported quantizer types:
  *   - QT_4bit, QT_4bit_uniform: native 4-bit codes mapped onto the
- *     PQ4 FastScan SIMD infrastructure (vpshufb / equivalent).
- *     No precision loss.
+ *     PQ4 FastScan SIMD (vpshufb / equivalent).
  *
- * For higher-precision types (QT_8bit, QT_6bit, etc.), use
- * IndexRefine(IndexSQFastScan(QT_4bit), IndexScalarQuantizer(QT_8bit))
- * to get fast-scan with reranking.  For fallback types (QT_fp16,
- * QT_bf16), use IndexScalarQuantizer directly.
+ *   - QT_6bit, QT_8bit, QT_8bit_uniform, QT_8bit_direct,
+ *     QT_8bit_direct_signed: re-quantised to 4-bit for the scan, reranked
+ *     against the originals in orig_codes.
+ *
+ *   - All other types (QT_fp16, QT_bf16): use IndexScalarQuantizer directly.
  */
 struct IndexSQFastScan : IndexFastScan {
     ScalarQuantizer sq;
 
+    /// Overselection ratio for reranking.
+    float rerank_factor = 2;
+
+    /// Low nibbles of the 8-bit codes, two dimensions per byte, indexed by
+    /// id. The high nibbles live in the packed scan codes. Empty for the
+    /// native 4-bit types, which need no rerank.
+    std::vector<uint8_t> lo_codes;
+
     /** Constructor.
      *
      * @param d       dimensionality of input vectors
-     * @param qtype   QT_4bit or QT_4bit_uniform only
+     * @param qtype   any native 4-bit or reranked type (see above)
      * @param metric  distance metric (METRIC_L2 or METRIC_INNER_PRODUCT)
      * @param bbs     block size for SIMD processing (multiple of 32)
      */
@@ -46,7 +54,7 @@ struct IndexSQFastScan : IndexFastScan {
 
     IndexSQFastScan();
 
-    /// Build from an existing IndexScalarQuantizer (must be QT_4bit*)
+    /// Build from an existing IndexScalarQuantizer
     explicit IndexSQFastScan(const IndexScalarQuantizer& orig, int bbs = 32);
 
     void train(idx_t n, const float* x) override;
@@ -107,6 +115,13 @@ struct IndexSQFastScan : IndexFastScan {
             SearchParameters* params = nullptr) const override;
 
     size_t sa_code_size() const override;
+
+    void fill_sa_code(
+            const CodePacker& packer,
+            idx_t id,
+            uint8_t* scratch,
+            int* values,
+            uint8_t* code_out) const;
 
     size_t fast_scan_code_size() const override;
 };

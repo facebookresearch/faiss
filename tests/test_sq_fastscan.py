@@ -48,12 +48,10 @@ class TestSQFastScanConstruction(unittest.TestCase):
         self.assertEqual(index.d, 0)
         self.assertEqual(index.ntotal, 0)
 
-    def test_rejects_non_4bit(self):
+    def test_accepts_reranked_types_rejects_fallback(self):
         d = 64
-        with self.assertRaises(RuntimeError):
-            faiss.IndexSQFastScan(d, SQ.QT_8bit)
-        with self.assertRaises(RuntimeError):
-            faiss.IndexSQFastScan(d, SQ.QT_6bit)
+        for qtype in (SQ.QT_8bit, SQ.QT_6bit):
+            faiss.IndexSQFastScan(d, qtype)
         with self.assertRaises(RuntimeError):
             faiss.IndexSQFastScan(d, SQ.QT_fp16)
         with self.assertRaises(RuntimeError):
@@ -177,11 +175,17 @@ class TestSQFastScanConversionConstructor(unittest.TestCase):
                 r1_fs = (I_fs[:, 0] >= 0).mean()
                 self.assertEqual(r1_sq, r1_fs)
 
-    def test_conversion_rejects_non_4bit(self):
+    def test_conversion_accepts_8bit_and_rejects_fallback(self):
         sq = faiss.IndexScalarQuantizer(self.d, SQ.QT_8bit)
         sq.train(self.ds.get_train())
+        sq.add(self.ds.get_database())
+        converted = faiss.IndexSQFastScan(sq)
+        self.assertEqual(converted.ntotal, sq.ntotal)
+
+        fp16 = faiss.IndexScalarQuantizer(self.d, SQ.QT_fp16)
+        fp16.train(self.ds.get_train())
         with self.assertRaises(RuntimeError):
-            faiss.IndexSQFastScan(sq)
+            faiss.IndexSQFastScan(fp16)
 
 
 class TestSQFastScanReset(unittest.TestCase):
@@ -586,3 +590,65 @@ class TestRaBitQFastScanBiasBound(unittest.TestCase):
         self.assertGreaterEqual(
             fs, ref - 0.1, f"fast scan R@1 {fs:.2f} trails the reference {ref:.2f}"
         )
+
+
+class TestSQFastScanSplitCodePaths(unittest.TestCase):
+    """Paths that rebuild a full code from the split halves.
+
+    QT_4bit hides every bug here, because its code is already one nibble per
+    dimension and sq.code_size equals the fast-scan code size.
+    """
+
+    def _pair(self, qtype, d=32, n=200):
+        rng = np.random.default_rng(0)
+        xb = rng.standard_normal((n, d), dtype=np.float32)
+        ref = faiss.IndexScalarQuantizer(d, qtype)
+        ref.train(xb)
+        ref.add(xb)
+        fs = faiss.IndexSQFastScan(d, qtype)
+        fs.train(xb)
+        fs.add(xb)
+        return xb, ref, fs
+
+    def test_reconstruct_matches_reference(self):
+        for qtype in (SQ.QT_4bit, SQ.QT_6bit, SQ.QT_8bit):
+            _, ref, fs = self._pair(qtype)
+            for i in (0, 7, 199):
+                np.testing.assert_array_equal(
+                    ref.reconstruct(i), fs.reconstruct(i)
+                )
+
+    def test_range_search_matches_reference(self):
+        for qtype in (SQ.QT_4bit, SQ.QT_6bit, SQ.QT_8bit):
+            xb, ref, fs = self._pair(qtype)
+            _, _, iref = ref.range_search(xb[:5], 20.0)
+            _, _, ifs = fs.range_search(xb[:5], 20.0)
+            self.assertEqual(sorted(iref.tolist()), sorted(ifs.tolist()))
+
+    def test_permute_entries_moves_both_halves(self):
+        for qtype in (SQ.QT_6bit, SQ.QT_8bit):
+            _, _, fs = self._pair(qtype)
+            n = fs.ntotal
+            before = fs.reconstruct(5).copy()
+            perm = np.arange(n - 1, -1, -1, dtype="int64")
+            fs.permute_entries(perm)
+            np.testing.assert_array_equal(before, fs.reconstruct(n - 6))
+
+    def test_direct_qtypes_match_reference(self):
+        rng = np.random.default_rng(0)
+        d, n = 32, 200
+        for qtype, lo in (
+            (SQ.QT_8bit_direct, 0),
+            (SQ.QT_8bit_direct_signed, -128),
+        ):
+            xb = rng.integers(lo, lo + 256, size=(n, d)).astype(np.float32)
+            ref = faiss.IndexScalarQuantizer(d, qtype)
+            ref.train(xb)
+            ref.add(xb)
+            fs = faiss.IndexSQFastScan(d, qtype)
+            fs.train(xb)
+            fs.add(xb)
+            _, iref = ref.search(xb[:10], 5)
+            _, ifs = fs.search(xb[:10], 5)
+            hits = sum(len(set(a) & set(b)) for a, b in zip(iref, ifs))
+            self.assertGreaterEqual(hits, 0.9 * iref.size)
