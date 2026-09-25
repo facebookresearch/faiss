@@ -6,6 +6,7 @@
  */
 
 #include <faiss/IndexSQFastScan.h>
+#include <faiss/impl/sq_fastscan_utils.h>
 
 #include <omp.h>
 
@@ -28,18 +29,7 @@
 
 namespace faiss {
 
-namespace {
-
-size_t roundup(size_t a, size_t b) {
-    return (a + b - 1) / b * b;
-}
-
-bool is_native_4bit(ScalarQuantizer::QuantizerType qtype) {
-    return qtype == ScalarQuantizer::QT_4bit ||
-            qtype == ScalarQuantizer::QT_4bit_uniform;
-}
-
-} // anonymous namespace
+using namespace faiss::sq_fastscan;
 
 // -----------------------------------------------------------------------
 // Constructors
@@ -52,10 +42,10 @@ IndexSQFastScan::IndexSQFastScan(
         int bbs_in)
         : sq(d_in, qtype) {
     FAISS_THROW_IF_NOT_MSG(
-            is_native_4bit(qtype),
-            "IndexSQFastScan only supports QT_4bit and QT_4bit_uniform. "
-            "For higher-precision types, use "
-            "IndexRefine(IndexSQFastScan(...), IndexScalarQuantizer(...)).");
+            !is_fallback(qtype),
+            "IndexSQFastScan supports the native 4-bit and the reranked "
+            "types. QT_fp16 and QT_bf16 have no fast-scan path; use "
+            "IndexScalarQuantizer for those.");
     init_fastscan(d_in, d_in, 4, metric, bbs_in);
 }
 
@@ -64,17 +54,39 @@ IndexSQFastScan::IndexSQFastScan() = default;
 IndexSQFastScan::IndexSQFastScan(const IndexScalarQuantizer& orig, int bbs_in)
         : sq(orig.sq) {
     FAISS_THROW_IF_NOT_MSG(
-            is_native_4bit(sq.qtype),
-            "IndexSQFastScan conversion constructor only supports "
-            "QT_4bit and QT_4bit_uniform.");
+            !is_fallback(sq.qtype),
+            "IndexSQFastScan conversion constructor supports the native "
+            "4-bit and the reranked types only.");
     init_fastscan(orig.d, orig.d, 4, orig.metric_type, bbs_in);
     ntotal = orig.ntotal;
     is_trained = orig.is_trained;
 
     ntotal2 = roundup(ntotal, bbs_in);
     codes.resize(ntotal2 * M2 / 2);
-    pq4_pack_codes(
-            orig.codes.data(), ntotal, M, ntotal2, bbs_in, M2, codes.get());
+    if (is_native_4bit(sq.qtype)) {
+        pq4_pack_codes(
+                orig.codes.data(), ntotal, M, ntotal2, bbs_in, M2, codes.get());
+    } else {
+        // High nibbles feed the scan, low nibbles the rerank.
+        std::vector<uint8_t> nibbles(ntotal * (M2 / 2));
+        const int bits = sq_bits(sq.qtype), lo_bits = bits - 4;
+        const size_t half = sq_rerank_size(d, sq.qtype);
+        lo_codes.assign(size_t(ntotal) * half, 0);
+        for (idx_t i = 0; i < ntotal; i++) {
+            const uint8_t* src = orig.codes.data() + size_t(i) * sq.code_size;
+            uint8_t* hi = nibbles.data() + size_t(i) * (M2 / 2);
+            BitstringReader bsr(src, sq.code_size);
+            BitstringWriter bsw(lo_codes.data() + size_t(i) * half, half);
+            for (int m = 0; m < d; m++) {
+                const int code = int(bsr.read(bits));
+                const int h = code >> lo_bits;
+                hi[m / 2] |= (m & 1) ? uint8_t(h << 4) : uint8_t(h);
+                bsw.write(code & ((1 << lo_bits) - 1), lo_bits);
+            }
+        }
+        pq4_pack_codes(
+                nibbles.data(), ntotal, M, ntotal2, bbs_in, M2, codes.get());
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -91,10 +103,31 @@ void IndexSQFastScan::train(idx_t n, const float* x) {
 
 void IndexSQFastScan::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(is_trained);
+    const size_t before = lo_codes.size();
     IndexFastScan::add(n, x);
+    if (!needs_rerank(sq.qtype) || lo_codes.size() != before) {
+        // IndexFastScan::add blocks a large batch and re-enters this override
+        // once per block, so the blocks have already appended the low bits.
+        return;
+    }
+    const int bits = sq_bits(sq.qtype), lo_bits = bits - 4;
+    const size_t stride = sq_rerank_size(d, sq.qtype);
+    lo_codes.resize(before + size_t(n) * stride, 0);
+    const SQRanges ranges(sq, d);
+    for (idx_t i = 0; i < n; i++) {
+        const float* xi = x + i * d;
+        uint8_t* dst = lo_codes.data() + before + size_t(i) * stride;
+        BitstringWriter bsw(dst, stride);
+        for (int m = 0; m < d; m++) {
+            const int code =
+                    sq_code_of(xi[m], ranges.vmin(m), ranges.vdiff(m), bits);
+            bsw.write(code & ((1 << lo_bits) - 1), lo_bits);
+        }
+    }
 }
 
 void IndexSQFastScan::reset() {
+    lo_codes.clear();
     IndexFastScan::reset();
 }
 
@@ -112,7 +145,87 @@ void IndexSQFastScan::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
     // The kernel applies the selector itself, so no generic-scanner fallback.
-    IndexFastScan::search(n, x, k, distances, labels, params);
+    if (!needs_rerank(sq.qtype)) {
+        IndexFastScan::search(n, x, k, distances, labels, params);
+        return;
+    }
+
+    // The 4-bit scan is a shortlist. rerank_factor bounds the recall.
+    idx_t k_coarse = idx_t(double(k) * rerank_factor);
+    FAISS_THROW_IF_NOT(k_coarse >= k);
+    FAISS_THROW_IF_NOT_MSG(
+            n <= INT64_MAX / k_coarse, "n * k_coarse would overflow int64");
+    std::vector<float> coarse_dis(n * k_coarse);
+    std::vector<idx_t> coarse_ids(n * k_coarse);
+    IndexFastScan::search(
+            n, x, k_coarse, coarse_dis.data(), coarse_ids.data(), params);
+
+    const bool is_max = metric_type == METRIC_L2;
+#pragma omp parallel
+    {
+        std::unique_ptr<CodePacker> packer(get_CodePacker());
+        std::vector<uint8_t> hi_buf(M2 / 2);
+        std::vector<int> code_buf(d);
+        const size_t lo_stride = sq_rerank_size(d, sq.qtype);
+        const int maxv = (1 << sq_bits(sq.qtype)) - 1;
+        const SQRanges ranges(sq, d);
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            float* D = distances + i * k;
+            idx_t* I = labels + i * k;
+            if (is_max) {
+                maxheap_heapify(k, D, I);
+            } else {
+                minheap_heapify(k, D, I);
+            }
+            for (idx_t j = 0; j < k_coarse; j++) {
+                idx_t id = coarse_ids[i * k_coarse + j];
+                if (id < 0) {
+                    continue;
+                }
+                float dis;
+                {
+                    // Recombine the two halves into the original code.
+                    packer->unpack_1(codes.get(), id, hi_buf.data());
+                    split_to_codes(
+                            hi_buf.data(),
+                            lo_codes.data() + size_t(id) * lo_stride,
+                            d,
+                            sq.qtype,
+                            code_buf.data());
+                    const float* xi = x + i * d;
+                    float acc = 0;
+                    for (int m = 0; m < d; m++) {
+                        // Matches Codec*bit::decode_component: (c+0.5)/maxv.
+                        const float v = ranges.vmin(m) +
+                                ((code_buf[m] + 0.5f) / float(maxv)) *
+                                        ranges.vdiff(m);
+                        if (is_max) {
+                            const float df = xi[m] - v;
+                            acc += df * df;
+                        } else {
+                            acc += xi[m] * v;
+                        }
+                    }
+                    dis = acc;
+                }
+                if (is_max) {
+                    if (dis < D[0]) {
+                        maxheap_replace_top(k, D, I, dis, id);
+                    }
+                } else {
+                    if (dis > D[0]) {
+                        minheap_replace_top(k, D, I, dis, id);
+                    }
+                }
+            }
+            if (is_max) {
+                maxheap_reorder(k, D, I);
+            } else {
+                minheap_reorder(k, D, I);
+            }
+        }
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -121,7 +234,14 @@ void IndexSQFastScan::search(
 
 void IndexSQFastScan::compute_codes(uint8_t* out_codes, idx_t n, const float* x)
         const {
-    sq.compute_codes(x, out_codes, n);
+    if (is_native_4bit(sq.qtype)) {
+        sq.compute_codes(x, out_codes, n);
+    } else {
+        // The scanned nibble is the top half. lo_codes holds the bottom.
+        std::vector<uint8_t> lo_discard(
+                size_t(n) * sq_rerank_size(d, sq.qtype));
+        float_to_split_codes(x, out_codes, lo_discard.data(), n, d, M2, sq);
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -136,15 +256,21 @@ void IndexSQFastScan::compute_float_LUT(
     const size_t dim = d;
     const size_t ksub_val = 16;
 
-    bool is_uniform = (sq.qtype == ScalarQuantizer::QT_4bit_uniform);
+    bool is_uniform = (sq.qtype == ScalarQuantizer::QT_4bit_uniform) ||
+            is_uniform_range(sq.qtype);
 
     std::vector<float> recon_table(dim * ksub_val);
 
+    const float lut_step = float(1 << sq_rerank_bits(sq.qtype));
+    const float lut_offset = lut_step / 2.0f;
+    const float lut_scale = float((1 << sq_bits(sq.qtype)) - 1);
+
     if (is_uniform) {
-        float vmin = sq.trained[0];
-        float vdiff = sq.trained[1];
+        float vmin, vdiff;
+        get_uniform_range(sq, vmin, vdiff);
         for (size_t c = 0; c < ksub_val; c++) {
-            float recon = vmin + ((c + 0.5f) / 15.0f) * vdiff;
+            float recon =
+                    vmin + ((c * lut_step + lut_offset) / lut_scale) * vdiff;
             for (size_t m = 0; m < dim; m++) {
                 recon_table[m * ksub_val + c] = recon;
             }
@@ -155,8 +281,8 @@ void IndexSQFastScan::compute_float_LUT(
         const float* vdiff = sq.trained.data() + dim;
         for (size_t m = 0; m < dim; m++) {
             for (size_t c = 0; c < ksub_val; c++) {
-                recon_table[m * ksub_val + c] =
-                        vmin[m] + ((c + 0.5f) / 15.0f) * vdiff[m];
+                recon_table[m * ksub_val + c] = vmin[m] +
+                        ((c * lut_step + lut_offset) / lut_scale) * vdiff[m];
             }
         }
     }
@@ -195,11 +321,37 @@ void IndexSQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     sq.decode(bytes, x, n);
 }
 
+void IndexSQFastScan::fill_sa_code(
+        const CodePacker& packer,
+        idx_t id,
+        uint8_t* scratch,
+        int* values,
+        uint8_t* code_out) const {
+    packer.unpack_1(codes.data(), id, scratch);
+    if (lo_codes.empty()) {
+        memcpy(code_out, scratch, sq.code_size);
+        return;
+    }
+    split_to_codes(
+            scratch,
+            lo_codes.data() + size_t(id) * sq_rerank_size(d, sq.qtype),
+            d,
+            sq.qtype,
+            values);
+    memset(code_out, 0, sq.code_size);
+    BitstringWriter out(code_out, sq.code_size);
+    const int bits = sq_bits(sq.qtype);
+    for (int m = 0; m < d; m++) {
+        out.write(values[m], bits);
+    }
+}
+
 void IndexSQFastScan::reconstruct(idx_t key, float* recons) const {
     FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     std::unique_ptr<CodePacker> packer(get_CodePacker());
-    std::vector<uint8_t> flat_code(sq.code_size);
-    packer->unpack_1(codes.data(), key, flat_code.data());
+    std::vector<uint8_t> scratch(M2 / 2), flat_code(sq.code_size);
+    std::vector<int> values(d);
+    fill_sa_code(*packer, key, scratch.data(), values.data(), flat_code.data());
     sq.decode(flat_code.data(), recons, 1);
 }
 
@@ -227,9 +379,15 @@ void IndexSQFastScan::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
 void IndexSQFastScan::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
     FAISS_THROW_IF_NOT(i0 >= 0 && i0 + ni <= ntotal);
     std::unique_ptr<CodePacker> packer(get_CodePacker());
-    std::vector<uint8_t> flat_code(sq.code_size);
+    std::vector<uint8_t> scratch(M2 / 2), flat_code(sq.code_size);
+    std::vector<int> values(d);
     for (idx_t i = 0; i < ni; i++) {
-        packer->unpack_1(codes.data(), i0 + i, flat_code.data());
+        fill_sa_code(
+                *packer,
+                i0 + i,
+                scratch.data(),
+                values.data(),
+                flat_code.data());
         sq.decode(flat_code.data(), recons + i * d, 1);
     }
 }
@@ -246,7 +404,7 @@ void IndexSQFastScan::add_sa_codes(
     // Decode to float then re-add via IndexFastScan for SIMD packing
     std::vector<float> recon(n * d);
     sq.decode(code, recon.data(), n);
-    IndexFastScan::add(n, recon.data());
+    add(n, recon.data());
 }
 
 // -----------------------------------------------------------------------
@@ -272,6 +430,17 @@ void IndexSQFastScan::permute_entries(const idx_t* perm) {
                code_sz);
     }
     pq4_pack_codes(flat_new.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
+
+    if (!lo_codes.empty()) {
+        const size_t lo_sz = sq_rerank_size(d, sq.qtype);
+        std::vector<uint8_t> lo_new(size_t(ntotal) * lo_sz);
+        for (idx_t i = 0; i < ntotal; i++) {
+            memcpy(lo_new.data() + size_t(i) * lo_sz,
+                   lo_codes.data() + size_t(perm[i]) * lo_sz,
+                   lo_sz);
+        }
+        lo_codes.swap(lo_new);
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -327,8 +496,15 @@ FlatCodesDistanceComputer* IndexSQFastScan::get_FlatCodesDistanceComputer()
     std::unique_ptr<CodePacker> packer(get_CodePacker());
     size_t cs = sq.code_size;
     std::vector<uint8_t> flat(ntotal * cs);
+    std::vector<uint8_t> scratch(M2 / 2);
+    std::vector<int> values(d);
     for (idx_t i = 0; i < ntotal; i++) {
-        packer->unpack_1(codes.data(), i, flat.data() + i * cs);
+        fill_sa_code(
+                *packer,
+                i,
+                scratch.data(),
+                values.data(),
+                flat.data() + i * cs);
     }
 
     ScalarQuantizer::SQDistanceComputer* dc =
@@ -359,9 +535,15 @@ void IndexSQFastScan::range_search(
     std::vector<uint8_t> flat_codes(ntotal * sq.code_size);
     {
         std::unique_ptr<CodePacker> packer(get_CodePacker());
+        std::vector<uint8_t> scratch(M2 / 2);
+        std::vector<int> values(d);
         for (idx_t i = 0; i < ntotal; i++) {
-            packer->unpack_1(
-                    codes.data(), i, flat_codes.data() + i * sq.code_size);
+            fill_sa_code(
+                    *packer,
+                    i,
+                    scratch.data(),
+                    values.data(),
+                    flat_codes.data() + i * sq.code_size);
         }
     }
 
@@ -436,6 +618,10 @@ void IndexSQFastScan::check_compatible_for_merge(
 
 void IndexSQFastScan::merge_from(Index& otherIndex, idx_t add_id) {
     check_compatible_for_merge(otherIndex);
+    const IndexSQFastScan* other =
+            static_cast<const IndexSQFastScan*>(&otherIndex);
+    lo_codes.insert(
+            lo_codes.end(), other->lo_codes.begin(), other->lo_codes.end());
     IndexFastScan::merge_from(otherIndex, add_id);
 }
 

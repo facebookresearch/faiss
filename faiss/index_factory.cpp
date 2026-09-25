@@ -179,8 +179,8 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
 };
 const std::string sq_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
-// Native 4-bit types with "fs" suffix for IndexSQFastScan, optional _bbs
-const std::string sq_fs_pattern = "(SQ4)fs(_[0-9]+)?";
+const std::string sq_fs_pattern =
+        "(SQ4|SQ6|SQ8|SQ8_direct_signed|SQ8_direct)fs(_[0-9]+)?";
 // All SQ types with "fs" suffix for IndexIVFSQFastScan, optional _bbs
 const std::string ivf_sq_fs_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)fs(_[0-9]+)?";
