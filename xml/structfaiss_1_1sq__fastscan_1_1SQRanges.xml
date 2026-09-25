@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1sq__fastscan_1_1SQRanges" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::sq_fastscan::SQRanges</compoundname>
+    <includes refid="sq__fastscan__utils_8h" local="no">sq_fastscan_utils.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1a3dbd8cf5defb373692d85fe19ba448aa" prot="public" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool faiss::sq_fastscan::SQRanges::uniform</definition>
+        <argsstring></argsstring>
+        <name>uniform</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::uniform</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="117" column="16" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1a72917caf492e1da440e2e9826283f450" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::sq_fastscan::SQRanges::vmin_arr</definition>
+        <argsstring></argsstring>
+        <name>vmin_arr</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::vmin_arr</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="118" column="17" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1ab8d6539dfc0aa83cce23879d8afc4559" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::sq_fastscan::SQRanges::vdiff_arr</definition>
+        <argsstring></argsstring>
+        <name>vdiff_arr</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::vdiff_arr</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="119" column="17" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1a6c9e1cb85612144c9f2d1354a09ed074" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::sq_fastscan::SQRanges::vmin_s</definition>
+        <argsstring></argsstring>
+        <name>vmin_s</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::vmin_s</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="120" column="11" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1ad67098445359932a723e90e629c27cf9" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::sq_fastscan::SQRanges::vdiff_s</definition>
+        <argsstring></argsstring>
+        <name>vdiff_s</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::vdiff_s</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="120" column="19" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1a2ada7f001667cfbd1fbd4fac71efff9a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::sq_fastscan::SQRanges::SQRanges</definition>
+        <argsstring>(const ScalarQuantizer &amp;sq, int d)</argsstring>
+        <name>SQRanges</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::SQRanges</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="99" column="5" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="99" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1a9db6675bc669d630094c7e9ab4dd7d87" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq_fastscan::SQRanges::vmin</definition>
+        <argsstring>(int m) const</argsstring>
+        <name>vmin</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::vmin</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="110" column="11" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="110" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1sq__fastscan_1_1SQRanges_1aef3b7e813c7887259316b2b6be879215" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq_fastscan::SQRanges::vdiff</definition>
+        <argsstring>(int m) const</argsstring>
+        <name>vdiff</name>
+        <qualifiedname>faiss::sq_fastscan::SQRanges::vdiff</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="113" column="11" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="113" bodyend="115"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Per-dimension range of the trained quantizer, resolved once for a batch. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/sq_fastscan_utils.h" line="98" column="1" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="98" bodyend="121"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a2ada7f001667cfbd1fbd4fac71efff9a" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>SQRanges</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a3dbd8cf5defb373692d85fe19ba448aa" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>uniform</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1aef3b7e813c7887259316b2b6be879215" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>vdiff</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1ab8d6539dfc0aa83cce23879d8afc4559" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>vdiff_arr</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1ad67098445359932a723e90e629c27cf9" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>vdiff_s</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a9db6675bc669d630094c7e9ab4dd7d87" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>vmin</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a72917caf492e1da440e2e9826283f450" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>vmin_arr</name></member>
+      <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a6c9e1cb85612144c9f2d1354a09ed074" prot="public" virt="non-virtual"><scope>faiss::sq_fastscan::SQRanges</scope><name>vmin_s</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

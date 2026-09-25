@@ -17,6 +17,7 @@
     <includedby refid="scanners_8h" local="no">faiss/impl/scalar_quantizer/scanners.h</includedby>
     <includedby refid="similarities_8h" local="no">faiss/impl/scalar_quantizer/similarities.h</includedby>
     <includedby refid="training_8h" local="no">faiss/impl/scalar_quantizer/training.h</includedby>
+    <includedby refid="sq__fastscan__utils_8h" local="no">faiss/impl/sq_fastscan_utils.h</includedby>
     <incdepgraph>
       <node id="24">
         <label>faiss/Index.h</label>
@@ -256,6 +257,8 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
       </node>
       <node id="12">
         <label>faiss/impl/scalar_quantizer/codecs.h</label>
@@ -302,6 +305,12 @@
       <node id="18">
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
+      </node>
+      <node id="19">
+        <label>faiss/impl/sq_fastscan_utils.h</label>
+        <link refid="sq__fastscan__utils_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1ScalarQuantizer" prot="public">faiss::ScalarQuantizer</innerclass>

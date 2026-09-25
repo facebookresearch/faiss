@@ -211,17 +211,17 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
-        </childnode>
         <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
         </childnode>
         <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
         </childnode>
       </node>
       <node id="28">
@@ -273,12 +273,14 @@
         </childnode>
         <childnode refid="35" relation="include">
         </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
       </node>
-      <node id="36">
+      <node id="37">
         <label>faiss/impl/binary_hamming/IndexBinaryHash_impl.h</label>
         <link refid="IndexBinaryHash__impl_8h_source"/>
       </node>
-      <node id="37">
+      <node id="38">
         <label>faiss/impl/binary_hamming/IndexBinaryIVF_impl.h</label>
         <link refid="IndexBinaryIVF__impl_8h_source"/>
       </node>
@@ -380,51 +382,57 @@
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>
-      <node id="38">
+      <node id="36">
+        <label>faiss/impl/sq_fastscan_utils.h</label>
+        <link refid="sq__fastscan__utils_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
         <label>faiss/svs/IndexSVSFaissUtils.h</label>
         <link refid="IndexSVSFaissUtils_8h_source"/>
-        <childnode refid="39" relation="include">
-        </childnode>
         <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>faiss/svs/IndexSVSFlat.h</label>
+        <link refid="IndexSVSFlat_8h_source"/>
+      </node>
+      <node id="41">
+        <label>faiss/svs/IndexSVSIVF.h</label>
+        <link refid="IndexSVSIVF_8h_source"/>
+        <childnode refid="42" relation="include">
         </childnode>
         <childnode refid="43" relation="include">
         </childnode>
       </node>
-      <node id="39">
-        <label>faiss/svs/IndexSVSFlat.h</label>
-        <link refid="IndexSVSFlat_8h_source"/>
-      </node>
-      <node id="40">
-        <label>faiss/svs/IndexSVSIVF.h</label>
-        <link refid="IndexSVSIVF_8h_source"/>
-        <childnode refid="41" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-      </node>
-      <node id="41">
+      <node id="42">
         <label>faiss/svs/IndexSVSIVFLVQ.h</label>
         <link refid="IndexSVSIVFLVQ_8h_source"/>
       </node>
-      <node id="42">
+      <node id="43">
         <label>faiss/svs/IndexSVSIVFLeanVec.h</label>
         <link refid="IndexSVSIVFLeanVec_8h_source"/>
       </node>
-      <node id="43">
+      <node id="44">
         <label>faiss/svs/IndexSVSVamana.h</label>
         <link refid="IndexSVSVamana_8h_source"/>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
+        <childnode refid="41" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
       </node>
-      <node id="44">
+      <node id="45">
         <label>faiss/svs/IndexSVSVamanaLVQ.h</label>
         <link refid="IndexSVSVamanaLVQ_8h_source"/>
       </node>
-      <node id="45">
+      <node id="46">
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
@@ -438,7 +446,7 @@
         <label>faiss/utils/distances_fused/simdlib_kernel-inl.h</label>
         <link refid="simdlib__kernel-inl_8h_source"/>
       </node>
-      <node id="46">
+      <node id="47">
         <label>faiss/utils/hamming_distance/hamming_impl.h</label>
         <link refid="hamming__distance_2hamming__impl_8h_source"/>
       </node>
@@ -450,7 +458,7 @@
         <label>faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h</label>
         <link refid="exhaustive__L2sqr__blas__cmax_8h_source"/>
       </node>
-      <node id="47">
+      <node id="48">
         <label>faiss/utils/simd_impl/hamming_impl.h</label>
         <link refid="simd__impl_2hamming__impl_8h_source"/>
       </node>

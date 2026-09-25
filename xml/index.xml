@@ -3058,10 +3058,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -3489,10 +3489,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1a9deb575e4f298dd73f2ed9699ca3f07d" kind="function"><name>compute_float_LUT</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -6639,7 +6639,7 @@
   <compound refid="structfaiss_1_1IndexIVFSQFastScan" kind="struct"><name>faiss::IndexIVFSQFastScan</name>
     <member refid="structfaiss_1_1IndexIVFSQFastScan_1aed5140fb06ce35dbf427eb29fdc416ed" kind="variable"><name>sq</name></member>
     <member refid="structfaiss_1_1IndexIVFSQFastScan_1a3e0e8c72c848c0c87e6bee80345f90f9" kind="variable"><name>rerank_factor</name></member>
-    <member refid="structfaiss_1_1IndexIVFSQFastScan_1ad4b3ccfd1a9a63abde4747655c718b16" kind="variable"><name>orig_codes_invlists</name></member>
+    <member refid="structfaiss_1_1IndexIVFSQFastScan_1aec272338688de512062df4a59b5f6890" kind="variable"><name>lo_codes_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a7a5b4bc9d80aea0270de58493c4eb3d4" kind="variable"><name>bbs</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a3eeb2caa1304b5366d5c1a3a3cdb289d" kind="variable"><name>M</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1aece546e9a73d5d57d276f206b98f6732" kind="variable"><name>nbits</name></member>
@@ -6672,6 +6672,8 @@
     <member refid="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d" kind="variable"><name>own_fields</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" kind="variable"><name>cp</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" kind="variable"><name>clustering_index</name></member>
+    <member refid="structfaiss_1_1IndexIVFSQFastScan_1ad5cd2bac988fc593e97967307bfa58df" kind="function"><name>lo_code_size</name></member>
+    <member refid="structfaiss_1_1IndexIVFSQFastScan_1aceba81547d97a68b6a375a4cbbc077dd" kind="function"><name>recombine_code</name></member>
     <member refid="structfaiss_1_1IndexIVFSQFastScan_1a1774535a1a9e4817d43f0b69bf78687c" kind="function"><name>IndexIVFSQFastScan</name></member>
     <member refid="structfaiss_1_1IndexIVFSQFastScan_1a51eceff36b408cdf60983159e0117c46" kind="function"><name>IndexIVFSQFastScan</name></member>
     <member refid="structfaiss_1_1IndexIVFSQFastScan_1afa80eebca4c878498e01bc80f22356d0" kind="function"><name>IndexIVFSQFastScan</name></member>
@@ -6895,10 +6897,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -7476,10 +7478,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -7650,10 +7652,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -7770,10 +7772,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -7942,10 +7944,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" kind="function"><name>init_fastscan</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a6f2ae4a0a5dd9d1c2afca4bc7f9c038a" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
@@ -8272,10 +8274,10 @@
     <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
@@ -8596,6 +8598,8 @@
   </compound>
   <compound refid="structfaiss_1_1IndexSQFastScan" kind="struct"><name>faiss::IndexSQFastScan</name>
     <member refid="structfaiss_1_1IndexSQFastScan_1af357819050429262ced08a23327ffec6" kind="variable"><name>sq</name></member>
+    <member refid="structfaiss_1_1IndexSQFastScan_1a06f7982cbd0b9f7e2f16094e66b6adbd" kind="variable"><name>rerank_factor</name></member>
+    <member refid="structfaiss_1_1IndexSQFastScan_1a0e5f5dcafd81ed688ca022238d315751" kind="variable"><name>lo_codes</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" kind="variable"><name>implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a71595cdc66c8a537737bfd8ceac6a211" kind="variable"><name>skip</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1add3fe80ce6635a6abbecd00229430875" kind="variable"><name>bbs</name></member>
@@ -8637,14 +8641,15 @@
     <member refid="structfaiss_1_1IndexSQFastScan_1a6c09a4142163aa49c3087a2bcb6e6075" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexSQFastScan_1ac7f8211d748e79e4be7cdb0008e1a484" kind="function"><name>search1</name></member>
     <member refid="structfaiss_1_1IndexSQFastScan_1aeb336dcfa98a12878f657a40d265e564" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1IndexSQFastScan_1a99696dd425c0d4ce586331fb0e010865" kind="function"><name>fill_sa_code</name></member>
     <member refid="structfaiss_1_1IndexSQFastScan_1a828012d44d6ed648a7e3267059c89c25" kind="function"><name>fast_scan_code_size</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" kind="function"><name>init_fastscan</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ae7fdcda430e72ff642bdd1753be91934" kind="function"><name>make_knn_scanner</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ab2a3805214ff68c1def274129de82de0" kind="function"><name>compute_quantized_LUT</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" kind="function"><name>search_dispatch_implem</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" kind="function"><name>search_dispatch_implem</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" kind="function"><name>search_implem_234</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" kind="function"><name>search_implem_12</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -13247,6 +13252,16 @@
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" kind="variable"><name>q</name></member>
   </compound>
+  <compound refid="structfaiss_1_1sq__fastscan_1_1SQRanges" kind="struct"><name>faiss::sq_fastscan::SQRanges</name>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a3dbd8cf5defb373692d85fe19ba448aa" kind="variable"><name>uniform</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a72917caf492e1da440e2e9826283f450" kind="variable"><name>vmin_arr</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1ab8d6539dfc0aa83cce23879d8afc4559" kind="variable"><name>vdiff_arr</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a6c9e1cb85612144c9f2d1354a09ed074" kind="variable"><name>vmin_s</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1ad67098445359932a723e90e629c27cf9" kind="variable"><name>vdiff_s</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a2ada7f001667cfbd1fbd4fac71efff9a" kind="function"><name>SQRanges</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1a9db6675bc669d630094c7e9ab4dd7d87" kind="function"><name>vmin</name></member>
+    <member refid="structfaiss_1_1sq__fastscan_1_1SQRanges_1aef3b7e813c7887259316b2b6be879215" kind="function"><name>vdiff</name></member>
+  </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1SQTurboQFactors" kind="struct"><name>faiss::scalar_quantizer::SQTurboQFactors</name>
     <member refid="structfaiss_1_1scalar__quantizer_1_1SQTurboQFactors_1a9bc943345fc79c5fc01b03069c51994b" kind="variable"><name>norm</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1SQTurboQFactors_1a908bfd151ce5d63dcc8479b05013d7d7" kind="variable"><name>gamma</name></member>
@@ -14464,19 +14479,19 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d150" kind="namespace"><name>faiss::@150</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d227" kind="namespace"><name>faiss::@227</name>
+  <compound refid="namespacefaiss_1_1_0d228" kind="namespace"><name>faiss::@228</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d231" kind="namespace"><name>faiss::@231</name>
+  <compound refid="namespacefaiss_1_1_0d232" kind="namespace"><name>faiss::@232</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d235" kind="namespace"><name>faiss::@235</name>
+  <compound refid="namespacefaiss_1_1_0d236" kind="namespace"><name>faiss::@236</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d247" kind="namespace"><name>faiss::@247</name>
+  <compound refid="namespacefaiss_1_1_0d248" kind="namespace"><name>faiss::@248</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d259" kind="namespace"><name>faiss::@259</name>
+  <compound refid="namespacefaiss_1_1_0d260" kind="namespace"><name>faiss::@260</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d262" kind="namespace"><name>faiss::@262</name>
+  <compound refid="namespacefaiss_1_1_0d263" kind="namespace"><name>faiss::@263</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d264" kind="namespace"><name>faiss::@264</name>
+  <compound refid="namespacefaiss_1_1_0d265" kind="namespace"><name>faiss::@265</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d69" kind="namespace"><name>faiss::@69</name>
   </compound>
@@ -14804,6 +14819,7 @@
   <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d122" kind="namespace"><name>faiss::pq_code_distance::@122</name>
   </compound>
   <compound refid="namespacefaiss_1_1quantize__lut" kind="namespace"><name>faiss::quantize_lut</name>
+    <member refid="namespacefaiss_1_1quantize__lut_1a88837160c987407dc70d037acd665e69" kind="function"><name>fastscan_lut_scale</name></member>
     <member refid="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" kind="function"><name>round_uint8_per_column</name></member>
     <member refid="namespacefaiss_1_1quantize__lut_1aaca4bcc4d17e5c66dbc07a7f93cad911" kind="function"><name>round_uint8_per_column_multi</name></member>
     <member refid="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" kind="function"><name>quantize_LUT_and_bias</name></member>
@@ -14910,6 +14926,21 @@
   <compound refid="namespacefaiss_1_1simd__partitioning" kind="namespace"><name>faiss::simd_partitioning</name>
   </compound>
   <compound refid="namespacefaiss_1_1simd__result__handlers" kind="namespace"><name>faiss::simd_result_handlers</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1sq__fastscan" kind="namespace"><name>faiss::sq_fastscan</name>
+    <member refid="sq__fastscan__utils_8h_1a062d416d496fe826fd8d804916b770a1" kind="function"><name>roundup</name></member>
+    <member refid="sq__fastscan__utils_8h_1a200a4b865a0112f4318736cb3f49fe12" kind="function"><name>is_native_4bit</name></member>
+    <member refid="sq__fastscan__utils_8h_1a1b0d657d511cc16845244eec72414e4e" kind="function"><name>needs_rerank</name></member>
+    <member refid="sq__fastscan__utils_8h_1a137552ae443b5eea20be9711ec4c090d" kind="function"><name>is_fallback</name></member>
+    <member refid="sq__fastscan__utils_8h_1a5e584e5695fff4ecbd3e8ee21e47e603" kind="function"><name>is_uniform_range</name></member>
+    <member refid="sq__fastscan__utils_8h_1a9ae7086979dc9cee204a56a3f00cd824" kind="function"><name>get_uniform_range</name></member>
+    <member refid="sq__fastscan__utils_8h_1adb55823063c81f0488750010cdf9d0ea" kind="function"><name>sq_bits</name></member>
+    <member refid="sq__fastscan__utils_8h_1ad852d74b4a2a1dd1b38880c6f582f112" kind="function"><name>sq_rerank_bits</name></member>
+    <member refid="sq__fastscan__utils_8h_1aee6c359838291853b6f887eefa4c54e9" kind="function"><name>sq_rerank_size</name></member>
+    <member refid="sq__fastscan__utils_8h_1aac7dace4a59f5c579aea68388716ba24" kind="function"><name>sq_code_of</name></member>
+    <member refid="sq__fastscan__utils_8h_1a670ec4b21e29f59fdbb0128a029d4ff7" kind="function"><name>float_to_split_codes</name></member>
+    <member refid="sq__fastscan__utils_8h_1a92b9f0431d933b962b019c6aec9136dc" kind="function"><name>split_to_codes</name></member>
+    <member refid="sq__fastscan__utils_8h_1ace845478df37dbad0c1cef29cfcc37fe" kind="function"><name>float_to_4bit_nibbles</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1svs__io" kind="namespace"><name>faiss::svs_io</name>
   </compound>
@@ -15443,6 +15474,8 @@
   <compound refid="simdlib__neon_8h" kind="file"><name>simdlib_neon.h</name>
   </compound>
   <compound refid="simdlib__ppc64_8h" kind="file"><name>simdlib_ppc64.h</name>
+  </compound>
+  <compound refid="sq__fastscan__utils_8h" kind="file"><name>sq_fastscan_utils.h</name>
   </compound>
   <compound refid="svs__io_8h" kind="file"><name>svs_io.h</name>
   </compound>

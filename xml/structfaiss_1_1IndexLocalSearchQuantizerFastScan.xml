@@ -1043,7 +1043,7 @@
         </inbodydescription>
         <location file="faiss/IndexFastScan.h" line="144" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>bool</type>
@@ -1053,7 +1053,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void faiss::IndexFastScan::search_dispatch_implem</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const FastScanDistancePostProcessing &amp;context) const</argsstring>
+        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const FastScanDistancePostProcessing &amp;context, const IDSelector *sel=nullptr) const</argsstring>
         <name>search_dispatch_implem</name>
         <qualifiedname>faiss::IndexFastScan::search_dispatch_implem</qualifiedname>
         <param>
@@ -1079,6 +1079,11 @@
         <param>
           <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
           <declname>context</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -1129,9 +1134,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="161" column="10"/>
+        <location file="faiss/IndexFastScan.h" line="162" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>class C</type>
@@ -1139,7 +1144,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void faiss::IndexFastScan::search_implem_12</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, int impl, const FastScanDistancePostProcessing &amp;context) const</argsstring>
+        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, int impl, const FastScanDistancePostProcessing &amp;context, const IDSelector *sel=nullptr) const</argsstring>
         <name>search_implem_12</name>
         <qualifiedname>faiss::IndexFastScan::search_implem_12</qualifiedname>
         <param>
@@ -1170,15 +1175,20 @@
           <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
           <declname>context</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="170" column="10"/>
+        <location file="faiss/IndexFastScan.h" line="171" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>class C</type>
@@ -1186,7 +1196,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void faiss::IndexFastScan::search_implem_14</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, int impl, const FastScanDistancePostProcessing &amp;context) const</argsstring>
+        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, int impl, const FastScanDistancePostProcessing &amp;context, const IDSelector *sel=nullptr) const</argsstring>
         <name>search_implem_14</name>
         <qualifiedname>faiss::IndexFastScan::search_implem_14</qualifiedname>
         <param>
@@ -1217,13 +1227,18 @@
           <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
           <declname>context</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="180" column="10"/>
+        <location file="faiss/IndexFastScan.h" line="182" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1266,7 +1281,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="194" column="10"/>
+        <location file="faiss/IndexFastScan.h" line="197" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -1300,7 +1315,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="201" column="12"/>
+        <location file="faiss/IndexFastScan.h" line="204" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
@@ -1319,7 +1334,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="207" column="24"/>
+        <location file="faiss/IndexFastScan.h" line="210" column="24"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1338,7 +1353,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="216" column="12"/>
+        <location file="faiss/IndexFastScan.h" line="219" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1382,7 +1397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="223" column="10"/>
+        <location file="faiss/IndexFastScan.h" line="226" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1413,7 +1428,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="229" column="10"/>
+        <location file="faiss/IndexFastScan.h" line="232" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>size_t</type>
@@ -1430,7 +1445,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="232" column="12" bodyfile="faiss/IndexFastScan.h" bodystart="232" bodyend="234"/>
+        <location file="faiss/IndexFastScan.h" line="235" column="12" bodyfile="faiss/IndexFastScan.h" bodystart="235" bodyend="237"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a57ce48e11490ead0689aee9df3a502be" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1485,7 +1500,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="236" column="10" bodyfile="faiss/IndexFastScan.h" bodystart="236" bodyend="238"/>
+        <location file="faiss/IndexFastScan.h" line="239" column="10" bodyfile="faiss/IndexFastScan.h" bodystart="239" bodyend="241"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -2686,10 +2701,10 @@
       <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ab476d0a16ffd8a297b52cf50d124a19d" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search</name></member>
       <member refid="structfaiss_1_1Index_1a702675e1ef409b9d88038cc8e3043d75" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search1</name></member>
       <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1acfec46de6def2bfb00388af78a365d63" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_dispatch_implem</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1ace381c5a5de3f99ba2585fbd2419fb58" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_dispatch_implem</name></member>
       <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_ex</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_implem_12</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_implem_14</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1ad6749aad92e77fd2b2e8a2420c6c391d" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_implem_12</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1acc31a6e97db2b6b9276630569b65f956" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_implem_14</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1acdf6f2d6f4c9c459846842bca5c9c4e5" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_implem_234</name></member>
       <member refid="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>search_subset</name></member>
       <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a793239b07a69169a69156a3304612cdc" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>Search_type_t</name></member>

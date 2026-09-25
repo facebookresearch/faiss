@@ -1,0 +1,342 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1sq__fastscan" kind="namespace" language="C++">
+    <compoundname>faiss::sq_fastscan</compoundname>
+    <innerclass refid="structfaiss_1_1sq__fastscan_1_1SQRanges" prot="public">faiss::sq_fastscan::SQRanges</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a062d416d496fe826fd8d804916b770a1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::sq_fastscan::roundup</definition>
+        <argsstring>(size_t a, size_t b)</argsstring>
+        <name>roundup</name>
+        <qualifiedname>faiss::sq_fastscan::roundup</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="27" column="15" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="27" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a200a4b865a0112f4318736cb3f49fe12" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::sq_fastscan::is_native_4bit</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>is_native_4bit</name>
+        <qualifiedname>faiss::sq_fastscan::is_native_4bit</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="31" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="31" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a1b0d657d511cc16845244eec72414e4e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::sq_fastscan::needs_rerank</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>needs_rerank</name>
+        <qualifiedname>faiss::sq_fastscan::needs_rerank</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="36" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="36" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a137552ae443b5eea20be9711ec4c090d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::sq_fastscan::is_fallback</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>is_fallback</name>
+        <qualifiedname>faiss::sq_fastscan::is_fallback</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="44" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="44" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a5e584e5695fff4ecbd3e8ee21e47e603" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::sq_fastscan::is_uniform_range</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>is_uniform_range</name>
+        <qualifiedname>faiss::sq_fastscan::is_uniform_range</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="48" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="48" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a9ae7086979dc9cee204a56a3f00cd824" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq_fastscan::get_uniform_range</definition>
+        <argsstring>(const ScalarQuantizer &amp;sq, float &amp;vmin, float &amp;vdiff)</argsstring>
+        <name>get_uniform_range</name>
+        <qualifiedname>faiss::sq_fastscan::get_uniform_range</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>vmin</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>vdiff</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="54" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="54" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1adb55823063c81f0488750010cdf9d0ea" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::sq_fastscan::sq_bits</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>sq_bits</name>
+        <qualifiedname>faiss::sq_fastscan::sq_bits</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+<para>Bits per dimension the quantizer stores. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="71" column="12" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="71" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1ad852d74b4a2a1dd1b38880c6f582f112" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::sq_fastscan::sq_rerank_bits</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>sq_rerank_bits</name>
+        <qualifiedname>faiss::sq_fastscan::sq_rerank_bits</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bits left over once the scan has taken its 4. Zero for a native 4-bit code, which needs no rerank and therefore stores nothing extra. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="80" column="12" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="80" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1aee6c359838291853b6f887eefa4c54e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::sq_fastscan::sq_rerank_size</definition>
+        <argsstring>(int d, ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>sq_rerank_size</name>
+        <qualifiedname>faiss::sq_fastscan::sq_rerank_size</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+<para>Bytes per vector needed to hold the leftover bits of every dimension. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="85" column="15" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="85" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1aac7dace4a59f5c579aea68388716ba24" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::sq_fastscan::sq_code_of</definition>
+        <argsstring>(float x, float vmin, float vdiff, int bits)</argsstring>
+        <name>sq_code_of</name>
+        <qualifiedname>faiss::sq_fastscan::sq_code_of</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>vmin</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>vdiff</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bits</declname>
+        </param>
+        <briefdescription>
+<para>The code for one value at the quantizer&apos;s own width. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="91" column="12" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="91" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a670ec4b21e29f59fdbb0128a029d4ff7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq_fastscan::float_to_split_codes</definition>
+        <argsstring>(const float *x, uint8_t *hi, uint8_t *lo, idx_t n, int d, size_t M2, const ScalarQuantizer &amp;sq)</argsstring>
+        <name>float_to_split_codes</name>
+        <qualifiedname>faiss::sq_fastscan::float_to_split_codes</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>hi</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>lo</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>M2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Split each code into the top 4 bits the SIMD kernel scans and the rest, which rerank keeps. <computeroutput>hi</computeroutput> is packed two dimensions per byte as pq4_pack_codes expects. <computeroutput>lo</computeroutput> is bit-packed at <computeroutput>bits - 4</computeroutput> per dimension. Total width is the quantizer&apos;s own, not that width plus 4. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="128" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="128" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1a92b9f0431d933b962b019c6aec9136dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq_fastscan::split_to_codes</definition>
+        <argsstring>(const uint8_t *hi, const uint8_t *lo, int d, ScalarQuantizer::QuantizerType qtype, int *codes_out)</argsstring>
+        <name>split_to_codes</name>
+        <qualifiedname>faiss::sq_fastscan::split_to_codes</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>hi</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>lo</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>codes_out</declname>
+        </param>
+        <briefdescription>
+<para>Rebuild the code values of one vector from its two halves. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="159" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="159" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="sq__fastscan__utils_8h_1ace845478df37dbad0c1cef29cfcc37fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq_fastscan::float_to_4bit_nibbles</definition>
+        <argsstring>(const float *x, uint8_t *nibbles, idx_t n, int d, int M2, const ScalarQuantizer &amp;sq)</argsstring>
+        <name>float_to_4bit_nibbles</name>
+        <qualifiedname>faiss::sq_fastscan::float_to_4bit_nibbles</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>nibbles</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>M2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> &amp;</type>
+          <declname>sq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/sq_fastscan_utils.h" line="173" column="13" bodyfile="faiss/impl/sq_fastscan_utils.h" bodystart="173" bodyend="229"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/sq_fastscan_utils.h" line="25" column="1"/>
+  </compounddef>
+</doxygen>

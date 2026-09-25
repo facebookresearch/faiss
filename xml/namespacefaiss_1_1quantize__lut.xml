@@ -3,6 +3,33 @@
   <compounddef id="namespacefaiss_1_1quantize__lut" kind="namespace" language="C++">
     <compoundname>faiss::quantize_lut</compoundname>
     <sectiondef kind="func">
+      <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1a88837160c987407dc70d037acd665e69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::quantize_lut::fastscan_lut_scale</definition>
+        <argsstring>(float max_column_span, float max_sum_span, size_t n_rounded_terms)</argsstring>
+        <name>fastscan_lut_scale</name>
+        <qualifiedname>faiss::quantize_lut::fastscan_lut_scale</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>max_column_span</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>max_sum_span</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_rounded_terms</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Scale for a fast scan LUT, bounding both the uint8 entry and the uint16 sum the kernel accumulates. <computeroutput>n_rounded_terms</computeroutput> is how many rounded values land in one accumulator: the columns, plus one for a rounded bias term. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/quantize_lut.h" line="34" column="7" declfile="faiss/utils/quantize_lut.h" declline="34" declcolumn="7"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::quantize_lut::round_uint8_per_column</definition>
@@ -37,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="32" column="6" declfile="faiss/utils/quantize_lut.h" declline="32" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="43" column="6" declfile="faiss/utils/quantize_lut.h" declline="43" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1aaca4bcc4d17e5c66dbc07a7f93cad911" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -77,7 +104,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="43" column="6" declfile="faiss/utils/quantize_lut.h" declline="43" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="54" column="6" declfile="faiss/utils/quantize_lut.h" declline="54" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -149,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="67" column="6" declfile="faiss/utils/quantize_lut.h" declline="67" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="78" column="6" declfile="faiss/utils/quantize_lut.h" declline="78" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1aa7e6fdcb7243e623e4b160308f761ac4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -211,7 +238,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="80" column="6" declfile="faiss/utils/quantize_lut.h" declline="80" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="91" column="6" declfile="faiss/utils/quantize_lut.h" declline="91" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1ab93e886d01cd9809d0c7ae3b7203f92a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -241,7 +268,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="94" column="7" declfile="faiss/utils/quantize_lut.h" declline="94" declcolumn="7"/>
+        <location file="faiss/utils/quantize_lut.h" line="105" column="7" declfile="faiss/utils/quantize_lut.h" declline="105" declcolumn="7"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -250,6 +277,6 @@
 <para>Functions to quantize PQ floating-point Look Up Tables (LUT) to uint8, and biases to uint16. The accumulation is supposed to take place in uint16. The quantization coefficients are float (a, b) such that <verbatim> original_value = quantized_value * a / b
 </verbatim> The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </para>
     </detaileddescription>
-    <location file="faiss/utils/quantize_lut.h" line="26" column="1"/>
+    <location file="faiss/utils/quantize_lut.h" line="28" column="1"/>
   </compounddef>
 </doxygen>
