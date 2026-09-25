@@ -75,8 +75,8 @@ IndexIVFSQFastScan::IndexIVFSQFastScan(
                 new BlockInvertedLists(nlist_in, get_CodePacker()), true);
 
         if (needs_rerank(qtype)) {
-            orig_codes_invlists =
-                    new ArrayInvertedLists(nlist_in, sq.code_size);
+            lo_codes_invlists =
+                    new ArrayInvertedLists(nlist_in, sq_rerank_size(d, qtype));
             direct_map.set_type(DirectMap::Hashtable, invlists, 0);
         }
     }
@@ -136,7 +136,7 @@ IndexIVFSQFastScan::IndexIVFSQFastScan(
     replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
 
     if (needs_rerank(sq.qtype)) {
-        orig_codes_invlists = new ArrayInvertedLists(nlist, sq.code_size);
+        lo_codes_invlists = new ArrayInvertedLists(nlist, lo_code_size());
         direct_map.set_type(DirectMap::Hashtable, invlists, 0);
     }
 
@@ -149,15 +149,7 @@ IndexIVFSQFastScan::IndexIVFSQFastScan(
         InvertedLists::ScopedCodes orig_codes(orig.invlists, list_no);
         InvertedLists::ScopedIds orig_ids(orig.invlists, list_no);
 
-        if (needs_rerank(sq.qtype)) {
-            orig_codes_invlists->add_entries(
-                    list_no, list_size, orig_ids.get(), orig_codes.get());
-            for (size_t j = 0; j < list_size; j++) {
-                direct_map.add_single_id(orig_ids.get()[j], list_no, j);
-            }
-        }
-
-        // Decode to float and re-quantize to 4-bit.
+        // Decode to float and re-encode for the scan.
         std::vector<float> recon(list_size * d);
         sq.decode(orig_codes.get(), recon.data(), list_size);
 
@@ -165,8 +157,21 @@ IndexIVFSQFastScan::IndexIVFSQFastScan(
         if (is_native_4bit(sq.qtype)) {
             sq.compute_codes(recon.data(), flat4.data(), list_size);
         } else {
-            float_to_4bit_nibbles(
-                    recon.data(), flat4.data(), list_size, d, M2, sq);
+            // Top 4 bits feed the scan, the rest are kept for rerank.
+            std::vector<uint8_t> lo(list_size * lo_code_size(), 0);
+            float_to_split_codes(
+                    recon.data(),
+                    flat4.data(),
+                    lo.data(),
+                    list_size,
+                    d,
+                    M2,
+                    sq);
+            lo_codes_invlists->add_entries(
+                    list_no, list_size, orig_ids.get(), lo.data());
+            for (size_t j = 0; j < list_size; j++) {
+                direct_map.add_single_id(orig_ids.get()[j], list_no, j);
+            }
         }
 
         BlockInvertedLists* bil = dynamic_cast<BlockInvertedLists*>(invlists);
@@ -180,7 +185,7 @@ IndexIVFSQFastScan::IndexIVFSQFastScan(
 }
 
 IndexIVFSQFastScan::~IndexIVFSQFastScan() {
-    delete orig_codes_invlists;
+    delete lo_codes_invlists;
 }
 
 // -----------------------------------------------------------------------
@@ -229,7 +234,10 @@ void IndexIVFSQFastScan::encode_vectors(
     } else if (is_native_4bit(sq.qtype)) {
         sq.compute_codes(to_encode, codes_out, n);
     } else {
-        float_to_4bit_nibbles(to_encode, codes_out, n, d, M2, sq);
+        // add_core keeps the leftover bits in lo_codes_invlists.
+        std::vector<uint8_t> lo_scratch(size_t(n) * lo_code_size());
+        float_to_split_codes(
+                to_encode, codes_out, lo_scratch.data(), n, d, M2, sq);
     }
 
     if (include_listnos) {
@@ -345,6 +353,34 @@ void IndexIVFSQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
     }
 }
 
+void IndexIVFSQFastScan::recombine_code(
+        int64_t list_no,
+        int64_t offset,
+        uint8_t* scratch,
+        int* values,
+        uint8_t* code_out) const {
+    // Interleaved for SIMD, so read one sub-quantizer at a time.
+    memset(scratch, 0, size_t(M2) / 2);
+    InvertedLists::ScopedCodes list_codes(invlists, list_no);
+    BitstringWriter bsw(scratch, M2 / 2);
+    for (size_t m = 0; m < M; m++) {
+        bsw.write(
+                pq4_get_packed_element(list_codes.get(), bbs, M2, offset, m),
+                4);
+    }
+    InvertedLists::ScopedCodes lo(lo_codes_invlists, list_no);
+    split_to_codes(
+            scratch, lo.get() + offset * lo_code_size(), d, sq.qtype, values);
+    // BitstringWriter matches Codec6bit/Codec8bit, so distance_to_code reads
+    // it.
+    memset(code_out, 0, sq.code_size);
+    BitstringWriter out(code_out, sq.code_size);
+    const int bits = sq_bits(sq.qtype);
+    for (int m = 0; m < d; m++) {
+        out.write(values[m], bits);
+    }
+}
+
 void IndexIVFSQFastScan::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
@@ -353,10 +389,13 @@ void IndexIVFSQFastScan::reconstruct_from_offset(
         // Fallback: codes stored directly in invlists.
         InvertedLists::ScopedCodes codes(invlists, list_no);
         sq.decode(codes.get() + offset * sq.code_size, recons, 1);
-    } else if (orig_codes_invlists) {
-        // Rerank: use original full-precision codes for reconstruction.
-        InvertedLists::ScopedCodes codes(orig_codes_invlists, list_no);
-        sq.decode(codes.get() + offset * sq.code_size, recons, 1);
+    } else if (lo_codes_invlists) {
+        // Rerank: rebuild the original code from its two nibble halves.
+        std::vector<uint8_t> scratch(M2 / 2), code(sq.code_size);
+        std::vector<int> values(d);
+        recombine_code(
+                list_no, offset, scratch.data(), values.data(), code.data());
+        sq.decode(code.data(), recons, 1);
     } else {
         // Native 4-bit: unpack from block inverted lists.
         std::vector<uint8_t> code(M2 / 2, 0);
@@ -416,6 +455,8 @@ void IndexIVFSQFastScan::search(
         {
             std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
                     sq.get_distance_computer(metric_type));
+            std::vector<uint8_t> scratch(M2 / 2), code(sq.code_size);
+            std::vector<int> values(d);
 
 #pragma omp for
             for (idx_t i = 0; i < n; i++) {
@@ -441,10 +482,13 @@ void IndexIVFSQFastScan::search(
                     idx_t list_no = lo_listno(lo);
                     idx_t offset = lo_offset(lo);
 
-                    InvertedLists::ScopedCodes codes(
-                            orig_codes_invlists, list_no);
-                    float dis = dc->distance_to_code(
-                            codes.get() + offset * sq.code_size);
+                    recombine_code(
+                            list_no,
+                            offset,
+                            scratch.data(),
+                            values.data(),
+                            code.data());
+                    float dis = dc->distance_to_code(code.data());
 
                     if (metric_type == METRIC_L2) {
                         if (dis < heap_dis[0]) {
@@ -516,6 +560,8 @@ void IndexIVFSQFastScan::search_preassigned(
         {
             std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
                     sq.get_distance_computer(metric_type));
+            std::vector<uint8_t> scratch(M2 / 2), code(sq.code_size);
+            std::vector<int> values(d);
 
 #pragma omp for
             for (idx_t i = 0; i < n; i++) {
@@ -541,10 +587,13 @@ void IndexIVFSQFastScan::search_preassigned(
                     idx_t list_no = lo_listno(lo);
                     idx_t offset = lo_offset(lo);
 
-                    InvertedLists::ScopedCodes codes(
-                            orig_codes_invlists, list_no);
-                    float dis = dc->distance_to_code(
-                            codes.get() + offset * sq.code_size);
+                    recombine_code(
+                            list_no,
+                            offset,
+                            scratch.data(),
+                            values.data(),
+                            code.data());
+                    float dis = dc->distance_to_code(code.data());
 
                     if (metric_type == METRIC_L2) {
                         if (dis < heap_dis[0]) {
@@ -611,6 +660,8 @@ void IndexIVFSQFastScan::range_search(
 
             std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
                     sq.get_distance_computer(metric_type));
+            std::vector<uint8_t> scratch(M2 / 2), code(sq.code_size);
+            std::vector<int> values(d);
 
 #pragma omp for
             for (idx_t i = 0; i < n; i++) {
@@ -622,20 +673,23 @@ void IndexIVFSQFastScan::range_search(
                     if (list_no < 0) {
                         continue;
                     }
-                    size_t list_size = orig_codes_invlists->list_size(list_no);
+                    size_t list_size = lo_codes_invlists->list_size(list_no);
                     if (list_size == 0) {
                         continue;
                     }
-                    InvertedLists::ScopedCodes codes(
-                            orig_codes_invlists, list_no);
-                    InvertedLists::ScopedIds ids(orig_codes_invlists, list_no);
+                    InvertedLists::ScopedIds ids(lo_codes_invlists, list_no);
 
                     for (size_t j = 0; j < list_size; j++) {
                         if (sel && !sel->is_member(ids[j])) {
                             continue;
                         }
-                        float dis = dc->distance_to_code(
-                                codes.get() + j * sq.code_size);
+                        recombine_code(
+                                list_no,
+                                j,
+                                scratch.data(),
+                                values.data(),
+                                code.data());
+                        float dis = dc->distance_to_code(code.data());
                         if (metric_type == METRIC_L2) {
                             if (dis < radius) {
                                 qres.add(dis, ids[j]);
@@ -701,28 +755,28 @@ void IndexIVFSQFastScan::add_with_ids(
     AlignedTable<uint8_t> flat_codes(n * code_size);
     encode_vectors(n, x, idx.get(), flat_codes.get());
 
-    // Store original SQ codes for rerank types
-    std::vector<uint8_t> orig_flat_codes;
+    // Same quantisation as encode_vectors, or the halves disagree.
+    std::vector<uint8_t> lo_flat_codes;
     if (needs_rerank(sq.qtype)) {
-        orig_flat_codes.resize(n * sq.code_size);
+        std::vector<float> to_encode(size_t(n) * d);
         for (idx_t i = 0; i < n; i++) {
-            if (idx[i] < 0) {
-                continue;
-            }
-            if (by_residual) {
-                std::vector<float> residual(d);
-                quantizer->compute_residual(x + i * d, residual.data(), idx[i]);
-                sq.compute_codes(
-                        residual.data(),
-                        orig_flat_codes.data() + i * sq.code_size,
-                        1);
+            if (by_residual && idx[i] >= 0) {
+                quantizer->compute_residual(
+                        x + i * d, to_encode.data() + i * d, idx[i]);
             } else {
-                sq.compute_codes(
-                        x + i * d,
-                        orig_flat_codes.data() + i * sq.code_size,
-                        1);
+                memcpy(to_encode.data() + i * d, x + i * d, sizeof(float) * d);
             }
         }
+        lo_flat_codes.assign(size_t(n) * lo_code_size(), 0);
+        std::vector<uint8_t> hi_discard(size_t(n) * (M2 / 2));
+        float_to_split_codes(
+                to_encode.data(),
+                hi_discard.data(),
+                lo_flat_codes.data(),
+                n,
+                d,
+                M2,
+                sq);
     }
 
     // Sort by list assignment
@@ -763,10 +817,10 @@ void IndexIVFSQFastScan::add_with_ids(
                    code_size);
 
             if (needs_rerank(sq.qtype)) {
-                orig_codes_invlists->add_entry(
+                lo_codes_invlists->add_entry(
                         list_no,
                         id,
-                        orig_flat_codes.data() + order[i] * sq.code_size);
+                        lo_flat_codes.data() + order[i] * lo_code_size());
                 direct_map.add_single_id(id, list_no, ofs);
             }
         }
@@ -790,9 +844,9 @@ void IndexIVFSQFastScan::add_with_ids(
 
 void IndexIVFSQFastScan::reset() {
     IndexIVFFastScan::reset();
-    if (orig_codes_invlists) {
+    if (lo_codes_invlists) {
         for (size_t i = 0; i < nlist; i++) {
-            orig_codes_invlists->resize(i, 0);
+            lo_codes_invlists->resize(i, 0);
         }
         direct_map.clear();
     }
