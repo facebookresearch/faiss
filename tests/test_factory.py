@@ -381,3 +381,16 @@ class TestIVFSpectralHashOwnership(unittest.TestCase):
         index.replace_vt(faiss.ITQTransform(10, 10))
         gc.collect()
         index.vt.d_out  # this should not crash
+
+
+class TestFactoryConstructorFailure(unittest.TestCase):
+    def test_ivf_pq_invalid_M(self):
+        # d = 8 is not divisible by M = 3, PQ throws
+        self.assertRaises(RuntimeError, faiss.index_factory, 8, "IVF4,PQ3")
+
+    def test_ivf_unknown_code(self):
+        self.assertRaises(RuntimeError, faiss.index_factory, 8, "IVF4,XYZ")
+
+    def test_2layer_invalid_M(self):
+        self.assertRaises(RuntimeError, faiss.index_factory, 8, "Residual4,PQ3")
+
