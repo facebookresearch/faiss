@@ -13383,7 +13383,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances_dispatch.h" line="209" column="13" bodyfile="faiss/utils/distances_dispatch.h" bodystart="209" bodyend="221"/>
+        <location file="faiss/utils/distances_dispatch.h" line="209" column="13" bodyfile="faiss/utils/distances_dispatch.h" bodystart="209" bodyend="223"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -13418,7 +13418,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances_dispatch.h" line="234" column="6" bodyfile="faiss/utils/distances_dispatch.h" bodystart="234" bodyend="254"/>
+        <location file="faiss/utils/distances_dispatch.h" line="236" column="6" bodyfile="faiss/utils/distances_dispatch.h" bodystart="236" bodyend="256"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a66df52907712fa6573cda2036d5a51ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
