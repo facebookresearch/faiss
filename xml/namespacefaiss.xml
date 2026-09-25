@@ -1677,6 +1677,22 @@
         </inbodydescription>
         <location file="faiss/impl/simd_dispatch.h" line="36" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="36" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1af7c48c659e85baf0f51e3389bf4cee70" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::AVAILABLE_SIMD_LEVELS_BASE_NO_AVX512</definition>
+        <argsstring></argsstring>
+        <name>AVAILABLE_SIMD_LEVELS_BASE_NO_AVX512</name>
+        <qualifiedname>faiss::AVAILABLE_SIMD_LEVELS_BASE_NO_AVX512</qualifiedname>
+        <initializer>=
+        AVAILABLE_SIMD_LEVELS_BASE &amp; ~(1 &lt;&lt; int(SIMDLevel::AVX512))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="43" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1aca260629acb0ef7888c14bd87169405f" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
         <definition>constexpr int faiss::AVAILABLE_SIMD_LEVELS_BASE_WITH_VPOPCNT</definition>
@@ -1691,7 +1707,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="41" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/impl/simd_dispatch.h" line="48" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a00628174b8a34a5e9b03938f6a757d40" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -1707,7 +1723,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="46" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/impl/simd_dispatch.h" line="53" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ab1e1e5fc5dd5807b9f54ffaea1153b47" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -1723,7 +1739,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="51" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="51" bodyend="-1"/>
+        <location file="faiss/impl/simd_dispatch.h" line="58" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a1fb891890806e64ce75bb0aa12704659" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -1738,7 +1754,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="54" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/impl/simd_dispatch.h" line="61" column="15" bodyfile="faiss/impl/simd_dispatch.h" bodystart="61" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1acba18e3a152e4eb878768d4d5fe1d911" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API size_t</type>
@@ -6958,7 +6974,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="56" column="21" bodyfile="faiss/impl/simd_dispatch.h" bodystart="56" bodyend="73"/>
+        <location file="faiss/impl/simd_dispatch.h" line="63" column="21" bodyfile="faiss/impl/simd_dispatch.h" bodystart="63" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ac312cf29fbd655341d6464550c4bee72" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6991,7 +7007,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="76" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="76" bodyend="87"/>
+        <location file="faiss/impl/simd_dispatch.h" line="83" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="83" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7b124cf970fa405a96ea3ea99df74662" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7025,7 +7041,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="92" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="92" bodyend="105"/>
+        <location file="faiss/impl/simd_dispatch.h" line="99" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="99" bodyend="112"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af531ac2f72724e9abcc311a12a71b1db" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7059,7 +7075,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="115" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="115" bodyend="193"/>
+        <location file="faiss/impl/simd_dispatch.h" line="122" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="122" bodyend="200"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a100aea00ff7b9a235f6ecb517b889138" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7088,7 +7104,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="199" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="199" bodyend="205"/>
+        <location file="faiss/impl/simd_dispatch.h" line="206" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="206" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7129,7 +7145,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="237" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="237" bodyend="240"/>
+        <location file="faiss/impl/simd_dispatch.h" line="244" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="244" bodyend="247"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7153,7 +7169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="247" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="247" bodyend="250"/>
+        <location file="faiss/impl/simd_dispatch.h" line="254" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="254" bodyend="257"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa986325b2f3fab6c8831493df8d487c2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7177,7 +7193,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="257" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="257" bodyend="260"/>
+        <location file="faiss/impl/simd_dispatch.h" line="264" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="264" bodyend="267"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aeb3f1ce996000a8335781020ac0aa9e8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7201,7 +7217,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="264" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="264" bodyend="267"/>
+        <location file="faiss/impl/simd_dispatch.h" line="271" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="271" bodyend="274"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SIMDLevel::AVX2 &gt;</type>
