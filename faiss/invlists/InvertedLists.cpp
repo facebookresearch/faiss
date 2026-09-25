@@ -440,8 +440,11 @@ void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(
         size_t list_no,
         size_t offset) const {
-    assert(list_no < nlist);
-    assert(offset < ids[list_no].size());
+    // Throw rather than assert: Panorama::reconstruct takes an unsized
+    // pointer, so these are the only bounds available and they must hold
+    // in opt builds too.
+    FAISS_THROW_IF_NOT(list_no < nlist);
+    FAISS_THROW_IF_NOT(offset < ids[list_no].size());
 
     uint8_t* recons_buffer = new uint8_t[code_size];
 
