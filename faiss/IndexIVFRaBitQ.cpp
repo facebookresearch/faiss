@@ -221,14 +221,13 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const override {
-        size_t ex_bits = ivf_rabitq.rabitq.nb_bits - 1;
-
-        // For 1-bit codes, use default implementation
-        if (ex_bits == 0 || rabitq_dc == nullptr) {
+        if (qb == 0 || rabitq_dc == nullptr) {
             return scan_codes_1bit(list_size, codes, ids, handler);
         }
 
-        // Multi-bit: Two-stage search with adaptive filtering
+        // Dispatch to the concrete SIMD-specialized distance computer once per
+        // list. Its inner loop handles both 1-bit and multi-bit codes without a
+        // virtual distance_to_code() call for every entry.
         return rabitq_dc->scan_codes_multibit(
                 list_size,
                 codes,
