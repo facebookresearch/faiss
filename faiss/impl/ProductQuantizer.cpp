@@ -489,8 +489,12 @@ void ProductQuantizer::compute_distance_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
-    if (dsub == 2 && nbits < 8) { // interesting for a narrow range of settings
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
+        defined(COMPILE_SIMD_RISCV_RVV)
+    // The dsub2 kernels help for a narrow range of settings. They require
+    // ksub = 1 << nbits to be a multiple of 8. Therefore nbits must be 3 or
+    // more.
+    if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, false, dis_tables);
     } else
@@ -524,8 +528,9 @@ void ProductQuantizer::compute_inner_prod_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
-    if (dsub == 2 && nbits < 8) {
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
+        defined(COMPILE_SIMD_RISCV_RVV)
+    if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, true, dis_tables);
     } else
@@ -872,8 +877,9 @@ void ProductQuantizer::search_sdc(
             float* heap_dis = res->val + i * k;
             const uint8_t* qcode = qcodes + i * code_size;
 
-            if (init_finalize_heap)
+            if (init_finalize_heap) {
                 maxheap_heapify(k, heap_dis, heap_ids);
+            }
 
             // Precompute per-subquantizer row pointers: q_row[m] points to
             // sdc_table[m*ksub^2 + qcode[m]*ksub], eliminating M
@@ -897,8 +903,9 @@ void ProductQuantizer::search_sdc(
                 bcode += code_size;
             }
 
-            if (init_finalize_heap)
+            if (init_finalize_heap) {
                 maxheap_reorder(k, heap_dis, heap_ids);
+            }
         }
     }
 }
