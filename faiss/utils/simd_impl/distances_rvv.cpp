@@ -11,6 +11,7 @@
 
 #ifdef COMPILE_SIMD_RISCV_RVV
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/extra_distances.h>
 #include <riscv_vector.h>
 #include <vector>
@@ -363,9 +364,7 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::RISCV_RVV>(
     // dis[i] = x_sqlen + y_sqlen[i] - 2 * sum_j x[j] * y[j * d_offset + i]
     //
     // The code accumulates the dot product first, and it applies the factor
-    // of 2 afterwards. A factor of -2 on x[j] can overflow to an infinity.
-    // That infinity then multiplies an element of y that is 0, and the
-    // product is a NaN. The SIMDLevel::NONE implementation scales the
+    // of 2 afterwards. Matches SIMDLevel::NONE implementation which scales the
     // accumulated dot product in the same way.
     for (; i + chunk <= ny; i += chunk) {
         vfloat32m8_t dp = __riscv_vfmv_v_f_f32m8(0.0f, chunk);
@@ -411,10 +410,7 @@ void fvec_inner_products_ny<SIMDLevel::RISCV_RVV>(
         size_t d,
         size_t ny) {
     // The loop below divides the ny dimension into chunks. Each chunk uses
-    // e32m4. An LMUL sweep showed that e32m4 is the fastest choice. It
-    // balances the throughput of the strided load vlse32 against the use of
-    // the register file. That load uses a stride of d*4 bytes. The chunk size
-    // is VLMAX, so the kernel fills the whole vector register at every VLEN.
+    // e32m4.
     // ip[i] = sum_{j=0}^{d-1} x[j] * y[i * d + j]
     const size_t chunk = __riscv_vsetvlmax_e32m4();
     const ptrdiff_t stride_bytes = (ptrdiff_t)d * (ptrdiff_t)sizeof(float);
@@ -458,8 +454,7 @@ void fvec_L2sqr_ny<SIMDLevel::RISCV_RVV>(
         size_t d,
         size_t ny) {
     // The loop below divides the ny dimension into chunks. Each chunk uses
-    // e32m8. The chunk size is VLMAX, so the kernel fills the whole vector
-    // register at every VLEN.
+    // e32m8.
     const size_t chunk = __riscv_vsetvlmax_e32m8();
     const ptrdiff_t stride_bytes = (ptrdiff_t)d * (ptrdiff_t)sizeof(float);
     size_t i = 0;
@@ -542,6 +537,56 @@ int fvec_madd_and_argmin<SIMDLevel::RISCV_RVV>(
     fvec_madd<SIMDLevel::RISCV_RVV>(n, a, bf, b, c);
     const size_t j = rvv_argmin(c, n);
     return j < n ? static_cast<int>(j) : -1;
+}
+
+template <>
+void fvec_add<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        const float* a,
+        const float* b,
+        float* c) {
+    size_t i = 0;
+    while (i < d) {
+        size_t vl = __riscv_vsetvl_e32m8(d - i);
+        vfloat32m8_t va = __riscv_vle32_v_f32m8(a + i, vl);
+        vfloat32m8_t vb = __riscv_vle32_v_f32m8(b + i, vl);
+        va = __riscv_vfadd_vv_f32m8(va, vb, vl);
+        __riscv_vse32_v_f32m8(c + i, va, vl);
+        i += vl;
+    }
+}
+
+template <>
+void fvec_add<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        const float* a,
+        float b,
+        float* c) {
+    size_t i = 0;
+    while (i < d) {
+        size_t vl = __riscv_vsetvl_e32m8(d - i);
+        vfloat32m8_t va = __riscv_vle32_v_f32m8(a + i, vl);
+        va = __riscv_vfadd_vf_f32m8(va, b, vl);
+        __riscv_vse32_v_f32m8(c + i, va, vl);
+        i += vl;
+    }
+}
+
+template <>
+void fvec_sub<SIMDLevel::RISCV_RVV>(
+        size_t d,
+        const float* a,
+        const float* b,
+        float* c) {
+    size_t i = 0;
+    while (i < d) {
+        size_t vl = __riscv_vsetvl_e32m8(d - i);
+        vfloat32m8_t va = __riscv_vle32_v_f32m8(a + i, vl);
+        vfloat32m8_t vb = __riscv_vle32_v_f32m8(b + i, vl);
+        va = __riscv_vfsub_vv_f32m8(va, vb, vl);
+        __riscv_vse32_v_f32m8(c + i, va, vl);
+        i += vl;
+    }
 }
 
 #define DEFINE_VECTOR_DISTANCE_RVV_FALLBACK(metric)                 \
