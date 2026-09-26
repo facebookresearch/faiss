@@ -70,6 +70,7 @@ void Clustering::train_encoded(
             "as large as number of clusters (%zd)",
             nx,
             k);
+    FAISS_THROW_IF_NOT_MSG(x_in, "training data must not be null");
 
     FAISS_THROW_IF_NOT_FMT(
             (!codec || static_cast<size_t>(codec->d) == d),
@@ -85,14 +86,34 @@ void Clustering::train_encoded(
 
     double t0 = getmillisecs();
 
-    if (!codec && check_input_data_for_NaNs) {
+    if (check_input_data_for_NaNs) {
         // Check for NaNs in input data. Normally it is the user's
-        // responsibility, but it may spare us some hard-to-debug
-        // reports.
-        const float* x = reinterpret_cast<const float*>(x_in);
-        for (size_t i = 0; i < nx * d; i++) {
+        // responsibility, but it may spare us some hard-to-debug reports.
+        if (!codec) {
+            const float* x = reinterpret_cast<const float*>(x_in);
+            for (size_t i = 0; i < nx * d; i++) {
+                FAISS_THROW_IF_NOT_MSG(
+                        std::isfinite(x[i]), "input contains NaN's or Inf's");
+            }
+        } else {
             FAISS_THROW_IF_NOT_MSG(
-                    std::isfinite(x[i]), "input contains NaN's or Inf's");
+                    decode_block_size > 0,
+                    "decode_block_size must be positive");
+            const size_t block_size =
+                    std::min(static_cast<size_t>(nx), decode_block_size);
+            std::vector<float> decoded(block_size * d);
+            const size_t code_size = codec->sa_code_size();
+            for (size_t i0 = 0; i0 < static_cast<size_t>(nx);
+                 i0 += block_size) {
+                const size_t ni =
+                        std::min(block_size, static_cast<size_t>(nx) - i0);
+                codec->sa_decode(ni, x_in + i0 * code_size, decoded.data());
+                for (size_t i = 0; i < ni * d; ++i) {
+                    FAISS_THROW_IF_NOT_MSG(
+                            std::isfinite(decoded[i]),
+                            "input contains NaN's or Inf's");
+                }
+            }
         }
     }
 

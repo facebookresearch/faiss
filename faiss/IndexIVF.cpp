@@ -18,9 +18,11 @@
 #include <cstdio>
 #include <limits>
 
+#include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
@@ -58,19 +60,42 @@ void Level1Quantizer::train_q1(
         const float* x,
         bool verbose,
         MetricType metric_type) {
+    train_q1_encoded(
+            n,
+            reinterpret_cast<const uint8_t*>(x),
+            nullptr,
+            verbose,
+            metric_type);
+}
+
+void Level1Quantizer::train_q1_encoded(
+        size_t n,
+        const uint8_t* x,
+        const Index* codec,
+        bool verbose,
+        MetricType metric_type) {
     FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     size_t d = quantizer->d;
+    FAISS_THROW_IF_NOT_FMT(
+            !codec || static_cast<size_t>(codec->d) == d,
+            "Codec dimension %d not the same as quantizer dimension %d",
+            codec ? codec->d : 0,
+            int(d));
     if (quantizer->is_trained &&
         (static_cast<size_t>(quantizer->ntotal) == nlist)) {
         if (verbose) {
             printf("IVF quantizer does not need training.\n");
         }
     } else if (quantizer_trains_alone == 1) {
+        FAISS_THROW_IF_MSG(
+                codec,
+                "encoded training is not supported when the IVF quantizer "
+                "trains alone");
         if (verbose) {
             printf("IVF quantizer trains alone...\n");
         }
         quantizer->verbose = verbose;
-        quantizer->train(n, x);
+        quantizer->train(n, reinterpret_cast<const float*>(x));
         FAISS_THROW_IF_NOT_MSG(
                 static_cast<size_t>(quantizer->ntotal) == nlist,
                 "nlist not consistent with quantizer size");
@@ -83,6 +108,9 @@ void Level1Quantizer::train_q1(
                 cp.use_super_kmeans && clustering_index,
                 "cp.use_super_kmeans is incompatible with a user-provided "
                 "clustering_index: SuperKMeans assigns with its own index");
+        FAISS_THROW_IF_MSG(
+                cp.use_super_kmeans && codec,
+                "SuperKMeans does not support encoded training");
 
         quantizer->reset();
         if (cp.use_super_kmeans) {
@@ -90,15 +118,24 @@ void Level1Quantizer::train_q1(
             static_cast<ClusteringParameters&>(super_cp) = cp;
             SuperKMeans clus(
                     static_cast<int>(d), static_cast<int>(nlist), super_cp);
-            clus.train(n, x);
+            clus.train(n, reinterpret_cast<const float*>(x));
             quantizer->add(nlist, clus.centroids.data());
         } else {
             Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
             if (clustering_index) {
-                clus.train(n, x, *clustering_index);
+                if (codec) {
+                    clus.train_encoded(n, x, codec, *clustering_index);
+                } else {
+                    clus.train(
+                            n,
+                            reinterpret_cast<const float*>(x),
+                            *clustering_index);
+                }
                 quantizer->add(nlist, clus.centroids.data());
+            } else if (codec) {
+                clus.train_encoded(n, x, codec, *quantizer);
             } else {
-                clus.train(n, x, *quantizer);
+                clus.train(n, reinterpret_cast<const float*>(x), *quantizer);
             }
         }
         quantizer->is_trained = true;
@@ -118,9 +155,15 @@ void Level1Quantizer::train_q1(
         Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
         if (!clustering_index) {
             IndexFlatL2 assigner(d);
-            clus.train(n, x, assigner);
+            if (codec) {
+                clus.train_encoded(n, x, codec, assigner);
+            } else {
+                clus.train(n, reinterpret_cast<const float*>(x), assigner);
+            }
+        } else if (codec) {
+            clus.train_encoded(n, x, codec, *clustering_index);
         } else {
-            clus.train(n, x, *clustering_index);
+            clus.train(n, reinterpret_cast<const float*>(x), *clustering_index);
         }
         if (verbose) {
             printf("Adding centroids to quantizer\n");
@@ -1306,6 +1349,77 @@ void IndexIVF::update_vectors(int n, const idx_t* new_ids, const float* x) {
 
     direct_map.update_codes(
             invlists, n, new_ids, assign.data(), flat_codes.data());
+}
+
+void IndexIVF::train_ex(idx_t n, const void* x, NumericType numeric_type) {
+    if (numeric_type == NumericType::Float16) {
+        IndexScalarQuantizer codec(d, ScalarQuantizer::QuantizerType::QT_fp16);
+        train_encoded(n, reinterpret_cast<const uint8_t*>(x), &codec);
+        return;
+    }
+    Index::train_ex(n, x, numeric_type);
+}
+
+void IndexIVF::train_encoded(idx_t n, const uint8_t* x, const Index* codec) {
+    FAISS_THROW_IF_NOT_MSG(codec, "encoded training requires a codec");
+    FAISS_THROW_IF_NOT_MSG(x, "encoded training data must not be null");
+    if (verbose) {
+        printf("Training level-1 quantizer\n");
+    }
+
+    train_q1_encoded(n, x, codec, verbose, metric_type);
+
+    if (verbose) {
+        printf("Training IVF residual\n");
+    }
+
+    idx_t max_nt = train_encoder_num_vectors();
+    if (max_nt <= 0 || n <= max_nt) {
+        max_nt = n;
+    }
+
+    std::vector<float> decoded(static_cast<size_t>(max_nt) * d);
+    if (max_nt == n) {
+        codec->sa_decode(n, x, decoded.data());
+    } else {
+        FAISS_THROW_IF_NOT_FMT(
+                n <= static_cast<idx_t>(std::numeric_limits<int>::max()),
+                "Dataset too large (%" PRId64 ") for standard subsampling",
+                n);
+        if (verbose) {
+            printf("  Input training set too big (max size is %" PRId64
+                   "), sampling %" PRId64 " / %" PRId64 " vectors\n",
+                   max_nt,
+                   max_nt,
+                   n);
+        }
+        std::vector<int> subset(static_cast<size_t>(n));
+        rand_perm(subset.data(), n, 1234);
+        const size_t encoded_code_size = codec->sa_code_size();
+        for (idx_t i = 0; i < max_nt; ++i) {
+            codec->sa_decode(
+                    1,
+                    x + static_cast<size_t>(subset[i]) * encoded_code_size,
+                    decoded.data() + static_cast<size_t>(i) * d);
+        }
+    }
+    n = max_nt;
+
+    if (by_residual) {
+        FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
+        std::vector<idx_t> assign(n);
+        quantizer->assign(n, decoded.data(), assign.data());
+
+        std::vector<float> residuals(static_cast<size_t>(n) * d);
+        quantizer->compute_residual_n(
+                n, decoded.data(), residuals.data(), assign.data());
+
+        train_encoder(n, residuals.data(), assign.data());
+    } else {
+        train_encoder(n, decoded.data(), nullptr);
+    }
+
+    is_trained = true;
 }
 
 void IndexIVF::train(idx_t n, const float* x) {

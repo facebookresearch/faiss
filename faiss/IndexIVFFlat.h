@@ -29,6 +29,13 @@ struct IndexIVFFlat : IndexIVF {
             MetricType = METRIC_L2,
             bool own_invlists = true);
 
+    /** Train the coarse quantizer from vectors decoded on demand by `codec`.
+     *
+     * IndexIVFFlat has no trainable residual encoder, so this avoids a
+     * corpus-sized decoded buffer. The codec must remain alive for this call.
+     */
+    void train_encoded(idx_t n, const uint8_t* x, const Index* codec) override;
+
     void add_core(
             idx_t n,
             const float* x,
@@ -109,6 +116,9 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
 
     /// also dedups the training set
     void train(idx_t n, const float* x) override;
+
+    /// Encoded training cannot preserve the byte-exact deduplication contract.
+    void train_encoded(idx_t n, const uint8_t* x, const Index* codec) override;
 
     /// implemented for all IndexIVF* classes
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;

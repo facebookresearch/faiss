@@ -57,6 +57,15 @@ IndexIVFFlat::IndexIVFFlat() {
     by_residual = false;
 }
 
+void IndexIVFFlat::train_encoded(
+        idx_t n,
+        const uint8_t* x,
+        const Index* codec) {
+    FAISS_THROW_IF_NOT_MSG(codec, "encoded training requires a codec");
+    train_q1_encoded(n, x, codec, verbose, metric_type);
+    is_trained = true;
+}
+
 void IndexIVFFlat::add_core(
         idx_t n,
         const float* x,
@@ -185,6 +194,10 @@ IndexIVFFlatDedup::IndexIVFFlatDedup(
                   nlist_in,
                   metric_type_in,
                   own_invlists_in) {}
+
+void IndexIVFFlatDedup::train_encoded(idx_t, const uint8_t*, const Index*) {
+    FAISS_THROW_MSG("encoded training is not supported by IndexIVFFlatDedup");
+}
 
 void IndexIVFFlatDedup::train(idx_t n, const float* x) {
     std::unordered_map<uint64_t, idx_t> map;
