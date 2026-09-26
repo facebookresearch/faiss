@@ -17,9 +17,11 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/fp16.h>
 
 namespace {
 
@@ -510,4 +512,229 @@ TEST(IVF, search_callbacks) {
             << "on_heap_changed should fire when vectors enter the heap";
     EXPECT_GE(distance_count, heap_count)
             << "not every distance computation leads to a heap change";
+}
+
+namespace {
+
+class LimitedEncoderIndex : public faiss::IndexIVFScalarQuantizer {
+   public:
+    LimitedEncoderIndex(faiss::Index* quantizer, int d, int nlist)
+            : faiss::IndexIVFScalarQuantizer(
+                      quantizer,
+                      d,
+                      nlist,
+                      faiss::ScalarQuantizer::QT_8bit) {}
+
+    faiss::idx_t train_encoder_num_vectors() const override {
+        return 7;
+    }
+
+    void train_encoder(
+            faiss::idx_t n,
+            const float* x,
+            const faiss::idx_t* assign) override {
+        encoder_input.assign(x, x + n * d);
+        encoder_assignments.assign(assign, assign + n);
+    }
+
+    std::vector<float> encoder_input;
+    std::vector<faiss::idx_t> encoder_assignments;
+};
+
+class TrackingFp16Codec : public faiss::IndexScalarQuantizer {
+   public:
+    explicit TrackingFp16Codec(int d)
+            : faiss::IndexScalarQuantizer(
+                      d,
+                      faiss::ScalarQuantizer::QuantizerType::QT_fp16) {}
+
+    void sa_decode(faiss::idx_t n, const uint8_t* bytes, float* x)
+            const override {
+        max_decode_rows = std::max(max_decode_rows, static_cast<size_t>(n));
+        faiss::IndexScalarQuantizer::sa_decode(n, bytes, x);
+    }
+
+    mutable size_t max_decode_rows = 0;
+};
+
+std::vector<uint16_t> encode_fp16(const std::vector<float>& values) {
+    std::vector<uint16_t> encoded(values.size());
+    for (size_t i = 0; i < values.size(); ++i) {
+        encoded[i] = faiss::encode_fp16(values[i]);
+    }
+    return encoded;
+}
+
+std::vector<float> decode_fp16(const std::vector<uint16_t>& values) {
+    std::vector<float> decoded(values.size());
+    for (size_t i = 0; i < values.size(); ++i) {
+        decoded[i] = faiss::decode_fp16(values[i]);
+    }
+    return decoded;
+}
+
+} // namespace
+
+TEST(IVF, train_float16_matches_float32_on_rounded_input) {
+    constexpr int d = 4;
+    constexpr int n = 64;
+    constexpr int nlist = 4;
+
+    std::vector<float> input(n * d);
+    for (size_t i = 0; i < input.size(); ++i) {
+        input[i] = static_cast<float>((i * 17) % 101) / 13.0f;
+    }
+    auto encoded = encode_fp16(input);
+    auto rounded = decode_fp16(encoded);
+
+    faiss::IndexFlatL2 float_quantizer(d);
+    faiss::IndexIVFFlat float_index(&float_quantizer, d, nlist);
+    float_index.cp.seed = 1234;
+    float_index.cp.niter = 4;
+    float_index.cp.min_points_per_centroid = 1;
+    float_index.train(n, rounded.data());
+
+    faiss::IndexFlatL2 half_quantizer(d);
+    faiss::IndexIVFFlat half_index(&half_quantizer, d, nlist);
+    half_index.cp.seed = 1234;
+    half_index.cp.niter = 4;
+    half_index.cp.min_points_per_centroid = 1;
+    half_index.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+
+    ASSERT_TRUE(half_index.is_trained);
+    ASSERT_EQ(half_quantizer.ntotal, nlist);
+    std::vector<float> float_centroids(nlist * d);
+    std::vector<float> half_centroids(nlist * d);
+    float_quantizer.reconstruct_n(0, nlist, float_centroids.data());
+    half_quantizer.reconstruct_n(0, nlist, half_centroids.data());
+    EXPECT_EQ(half_centroids, float_centroids);
+}
+
+TEST(IVF, encoded_training_rejects_non_finite_values) {
+    constexpr int d = 2;
+    constexpr int n = 4;
+    constexpr int nlist = 2;
+    auto encoded = encode_fp16(
+            {0.0f,
+             1.0f,
+             2.0f,
+             3.0f,
+             std::numeric_limits<float>::infinity(),
+             5.0f,
+             6.0f,
+             7.0f});
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+    EXPECT_THROW(
+            index.train_ex(n, encoded.data(), faiss::NumericType::Float16),
+            faiss::FaissException);
+}
+
+TEST(IVF, encoded_training_decodes_in_bounded_batches) {
+    constexpr int d = 4;
+    constexpr int n = 40;
+    constexpr int nlist = 2;
+    constexpr size_t decode_block_size = 5;
+
+    std::vector<float> input(n * d);
+    for (size_t i = 0; i < input.size(); ++i) {
+        input[i] = static_cast<float>((i * 11) % 97) / 17.0f;
+    }
+    auto encoded = encode_fp16(input);
+    TrackingFp16Codec codec(d);
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+    index.cp.decode_block_size = decode_block_size;
+    index.cp.niter = 2;
+    index.cp.min_points_per_centroid = 1;
+    index.train_encoded(
+            n, reinterpret_cast<const uint8_t*>(encoded.data()), &codec);
+
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_GT(codec.max_decode_rows, 0);
+    EXPECT_LE(codec.max_decode_rows, decode_block_size);
+}
+
+TEST(IVF, train_float16_trains_scalar_quantizer_encoder) {
+    constexpr int d = 4;
+    constexpr int n = 128;
+    constexpr int nlist = 4;
+
+    std::vector<float> input(n * d);
+    for (size_t i = 0; i < input.size(); ++i) {
+        input[i] = static_cast<float>((i * 19) % 113) / 23.0f;
+    }
+    auto encoded = encode_fp16(input);
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFScalarQuantizer index(
+            &quantizer,
+            d,
+            nlist,
+            faiss::ScalarQuantizer::QuantizerType::QT_8bit);
+    index.cp.seed = 1234;
+    index.cp.niter = 4;
+    index.cp.min_points_per_centroid = 1;
+    index.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(quantizer.ntotal, nlist);
+    EXPECT_FALSE(index.sq.trained.empty());
+}
+
+TEST(IVF, encoded_training_validates_codec) {
+    constexpr int d = 4;
+    constexpr int n = 4;
+    constexpr int nlist = 2;
+    std::vector<uint16_t> encoded(n * (d + 1), faiss::encode_fp16(1.0f));
+
+    faiss::IndexFlatL2 quantizer(d);
+    std::vector<float> centroids(nlist * d, 0.0f);
+    quantizer.add(nlist, centroids.data());
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+    TrackingFp16Codec wrong_dimension_codec(d + 1);
+
+    EXPECT_THROW(
+            index.train_encoded(
+                    n,
+                    reinterpret_cast<const uint8_t*>(encoded.data()),
+                    &wrong_dimension_codec),
+            faiss::FaissException);
+    EXPECT_THROW(
+            index.train_encoded(
+                    n,
+                    reinterpret_cast<const uint8_t*>(encoded.data()),
+                    nullptr),
+            faiss::FaissException);
+}
+
+TEST(IVF, encoded_encoder_subsampling_matches_float32) {
+    constexpr int d = 4;
+    constexpr int n = 40;
+    constexpr int nlist = 2;
+
+    std::vector<float> input(n * d);
+    for (size_t i = 0; i < input.size(); ++i) {
+        input[i] = static_cast<float>((i * 23) % 127) / 29.0f;
+    }
+    auto encoded = encode_fp16(input);
+    auto rounded = decode_fp16(encoded);
+
+    faiss::IndexFlatL2 float_quantizer(d);
+    LimitedEncoderIndex float_index(&float_quantizer, d, nlist);
+    float_index.cp.seed = 1234;
+    float_index.cp.niter = 2;
+    float_index.cp.min_points_per_centroid = 1;
+    float_index.train(n, rounded.data());
+
+    faiss::IndexFlatL2 half_quantizer(d);
+    LimitedEncoderIndex half_index(&half_quantizer, d, nlist);
+    half_index.cp.seed = 1234;
+    half_index.cp.niter = 2;
+    half_index.cp.min_points_per_centroid = 1;
+    half_index.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+
+    EXPECT_EQ(half_index.encoder_input, float_index.encoder_input);
+    EXPECT_EQ(half_index.encoder_assignments, float_index.encoder_assignments);
 }
