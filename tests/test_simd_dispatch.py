@@ -256,7 +256,8 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         """SPR detection must agree with the CPU's real feature flags. The SPR
         code path is compiled with -mavx512fp16, so AVX512_SPR must be
         reported available if and only if the CPU actually has the full
-        AVX512 core feature set, VNNI, VPOPCNTDQ, BITALG, BF16 and FP16.
+        AVX512 core feature set, VNNI, VBMI, VPOPCNTDQ, BITALG, BF16 and
+        FP16.
         """
         import platform
 
@@ -297,6 +298,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         spr_capable = (
             avx512_core <= flags
             and "avx512_vnni" in flags
+            and "avx512vbmi" in flags
             and "avx512_vpopcntdq" in flags
             and "avx512_bitalg" in flags
             and "avx512_bf16" in flags
@@ -314,6 +316,7 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             f"detected={spr_detected}, cpu_spr_capable={spr_capable} "
             f"(avx512_core={avx512_core <= flags}, "
             f"vnni={'avx512_vnni' in flags}, "
+            f"vbmi={'avx512vbmi' in flags}, "
             f"vpopcntdq={'avx512_vpopcntdq' in flags}, "
             f"bitalg={'avx512_bitalg' in flags}, "
             f"bf16={'avx512_bf16' in flags}, "

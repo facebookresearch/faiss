@@ -868,6 +868,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_index(idxmap->index, f);
         WRITEVECTOR(idxmap->id_map);
     } else if (const IndexHNSW* idxhnsw = dynamic_cast<const IndexHNSW*>(idx)) {
+        const auto* hnsw_rabitq = dynamic_cast<const IndexHNSWRaBitQ*>(idxhnsw);
         uint32_t h = dynamic_cast<const IndexHNSWFlatPanorama*>(idx)
                 ? fourcc("IHfP")
                 : dynamic_cast<const IndexHNSWFlat*>(idx)   ? fourcc("IHNf")
@@ -875,15 +876,16 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
                 : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
-                : dynamic_cast<const IndexHNSWRaBitQ*>(idx) ? fourcc("IHNr")
-                : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
-                                                            : 0;
+                : hnsw_rabitq ? hnsw_rabitq->fp32_graph_built ? fourcc("IHNg")
+                                                              : fourcc("IHNr")
+                : typeid(*idx) == typeid(IndexHNSW) ? fourcc("IH00")
+                                                    : 0;
         FAISS_THROW_IF_NOT_FMT(
                 h != 0,
                 "don't know how to serialize this IndexHNSW subtype: %s",
                 typeid(*idx).name());
         const IndexRaBitQ* storage_rabitq = nullptr;
-        if (h == fourcc("IHNr")) {
+        if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             storage_rabitq = dynamic_cast<const IndexRaBitQ*>(idxhnsw->storage);
             FAISS_THROW_IF_NOT_MSG(
                     storage_rabitq ||
@@ -913,13 +915,23 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         } else {
             write_index(idxhnsw->storage, f);
         }
-        if (h == fourcc("IHNr")) {
-            // The staged flag is graph-traversal state, so it has to live here:
-            // with IO_FLAG_SKIP_STORAGE there is no storage to derive it from.
-            // Storage-owned settings are not duplicated in this payload;
-            // IndexRaBitQ serializes whatever it owns.
+        if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
+            // Persistent progressive/nested layouts reload with ordinary HNSW
+            // traversal. Runtime-only integer ADC modes reload as packed rows
+            // and therefore restore staged traversal for multi-bit codes.
+            // With IO_FLAG_SKIP_STORAGE, preserve the current graph policy.
+            const bool persistent_nonpacked_layout = storage_rabitq &&
+                    (storage_rabitq->full_code_mode ==
+                             RABITQ_FULL_CODE_PROGRESSIVE ||
+                     storage_rabitq->full_code_mode ==
+                             RABITQ_FULL_CODE_NESTED_LUT7 ||
+                     storage_rabitq->full_code_mode ==
+                             RABITQ_FULL_CODE_NESTED_LUT4 ||
+                     storage_rabitq->full_code_mode ==
+                             RABITQ_FULL_CODE_NIBBLE_LUT4);
             const bool staged = storage_rabitq
-                    ? storage_rabitq->rabitq.nb_bits >= 2
+                    ? !persistent_nonpacked_layout &&
+                            storage_rabitq->rabitq.nb_bits >= 2
                     : idxhnsw->hnsw.search_method == HNSW::SM_RABITQ;
             WRITE1(staged);
         }
@@ -1081,10 +1093,25 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             write_index_header(idx, f);
             write_RaBitQuantizer(&idxq->rabitq, f, false);
         } else {
-            uint32_t h = fourcc("Ixrr"); // multi-bit (new format)
+            uint32_t h = idxq->full_code_mode == RABITQ_FULL_CODE_PROGRESSIVE
+                    ? fourcc("Ixrp") // independent 2-bit prefix + full tail
+                    : idxq->full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7
+                    ? fourcc("Ixrn") // nested 2-bit prefix + split 5-bit LUT
+                    : idxq->full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4
+                    ? fourcc("Ixrt") // nested 2-bit prefix + 2-bit local LUT
+                    : idxq->full_code_mode == RABITQ_FULL_CODE_NIBBLE_LUT4
+                    ? fourcc("Ixru")  // contiguous nibble + LUT4
+                    : fourcc("Ixrr"); // legacy multi-bit layout
             WRITE1(h);
             write_index_header(idx, f);
             write_RaBitQuantizer(&idxq->rabitq, f, true);
+            if (idxq->full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7) {
+                WRITEVECTOR(idxq->nested_lut7);
+            } else if (
+                    idxq->full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4 ||
+                    idxq->full_code_mode == RABITQ_FULL_CODE_NIBBLE_LUT4) {
+                WRITEVECTOR(idxq->nested_lut4);
+            }
         }
         WRITEVECTOR(idxq->codes);
         WRITEVECTOR(idxq->center);

@@ -160,6 +160,7 @@ struct HNSW {
         SM_DEFAULT,
         SM_PANORAMA,
         SM_RABITQ,
+        SM_RABITQ_ADAPTIVE,
     };
     Search_method_t search_method = SM_DEFAULT;
 
