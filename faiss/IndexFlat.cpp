@@ -446,6 +446,30 @@ void IndexFlat1D::reset() {
     perm.clear();
 }
 
+size_t IndexFlat1D::remove_ids(const IDSelector& sel) {
+    size_t nremoved = IndexFlatL2::remove_ids(sel);
+    if (nremoved > 0) {
+        if (continuous_update) {
+            update_permutation();
+        } else {
+            perm.clear();
+        }
+    }
+    return nremoved;
+}
+
+void IndexFlat1D::merge_from(Index& otherIndex, idx_t add_id) {
+    idx_t other_ntotal = otherIndex.ntotal;
+    IndexFlatL2::merge_from(otherIndex, add_id);
+    if (other_ntotal > 0) {
+        if (continuous_update) {
+            update_permutation();
+        } else {
+            perm.clear();
+        }
+    }
+}
+
 void IndexFlat1D::search(
         idx_t n,
         const float* x,

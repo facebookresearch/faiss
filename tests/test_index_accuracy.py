@@ -609,6 +609,74 @@ class TestFlat1D(unittest.TestCase):
             self.assertEqual((I == -1).sum(), 10 - i)
             index.add(x)
 
+    def test_remove_ids(self):
+        # Issue #5576: remove_ids should keep the sorted permutation consistent
+        # 1. Test continuous_update=True
+        index = faiss.IndexFlat1D(True)
+        xb = np.array([[1.0], [2.0], [3.0], [4.0], [5.0]], dtype=np.float32)
+        index.add(xb)
+
+        # Remove ID 0 (value 1.0)
+        sel = faiss.IDSelectorBatch([0])
+        removed = index.remove_ids(sel)
+        self.assertEqual(removed, 1)
+        self.assertEqual(index.ntotal, 4)
+
+        # Search should succeed immediately without throwing
+        xq = np.array([[2.5]], dtype=np.float32)
+        D, I = index.search(xq, 4)
+        self.assertEqual(I.shape, (1, 4))
+        self.assertEqual(set(I[0]), {0, 1, 2, 3})
+
+        # Remove nonexistent ID
+        sel_none = faiss.IDSelectorBatch([99])
+        removed_none = index.remove_ids(sel_none)
+        self.assertEqual(removed_none, 0)
+        self.assertEqual(index.ntotal, 4)
+        D, I = index.search(xq, 4)
+        self.assertEqual(set(I[0]), {0, 1, 2, 3})
+
+        # 2. Test continuous_update=False
+        index_manual = faiss.IndexFlat1D(False)
+        index_manual.add(xb)
+        index_manual.update_permutation()
+
+        removed_m = index_manual.remove_ids(sel)
+        self.assertEqual(removed_m, 1)
+        # Permutation is invalidated, search should throw until update_permutation
+        with self.assertRaises(RuntimeError):
+            index_manual.search(xq, 4)
+
+        index_manual.update_permutation()
+        D_m, I_m = index_manual.search(xq, 4)
+        self.assertEqual(set(I_m[0]), {0, 1, 2, 3})
+
+        # 3. Remove all elements
+        sel_all = faiss.IDSelectorBatch([0, 1, 2, 3])
+        removed_all = index.remove_ids(sel_all)
+        self.assertEqual(removed_all, 4)
+        self.assertEqual(index.ntotal, 0)
+        D_empty, I_empty = index.search(xq, 4)
+        self.assertTrue((I_empty == -1).all())
+
+    def test_merge_from(self):
+        index1 = faiss.IndexFlat1D(True)
+        xb1 = np.array([[1.0], [3.0]], dtype=np.float32)
+        index1.add(xb1)
+
+        index2 = faiss.IndexFlat1D(True)
+        xb2 = np.array([[2.0], [4.0]], dtype=np.float32)
+        index2.add(xb2)
+
+        index1.merge_from(index2)
+        self.assertEqual(index1.ntotal, 4)
+        self.assertEqual(index2.ntotal, 0)
+
+        xq = np.array([[2.5]], dtype=np.float32)
+        D, I = index1.search(xq, 4)
+        self.assertEqual(I.shape, (1, 4))
+        self.assertEqual(set(I[0]), {0, 1, 2, 3})
+
 
 class OPQRelativeAccuracy(unittest.TestCase):
     # translated from test_opq.lua
