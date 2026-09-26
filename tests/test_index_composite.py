@@ -769,6 +769,42 @@ class TestSplitMerge(unittest.TestCase):
 
 class TestIndependentQuantizer(unittest.TestCase):
 
+    def test_ntotal(self):
+        d = 4
+        index_ivf = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, 2)
+        index_ivf.nprobe = 2
+        index = faiss.IndexIVFIndependentQuantizer(
+            faiss.IndexFlatL2(d), index_ivf
+        )
+        x = np.array([
+            [0, 0, 0, 0],
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+        ], dtype="float32")
+        index.train(x)
+
+        def check_count(n):
+            self.assertEqual(index.ntotal, n)
+            self.assertEqual(index.ntotal, index_ivf.ntotal)
+
+        check_count(0)
+        index.add(x[:2])
+        check_count(2)
+        index.add(x[2:])
+        check_count(4)
+        D, I = index.search(x, 1)
+        np.testing.assert_array_equal(I[:, 0], np.arange(4))
+        np.testing.assert_array_equal(D[:, 0], 0)
+
+        index.reset()
+        check_count(0)
+        index.add(x)
+        check_count(4)
+        Dnew, Inew = index.search(x, 1)
+        np.testing.assert_array_equal(D, Dnew)
+        np.testing.assert_array_equal(I, Inew)
+
     def test_sidebyside(self):
         """provide double-sized vectors to the index, where each vector
         is the concatenation of twice the same vector"""
@@ -793,6 +829,8 @@ class TestIndependentQuantizer(unittest.TestCase):
         index2 = faiss.IndexIVFIndependentQuantizer(
             quantizer, index, select32last
         )
+        self.assertEqual(index2.ntotal, ds.nb)
+        self.assertEqual(index2.ntotal, index.ntotal)
 
         xq2 = np.hstack([ds.get_queries()] * 2)
         quantizer.search(xq2, 30)
@@ -802,9 +840,14 @@ class TestIndependentQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(Iref, Inew)
 
         # test add
-        index2.reset()
         xb2 = np.hstack([ds.get_database()] * 2)
         index2.add(xb2)
+        self.assertEqual(index2.ntotal, 2 * ds.nb)
+        self.assertEqual(index2.ntotal, index.ntotal)
+        index2.reset()
+        index2.add(xb2)
+        self.assertEqual(index2.ntotal, ds.nb)
+        self.assertEqual(index2.ntotal, index.ntotal)
         Dnew, Inew = index2.search(xq2, 10)
 
         np.testing.assert_array_equal(Dref, Dnew)
