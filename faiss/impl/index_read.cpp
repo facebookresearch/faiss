@@ -2533,7 +2533,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP") || h == fourcc("IHNr") || h == fourcc("IH00")) {
+            h == fourcc("IHfP") || h == fourcc("IHNr") || h == fourcc("IHNg") ||
+            h == fourcc("IH00")) {
         std::unique_ptr<IndexHNSW> idxhnsw;
         if (h == fourcc("IH00")) {
             idxhnsw = std::make_unique<IndexHNSW>();
@@ -2551,7 +2552,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
         } else if (h == fourcc("IHc2")) {
             idxhnsw = std::make_unique<IndexHNSWCagra>();
-        } else if (h == fourcc("IHNr")) {
+        } else if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             idxhnsw = std::make_unique<IndexHNSWRaBitQ>();
         }
         read_index_header(*idxhnsw, f);
@@ -2621,10 +2622,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxhnsw->storage->d,
                     idxhnsw->d);
         }
-        if (h == fourcc("IHNr")) {
+        if (h == fourcc("IHNr") || h == fourcc("IHNg")) {
             auto* idx_rabitq = dynamic_cast<IndexHNSWRaBitQ*>(idxhnsw.get());
             FAISS_THROW_IF_NOT_MSG(
-                    idx_rabitq, "IHNr must deserialize to an IndexHNSWRaBitQ");
+                    idx_rabitq,
+                    "IHNr/IHNg must deserialize to an IndexHNSWRaBitQ");
+            idx_rabitq->fp32_graph_built = h == fourcc("IHNg");
             FAISS_THROW_IF_NOT_MSG(
                     idxhnsw->metric_type == METRIC_L2,
                     "IndexHNSWRaBitQ supports only the L2 metric");
@@ -2653,9 +2656,23 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                         rq->rabitq.code_size,
                         expected_code_size,
                         "IndexHNSWRaBitQ quantizer");
+                size_t expected_storage_code_size = expected_code_size;
+                if (rq->full_code_mode == RABITQ_FULL_CODE_PROGRESSIVE) {
+                    expected_storage_code_size =
+                            rq->rabitq.progressive_code_size();
+                } else if (rq->full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7) {
+                    expected_storage_code_size =
+                            rq->rabitq.nested_lut7_code_size();
+                } else if (rq->full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4) {
+                    expected_storage_code_size =
+                            rq->rabitq.nested_lut4_code_size(false);
+                } else if (rq->full_code_mode == RABITQ_FULL_CODE_NIBBLE_LUT4) {
+                    expected_storage_code_size =
+                            rq->rabitq.nested_lut4_code_size(true);
+                }
                 validate_code_size_match(
                         rq->code_size,
-                        expected_code_size,
+                        expected_storage_code_size,
                         "IndexHNSWRaBitQ storage");
                 FAISS_THROW_IF_NOT(
                         rq->codes.size() ==
@@ -2668,7 +2685,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                                 rq->center.size() == static_cast<size_t>(rq->d),
                         "IndexHNSWRaBitQ center size mismatch");
                 FAISS_THROW_IF_NOT_MSG(
-                        staged == (rq->rabitq.nb_bits >= 2),
+                        staged ==
+                                (rq->full_code_mode ==
+                                         RABITQ_FULL_CODE_PACKED &&
+                                 rq->rabitq.nb_bits >= 2),
                         "IndexHNSWRaBitQ staged-search metadata mismatch");
             }
         }
@@ -3019,12 +3039,29 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         idxq->code_size = idxq->rabitq.code_size;
         idx = std::move(idxq);
-    } else if (h == fourcc("Ixrr")) {
-        // Ixrr = multi-bit format (new)
+    } else if (
+            h == fourcc("Ixrr") || h == fourcc("Ixrp") || h == fourcc("Ixrn") ||
+            h == fourcc("Ixrt") || h == fourcc("Ixru")) {
+        // Ixrr = legacy; Ixrp = progressive; Ixrn = nested LUT progressive.
+        const bool progressive = h == fourcc("Ixrp");
+        const bool nested_lut7 = h == fourcc("Ixrn");
+        const bool nested_lut4 = h == fourcc("Ixrt");
+        const bool nibble_lut4 = h == fourcc("Ixru");
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
         read_RaBitQuantizer(
                 idxq->rabitq, f, idxq->d, true); // Reads nb_bits from file
+        if (nested_lut7) {
+            READVECTOR(idxq->nested_lut7);
+            FAISS_THROW_IF_NOT_MSG(
+                    idxq->rabitq.nb_bits == 7 && idxq->nested_lut7.size() == 64,
+                    "invalid nested LUT RaBitQ metadata");
+        } else if (nested_lut4 || nibble_lut4) {
+            READVECTOR(idxq->nested_lut4);
+            FAISS_THROW_IF_NOT_MSG(
+                    idxq->rabitq.nb_bits == 4 && idxq->nested_lut4.size() == 8,
+                    "invalid nested LUT4 RaBitQ metadata");
+        }
         read_vector(idxq->codes, f);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
@@ -3035,7 +3072,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "invalid RaBitQ qb=%d (must be in [0, 8])",
                 idxq->qb);
 
-        idxq->code_size = idxq->rabitq.code_size;
+        idxq->code_size = nested_lut7 ? idxq->rabitq.nested_lut7_code_size()
+                : (nested_lut4 || nibble_lut4)
+                ? idxq->rabitq.nested_lut4_code_size(nibble_lut4)
+                : progressive ? idxq->rabitq.progressive_code_size()
+                              : idxq->rabitq.code_size;
+        idxq->full_code_mode = nested_lut7 ? RABITQ_FULL_CODE_NESTED_LUT7
+                : nested_lut4              ? RABITQ_FULL_CODE_NESTED_LUT4
+                : nibble_lut4              ? RABITQ_FULL_CODE_NIBBLE_LUT4
+                : progressive              ? RABITQ_FULL_CODE_PROGRESSIVE
+                                           : RABITQ_FULL_CODE_PACKED;
+        FAISS_THROW_IF_NOT(
+                idxq->codes.size() ==
+                mul_no_overflow(
+                        static_cast<size_t>(idxq->ntotal),
+                        idxq->code_size,
+                        "IndexRaBitQ codes"));
         idx = std::move(idxq);
     } else if (h == fourcc("Iwrq")) {
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
