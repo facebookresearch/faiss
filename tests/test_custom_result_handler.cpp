@@ -19,6 +19,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/index_factory.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -297,6 +298,95 @@ void test_rabitq_one_bit_scanner(MetricType metric) {
     }
 }
 
+void test_rabitq_unquantized_multibit_scanner(MetricType metric) {
+    constexpr size_t local_d = 32;
+    constexpr size_t local_nb = 129;
+
+    std::vector<float> xb(local_nb * local_d);
+    std::vector<float> xq(local_d);
+    rand_smooth_vectors(local_nb, local_d, xb.data(), 2468);
+    rand_smooth_vectors(1, local_d, xq.data(), 1357);
+
+    IndexFlat quantizer(local_d, metric);
+    IndexIVFRaBitQ index(
+            &quantizer,
+            local_d,
+            1,
+            metric,
+            /*own_invlists=*/true,
+            /*nb_bits=*/3);
+    index.train(local_nb, xb.data());
+    index.add(local_nb, xb.data());
+
+    const size_t list_size = index.invlists->list_size(0);
+    ASSERT_EQ(list_size, local_nb);
+    InvertedLists::ScopedCodes codes(index.invlists, 0);
+    InvertedLists::ScopedIds ids(index.invlists, 0);
+
+    IDSelectorRange selector(local_nb / 4, 3 * local_nb / 4);
+    IVFRaBitQSearchParameters params;
+    params.qb = 0;
+    std::unique_ptr<InvertedListScanner> scanner(
+            index.get_InvertedListScanner(false, &selector, &params));
+    scanner->set_query(xq.data());
+    scanner->set_list(0, 0.0f);
+
+    std::vector<float> selected_distances;
+    for (size_t j = 0; j < list_size; ++j) {
+        if (selector.is_member(ids[j])) {
+            selected_distances.push_back(scanner->distance_to_code(
+                    codes.get() + j * index.code_size));
+        }
+    }
+    ASSERT_FALSE(selected_distances.empty());
+
+    std::vector<float> expected_distances;
+    std::vector<idx_t> expected_ids;
+    for (size_t j = 0; j < list_size; ++j) {
+        if (!selector.is_member(ids[j])) {
+            continue;
+        }
+        const float distance =
+                scanner->distance_to_code(codes.get() + j * index.code_size);
+        expected_distances.push_back(distance);
+        expected_ids.push_back(ids[j]);
+    }
+
+    CollectAllResultHandler handler;
+    handler.threshold = metric == METRIC_INNER_PRODUCT
+            ? std::numeric_limits<float>::lowest()
+            : std::numeric_limits<float>::max();
+    const size_t nup =
+            scanner->scan_codes(list_size, codes.get(), ids.get(), handler);
+    EXPECT_EQ(expected_distances, handler.D);
+    EXPECT_EQ(expected_ids, handler.I);
+    EXPECT_EQ(expected_ids.size(), nup);
+    EXPECT_EQ(selected_distances.size(), handler.stats.scan_cnt);
+
+    auto sorted_distances = selected_distances;
+    std::sort(sorted_distances.begin(), sorted_distances.end());
+    CollectAllResultHandler threshold_handler;
+    threshold_handler.threshold = sorted_distances[sorted_distances.size() / 2];
+    scanner->scan_codes(list_size, codes.get(), ids.get(), threshold_handler);
+    for (float distance : threshold_handler.D) {
+        EXPECT_TRUE(
+                metric == METRIC_INNER_PRODUCT
+                        ? distance > threshold_handler.threshold
+                        : distance < threshold_handler.threshold);
+    }
+
+    // An impossible threshold proves that qb=0 still uses the staged
+    // estimate/refine path: no full distances need to be evaluated. The
+    // generic loop would evaluate every selected code before rejecting it.
+    CollectAllResultHandler reject_all_handler;
+    reject_all_handler.threshold = metric == METRIC_INNER_PRODUCT
+            ? std::numeric_limits<float>::max()
+            : std::numeric_limits<float>::lowest();
+    scanner->scan_codes(list_size, codes.get(), ids.get(), reject_all_handler);
+    EXPECT_TRUE(reject_all_handler.I.empty());
+    EXPECT_EQ(0, reject_all_handler.stats.scan_cnt);
+}
+
 /*************************************************************
  * Test cases for different IVF index types
  *************************************************************/
@@ -331,6 +421,14 @@ TEST(RaBitQScanner, OneBitL2MatchesDistanceComputer) {
 
 TEST(RaBitQScanner, OneBitIPMatchesDistanceComputer) {
     test_rabitq_one_bit_scanner(METRIC_INNER_PRODUCT);
+}
+
+TEST(RaBitQScanner, UnquantizedMultibitL2KeepsStagedScan) {
+    test_rabitq_unquantized_multibit_scanner(METRIC_L2);
+}
+
+TEST(RaBitQScanner, UnquantizedMultibitIPKeepsStagedScan) {
+    test_rabitq_unquantized_multibit_scanner(METRIC_INNER_PRODUCT);
 }
 
 TEST(TestIndexTypes, IVFRaBitQ4_L2) {

@@ -479,8 +479,10 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
                 handler.stats.scan_cnt++;
                 const float dis = distance_to_code_full(codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-
-                if (handler.add_result(dis, id)) {
+                const bool passes_threshold = keep_max
+                        ? handler.threshold < dis
+                        : handler.threshold > dis;
+                if (passes_threshold && handler.add_result(dis, id)) {
                     handler.stats.nheap_updates++;
                     nup++;
                 }
@@ -717,8 +719,10 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
                 handler.stats.scan_cnt++;
                 const float dis = distance_to_code_full(codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-
-                if (handler.add_result(dis, id)) {
+                const bool passes_threshold = keep_max
+                        ? handler.threshold < dis
+                        : handler.threshold > dis;
+                if (passes_threshold && handler.add_result(dis, id)) {
                     handler.stats.nheap_updates++;
                     nup++;
                 }

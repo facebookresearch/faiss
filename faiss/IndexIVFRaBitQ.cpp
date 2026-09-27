@@ -221,7 +221,9 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const override {
-        if (qb == 0 || rabitq_dc == nullptr) {
+        const bool unquantized_one_bit =
+                qb == 0 && ivf_rabitq.rabitq.nb_bits == 1;
+        if (unquantized_one_bit || rabitq_dc == nullptr) {
             return scan_codes_1bit(list_size, codes, ids, handler);
         }
 
