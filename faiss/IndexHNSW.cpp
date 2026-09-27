@@ -1071,6 +1071,7 @@ void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
     // expanded full-code scorer intentionally has no staged/symmetric API.
     storage_rabitq->set_full_code_mode(RABITQ_FULL_CODE_PACKED);
     hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+    hnsw.adaptive_prefix_upper_levels = false;
     try {
         IndexHNSW::add(n, x);
     } catch (...) {
@@ -1122,6 +1123,7 @@ void IndexHNSWRaBitQ::reset() {
     FAISS_THROW_IF_NOT_MSG(
             storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
     hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+    hnsw.adaptive_prefix_upper_levels = false;
 }
 
 void IndexHNSWRaBitQ::set_full_code_mode(uint8_t mode) {
@@ -1130,6 +1132,7 @@ void IndexHNSWRaBitQ::set_full_code_mode(uint8_t mode) {
             storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
     storage_rabitq->set_full_code_mode(mode);
     hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+    hnsw.adaptive_prefix_upper_levels = false;
 }
 
 void IndexHNSWRaBitQ::prepare_nested_adaptive_navigation(float sigma) {
@@ -1138,6 +1141,7 @@ void IndexHNSWRaBitQ::prepare_nested_adaptive_navigation(float sigma) {
             storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
     storage_rabitq->prepare_nested_adaptive_navigation(sigma);
     hnsw.search_method = HNSW::SM_RABITQ_ADAPTIVE;
+    hnsw.adaptive_prefix_upper_levels = true;
 }
 
 void IndexHNSWRaBitQ::permute_entries(const idx_t* perm) {
@@ -1147,6 +1151,7 @@ void IndexHNSWRaBitQ::permute_entries(const idx_t* perm) {
     storage_rabitq->permute_entries(perm);
     hnsw.permute_entries(perm);
     hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+    hnsw.adaptive_prefix_upper_levels = false;
 }
 
 /**************************************************************

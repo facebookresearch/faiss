@@ -1956,6 +1956,7 @@ class HNSW:
     efConstruction: int
     efSearch: int
     search_method: int
+    adaptive_prefix_upper_levels: bool
     hnsw_stats: HNSWStats
     assign_probas: Float32Vector
     cum_nneighbor_per_level: Int32Vector

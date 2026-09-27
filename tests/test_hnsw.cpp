@@ -22,6 +22,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
@@ -302,6 +303,149 @@ TEST(HNSW, Test_IndexHNSW_METRIC_Lp) {
 
     EXPECT_NEAR(distance, 8.0, 1e-5); // Distance should be 8.0 (2^3)
     EXPECT_EQ(label, 0);              // Label should be 0
+}
+
+namespace {
+
+struct RecordingAdaptiveDistanceComputer : faiss::DistanceComputer,
+                                           faiss::DistanceComputerAdaptive {
+    explicit RecordingAdaptiveDistanceComputer(faiss::idx_t target)
+            : target(target) {}
+
+    void set_query(const float*) override {}
+
+    float operator()(faiss::idx_t i) override {
+        events.push_back('E');
+        return exact_distance(i);
+    }
+
+    float symmetric_dis(faiss::idx_t i, faiss::idx_t j) override {
+        return static_cast<float>(std::abs(i - j));
+    }
+
+    int adaptive_batch_size() const override {
+        return 4;
+    }
+
+    void distances_prefix_selected(
+            const int32_t* ids,
+            int count,
+            float* estimates) override {
+        events.push_back('P');
+        for (int lane = 0; lane < count; ++lane) {
+            estimates[lane] = prefix_distance(ids[lane]);
+        }
+    }
+
+    void distances_prefix_bounds(
+            const int32_t* ids,
+            int count,
+            float* estimates,
+            float* lower_bounds) override {
+        events.push_back('B');
+        for (int lane = 0; lane < count; ++lane) {
+            estimates[lane] = prefix_distance(ids[lane]);
+            lower_bounds[lane] = -std::numeric_limits<float>::infinity();
+        }
+    }
+
+    void distances_full_selected(
+            const int32_t* ids,
+            int count,
+            float* distances) override {
+        events.push_back('F');
+        for (int lane = 0; lane < count; ++lane) {
+            distances[lane] = exact_distance(ids[lane]);
+        }
+    }
+
+    void adaptive_reset_stats() override {
+        prefix_count = 0;
+        refine_count = 0;
+    }
+
+    void adaptive_record(int prefix, int refine) override {
+        prefix_count += prefix;
+        refine_count += refine;
+    }
+
+    bool adaptive_should_use_full() const override {
+        return false;
+    }
+
+    uint64_t adaptive_prefix_count() const override {
+        return prefix_count;
+    }
+
+    uint64_t adaptive_refine_count() const override {
+        return refine_count;
+    }
+
+    std::vector<char> events;
+
+   private:
+    float exact_distance(faiss::idx_t i) const {
+        const auto delta = static_cast<float>(i - target);
+        return delta * delta;
+    }
+
+    float prefix_distance(faiss::idx_t i) const {
+        return exact_distance(i);
+    }
+
+    faiss::idx_t target;
+    uint64_t prefix_count = 0;
+    uint64_t refine_count = 0;
+};
+
+} // namespace
+
+TEST(HNSW, AdaptivePrefixUpperLevelsRescoreEntryBeforeLevelZero) {
+    constexpr int d = 1;
+    constexpr int nb = 256;
+    constexpr int k = 5;
+    std::vector<float> database(nb);
+    for (int i = 0; i < nb; ++i) {
+        database[i] = static_cast<float>(i);
+    }
+
+    faiss::IndexHNSWFlat index(d, 4);
+    index.add(nb, database.data());
+    ASSERT_GE(index.hnsw.max_level, 1);
+    index.hnsw.search_method = faiss::HNSW::SM_RABITQ_ADAPTIVE;
+    index.hnsw.adaptive_prefix_upper_levels = true;
+    index.hnsw.efSearch = 16;
+
+    RecordingAdaptiveDistanceComputer distance_computer(nb / 2);
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    using RH = faiss::HeapBlockResultHandler<faiss::HNSW::C>;
+    RH results(1, distances.data(), labels.data(), k);
+    RH::SingleResultHandler result(results);
+    std::unique_ptr<faiss::VisitedTable> visited =
+            faiss::VisitedTable::create(nb);
+
+    result.begin(0);
+    index.hnsw.search(distance_computer, &index, result, *visited, nullptr);
+    result.end();
+
+    const auto first_exact = std::find(
+            distance_computer.events.begin(),
+            distance_computer.events.end(),
+            'E');
+    const auto first_level_zero = std::find(
+            distance_computer.events.begin(),
+            distance_computer.events.end(),
+            'B');
+    ASSERT_NE(first_exact, distance_computer.events.end());
+    ASSERT_NE(first_level_zero, distance_computer.events.end());
+    ASSERT_LT(first_exact, first_level_zero);
+    EXPECT_TRUE(
+            std::all_of(
+                    distance_computer.events.begin(),
+                    first_exact,
+                    [](char event) { return event == 'P'; }));
+    EXPECT_EQ(std::count(first_exact, first_level_zero, 'E'), 1);
 }
 
 TEST(HNSW, Test_IndexHNSWCagra_BaseLevelOnly_RangeSearch) {

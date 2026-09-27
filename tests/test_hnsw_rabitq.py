@@ -865,6 +865,7 @@ class TestHNSWRaBitQ(unittest.TestCase):
         index.add_with_fp32_graph(xb)
         index.prepare_nested_adaptive_navigation()
         self.assertEqual(storage.nested_adaptive_sigma, 2.0)
+        self.assertTrue(index.hnsw.adaptive_prefix_upper_levels)
         index.hnsw.efSearch = 64
 
         original_level = faiss.SIMDConfig.get_level()
@@ -917,6 +918,7 @@ class TestHNSWRaBitQ(unittest.TestCase):
         index.permute_entries(perm)
         self.assertFalse(storage.nested_adaptive_navigation)
         self.assertEqual(index.hnsw.search_method, faiss.HNSW.SM_DEFAULT)
+        self.assertFalse(index.hnsw.adaptive_prefix_upper_levels)
         distances, labels = index.search(xq, 10)
         self.assertTrue(np.all(np.isfinite(distances)))
         self.assertTrue(np.all(labels >= 0))
@@ -928,6 +930,7 @@ class TestHNSWRaBitQ(unittest.TestCase):
         index.reset()
         self.assertFalse(storage.nested_adaptive_navigation)
         self.assertEqual(index.hnsw.search_method, faiss.HNSW.SM_DEFAULT)
+        self.assertFalse(index.hnsw.adaptive_prefix_upper_levels)
         self.assertFalse(index.fp32_graph_built)
 
     def test_nested_lut4_hnsw_serialization(self):

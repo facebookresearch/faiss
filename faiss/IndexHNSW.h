@@ -251,8 +251,9 @@ struct IndexHNSWRaBitQ : IndexHNSW {
      */
     void set_full_code_mode(uint8_t mode);
 
-    /** Build the nested-LUT7 adaptive-bound sidecar and select its staged
-     * level-zero HNSW evaluator. Research mode; sidecar is runtime-only.
+    /** Build the nested-LUT7 adaptive-bound sidecar, use prefix navigation on
+     * upper levels, and select the staged level-zero evaluator. Research mode;
+     * sidecar and navigation policy are runtime-only.
      */
     void prepare_nested_adaptive_navigation(float sigma = 2.0f);
 

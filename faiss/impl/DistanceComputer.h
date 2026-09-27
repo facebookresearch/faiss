@@ -91,6 +91,11 @@ struct DistanceComputerBatch {
 struct DistanceComputerAdaptive {
     virtual int adaptive_batch_size() const = 0;
 
+    virtual void distances_prefix_selected(
+            const int32_t* ids,
+            int count,
+            float* estimates) = 0;
+
     virtual void distances_prefix_bounds(
             const int32_t* ids,
             int count,

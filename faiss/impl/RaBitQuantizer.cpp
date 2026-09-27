@@ -2165,14 +2165,10 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         }
     }
 
-    void distances_prefix_bounds(
+    void distances_prefix_selected(
             const int32_t* ids,
             int count,
-            float* estimates,
-            float* lower_bounds) final {
-        FAISS_THROW_IF_NOT_MSG(
-                adaptive_error_norms != nullptr,
-                "adaptive error-norm sidecar is not prepared");
+            float* estimates) final {
         FAISS_THROW_IF_NOT_MSG(
                 count >= 1 && count <= 16,
                 "adaptive prefix batch must contain 1..16 candidates");
@@ -2183,6 +2179,17 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
         evaluate_current_mode(ids, count, estimates);
         progressive_prefix_only = saved_prefix_only;
         nested_lut3_navigation = saved_mid;
+    }
+
+    void distances_prefix_bounds(
+            const int32_t* ids,
+            int count,
+            float* estimates,
+            float* lower_bounds) final {
+        FAISS_THROW_IF_NOT_MSG(
+                adaptive_error_norms != nullptr,
+                "adaptive error-norm sidecar is not prepared");
+        distances_prefix_selected(ids, count, estimates);
 
         const float projection_multiplier = 2.0f * scale * quantized_norm *
                 adaptive_sigma / std::sqrt(static_cast<float>(d));

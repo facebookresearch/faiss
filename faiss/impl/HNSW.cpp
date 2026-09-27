@@ -774,6 +774,57 @@ HNSWStats greedy_update_nearest_impl(
     }
 }
 
+template <class C>
+HNSWStats greedy_update_nearest_adaptive_prefix_impl(
+        const HNSW& hnsw,
+        DistanceComputerAdaptive& adaptive,
+        int level,
+        storage_idx_t& nearest,
+        float& d_nearest) {
+    HNSWStats stats;
+    const int batch_size = adaptive.adaptive_batch_size();
+    FAISS_ASSERT(batch_size >= 1 && batch_size <= 16);
+
+    for (;;) {
+        const storage_idx_t previous = nearest;
+        size_t begin, end;
+        hnsw.neighbor_range(nearest, level, &begin, &end);
+
+        storage_idx_t ids[16];
+        float estimates[16];
+        int count = 0;
+        auto evaluate = [&] {
+            adaptive.distances_prefix_selected(ids, count, estimates);
+            for (int lane = 0; lane < count; ++lane) {
+                if (C::cmp(d_nearest, estimates[lane])) {
+                    nearest = ids[lane];
+                    d_nearest = estimates[lane];
+                }
+            }
+            stats.ndis += count;
+            count = 0;
+        };
+
+        for (size_t j = begin; j < end; ++j) {
+            const storage_idx_t id = hnsw.neighbors[j];
+            if (id < 0) {
+                break;
+            }
+            ids[count++] = id;
+            if (count == batch_size) {
+                evaluate();
+            }
+        }
+        if (count > 0) {
+            evaluate();
+        }
+        stats.nhops++;
+        if (nearest == previous) {
+            return stats;
+        }
+    }
+}
+
 } // namespace
 
 /// greedily update a nearest vector at a given level
@@ -1935,12 +1986,27 @@ HNSWStats search_impl(
 
     //  greedy search on upper levels
     storage_idx_t nearest = hnsw.entry_point;
-    float d_nearest = qdis(nearest);
+    auto* adaptive_upper = hnsw.search_method == HNSW::SM_RABITQ_ADAPTIVE &&
+                    hnsw.adaptive_prefix_upper_levels
+            ? dynamic_cast<DistanceComputerAdaptive*>(&qdis)
+            : nullptr;
+    float d_nearest;
+    if (adaptive_upper) {
+        adaptive_upper->distances_prefix_selected(&nearest, 1, &d_nearest);
+    } else {
+        d_nearest = qdis(nearest);
+    }
 
     for (int level = hnsw.max_level; level >= 1; level--) {
-        HNSWStats local_stats = greedy_update_nearest_impl<C>(
-                hnsw, qdis, level, nearest, d_nearest);
+        HNSWStats local_stats = adaptive_upper
+                ? greedy_update_nearest_adaptive_prefix_impl<C>(
+                          hnsw, *adaptive_upper, level, nearest, d_nearest)
+                : greedy_update_nearest_impl<C>(
+                          hnsw, qdis, level, nearest, d_nearest);
         stats.combine(local_stats);
+    }
+    if (adaptive_upper) {
+        d_nearest = qdis(nearest);
     }
 
     int ef = std::max(cur_efSearch, k);
