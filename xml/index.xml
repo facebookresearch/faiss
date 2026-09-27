@@ -14454,6 +14454,8 @@
     <member refid="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" kind="function"><name>getmillisecs</name></member>
     <member refid="namespacefaiss_1aa3af5769b0b649f112332a874c64d361" kind="function"><name>get_mem_usage_kb</name></member>
     <member refid="namespacefaiss_1a090355c2725c425a511a367cbfe41262" kind="function"><name>get_cycles</name></member>
+    <member refid="namespacefaiss_1a2000a5e802e769f02a80c59e366c2068" kind="function"><name>set_search_stats_enabled</name></member>
+    <member refid="namespacefaiss_1a963568a90d74e99b1e45be7e84005cf0" kind="function"><name>get_search_stats_enabled</name></member>
     <member refid="namespacefaiss_1ab7c6da3d6915a010d5d3074d93878ce9" kind="function"><name>reflection</name></member>
     <member refid="namespacefaiss_1afb68fe89ad5e948974da1b70d7b4157c" kind="function"><name>matrix_qr</name></member>
     <member refid="namespacefaiss_1ad5827240bc67d6f8a612ba8761b34714" kind="function"><name>ranklist_handle_ties</name></member>
