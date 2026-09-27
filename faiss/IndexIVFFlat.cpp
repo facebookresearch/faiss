@@ -212,6 +212,11 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x) {
     IndexIVFFlat::train(n2, x2.get());
 }
 
+void IndexIVFFlatDedup::reset() {
+    IndexIVFFlat::reset();
+    instances.clear();
+}
+
 void IndexIVFFlatDedup::add_with_ids(
         idx_t na,
         const float* x,
