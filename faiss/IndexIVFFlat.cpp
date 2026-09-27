@@ -335,8 +335,19 @@ void IndexIVFFlatDedup::search_preassigned(
 }
 
 size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_NOT_MSG(
+            direct_map.no(), "direct map remove not implemented");
+
+    const size_t stored_ntotal = invlists->compute_ntotal() + instances.size();
+    FAISS_THROW_IF_NOT_MSG(
+            ntotal >= 0 && static_cast<size_t>(ntotal) == stored_ntotal,
+            "IndexIVFFlatDedup inconsistent ntotal");
+
     std::unordered_map<idx_t, idx_t> replace;
     std::vector<std::pair<idx_t, idx_t>> toadd;
+    // Duplicate ids exist only in instances, so erasing them does not shrink
+    // an inverted list and must be counted separately.
+    size_t n_dup_removed = 0;
     for (auto it = instances.begin(); it != instances.end();) {
         if (sel.is_member(it->first)) {
             // then we erase this entry
@@ -349,10 +360,13 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
                             replace[it->first], it->second);
                     toadd.push_back(new_entry);
                 }
+            } else {
+                n_dup_removed++;
             }
             it = instances.erase(it);
         } else {
             if (sel.is_member(it->second)) {
+                n_dup_removed++;
                 it = instances.erase(it);
             } else {
                 ++it;
@@ -363,9 +377,6 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
     instances.insert(toadd.begin(), toadd.end());
 
     // mostly copied from IndexIVF.cpp
-
-    FAISS_THROW_IF_NOT_MSG(
-            direct_map.no(), "direct map remove not implemented");
 
     std::vector<int64_t> toremove(nlist);
 
@@ -404,8 +415,11 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
             invlists->resize(i, invlists->list_size(i) - toremove[i]);
         }
     }
-    ntotal -= nremove;
-    return nremove;
+    // A replaced representative is removed logically without shrinking its
+    // physical slot. Each key in replace represents one such removal.
+    size_t total_removed = nremove + n_dup_removed + replace.size();
+    ntotal -= total_removed;
+    return total_removed;
 }
 
 void IndexIVFFlatDedup::range_search(

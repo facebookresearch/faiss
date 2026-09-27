@@ -495,6 +495,67 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
+    def test_remove_ids_counts_duplicates(self):
+        d = 8
+        rs = np.random.RandomState(123)
+        xt = rs.rand(200, d).astype("float32")
+        v = rs.rand(d).astype("float32")
+        w = rs.rand(d).astype("float32")
+
+        def build(ids=(10, 11, 12), vectors=None):
+            if vectors is None:
+                vectors = np.vstack([v, v, w])
+            index = faiss.IndexIVFFlatDedup(faiss.IndexFlatL2(d), d, 4)
+            index.nprobe = index.nlist
+            index.train(xt)
+            index.add_with_ids(vectors, np.array(ids, dtype="int64"))
+            return index
+
+        def assert_state(index, ntotal, ninstances, expected_ids):
+            physical = sum(
+                index.invlists.list_size(i) for i in range(index.nlist)
+            )
+            self.assertEqual(index.ntotal, ntotal)
+            self.assertEqual(index.ntotal, physical + ninstances)
+            _, ids = index.search(v.reshape(1, d), index.ntotal + 1)
+            self.assertEqual(set(ids[0]) - {-1}, set(expected_ids))
+
+        cases = (
+            ("duplicate", [11], 1, 2, 0, {10, 12}),
+            ("representative", [10], 1, 2, 0, {11, 12}),
+            ("whole duplicate group", [10, 11], 2, 1, 0, {12}),
+            ("unique", [12], 1, 2, 1, {10, 11}),
+        )
+        for name, ids, nremoved, ntotal, ninstances, expected_ids in cases:
+            with self.subTest(name=name):
+                index = build()
+                self.assertEqual(
+                    index.remove_ids(np.array(ids, dtype="int64")), nremoved
+                )
+                assert_state(index, ntotal, ninstances, expected_ids)
+
+        index = build(
+            ids=(10, 11, 12),
+            vectors=np.vstack([v, v, v]),
+        )
+        self.assertEqual(index.remove_ids(np.array([10], dtype="int64")), 1)
+        assert_state(index, 2, 1, {11, 12})
+        self.assertEqual(index.remove_ids(np.array([11], dtype="int64")), 1)
+        assert_state(index, 1, 0, {12})
+        self.assertEqual(index.remove_ids(np.array([12], dtype="int64")), 1)
+        assert_state(index, 0, 0, set())
+
+        index = build()
+        index.set_direct_map_type(faiss.DirectMap.Hashtable)
+        before = index.search(v.reshape(1, d), 3)
+        with self.assertRaisesRegex(
+            RuntimeError, "direct map remove not implemented"
+        ):
+            index.remove_ids(np.array([11], dtype="int64"))
+        after = index.search(v.reshape(1, d), 3)
+        self.assertEqual(index.ntotal, 3)
+        np.testing.assert_array_equal(before, after)
+
 
 class TestSerialize(unittest.TestCase):
 
