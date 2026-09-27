@@ -563,8 +563,17 @@ void IndexIVF::search_preassigned(
                         key,
                         nlist);
 
-                // don't waste time on empty lists
-                if (invlists->is_empty(key, inverted_list_context)) {
+                // Iterator backends may need to seek or perform remote setup to
+                // create an iterator. Keep the iterator used for the empty
+                // check so that a non-empty list is opened only once.
+                std::unique_ptr<InvertedListsIterator> iterator;
+                if (invlists->use_iterator) {
+                    iterator.reset(
+                            invlists->get_iterator(key, inverted_list_context));
+                    if (!iterator->is_available()) {
+                        return (size_t)0;
+                    }
+                } else if (invlists->is_empty(key, inverted_list_context)) {
                     return (size_t)0;
                 }
 
@@ -573,11 +582,8 @@ void IndexIVF::search_preassigned(
                 nlistv++;
                 if (invlists->use_iterator) {
                     size_t list_size = 0;
-                    std::unique_ptr<InvertedListsIterator> it(
-                            invlists->get_iterator(key, inverted_list_context));
-
                     nheap += scanner->iterate_codes(
-                            it.get(), simi, idxi, k, list_size);
+                            iterator.get(), simi, idxi, k, list_size);
 
                     return list_size;
                 } else {
@@ -897,7 +903,18 @@ void IndexIVF::range_search_preassigned(
                         ik,
                         nlist);
 
-                if (invlists->is_empty(key, inverted_list_context)) {
+                // Reuse the iterator that performed the empty check. The base
+                // InvertedLists::is_empty implementation creates an iterator,
+                // so calling it here and get_iterator below would open every
+                // non-empty list twice.
+                std::unique_ptr<InvertedListsIterator> iterator;
+                if (invlists->use_iterator) {
+                    iterator.reset(
+                            invlists->get_iterator(key, inverted_list_context));
+                    if (!iterator->is_available()) {
+                        return;
+                    }
+                } else if (invlists->is_empty(key, inverted_list_context)) {
                     return;
                 }
 
@@ -905,11 +922,8 @@ void IndexIVF::range_search_preassigned(
                 const size_t scan_cnt0 = qres.stats.scan_cnt;
                 if (invlists->use_iterator) {
                     size_t list_size = 0;
-                    std::unique_ptr<InvertedListsIterator> it(
-                            invlists->get_iterator(key, inverted_list_context));
-
                     scanner->iterate_codes_range(
-                            it.get(), radius, qres, list_size);
+                            iterator.get(), radius, qres, list_size);
                     qres.stats.scan_cnt += list_size;
                 } else {
                     InvertedLists::ScopedCodes scodes(invlists, key);

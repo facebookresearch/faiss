@@ -44,6 +44,7 @@ class TestContext {
     std::unordered_map<faiss::idx_t, size_t> list_nos;
     faiss::idx_t id = 0;
     std::set<size_t> lists_probed;
+    size_t iterator_creations = 0;
 };
 
 // the iterator that iterates over the codes stored in context object
@@ -103,6 +104,7 @@ class TestInvertedLists : public faiss::InvertedLists {
             const override {
         auto testContext = (TestContext*)context;
         testContext->lists_probed.insert(list_no);
+        testContext->iterator_creations++;
         return new TestInvertedListIterator(list_no, testContext);
     }
 
@@ -238,6 +240,8 @@ TEST(IVF, list_context) {
                 &params);
         EXPECT_EQ(nprobe, context.lists_probed.size())
                 << "should probe nprobe lists";
+        EXPECT_EQ(nprobe, context.iterator_creations)
+                << "each non-empty iterator list should be opened once";
 
         // check the result contains the query vector, the probablity of
         // this fail should be low
@@ -253,6 +257,23 @@ TEST(IVF, list_context) {
                 std::find(labels.cbegin(), labels.cend(), query_vector_id) !=
                 labels.cend())
                 << "should return the query vector";
+    }
+    {
+        constexpr size_t nprobe = 10;
+        faiss::SearchParametersIVF params;
+        params.inverted_list_context = &context;
+        params.nprobe = nprobe;
+
+        context.iterator_creations = 0;
+        faiss::RangeSearchResult result(1);
+        index.range_search(
+                1,
+                query_vector.data(),
+                std::numeric_limits<float>::max(),
+                &result,
+                &params);
+        EXPECT_EQ(nprobe, context.iterator_creations)
+                << "range search should open each iterator list once";
     }
 }
 
