@@ -439,7 +439,7 @@ void IndexIVF::search_preassigned(
     IDSelector* sel = params ? params->sel : nullptr;
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
     if (selr) {
-        if (selr->assume_sorted) {
+        if (selr->assume_sorted && !invlists->use_iterator) {
             sel = nullptr; // use special IDSelectorRange processing
         } else {
             selr = nullptr; // use generic processing

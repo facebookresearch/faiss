@@ -40,9 +40,9 @@ class TestContext {
     }
 
     // id to codes map
-    std::unordered_map<faiss::idx_t, std::vector<uint8_t>> codes;
+    std::map<faiss::idx_t, std::vector<uint8_t>> codes;
     // id to list_no map
-    std::unordered_map<faiss::idx_t, size_t> list_nos;
+    std::map<faiss::idx_t, size_t> list_nos;
     faiss::idx_t id = 0;
     std::set<size_t> lists_probed;
 };
@@ -296,6 +296,71 @@ TEST(IVF, list_context) {
                 result.labels + result.lims[1],
                 [&](faiss::idx_t id) { return !selector.is_member(id); });
         EXPECT_EQ(0, rejected_range);
+    }
+}
+
+TEST(IVF, iterator_sorted_range_selector) {
+    constexpr int d = 4;
+    constexpr faiss::idx_t nb = 8;
+    constexpr faiss::idx_t k = nb;
+
+    const std::vector<float> xb = {
+            0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0,
+            4, 0, 0, 0, 5, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0,
+    };
+    const float query[d] = {1, 0, 0, 0};
+
+    for (faiss::MetricType metric :
+         {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+        std::unique_ptr<faiss::Index> quantizer;
+        if (metric == faiss::METRIC_L2) {
+            quantizer = std::make_unique<faiss::IndexFlatL2>(d);
+        } else {
+            quantizer = std::make_unique<faiss::IndexFlatIP>(d);
+        }
+        faiss::IndexIVFFlat index(quantizer.get(), d, 1, metric);
+        index.train(nb, xb.data());
+
+        TestInvertedLists inverted_lists(1, index.code_size);
+        index.replace_invlists(&inverted_lists);
+        TestContext context;
+        const faiss::idx_t list_nos[nb] = {0, 0, 0, 0, 0, 0, 0, 0};
+        index.add_core(nb, xb.data(), nullptr, list_nos, &context);
+
+        auto check_selector = [&](faiss::idx_t imin,
+                                  faiss::idx_t imax,
+                                  size_t expected_count) {
+            faiss::IDSelectorRange selector(imin, imax, true);
+            faiss::SearchParametersIVF params;
+            params.inverted_list_context = &context;
+            params.nprobe = 1;
+            params.sel = &selector;
+
+            std::vector<float> distances(k);
+            std::vector<faiss::idx_t> labels(k);
+            index.search(1, query, k, distances.data(), labels.data(), &params);
+            const size_t knn_count = std::count_if(
+                    labels.begin(), labels.end(), [](faiss::idx_t id) {
+                        return id != -1;
+                    });
+            EXPECT_EQ(expected_count, knn_count);
+            for (faiss::idx_t id : labels) {
+                EXPECT_TRUE(id == -1 || selector.is_member(id));
+            }
+
+            faiss::RangeSearchResult result(1);
+            const float radius = metric == faiss::METRIC_L2
+                    ? std::numeric_limits<float>::max()
+                    : std::numeric_limits<float>::lowest();
+            index.range_search(1, query, radius, &result, &params);
+            EXPECT_EQ(expected_count, result.lims[1]);
+            for (size_t i = 0; i < result.lims[1]; ++i) {
+                EXPECT_TRUE(selector.is_member(result.labels[i]));
+            }
+        };
+
+        check_selector(nb / 2, nb, nb / 2);
+        check_selector(nb, nb + 1, 0);
     }
 }
 
