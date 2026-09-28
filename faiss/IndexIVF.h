@@ -66,8 +66,10 @@ struct Level1Quantizer {
 };
 
 struct SearchParametersIVF : SearchParameters {
-    size_t nprobe = 1;    ///< number of probes at query time
-    size_t max_codes = 0; ///< max nb of codes to visit to do a query
+    size_t nprobe = 1; ///< number of probes at query time
+    /// Max nb of codes to visit to do a query. Supported by generic IVF
+    /// k-NN in parallel_mode 0 and 3, and by range search in parallel_mode 0.
+    size_t max_codes = 0;
 
     /// FastScan k-NN only: maximum number of inverted lists to visit.
     /// 0 means unlimited, i.e. bounded only by nprobe. When set together
