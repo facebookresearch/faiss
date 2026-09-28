@@ -103,6 +103,17 @@ endif()
 option(FAISS_ENABLE_METAL "Enable Metal GPU backend for Apple Silicon."
   ${_FAISS_METAL_DEFAULT})
 option(FAISS_ENABLE_SVS "Enable SVS (Intel(R) Scalable Vector Search) integration." OFF)
+# Routes the two BLAS-dominated exhaustive-search sgemm_ call sites (Flat
+# IP search, ARM_SVE L2 cmax used by e.g. RCQ training) through cblas_sgemm
+# instead of the Fortran sgemm_ entry point. Only the CBLAS entry point
+# reaches OpenBLAS's SME direct-sgemm dispatch gate (interface/gemm.c); the
+# Fortran entry point never does. Strict no-op when OFF: the code compiled
+# in that case is byte-identical to the pre-existing Fortran call. Requires
+# an OpenBLAS build whose gemm.c dispatch conditions are met (RowMajor,
+# NoTrans/NoTrans, tight leading dimensions) to actually improve on the
+# Fortran path; harmless (same result, same or comparable speed) against
+# any BLAS otherwise.
+option(FAISS_ENABLE_SME_CBLAS "Route hot sgemm_ call sites through cblas_sgemm (opt-in, needed to reach OpenBLAS's SME dispatch on SME-capable ARM hardware)." OFF)
 set(FAISS_SVS_RUNTIME_VERSION "v0" CACHE STRING "Version of the SVS runtime API to use")
 set_property(CACHE FAISS_SVS_RUNTIME_VERSION PROPERTY STRINGS "v0")
 

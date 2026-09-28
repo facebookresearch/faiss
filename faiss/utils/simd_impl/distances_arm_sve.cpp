@@ -56,50 +56,7 @@ void cblas_sgemm(
 #endif
 }
 
-#ifdef FAISS_SME_CBLAS_SGEMM
-namespace {
-
-constexpr int kCblasRowMajor = 101;
-constexpr int kCblasNoTrans = 111;
-
-void sme_cblas_sgemm_tn(
-        FINTEGER M,
-        FINTEGER N,
-        FINTEGER K,
-        float alpha,
-        const float* A,
-        FINTEGER ldA,
-        const float* B,
-        FINTEGER ldB,
-        float beta,
-        float* C,
-        FINTEGER ldC) {
-    std::vector<float> At((size_t)K * (size_t)M);
-    for (FINTEGER i = 0; i < M; i++) {
-        const float* row = A + (size_t)i * (size_t)ldA;
-        for (FINTEGER l = 0; l < K; l++) {
-            At[(size_t)l * (size_t)M + i] = row[l];
-        }
-    }
-    cblas_sgemm(
-            kCblasRowMajor,
-            kCblasNoTrans,
-            kCblasNoTrans,
-            (int)N,
-            (int)M,
-            (int)K,
-            alpha,
-            B,
-            (int)ldB,
-            At.data(),
-            (int)M,
-            beta,
-            C,
-            (int)ldC);
-}
-
-} // namespace
-#endif
+#include <faiss/utils/simd_impl/sme_cblas_sgemm.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::ARM_SVE
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
@@ -843,6 +800,9 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
+#ifdef FAISS_SME_CBLAS_SGEMM
+    std::vector<float> sme_scratch;
+#endif
 
     fvec_norms_L2sqr(x_norms.get(), x, d, nx);
 
@@ -882,7 +842,8 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
                         di,
                         zero,
                         ip_block.get(),
-                        nyi);
+                        nyi,
+                        sme_scratch);
 #else
                 sgemm_("Transpose",
                        "Not transpose",
