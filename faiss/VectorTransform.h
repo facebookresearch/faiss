@@ -144,6 +144,9 @@ struct HadamardRotation : VectorTransform {
 
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
 
+    /// Apply the inverse transform when d_in == d_out.
+    void reverse_transform(idx_t n, const float* xt, float* x) const override;
+
     void check_identical(const VectorTransform& other) const override;
 
     HadamardRotation() {}

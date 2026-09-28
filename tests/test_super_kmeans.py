@@ -53,6 +53,55 @@ class SuperKMeansTest(unittest.TestCase):
         v_final = v_stats.at(v_stats.size() - 1).obj
         self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
 
+    def test_spherical_objective_close_to_vanilla_spherical(self):
+        # With cp.spherical=true, SuperKMeans unit-normalizes centroids so the
+        # L2 assignment it computes is equivalent to inner-product assignment.
+        # The final objective must track vanilla spherical Clustering.
+        d, k, n = 64, 16, 2000
+        x = SyntheticDataset(d, n, 0, 0).get_train()
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 42
+        p.niter = 10
+        p.spherical = True
+        sc = faiss.SuperKMeans(d, k, p)
+        sc.train(x)
+
+        quant = faiss.IndexFlatL2(d)
+        vanilla = faiss.Clustering(d, k)
+        vanilla.seed = 42
+        vanilla.niter = 10
+        vanilla.spherical = True
+        vanilla.train(x, quant)
+
+        sc_final = sc.iteration_stats.at(sc.iteration_stats.size() - 1).obj
+        v_stats = vanilla.iteration_stats
+        v_final = v_stats.at(v_stats.size() - 1).obj
+        self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
+
+    def test_spherical_produces_unit_centroids(self):
+        d, k, n = 64, 16, 2000
+        x = SyntheticDataset(d, n, 0, 0).get_train()
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 42
+        p.niter = 10
+        p.spherical = True
+        sc = faiss.SuperKMeans(d, k, p)
+        sc.train(x)
+
+        centroids = faiss.vector_to_array(sc.centroids).reshape(k, d)
+        norms = np.linalg.norm(centroids, axis=1)
+        np.testing.assert_allclose(norms, 1.0, atol=1e-4)
+
+    def test_use_super_kmeans_field_is_inherited(self):
+        # use_super_kmeans lives on ClusteringParameters and is inherited by
+        # SuperKMeansParameters; it must be settable from Python.
+        p = faiss.SuperKMeansParameters()
+        self.assertFalse(p.use_super_kmeans)
+        p.use_super_kmeans = True
+        self.assertTrue(p.use_super_kmeans)
+
     def test_pruning_rate_in_expected_range(self):
         # The 10-d intrinsic manifold of SyntheticDataset gives ADSampling
         # the assigned-vs-other distance gap it needs to prune effectively.

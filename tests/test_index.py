@@ -137,6 +137,32 @@ class TestIndexFlat(unittest.TestCase):
                     lims, np.zeros(1, dtype=np.int64)
                 )
 
+    def test_empty_index_with_blas(self):
+        # The threshold is what makes this a regression test: it puts the
+        # search in a configuration that would otherwise select the BLAS path,
+        # which returns early on an empty database without ever initializing
+        # the result handler. k covers the Top1, heap, and reservoir handlers.
+        saved_threshold = faiss.cvar.distance_compute_blas_threshold
+        faiss.cvar.distance_compute_blas_threshold = 1
+        try:
+            xq = np.arange(5, dtype="float32").reshape(-1, 1)
+            for metric_type in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+                expected_distance = (
+                    np.finfo("float32").max
+                    if metric_type == faiss.METRIC_L2
+                    else np.finfo("float32").min
+                )
+                index = faiss.IndexFlat(1, metric_type)
+                for k in (1, 10, 150):
+                    with self.subTest(metric_type=metric_type, k=k):
+                        D = np.full((len(xq), k), 42, dtype="float32")
+                        I = np.full((len(xq), k), 99, dtype="int64")
+                        index.search(xq, k, D=D, I=I)
+                        np.testing.assert_array_equal(D, expected_distance)
+                        np.testing.assert_array_equal(I, -1)
+        finally:
+            faiss.cvar.distance_compute_blas_threshold = saved_threshold
+
 
 @for_all_simd_levels
 class TestDbParallelSearch(unittest.TestCase):

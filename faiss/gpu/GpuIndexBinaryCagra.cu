@@ -78,6 +78,13 @@ std::shared_ptr<GpuResources> GpuIndexBinaryCagra::getResources() {
 }
 
 void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
+    // The config is shared with the float index; there is no binary
+    // multi-GPU build, so reject rather than silently ignoring the request.
+    FAISS_THROW_IF_MSG(
+            cagraConfig_.devices.size() > 1,
+            "binary CAGRA has no multi-GPU build; "
+            "GpuIndexCagraConfig::devices must name at most one device");
+
     DeviceScope scope(cagraConfig_.device);
     if (this->is_trained) {
         FAISS_ASSERT(index_);

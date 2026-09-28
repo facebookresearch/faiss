@@ -316,7 +316,7 @@ TEST(TestHamming, test_hamming_knn) {
         ASSERT_EQ(dist_ham_knn, *true_bit_distances) << assert_str.str();
     }
 
-    for (auto code_size : {8, 16, 24, 32}) {
+    for (auto code_size : {8, 16, 24, 32, 64}) {
         std::stringstream assert_str = get_correct_hamming_example(
                 na,
                 nb,
@@ -331,5 +331,44 @@ TEST(TestHamming, test_hamming_knn) {
         faiss::hammings(
                 a->data(), b->data(), na, nb, code_size, dist_gen.data());
         EXPECT_EQ(dist_gen, *true_bit_distances) << assert_str.str();
+    }
+}
+
+TEST(TestHamming, test_hammings_ragged_code_size) {
+    std::default_random_engine rng(123);
+    std::uniform_int_distribution<int32_t> uniform(0, 255);
+
+    const size_t na = 3;
+    const size_t nb = 7;
+
+    for (auto code_size : {1, 2, 5, 12, 20, 33}) {
+        std::vector<uint8_t> a(na * code_size);
+        std::vector<uint8_t> b(nb * code_size);
+        for (auto& v : a) {
+            v = uniform(rng);
+        }
+        for (auto& v : b) {
+            v = uniform(rng);
+        }
+
+        // Reference: byte-wise popcount of the XOR, independent of faiss.
+        std::vector<hamdis_t> expected(na * nb);
+        for (size_t i = 0; i < na; ++i) {
+            for (size_t j = 0; j < nb; ++j) {
+                int d = 0;
+                for (int c = 0; c < code_size; ++c) {
+                    uint8_t x = a[i * code_size + c] ^ b[j * code_size + c];
+                    while (x) {
+                        d += x & 1;
+                        x >>= 1;
+                    }
+                }
+                expected[i * nb + j] = d;
+            }
+        }
+
+        std::vector<hamdis_t> dis(na * nb);
+        faiss::hammings(a.data(), b.data(), na, nb, code_size, dis.data());
+        EXPECT_EQ(dis, expected) << "code_size = " << code_size;
     }
 }

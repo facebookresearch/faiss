@@ -775,8 +775,8 @@ class Test_IO_HNSW(unittest.TestCase):
         index = faiss.IndexHNSWFlat(d, 16)
         index.train(self.xt)
         index.add(self.xb)
-        # Note: RaBitQ lacks symmetric_distance, so it can be used for
-        # `search()`, but not `add()`.
+        # Build the graph with Flat storage, then verify that swapping in an
+        # equivalent RaBitQ storage preserves useful search results.
         I_flat = index.storage.assign(self.xq, 10)
         I_hnsw_flat = index.assign(self.xq, 10)
         index.storage = faiss.IndexRaBitQ(d)

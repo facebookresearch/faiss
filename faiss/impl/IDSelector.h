@@ -23,6 +23,50 @@ struct IDSelector {
     virtual ~IDSelector() {}
 };
 
+/** Scan context handed to IDSelectorWithContext::is_member_with_context: the
+ * contiguous id block being scanned and the position of the id under test. */
+struct IDScanContext {
+    /// the contiguous block of ids being scanned
+    const idx_t* ids;
+    /// number of entries in `ids`
+    size_t list_size;
+    /// index of the tested id within `ids` (i.e. ids[j] == id)
+    size_t j;
+};
+
+/** IDSelector that also receives the surrounding scan context on each
+ * membership test, letting an implementation exploit locality across a scan
+ * (for example, prefetching data for an entry it will be asked about soon).
+ * The policy is entirely up to the implementation. */
+struct IDSelectorWithContext : IDSelector {
+    virtual bool is_member_with_context(idx_t id, const IDScanContext& ctx)
+            const = 0;
+};
+
+/** Routes each per-candidate membership test to is_member_with_context() when
+ * the selector implements IDSelectorWithContext, else to plain is_member().
+ * Construct one per inverted-list scan: the dynamic_cast is the only RTTI cost
+ * and the per-candidate cost is a single predicted branch (cf. the
+ * IDSelectorRange dynamic_cast in IndexIVF.cpp). The scan context is only
+ * meaningful when the scan exposes a real id array (i.e. !store_pairs); when
+ * store_pairs the context path is disabled and every test falls back to
+ * is_member. */
+struct IDSelectorContextDispatch {
+    const IDSelector* sel;
+    const IDSelectorWithContext* ctx_sel;
+
+    IDSelectorContextDispatch(const IDSelector* sel, bool store_pairs)
+            : sel(sel),
+              ctx_sel((sel != nullptr && !store_pairs)
+                              ? dynamic_cast<const IDSelectorWithContext*>(sel)
+                              : nullptr) {}
+
+    bool is_member(idx_t id, const IDScanContext& ctx) const {
+        return ctx_sel ? ctx_sel->is_member_with_context(id, ctx)
+                       : sel->is_member(id);
+    }
+};
+
 /** ids between [imin, imax) */
 struct IDSelectorRange : IDSelector {
     idx_t imin, imax;

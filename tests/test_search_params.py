@@ -302,6 +302,65 @@ class TestSelector(unittest.TestCase):
     def test_HSNW(self):
         self.do_test_id_selector_weak("HNSW")
 
+    def make_line_index(self, metric=faiss.METRIC_L2):
+        """build an HNSW index over 4 points on a line"""
+        xb = np.array(
+            [[0.0, 0.0], [10.0, 0.0], [20.0, 0.0], [30.0, 0.0]],
+            dtype=np.float32,
+        )
+        index = faiss.IndexHNSWFlat(2, 4, metric)
+        index.hnsw.efConstruction = 40
+        index.add(xb)
+        return xb, index
+
+    def unbounded_params(self, ef_search, sel):
+        return faiss.SearchParametersHNSW(
+            efSearch=ef_search, bounded_queue=False, sel=sel
+        )
+
+    def test_HNSW_unbounded_queue_id_selector(self):
+        cases = (
+            (faiss.METRIC_L2, [[0.0, 0.0]], 100.0),
+            (faiss.METRIC_INNER_PRODUCT, [[1.0, 0.0]], 10.0),
+        )
+        for metric, query, expected_distance in cases:
+            _, index = self.make_line_index(metric)
+            xq = np.array(query, dtype=np.float32)
+
+            for ef_search in (1, 40):
+                with self.subTest(metric=metric, ef_search=ef_search):
+                    params = self.unbounded_params(
+                        ef_search, faiss.IDSelectorRange(1, 2)
+                    )
+                    D, I = index.search(xq, 1, params=params)
+
+                    np.testing.assert_array_equal(I, [[1]])
+                    np.testing.assert_array_equal(D, [[expected_distance]])
+
+    def test_HNSW_unbounded_queue_selector_rejects_all(self):
+        _, index = self.make_line_index()
+        params = self.unbounded_params(40, faiss.IDSelectorRange(4, 4))
+        xq = np.zeros((1, 2), dtype=np.float32)
+        _, I = index.search(xq, 1, params=params)
+        np.testing.assert_array_equal(I, [[-1]])
+
+    def test_HNSW_unbounded_queue_rejected_starting_node(self):
+        xb, index = self.make_line_index()
+        starting_id = index.hnsw.entry_point
+        allowed_id = (starting_id + 1) % len(xb)
+        params = self.unbounded_params(
+            1, faiss.IDSelectorRange(allowed_id, allowed_id + 1)
+        )
+
+        # The query coincides with the entry point (distance zero), so the
+        # upper-level search keeps it as the level-0 starting node.
+        xq = xb[starting_id : starting_id + 1]
+        expected_distance = np.sum((xq[0] - xb[allowed_id]) ** 2)
+        D, I = index.search(xq, 1, params=params)
+
+        np.testing.assert_array_equal(I, [[allowed_id]])
+        np.testing.assert_array_equal(D, [[expected_distance]])
+
     def test_idmap(self):
         ds = datasets.SyntheticDataset(32, 100, 100, 20)
         rs = np.random.RandomState(123)
@@ -363,6 +422,35 @@ class TestSelector(unittest.TestCase):
         np.testing.assert_array_equal(lims_ref, lims)
         np.testing.assert_array_equal(sorted(I_ref), sorted(I))
         np.testing.assert_array_equal(sorted(D_ref), sorted(D))
+
+    def test_idmap_range_ivf_params(self):
+        quantizer = faiss.IndexFlatL2(1)
+        quantizer.add(np.array([[0.0], [100.0]], dtype="float32"))
+        base = faiss.IndexIVFFlat(quantizer, 1, 2, faiss.METRIC_L2)
+        base.nprobe = 1
+        index = faiss.IndexIDMap(base)
+
+        index.add_with_ids(
+            np.array([[0.0], [100.0]], dtype="float32"),
+            np.array([10, 20], dtype="int64"),
+        )
+
+        params = faiss.SearchParametersIVF(nprobe=2)
+        params.sel = faiss.IDSelectorBatch(
+            np.array([10, 20], dtype="int64")
+        )
+        lims, distances, labels = index.range_search(
+            np.array([[0.0]], dtype="float32"),
+            10001.0,
+            params=params,
+        )
+        order = np.argsort(labels)
+        labels = labels[order]
+        distances = distances[order]
+
+        np.testing.assert_array_equal(lims, [0, 2])
+        np.testing.assert_array_equal(distances, [0.0, 10000.0])
+        np.testing.assert_array_equal(labels, [10, 20])
 
     def test_bounds(self):
         # https://github.com/facebookresearch/faiss/issues/3156
