@@ -1568,6 +1568,8 @@ void reservePriorityQueue(
 /// Templated body of `search_from_candidate_unbounded`. The choice of
 /// max-heap vs min-heap for both `top_candidates` and `candidates` is
 /// derived from C via `TopCandidatesQueue` / `CandidatesQueue`.
+/// `sel` filters the results only. The traversal still visits the rejected
+/// nodes.
 template <typename VTType, class C>
 TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         const HNSW& hnsw,
@@ -1575,16 +1577,48 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         DistanceComputer& qdis,
         int ef,
         VTType& vt,
-        HNSWStats& stats) {
+        HNSWStats& stats,
+        const IDSelector* sel) {
+    const auto max_size = static_cast<size_t>(ef);
+
     int ndis = 0;
+    // `top_candidates` bounds the traversal and keeps the nodes that `sel`
+    // rejects, because a rejected node is still a valid hop towards an
+    // accepted one.
     TopCandidatesQueue<C> top_candidates;
     reservePriorityQueue(top_candidates, ef);
+
+    // `selected_candidates` keeps only the accepted nodes, and
+    // the function returns it instead when `sel` is set.
+    TopCandidatesQueue<C> selected_candidates;
+    if (sel) {
+        reservePriorityQueue(selected_candidates, ef);
+    }
 
     CandidatesQueue<C> candidates;
     reservePriorityQueue(candidates, ef);
 
+    // Adds a node to a queue of the best `max_size` nodes. The size test
+    // comes first because `top()` needs a queue that is not empty.
+    auto push_bounded = [max_size](
+                                TopCandidatesQueue<C>& queue,
+                                const float dis,
+                                const size_t idx) {
+        if (queue.size() >= max_size && !C::cmp(queue.top().first, dis)) {
+            return false;
+        }
+        queue.emplace(dis, idx);
+        if (queue.size() > max_size) {
+            queue.pop();
+        }
+        return true;
+    };
+
     top_candidates.push(node);
     candidates.push(node);
+    if (sel && sel->is_member(node.second)) {
+        selected_candidates.push(node);
+    }
 
     vt.set(node.second);
 
@@ -1619,14 +1653,11 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         size_t saved_j[4];
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
-            if (C::cmp(top_candidates.top().first, dis) ||
-                top_candidates.size() < static_cast<size_t>(ef)) {
+            if (sel && sel->is_member(idx)) {
+                push_bounded(selected_candidates, dis, idx);
+            }
+            if (push_bounded(top_candidates, dis, idx)) {
                 candidates.emplace(dis, idx);
-                top_candidates.emplace(dis, idx);
-
-                if (top_candidates.size() > static_cast<size_t>(ef)) {
-                    top_candidates.pop();
-                }
             }
         };
 
@@ -1674,6 +1705,9 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     }
     stats.ndis += ndis;
 
+    if (sel) {
+        return selected_candidates;
+    }
     return top_candidates;
 }
 
@@ -1693,7 +1727,7 @@ std::priority_queue<HNSW::Node> hnsw_detail::search_from_candidate_unbounded(
     using C = HNSW::C_distance;
     auto call = [&]<typename VTType>(VTType& vt_concrete) {
         return search_from_candidate_unbounded_fixVT<VTType, C>(
-                hnsw, node, qdis, ef, vt_concrete, stats);
+                hnsw, node, qdis, ef, vt_concrete, stats, nullptr);
     };
     if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(vt)) {
         return call(*vtv);
@@ -1792,6 +1826,7 @@ HNSWStats search_impl(
                 hnsw.search_method == HNSW::SM_DEFAULT ||
                         hnsw.search_method == HNSW::SM_PANORAMA,
                 "invalid HNSW search method");
+        const IDSelector* sel = params ? params->sel : nullptr;
         auto call = [&]<typename VTType>(VTType& vt_concrete) {
             return search_from_candidate_unbounded_fixVT<VTType, C>(
                     hnsw,
@@ -1799,7 +1834,8 @@ HNSWStats search_impl(
                     qdis,
                     ef,
                     vt_concrete,
-                    stats);
+                    stats,
+                    sel);
         };
         TopCandidatesQueue<C> top_candidates;
         if (VisitedTableVector* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {

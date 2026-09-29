@@ -318,7 +318,7 @@ struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     Quantizer8bitDirect(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
-    void encode_vector(const float* x, uint8_t* code) const final {
+    void encode_vector(const float* x, uint8_t* code) const override {
         for (size_t i = 0; i < d; i++) {
             code[i] = (uint8_t)x[i];
         }

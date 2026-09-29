@@ -32,8 +32,10 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -41,6 +43,13 @@ using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
 HNSWStats hnsw_stats;
+
+void HNSWStats::combine_atomic(const HNSWStats& other) {
+    detail::atomic_fetch_add_relaxed(n1, other.n1);
+    detail::atomic_fetch_add_relaxed(n2, other.n2);
+    detail::atomic_fetch_add_relaxed(ndis, other.ndis);
+    detail::atomic_fetch_add_relaxed(nhops, other.nhops);
+}
 
 /**************************************************************
  * add / search blocks of descriptors
@@ -487,8 +496,10 @@ void hnsw_search(
         InterruptCallback::check();
     }
 
-    hnsw_stats.combine({n1, n2, ndis, nhops});
-    rabitq_stats.add({n_rabitq_1bit, n_rabitq_refine});
+    if (get_search_stats_enabled()) {
+        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        rabitq_stats.add_atomic({n_rabitq_1bit, n_rabitq_refine});
+    }
 }
 
 } // anonymous namespace
@@ -699,10 +710,9 @@ void IndexHNSW::search_level_0(
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
             }
-#pragma omp critical
-            {
-                hnsw_stats.combine(search_stats);
-                rabitq_stats.add(rq_search_stats);
+            if (get_search_stats_enabled()) {
+                hnsw_stats.combine_atomic(search_stats);
+                rabitq_stats.add_atomic(rq_search_stats);
             }
         }
         omp_rethrow_if_exception(ex);
@@ -1230,7 +1240,9 @@ void IndexHNSW2Level::search(
         }
         omp_rethrow_if_exception(ex);
 
-        hnsw_stats.combine({n1, n2, ndis, nhops});
+        if (get_search_stats_enabled()) {
+            hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        }
     }
 }
 
@@ -1432,7 +1444,9 @@ void IndexHNSWCagra::range_search(
         result->do_allocation();
         pres.copy_result();
 
-        hnsw_stats.combine({n1, n2, ndis, nhops});
+        if (get_search_stats_enabled()) {
+            hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        }
     };
 
     if (is_similarity_metric(metric_type)) {

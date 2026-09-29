@@ -14,6 +14,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/pq_code_distance/IVFPQ_QueryTables.h>
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -411,10 +412,8 @@ struct IVFPQScannerT : QueryTables {
             }
         }
 
-#pragma omp critical
-        {
-            indexIVFPQ_stats.n_hamming_pass += n_hamming_pass;
-        }
+        detail::atomic_fetch_add_relaxed(
+                indexIVFPQ_stats.n_hamming_pass, n_hamming_pass);
     }
 
     template <class SearchResultType>

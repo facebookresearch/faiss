@@ -217,6 +217,10 @@ class TestHNSW(unittest.TestCase):
         index = faiss.IndexHNSWFlat(d, 16)
         index.add(self.xb)
         stats = faiss.cvar.hnsw_stats
+        self.addCleanup(
+            faiss.set_search_stats_enabled, faiss.get_search_stats_enabled()
+        )
+        faiss.set_search_stats_enabled(True)
         stats.reset()
         Dhnsw, Ihnsw = index.search(self.xq, 1)
         self.assertGreater(stats.ndis, len(self.xq) * index.hnsw.efSearch)

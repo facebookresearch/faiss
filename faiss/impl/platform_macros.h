@@ -8,6 +8,7 @@
 #pragma once
 
 // basic int types and size_t
+#include <atomic>
 #include <cstdint>
 #include <cstdio>
 
@@ -145,6 +146,21 @@ inline int __builtin_clzll(uint64_t x) {
 #else
 #define FAISS_DEPRECATED(msg)
 #endif // GCC or Clang
+
+namespace faiss {
+namespace detail {
+
+template <typename T>
+inline void atomic_fetch_add_relaxed(T& target, T value) {
+#if defined(__cpp_lib_atomic_ref) && __cpp_lib_atomic_ref >= 201806L
+    std::atomic_ref<T>(target).fetch_add(value, std::memory_order_relaxed);
+#else
+    __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+#endif
+}
+
+} // namespace detail
+} // namespace faiss
 
 // Localized enablement of imprecise floating point operations
 // You need to use all 3 macros to cover all compilers.
