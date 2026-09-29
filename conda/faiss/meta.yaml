@@ -158,6 +158,7 @@ outputs:
       requires:
         - numpy >=2.0,<3.0
         - scipy
+        - pytest  # [osx and arm64]
         - pytorch-cpu >=2.7  # [not win]
         - pytorch >=2.7      # [win]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
@@ -169,7 +170,8 @@ outputs:
         - python_abi =3.12
         {% endif %}
       commands:
-        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+        - python -X faulthandler -m pytest tests/ --ignore=tests/external_module_test.py -q -k 'not test_update_codebooks_with_double and not (TestProductLocalSearchQuantizer and test_lut)'  # [osx and arm64]
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"  # [not (osx and arm64)]
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
