@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -368,6 +376,10 @@ void pairwise_indexed_inner_product(
 /***************************************************************************
  * KNN functions
  ***************************************************************************/
+
+// heuristic to select if blas should be used to compute distances
+template <SIMDLevel>
+bool should_use_blas(size_t nx, size_t ny, size_t d);
 
 // threshold on nx * d above which we switch to BLAS to compute distances
 FAISS_API extern int distance_compute_blas_threshold;
