@@ -20,6 +20,7 @@ __global__ void ivfInterleavedScan2(
         Tensor<float, 3, true> distanceIn,
         Tensor<idx_t, 3, true> indicesIn,
         Tensor<idx_t, 2, true> listIds,
+        idx_t* listLengths,
         int k,
         void** listIndices,
         IndicesOptions opt,
@@ -46,7 +47,7 @@ __global__ void ivfInterleavedScan2(
                 float,
                 uint32_t,
                 false,
-                Comparator<float>,
+                TieBreakComparator<float>,
                 NumWarpQ,
                 NumThreadQ,
                 ThreadsPerBlock>
@@ -74,9 +75,10 @@ __global__ void ivfInterleavedScan2(
             // together into a uint32_t
             uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-            // The IDs reported from the list may be -1, if a particular IVF
-            // list doesn't even have k entries in it
-            if (listIds[queryId][curProbe] != -1) {
+            // Reject pass-1 padding: a short list leaves slots the
+            // tie-break can now select.
+            idx_t listId = listIds[queryId][curProbe];
+            if (listId != -1 && (idx_t)curK < listLengths[listId]) {
                 // Adjust the value we are selecting based on the sorting order
                 heap.addThreadQ(distanceBase[i] * adj, index);
             }
@@ -91,7 +93,7 @@ __global__ void ivfInterleavedScan2(
             uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
             idx_t listId = listIds[queryId][curProbe];
-            if (listId != -1) {
+            if (listId != -1 && (idx_t)curK < listLengths[listId]) {
                 heap.addThreadQ(distanceBase[i] * adj, index);
             }
         }
@@ -114,14 +116,13 @@ __global__ void ivfInterleavedScan2(
                 uint32_t curK = packedIndex & 0xffff;
 
                 idx_t listId = listIds[queryId][curProbe];
-                idx_t listOffset = indicesIn[queryId][curProbe][curK];
+                idx_t stored = indicesIn[queryId][curProbe][curK];
 
-                if (opt == INDICES_32_BIT) {
-                    index = (idx_t)((int*)listIndices[listId])[listOffset];
-                } else if (opt == INDICES_64_BIT) {
-                    index = ((idx_t*)listIndices[listId])[listOffset];
+                // Pass 1 already resolved the user id. See `ivfSelectionKey`.
+                if (opt == INDICES_32_BIT || opt == INDICES_64_BIT) {
+                    index = stored;
                 } else {
-                    index = (listId << 32 | (idx_t)listOffset);
+                    index = (listId << 32 | (idx_t)stored);
                 }
             }
 
@@ -134,6 +135,7 @@ void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
+        DeviceVector<idx_t>& listLengths,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
@@ -147,6 +149,7 @@ void runIVFInterleavedScan2(
                     distanceIn,                              \
                     indicesIn,                               \
                     listIds,                                 \
+                    listLengths.data(),                      \
                     k,                                       \
                     listIndices.data(),                      \
                     indicesOptions,                          \
