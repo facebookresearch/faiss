@@ -1,10 +1,12 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
+# Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 import argparse
 import os
+import subprocess
 import sys
 import time
 import json
@@ -607,19 +609,20 @@ def main():
 
     print("args:", args)
 
-    os.system(
-        'echo -n "nb processors "; '
-        "cat /proc/cpuinfo | grep ^processor | wc -l; "
-        'cat /proc/cpuinfo | grep ^"model name" | tail -1'
+    lscpu = subprocess.check_output(["lscpu"], text=True)
+    cpu_model = next(
+        line.split(":", 1)[1].strip()
+        for line in lscpu.splitlines()
+        if line.lower().startswith("model name:")
     )
+    print("nb processors", os.cpu_count())
+    print("model name", cpu_model)
 
     # object to collect results
     res = argparse.Namespace()
     res.args = args.__dict__
 
-    res.cpu_model = [
-        l for l in open("/proc/cpuinfo", "r") if "model name" in l
-    ][0]
+    res.cpu_model = cpu_model
 
     print("Load dataset")
 

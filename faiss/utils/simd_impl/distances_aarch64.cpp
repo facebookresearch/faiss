@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +12,7 @@
 
 #include <arm_neon.h>
 #include <limits>
+#include <omp.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::ARM_NEON
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
@@ -20,6 +22,19 @@
 #include <faiss/utils/simd_impl/distances_simdlib256.h>
 
 namespace faiss {
+
+template <>
+bool should_use_blas<SIMDLevel::ARM_NEON>(
+        size_t nx,
+        size_t ny,
+        size_t d) {
+    if (omp_in_parallel()) {
+        return d >= 64 && nx >= 4 &&
+                nx * d * ny >= (size_t{1} << 22);
+    }
+
+    return should_use_blas<SIMDLevel::NONE>(nx, ny, d);
+}
 
 template <>
 void fvec_madd<SIMDLevel::ARM_NEON>(

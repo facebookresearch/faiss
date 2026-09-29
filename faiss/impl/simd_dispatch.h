@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,19 +30,15 @@ namespace faiss {
 
 constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 
-constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
+constexpr int AVAILABLE_SIMD_LEVELS_NEON = AVAILABLE_SIMD_LEVELS_NONE |
+        (1 << int(SIMDLevel::ARM_NEON));
+
+constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NEON |
+        (1 << int(SIMDLevel::AVX2));
 
 // BASE: AVX2_NEON + AVX512 + RISCV_RVV
 constexpr int AVAILABLE_SIMD_LEVELS_BASE = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
         (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
-
-// BASE_NO_AVX512: BASE minus AVX512, for functions implemented at NONE,
-// AVX2, ARM_NEON and RISCV_RVV but with no AVX512 specialization. AVX512
-// machines fall through to AVX2, while RISC-V dispatches directly to the
-// native vector-length-agnostic RVV kernels.
-constexpr int AVAILABLE_SIMD_LEVELS_BASE_NO_AVX512 =
-        AVAILABLE_SIMD_LEVELS_BASE & ~(1 << int(SIMDLevel::AVX512));
 
 // BASE_WITH_VPOPCNT: BASE + AVX512_VPOPCNT, for kernels that need only
 // VPOPCNTDQ on top of baseline AVX-512 (Ice Lake, Zen 4, Zen 5).
