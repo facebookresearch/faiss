@@ -14,3 +14,7 @@
 using faiss::gpu::GpuIndexConfig;
 
 DEFINE_GETTER(GpuIndexConfig, int, device)
+
+int faiss_GpuIndex_getDevice(const FaissGpuIndex* index) {
+    return reinterpret_cast<const faiss::gpu::GpuIndex*>(index)->getDevice();
+}
