@@ -100,6 +100,10 @@ int faiss_IndexRefineFlat_new(
 FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
 FAISS_DECLARE_INDEX_DOWNCAST(IndexRefineFlat)
 
+/// Get a pointer to the base index.
+/// The returned pointer is borrowed, do not free.
+FaissIndex* faiss_IndexRefineFlat_base_index(FaissIndexRefineFlat* index);
+
 FAISS_DECLARE_GETTER_SETTER(IndexRefineFlat, int, own_fields)
 
 /// factor between k requested in search and the k requested from
