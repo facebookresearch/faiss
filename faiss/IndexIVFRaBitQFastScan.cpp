@@ -22,6 +22,7 @@
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <faiss/utils/utils.h>
 
@@ -630,6 +631,7 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
         std::vector<float> centroid_buf(d);
         std::vector<float> all_mins(cur_nprobe * M);
         std::vector<float> probe_b(cur_nprobe);
+        std::vector<float> probe_span(cur_nprobe);
 
 #pragma omp for schedule(dynamic)
         for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
@@ -686,13 +688,18 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
                                 span_j += span;
                             }
                             probe_b[j2] = b_j;
-                            glob_max_dis = std::max(glob_max_dis, span_j);
+                            probe_span[j2] = span_j;
                             glob_b = std::min(glob_b, b_j);
                         }
 
-                        a = std::min(
-                                255.0f / glob_max_span,
-                                65535.0f / glob_max_dis);
+                        for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                            glob_max_dis = std::max(
+                                    glob_max_dis,
+                                    probe_span[j2] + probe_b[j2] - glob_b);
+                        }
+
+                        a = quantize_lut::fastscan_lut_scale(
+                                glob_max_span, glob_max_dis, M + 1);
 
                         // Second pass: quantize LUT and compute biasq.
                         uint8_t* out_base =
@@ -952,7 +959,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                         b += mn;
                     }
 
-                    a = std::min(255.0f / max_span, 65535.0f / max_dis);
+                    a = quantize_lut::fastscan_lut_scale(max_span, max_dis, M);
                     for (size_t m = 0; m < M; m++) {
                         const float* tab = lut_float.get() + m * ksub;
                         rabitq::lut_quantize_16_to_uint8<SL>(

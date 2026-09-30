@@ -12,6 +12,7 @@
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/utils/distances.h>
@@ -26,6 +27,11 @@
 namespace faiss {
 
 RaBitQStats rabitq_stats;
+
+void RaBitQStats::add_atomic(const RaBitQStats& other) {
+    detail::atomic_fetch_add_relaxed(n_1bit, other.n_1bit);
+    detail::atomic_fetch_add_relaxed(n_refine, other.n_refine);
+}
 
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
@@ -721,12 +727,10 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
     // call the SIMD-specialized rabitq functions directly (no per-call
     // with_simd_level overhead).
     //
-    // Use A0_SPR (which includes AVX512_SPR) so that on Sapphire Rapids
-    // and later x86 microarchitectures the VPOPCNTDQ-based RaBitQ
-    // specialization in rabitq_avx512_spr.cpp is selected. On AVX-512
-    // CPUs without VPOPCNTDQ, dispatch falls through to the AVX512
-    // specialization in rabitq_avx512.cpp.
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    // VPOPCNT rather than SPR: Ice Lake and Zen 4 have VPOPCNTDQ without the
+    // rest of the SPR feature set. Below it, dispatch falls through to
+    // rabitq_avx512.cpp.
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_VPOPCNT>(
             [&]<SIMDLevel SL>() -> FlatCodesDistanceComputer* {
                 if (qb == 0) {
                     auto dc =

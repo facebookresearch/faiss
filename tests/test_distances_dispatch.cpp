@@ -61,6 +61,7 @@ std::vector<SIMDLevel> available_levels() {
             SIMDLevel::AVX2,
             SIMDLevel::AVX512,
             SIMDLevel::AVX512_SPR,
+            SIMDLevel::AVX512_VPOPCNT,
             SIMDLevel::ARM_NEON,
             SIMDLevel::ARM_SVE,
     };

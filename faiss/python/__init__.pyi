@@ -3087,7 +3087,10 @@ SIMDLevel_AVX512_SPR: int
 SIMDLevel_ARM_NEON: int
 SIMDLevel_ARM_SVE: int
 SIMDLevel_RISCV_RVV: int
+SIMDLevel_AVX512_VPOPCNT: int
 SIMDLevel_COUNT: int
+
+def compiled_simd_levels() -> int: ...
 
 class SIMDConfig:
     level: int
@@ -3111,6 +3114,8 @@ class SIMDConfig:
 # Utility functions
 def get_mem_usage_kb() -> int: ...
 def get_compile_options() -> str: ...
+def set_search_stats_enabled(enabled: bool) -> None: ...
+def get_search_stats_enabled() -> bool: ...
 def check_openmp() -> bool: ...
 def shard_ivf_index_centroids(
     index: IndexIVF,
@@ -4381,7 +4386,6 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
-    hnsw_deterministic_build: bool
 
 cvar: _SwigGlobals
 

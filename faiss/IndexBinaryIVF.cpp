@@ -348,10 +348,6 @@ void IndexBinaryIVF::replace_invlists(InvertedLists* il, bool own) {
     own_invlists = own;
 }
 
-// IVFBinaryScannerL2, search_knn_hamming_count, BlockSearch,
-// BlockSearchVariableK, search_knn_hamming_per_invlist are now in
-// impl/binary_hamming/IndexBinaryIVF_impl.h (compiled per-ISA)
-
 namespace {
 
 void search_knn_hamming_heap(
@@ -461,13 +457,9 @@ void search_knn_hamming_heap(
 
 } // anonymous namespace
 
-// The remaining template code (search_knn_hamming_count,
-// search_knn_hamming_per_invlist, etc.) has been moved to
-// impl/binary_hamming/IndexBinaryIVF_impl.h
-
 BinaryInvertedListScanner* IndexBinaryIVF::get_InvertedListScanner(
         bool store_pairs) const {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    return with_simd_level_with_vpopcnt([&]<SIMDLevel SL>() {
         return make_binary_ivf_scanner_fixSL<SL>(code_size, store_pairs);
     });
 }
@@ -483,7 +475,7 @@ void IndexBinaryIVF::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params) const {
     if (per_invlist_search) {
-        with_simd_level([&]<SIMDLevel SL>() {
+        with_simd_level_with_vpopcnt([&]<SIMDLevel SL>() {
             search_knn_hamming_per_invlist_fixSL<SL>(
                     code_size,
                     this,
@@ -501,7 +493,7 @@ void IndexBinaryIVF::search_preassigned(
         search_knn_hamming_heap(
                 this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
     } else {
-        with_simd_level([&]<SIMDLevel SL>() {
+        with_simd_level_with_vpopcnt([&]<SIMDLevel SL>() {
             search_knn_hamming_count_fixSL<SL>(
                     code_size,
                     store_pairs,

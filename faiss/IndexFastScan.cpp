@@ -268,15 +268,16 @@ void IndexFastScan::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
+    const IDSelector* sel = params ? params->sel : nullptr;
 
     FastScanDistancePostProcessing empty_context{};
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, empty_context);
+        search_dispatch_implem<true>(
+                n, x, k, distances, labels, empty_context, sel);
     } else {
         search_dispatch_implem<false>(
-                n, x, k, distances, labels, empty_context);
+                n, x, k, distances, labels, empty_context, sel);
     }
 }
 
@@ -287,7 +288,8 @@ void IndexFastScan::search_dispatch_implem(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const FastScanDistancePostProcessing& context) const {
+        const FastScanDistancePostProcessing& context,
+        const IDSelector* sel) const {
     using Cfloat = typename std::conditional<
             is_max,
             CMax<float, int64_t>,
@@ -318,6 +320,10 @@ void IndexFastScan::search_dispatch_implem(
         FAISS_THROW_MSG("not implemented");
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes);
+        FAISS_THROW_IF_MSG(
+                sel,
+                "IDSelector is not supported by implem 2/3/4; leave implem at "
+                "0 so a selector-aware kernel is chosen");
         search_implem_234<Cfloat>(n, x, k, distances, labels, context);
     } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);
@@ -329,9 +335,11 @@ void IndexFastScan::search_dispatch_implem(
         // - OpenMP disabled (omp_get_max_threads() = 1)
         if (nt < 2) {
             if (impl == 12 || impl == 13) {
-                search_implem_12<C>(n, x, k, distances, labels, impl, context);
+                search_implem_12<C>(
+                        n, x, k, distances, labels, impl, context, sel);
             } else {
-                search_implem_14<C>(n, x, k, distances, labels, impl, context);
+                search_implem_14<C>(
+                        n, x, k, distances, labels, impl, context, sel);
             }
         } else {
             // explicitly slice over threads
@@ -356,7 +364,8 @@ void IndexFastScan::search_dispatch_implem(
                             dis_i,
                             lab_i,
                             impl,
-                            thread_context);
+                            thread_context,
+                            sel);
                 } else {
                     search_implem_14<C>(
                             i1 - i0,
@@ -365,7 +374,8 @@ void IndexFastScan::search_dispatch_implem(
                             dis_i,
                             lab_i,
                             impl,
-                            thread_context);
+                            thread_context,
+                            sel);
                 }
             }
         }
@@ -441,7 +451,8 @@ void IndexFastScan::search_implem_12(
         float* distances,
         idx_t* labels,
         int impl,
-        const FastScanDistancePostProcessing& context) const {
+        const FastScanDistancePostProcessing& context,
+        const IDSelector* sel) const {
     FAISS_THROW_IF_NOT(bbs == 32);
 
     // handle qbs2 blocking by recursive call
@@ -461,7 +472,8 @@ void IndexFastScan::search_implem_12(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    sub_context);
+                    sub_context,
+                    sel);
         }
         return;
     }
@@ -493,7 +505,7 @@ void IndexFastScan::search_implem_12(
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
     auto scanner = make_knn_scanner(
-            C::is_max, n, k, ntotal, distances, labels, nullptr, impl, context);
+            C::is_max, n, k, ntotal, distances, labels, sel, impl, context);
     auto* rh = scanner->handler();
     rh->normalizers = normalizers.get();
     // Note: skip & 2 previously set handler->disable (run kernel,
@@ -526,7 +538,8 @@ void IndexFastScan::search_implem_14(
         float* distances,
         idx_t* labels,
         int impl,
-        const FastScanDistancePostProcessing& context) const {
+        const FastScanDistancePostProcessing& context,
+        const IDSelector* sel) const {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
     // The accumulate loop dispatch table only instantiates certain
@@ -554,7 +567,8 @@ void IndexFastScan::search_implem_14(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    sub_context);
+                    sub_context,
+                    sel);
         }
         return;
     }
@@ -578,7 +592,7 @@ void IndexFastScan::search_implem_14(
             LUT.get());
 
     auto scanner = make_knn_scanner(
-            C::is_max, n, k, ntotal, distances, labels, nullptr, impl, context);
+            C::is_max, n, k, ntotal, distances, labels, sel, impl, context);
     auto* rh = scanner->handler();
     rh->normalizers = normalizers.get();
     // Note: skip & 2 previously set handler->disable (run kernel,
@@ -607,7 +621,8 @@ template void IndexFastScan::search_dispatch_implem<true>(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const FastScanDistancePostProcessing& context) const;
+        const FastScanDistancePostProcessing& context,
+        const IDSelector* sel) const;
 
 template void IndexFastScan::search_dispatch_implem<false>(
         idx_t n,
@@ -615,7 +630,8 @@ template void IndexFastScan::search_dispatch_implem<false>(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const FastScanDistancePostProcessing& context) const;
+        const FastScanDistancePostProcessing& context,
+        const IDSelector* sel) const;
 
 void IndexFastScan::reconstruct(idx_t key, float* recons) const {
     FAISS_THROW_IF_NOT_FMT(
