@@ -75,6 +75,33 @@ void compute_centroids(
         float* hassign,
         float* centroids);
 
+/** Same as compute_centroids for training vectors stored as packed IEEE
+ * binary16 values.
+ *
+ * Rows are widened in registers and accumulated directly into the fp32
+ * centroids: there is no per-row decode call and no decode buffer.
+ *
+ * @param x            training vectors, size n * d
+ */
+void compute_centroids_fp16(
+        size_t d,
+        size_t k,
+        size_t n,
+        size_t k_frozen,
+        const uint16_t* x,
+        const int64_t* assign,
+        const float* weights,
+        float* hassign,
+        float* centroids);
+
+/** Check packed IEEE binary16 values for NaNs and infinities.
+ *
+ * The check runs on the bit patterns, without widening to fp32.
+ *
+ * @return true iff none of the `n` values is a NaN or an infinity
+ */
+bool fp16_all_finite(size_t n, const uint16_t* x);
+
 /** Handle empty clusters by splitting larger ones.
  *
  * It works by slightly changing the centroids to make 2 clusters from
