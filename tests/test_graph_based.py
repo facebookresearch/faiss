@@ -172,11 +172,26 @@ class TestHNSW(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             index.search(self.xq, 1, params=params)
 
-        params = faiss.SearchParametersHNSW(adaptive_beam_gamma=0.1)
+    def test_hnsw_adaptive_beam_search_cosine(self):
+        d = self.xq.shape[1]
+        xb = self.xb.copy()
+        xq = self.xq.copy()
+        faiss.normalize_L2(xb)
+        faiss.normalize_L2(xq)
+        flat = faiss.IndexFlatIP(d)
+        flat.add(xb)
+        _, Iref = flat.search(xq, 1)
+
         index = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
-        index.add(self.xb)
-        with self.assertRaises(RuntimeError):
-            index.search(self.xq, 1, params=params)
+        index.add(xb)
+        prev_nok = 0
+        for gamma in 0, 0.1, 0.5:
+            params = faiss.SearchParametersHNSW(adaptive_beam_gamma=gamma)
+            _, I = index.search(xq, 1, params=params)
+            nok = (Iref == I).sum()
+            self.assertGreaterEqual(nok, prev_nok)
+            prev_nok = nok
+        self.assertGreaterEqual(prev_nok, 490)
 
     def test_hnsw_adaptive_beam_range_search(self):
         d = self.xq.shape[1]

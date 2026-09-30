@@ -24,6 +24,7 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
+#include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 #include <omp.h>
@@ -424,16 +425,40 @@ TEST(HNSW, Test_adaptive_beam_search) {
                 faiss::FaissException);
     }
 
-    { // similarity metrics are not supported
+    { // inner product of unit vectors (cosine similarity)
+        std::vector<float> xb_n = xb, xq_n = xq;
+        faiss::fvec_renorm_L2(d, nb, xb_n.data());
+        faiss::fvec_renorm_L2(d, nq, xq_n.data());
+        faiss::IndexFlatIP flat_ip(d);
+        flat_ip.add(nb, xb_n.data());
+        std::vector<faiss::idx_t> Iref_ip(k * nq);
+        std::vector<float> Dref_ip(k * nq);
+        flat_ip.search(nq, xq_n.data(), k, Dref_ip.data(), Iref_ip.data());
+
         faiss::IndexHNSWFlat index_ip(d, 16, faiss::METRIC_INNER_PRODUCT);
-        index_ip.add(nb, xb.data());
-        faiss::SearchParametersHNSW params;
-        params.adaptive_beam_gamma = 0.3;
-        std::vector<faiss::idx_t> I(k * nq);
-        std::vector<float> D(k * nq);
-        EXPECT_THROW(
-                index_ip.search(nq, xq.data(), k, D.data(), I.data(), &params),
-                faiss::FaissException);
+        index_ip.add(nb, xb_n.data());
+        size_t prev_nok_ip = 0, prev_ndis_ip = 0;
+        for (float gamma : {0.0f, 0.3f, 1.0f}) {
+            faiss::SearchParametersHNSW params;
+            params.adaptive_beam_gamma = gamma;
+            std::vector<faiss::idx_t> I(k * nq);
+            std::vector<float> D(k * nq);
+            faiss::hnsw_stats.reset();
+            index_ip.search(nq, xq_n.data(), k, D.data(), I.data(), &params);
+            size_t nok = 0;
+            for (int i = 0; i < nq; i++) {
+                std::unordered_set<faiss::idx_t> ref(
+                        Iref_ip.begin() + i * k, Iref_ip.begin() + (i + 1) * k);
+                for (int j = 0; j < k; j++) {
+                    nok += ref.count(I[i * k + j]);
+                }
+            }
+            EXPECT_GE(faiss::hnsw_stats.ndis, prev_ndis_ip);
+            EXPECT_GE(nok, prev_nok_ip);
+            prev_ndis_ip = faiss::hnsw_stats.ndis;
+            prev_nok_ip = nok;
+        }
+        EXPECT_GE(prev_nok_ip, size_t(0.99 * nq * k));
     }
 }
 

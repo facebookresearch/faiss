@@ -174,7 +174,9 @@ struct HNSW {
     /// the recall increases with gamma. There is no gain for the low
     /// recalls, that efSearch reaches with a few tens of candidates.
     ///
-    /// Not supported for similarity metrics, with an IDSelector, nor by
+    /// Supported for the distance metrics and for METRIC_INNER_PRODUCT on
+    /// unit vectors (cosine similarity), where the rule is applied to the
+    /// L2 distance 2 - 2 * ip. Not supported with an IDSelector nor by
     /// search_level_0. For a range search the bound is relative to the
     /// radius.
     /// Not serialized.
