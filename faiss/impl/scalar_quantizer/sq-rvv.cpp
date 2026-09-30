@@ -91,12 +91,64 @@ template <>
 struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
             : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
+
+    // Bit-exact with the scalar decode_fp16 for arbitrary code words.
+    // NaN/Inf lanes are excluded from the widening conversion (an FP
+    // conversion would quiet sNaN payloads, while the scalar infnan
+    // branch preserves them) and rebuilt in the integer domain, keeping
+    // the sign, the all-ones exponent and the shifted mantissa.
+    void decode_vector(const uint8_t* code, float* x) const final {
+        const auto* code16 = reinterpret_cast<const uint16_t*>(code);
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e16m4(d - i);
+            vuint16m4_t vh = __riscv_vle16_v_u16m4(code16 + i, vl);
+            vbool4_t is_nan = __riscv_vmsgtu_vx_u16m4_b4(
+                    __riscv_vand_vx_u16m4(vh, 0x7FFF, vl), 0x7C00, vl);
+            vfloat32m8_t vf = __riscv_vfwcvt_f_f_v_f32m8_m(
+                    __riscv_vmnot_m_b4(is_nan, vl),
+                    __riscv_vreinterpret_v_u16m4_f16m4(vh),
+                    vl);
+            vf = __riscv_vfsub_vf_f32m8_m(
+                    __riscv_vmnot_m_b4(is_nan, vl), vf, 0.0f, vl);
+            if (__riscv_vfirst_m_b4(is_nan, vl) >= 0) {
+                vint32m8_t bits = __riscv_vsext_vf2_i32m8(
+                        __riscv_vreinterpret_v_u16m4_i16m4(vh), vl);
+                bits = __riscv_vsll_vx_i32m8(bits, 13, vl);
+                bits = __riscv_vand_vx_i32m8(bits, -0x70002000, vl);
+                bits = __riscv_vor_vx_i32m8(bits, 0x70000000, vl);
+                vf = __riscv_vmerge_vvm_f32m8(
+                        vf,
+                        __riscv_vreinterpret_v_i32m8_f32m8(bits),
+                        is_nan,
+                        vl);
+            }
+            __riscv_vse32_v_f32m8(x + i, vf, vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
 struct QuantizerBF16<SIMDLevel::RISCV_RVV> : QuantizerBF16<SIMDLevel::NONE> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
             : QuantizerBF16<SIMDLevel::NONE>(d, trained) {}
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        const auto* code16 = reinterpret_cast<const uint16_t*>(code);
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e16m4(d - i);
+            vuint16m4_t v = __riscv_vle16_v_u16m4(code16 + i, vl);
+            vuint32m8_t w = __riscv_vzext_vf2_u32m8(v, vl);
+            w = __riscv_vsll_vx_u32m8(w, 16, vl);
+            __riscv_vse32_v_f32m8(
+                    x + i, __riscv_vreinterpret_v_u32m8_f32m8(w), vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
@@ -104,6 +156,19 @@ struct Quantizer8bitDirect<SIMDLevel::RISCV_RVV>
         : Quantizer8bitDirect<SIMDLevel::NONE> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
             : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e8m2(d - i);
+            vuint8m2_t b = __riscv_vle8_v_u8m2(code + i, vl);
+            vuint16m4_t u = __riscv_vzext_vf2_u16m4(b, vl);
+            vfloat32m8_t f = __riscv_vfwcvt_f_xu_v_f32m8(u, vl);
+            __riscv_vse32_v_f32m8(x + i, f, vl);
+            i += vl;
+        }
+    }
 
     void encode_vector(const float* x, uint8_t* code) const final {
         std::size_t i = 0;
@@ -125,6 +190,25 @@ struct Quantizer8bitDirectSigned<SIMDLevel::RISCV_RVV>
         : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
             : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {}
+
+    // Bit-exact with the scalar reference: flipping the sign bit turns the
+    // unsigned bias removal into a signed value ((code ^ 0x80) as int8 ==
+    // code - 128), and the widening conversion of that exact integer
+    // reproduces the scalar integer subtraction.
+    void decode_vector(const uint8_t* code, float* x) const final {
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e8m2(d - i);
+            vint8m2_t v = __riscv_vle8_v_i8m2(
+                    reinterpret_cast<const int8_t*>(code) + i, vl);
+            v = __riscv_vxor_vx_i8m2(v, -128, vl);
+            vint16m4_t v16 = __riscv_vsext_vf2_i16m4(v, vl);
+            vfloat32m8_t f = __riscv_vfwcvt_f_x_v_f32m8(v16, vl);
+            __riscv_vse32_v_f32m8(x + i, f, vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
