@@ -150,7 +150,8 @@ void IndexFastScan::check_compatible_for_merge(const Index& otherIndex) const {
             "can only merge indexes of the same type");
 }
 
-void IndexFastScan::merge_from(Index& otherIndex, idx_t /*add_id*/) {
+void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
+    FAISS_THROW_IF_NOT_MSG(add_id == 0, "cannot set ids in FastScan index");
     check_compatible_for_merge(otherIndex);
     IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
     ntotal2 = roundup(ntotal + other->ntotal, bbs);
