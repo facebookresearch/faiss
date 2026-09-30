@@ -122,6 +122,87 @@ class TestHNSW(unittest.TestCase):
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
+    def test_hnsw_adaptive_beam_search(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        stats = faiss.cvar.hnsw_stats
+        self.addCleanup(
+            faiss.set_search_stats_enabled, faiss.get_search_stats_enabled()
+        )
+        faiss.set_search_stats_enabled(True)
+
+        prev_ndis = 0
+        prev_nok = 0
+        for gamma in 0, 0.1, 0.5:
+            params = faiss.SearchParametersHNSW(adaptive_beam_gamma=gamma)
+            stats.reset()
+            Dhnsw, Ihnsw = index.search(self.xq, 1, params=params)
+            nok = (self.Iref == Ihnsw).sum()
+            # the explored region grows with gamma
+            self.assertGreaterEqual(stats.ndis, prev_ndis)
+            self.assertGreaterEqual(nok, prev_nok)
+            prev_ndis = stats.ndis
+            prev_nok = nok
+
+            # same when set on the index
+            index.hnsw.adaptive_beam_gamma = gamma
+            Dhnsw2, Ihnsw2 = index.search(self.xq, 1)
+            index.hnsw.adaptive_beam_gamma = -1
+            np.testing.assert_array_equal(Ihnsw, Ihnsw2)
+            np.testing.assert_array_equal(Dhnsw, Dhnsw2)
+
+        self.assertGreaterEqual(prev_nok, 490)
+
+        # bound on the number of explored nodes
+        params = faiss.SearchParametersHNSW(
+            adaptive_beam_gamma=0.5, adaptive_beam_max_hops=5)
+        stats.reset()
+        Dhnsw, Ihnsw = index.search(self.xq, 1, params=params)
+        self.assertLess(stats.ndis, prev_ndis)
+        self.assertLess((self.Iref == Ihnsw).sum(), prev_nok)
+
+    def test_hnsw_adaptive_beam_search_unsupported(self):
+        d = self.xq.shape[1]
+        params = faiss.SearchParametersHNSW(
+            adaptive_beam_gamma=0.1, sel=faiss.IDSelectorRange(0, 100))
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        with self.assertRaises(RuntimeError):
+            index.search(self.xq, 1, params=params)
+
+        params = faiss.SearchParametersHNSW(adaptive_beam_gamma=0.1)
+        index = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
+        index.add(self.xb)
+        with self.assertRaises(RuntimeError):
+            index.search(self.xq, 1, params=params)
+
+    def test_hnsw_adaptive_beam_range_search(self):
+        d = self.xq.shape[1]
+        index_flat = faiss.IndexFlatL2(d)
+        index_flat.add(self.xb)
+        D, _ = index_flat.search(self.xq, 10)
+        radius = np.median(D[:, -1])
+        lims_ref, _, Iref = index_flat.range_search(self.xq, radius)
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        prev_nfound = 0
+        for gamma in 0, 0.2, 0.5:
+            params = faiss.SearchParametersHNSW(adaptive_beam_gamma=gamma)
+            lims, Dr, Ir = index.range_search(
+                self.xq, radius, params=params)
+            self.assertTrue(np.all(Dr < radius))
+            for i in range(len(self.xq)):
+                ref = Iref[lims_ref[i]:lims_ref[i + 1]]
+                new = Ir[lims[i]:lims[i + 1]]
+                self.assertLessEqual(set(new), set(ref))
+            # the explored region grows with gamma
+            self.assertGreaterEqual(lims[-1], prev_nfound)
+            prev_nfound = lims[-1]
+        self.assertGreaterEqual(prev_nfound, 0.95 * lims_ref[-1])
+
     def test_hnsw_no_init_level0(self):
         d = self.xq.shape[1]
 

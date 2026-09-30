@@ -20,6 +20,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
@@ -330,6 +331,110 @@ TEST(HNSW, Test_IndexHNSW_METRIC_Lp) {
 
     EXPECT_NEAR(distance, 8.0, 1e-5); // Distance should be 8.0 (2^3)
     EXPECT_EQ(label, 0);              // Label should be 0
+}
+
+TEST(HNSW, Test_adaptive_beam_search) {
+    int d = 16;
+    int nb = 5000;
+    int nq = 100;
+    int k = 10;
+    std::vector<float> xb(d * nb), xq(d * nq);
+    faiss::float_rand(xb.data(), xb.size(), 123);
+    faiss::float_rand(xq.data(), xq.size(), 456);
+
+    faiss::IndexFlatL2 flat(d);
+    flat.add(nb, xb.data());
+    std::vector<faiss::idx_t> Iref(k * nq);
+    std::vector<float> Dref(k * nq);
+    flat.search(nq, xq.data(), k, Dref.data(), Iref.data());
+
+    faiss::IndexHNSWFlat index(d, 16);
+    index.add(nb, xb.data());
+
+    auto count_ok = [&](const std::vector<faiss::idx_t>& I) {
+        size_t nok = 0;
+        for (int i = 0; i < nq; i++) {
+            std::unordered_set<faiss::idx_t> ref(
+                    Iref.begin() + i * k, Iref.begin() + (i + 1) * k);
+            for (int j = 0; j < k; j++) {
+                nok += ref.count(I[i * k + j]);
+            }
+        }
+        return nok;
+    };
+
+    SearchStatsEnabledGuard stats_guard(true);
+
+    // the explored region grows with gamma
+    size_t prev_ndis = 0, prev_nok = 0;
+    for (float gamma : {0.0f, 0.1f, 0.3f, 1.0f}) {
+        faiss::SearchParametersHNSW params;
+        params.adaptive_beam_gamma = gamma;
+        std::vector<faiss::idx_t> I(k * nq);
+        std::vector<float> D(k * nq);
+        faiss::hnsw_stats.reset();
+        index.search(nq, xq.data(), k, D.data(), I.data(), &params);
+        size_t ndis = faiss::hnsw_stats.ndis;
+        size_t nok = count_ok(I);
+        EXPECT_GE(ndis, prev_ndis);
+        EXPECT_GE(nok, prev_nok);
+        prev_ndis = ndis;
+        prev_nok = nok;
+
+        // same result when set on the index
+        index.hnsw.adaptive_beam_gamma = gamma;
+        std::vector<faiss::idx_t> I2(k * nq);
+        std::vector<float> D2(k * nq);
+        index.search(nq, xq.data(), k, D2.data(), I2.data());
+        index.hnsw.adaptive_beam_gamma = -1;
+        EXPECT_EQ(I, I2);
+        EXPECT_EQ(D, D2);
+    }
+    EXPECT_GE(prev_nok, size_t(0.99 * nq * k));
+
+    { // bound on the number of explored nodes
+        faiss::SearchParametersHNSW params;
+        params.adaptive_beam_gamma = 1.0;
+        std::vector<faiss::idx_t> I(k * nq), I2(k * nq);
+        std::vector<float> D(k * nq), D2(k * nq);
+        index.search(nq, xq.data(), k, D.data(), I.data(), &params);
+
+        // too large to have an effect
+        params.adaptive_beam_max_hops = nb;
+        index.search(nq, xq.data(), k, D2.data(), I2.data(), &params);
+        EXPECT_EQ(I, I2);
+        EXPECT_EQ(D, D2);
+
+        params.adaptive_beam_max_hops = 10;
+        faiss::hnsw_stats.reset();
+        index.search(nq, xq.data(), k, D2.data(), I2.data(), &params);
+        EXPECT_LT(faiss::hnsw_stats.ndis, prev_ndis);
+        EXPECT_LT(count_ok(I2), count_ok(I));
+    }
+
+    { // selectors are not supported
+        faiss::IDSelectorRange sel(0, nb / 4);
+        faiss::SearchParametersHNSW params;
+        params.adaptive_beam_gamma = 0.3;
+        params.sel = &sel;
+        std::vector<faiss::idx_t> I(k * nq);
+        std::vector<float> D(k * nq);
+        EXPECT_THROW(
+                index.search(nq, xq.data(), k, D.data(), I.data(), &params),
+                faiss::FaissException);
+    }
+
+    { // similarity metrics are not supported
+        faiss::IndexHNSWFlat index_ip(d, 16, faiss::METRIC_INNER_PRODUCT);
+        index_ip.add(nb, xb.data());
+        faiss::SearchParametersHNSW params;
+        params.adaptive_beam_gamma = 0.3;
+        std::vector<faiss::idx_t> I(k * nq);
+        std::vector<float> D(k * nq);
+        EXPECT_THROW(
+                index_ip.search(nq, xq.data(), k, D.data(), I.data(), &params),
+                faiss::FaissException);
+    }
 }
 
 TEST(HNSW, Test_IndexHNSWCagra_BaseLevelOnly_RangeSearch) {

@@ -1711,6 +1711,127 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     return top_candidates;
 }
 
+/// Adaptive Beam Search on level 0, see HNSW::adaptive_beam_gamma. The
+/// candidates queue is unbounded: a node is explored as long as its distance
+/// is below `dis_factor` times the threshold of the result handler (ie. the
+/// distance of the current k-th result for a k-NN search).
+/// `dis_factor` applies to the distances as returned by `qdis`.
+/// At most `max_hops` nodes are explored (0 = no bound).
+template <typename VTType>
+void search_from_candidate_adaptive_fixVT(
+        const HNSW& hnsw,
+        const HNSW::Node& node,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        float dis_factor,
+        int max_hops,
+        VTType& vt,
+        HNSWStats& stats) {
+    using C = HNSW::C_distance;
+
+    int ndis = 0;
+    int nstep = 0;
+
+    CandidatesQueue<C> candidates;
+    reservePriorityQueue(candidates, 256);
+
+    float threshold = res.threshold;
+    // nodes farther than this can never be explored because the threshold
+    // only decreases, so there is no need to keep them in the queue.
+    float max_candidate_dis = threshold * dis_factor;
+
+    auto add_to_heap = [&](const size_t idx, const float dis) {
+        if (C::cmp(threshold, dis)) {
+            if (res.add_result(dis, idx)) {
+                threshold = res.threshold;
+                max_candidate_dis = threshold * dis_factor;
+            }
+        }
+        if (dis <= max_candidate_dis) {
+            candidates.emplace(dis, idx);
+        }
+    };
+
+    add_to_heap(node.second, node.first);
+    vt.set(node.second);
+
+    while (!candidates.empty()) {
+        float d0;
+        storage_idx_t v0;
+        std::tie(d0, v0) = candidates.top();
+
+        if (d0 > max_candidate_dis) {
+            break;
+        }
+
+        candidates.pop();
+
+        size_t begin, end;
+        hnsw.neighbor_range(v0, 0, &begin, &end);
+
+        size_t jmax = begin;
+        for (size_t j = begin; j < end; j++) {
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0) {
+                break;
+            }
+
+            vt.prefetch(v1);
+            jmax += 1;
+        }
+
+        int counter = 0;
+        size_t saved_j[4];
+
+        for (size_t j = begin; j < jmax; j++) {
+            int v1 = hnsw.neighbors[j];
+
+            saved_j[counter] = v1;
+            counter += vt.set(v1) ? 1 : 0;
+
+            if (counter == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        saved_j[0],
+                        saved_j[1],
+                        saved_j[2],
+                        saved_j[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    add_to_heap(saved_j[id4], dis[id4]);
+                }
+
+                ndis += 4;
+
+                counter = 0;
+            }
+        }
+
+        for (int icnt = 0; icnt < counter; icnt++) {
+            float dis = qdis(saved_j[icnt]);
+            add_to_heap(saved_j[icnt], dis);
+
+            ndis += 1;
+        }
+
+        nstep++;
+        if (max_hops > 0 && nstep >= max_hops) {
+            break;
+        }
+    }
+
+    ++stats.n1;
+    if (candidates.size() == 0) {
+        ++stats.n2;
+    }
+    stats.ndis += ndis;
+    stats.nhops += nstep;
+}
+
 } // namespace
 
 /// Public dispatcher: only the distance (CMax) flavor is exposed because
@@ -1764,11 +1885,15 @@ HNSWStats search_impl(
 
     bool bounded_queue = hnsw.search_bounded_queue;
     int cur_efSearch = hnsw.efSearch;
+    float adaptive_beam_gamma = hnsw.adaptive_beam_gamma;
+    int adaptive_beam_max_hops = hnsw.adaptive_beam_max_hops;
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
             bounded_queue = hnsw_params->bounded_queue;
             cur_efSearch = hnsw_params->efSearch;
+            adaptive_beam_gamma = hnsw_params->adaptive_beam_gamma;
+            adaptive_beam_max_hops = hnsw_params->adaptive_beam_max_hops;
         }
     }
 
@@ -1783,7 +1908,49 @@ HNSWStats search_impl(
     }
 
     int ef = std::max(cur_efSearch, k);
-    if (bounded_queue) {
+    if (adaptive_beam_gamma >= 0) {
+        if constexpr (std::is_same_v<C, HNSW::C_distance>) {
+            FAISS_THROW_IF_NOT_MSG(
+                    hnsw.search_method == HNSW::SM_DEFAULT ||
+                            hnsw.search_method == HNSW::SM_PANORAMA,
+                    "adaptive beam search is not supported for this HNSW "
+                    "search method");
+            // The exploration stops on the distance of the k-th result.
+            // With a selector this is the k-th accepted result, that is
+            // far from the query when few vectors are accepted: the
+            // exploration then visits a large part of the graph.
+            FAISS_THROW_IF_NOT_MSG(
+                    !(params && params->sel),
+                    "adaptive beam search does not support IDSelector");
+            // gamma applies to the distance itself, METRIC_L2 distances
+            // are squared.
+            float dis_factor = 1 + adaptive_beam_gamma;
+            if (index && index->metric_type == METRIC_L2) {
+                dis_factor *= dis_factor;
+            }
+            auto call = [&]<typename VTType>(VTType& vt_concrete) {
+                search_from_candidate_adaptive_fixVT<VTType>(
+                        hnsw,
+                        HNSW::Node(d_nearest, nearest),
+                        qdis,
+                        res,
+                        dis_factor,
+                        adaptive_beam_max_hops,
+                        vt_concrete,
+                        stats);
+            };
+            if (VisitedTableVector* vtv =
+                        dynamic_cast<VisitedTableVector*>(&vt)) {
+                call(*vtv);
+            } else {
+                VisitedTableSet& vts = dynamic_cast<VisitedTableSet&>(vt);
+                call(vts);
+            }
+        } else {
+            FAISS_THROW_MSG(
+                    "adaptive beam search does not support similarity metrics");
+        }
+    } else if (bounded_queue) {
         MinimaxHeapT<HC_for<C>> candidates(ef);
 
         candidates.push(nearest, d_nearest);

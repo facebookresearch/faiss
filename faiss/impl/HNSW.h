@@ -56,6 +56,10 @@ struct SearchParametersHNSW : SearchParameters {
     int efSearch = 16;
     bool check_relative_distance = true;
     bool bounded_queue = true;
+    /// see HNSW::adaptive_beam_gamma
+    float adaptive_beam_gamma = -1;
+    /// see HNSW::adaptive_beam_max_hops
+    int adaptive_beam_max_hops = 0;
 
     ~SearchParametersHNSW() {}
 };
@@ -153,6 +157,37 @@ struct HNSW {
 
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
+
+    /// when >= 0, the level-0 search uses Adaptive Beam Search (Al-Jazzazi
+    /// et al., "Distance Adaptive Beam Search for Provably Accurate
+    /// Graph-Based Nearest Neighbor Search", 2025): the exploration stops
+    /// when the closest unexpanded candidate is farther than (1 + gamma)
+    /// times the distance of the current k-th result, instead of being
+    /// bounded by a beam of efSearch candidates. efSearch,
+    /// check_relative_distance and search_bounded_queue are ignored in
+    /// that case.
+    ///
+    /// The queries that need more exploration get it, so for a given
+    /// recall the average cost is lower than with efSearch and the cost of
+    /// the most expensive queries is higher: set adaptive_beam_max_hops
+    /// to bound it. Useful values of gamma are typically in 0.02 .. 0.2,
+    /// the recall increases with gamma. There is no gain for the low
+    /// recalls, that efSearch reaches with a few tens of candidates.
+    ///
+    /// Not supported for similarity metrics, with an IDSelector, nor by
+    /// search_level_0. For a range search the bound is relative to the
+    /// radius.
+    /// Not serialized.
+    float adaptive_beam_gamma = -1;
+
+    /// upper bound on the number of nodes explored by the Adaptive Beam
+    /// Search, to bound the cost of the queries for which the distance
+    /// criterion stops late. 0 means no bound, which is not recommended:
+    /// the cost of a query is then not bounded. A reasonable setting is
+    /// 1.25 times the efSearch that reaches the target recall with the
+    /// default search.
+    /// Not serialized.
+    int adaptive_beam_max_hops = 0;
 
     /// Specialized level-0 search implementations. This state is derived from
     /// the owning IndexHNSW subtype after construction or deserialization.
