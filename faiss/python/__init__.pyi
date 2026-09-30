@@ -1711,31 +1711,6 @@ class IndexIVF(Index):
         precomputed_idx: npt.NDArray[np.int64] | None = None,
         inverted_list_context: Any | None = None,
     ) -> None: ...
-    def search_preassigned(
-        self,
-        n: int,
-        x: npt.NDArray[np.float32],
-        k: int,
-        assign: npt.NDArray[np.int64],
-        centroid_dis: npt.NDArray[np.float32],
-        distances: npt.NDArray[np.float32],
-        labels: npt.NDArray[np.int64],
-        store_pairs: bool,
-        params: IVFSearchParameters | None = None,
-        stats: IndexIVFStats | None = None,
-    ) -> None: ...
-    def range_search_preassigned(
-        self,
-        nx: int,
-        x: npt.NDArray[np.float32],
-        radius: float,
-        keys: npt.NDArray[np.int64],
-        coarse_dis: npt.NDArray[np.float32],
-        result: RangeSearchResult,
-        store_pairs: bool = False,
-        params: Any | None = None,  # IVFSearchParameters
-        stats: Any | None = None,  # IndexIVFStats
-    ) -> None: ...
     def set_beam_factor(self, beam_factor: float) -> None: ...
     def encode_vectors(
         self,
@@ -1813,6 +1788,17 @@ class IndexIVF(Index):
         D: npt.NDArray[np.float32] | None = None,
         I: npt.NDArray[np.int64] | None = None,
     ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
+    def range_search_preassigned(
+        self,
+        x: npt.NDArray[np.float32],
+        thresh: float,
+        Iq: npt.NDArray[np.int64],
+        Dq: npt.NDArray[np.float32] | None,
+        *,
+        params: SearchParameters | None = None,
+    ) -> tuple[
+        npt.NDArray[np.int64], npt.NDArray[np.float32], npt.NDArray[np.int64]
+    ]: ...
 
 class IndexIVFFlat(IndexIVF):
     def __init__(
@@ -2449,49 +2435,75 @@ def search_with_parameters(
     x: torch.Tensor,
     k: int,
     params: SearchParameters | None = None,
-    output_stats: bool = False,
-) -> (
-    tuple[torch.Tensor, torch.Tensor]
-    | tuple[torch.Tensor, torch.Tensor, dict[str, Any]]
-): ...
+    output_stats: Literal[False] = False,
+) -> tuple[torch.Tensor, torch.Tensor]: ...
+@overload
+def search_with_parameters(
+    index: Index,
+    x: torch.Tensor,
+    k: int,
+    params: SearchParameters | None = None,
+    *,
+    output_stats: Literal[True],
+) -> tuple[torch.Tensor, torch.Tensor, dict[str, Any]]: ...
 @overload
 def search_with_parameters(
     index: Index,
     x: npt.NDArray[np.float32],
     k: int,
     params: SearchParameters | None = None,
-    output_stats: bool = False,
-) -> (
-    tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]
-    | tuple[npt.NDArray[np.float32], npt.NDArray[np.int64], dict[str, Any]]
-): ...
+    output_stats: Literal[False] = False,
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
+@overload
+def search_with_parameters(
+    index: Index,
+    x: npt.NDArray[np.float32],
+    k: int,
+    params: SearchParameters | None = None,
+    *,
+    output_stats: Literal[True],
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64], dict[str, Any]]: ...
 @overload
 def range_search_with_parameters(
     index: Index,
     x: torch.Tensor,
     radius: float,
     params: SearchParameters | None = None,
-    output_stats: bool = False,
-) -> (
-    tuple[torch.Tensor, torch.Tensor, torch.Tensor]
-    | tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, Any]]
-): ...
+    output_stats: Literal[False] = False,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]: ...
+@overload
+def range_search_with_parameters(
+    index: Index,
+    x: torch.Tensor,
+    radius: float,
+    params: SearchParameters | None = None,
+    *,
+    output_stats: Literal[True],
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, Any]]: ...
 @overload
 def range_search_with_parameters(
     index: Index,
     x: npt.NDArray[np.float32],
     radius: float,
     params: SearchParameters | None = None,
-    output_stats: bool = False,
-) -> (
-    tuple[npt.NDArray[np.int64], npt.NDArray[np.float32], npt.NDArray[np.int64]]
-    | tuple[
-        npt.NDArray[np.int64],
-        npt.NDArray[np.float32],
-        npt.NDArray[np.int64],
-        dict[str, Any],
-    ]
-): ...
+    output_stats: Literal[False] = False,
+) -> tuple[
+    npt.NDArray[np.int64], npt.NDArray[np.float32], npt.NDArray[np.int64]
+]: ...
+@overload
+def range_search_with_parameters(
+    index: Index,
+    x: npt.NDArray[np.float32],
+    radius: float,
+    params: SearchParameters | None = None,
+    *,
+    output_stats: Literal[True],
+) -> tuple[
+    npt.NDArray[np.int64],
+    npt.NDArray[np.float32],
+    npt.NDArray[np.int64],
+    dict[str, Any],
+]: ...
 
 # IVF Search Parameters
 class IVFSearchParameters(SearchParameters):
@@ -2677,14 +2689,14 @@ class Clustering(ClusteringParameters):
         self,
         x: torch.Tensor,
         index: Index,
-        x_weights: torch.Tensor | None = None,
+        weights: torch.Tensor | None = None,
     ) -> None: ...
     @overload
     def train(
         self,
         x: npt.NDArray[np.float32],
         index: Index,
-        x_weights: npt.NDArray[np.float32] | None = None,
+        weights: npt.NDArray[np.float32] | None = None,
     ) -> None: ...
     @overload
     def train_encoded(
@@ -2806,16 +2818,14 @@ class AutoTuneCriterion:
     @overload
     def set_groundtruth(
         self,
-        gt_nnn: int,
-        gt_D_in: torch.Tensor,
-        gt_I_in: torch.Tensor,
+        D: torch.Tensor | None,
+        I: torch.Tensor,
     ) -> None: ...
     @overload
     def set_groundtruth(
         self,
-        gt_nnn: int,
-        gt_D_in: npt.NDArray[np.float32],
-        gt_I_in: npt.NDArray[np.int64],
+        D: npt.NDArray[np.float32] | None,
+        I: npt.NDArray[np.int64],
     ) -> None: ...
     @overload
     def evaluate(self, D: torch.Tensor, I: torch.Tensor) -> float: ...
@@ -3158,27 +3168,6 @@ def search_and_return_centroids(
 def get_invlist_range(index: Index, i0: int, i1: int) -> ArrayInvertedLists: ...
 def set_invlist_range(
     index: Index, i0: int, i1: int, src: ArrayInvertedLists
-) -> None: ...
-def search_with_parameters(
-    index: Index,
-    n: int,
-    x: npt.NDArray[np.float32],
-    k: int,
-    distances: npt.NDArray[np.float32],
-    labels: npt.NDArray[np.int64],
-    params: IVFSearchParameters,
-    nb_dis: npt.NDArray[np.int64] | None = None,
-    ms_per_stage: npt.NDArray[np.float64] | None = None,
-) -> None: ...
-def range_search_with_parameters(
-    index: Index,
-    n: int,
-    x: npt.NDArray[np.float32],
-    radius: float,
-    result: RangeSearchResult,
-    params: IVFSearchParameters,
-    nb_dis: npt.NDArray[np.int64] | None = None,
-    ms_per_stage: npt.NDArray[np.float64] | None = None,
 ) -> None: ...
 def ivf_residual_from_quantizer(
     rq: ResidualQuantizer, nlevel: int
@@ -4368,15 +4357,6 @@ def get_num_gpus() -> int: ...
 def gpu_profiler_start() -> None: ...
 def gpu_profiler_stop() -> None: ...
 def gpu_sync_all_devices() -> None: ...
-
-# Distance computation globals
-distance_compute_blas_threshold: int
-distance_compute_blas_query_bs: int
-distance_compute_blas_database_bs: int
-distance_compute_min_k_reservoir: int
-
-# Index factory verbose flag
-index_factory_verbose: int
 
 # SWIG exposes mutable C++ globals here rather than as module attributes,
 # which could not write through to C++. Access as `faiss.cvar.<name>`.
