@@ -9,6 +9,7 @@ from __future__ import absolute_import, division, print_function
 # no unicode_literals because it messes up in py2
 
 import numpy as np
+import os
 import unittest
 import faiss
 import re
@@ -773,6 +774,17 @@ class TestDistancesPositive(unittest.TestCase):
         assert np.all(D >= 0)
 
 
+# Both tests below construct a threaded IndexShards / IndexReplicas. That path
+# hangs on aarch64 rather than running slowly: over 1000x64 vectors it burns a
+# 10 min timeout there while finishing in well under a second on x86. Same
+# symptom as T272565319, which was closed by the test bot after the affected
+# test switched to threaded=False, and as test_meta_index.Shards.test_shards,
+# which is still unfixed. Skipping keeps the threaded path honestly covered on
+# x86 instead of papering over it with threaded=False.
+@unittest.skipIf(
+    os.name == "posix" and os.uname().machine == "aarch64",
+    "Threaded IndexShards/IndexReplicas hang on aarch64 (T272565319).",
+)
 class TestShardReplicas(unittest.TestCase):
     def test_shard_flag_propagation(self):
         d = 64  # dimension
