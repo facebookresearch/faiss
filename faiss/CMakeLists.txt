@@ -418,6 +418,7 @@ set(FAISS_HEADERS
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h
   utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
+  utils/simd_impl/sme_cblas_sgemm.h
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
@@ -714,6 +715,18 @@ target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512_spr PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_sve PRIVATE FINTEGER=int)
+
+if(FAISS_ENABLE_SME_CBLAS)
+  # See FAISS_ENABLE_SME_CBLAS in the top-level CMakeLists.txt for rationale.
+  # sme_cblas_sgemm_tn() (distances.cpp / distances_arm_sve.cpp) assumes
+  # FINTEGER == int, matching the FINTEGER=int forced above on every target;
+  # this option must not be combined with a caller-supplied FINTEGER=long.
+  target_compile_definitions(faiss PRIVATE FAISS_SME_CBLAS_SGEMM)
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_SME_CBLAS_SGEMM)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_SME_CBLAS_SGEMM)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_SME_CBLAS_SGEMM)
+  target_compile_definitions(faiss_sve PRIVATE FAISS_SME_CBLAS_SGEMM)
+endif()
 
 if(FAISS_USE_LTO)
   include(CheckIPOSupported)

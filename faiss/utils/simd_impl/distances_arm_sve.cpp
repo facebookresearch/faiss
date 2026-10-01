@@ -7,6 +7,8 @@
 
 #include <arm_sve.h>
 
+#include <vector>
+
 #include <faiss/utils/distances.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -34,7 +36,27 @@ int sgemm_(
         float* beta,
         float* c,
         FINTEGER* ldc);
+
+#ifdef FAISS_SME_CBLAS_SGEMM
+void cblas_sgemm(
+        int Order,
+        int TransA,
+        int TransB,
+        int M,
+        int N,
+        int K,
+        float alpha,
+        const float* A,
+        int lda,
+        const float* B,
+        int ldb,
+        float beta,
+        float* C,
+        int ldc);
+#endif
 }
+
+#include <faiss/utils/simd_impl/sme_cblas_sgemm.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::ARM_SVE
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
@@ -778,6 +800,9 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
+#ifdef FAISS_SME_CBLAS_SGEMM
+    std::vector<float> sme_scratch;
+#endif
 
     fvec_norms_L2sqr(x_norms.get(), x, d, nx);
 
@@ -805,6 +830,21 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
             {
                 float one = 1, zero = 0;
                 FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+#ifdef FAISS_SME_CBLAS_SGEMM
+                sme_cblas_sgemm_tn(
+                        nyi,
+                        nxi,
+                        di,
+                        one,
+                        y + j0 * d,
+                        di,
+                        x + i0 * d,
+                        di,
+                        zero,
+                        ip_block.get(),
+                        nyi,
+                        sme_scratch);
+#else
                 sgemm_("Transpose",
                        "Not transpose",
                        &nyi,
@@ -818,6 +858,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
                        &zero,
                        ip_block.get(),
                        &nyi);
+#endif
             }
 #pragma omp parallel for schedule(static) if ((i1 - i0) >= 16)
             for (int64_t i = static_cast<int64_t>(i0);

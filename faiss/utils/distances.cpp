@@ -49,7 +49,27 @@ int sgemm_(
         float* beta,
         float* c,
         FINTEGER* ldc);
+
+#ifdef FAISS_SME_CBLAS_SGEMM
+void cblas_sgemm(
+        int Order,
+        int TransA,
+        int TransB,
+        int M,
+        int N,
+        int K,
+        float alpha,
+        const float* A,
+        int lda,
+        const float* B,
+        int ldb,
+        float beta,
+        float* C,
+        int ldc);
+#endif
 }
+
+#include <faiss/utils/simd_impl/sme_cblas_sgemm.h>
 
 namespace faiss {
 
@@ -379,6 +399,9 @@ void exhaustive_inner_product_blas(
     const size_t bs_x = distance_compute_blas_query_bs;
     const size_t bs_y = distance_compute_blas_database_bs;
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+#ifdef FAISS_SME_CBLAS_SGEMM
+    std::vector<float> sme_scratch;
+#endif
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
@@ -397,6 +420,21 @@ void exhaustive_inner_product_blas(
             {
                 float one = 1, zero = 0;
                 FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+#ifdef FAISS_SME_CBLAS_SGEMM
+                sme_cblas_sgemm_tn(
+                        nyi,
+                        nxi,
+                        di,
+                        one,
+                        y + j0 * d,
+                        di,
+                        x + i0 * d,
+                        di,
+                        zero,
+                        ip_block.get(),
+                        nyi,
+                        sme_scratch);
+#else
                 sgemm_("Transpose",
                        "Not transpose",
                        &nyi,
@@ -410,6 +448,7 @@ void exhaustive_inner_product_blas(
                        &zero,
                        ip_block.get(),
                        &nyi);
+#endif
             }
 
             res.add_results(j0, j1, ip_block.get());
@@ -442,6 +481,9 @@ void exhaustive_L2sqr_blas_default_impl(
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
+#ifdef FAISS_SME_CBLAS_SGEMM
+    std::vector<float> sme_scratch;
+#endif
 
     fvec_norms_L2sqr(x_norms.get(), x, d, nx);
 
@@ -469,6 +511,21 @@ void exhaustive_L2sqr_blas_default_impl(
             {
                 float one = 1, zero = 0;
                 FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+#ifdef FAISS_SME_CBLAS_SGEMM
+                sme_cblas_sgemm_tn(
+                        nyi,
+                        nxi,
+                        di,
+                        one,
+                        y + j0 * d,
+                        di,
+                        x + i0 * d,
+                        di,
+                        zero,
+                        ip_block.get(),
+                        nyi,
+                        sme_scratch);
+#else
                 sgemm_("Transpose",
                        "Not transpose",
                        &nyi,
@@ -482,6 +539,7 @@ void exhaustive_L2sqr_blas_default_impl(
                        &zero,
                        ip_block.get(),
                        &nyi);
+#endif
             }
             for (size_t i = i0; i < i1; i++) {
                 float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
@@ -688,6 +746,9 @@ static void knn_db_parallel_impl(
                     FINTEGER nyi = static_cast<FINTEGER>(block_ny);
                     FINTEGER nxi = static_cast<FINTEGER>(nx);
                     FINTEGER di = static_cast<FINTEGER>(d);
+                    // Not routed through sme_cblas_sgemm_tn: M is tiny here
+                    // (nx < nt), and SME dispatch is slower than generic
+                    // GEMM at that shape.
                     sgemm_("Transpose",
                            "Not transpose",
                            &nyi,
@@ -1159,6 +1220,9 @@ void pairwise_L2sqr(
         FINTEGER nbi = nb, nqi = nq, di = d, ldqi = ldq, ldbi = ldb, lddi = ldd;
         float one = 1.0, minus_2 = -2.0;
 
+        // Not routed through sme_cblas_sgemm_tn: the GEMM is faster in
+        // isolation here, but this call doesn't dominate any caller's
+        // runtime, so end-to-end it makes no measurable difference.
         sgemm_("Transposed",
                "Not transposed",
                &nbi,
