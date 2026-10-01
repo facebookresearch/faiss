@@ -31,33 +31,8 @@ static std::vector<uint8_t> random_codes(size_t d, size_t qb, uint32_t seed) {
     return q;
 }
 
-static std::vector<uint8_t> random_bytes(size_t n, uint32_t seed) {
-    std::mt19937 rng(seed);
-    std::vector<uint8_t> v(n);
-    for (size_t i = 0; i < n; i++) {
-        v[i] = static_cast<uint8_t>(rng());
-    }
-    return v;
-}
-
-// 32-d chunks and chunk boundaries.
-static const std::vector<size_t> kDims = {
-        1,
-        8,
-        16,
-        31,
-        32,
-        33,
-        100,
-        128,
-        255,
-        256,
-        257,
-        384,
-        512,
-        768,
-        1024,
-        2048};
+using faiss_test::kDims;
+using faiss_test::random_bytes;
 
 // Note: scalar kernel's own correctness is covered end-to-end by
 // tests/test_rabitq.py. This target is x86-only (see BUCK).
