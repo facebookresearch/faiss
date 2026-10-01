@@ -15,6 +15,8 @@
 
 namespace faiss {
 
+size_t panorama_query_block_size = 32;
+
 namespace {
 
 /// Helper function to compute cumulative sums by iterating backwards through
