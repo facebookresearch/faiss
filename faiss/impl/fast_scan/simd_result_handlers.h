@@ -8,6 +8,7 @@
 #pragma once
 
 #include <algorithm>
+#include <bit>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -374,7 +375,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -391,7 +392,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 this->scan_cnt++;
                 T d = d32tab[j];
@@ -498,7 +499,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -520,7 +521,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 this->scan_cnt++;
                 T dis_for_j = d32tab[j];
@@ -637,7 +638,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -651,7 +652,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 T dis_for_j = d32tab[j];
                 this->scan_cnt++;
@@ -771,7 +772,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
 
                 auto real_idx = this->adjust_id(b, j);
@@ -786,7 +787,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 T dis = d32tab[j];
                 n_per_query[q]++;
@@ -944,7 +945,7 @@ struct SingleQueryResultCollectHandler
 
         if (this->sel != nullptr) {
             while (lt_mask) {
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -955,7 +956,7 @@ struct SingleQueryResultCollectHandler
             }
         } else {
             while (lt_mask) {
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 T dis = d32tab[j];
                 int64_t idx = this->adjust_id(b, j);
