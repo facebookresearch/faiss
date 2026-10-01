@@ -24,6 +24,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/fp16.h>
 
@@ -259,6 +260,131 @@ TEST(IVF, list_context) {
                 std::find(labels.cbegin(), labels.cend(), query_vector_id) !=
                 labels.cend())
                 << "should return the query vector";
+    }
+}
+
+TEST(IVF, sorted_range_selector_rejects_store_pairs) {
+    constexpr size_t d = 4;
+    constexpr size_t nb = 100;
+    constexpr faiss::idx_t k = 50;
+
+    faiss::IndexFlatL2 quantizer(d);
+    const std::vector<float> centroid(d, 0.0f);
+    quantizer.add(1, centroid.data());
+    faiss::IndexIVFFlat index(&quantizer, d, 1);
+    index.is_trained = true;
+
+    std::vector<float> database(nb * d);
+    std::vector<faiss::idx_t> ids(nb);
+    for (size_t i = 0; i < nb; ++i) {
+        ids[i] = static_cast<faiss::idx_t>(1000 + i);
+        for (size_t j = 0; j < d; ++j) {
+            database[i * d + j] = static_cast<float>(i + j);
+        }
+    }
+    index.add_with_ids(nb, database.data(), ids.data());
+
+    faiss::IDSelectorRange selector(1020, 1040, true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = 1;
+    params.sel = &selector;
+    const faiss::idx_t key = 0;
+    const float coarse_distance = 0.0f;
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    EXPECT_THROW(
+            index.search_preassigned(
+                    1,
+                    centroid.data(),
+                    k,
+                    &key,
+                    &coarse_distance,
+                    distances.data(),
+                    labels.data(),
+                    true,
+                    &params),
+            faiss::FaissException);
+}
+
+namespace {
+
+// Counts the code fetches that a scan performs, so a test can show that a list
+// the range filter empties never reaches its codes.
+struct CountingInvertedLists : faiss::ArrayInvertedLists {
+    mutable size_t code_fetches = 0;
+
+    CountingInvertedLists(size_t nlist_in, size_t code_size_in)
+            : faiss::ArrayInvertedLists(nlist_in, code_size_in) {}
+
+    const uint8_t* get_codes(size_t list_no) const override {
+        code_fetches++;
+        return faiss::ArrayInvertedLists::get_codes(list_no);
+    }
+};
+
+} // namespace
+
+TEST(IVF, sorted_range_selector_skips_setup_for_filtered_lists) {
+    constexpr size_t d = 8;
+    constexpr size_t nb = 1000;
+    constexpr size_t nlist = 16;
+    constexpr faiss::idx_t k = 10;
+    constexpr faiss::idx_t range_end = 20;
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+
+    std::mt19937 rng(12345);
+    std::normal_distribution<float> normal(0.0f, 1.0f);
+    std::vector<float> database(nb * d);
+    for (float& value : database) {
+        value = normal(rng);
+    }
+    std::vector<faiss::idx_t> ids(nb);
+    for (size_t i = 0; i < nb; ++i) {
+        ids[i] = static_cast<faiss::idx_t>(i); // ascending, so each list sorts
+    }
+    index.train(nb, database.data());
+
+    auto* counting = new CountingInvertedLists(nlist, index.code_size);
+    index.replace_invlists(counting, /*own=*/true);
+    index.add_with_ids(nb, database.data(), ids.data());
+
+    // Lists that hold no id below range_end cannot contribute a result, so the
+    // scan must return before it fetches their codes.
+    size_t lists_in_range = 0;
+    size_t lists_non_empty = 0;
+    for (size_t list_no = 0; list_no < nlist; ++list_no) {
+        const size_t list_size = counting->list_size(list_no);
+        if (list_size == 0) {
+            continue;
+        }
+        lists_non_empty++;
+        const faiss::idx_t* list_ids = counting->ids[list_no].data();
+        if (list_ids[0] < range_end) {
+            lists_in_range++;
+        }
+    }
+    ASSERT_GT(lists_in_range, 0u);
+    ASSERT_LT(lists_in_range, lists_non_empty);
+
+    faiss::IDSelectorRange selector(0, range_end, /*assume_sorted=*/true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = nlist;
+    params.sel = &selector;
+
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    counting->code_fetches = 0;
+    index.search(
+            1, database.data(), k, distances.data(), labels.data(), &params);
+    EXPECT_EQ(lists_in_range, counting->code_fetches);
+
+    // Every returned id honours the selector.
+    for (faiss::idx_t label : labels) {
+        if (label != -1) {
+            EXPECT_TRUE(selector.is_member(label));
+        }
     }
 }
 
