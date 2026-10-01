@@ -8,6 +8,7 @@
     <includedby refid="MinMaxFP16-inl_8h" local="no">faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</includedby>
     <includedby refid="quantizers_8h" local="no">faiss/impl/scalar_quantizer/quantizers.h</includedby>
     <includedby refid="scanners_8h" local="no">faiss/impl/scalar_quantizer/scanners.h</includedby>
+    <includedby refid="fp16__kernels_8h" local="no">faiss/utils/simd_impl/fp16_kernels.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>faiss/impl/platform_macros.h</label>
@@ -88,6 +89,12 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/utils/simd_impl/fp16_kernels.h</label>
+        <link refid="fp16__kernels_8h_source"/>
       </node>
     </invincdepgraph>
     <briefdescription>

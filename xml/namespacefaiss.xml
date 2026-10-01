@@ -53,6 +53,8 @@
     <innerclass refid="structfaiss_1_1FileIOReader" prot="public">faiss::FileIOReader</innerclass>
     <innerclass refid="structfaiss_1_1FileIOWriter" prot="public">faiss::FileIOWriter</innerclass>
     <innerclass refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public">faiss::FlatCodesDistanceComputer</innerclass>
+    <innerclass refid="structfaiss_1_1Fp16QueryTiles" prot="public">faiss::Fp16QueryTiles</innerclass>
+    <innerclass refid="structfaiss_1_1Fp32QueryTiles" prot="public">faiss::Fp32QueryTiles</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer16__tpl" prot="public">faiss::GenHammingComputer16_tpl</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1AVX2_01_4" prot="public">faiss::GenHammingComputer16_tpl&lt; SIMDLevel::AVX2 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::GenHammingComputer16_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
@@ -1974,7 +1976,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="581" column="23" declfile="faiss/IndexIVF.h" declline="581" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="625" column="23" declfile="faiss/IndexIVF.h" declline="625" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -1988,7 +1990,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="599" column="32" declfile="faiss/IndexIVF.h" declline="599" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="643" column="32" declfile="faiss/IndexIVF.h" declline="643" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -2439,7 +2441,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="230" column="7" declfile="faiss/Clustering.h" declline="230" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="259" column="7" declfile="faiss/Clustering.h" declline="259" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -12174,6 +12176,116 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="446" column="6" declfile="faiss/utils/distances.h" declline="446" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a2b05f584a706892782deb66903753969" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::knn_inner_product_fp16</definition>
+        <argsstring>(const uint16_t *x, const float *y, size_t d, size_t nx, size_t ny, size_t k, float *distances, int64_t *indexes, const IDSelector *sel=nullptr)</argsstring>
+        <name>knn_inner_product_fp16</name>
+        <qualifiedname>faiss::knn_inner_product_fp16</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>indexes</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>knn_inner_product for packed IEEE binary16 queries (x: nx * d uint16_t).</para>
+<para>The BLAS kernels widen each query tile once and reuse it for all database tiles, so there is no fp32 copy of the queries. Results are the same as knn_inner_product on the widened queries. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/distances.h" line="464" column="6" declfile="faiss/utils/distances.h" declline="464" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a79b28d05d2c60682d4b952ba337a975a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::knn_L2sqr_fp16</definition>
+        <argsstring>(const uint16_t *x, const float *y, size_t d, size_t nx, size_t ny, size_t k, float *distances, int64_t *indexes, const float *y_norm2=nullptr, const IDSelector *sel=nullptr)</argsstring>
+        <name>knn_L2sqr_fp16</name>
+        <qualifiedname>faiss::knn_L2sqr_fp16</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>indexes</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y_norm2</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>knn_L2sqr for packed IEEE binary16 queries, see knn_inner_product_fp16 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/distances.h" line="476" column="6" declfile="faiss/utils/distances.h" declline="476" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::knn_inner_products_by_idx</definition>
@@ -12274,7 +12386,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="468" column="6" declfile="faiss/utils/distances.h" declline="468" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="498" column="6" declfile="faiss/utils/distances.h" declline="498" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -12376,7 +12488,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="491" column="6" declfile="faiss/utils/distances.h" declline="491" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="521" column="6" declfile="faiss/utils/distances.h" declline="521" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -12458,7 +12570,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="519" column="6" declfile="faiss/utils/distances.h" declline="519" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="549" column="6" declfile="faiss/utils/distances.h" declline="549" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -12506,7 +12618,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="530" column="6" declfile="faiss/utils/distances.h" declline="530" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="560" column="6" declfile="faiss/utils/distances.h" declline="560" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -12549,7 +12661,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="545" column="6" declfile="faiss/utils/distances.h" declline="545" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="575" column="6" declfile="faiss/utils/distances.h" declline="575" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5dd6d801259938e369896dce0d535e61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -12596,7 +12708,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="555" column="6" declfile="faiss/utils/distances.h" declline="555" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="585" column="6" declfile="faiss/utils/distances.h" declline="585" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -12665,7 +12777,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="579" column="6" declfile="faiss/utils/distances.h" declline="579" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="609" column="6" declfile="faiss/utils/distances.h" declline="609" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a29753cc2772af16343641e63d0cd6ebc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -12704,7 +12816,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="583" column="6" declfile="faiss/utils/distances.h" declline="583" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="613" column="6" declfile="faiss/utils/distances.h" declline="613" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -12741,7 +12853,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="588" column="5" declfile="faiss/utils/distances.h" declline="588" declcolumn="5"/>
+        <location file="faiss/utils/distances.h" line="618" column="5" declfile="faiss/utils/distances.h" declline="618" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6a87cbe5f48bc8e8d43eeb123c3e3706" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -12780,7 +12892,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="596" column="5" declfile="faiss/utils/distances.h" declline="596" declcolumn="5"/>
+        <location file="faiss/utils/distances.h" line="626" column="5" declfile="faiss/utils/distances.h" declline="626" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa5e841c092ed5a4c19640bd0689e44e2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -18971,7 +19083,55 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" line="18" column="6" declfile="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" declline="18" declcolumn="6"/>
+        <location file="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" line="100" column="6" declfile="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" declline="100" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ab7a7c888027e1afbbaf404183fab1fbd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::exhaustive_L2sqr_blas_cmax_fp16</definition>
+        <argsstring>(const uint16_t *x, const float *y, size_t d, size_t nx, size_t ny, Top1BlockResultHandler&lt; CMax&lt; float, int64_t &gt; &gt; &amp;res, const float *y_norms)</argsstring>
+        <name>exhaustive_L2sqr_blas_cmax_fp16</name>
+        <qualifiedname>faiss::exhaustive_L2sqr_blas_cmax_fp16</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Top1BlockResultHandler" kindref="compound">Top1BlockResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt; &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y_norms</declname>
+        </param>
+        <briefdescription>
+<para>Same as exhaustive_L2sqr_blas_cmax for packed IEEE binary16 queries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" line="111" column="6" declfile="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" declline="111" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7e7970c7b6e78837074358ff5756abcd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -20742,6 +20902,59 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="165" column="6" declfile="faiss/utils/utils.h" declline="165" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a126996f5691b55a2fe86c4d58e512fb3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::fp16_to_fp32</definition>
+        <argsstring>(size_t n, const uint16_t *x, float *out)</argsstring>
+        <name>fp16_to_fp32</name>
+        <qualifiedname>faiss::fp16_to_fp32</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Convert packed IEEE binary16 values to fp32 (exact).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of values </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input fp16 values, size n </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output fp32 values, size n </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="173" column="6" declfile="faiss/utils/utils.h" declline="173" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
         <definition>uint64_t faiss::hash_bytes</definition>
@@ -20763,7 +20976,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="168" column="10" declfile="faiss/utils/utils.h" declline="168" declcolumn="10"/>
+        <location file="faiss/utils/utils.h" line="176" column="10" declfile="faiss/utils/utils.h" declline="176" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -20778,7 +20991,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="171" column="6" declfile="faiss/utils/utils.h" declline="171" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="179" column="6" declfile="faiss/utils/utils.h" declline="179" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -13,6 +13,7 @@
     <includedby refid="distances__autovec-inl_8h" local="no">faiss/utils/simd_impl/distances_autovec-inl.h</includedby>
     <includedby refid="distances__simdlib256_8h" local="no">faiss/utils/simd_impl/distances_simdlib256.h</includedby>
     <includedby refid="distances__sse-inl_8h" local="no">faiss/utils/simd_impl/distances_sse-inl.h</includedby>
+    <includedby refid="exhaustive__L2sqr__blas__cmax_8h" local="no">faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>faiss/impl/platform_macros.h</label>
@@ -552,6 +553,8 @@
         </childnode>
         <childnode refid="65" relation="include">
         </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
       </node>
       <node id="62">
         <label>faiss/utils/distances_dispatch.h</label>
@@ -574,6 +577,10 @@
       <node id="65">
         <label>faiss/utils/simd_impl/distances_sse-inl.h</label>
         <link refid="distances__sse-inl_8h_source"/>
+      </node>
+      <node id="66">
+        <label>faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h</label>
+        <link refid="exhaustive__L2sqr__blas__cmax_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
@@ -1039,152 +1046,182 @@
 <codeline lineno="455"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y_norm2<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="456"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="457"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="458"><highlight class="comment">/**<sp/>Find<sp/>the<sp/>max<sp/>inner<sp/>product<sp/>neighbors<sp/>for<sp/>nx<sp/>queries<sp/>in<sp/>a<sp/>set<sp/>of<sp/>ny<sp/>vectors</highlight></codeline>
-<codeline lineno="459"><highlight class="comment"><sp/>*<sp/>indexed<sp/>by<sp/>ids.<sp/>May<sp/>be<sp/>useful<sp/>for<sp/>re-ranking<sp/>a<sp/>pre-selected<sp/>vector<sp/>list</highlight></codeline>
-<codeline lineno="460"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="461"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="462"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>(max(ids)<sp/>+<sp/>1)<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="463"><highlight class="comment"><sp/>*<sp/>@param<sp/>ids<sp/><sp/>subset<sp/>of<sp/>database<sp/>vectors<sp/>to<sp/>consider,<sp/>size<sp/>(nx,<sp/>nsubset)</highlight></codeline>
-<codeline lineno="464"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>structure</highlight></codeline>
-<codeline lineno="465"><highlight class="comment"><sp/>*<sp/>@param<sp/>ld_ids<sp/>stride<sp/>for<sp/>the<sp/>ids<sp/>array.<sp/>-1:<sp/>use<sp/>nsubset,<sp/>0:<sp/>all<sp/>queries</highlight></codeline>
-<codeline lineno="466"><highlight class="comment"><sp/>*<sp/>process<sp/>the<sp/>same<sp/>subset</highlight></codeline>
-<codeline lineno="467"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="468" refid="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" kindref="member">knn_inner_products_by_idx</ref>(</highlight></codeline>
-<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
-<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>subset,</highlight></codeline>
-<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
-<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
-<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsubset,</highlight></codeline>
-<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vals,</highlight></codeline>
-<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>ids,</highlight></codeline>
-<codeline lineno="479"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ld_ids<sp/>=<sp/>-1);</highlight></codeline>
-<codeline lineno="480"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="481"><highlight class="comment">/**<sp/>Find<sp/>the<sp/>nearest<sp/>neighbors<sp/>for<sp/>nx<sp/>queries<sp/>in<sp/>a<sp/>set<sp/>of<sp/>ny<sp/>vectors</highlight></codeline>
-<codeline lineno="482"><highlight class="comment"><sp/>*<sp/>indexed<sp/>by<sp/>ids.<sp/>May<sp/>be<sp/>useful<sp/>for<sp/>re-ranking<sp/>a<sp/>pre-selected<sp/>vector<sp/>list</highlight></codeline>
-<codeline lineno="483"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="484"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="485"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>(max(ids)<sp/>+<sp/>1)<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="486"><highlight class="comment"><sp/>*<sp/>@param<sp/>subset<sp/>subset<sp/>of<sp/>database<sp/>vectors<sp/>to<sp/>consider,<sp/>size<sp/>(nx,<sp/>nsubset)</highlight></codeline>
-<codeline lineno="487"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>structure</highlight></codeline>
-<codeline lineno="488"><highlight class="comment"><sp/>*<sp/>@param<sp/>ld_subset<sp/>stride<sp/>for<sp/>the<sp/>subset<sp/>array.<sp/>-1:<sp/>use<sp/>nsubset,<sp/>0:<sp/>all<sp/>queries</highlight></codeline>
-<codeline lineno="489"><highlight class="comment"><sp/>*<sp/>process<sp/>the<sp/>same<sp/>subset</highlight></codeline>
-<codeline lineno="490"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="491" refid="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" kindref="member">knn_L2sqr_by_idx</ref>(</highlight></codeline>
-<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
-<codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>subset,</highlight></codeline>
-<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
-<codeline lineno="497"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
-<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsubset,</highlight></codeline>
-<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vals,</highlight></codeline>
-<codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>ids,</highlight></codeline>
-<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ld_subset<sp/>=<sp/>-1);</highlight></codeline>
-<codeline lineno="503"><highlight class="normal"></highlight></codeline>
-<codeline lineno="504"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
-<codeline lineno="505"><highlight class="comment"><sp/>*<sp/>Range<sp/>search</highlight></codeline>
-<codeline lineno="506"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="507"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="508"><highlight class="comment">///<sp/>Forward<sp/>declaration,<sp/>see<sp/>AuxIndexStructures.h</highlight></codeline>
-<codeline lineno="509"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>;</highlight></codeline>
+<codeline lineno="458"><highlight class="comment">/**<sp/>knn_inner_product<sp/>for<sp/>packed<sp/>IEEE<sp/>binary16<sp/>queries<sp/>(x:<sp/>nx<sp/>*<sp/>d<sp/>uint16_t).</highlight></codeline>
+<codeline lineno="459"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="460"><highlight class="comment"><sp/>*<sp/>The<sp/>BLAS<sp/>kernels<sp/>widen<sp/>each<sp/>query<sp/>tile<sp/>once<sp/>and<sp/>reuse<sp/>it<sp/>for<sp/>all<sp/>database</highlight></codeline>
+<codeline lineno="461"><highlight class="comment"><sp/>*<sp/>tiles,<sp/>so<sp/>there<sp/>is<sp/>no<sp/>fp32<sp/>copy<sp/>of<sp/>the<sp/>queries.<sp/>Results<sp/>are<sp/>the<sp/>same<sp/>as</highlight></codeline>
+<codeline lineno="462"><highlight class="comment"><sp/>*<sp/>knn_inner_product<sp/>on<sp/>the<sp/>widened<sp/>queries.</highlight></codeline>
+<codeline lineno="463"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="464" refid="namespacefaiss_1a2b05f584a706892782deb66903753969" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a2b05f584a706892782deb66903753969" kindref="member">knn_inner_product_fp16</ref>(</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x,</highlight></codeline>
+<codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
+<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>indexes,</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="475"><highlight class="comment">///<sp/>knn_L2sqr<sp/>for<sp/>packed<sp/>IEEE<sp/>binary16<sp/>queries,<sp/>see<sp/>knn_inner_product_fp16</highlight></codeline>
+<codeline lineno="476" refid="namespacefaiss_1a79b28d05d2c60682d4b952ba337a975a" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a79b28d05d2c60682d4b952ba337a975a" kindref="member">knn_L2sqr_fp16</ref>(</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x,</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
+<codeline lineno="479"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="480"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
+<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>indexes,</highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y_norm2<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="487"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="488"><highlight class="comment">/**<sp/>Find<sp/>the<sp/>max<sp/>inner<sp/>product<sp/>neighbors<sp/>for<sp/>nx<sp/>queries<sp/>in<sp/>a<sp/>set<sp/>of<sp/>ny<sp/>vectors</highlight></codeline>
+<codeline lineno="489"><highlight class="comment"><sp/>*<sp/>indexed<sp/>by<sp/>ids.<sp/>May<sp/>be<sp/>useful<sp/>for<sp/>re-ranking<sp/>a<sp/>pre-selected<sp/>vector<sp/>list</highlight></codeline>
+<codeline lineno="490"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="491"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="492"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>(max(ids)<sp/>+<sp/>1)<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="493"><highlight class="comment"><sp/>*<sp/>@param<sp/>ids<sp/><sp/>subset<sp/>of<sp/>database<sp/>vectors<sp/>to<sp/>consider,<sp/>size<sp/>(nx,<sp/>nsubset)</highlight></codeline>
+<codeline lineno="494"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>structure</highlight></codeline>
+<codeline lineno="495"><highlight class="comment"><sp/>*<sp/>@param<sp/>ld_ids<sp/>stride<sp/>for<sp/>the<sp/>ids<sp/>array.<sp/>-1:<sp/>use<sp/>nsubset,<sp/>0:<sp/>all<sp/>queries</highlight></codeline>
+<codeline lineno="496"><highlight class="comment"><sp/>*<sp/>process<sp/>the<sp/>same<sp/>subset</highlight></codeline>
+<codeline lineno="497"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="498" refid="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" kindref="member">knn_inner_products_by_idx</ref>(</highlight></codeline>
+<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>subset,</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="503"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsubset,</highlight></codeline>
+<codeline lineno="506"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="507"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vals,</highlight></codeline>
+<codeline lineno="508"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>ids,</highlight></codeline>
+<codeline lineno="509"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ld_ids<sp/>=<sp/>-1);</highlight></codeline>
 <codeline lineno="510"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="511"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
-<codeline lineno="512"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>w.r.t<sp/>to<sp/>max<sp/>inner<sp/>product</highlight></codeline>
+<codeline lineno="511"><highlight class="comment">/**<sp/>Find<sp/>the<sp/>nearest<sp/>neighbors<sp/>for<sp/>nx<sp/>queries<sp/>in<sp/>a<sp/>set<sp/>of<sp/>ny<sp/>vectors</highlight></codeline>
+<codeline lineno="512"><highlight class="comment"><sp/>*<sp/>indexed<sp/>by<sp/>ids.<sp/>May<sp/>be<sp/>useful<sp/>for<sp/>re-ranking<sp/>a<sp/>pre-selected<sp/>vector<sp/>list</highlight></codeline>
 <codeline lineno="513"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="514"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="515"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>ny<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="516"><highlight class="comment"><sp/>*<sp/>@param<sp/>radius<sp/>search<sp/>radius<sp/>around<sp/>the<sp/>x<sp/>vectors</highlight></codeline>
-<codeline lineno="517"><highlight class="comment"><sp/>*<sp/>@param<sp/>result<sp/>result<sp/>structure</highlight></codeline>
-<codeline lineno="518"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="519" refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" kindref="member">range_search_L2sqr</ref>(</highlight></codeline>
-<codeline lineno="520"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="521"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
-<codeline lineno="522"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="523"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
-<codeline lineno="524"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
-<codeline lineno="525"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
-<codeline lineno="526"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
-<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="528"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="529"><highlight class="comment">///<sp/>same<sp/>as<sp/>range_search_L2sqr<sp/>for<sp/>the<sp/>inner<sp/>product<sp/>similarity</highlight></codeline>
-<codeline lineno="530" refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kindref="member">range_search_inner_product</ref>(</highlight></codeline>
-<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
-<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
-<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
-<codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
-<codeline lineno="537"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
-<codeline lineno="538"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="539"><highlight class="normal"></highlight></codeline>
-<codeline lineno="540"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
-<codeline lineno="541"><highlight class="comment"><sp/>*<sp/>PQ<sp/>tables<sp/>computations</highlight></codeline>
-<codeline lineno="542"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="543"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="544"><highlight class="comment">///<sp/>specialized<sp/>function<sp/>for<sp/>PQ2</highlight></codeline>
-<codeline lineno="545" refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kindref="member">compute_PQ_dis_tables_dsub2</ref>(</highlight></codeline>
-<codeline lineno="546"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="547"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ksub,</highlight></codeline>
-<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids,</highlight></codeline>
-<codeline lineno="549"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="514"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="515"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>(max(ids)<sp/>+<sp/>1)<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="516"><highlight class="comment"><sp/>*<sp/>@param<sp/>subset<sp/>subset<sp/>of<sp/>database<sp/>vectors<sp/>to<sp/>consider,<sp/>size<sp/>(nx,<sp/>nsubset)</highlight></codeline>
+<codeline lineno="517"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>structure</highlight></codeline>
+<codeline lineno="518"><highlight class="comment"><sp/>*<sp/>@param<sp/>ld_subset<sp/>stride<sp/>for<sp/>the<sp/>subset<sp/>array.<sp/>-1:<sp/>use<sp/>nsubset,<sp/>0:<sp/>all<sp/>queries</highlight></codeline>
+<codeline lineno="519"><highlight class="comment"><sp/>*<sp/>process<sp/>the<sp/>same<sp/>subset</highlight></codeline>
+<codeline lineno="520"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="521" refid="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" kindref="member">knn_L2sqr_by_idx</ref>(</highlight></codeline>
+<codeline lineno="522"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="523"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
+<codeline lineno="524"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>subset,</highlight></codeline>
+<codeline lineno="525"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="526"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
+<codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsubset,</highlight></codeline>
+<codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vals,</highlight></codeline>
+<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>ids,</highlight></codeline>
+<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ld_subset<sp/>=<sp/>-1);</highlight></codeline>
+<codeline lineno="533"><highlight class="normal"></highlight></codeline>
+<codeline lineno="534"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
+<codeline lineno="535"><highlight class="comment"><sp/>*<sp/>Range<sp/>search</highlight></codeline>
+<codeline lineno="536"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="537"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="538"><highlight class="comment">///<sp/>Forward<sp/>declaration,<sp/>see<sp/>AuxIndexStructures.h</highlight></codeline>
+<codeline lineno="539"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>;</highlight></codeline>
+<codeline lineno="540"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="541"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
+<codeline lineno="542"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>w.r.t<sp/>to<sp/>max<sp/>inner<sp/>product</highlight></codeline>
+<codeline lineno="543"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="544"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="545"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>ny<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="546"><highlight class="comment"><sp/>*<sp/>@param<sp/>radius<sp/>search<sp/>radius<sp/>around<sp/>the<sp/>x<sp/>vectors</highlight></codeline>
+<codeline lineno="547"><highlight class="comment"><sp/>*<sp/>@param<sp/>result<sp/>result<sp/>structure</highlight></codeline>
+<codeline lineno="548"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="549" refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" kindref="member">range_search_L2sqr</ref>(</highlight></codeline>
 <codeline lineno="550"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="551"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_inner_product,</highlight></codeline>
-<codeline lineno="552"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis_tables);</highlight></codeline>
-<codeline lineno="553"><highlight class="normal"></highlight></codeline>
-<codeline lineno="554"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
-<codeline lineno="555"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kindref="member">compute_PQ_dis_tables_dsub2</ref>(</highlight></codeline>
-<codeline lineno="556"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="557"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ksub,</highlight></codeline>
-<codeline lineno="558"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids,</highlight></codeline>
-<codeline lineno="559"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
-<codeline lineno="560"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="561"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_inner_product,</highlight></codeline>
-<codeline lineno="562"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis_tables);</highlight></codeline>
-<codeline lineno="563"><highlight class="normal"></highlight></codeline>
-<codeline lineno="564"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
-<codeline lineno="565"><highlight class="comment"><sp/>*<sp/>Templatized<sp/>versions<sp/>of<sp/>distance<sp/>functions</highlight></codeline>
-<codeline lineno="566"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="567"><highlight class="normal"></highlight></codeline>
-<codeline lineno="568"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
-<codeline lineno="569"><highlight class="comment"><sp/>*<sp/>Misc<sp/><sp/>matrix<sp/>and<sp/>vector<sp/>manipulation<sp/>functions</highlight></codeline>
-<codeline lineno="570"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="571"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="572"><highlight class="comment">/**<sp/>compute<sp/>c<sp/>:=<sp/>a<sp/>+<sp/>bf<sp/>*<sp/>b<sp/>for<sp/>a,<sp/>b<sp/>and<sp/>c<sp/>tables</highlight></codeline>
-<codeline lineno="573"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="574"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/>size<sp/>of<sp/>the<sp/>tables</highlight></codeline>
-<codeline lineno="575"><highlight class="comment"><sp/>*<sp/>@param<sp/>a<sp/><sp/><sp/>size<sp/>n</highlight></codeline>
-<codeline lineno="576"><highlight class="comment"><sp/>*<sp/>@param<sp/>b<sp/><sp/><sp/>size<sp/>n</highlight></codeline>
-<codeline lineno="577"><highlight class="comment"><sp/>*<sp/>@param<sp/>c<sp/><sp/><sp/>result<sp/>table,<sp/>size<sp/>n</highlight></codeline>
-<codeline lineno="578"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="579" refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" kindref="member">fvec_madd</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
-<codeline lineno="580"><highlight class="normal"></highlight></codeline>
-<codeline lineno="581"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>same<sp/>statically<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="582"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
-<codeline lineno="583"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" kindref="member">fvec_madd</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
-<codeline lineno="584"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="585"><highlight class="comment">/**<sp/>same<sp/>as<sp/>fvec_madd,<sp/>also<sp/>return<sp/>index<sp/>of<sp/>the<sp/>min<sp/>of<sp/>the<sp/>result<sp/>table</highlight></codeline>
-<codeline lineno="586"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/>index<sp/>of<sp/>the<sp/>min<sp/>of<sp/>table<sp/>c</highlight></codeline>
-<codeline lineno="587"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="588" refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kindref="member">fvec_madd_and_argmin</ref>(</highlight></codeline>
-<codeline lineno="589"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
-<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,</highlight></codeline>
-<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,</highlight></codeline>
-<codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,</highlight></codeline>
-<codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
-<codeline lineno="594"><highlight class="normal"></highlight></codeline>
-<codeline lineno="595"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
-<codeline lineno="596"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kindref="member">fvec_madd_and_argmin</ref>(</highlight></codeline>
-<codeline lineno="597"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
-<codeline lineno="598"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,</highlight></codeline>
-<codeline lineno="599"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,</highlight></codeline>
-<codeline lineno="600"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,</highlight></codeline>
-<codeline lineno="601"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
-<codeline lineno="602"><highlight class="normal"></highlight></codeline>
-<codeline lineno="603"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="551"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
+<codeline lineno="552"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="553"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
+<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
+<codeline lineno="556"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
+<codeline lineno="557"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="558"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="559"><highlight class="comment">///<sp/>same<sp/>as<sp/>range_search_L2sqr<sp/>for<sp/>the<sp/>inner<sp/>product<sp/>similarity</highlight></codeline>
+<codeline lineno="560" refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kindref="member">range_search_inner_product</ref>(</highlight></codeline>
+<codeline lineno="561"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="562"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y,</highlight></codeline>
+<codeline lineno="563"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="564"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="565"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
+<codeline lineno="566"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
+<codeline lineno="567"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
+<codeline lineno="568"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="569"><highlight class="normal"></highlight></codeline>
+<codeline lineno="570"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
+<codeline lineno="571"><highlight class="comment"><sp/>*<sp/>PQ<sp/>tables<sp/>computations</highlight></codeline>
+<codeline lineno="572"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="573"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="574"><highlight class="comment">///<sp/>specialized<sp/>function<sp/>for<sp/>PQ2</highlight></codeline>
+<codeline lineno="575" refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kindref="member">compute_PQ_dis_tables_dsub2</ref>(</highlight></codeline>
+<codeline lineno="576"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="577"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ksub,</highlight></codeline>
+<codeline lineno="578"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids,</highlight></codeline>
+<codeline lineno="579"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="580"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="581"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_inner_product,</highlight></codeline>
+<codeline lineno="582"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis_tables);</highlight></codeline>
+<codeline lineno="583"><highlight class="normal"></highlight></codeline>
+<codeline lineno="584"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kindref="member">compute_PQ_dis_tables_dsub2</ref>(</highlight></codeline>
+<codeline lineno="586"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="587"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ksub,</highlight></codeline>
+<codeline lineno="588"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids,</highlight></codeline>
+<codeline lineno="589"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
+<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_inner_product,</highlight></codeline>
+<codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis_tables);</highlight></codeline>
+<codeline lineno="593"><highlight class="normal"></highlight></codeline>
+<codeline lineno="594"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
+<codeline lineno="595"><highlight class="comment"><sp/>*<sp/>Templatized<sp/>versions<sp/>of<sp/>distance<sp/>functions</highlight></codeline>
+<codeline lineno="596"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="597"><highlight class="normal"></highlight></codeline>
+<codeline lineno="598"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
+<codeline lineno="599"><highlight class="comment"><sp/>*<sp/>Misc<sp/><sp/>matrix<sp/>and<sp/>vector<sp/>manipulation<sp/>functions</highlight></codeline>
+<codeline lineno="600"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="601"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="602"><highlight class="comment">/**<sp/>compute<sp/>c<sp/>:=<sp/>a<sp/>+<sp/>bf<sp/>*<sp/>b<sp/>for<sp/>a,<sp/>b<sp/>and<sp/>c<sp/>tables</highlight></codeline>
+<codeline lineno="603"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="604"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/>size<sp/>of<sp/>the<sp/>tables</highlight></codeline>
+<codeline lineno="605"><highlight class="comment"><sp/>*<sp/>@param<sp/>a<sp/><sp/><sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="606"><highlight class="comment"><sp/>*<sp/>@param<sp/>b<sp/><sp/><sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="607"><highlight class="comment"><sp/>*<sp/>@param<sp/>c<sp/><sp/><sp/>result<sp/>table,<sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="608"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="609" refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" kindref="member">fvec_madd</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
+<codeline lineno="610"><highlight class="normal"></highlight></codeline>
+<codeline lineno="611"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>same<sp/>statically<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="612"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
+<codeline lineno="613"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" kindref="member">fvec_madd</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
+<codeline lineno="614"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="615"><highlight class="comment">/**<sp/>same<sp/>as<sp/>fvec_madd,<sp/>also<sp/>return<sp/>index<sp/>of<sp/>the<sp/>min<sp/>of<sp/>the<sp/>result<sp/>table</highlight></codeline>
+<codeline lineno="616"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/>index<sp/>of<sp/>the<sp/>min<sp/>of<sp/>table<sp/>c</highlight></codeline>
+<codeline lineno="617"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="618" refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kindref="member">fvec_madd_and_argmin</ref>(</highlight></codeline>
+<codeline lineno="619"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,</highlight></codeline>
+<codeline lineno="621"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,</highlight></codeline>
+<codeline lineno="622"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,</highlight></codeline>
+<codeline lineno="623"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
+<codeline lineno="624"><highlight class="normal"></highlight></codeline>
+<codeline lineno="625"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
+<codeline lineno="626"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kindref="member">fvec_madd_and_argmin</ref>(</highlight></codeline>
+<codeline lineno="627"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="628"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,</highlight></codeline>
+<codeline lineno="629"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,</highlight></codeline>
+<codeline lineno="630"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,</highlight></codeline>
+<codeline lineno="631"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
+<codeline lineno="632"><highlight class="normal"></highlight></codeline>
+<codeline lineno="633"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/distances.h"/>
   </compounddef>

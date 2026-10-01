@@ -319,6 +319,95 @@
         </inbodydescription>
         <location file="faiss/impl/ClusteringHelpers.h" line="66" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="66" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::detail::compute_centroids_fp16</definition>
+        <argsstring>(size_t d, size_t k, size_t n, size_t k_frozen, const uint16_t *x, const int64_t *assign, const float *weights, float *hassign, float *centroids)</argsstring>
+        <name>compute_centroids_fp16</name>
+        <qualifiedname>faiss::detail::compute_centroids_fp16</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k_frozen</declname>
+        </param>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const int64_t *</type>
+          <declname>assign</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>weights</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>hassign</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>centroids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Same as compute_centroids for training vectors stored as packed IEEE binary16 values.</para>
+<para>Rows are widened in registers and accumulated directly into the fp32 centroids: there is no per-row decode call and no decode buffer.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>training vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringHelpers.h" line="86" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="86" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::detail::fp16_all_finite</definition>
+        <argsstring>(size_t n, const uint16_t *x)</argsstring>
+        <name>fp16_all_finite</name>
+        <qualifiedname>faiss::detail::fp16_all_finite</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Check packed IEEE binary16 values for NaNs and infinities.</para>
+<para>The check runs on the bit patterns, without widening to fp32.</para>
+<para><simplesect kind="return"><para>true iff none of the <computeroutput>n</computeroutput> values is a NaN or an infinity </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringHelpers.h" line="103" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="103" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1abafebf68b413f497c0fc8e44a180cfb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::detail::split_clusters</definition>
@@ -360,7 +449,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ClusteringHelpers.h" line="85" column="5" declfile="faiss/impl/ClusteringHelpers.h" declline="85" declcolumn="5"/>
+        <location file="faiss/impl/ClusteringHelpers.h" line="112" column="5" declfile="faiss/impl/ClusteringHelpers.h" declline="112" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1ace450562f499446f88cfc5596a421e9d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -535,6 +624,76 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/platform_macros.h" line="154" column="13" bodyfile="faiss/impl/platform_macros.h" bodystart="154" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1detail_1aaf43e25f27c3867e9b4b2468a79fee70" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>Level</declname>
+            <defname>Level</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::detail::fp16_madd</definition>
+        <argsstring>(size_t d, const uint16_t *x, float w, float *c)</argsstring>
+        <name>fp16_madd</name>
+        <qualifiedname>faiss::detail::fp16_madd</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/fp16_kernels.h" line="21" column="13" bodyfile="faiss/utils/simd_impl/fp16_kernels.h" bodystart="21" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1detail_1adcf446d04daca757cbcfb59e51112075" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>Level</declname>
+            <defname>Level</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::detail::fp16_to_fp32_kernel</definition>
+        <argsstring>(size_t n, const uint16_t *x, float *out)</argsstring>
+        <name>fp16_to_fp32_kernel</name>
+        <qualifiedname>faiss::detail::fp16_to_fp32_kernel</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/fp16_kernels.h" line="28" column="13" bodyfile="faiss/utils/simd_impl/fp16_kernels.h" bodystart="28" bodyend="32"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1aa233c0a54aee4ea6ece0c73d8db01d67" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>

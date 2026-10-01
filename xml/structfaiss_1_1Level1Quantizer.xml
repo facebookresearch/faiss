@@ -126,13 +126,85 @@
           <declname>metric_type</declname>
         </param>
         <briefdescription>
-<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>
+<para>Trains the level-1 quantizer from fp32 vectors. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="50" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a8e073c4e8aaf4690dd14847a47fae220" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Level1Quantizer::train_q1_ex</definition>
+        <argsstring>(size_t n, const void *x, NumericType numeric_type, bool verbose, MetricType metric_type)</argsstring>
+        <name>train_q1_ex</name>
+        <qualifiedname>faiss::Level1Quantizer::train_q1_ex</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Trains the level-1 quantizer from Float32 or packed Float16 vectors.</para>
+<para>Float16 runs k-means natively on the fp16 rows (see <ref refid="structfaiss_1_1Clustering_1ad5a11742544521801f37af4fd9e6f97d" kindref="member">Clustering::train_ex</ref>). With quantizer_trains_alone == 1 the data is passed on to quantizer-&gt;train_ex(). <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref> requires Float32. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="62" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1aa00eb36606d9c97c91e27ac0401c4e62" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Level1Quantizer::train_q1_encoded</definition>
+        <argsstring>(size_t n, const uint8_t *x, const Index *codec, bool verbose, MetricType metric_type)</argsstring>
+        <name>train_q1_encoded</name>
+        <qualifiedname>faiss::Level1Quantizer::train_q1_encoded</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>codec</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Trains the level-1 quantizer from vectors encoded by <computeroutput>codec</computeroutput>.</para>
+<para>The codec must remain alive for the duration of this call and decode each input row to <computeroutput>quantizer-&gt;d</computeroutput> floats. Encoded training is supported when clustering trains the quantizer (quantizer_trains_alone 0 or 2) without <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="76" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -147,7 +219,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="57" column="12"/>
+        <location file="faiss/IndexIVF.h" line="84" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -169,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="58" column="10"/>
+        <location file="faiss/IndexIVF.h" line="85" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -187,7 +259,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="59" column="11"/>
+        <location file="faiss/IndexIVF.h" line="86" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1ad2d58826ac8d146e3ecce708714ee06d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -209,7 +281,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="61" column="5"/>
+        <location file="faiss/IndexIVF.h" line="88" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -223,7 +295,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="63" column="5"/>
+        <location file="faiss/IndexIVF.h" line="90" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -237,7 +309,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="65" column="5"/>
+        <location file="faiss/IndexIVF.h" line="92" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -453,7 +525,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVF.h" line="30" column="1" bodyfile="faiss/IndexIVF.h" bodystart="30" bodyend="66"/>
+    <location file="faiss/IndexIVF.h" line="30" column="1" bodyfile="faiss/IndexIVF.h" bodystart="30" bodyend="93"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>clustering_index</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>coarse_code_size</name></member>
@@ -467,6 +539,8 @@
       <member refid="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>quantizer_trains_alone</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>train_q1</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1aa00eb36606d9c97c91e27ac0401c4e62" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>train_q1_encoded</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a8e073c4e8aaf4690dd14847a47fae220" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>train_q1_ex</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>~Level1Quantizer</name></member>
     </listofallmembers>
   </compounddef>

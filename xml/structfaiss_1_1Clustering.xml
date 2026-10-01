@@ -492,6 +492,43 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="144" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Clustering_1ad5a11742544521801f37af4fd9e6f97d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Clustering::train_ex</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type, Index &amp;index, const float *weights=nullptr)</argsstring>
+        <name>train_ex</name>
+        <qualifiedname>faiss::Clustering::train_ex</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>weights</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>run k-means on vectors of the given numeric type</para>
+<para>Float32 is the same as <ref refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" kindref="member">train()</ref>. Float16 takes packed IEEE binary16 vectors (n * d uint16_t) and runs k-means natively on them: the NaN check, subsampling, initialization and centroid updates read the fp16 rows directly, and the assignment step passes blocks of at most decode_block_size fp16 rows to index.search_ex(Float16). Indexes with a native fp16 search consume them directly; the <ref refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" kindref="member">Index::search_ex</ref> default widens them block by block. There is no fp32 copy of the training set, unless init_method needs one. Centroids are fp32. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="162" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::Clustering::post_process_centroids</definition>
@@ -505,7 +542,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="153" column="10"/>
+        <location file="faiss/Clustering.h" line="171" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1a17403e70a0daaa43c67ac3ea098ce5b3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -519,7 +556,48 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="155" column="13" bodyfile="faiss/Clustering.h" bodystart="155" bodyend="155"/>
+        <location file="faiss/Clustering.h" line="173" column="13" bodyfile="faiss/Clustering.h" bodystart="173" bodyend="173"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="structfaiss_1_1Clustering_1a4e4a2c75bccb6a5ee3f1fbcefbf82e20" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Clustering::train_impl</definition>
+        <argsstring>(idx_t nx, const uint8_t *x_in, const Index *codec, NumericType numeric_type, Index &amp;index, const float *weights)</argsstring>
+        <name>train_impl</name>
+        <qualifiedname>faiss::Clustering::train_impl</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>x_in</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>codec</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>k-means on rows encoded by <computeroutput>codec</computeroutput> or, if codec is null, stored as <computeroutput>numeric_type</computeroutput> (Float32 or Float16) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="178" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -559,7 +637,7 @@
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="108" column="1" bodyfile="faiss/Clustering.h" bodystart="108" bodyend="156"/>
+    <location file="faiss/Clustering.h" line="108" column="1" bodyfile="faiss/Clustering.h" bodystart="108" bodyend="185"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>afkmc2_chain_length</name></member>
       <member refid="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>centroids</name></member>
@@ -583,6 +661,8 @@
       <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>spherical</name></member>
       <member refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" prot="public" virt="virtual"><scope>faiss::Clustering</scope><name>train</name></member>
       <member refid="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>train_encoded</name></member>
+      <member refid="structfaiss_1_1Clustering_1ad5a11742544521801f37af4fd9e6f97d" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>train_ex</name></member>
+      <member refid="structfaiss_1_1Clustering_1a4e4a2c75bccb6a5ee3f1fbcefbf82e20" prot="protected" virt="non-virtual"><scope>faiss::Clustering</scope><name>train_impl</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>update_index</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>use_faster_subsampling</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a84a51c2d506530e8900272e5beef8780" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>use_super_kmeans</name></member>
