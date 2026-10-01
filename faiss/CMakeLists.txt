@@ -17,6 +17,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/approx_topk/avx2.cpp
   impl/binary_hamming/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/simd_impl/fp16_kernels_avx2.cpp
   utils/hamming_distance/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
@@ -57,6 +58,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/binary_hamming/neon.cpp
   impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/simd_impl/fp16_kernels_neon.cpp
   utils/hamming_distance/hamming_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
@@ -418,6 +420,7 @@ set(FAISS_HEADERS
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h
   utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
+  utils/simd_impl/fp16_kernels.h
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h

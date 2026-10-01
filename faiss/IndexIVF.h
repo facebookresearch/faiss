@@ -46,10 +46,37 @@ struct Level1Quantizer {
     /// to override index used during clustering
     Index* clustering_index = nullptr;
 
-    /// Trains the quantizer and calls train_residual to train sub-quantizers
+    /// Trains the level-1 quantizer from fp32 vectors.
     void train_q1(
             size_t n,
             const float* x,
+            bool verbose,
+            MetricType metric_type);
+
+    /** Trains the level-1 quantizer from Float32 or packed Float16 vectors.
+     *
+     * Float16 runs k-means natively on the fp16 rows (see
+     * Clustering::train_ex). With quantizer_trains_alone == 1 the data is
+     * passed on to quantizer->train_ex(). SuperKMeans requires Float32.
+     */
+    void train_q1_ex(
+            size_t n,
+            const void* x,
+            NumericType numeric_type,
+            bool verbose,
+            MetricType metric_type);
+
+    /** Trains the level-1 quantizer from vectors encoded by `codec`.
+     *
+     * The codec must remain alive for the duration of this call and decode
+     * each input row to `quantizer->d` floats. Encoded training is supported
+     * when clustering trains the quantizer (quantizer_trains_alone 0 or 2)
+     * without SuperKMeans.
+     */
+    void train_q1_encoded(
+            size_t n,
+            const uint8_t* x,
+            const Index* codec,
             bool verbose,
             MetricType metric_type);
 
@@ -235,6 +262,23 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /// Trains the quantizer and calls train_encoder to train sub-quantizers
     void train(idx_t n, const float* x) override;
+
+    /** Train from vectors decoded on demand by `codec`.
+     *
+     * Coarse quantizer training decodes in bounded batches. Subclasses with a
+     * trainable encoder decode at most train_encoder_num_vectors() rows into
+     * fp32; IndexIVFFlat overrides this method and needs no fp32 corpus buffer.
+     */
+    virtual void train_encoded(idx_t n, const uint8_t* x, const Index* codec);
+
+    /** Supports Float32 and packed IEEE binary16 (Float16) inputs.
+     *
+     * Float16 trains natively without a codec: the coarse quantizer runs
+     * fp16 k-means (Clustering::train_ex) and only the
+     * train_encoder_num_vectors() rows sampled for the encoder are widened
+     * to fp32. IndexIVFFlat overrides this and widens no rows at all.
+     */
+    void train_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Calls add_with_ids with NULL ids
     void add(idx_t n, const float* x) override;
