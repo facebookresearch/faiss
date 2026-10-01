@@ -567,24 +567,24 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       # Per-file SIMD flags (GCC/Clang)
       set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
         TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt;-mbmi2"
       )
       set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt"
+          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt;-mbmi2"
       )
       # VPOPCNT sources require VPOPCNTDQ and BITALG on top of baseline AVX-512.
       set_source_files_properties(${FAISS_SIMD_AVX512_VPOPCNT_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mbmi2"
       )
       # The remaining SPR sources require the full SPR feature set.
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16;-mbmi2"
       )
     else()
       # Per-file SIMD flags (MSVC)

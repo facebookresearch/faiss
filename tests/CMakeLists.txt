@@ -45,6 +45,7 @@ set(FAISS_TEST_SRC
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
   test_rabitq_fastscan.cpp
+  test_rabitq_batch_estimates.cpp
   test_super_kmeans_foundations.cpp
 )
 
@@ -69,6 +70,10 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     test_simd_perf.cpp
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+    # Enable VPOPCNT dispatch for this test. The common
+    # target enables AVX2/AVX512 only.
+    set_source_files_properties(test_rabitq_batch_estimates.cpp
+      PROPERTIES COMPILE_DEFINITIONS COMPILE_SIMD_AVX512_VPOPCNT)
     list(APPEND FAISS_TEST_SRC
       test_rabitq_simd.cpp
       test_rabitq_simd_dd.cpp
