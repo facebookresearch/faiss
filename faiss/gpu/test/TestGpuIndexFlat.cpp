@@ -821,6 +821,14 @@ std::vector<uint16_t> toFp16(const std::vector<float>& v) {
     return out;
 }
 
+std::vector<float> fromFp16(const std::vector<uint16_t>& v) {
+    std::vector<float> out(v.size());
+    std::transform(v.begin(), v.end(), out.begin(), [](uint16_t h) {
+        return faiss::decode_fp16(h);
+    });
+    return out;
+}
+
 // A copy of host data on a GPU device
 struct DeviceCopy {
     DeviceCopy(int device, const void* src, size_t bytes) {
@@ -849,7 +857,7 @@ void testSearchExFloat16(faiss::gpu::GpuIndex& index) {
 
     auto queries = faiss::gpu::randVecs(numQuery, index.d);
     auto queries16 = toFp16(queries);
-    auto roundedQueries = faiss::gpu::roundToHalf(queries);
+    auto roundedQueries = fromFp16(queries16);
 
     std::vector<float> refDistances(numQuery * k);
     std::vector<faiss::idx_t> refLabels(numQuery * k);
@@ -955,7 +963,7 @@ TEST(TestGpuIndexFlat, ClusteringTrainExFloat16) {
     int numVecs = 2000;
     auto vecs = faiss::gpu::randVecs(numVecs, dim);
     auto vecs16 = toFp16(vecs);
-    auto roundedVecs = faiss::gpu::roundToHalf(vecs);
+    auto roundedVecs = fromFp16(vecs16);
 
     faiss::ClusteringParameters cp;
     cp.niter = 10;
