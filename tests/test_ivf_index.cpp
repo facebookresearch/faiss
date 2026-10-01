@@ -261,6 +261,52 @@ TEST(IVF, list_context) {
                 labels.cend())
                 << "should return the query vector";
     }
+    // assume_sorted picks the bounded-section shortcut on an array-backed
+    // list. An iterable list has no section to bound, so it must keep the
+    // selector and filter per entry instead.
+    for (bool assume_sorted : {false, true}) {
+        // Iterator scans must honor the same selector contract as array-backed
+        // scans. Keep only the upper half of the IDs and verify both KNN and
+        // range search.
+        SCOPED_TRACE(testing::Message() << "assume_sorted=" << assume_sorted);
+        constexpr faiss::idx_t k = 100;
+        constexpr size_t nprobe = 10;
+        faiss::IDSelectorRange selector(nb / 2, nb, assume_sorted);
+        faiss::SearchParametersIVF params;
+        params.inverted_list_context = &context;
+        params.nprobe = nprobe;
+        params.sel = &selector;
+
+        context.lists_probed.clear();
+        std::vector<float> distances(k);
+        std::vector<faiss::idx_t> labels(k);
+        index.search(
+                1,
+                query_vector.data(),
+                k,
+                distances.data(),
+                labels.data(),
+                &params);
+        const size_t rejected_knn = std::count_if(
+                labels.cbegin(), labels.cend(), [&](faiss::idx_t id) {
+                    return id != -1 && !selector.is_member(id);
+                });
+        EXPECT_EQ(0, rejected_knn);
+
+        context.lists_probed.clear();
+        faiss::RangeSearchResult result(1);
+        index.range_search(
+                1,
+                query_vector.data(),
+                std::numeric_limits<float>::max(),
+                &result,
+                &params);
+        const size_t rejected_range = std::count_if(
+                result.labels,
+                result.labels + result.lims[1],
+                [&](faiss::idx_t id) { return !selector.is_member(id); });
+        EXPECT_EQ(0, rejected_range);
+    }
 }
 
 TEST(IVF, sorted_range_selector_rejects_store_pairs) {
