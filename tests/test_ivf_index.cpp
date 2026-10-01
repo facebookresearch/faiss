@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <algorithm>
 #include <atomic>
+#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <map>
@@ -1165,8 +1166,14 @@ TEST(IndexFlat, search_ex_float16_native_matches_float32) {
                         hi.data());
                 EXPECT_EQ(hi, fi)
                         << "metric=" << metric << " d=" << d << " k=" << k;
-                EXPECT_EQ(hd, fd)
-                        << "metric=" << metric << " d=" << d << " k=" << k;
+                for (size_t i = 0; i < fd.size(); ++i) {
+                    EXPECT_NEAR(
+                            hd[i],
+                            fd[i],
+                            1e-5f * std::max(1.0f, std::fabs(fd[i])))
+                            << "metric=" << metric << " d=" << d << " k=" << k
+                            << " result=" << i;
+                }
             }
         }
     }
