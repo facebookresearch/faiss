@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,6 +30,11 @@ namespace faiss {
 /*******
 Functions with SIMDLevel::NONE
 */
+
+template <>
+bool should_use_blas<SIMDLevel::NONE>(size_t nx, size_t, size_t d) {
+    return nx * d >= static_cast<size_t>(distance_compute_blas_threshold);
+}
 
 template <>
 void fvec_madd<SIMDLevel::NONE>(
