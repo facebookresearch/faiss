@@ -644,21 +644,19 @@ template struct CombinerRangeKNN<int16_t>;
 void fp16_to_fp32(size_t n, const uint16_t* x, float* out) {
     // below this many values, stay on the calling thread
     constexpr size_t block = size_t(1) << 16;
-    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
-            [&]<SIMDLevel SL>() {
-                if (n <= block) {
-                    detail::fp16_to_fp32_kernel<SL>(n, x, out);
-                    return;
-                }
-                const int64_t nblock =
-                        static_cast<int64_t>((n + block - 1) / block);
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>([&]<SIMDLevel SL>() {
+        if (n <= block) {
+            detail::fp16_to_fp32_kernel<SL>(n, x, out);
+            return;
+        }
+        const int64_t nblock = static_cast<int64_t>((n + block - 1) / block);
 #pragma omp parallel for
-                for (int64_t b = 0; b < nblock; b++) {
-                    const size_t j0 = static_cast<size_t>(b) * block;
-                    detail::fp16_to_fp32_kernel<SL>(
-                            std::min(block, n - j0), x + j0, out + j0);
-                }
-            });
+        for (int64_t b = 0; b < nblock; b++) {
+            const size_t j0 = static_cast<size_t>(b) * block;
+            detail::fp16_to_fp32_kernel<SL>(
+                    std::min(block, n - j0), x + j0, out + j0);
+        }
+    });
 }
 
 void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {

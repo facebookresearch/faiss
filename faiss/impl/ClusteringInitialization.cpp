@@ -485,35 +485,34 @@ void init_centroids_fp16(
             n_existing_centroids,
             existing_centroids);
 
-    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
-            [&]<SIMDLevel SL>() {
-                switch (initializer.method) {
-                    case ClusteringInitMethod::KMEANS_PLUS_PLUS:
-                        init_kmeans_plus_plus_impl(
-                                initializer,
-                                n,
-                                Fp16Rows<SL>{initializer.d, x},
-                                centroids,
-                                n_existing_centroids,
-                                existing_centroids);
-                        break;
-                    case ClusteringInitMethod::AFK_MC2:
-                        init_afkmc2_impl(
-                                initializer,
-                                n,
-                                Fp16Rows<SL>{initializer.d, x},
-                                centroids,
-                                n_existing_centroids,
-                                existing_centroids);
-                        break;
-                    case ClusteringInitMethod::RANDOM:
-                        FAISS_THROW_MSG(
-                                "fp16 centroid helper requires non-random "
-                                "initialization");
-                    default:
-                        FAISS_THROW_MSG("Unknown initialization method");
-                }
-            });
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>([&]<SIMDLevel SL>() {
+        switch (initializer.method) {
+            case ClusteringInitMethod::KMEANS_PLUS_PLUS:
+                init_kmeans_plus_plus_impl(
+                        initializer,
+                        n,
+                        Fp16Rows<SL>{initializer.d, x},
+                        centroids,
+                        n_existing_centroids,
+                        existing_centroids);
+                break;
+            case ClusteringInitMethod::AFK_MC2:
+                init_afkmc2_impl(
+                        initializer,
+                        n,
+                        Fp16Rows<SL>{initializer.d, x},
+                        centroids,
+                        n_existing_centroids,
+                        existing_centroids);
+                break;
+            case ClusteringInitMethod::RANDOM:
+                FAISS_THROW_MSG(
+                        "fp16 centroid helper requires non-random "
+                        "initialization");
+            default:
+                FAISS_THROW_MSG("Unknown initialization method");
+        }
+    });
 }
 
 } // namespace detail

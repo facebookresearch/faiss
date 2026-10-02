@@ -227,26 +227,22 @@ void compute_centroids_fp16(
         const float* weights,
         float* hassign,
         float* centroids) {
-    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
-            [&]<SIMDLevel SL>() {
-                compute_centroids_impl(
-                        d,
-                        k,
-                        n,
-                        k_frozen,
-                        assign,
-                        weights,
-                        hassign,
-                        centroids,
-                        [&](size_t i,
-                            const float* w,
-                            float* c,
-                            float* /*scratch*/) {
-                            // x * 1.0f is exact, so unweighted sums match the
-                            // fp32 path.
-                            fp16_madd<SL>(d, x + i * d, w ? *w : 1.0f, c);
-                        });
-            });
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>([&]<SIMDLevel SL>() {
+        compute_centroids_impl(
+                d,
+                k,
+                n,
+                k_frozen,
+                assign,
+                weights,
+                hassign,
+                centroids,
+                [&](size_t i, const float* w, float* c, float* /*scratch*/) {
+                    // x * 1.0f is exact, so unweighted sums match the
+                    // fp32 path.
+                    fp16_madd<SL>(d, x + i * d, w ? *w : 1.0f, c);
+                });
+    });
 }
 
 bool fp16_all_finite(size_t n, const uint16_t* x) {

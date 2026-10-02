@@ -42,6 +42,21 @@ void fp16_to_fp32_kernel<SIMDLevel::AVX2>(
         float* out);
 #endif
 
+#ifdef COMPILE_SIMD_AVX512
+template <>
+void fp16_madd<SIMDLevel::AVX512>(
+        size_t d,
+        const uint16_t* x,
+        float w,
+        float* c);
+
+template <>
+void fp16_to_fp32_kernel<SIMDLevel::AVX512>(
+        size_t n,
+        const uint16_t* x,
+        float* out);
+#endif
+
 #ifdef COMPILE_SIMD_ARM_NEON
 template <>
 void fp16_madd<SIMDLevel::ARM_NEON>(
