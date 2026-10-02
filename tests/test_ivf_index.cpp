@@ -21,6 +21,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/ClusteringHelpers.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
@@ -1064,25 +1065,75 @@ TEST(Clustering, train_ex_float16_weighted_matches_float32) {
     }
 }
 
-TEST(Clustering, train_ex_float16_subsampling_and_kmeanspp_match_float32) {
+TEST(Clustering, train_ex_float16_subsampling_initializers_match_float32) {
     constexpr size_t n = 100;
     constexpr size_t d = 12;
     constexpr size_t k = 4;
     auto encoded = encode_fp16(make_training_data(n, d));
     auto rounded = decode_fp16(encoded);
-    auto cp = small_clustering_params(4);
-    cp.max_points_per_centroid = 8;
-    cp.init_method = faiss::ClusteringInitMethod::KMEANS_PLUS_PLUS;
 
-    faiss::Clustering full(d, k, cp);
-    faiss::IndexFlatL2 full_index(d);
-    full.train(n, rounded.data(), full_index);
+    for (auto method :
+         {faiss::ClusteringInitMethod::KMEANS_PLUS_PLUS,
+          faiss::ClusteringInitMethod::AFK_MC2}) {
+        auto cp = small_clustering_params(4);
+        cp.max_points_per_centroid = 8;
+        cp.init_method = method;
+        cp.afkmc2_chain_length = 7;
 
-    faiss::Clustering half(d, k, cp);
-    faiss::IndexFlatL2 half_index(d);
-    half.train_ex(n, encoded.data(), faiss::NumericType::Float16, half_index);
+        faiss::Clustering full(d, k, cp);
+        faiss::IndexFlatL2 full_index(d);
+        full.train(n, rounded.data(), full_index);
 
-    EXPECT_EQ(half.centroids, full.centroids);
+        faiss::Clustering half(d, k, cp);
+        faiss::IndexFlatL2 half_index(d);
+        half.train_ex(
+                n, encoded.data(), faiss::NumericType::Float16, half_index);
+
+        EXPECT_EQ(half.centroids, full.centroids)
+                << "method=" << static_cast<int>(method);
+    }
+}
+
+TEST(Clustering, float16_initializers_match_with_existing_and_early_return) {
+    constexpr size_t n = 24;
+    constexpr size_t d = 5;
+    constexpr size_t k = 3;
+    auto encoded = encode_fp16(make_training_data(n, d));
+    auto rounded = decode_fp16(encoded);
+    const std::vector<float> existing = {-4.0f, -2.0f, 0.0f, 2.0f, 4.0f};
+
+    for (auto method :
+         {faiss::ClusteringInitMethod::KMEANS_PLUS_PLUS,
+          faiss::ClusteringInitMethod::AFK_MC2}) {
+        faiss::ClusteringInitialization initializer(d, k);
+        initializer.method = method;
+        initializer.seed = 4321;
+        initializer.afkmc2_chain_length = 7;
+        std::vector<float> full(k * d);
+        std::vector<float> half(k * d);
+
+        initializer.init_centroids(
+                n, rounded.data(), full.data(), 1, existing.data());
+        faiss::detail::init_centroids_fp16(
+                initializer,
+                n,
+                encoded.data(),
+                half.data(),
+                1,
+                existing.data());
+        EXPECT_EQ(half, full) << "existing method=" << static_cast<int>(method);
+
+        faiss::ClusteringInitialization single(d, 1);
+        single.method = method;
+        single.seed = 4321;
+        std::vector<float> full_single(d);
+        std::vector<float> half_single(d);
+        single.init_centroids(n, rounded.data(), full_single.data());
+        faiss::detail::init_centroids_fp16(
+                single, n, encoded.data(), half_single.data());
+        EXPECT_EQ(half_single, full_single)
+                << "early return method=" << static_cast<int>(method);
+    }
 }
 
 TEST(Clustering, train_ex_float16_assigns_in_bounded_batches) {
