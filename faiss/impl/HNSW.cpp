@@ -1041,8 +1041,28 @@ inline void extract_search_params(
     }
 }
 
+template <bool UseTailBatch>
 struct DefaultCandidateDistanceEvaluator {
     DistanceComputer& qdis;
+    DistanceComputerBatch* qdis_batch;
+    int preferred_batch;
+    int max_tail_batch;
+
+    DefaultCandidateDistanceEvaluator(
+            DistanceComputer& qdis_in,
+            DistanceComputerBatch* qdis_batch_in)
+            : qdis(qdis_in),
+              qdis_batch(qdis_batch_in),
+              preferred_batch(
+                      qdis_batch ? qdis_batch->preferred_batch_size() : 4),
+              max_tail_batch(
+                      UseTailBatch && qdis_batch
+                              ? qdis_batch->max_tail_batch_size()
+                              : 0) {}
+
+    int batch_size() const {
+        return preferred_batch;
+    }
 
     template <typename GetThreshold, typename AddResult>
     size_t evaluate(
@@ -1050,24 +1070,52 @@ struct DefaultCandidateDistanceEvaluator {
             int count,
             GetThreshold&& /* get_threshold */,
             AddResult&& add_result) {
-        if (count == 4) {
-            float distances[4];
+        float distances[16];
+        int evaluated = 0;
+        if (count >= 16 && qdis_batch && preferred_batch == 16) {
+            qdis_batch->distances_batch_16(ids, distances);
+            for (int i = 0; i < 16; ++i) {
+                add_result(ids[i], distances[i], true);
+            }
+            evaluated = 16;
+        }
+        if (count - evaluated >= 8 && qdis_batch) {
+            qdis_batch->distances_batch_8(
+                    ids + evaluated, distances + evaluated);
+            for (int i = 0; i < 8; ++i) {
+                add_result(ids[evaluated + i], distances[evaluated + i], true);
+            }
+            evaluated += 8;
+        }
+        if constexpr (UseTailBatch) {
+            const int tail = count - evaluated;
+            if (qdis_batch && tail <= max_tail_batch && tail > 1 && tail != 4) {
+                qdis_batch->distances_batch_tail(
+                        ids + evaluated, tail, distances + evaluated);
+                for (int i = 0; i < tail; ++i) {
+                    add_result(
+                            ids[evaluated + i], distances[evaluated + i], true);
+                }
+                return count;
+            }
+        }
+        if (count - evaluated >= 4) {
             qdis.distances_batch_4(
-                    ids[0],
-                    ids[1],
-                    ids[2],
-                    ids[3],
-                    distances[0],
-                    distances[1],
-                    distances[2],
-                    distances[3]);
+                    ids[evaluated + 0],
+                    ids[evaluated + 1],
+                    ids[evaluated + 2],
+                    ids[evaluated + 3],
+                    distances[evaluated + 0],
+                    distances[evaluated + 1],
+                    distances[evaluated + 2],
+                    distances[evaluated + 3]);
             for (int i = 0; i < 4; ++i) {
-                add_result(ids[i], distances[i]);
+                add_result(ids[evaluated + i], distances[evaluated + i], true);
             }
-        } else {
-            for (int i = 0; i < count; ++i) {
-                add_result(ids[i], qdis(ids[i]));
-            }
+            evaluated += 4;
+        }
+        for (int i = evaluated; i < count; ++i) {
+            add_result(ids[i], qdis(ids[i]), true);
         }
         return count;
     }
@@ -1081,6 +1129,10 @@ struct DefaultCandidateDistanceEvaluator {
 struct RaBitQCandidateDistanceEvaluator {
     RaBitQDistanceComputer& rq;
     const bool is_similarity;
+
+    int batch_size() const {
+        return 4;
+    }
 
     template <typename GetThreshold, typename AddResult>
     size_t evaluate(
@@ -1103,9 +1155,81 @@ struct RaBitQCandidateDistanceEvaluator {
                 rq.stats.n_refine++;
                 ndis++;
             }
-            add_result(ids[i], distance);
+            add_result(ids[i], distance, true);
         }
         return ndis;
+    }
+};
+
+/** Probabilistic nested-RaBitQ evaluator. Every candidate receives the shared
+ * two-bit prefix score. Only candidates whose lower bound can still enter the
+ * current result heap read and score the full seven-bit row.
+ */
+struct RaBitQAdaptiveCandidateDistanceEvaluator {
+    DistanceComputerAdaptive& adaptive;
+
+    int batch_size() const {
+        return adaptive.adaptive_batch_size();
+    }
+
+    template <typename GetThreshold, typename AddResult>
+    size_t evaluate(
+            const storage_idx_t* ids,
+            int count,
+            GetThreshold&& get_threshold,
+            AddResult&& add_result) {
+        float estimates[16];
+        float lower_bounds[16];
+        int32_t refine_ids[16];
+        float refine_distances[16];
+        if (adaptive.adaptive_should_use_full()) {
+            adaptive.distances_full_selected(ids, count, refine_distances);
+            for (int lane = 0; lane < count; ++lane) {
+                add_result(ids[lane], refine_distances[lane], true);
+            }
+            // Logical all-refined accounting keeps the reported ratio useful
+            // after the physical prefix pass has been bypassed.
+            adaptive.adaptive_record(count, count);
+            return static_cast<size_t>(count);
+        }
+        adaptive.distances_prefix_bounds(ids, count, estimates, lower_bounds);
+        const float threshold = get_threshold();
+        int refine_count = 0;
+        // Keep bridge selection independent of the SIMD implementation's
+        // physical batch size (8 on AVX-512, up to 16 elsewhere). Each
+        // logical group of eight that produces no exact refinement keeps its
+        // best prefix estimate for graph navigation only.
+        constexpr int kBridgeGroupSize = 8;
+        int bridge_lanes[2] = {-1, -1};
+        int group_refine_counts[2] = {0, 0};
+        for (int lane = 0; lane < count; ++lane) {
+            const int group = lane / kBridgeGroupSize;
+            if (lower_bounds[lane] < threshold) {
+                refine_ids[refine_count++] = ids[lane];
+                group_refine_counts[group]++;
+            } else if (
+                    bridge_lanes[group] < 0 ||
+                    estimates[lane] < estimates[bridge_lanes[group]]) {
+                bridge_lanes[group] = lane;
+            }
+        }
+        if (refine_count > 0) {
+            adaptive.distances_full_selected(
+                    refine_ids, refine_count, refine_distances);
+            for (int lane = 0; lane < refine_count; ++lane) {
+                add_result(refine_ids[lane], refine_distances[lane], true);
+            }
+        }
+        const int group_count =
+                (count + kBridgeGroupSize - 1) / kBridgeGroupSize;
+        for (int group = 0; group < group_count; ++group) {
+            const int bridge_lane = bridge_lanes[group];
+            if (group_refine_counts[group] == 0 && bridge_lane >= 0) {
+                add_result(ids[bridge_lane], estimates[bridge_lane], false);
+            }
+        }
+        adaptive.adaptive_record(count, refine_count);
+        return static_cast<size_t>(count + refine_count);
     }
 };
 
@@ -1170,7 +1294,8 @@ int search_from_candidates_fixVT(
         hnsw.neighbor_range(v0, level, &begin, &end);
 
         // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
+        // Batch-capable distance computers amortize query loads across
+        // multiple arbitrary neighbors.
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
@@ -1183,21 +1308,23 @@ int search_from_candidates_fixVT(
         }
 
         int counter = 0;
-        storage_idx_t saved_j[4];
+        storage_idx_t saved_j[16];
+        const int batch_size = evaluator.batch_size();
 
         threshold = res.threshold;
 
-        auto add_to_heap = [&](const size_t idx, const float dis) {
-            if (!sel || sel->is_member(idx)) {
-                if (C::cmp(threshold, dis)) {
-                    if (res.add_result(dis, idx)) {
-                        threshold = res.threshold;
-                        nres += 1;
+        auto add_to_heap =
+                [&](const size_t idx, const float dis, bool result_eligible) {
+                    if (result_eligible && (!sel || sel->is_member(idx))) {
+                        if (C::cmp(threshold, dis)) {
+                            if (res.add_result(dis, idx)) {
+                                threshold = res.threshold;
+                                nres += 1;
+                            }
+                        }
                     }
-                }
-            }
-            candidates.push(idx, dis);
-        };
+                    candidates.push(idx, dis);
+                };
 
         for (size_t j = begin; j < jmax; j++) {
             int v1 = hnsw.neighbors[j];
@@ -1205,7 +1332,7 @@ int search_from_candidates_fixVT(
             saved_j[counter] = v1;
             counter += vt.set(v1) ? 1 : 0;
 
-            if (counter == 4) {
+            if (counter == batch_size) {
                 ndis += evaluator.evaluate(
                         saved_j,
                         counter,
@@ -1281,7 +1408,21 @@ int search_from_candidates_dispatch(
         int level,
         int nres_in,
         const SearchParameters* params) {
-    DefaultCandidateDistanceEvaluator evaluator{qdis};
+    auto* qdis_batch = dynamic_cast<DistanceComputerBatch*>(&qdis);
+    if (qdis_batch && qdis_batch->max_tail_batch_size() > 0) {
+        DefaultCandidateDistanceEvaluator<true> evaluator{qdis, qdis_batch};
+        return search_from_candidates_evaluator_dispatch<C>(
+                hnsw,
+                evaluator,
+                res,
+                candidates,
+                vt,
+                stats,
+                level,
+                nres_in,
+                params);
+    }
+    DefaultCandidateDistanceEvaluator<false> evaluator{qdis, qdis_batch};
     return search_from_candidates_evaluator_dispatch<C>(
             hnsw,
             evaluator,
@@ -1311,6 +1452,37 @@ int search_from_candidates_rabitq_dispatch(
     FAISS_THROW_IF_NOT_MSG(
             rq->nb_bits >= 2, "staged RaBitQ search requires nb_bits >= 2");
     RaBitQCandidateDistanceEvaluator evaluator{*rq, hnsw.is_similarity};
+    return search_from_candidates_evaluator_dispatch<C>(
+            hnsw,
+            evaluator,
+            res,
+            candidates,
+            vt,
+            stats,
+            level,
+            nres_in,
+            params);
+}
+
+template <class C>
+int search_from_candidates_rabitq_adaptive_dispatch(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler& res,
+        MinimaxHeapT<HC_for<C>>& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    FAISS_THROW_IF_NOT_MSG(
+            !hnsw.is_similarity,
+            "adaptive nested RaBitQ currently supports only L2");
+    auto* adaptive = dynamic_cast<DistanceComputerAdaptive*>(&qdis);
+    FAISS_THROW_IF_NOT_MSG(
+            adaptive,
+            "adaptive RaBitQ search requires an adaptive distance computer");
+    RaBitQAdaptiveCandidateDistanceEvaluator evaluator{*adaptive};
     return search_from_candidates_evaluator_dispatch<C>(
             hnsw,
             evaluator,
@@ -1621,6 +1793,9 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     }
 
     vt.set(node.second);
+    auto* qdis_batch = dynamic_cast<DistanceComputerBatch*>(&qdis);
+    DefaultCandidateDistanceEvaluator<true> evaluator{qdis, qdis_batch};
+    const int batch_size = evaluator.batch_size();
 
     while (!candidates.empty()) {
         float d0;
@@ -1637,7 +1812,8 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         hnsw.neighbor_range(v0, 0, &begin, &end);
 
         // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
+        // Batch-capable distance computers amortize query loads across
+        // multiple arbitrary neighbors.
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
@@ -1650,9 +1826,11 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
         }
 
         int counter = 0;
-        size_t saved_j[4];
+        storage_idx_t saved_j[16];
 
-        auto add_to_heap = [&](const size_t idx, const float dis) {
+        auto add_to_heap = [&](const size_t idx,
+                               const float dis,
+                               bool /* result_eligible */) {
             if (sel && sel->is_member(idx)) {
                 push_bounded(selected_candidates, dis, idx);
             }
@@ -1667,33 +1845,16 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
             saved_j[counter] = v1;
             counter += vt.set(v1) ? 1 : 0;
 
-            if (counter == 4) {
-                float dis[4];
-                qdis.distances_batch_4(
-                        saved_j[0],
-                        saved_j[1],
-                        saved_j[2],
-                        saved_j[3],
-                        dis[0],
-                        dis[1],
-                        dis[2],
-                        dis[3]);
-
-                for (size_t id4 = 0; id4 < 4; id4++) {
-                    add_to_heap(saved_j[id4], dis[id4]);
-                }
-
-                ndis += 4;
-
+            if (counter == batch_size) {
+                ndis += evaluator.evaluate(
+                        saved_j, counter, []() { return 0.0f; }, add_to_heap);
                 counter = 0;
             }
         }
 
-        for (int icnt = 0; icnt < counter; icnt++) {
-            float dis = qdis(saved_j[icnt]);
-            add_to_heap(saved_j[icnt], dis);
-
-            ndis += 1;
+        if (counter > 0) {
+            ndis += evaluator.evaluate(
+                    saved_j, counter, []() { return 0.0f; }, add_to_heap);
         }
 
         stats.nhops += 1;
@@ -1797,6 +1958,10 @@ HNSWStats search_impl(
                 search_from_candidates_rabitq_dispatch<C>(
                         hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
                 break;
+            case HNSW::SM_RABITQ_ADAPTIVE:
+                search_from_candidates_rabitq_adaptive_dispatch<C>(
+                        hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
+                break;
             case HNSW::SM_PANORAMA:
                 if constexpr (std::is_same_v<C, HNSW::C_distance>) {
                     hnsw_detail::search_from_candidates_panorama(
@@ -1820,7 +1985,8 @@ HNSWStats search_impl(
         }
     } else {
         FAISS_THROW_IF_NOT_MSG(
-                hnsw.search_method != HNSW::SM_RABITQ,
+                hnsw.search_method != HNSW::SM_RABITQ &&
+                        hnsw.search_method != HNSW::SM_RABITQ_ADAPTIVE,
                 "staged RaBitQ search requires bounded_queue=true");
         FAISS_THROW_IF_NOT_MSG(
                 hnsw.search_method == HNSW::SM_DEFAULT ||
@@ -1901,6 +2067,17 @@ void search_level_0_impl(
                         params);
             case HNSW::SM_RABITQ:
                 return search_from_candidates_rabitq_dispatch<C>(
+                        hnsw,
+                        qdis,
+                        res,
+                        candidates,
+                        vt,
+                        search_stats,
+                        0,
+                        nres,
+                        params);
+            case HNSW::SM_RABITQ_ADAPTIVE:
+                return search_from_candidates_rabitq_adaptive_dispatch<C>(
                         hnsw,
                         qdis,
                         res,

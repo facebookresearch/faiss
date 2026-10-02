@@ -123,7 +123,106 @@ struct RaBitQuantizer : Quantizer {
     FlatCodesDistanceComputer* get_distance_computer(
             uint8_t qb = 0,
             const float* centroid = nullptr,
-            bool centered = false) const;
+            bool centered = false,
+            bool full_distance = true) const;
+
+    /** Expand existing multi-bit RaBitQ codes without changing their levels or
+     * correction factors. Each output row is d signed level bytes followed by
+     * the original ExtraBitsFactors bytes.
+     */
+    void expand_codes(
+            const uint8_t* packed_codes,
+            size_t n,
+            uint8_t* expanded_codes) const;
+
+    /** Create a full-code L2 distance computer over expanded rows. Floating
+     * mode is a parity control; integer mode quantizes each query residual to
+     * signed int8 once in set_query().
+     */
+    FlatCodesDistanceComputer* get_expanded_distance_computer(
+            const uint8_t* expanded_codes,
+            const float* centroid,
+            bool integer_query) const;
+
+    /** Create an integer-query L2 distance computer over authoritative packed
+     * rows. Levels are expanded only into per-distance-computer batch scratch.
+     */
+    FlatCodesDistanceComputer* get_packed_integer_distance_computer(
+            const uint8_t* packed_codes,
+            const float* centroid) const;
+
+    FlatCodesDistanceComputer* get_split4_integer_distance_computer(
+            const uint8_t* sign_codes,
+            size_t sign_stride,
+            const uint8_t* tail_codes,
+            size_t tail_stride,
+            const float* centroid) const;
+
+    /** Unsupported legacy-conversion hook. Independent prefix and full codes
+     * require the original vectors and must be encoded together.
+     */
+    size_t progressive_code_size() const;
+    void pack_progressive_codes(
+            const uint8_t* packed_codes,
+            size_t n,
+            uint8_t* progressive_codes) const;
+
+    /** Encode a nested code whose two-bit prefix is optimized directly and
+     * whose remaining bits refine the same coarse cells.
+     */
+    void compute_progressive_codes_core(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroid) const;
+
+    /** Create an integer-query distance computer over progressive rows.
+     * prefix_only=true reads only the navigation prefix; false combines the
+     * same prefix and tail for full-code reranking.
+     */
+    FlatCodesDistanceComputer* get_progressive_integer_distance_computer(
+            const uint8_t* progressive_codes,
+            const float* centroid,
+            bool prefix_only) const;
+
+    size_t nested_lut7_code_size() const;
+
+    void compute_nested_lut7_codes_core(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroid,
+            const uint8_t* lut,
+            bool mid_navigation_factor = false,
+            bool exact_level_encoding = false) const;
+
+    FlatCodesDistanceComputer* get_nested_lut7_integer_distance_computer(
+            const uint8_t* codes,
+            const float* centroid,
+            bool prefix_only,
+            bool mid_navigation,
+            const uint8_t* lut,
+            const float* adaptive_error_norms = nullptr,
+            float adaptive_sigma = 0.0f) const;
+
+    size_t nested_lut4_code_size(bool nibble_layout) const;
+
+    void compute_nested_lut4_codes_core(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroid,
+            const uint8_t* lut,
+            bool nibble_layout) const;
+
+    FlatCodesDistanceComputer* get_nested_lut4_integer_distance_computer(
+            const uint8_t* codes,
+            const float* centroid,
+            bool prefix_only,
+            bool nibble_layout,
+            const uint8_t* lut) const;
+
+    bool expanded_integer_uses_native_dotprod() const;
 };
 
 // RaBitQDistanceComputer: Base class for RaBitQ distance computers
@@ -146,6 +245,7 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
     const float* centroid = nullptr;
     MetricType metric_type = MetricType::METRIC_L2;
     size_t nb_bits = 1;
+    bool full_distance = true;
 
     // Query error factor for bound computation (g_error in rabitq-library)
     // Used with f_error to compute error bounds for two-stage filtering
@@ -196,7 +296,8 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
     // Override from FlatCodesDistanceComputer
     // Delegates to distance_to_code_full() for multi-bit distance computation
     float distance_to_code(const uint8_t* code) final {
-        return distance_to_code_full(code);
+        return full_distance ? distance_to_code_full(code)
+                             : distance_to_code_1bit(code);
     }
 };
 

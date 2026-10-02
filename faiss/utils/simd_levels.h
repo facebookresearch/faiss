@@ -21,7 +21,7 @@ enum class SIMDLevel {
     // x86
     AVX2,
     AVX512,
-    AVX512_SPR, // Sapphire Rapids: AVX512_VPOPCNT + BF16 + FP16 + VNNI
+    AVX512_SPR, // Sapphire Rapids: VPOPCNT + BF16 + FP16 + VNNI + VBMI
     // arm & aarch64
     ARM_NEON,
     ARM_SVE, // Scalable Vector Extension (ARMv8.2+)
