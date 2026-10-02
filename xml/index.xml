@@ -11616,6 +11616,7 @@
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" kind="variable"><name>q</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1aff3ccb17a679daff45c36d4a630328c6" kind="function"><name>symmetric_dis</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1af17809ad73d49dd0b74141972cd6e8a3" kind="function"><name>distance_to_code_1bit</name></member>
+    <member refid="structfaiss_1_1RaBitQDistanceComputer_1ae9ae08cbc8a26312c6f993d86e2336b6" kind="function"><name>distance_to_code_1bit_batch_4</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a05eaf054b823178549c305432219783c" kind="function"><name>distance_to_code_full</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1aec17c4be06eac85eb90f30d156d375b5" kind="function"><name>should_refine</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a0c2f30e07d3e6ea56a79b73e81e45657" kind="function"><name>set_centroid</name></member>
@@ -14990,6 +14991,8 @@
     <member refid="rabitq__simd_8h_1a118df7fcf4a81315cc4f1244b95a0c30" kind="variable"><name>RABITQ_QUANTIZATION_SIMD_LEVELS</name></member>
     <member refid="rabitq__simd_8h_1afeb79d98edbdd4b10dcbf414c6b33a06" kind="function"><name>bitwise_and_dot_product</name></member>
     <member refid="rabitq__simd_8h_1ab4e0fc899aae9b0cff9b7ec3522c5b6e" kind="function"><name>bitwise_and_dot_product_with_popcount</name></member>
+    <member refid="rabitq__simd_8h_1a305498f5424cecdc6c2473b3a09ff0b1" kind="function"><name>bitwise_q4_batch_4</name></member>
+    <member refid="rabitq__simd_8h_1ad9e95e64f0f3825a96f1f50d2a5daafb" kind="function"><name>bitwise_q4_batch_4&lt; SIMDLevel::AVX512_VPOPCNT &gt;</name></member>
     <member refid="rabitq__simd_8h_1aa369a4ff0088baa248147660f15980d6" kind="function"><name>bitwise_xor_dot_product</name></member>
     <member refid="rabitq__simd_8h_1af659144f46f1e1972f1283b537778619" kind="function"><name>popcount</name></member>
     <member refid="rabitq__simd_8h_1a6d8a5bc919e7415ab435c0d88ba021c7" kind="function"><name>rearrange_bit_planes</name></member>

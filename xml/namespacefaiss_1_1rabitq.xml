@@ -139,6 +139,77 @@ size) in one pass over data. </para>
         </inbodydescription>
         <location file="faiss/utils/rabitq_simd.h" line="50" column="28" declfile="faiss/utils/rabitq_simd.h" declline="50" declcolumn="28"/>
       </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1a305498f5424cecdc6c2473b3a09ff0b1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::bitwise_q4_batch_4</definition>
+        <argsstring>(const uint8_t *query, const uint8_t *const *data, size_t size, BitwiseAndDotProductResult *results)</argsstring>
+        <name>bitwise_q4_batch_4</name>
+        <qualifiedname>faiss::rabitq::bitwise_q4_batch_4</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult" kindref="compound">BitwiseAndDotProductResult</ref> *</type>
+          <declname>results</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Four independent AND-dot-product/popcount pairs for a four-plane query. Query contains 4 * size bytes; each data pointer contains <computeroutput>size</computeroutput> bytes. Byte-aligned buffers and arbitrary byte counts are supported. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="60" column="13" bodyfile="faiss/utils/rabitq_simd.h" bodystart="60" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1ad9e95e64f0f3825a96f1f50d2a5daafb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::rabitq::bitwise_q4_batch_4&lt; SIMDLevel::AVX512_VPOPCNT &gt;</definition>
+        <argsstring>(const uint8_t *query, const uint8_t *const *data, size_t size, BitwiseAndDotProductResult *results)</argsstring>
+        <name>bitwise_q4_batch_4&lt; SIMDLevel::AVX512_VPOPCNT &gt;</name>
+        <qualifiedname>faiss::rabitq::bitwise_q4_batch_4&lt; SIMDLevel::AVX512_VPOPCNT &gt;</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rabitq_1_1BitwiseAndDotProductResult" kindref="compound">BitwiseAndDotProductResult</ref> *</type>
+          <declname>results</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="72" column="1" declfile="faiss/utils/rabitq_simd.h" declline="72" declcolumn="1"/>
+      </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1aa369a4ff0088baa248147660f15980d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -212,7 +283,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="66" column="10" declfile="faiss/utils/rabitq_simd.h" declline="66" declcolumn="10"/>
+        <location file="faiss/utils/rabitq_simd.h" line="88" column="10" declfile="faiss/utils/rabitq_simd.h" declline="88" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1af659144f46f1e1972f1283b537778619" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -263,7 +334,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="80" column="10" declfile="faiss/utils/rabitq_simd.h" declline="80" declcolumn="10"/>
+        <location file="faiss/utils/rabitq_simd.h" line="102" column="10" declfile="faiss/utils/rabitq_simd.h" declline="102" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a6d8a5bc919e7415ab435c0d88ba021c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -337,7 +408,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="96" column="6" declfile="faiss/utils/rabitq_simd.h" declline="96" declcolumn="6"/>
+        <location file="faiss/utils/rabitq_simd.h" line="118" column="6" declfile="faiss/utils/rabitq_simd.h" declline="118" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ac49c671f3e8b64c40faa7498d886ee0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -372,7 +443,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="104" column="6" declfile="faiss/utils/rabitq_simd.h" declline="104" declcolumn="6"/>
+        <location file="faiss/utils/rabitq_simd.h" line="126" column="6" declfile="faiss/utils/rabitq_simd.h" declline="126" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ae46378896c8b5c8765a78f15bc4aef61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -411,7 +482,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="109" column="6" declfile="faiss/utils/rabitq_simd.h" declline="109" declcolumn="6"/>
+        <location file="faiss/utils/rabitq_simd.h" line="131" column="6" declfile="faiss/utils/rabitq_simd.h" declline="131" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a45c198aaf4d2d4c579719734e38ca541" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -450,7 +521,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="113" column="6" declfile="faiss/utils/rabitq_simd.h" declline="113" declcolumn="6"/>
+        <location file="faiss/utils/rabitq_simd.h" line="135" column="6" declfile="faiss/utils/rabitq_simd.h" declline="135" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a71892d20a16ee1dc022f21ffe00683e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -509,7 +580,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="121" column="6" declfile="faiss/utils/rabitq_simd.h" declline="121" declcolumn="6"/>
+        <location file="faiss/utils/rabitq_simd.h" line="143" column="6" declfile="faiss/utils/rabitq_simd.h" declline="143" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a5745fa8520d0e2fb3e6aba23d168c6cc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -541,7 +612,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="135" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="135" bodyend="157"/>
+        <location file="faiss/utils/rabitq_simd.h" line="157" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="157" bodyend="181"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a31d16783ab69cc9abe91f808435719ae" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -573,7 +644,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="160" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="161" bodyend="186"/>
+        <location file="faiss/utils/rabitq_simd.h" line="184" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="185" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a290007a2ca46073a49129d7d73f0768a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -605,7 +676,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="189" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="189" bodyend="211"/>
+        <location file="faiss/utils/rabitq_simd.h" line="215" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="215" bodyend="239"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ac0999cb30c3f92f1dda521134802811c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -629,7 +700,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="214" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="214" bodyend="226"/>
+        <location file="faiss/utils/rabitq_simd.h" line="242" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="242" bodyend="255"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a01e0454f0fcdb6ba34c6473e7857bbd7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -661,7 +732,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="229" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="229" bodyend="242"/>
+        <location file="faiss/utils/rabitq_simd.h" line="258" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="258" bodyend="271"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1aa09e68ccc53e807225e891908baac33d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint8_t</type>
@@ -683,7 +754,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="244" column="16" bodyfile="faiss/utils/rabitq_simd.h" bodystart="244" bodyend="252"/>
+        <location file="faiss/utils/rabitq_simd.h" line="273" column="16" bodyfile="faiss/utils/rabitq_simd.h" bodystart="273" bodyend="281"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1acee2e8ac9e6aebcfc260b257b3ba26a4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint8_t</type>
@@ -701,7 +772,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="254" column="16" bodyfile="faiss/utils/rabitq_simd.h" bodystart="254" bodyend="256"/>
+        <location file="faiss/utils/rabitq_simd.h" line="283" column="16" bodyfile="faiss/utils/rabitq_simd.h" bodystart="283" bodyend="285"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a3ed184fb77525863d65007de4fc8ecbf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -729,7 +800,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="259" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="259" bodyend="269"/>
+        <location file="faiss/utils/rabitq_simd.h" line="288" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="288" bodyend="298"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1afddf04a7933c2645e4dd5f9b2aabf038" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -761,7 +832,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="272" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="272" bodyend="286"/>
+        <location file="faiss/utils/rabitq_simd.h" line="301" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="301" bodyend="315"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1abae8d9869b100c40824eff42cce922d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -793,7 +864,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="289" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="289" bodyend="297"/>
+        <location file="faiss/utils/rabitq_simd.h" line="318" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="318" bodyend="326"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1a155318c732eb70ac09830ca16cae36e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -845,7 +916,7 @@ size) in one pass over data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="300" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="300" bodyend="328"/>
+        <location file="faiss/utils/rabitq_simd.h" line="329" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="329" bodyend="357"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -181,6 +181,29 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQuantizer.h" line="160" column="19"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQDistanceComputer_1ae9ae08cbc8a26312c6f993d86e2336b6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::RaBitQDistanceComputer::distance_to_code_1bit_batch_4</definition>
+        <argsstring>(const uint8_t *const *codes_in, float *distances)</argsstring>
+        <name>distance_to_code_1bit_batch_4</name>
+        <qualifiedname>faiss::RaBitQDistanceComputer::distance_to_code_1bit_batch_4</qualifiedname>
+        <param>
+          <type>const uint8_t *const *</type>
+          <declname>codes_in</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute four one-bit estimates in input order. Caller must call <ref refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" kindref="member">set_query()</ref> first. Each pointer addresses one complete encoded row; rows need not be contiguous or distinct. The output holds four floats. Does not refine candidates, update thresholds, or increment stats. The default calls the single estimate four times. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="167" column="18" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="167" bodyend="173"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQDistanceComputer_1a05eaf054b823178549c305432219783c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
         <definition>virtual float faiss::RaBitQDistanceComputer::distance_to_code_full</definition>
@@ -197,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="163" column="19"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="176" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQDistanceComputer_1aec17c4be06eac85eb90f30d156d375b5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE bool</type>
@@ -228,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="168" column="30" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="168" bodyend="178"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="181" column="30" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="181" bodyend="191"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQDistanceComputer_1a0c2f30e07d3e6ea56a79b73e81e45657" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -246,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="181" column="18" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="181" bodyend="183"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="194" column="18" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="194" bodyend="196"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQDistanceComputer_1ac9e4dfcc3377decb9432f96146477ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -296,7 +319,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="185" column="20"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="198" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQDistanceComputer_1a056b42b9fea10cf699e0ba16ea1afdaa" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -316,7 +339,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="198" column="11" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="198" bodyend="200"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="211" column="11" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="211" bodyend="213"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -593,7 +616,7 @@
         <link refid="structfaiss_1_1RaBitQStats"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/RaBitQuantizer.h" line="144" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="144" bodyend="201"/>
+    <location file="faiss/impl/RaBitQuantizer.h" line="144" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="144" bodyend="214"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1a115ece1461de484cf9ecf0c9cb94984d" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>centroid</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>code_size</name></member>
@@ -601,6 +624,7 @@
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1a0c137ca82f40b6143c43900fbf4f98ad" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>d</name></member>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1a056b42b9fea10cf699e0ba16ea1afdaa" prot="public" virt="virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1af17809ad73d49dd0b74141972cd6e8a3" prot="public" virt="pure-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code_1bit</name></member>
+      <member refid="structfaiss_1_1RaBitQDistanceComputer_1ae9ae08cbc8a26312c6f993d86e2336b6" prot="public" virt="virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code_1bit_batch_4</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a266c140106f07e44066cf90a29a1e2b7" prot="public" virt="virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code_batch_4</name></member>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1a05eaf054b823178549c305432219783c" prot="public" virt="pure-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code_full</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84" prot="public" virt="virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distances_batch_4</name></member>

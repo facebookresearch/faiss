@@ -646,7 +646,7 @@
 <codeline lineno="353"><highlight class="comment"><sp/>*<sp/>The<sp/>multi-bit<sp/>distance<sp/>combines<sp/>the<sp/>sign<sp/>bit<sp/>(1-bit)<sp/>with<sp/>additional</highlight></codeline>
 <codeline lineno="354"><highlight class="comment"><sp/>*<sp/>magnitude<sp/>bits<sp/>(ex_bits)<sp/>to<sp/>compute<sp/>a<sp/>more<sp/>accurate<sp/>distance<sp/>estimate.</highlight></codeline>
 <codeline lineno="355"><highlight class="comment"><sp/>*<sp/>Uses<sp/>SIMD-optimized<sp/>bit-plane<sp/>decomposition<sp/>(AVX2+BMI2)<sp/>for<sp/>ex_bits<sp/>1-7,</highlight></codeline>
-<codeline lineno="356"><highlight class="comment"><sp/>*<sp/>with<sp/>scalar<sp/>fallback<sp/>for<sp/>non-x86<sp/>or<sp/>non-BMI2<sp/>platforms.</highlight></codeline>
+<codeline lineno="356"><highlight class="comment"><sp/>*<sp/>with<sp/>scalar<sp/>fallback<sp/>for<sp/>non-x86<sp/>platforms.</highlight></codeline>
 <codeline lineno="357"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="358"><highlight class="comment"><sp/>*<sp/>@param<sp/>sign_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/>unpacked<sp/>sign<sp/>bits<sp/>(1-bit<sp/>codes<sp/>in<sp/>standard<sp/>format)</highlight></codeline>
 <codeline lineno="359"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>

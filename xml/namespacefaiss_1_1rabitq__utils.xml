@@ -900,7 +900,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Compute full multi-bit distance from sign bits and ex-bit codes. This is the core distance computation shared by RaBitQFastScan handlers.</para>
-<para>The multi-bit distance combines the sign bit (1-bit) with additional magnitude bits (ex_bits) to compute a more accurate distance estimate. Uses SIMD-optimized bit-plane decomposition (AVX2+BMI2) for ex_bits 1-7, with scalar fallback for non-x86 or non-BMI2 platforms.</para>
+<para>The multi-bit distance combines the sign bit (1-bit) with additional magnitude bits (ex_bits) to compute a more accurate distance estimate. Uses SIMD-optimized bit-plane decomposition (AVX2+BMI2) for ex_bits 1-7, with scalar fallback for non-x86 platforms.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sign_bits</parametername>
