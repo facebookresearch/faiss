@@ -590,29 +590,42 @@ float compute_inner_product<SIMDLevel::AVX2>(
         float cb) {
     if (ex_bits == 8) {
         // Eight byte-aligned extra codes, plus their independent sign bits.
-        __m256 acc = _mm256_setzero_ps();
+        // One sign-word broadcast serves 32 dims, to save shuffle-port uops.
+        __m256 acc0 = _mm256_setzero_ps();
+        __m256 acc1 = _mm256_setzero_ps();
         const __m256 weight = _mm256_set1_ps(256.f);
         const __m256 offset = _mm256_set1_ps(cb);
         const __m256i positions =
                 _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
-        size_t i = 0;
-        for (; i + 8 <= d; i += 8) {
+        // cmpeq, not cmpgt: bit 31 of the shifted positions is a sign bit.
+        auto step = [&](__m256& acc, size_t i, __m256i signs, __m256i pos) {
             const __m128i bytes = _mm_loadl_epi64(
                     reinterpret_cast<const __m128i*>(ex_code + i));
             const __m256 extra =
                     _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes));
-            const __m256i mask = _mm256_cmpgt_epi32(
-                    _mm256_and_si256(
-                            _mm256_set1_epi32(sign_bits[i / 8]), positions),
-                    _mm256_setzero_si256());
+            const __m256i mask =
+                    _mm256_cmpeq_epi32(_mm256_and_si256(signs, pos), pos);
             const __m256 recon = _mm256_add_ps(
                     extra, _mm256_and_ps(_mm256_castsi256_ps(mask), weight));
             acc = _mm256_fmadd_ps(
                     _mm256_loadu_ps(rotated_q + i),
                     _mm256_add_ps(recon, offset),
                     acc);
+        };
+        size_t i = 0;
+        for (; i + 32 <= d; i += 32) {
+            uint32_t word;
+            memcpy(&word, sign_bits + i / 8, sizeof(word));
+            const __m256i signs = _mm256_set1_epi32(static_cast<int>(word));
+            step(acc0, i, signs, positions);
+            step(acc1, i + 8, signs, _mm256_slli_epi32(positions, 8));
+            step(acc0, i + 16, signs, _mm256_slli_epi32(positions, 16));
+            step(acc1, i + 24, signs, _mm256_slli_epi32(positions, 24));
         }
-        return hsum_avx2(acc) +
+        for (; i + 8 <= d; i += 8) {
+            step(acc0, i, _mm256_set1_epi32(sign_bits[i / 8]), positions);
+        }
+        return hsum_avx2(_mm256_add_ps(acc0, acc1)) +
                 ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
     }
     if (ex_bits == 1) {
