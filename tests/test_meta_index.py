@@ -218,6 +218,29 @@ class Shards(unittest.TestCase):
         np.testing.assert_equal(Inew, Iref)
         np.testing.assert_allclose(Dnew, Dref)
 
+    def test_shards_ivf_selector(self):
+        for threaded in (False, True):
+            with self.subTest(threaded=threaded):
+                quantizer = faiss.IndexFlatL2(1)
+                quantizer.add(np.array([[0.0]], dtype="float32"))
+                shards = faiss.IndexShardsIVF(quantizer, 1, threaded, False)
+                for value, external_id in [(0.0, 100), (1.0, 200)]:
+                    child = faiss.IndexIVFFlat(quantizer, 1, 1)
+                    child.add_with_ids(
+                        np.array([[value]], dtype="float32"),
+                        np.array([external_id], dtype="int64"),
+                    )
+                    shards.add_shard(child)
+
+                params = faiss.SearchParametersIVF(nprobe=1)
+                params.sel = faiss.IDSelectorArray(
+                    np.array([100], dtype="int64")
+                )
+                query = np.array([[0.0]], dtype="float32")
+                distances, labels = shards.search(query, 2, params=params)
+                np.testing.assert_array_equal(labels, [[100, -1]])
+                self.assertEqual(distances[0, 0], 0.0)
+
     def test_shards_ivf_train_add(self):
         ds = SyntheticDataset(32, 1000, 600, 20)
         quantizer = faiss.IndexFlatL2(ds.d)
