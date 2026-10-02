@@ -462,6 +462,313 @@
         </inbodydescription>
         <location file="faiss/gpu_metal/MetalDistance.h" line="57" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="57" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1aeaf04d9e091b97c7ae2afcf4338017c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::runMetalIVFPQFullSearch</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device, id&lt; MTLCommandQueue &gt; queue, id&lt; MTLBuffer &gt; queries, id&lt; MTLBuffer &gt; coarseAssign, id&lt; MTLBuffer &gt; coarseDist, id&lt; MTLBuffer &gt; coarseCentroids, id&lt; MTLBuffer &gt; pqCentroids, id&lt; MTLBuffer &gt; lookupTable, id&lt; MTLBuffer &gt; codes, id&lt; MTLBuffer &gt; ids, id&lt; MTLBuffer &gt; listOffset, id&lt; MTLBuffer &gt; listLength, int nq, int d, int M, int k, int nprobe, int nlist, int avgListLen, bool lookupFp16, bool isL2, id&lt; MTLBuffer &gt; outDistances, id&lt; MTLBuffer &gt; outIndices, id&lt; MTLBuffer &gt; perListDistBuf, id&lt; MTLBuffer &gt; perListIdxBuf, bool waitForCompletion=true)</argsstring>
+        <name>runMetalIVFPQFullSearch</name>
+        <qualifiedname>faiss::gpu_metal::runMetalIVFPQFullSearch</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLCommandQueue &gt;</type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseAssign</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseDist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseCentroids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>pqCentroids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>lookupTable</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listOffset</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listLength</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nprobe</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>avgListLen</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>lookupFp16</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>isL2</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outDistances</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outIndices</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListDistBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListIdxBuf</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>waitForCompletion</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Full IVF-PQ search on the GPU: builds per-(query, probe) PQ lookup tables, scans the assigned inverted lists with 8-bit ADC, and merges the per-list top-k into the final top-k. Coarse quantization is performed on the CPU and the assignments are passed in via <computeroutput>coarseAssign</computeroutput>. <computeroutput>coarseDist</computeroutput> carries the per-(query, probe) coarse scores, added for inner product (the IP tables hold &lt;q_m, pq_m&gt; only); unused for L2. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="92" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="92" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1a587556e5c7ed07b5dd7d299f5d5d2970" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::runMetalIVFPQPrecomputeTerm2</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device, id&lt; MTLCommandQueue &gt; queue, id&lt; MTLBuffer &gt; coarseCentroids, id&lt; MTLBuffer &gt; pqCentroids, id&lt; MTLBuffer &gt; outTerm2, int nlist, int d, int M)</argsstring>
+        <name>runMetalIVFPQPrecomputeTerm2</name>
+        <qualifiedname>faiss::gpu_metal::runMetalIVFPQPrecomputeTerm2</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLCommandQueue &gt;</type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseCentroids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>pqCentroids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outTerm2</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>M</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Build the query-independent precomputed term of the IVFPQ L2 distance decomposition on the GPU: term2[l][m][c] = ||pq[m][c]||^2 + 2 &lt;coarse_l[m], pq[m][c]&gt;, laid out as nlist * M * 256 floats. Run once per trained index; consumed by runMetalIVFPQPrecompSearch. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="124" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="124" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalDistance_8h_1a40d9c278e5450d0ad37cc3d9cd42f11b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::runMetalIVFPQPrecompSearch</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device, id&lt; MTLCommandQueue &gt; queue, id&lt; MTLBuffer &gt; queries, id&lt; MTLBuffer &gt; coarseAssign, id&lt; MTLBuffer &gt; coarseDist, id&lt; MTLBuffer &gt; term2, id&lt; MTLBuffer &gt; qtermScratch, id&lt; MTLBuffer &gt; pqCentroids, id&lt; MTLBuffer &gt; codes, id&lt; MTLBuffer &gt; ids, id&lt; MTLBuffer &gt; listOffset, id&lt; MTLBuffer &gt; listLength, int nq, int d, int M, int k, int nprobe, bool isL2, bool useDis0, id&lt; MTLBuffer &gt; outDistances, id&lt; MTLBuffer &gt; outIndices, id&lt; MTLBuffer &gt; perListDistBuf, id&lt; MTLBuffer &gt; perListIdxBuf, id&lt; MTLBuffer &gt; mergeScratchDistBuf, id&lt; MTLBuffer &gt; mergeScratchIdxBuf, bool waitForCompletion=true, id&lt; MTLBuffer &gt; coarseCentroids=nil, bool onTheFly=false, bool shortLists=false, bool compactMerge=true)</argsstring>
+        <name>runMetalIVFPQPrecompSearch</name>
+        <qualifiedname>faiss::gpu_metal::runMetalIVFPQPrecompSearch</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLCommandQueue &gt;</type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseAssign</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseDist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>term2</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>qtermScratch</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>pqCentroids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listOffset</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>listLength</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nprobe</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>isL2</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>useDis0</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outDistances</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outIndices</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListDistBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>perListIdxBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>mergeScratchDistBuf</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>mergeScratchIdxBuf</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>waitForCompletion</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>coarseCentroids</declname>
+          <defval>nil</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>onTheFly</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>shortLists</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>compactMerge</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>IVF-PQ search using the precomputed-table decomposition: a per-query M*256 term is built once per batch (instead of a full residual LUT per (query, probe)), combined with <computeroutput>term2</computeroutput> in threadgroup memory by the scan kernel, and the coarse distance is added as the constant ||x - c||^2 term. The scan keeps an exact running top-k over arbitrarily long lists and the merge runs in rounds, so there is no list-length or nprobe*k cap; the remaining requirements are k &lt;= 512, M &lt;= 64 and d/M &lt;= 256. onTheFly evaluates encountered codes directly (d &lt;= 256), using the supplied coarse centroids; shortLists requires every list to have &lt;= 128 entries and selects a smaller threadgroup and scratch allocation. <computeroutput>term2</computeroutput> may be nil for inner product (qterm is the whole table); <computeroutput>useDis0</computeroutput> adds the coarse distance (required for L2, by_residual for IP). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalDistance.h" line="146" column="6" declfile="faiss/gpu_metal/MetalDistance.h" declline="146" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="MetalFlatKernels_8h_1ac556d7942814f613e43348013ab3cf8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::gpu_metal::getMetalFlatSearchMaxK</definition>
@@ -552,7 +859,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="108" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="108" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="201" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="201" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="MetalPythonBridge_8h_1a0dcb213f19d10870207c1f259ebb5c04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

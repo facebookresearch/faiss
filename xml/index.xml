@@ -10047,6 +10047,7 @@
   <compound refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kind="struct"><name>faiss::gpu_metal::MetalIndexConfig</name>
     <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1ad4fc2493e916a6def403203f1a6047b9" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1ad89b524de6ea38c695f9761b88876a15" kind="variable"><name>useFloat16CoarseQuantizer</name></member>
+    <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a33325db511464edef73ffa080a526255" kind="variable"><name>useFloat16</name></member>
     <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a6f531372b065f9555cafa76beb6b3e60" kind="variable"><name>indicesOptions</name></member>
     <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a9a0996b37bfdb285231b3e0a73e3673b" kind="variable"><name>interleavedLayout</name></member>
   </compound>
@@ -10189,6 +10190,32 @@
   <compound refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ" kind="class"><name>faiss::gpu_metal::MetalIndexIVFPQ</name>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1af88d1fcf43ff2a4a3c2078966f8d467e" kind="variable"><name>cpuIndex_</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1afabf33e11b51ad1e57bc2779fe4b05aa" kind="variable"><name>gpuIvf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1aa08fe0e2ad4e05f305e9b79e25a24772" kind="variable"><name>searchQueriesBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a2acba370483b7697cd33b755f200e43b" kind="variable"><name>searchCoarseBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1ad5c403d74ebabf476c5498743cd9c931" kind="variable"><name>searchOutDistBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a7fd5d158e55ee3ab3704bfaabac0daed" kind="variable"><name>searchOutIdxBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a60e9d350b1fb3e7242d49f9d40c84ef1" kind="variable"><name>searchPerListDistBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a5e6c0ab77d151d1cde37b8ea86831c05" kind="variable"><name>searchPerListIdxBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a42e4402a9b58e5789be9620e3b1de44b" kind="variable"><name>lookupTableBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a5eceaac5da55e170800e801ba156b7fe" kind="variable"><name>lookupTableHalfBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a6fb6d41d56ba7a85da97eeb2a14ea910" kind="variable"><name>searchCoarseDistBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a274937fe9e9ab61e954a3ffd8b0aa7e2" kind="variable"><name>searchQTermBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a159d2077178f9d884ae083250dce6832" kind="variable"><name>searchMergeDistBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a36341db99de82d2885d730d3585667ff" kind="variable"><name>searchMergeIdxBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a492f497b25bfc0338023b6771635b112" kind="variable"><name>searchQueriesCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a66d5dab94b4eea2dd700408321f5a34a" kind="variable"><name>searchCoarseCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a04ad93b638cd9d6a86d4b2fef296767c" kind="variable"><name>searchOutDistCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a75504afd48bd0b22c6567a78b148b3b3" kind="variable"><name>searchOutIdxCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a032b90a784c25ffc86ac712c3091f606" kind="variable"><name>searchPerListDistCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a37276e4b508bb50d8e476e09f1b7c5b1" kind="variable"><name>searchPerListIdxCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a34ab8eb0c20c2dd529689a5e0fef2f20" kind="variable"><name>lookupTableCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a3203ab2f8031bf6c1a49efee7c0b2b77" kind="variable"><name>lookupTableHalfCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1aae3b458b594786a22196f10cc8e581b8" kind="variable"><name>searchCoarseDistCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a754c436a1788aa1bfeb2583908f06280" kind="variable"><name>searchQTermCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1ac598185d1aeb3ffcc4927d75d00ba487" kind="variable"><name>searchMergeDistCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1ae7b94af5c1445bd6b7d8d666b3a9375c" kind="variable"><name>searchMergeIdxCap_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1abebd7e809895ab65d1a797588d04ad4e" kind="variable"><name>centroidBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1ada4b08e023ec86e303124854fcc4f92d" kind="variable"><name>term2Buf_</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1ab2e5e3e6367998cfbbe17c113be52cbd" kind="function"><name>MetalIndexIVFPQ</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a5ce53bc6297e1ff956d17346fb3f5ec8" kind="function"><name>MetalIndexIVFPQ</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1ac7c6bc24b7e22a05b1f30ee2c26b07e7" kind="function"><name>~MetalIndexIVFPQ</name></member>
@@ -10235,7 +10262,11 @@
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a8f4c15d995e3fe64b3ee177b2cec3542" kind="function"><name>verifyPQSettings_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a92aafae2d6d01d71b07c277eeeb27f5a" kind="function"><name>precomputeTerm2_</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1af48b7f172204cfc7bedea067f2749915" kind="function"><name>encodeResidualAndAppend_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a3db648ce00492184d7d80b5310dd9314" kind="function"><name>ensureSearchBuf_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1afb9be4d08442170e7a07680b941f7a5e" kind="function"><name>uploadCentroids_</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFPQ_1a51e346361c334f45b7716f0ef2cc903f" kind="function"><name>uploadPQCentroids_</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndex_1a4c77a6d021058a79d3db8edd3410ad86" kind="variable"><name>resources_</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalIndex_1a76638018ed5ce44136ea2d75186fb400" kind="variable"><name>config_</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
@@ -10362,6 +10393,12 @@
     <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a0a99dad2ce9c1b27d87e60a189aeef24" kind="function"><name>encodeTopKThreadgroup</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a6e543fcf47bae25dc29348e08a1cb19c" kind="function"><name>encodeIVFScanList</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a795419baef42c0a13c330199c7d713b5" kind="function"><name>encodeIVFMergeLists</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1af69be564b3de3cc3f66fef695180d850" kind="function"><name>encodeIVFPQBuildLookupTables</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1ab584ff7efa50270df1abdab3403193d2" kind="function"><name>encodeIVFPQScanList</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a92b0cb8df5cd57a2bc3c407b8c66048b" kind="function"><name>encodeIVFPQPrecomputeTerm2</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a937792776aa523e5e5711fb4c4e8a6bf" kind="function"><name>encodeIVFPQBuildQueryTerm</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a1c6a236532b773ba8568fad6c45d21b0" kind="function"><name>encodeIVFPQScanListPrecomp</name></member>
+    <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a0da8449383ade8a2810dbfbbbd2c3f28" kind="function"><name>encodeIVFMergeListsGrouped</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1ab959e9ffd4412c0af1d30f0982f27604" kind="function"><name>selectTopKVariantIndex</name></member>
     <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a5799152f9d458ffc42283d14c56d2d08" kind="function"><name>pipeline</name></member>
   </compound>
@@ -14852,6 +14889,9 @@
     <member refid="MetalDistance_8h_1a4143b1d2902cb814cf5bc18a4660bcd5" kind="function"><name>runMetalComputeNorms</name></member>
     <member refid="MetalDistance_8h_1a6659980c3bfad77c957e5b203e6d5c48" kind="function"><name>runMetalIVFFlatScan</name></member>
     <member refid="MetalDistance_8h_1afd9b8e293ee8d0417f4d9ccb293e317a" kind="function"><name>runMetalIVFFlatFullSearch</name></member>
+    <member refid="MetalDistance_8h_1aeaf04d9e091b97c7ae2afcf4338017c8" kind="function"><name>runMetalIVFPQFullSearch</name></member>
+    <member refid="MetalDistance_8h_1a587556e5c7ed07b5dd7d299f5d5d2970" kind="function"><name>runMetalIVFPQPrecomputeTerm2</name></member>
+    <member refid="MetalDistance_8h_1a40d9c278e5450d0ad37cc3d9cd42f11b" kind="function"><name>runMetalIVFPQPrecompSearch</name></member>
     <member refid="MetalFlatKernels_8h_1ac556d7942814f613e43348013ab3cf8c" kind="function"><name>getMetalFlatSearchMaxK</name></member>
     <member refid="MetalFlatKernels_8h_1abb3e4f072ec9c764ed2a1fa807d44b56" kind="function"><name>runFlatSearchGPU</name></member>
     <member refid="MetalKernels_8h_1af8ab30db0a71d9b6001b88ecc531e061" kind="function"><name>getMetalKernels</name></member>

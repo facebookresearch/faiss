@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="53" column="21" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="57" column="21" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalIndex_1a76638018ed5ce44136ea2d75186fb400" prot="protected" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" kindref="compound">MetalIndexConfig</ref></type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="54" column="22" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="58" column="22" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="58" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="35" column="5"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="39" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndex_1acc05f76293ffcbde258cbccf44d7f840" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="42" column="9" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="42" bodyend="44"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="46" column="9" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="46" bodyend="48"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndex_1ae924834bcf7a0a1e2afd10f008137c78" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu__metal_1_1MetalResources" kindref="compound">MetalResources</ref> &gt;</type>
@@ -99,7 +99,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="45" column="21" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="45" bodyend="47"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="49" column="21" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="49" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalIndex_1aef4dd4ffabcaf3fa33e65aef7987eb5b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::shared_ptr&lt; const <ref refid="classfaiss_1_1gpu__metal_1_1MetalResources" kindref="compound">MetalResources</ref> &gt;</type>
@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="48" column="21" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="48" bodyend="50"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="52" column="21" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="52" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1904,7 +1904,7 @@
         <link refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu_metal/MetalIndex.h" line="33" column="1" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="33" bodyend="55"/>
+    <location file="faiss/gpu_metal/MetalIndex.h" line="37" column="1" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="37" bodyend="59"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2" prot="public" virt="pure-virtual"><scope>faiss::gpu_metal::MetalIndex</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::gpu_metal::MetalIndex</scope><name>add_ex</name></member>

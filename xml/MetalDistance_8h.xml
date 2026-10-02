@@ -123,9 +123,101 @@
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>interleavedCodesOffset<sp/>=<sp/>nil,</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>centroidsAreFP16<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>waitForCompletion<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"></highlight></codeline>
-<codeline lineno="86"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="86"><highlight class="comment">///<sp/>Full<sp/>IVF-PQ<sp/>search<sp/>on<sp/>the<sp/>GPU:<sp/>builds<sp/>per-(query,<sp/>probe)<sp/>PQ<sp/>lookup<sp/>tables,</highlight></codeline>
+<codeline lineno="87"><highlight class="comment">///<sp/>scans<sp/>the<sp/>assigned<sp/>inverted<sp/>lists<sp/>with<sp/>8-bit<sp/>ADC,<sp/>and<sp/>merges<sp/>the<sp/>per-list</highlight></codeline>
+<codeline lineno="88"><highlight class="comment">///<sp/>top-k<sp/>into<sp/>the<sp/>final<sp/>top-k.<sp/>Coarse<sp/>quantization<sp/>is<sp/>performed<sp/>on<sp/>the<sp/>CPU<sp/>and</highlight></codeline>
+<codeline lineno="89"><highlight class="comment">///<sp/>the<sp/>assignments<sp/>are<sp/>passed<sp/>in<sp/>via<sp/>@p<sp/>coarseAssign.<sp/>@p<sp/>coarseDist<sp/>carries</highlight></codeline>
+<codeline lineno="90"><highlight class="comment">///<sp/>the<sp/>per-(query,<sp/>probe)<sp/>coarse<sp/>scores,<sp/>added<sp/>for<sp/>inner<sp/>product<sp/>(the<sp/>IP</highlight></codeline>
+<codeline lineno="91"><highlight class="comment">///<sp/>tables<sp/>hold<sp/>&lt;q_m,<sp/>pq_m&gt;<sp/>only);<sp/>unused<sp/>for<sp/>L2.</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>runMetalIVFPQFullSearch(</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLDevice&gt;<sp/>device,</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLCommandQueue&gt;<sp/>queue,</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>queries,</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseAssign,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseDist,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseCentroids,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>pqCentroids,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>lookupTable,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>codes,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>ids,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>listOffset,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>listLength,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nprobe,</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlist,</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>avgListLen,</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>lookupFp16,</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isL2,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>outDistances,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>outIndices,</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>perListDistBuf,</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>perListIdxBuf,</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>waitForCompletion<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="120"><highlight class="comment">///<sp/>Build<sp/>the<sp/>query-independent<sp/>precomputed<sp/>term<sp/>of<sp/>the<sp/>IVFPQ<sp/>L2<sp/>distance</highlight></codeline>
+<codeline lineno="121"><highlight class="comment">///<sp/>decomposition<sp/>on<sp/>the<sp/>GPU:<sp/>term2[l][m][c]<sp/>=<sp/>||pq[m][c]||^2<sp/>+</highlight></codeline>
+<codeline lineno="122"><highlight class="comment">///<sp/>2<sp/>&lt;coarse_l[m],<sp/>pq[m][c]&gt;,<sp/>laid<sp/>out<sp/>as<sp/>nlist<sp/>*<sp/>M<sp/>*<sp/>256<sp/>floats.<sp/>Run<sp/>once</highlight></codeline>
+<codeline lineno="123"><highlight class="comment">///<sp/>per<sp/>trained<sp/>index;<sp/>consumed<sp/>by<sp/>runMetalIVFPQPrecompSearch.</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>runMetalIVFPQPrecomputeTerm2(</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLDevice&gt;<sp/>device,</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLCommandQueue&gt;<sp/>queue,</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseCentroids,</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>pqCentroids,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>outTerm2,</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlist,</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="134"><highlight class="comment">///<sp/>IVF-PQ<sp/>search<sp/>using<sp/>the<sp/>precomputed-table<sp/>decomposition:<sp/>a<sp/>per-query</highlight></codeline>
+<codeline lineno="135"><highlight class="comment">///<sp/>M*256<sp/>term<sp/>is<sp/>built<sp/>once<sp/>per<sp/>batch<sp/>(instead<sp/>of<sp/>a<sp/>full<sp/>residual<sp/>LUT<sp/>per</highlight></codeline>
+<codeline lineno="136"><highlight class="comment">///<sp/>(query,<sp/>probe)),<sp/>combined<sp/>with<sp/>@p<sp/>term2<sp/>in<sp/>threadgroup<sp/>memory<sp/>by<sp/>the<sp/>scan</highlight></codeline>
+<codeline lineno="137"><highlight class="comment">///<sp/>kernel,<sp/>and<sp/>the<sp/>coarse<sp/>distance<sp/>is<sp/>added<sp/>as<sp/>the<sp/>constant<sp/>||x<sp/>-<sp/>c||^2<sp/>term.</highlight></codeline>
+<codeline lineno="138"><highlight class="comment">///<sp/>The<sp/>scan<sp/>keeps<sp/>an<sp/>exact<sp/>running<sp/>top-k<sp/>over<sp/>arbitrarily<sp/>long<sp/>lists<sp/>and<sp/>the</highlight></codeline>
+<codeline lineno="139"><highlight class="comment">///<sp/>merge<sp/>runs<sp/>in<sp/>rounds,<sp/>so<sp/>there<sp/>is<sp/>no<sp/>list-length<sp/>or<sp/>nprobe*k<sp/>cap;<sp/>the</highlight></codeline>
+<codeline lineno="140"><highlight class="comment">///<sp/>remaining<sp/>requirements<sp/>are<sp/>k<sp/>&lt;=<sp/>512,<sp/>M<sp/>&lt;=<sp/>64<sp/>and<sp/>d/M<sp/>&lt;=<sp/>256.</highlight></codeline>
+<codeline lineno="141"><highlight class="comment">///<sp/>onTheFly<sp/>evaluates<sp/>encountered<sp/>codes<sp/>directly<sp/>(d<sp/>&lt;=<sp/>256),<sp/>using<sp/>the</highlight></codeline>
+<codeline lineno="142"><highlight class="comment">///<sp/>supplied<sp/>coarse<sp/>centroids;<sp/>shortLists<sp/>requires<sp/>every<sp/>list<sp/>to<sp/>have<sp/>&lt;=<sp/>128</highlight></codeline>
+<codeline lineno="143"><highlight class="comment">///<sp/>entries<sp/>and<sp/>selects<sp/>a<sp/>smaller<sp/>threadgroup<sp/>and<sp/>scratch<sp/>allocation.</highlight></codeline>
+<codeline lineno="144"><highlight class="comment">///<sp/>@p<sp/>term2<sp/>may<sp/>be<sp/>nil<sp/>for<sp/>inner<sp/>product<sp/>(qterm<sp/>is<sp/>the<sp/>whole<sp/>table);</highlight></codeline>
+<codeline lineno="145"><highlight class="comment">///<sp/>@p<sp/>useDis0<sp/>adds<sp/>the<sp/>coarse<sp/>distance<sp/>(required<sp/>for<sp/>L2,<sp/>by_residual<sp/>for<sp/>IP).</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>runMetalIVFPQPrecompSearch(</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLDevice&gt;<sp/>device,</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLCommandQueue&gt;<sp/>queue,</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>queries,</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseAssign,</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseDist,</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>term2,</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>qtermScratch,</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>pqCentroids,</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>codes,</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>ids,</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>listOffset,</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>listLength,</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nprobe,</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isL2,</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>useDis0,</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>outDistances,</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>outIndices,</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>perListDistBuf,</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>perListIdxBuf,</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>mergeScratchDistBuf,</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>mergeScratchIdxBuf,</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>waitForCompletion<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>id&lt;MTLBuffer&gt;<sp/>coarseCentroids<sp/>=<sp/>nil,</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>onTheFly<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>shortLists<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>compactMerge<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu_metal/MetalDistance.h"/>
   </compounddef>

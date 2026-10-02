@@ -34,6 +34,22 @@
         </inbodydescription>
         <location file="faiss/gpu_metal/MetalIndex.h" line="25" column="10" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="25" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a33325db511464edef73ffa080a526255" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu_metal::MetalIndexConfig::useFloat16</definition>
+        <argsstring></argsstring>
+        <name>useFloat16</name>
+        <qualifiedname>faiss::gpu_metal::MetalIndexConfig::useFloat16</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Build the IVF-PQ distance lookup tables in half precision. Halves LUT bandwidth during the GPU scan at a small accuracy cost. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="29" column="10" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a6f531372b065f9555cafa76beb6b3e60" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">faiss::gpu::IndicesOptions</ref></type>
         <definition>faiss::gpu::IndicesOptions faiss::gpu_metal::MetalIndexConfig::indicesOptions</definition>
@@ -47,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="27" column="32" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="31" column="32" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a9a0996b37bfdb285231b3e0a73e3673b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -62,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalIndex.h" line="29" column="10" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalIndex.h" line="33" column="10" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="33" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -70,11 +86,12 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu_metal/MetalIndex.h" line="22" column="1" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="22" bodyend="30"/>
+    <location file="faiss/gpu_metal/MetalIndex.h" line="22" column="1" bodyfile="faiss/gpu_metal/MetalIndex.h" bodystart="22" bodyend="34"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1ad4fc2493e916a6def403203f1a6047b9" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIndexConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a6f531372b065f9555cafa76beb6b3e60" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIndexConfig</scope><name>indicesOptions</name></member>
       <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a9a0996b37bfdb285231b3e0a73e3673b" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIndexConfig</scope><name>interleavedLayout</name></member>
+      <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1a33325db511464edef73ffa080a526255" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIndexConfig</scope><name>useFloat16</name></member>
       <member refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig_1ad89b524de6ea38c695f9761b88876a15" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalIndexConfig</scope><name>useFloat16CoarseQuantizer</name></member>
     </listofallmembers>
   </compounddef>
