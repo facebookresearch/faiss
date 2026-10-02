@@ -19,12 +19,70 @@
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
 #include <omp.h>
+#include <algorithm>
+#include <cmath>
 #include <cstring>
 
 namespace faiss {
 
 IndexFlat::IndexFlat(idx_t d_, MetricType metric)
         : IndexFlatCodes(sizeof(float) * d_, d_, metric) {}
+
+void IndexFlat::add(idx_t n, const float* x) {
+    // Other metrics such as METRIC_NaNEuclidean give NaN a meaning.
+    if (metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT) {
+        // A float is NaN or Inf when all 8 exponent bits are set. The
+        // branch free scan vectorizes, the slow path only names the entry.
+        const size_t total = size_t(n) * d;
+        const uint32_t* bits = reinterpret_cast<const uint32_t*>(x);
+        uint32_t bad = 0;
+        for (size_t i = 0; i < total; i++) {
+            bad |= uint32_t((bits[i] & 0x7f800000u) == 0x7f800000u);
+        }
+        if (bad) {
+            for (size_t i = 0; i < total; i++) {
+                FAISS_THROW_IF_NOT_FMT(
+                        std::isfinite(x[i]),
+                        "IndexFlat::add: vector %" PRId64 " component %" PRId64
+                        " is not finite (%g)",
+                        int64_t(i / d),
+                        int64_t(i % d),
+                        double(x[i]));
+            }
+        }
+    }
+    IndexFlatCodes::add(n, x);
+}
+
+namespace {
+
+// A flat L2 search with no selector must return min(k, ntotal) results per
+// query. Fewer means an entry never beat the FLT_MAX heap threshold, which
+// only happens when its squared distance overflowed or was NaN.
+void check_l2_result_count(
+        idx_t n,
+        idx_t k,
+        idx_t ntotal,
+        const idx_t* labels) {
+    const idx_t expected = std::min(k, ntotal);
+    for (idx_t i = 0; i < n; i++) {
+        idx_t found = 0;
+        for (idx_t j = 0; j < expected; j++) {
+            found += labels[i * k + j] >= 0;
+        }
+        FAISS_THROW_IF_NOT_FMT(
+                found == expected,
+                "IndexFlat::search: query %" PRId64 " returned %" PRId64
+                " of %" PRId64
+                " results. A squared L2 distance overflowed float32 "
+                "or the query is not finite",
+                int64_t(i),
+                int64_t(found),
+                int64_t(expected));
+    }
+}
+
+} // namespace
 
 void IndexFlat::search(
         idx_t n,
@@ -43,6 +101,9 @@ void IndexFlat::search(
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
         knn_L2sqr(x, get_xb(), d, n, ntotal, &res, nullptr, sel);
+        if (!sel) {
+            check_l2_result_count(n, k, ntotal, labels);
+        }
     } else {
         knn_extra_metrics(
                 x,

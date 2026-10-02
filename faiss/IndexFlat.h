@@ -23,6 +23,15 @@ struct IndexFlat : IndexFlatCodes {
             idx_t d, ///< dimensionality of the input vectors
             MetricType metric = METRIC_L2);
 
+    /// With METRIC_L2 or METRIC_INNER_PRODUCT, throws if any component of
+    /// x is NaN or infinite. Such a vector never compares below the heap
+    /// threshold, so search would drop it from every result list without
+    /// an error.
+    void add(idx_t n, const float* x) override;
+
+    /// With METRIC_L2 and no IDSelector, throws if a query returns fewer
+    /// than min(k, ntotal) results. That happens when a squared distance
+    /// overflows float32 or the query has a non finite component.
     void search(
             idx_t n,
             const float* x,
