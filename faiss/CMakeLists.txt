@@ -333,6 +333,10 @@ set(FAISS_HEADERS
   impl/scalar_quantizer/quantizers.h
   impl/scalar_quantizer/scanners.h
   impl/scalar_quantizer/similarities.h
+  impl/pq_code_distance/pq_rvv_kernel.h
+  impl/scalar_quantizer/sq8_coefficients.h
+  impl/scalar_quantizer/sq8_rvv_kernel.h
+  utils/simd_impl/distances_rvv_kernel.h
   impl/scalar_quantizer/sq-dispatch.h
   impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
