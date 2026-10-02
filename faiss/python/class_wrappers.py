@@ -308,6 +308,18 @@ def handle_Index(the_class):
         else:
             self.add_ex(n, swig_ptr(x), numeric_type)
 
+    def replacement_add_with_fp32_graph(self, x):
+        """Add one batch to RaBitQ storage and build its HNSW graph with
+        temporary FP32 distances.
+
+        The index must be trained and empty. This is a batch-only operation;
+        append is rejected until the index is reset.
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype="float32")
+        self.add_with_fp32_graph_c(n, swig_ptr(x))
+
     def replacement_add_with_ids(self, x, ids, numeric_type=faiss.Float32):
         """Adds vectors with arbitrary ids to the index (not all indexes
         support this).
@@ -961,6 +973,12 @@ def handle_Index(the_class):
         self.permute_entries_c(faiss.swig_ptr(perm))
 
     replace_method(the_class, "add", replacement_add)
+    replace_method(
+        the_class,
+        "add_with_fp32_graph",
+        replacement_add_with_fp32_graph,
+        ignore_missing=True,
+    )
     replace_method(the_class, "add_with_ids", replacement_add_with_ids)
     replace_method(the_class, "assign", replacement_assign)
     replace_method(the_class, "train", replacement_train)

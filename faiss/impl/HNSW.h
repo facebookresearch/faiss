@@ -160,8 +160,14 @@ struct HNSW {
         SM_DEFAULT,
         SM_PANORAMA,
         SM_RABITQ,
+        SM_RABITQ_ADAPTIVE,
     };
     Search_method_t search_method = SM_DEFAULT;
+
+    /// Use the nested prefix scorer for upper-level adaptive navigation and
+    /// re-score the selected entry with the full code before level zero.
+    /// Runtime-only derived policy; not serialized.
+    bool adaptive_prefix_upper_levels = false;
 
     /// distance comparison semantics: when true, distances are treated as
     /// similarity scores (larger is better). Default false matches the
