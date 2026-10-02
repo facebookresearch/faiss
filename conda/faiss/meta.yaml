@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -69,7 +70,7 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34  # [linux and not x86_64]
+        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
         - libopenblas =0.3.34  # [osx]
       run:
         - python {{ python }}
@@ -83,7 +84,7 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34  # [linux and not x86_64]
+        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
         - libopenblas =0.3.34  # [osx]
     test:
       requires:
@@ -95,6 +96,7 @@ outputs:
         - test -f $PREFIX/lib/MetalDistance.metallib   # [osx and arm64]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+        - python -c "import ctypes; lib = ctypes.CDLL('libopenblas.so.0'); assert lib.openblas_get_parallel() == 2"  # [linux and not x86_64]
 
   - name: faiss-cpu
     script: build-pkg.sh  # [x86_64 and not win and not osx]
