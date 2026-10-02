@@ -12,10 +12,13 @@
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
+#include <algorithm>
+#include <cinttypes>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
+#include <functional>
 #include <limits>
 
 #if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_FLAT)
@@ -24,6 +27,65 @@
 
 namespace faiss {
 namespace gpu {
+
+namespace {
+
+// A float is NaN or Inf when all 8 exponent bits are set
+__global__ void countNonFiniteKernel(
+        const float* x,
+        size_t total,
+        unsigned long long* count) {
+    unsigned long long local = 0;
+    for (size_t i = size_t(blockIdx.x) * blockDim.x + threadIdx.x; i < total;
+         i += size_t(gridDim.x) * blockDim.x) {
+        local += (__float_as_uint(x[i]) & 0x7f800000u) == 0x7f800000u;
+    }
+    if (local) {
+        atomicAdd(count, local);
+    }
+}
+
+// Counts the queries that hold a -1 label within their first `expected`
+// result slots
+__global__ void countShortRowsKernel(
+        const idx_t* labels,
+        idx_t n,
+        int k,
+        idx_t expected,
+        unsigned long long* count) {
+    for (idx_t i = idx_t(blockIdx.x) * blockDim.x + threadIdx.x; i < n;
+         i += idx_t(gridDim.x) * blockDim.x) {
+        for (idx_t j = 0; j < expected; j++) {
+            if (labels[i * k + j] < 0) {
+                atomicAdd(count, 1ULL);
+                break;
+            }
+        }
+    }
+}
+
+unsigned long long runCount(
+        GpuResources* res,
+        cudaStream_t stream,
+        const std::function<void(unsigned long long*)>& launch) {
+    DeviceTensor<unsigned long long, 1, true> count(
+            res, makeTempAlloc(AllocType::Other, stream), {1});
+    CUDA_VERIFY(cudaMemsetAsync(
+            count.data(), 0, sizeof(unsigned long long), stream));
+    launch(count.data());
+    CUDA_TEST_ERROR();
+    unsigned long long host = 0;
+    CUDA_VERIFY(cudaMemcpyAsync(
+            &host,
+            count.data(),
+            sizeof(unsigned long long),
+            cudaMemcpyDeviceToHost,
+            stream));
+    CUDA_VERIFY(cudaStreamSynchronize(stream));
+    return host;
+}
+
+} // namespace
 
 GpuIndexFlat::GpuIndexFlat(
         GpuResourcesProvider* provider,
@@ -209,7 +271,37 @@ void GpuIndexFlat::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     // We do not support add_with_ids
     FAISS_THROW_IF_MSG(ids, "add_with_ids not supported");
 
-    data_->add(x, n, resources_->getDefaultStream(config_.device));
+    auto stream = resources_->getDefaultStream(config_.device);
+
+    // NaN or Inf never compares below the selection threshold, so such a
+    // vector would drop out of every result list without an error. The
+    // input may sit on the host or the device, so check a device copy.
+    const bool checkFinite =
+            metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT;
+    DeviceTensor<float, 2, true> devX;
+    if (checkFinite) {
+        devX = toDeviceTemporary<float, 2>(
+                resources_.get(),
+                config_.device,
+                const_cast<float*>(x),
+                stream,
+                {n, this->d});
+        size_t total = size_t(n) * this->d;
+        auto bad =
+                runCount(resources_.get(), stream, [&](unsigned long long* c) {
+                    int grid = int(std::min<size_t>(
+                            (total + 255) / 256, size_t(4096)));
+                    countNonFiniteKernel<<<grid, 256, 0, stream>>>(
+                            devX.data(), total, c);
+                });
+        FAISS_THROW_IF_NOT_FMT(
+                bad == 0,
+                "GpuIndexFlat::add: %llu components are not finite",
+                bad);
+    }
+
+    // reuse the checked device copy instead of copying x again
+    data_->add(checkFinite ? devX.data() : x, n, stream);
     this->ntotal += n;
 }
 
@@ -239,6 +331,27 @@ void GpuIndexFlat::searchImpl_(
             outLabels,
             true,
             sel);
+    // A flat L2 search with no selector must fill min(k, ntotal) slots per
+    // query. Fewer means a squared distance overflowed float32 or the query
+    // is not finite.
+    if (metric_type == METRIC_L2 && !sel && n > 0) {
+        idx_t expected = std::min(idx_t(k), this->ntotal);
+        auto shortRows =
+                runCount(resources_.get(), stream, [&](unsigned long long* c) {
+                    int grid = int(std::min<idx_t>((n + 255) / 256, 4096));
+                    countShortRowsKernel<<<grid, 256, 0, stream>>>(
+                            outLabels.data(), n, k, expected, c);
+                });
+        FAISS_THROW_IF_NOT_FMT(
+                shortRows == 0,
+                "GpuIndexFlat::search: %llu of %" PRId64
+                " queries returned fewer than %" PRId64
+                " results. A squared L2 distance overflowed float32 "
+                "or the query is not finite",
+                shortRows,
+                int64_t(n),
+                int64_t(expected));
+    }
 }
 
 void GpuIndexFlat::searchImpl_ex_(
