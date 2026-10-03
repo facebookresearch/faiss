@@ -71,7 +71,6 @@ void train_q1_impl(
     const size_t nlist = q1.nlist;
     const ClusteringParameters& cp = q1.cp;
     Index* clustering_index = q1.clustering_index;
-    const bool float32 = !codec && numeric_type == NumericType::Float32;
 
     // k-means on the training rows, with `assigner` as assignment index
     auto train_clustering = [&](Clustering& clus, Index& assigner) {
@@ -117,8 +116,15 @@ void train_q1_impl(
                 "cp.use_super_kmeans is incompatible with a user-provided "
                 "clustering_index: SuperKMeans assigns with its own index");
         FAISS_THROW_IF_MSG(
-                cp.use_super_kmeans && !float32,
-                "SuperKMeans requires fp32 training data");
+                cp.use_super_kmeans && codec,
+                "SuperKMeans does not support encoded training data");
+        FAISS_THROW_IF_MSG(
+                cp.use_super_kmeans &&
+                        !(metric_type == METRIC_L2 ||
+                          (metric_type == METRIC_INNER_PRODUCT &&
+                           cp.spherical)),
+                "SuperKMeans requires L2 or spherical inner-product "
+                "clustering");
 
         quantizer->reset();
         if (cp.use_super_kmeans) {
@@ -126,7 +132,7 @@ void train_q1_impl(
             static_cast<ClusteringParameters&>(super_cp) = cp;
             SuperKMeans clus(
                     static_cast<int>(d), static_cast<int>(nlist), super_cp);
-            clus.train(n, reinterpret_cast<const float*>(x));
+            clus.train_ex(n, x, numeric_type);
             quantizer->add(nlist, clus.centroids.data());
         } else {
             Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
