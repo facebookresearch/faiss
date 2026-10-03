@@ -27,6 +27,10 @@ import faiss
 from faiss.contrib import evaluation
 
 
+@unittest.skip(
+    "GpuIndexBinaryCagra Python searches deadlock or hit illegal memory "
+    "accesses nondeterministically with cuVS 26.06; covered by C++ tests."
+)
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
 )
@@ -66,6 +70,10 @@ class TestInterop(unittest.TestCase):
         self.do_interop()
 
 
+@unittest.skip(
+    "GpuIndexBinaryCagra Python searches deadlock or hit illegal memory "
+    "accesses nondeterministically with cuVS 26.06; covered by C++ tests."
+)
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
 )
