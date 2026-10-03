@@ -135,13 +135,41 @@
           <declname>x</declname>
         </param>
         <briefdescription>
+<para>Train on <computeroutput>n</computeroutput> row-major fp32 vectors of dimension <computeroutput>d</computeroutput>. </para>
         </briefdescription>
         <detaileddescription>
-<para>Train on <computeroutput>n</computeroutput> row-major vectors of dimension <computeroutput>d</computeroutput>. Honors the applicable <ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref> fields (niter, seed, verbose, max_points_per_centroid, use_faster_subsampling, check_input_data_for_NaNs). </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="96" column="10"/>
+        <location file="faiss/SuperKMeans.h" line="93" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SuperKMeans_1a6b4912424a0323ac8774def94abd3c54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::SuperKMeans::train_ex</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type)</argsstring>
+        <name>train_ex</name>
+        <qualifiedname>faiss::SuperKMeans::train_ex</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Train on vectors of the given numeric type.</para>
+<para>Float32 is the same as <ref refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" kindref="member">train()</ref>. Float16 takes packed IEEE binary16 vectors and widens bounded blocks while rotating them into the fp32 training workspace. Centroids and all iteration state remain fp32. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="101" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -169,7 +197,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/SuperKMeans.h" line="72" column="1" bodyfile="faiss/SuperKMeans.h" bodystart="72" bodyend="97"/>
+    <location file="faiss/SuperKMeans.h" line="72" column="1" bodyfile="faiss/SuperKMeans.h" bodystart="72" bodyend="102"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>centroids</name></member>
       <member refid="structfaiss_1_1SuperKMeans_1a971807c8fb000bdb1363510f61e63f96" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>cp</name></member>
@@ -179,6 +207,7 @@
       <member refid="structfaiss_1_1SuperKMeans_1abea467844bc52bb17771af20fba756fc" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>k</name></member>
       <member refid="structfaiss_1_1SuperKMeans_1a6ccc8a3ab08caaef496c072db242ccb4" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>SuperKMeans</name></member>
       <member refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>train</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1a6b4912424a0323ac8774def94abd3c54" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>train_ex</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

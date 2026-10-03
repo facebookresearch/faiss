@@ -13599,6 +13599,7 @@
     <member refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" kind="variable"><name>gemm_pruning_rates</name></member>
     <member refid="structfaiss_1_1SuperKMeans_1a6ccc8a3ab08caaef496c072db242ccb4" kind="function"><name>SuperKMeans</name></member>
     <member refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1a6b4912424a0323ac8774def94abd3c54" kind="function"><name>train_ex</name></member>
   </compound>
   <compound refid="structfaiss_1_1SuperKMeansAssignScratch" kind="struct"><name>faiss::SuperKMeansAssignScratch</name>
     <member refid="structfaiss_1_1SuperKMeansAssignScratch_1a35058c7e7bafe83383278b08e05524c8" kind="variable"><name>Y_trail</name></member>

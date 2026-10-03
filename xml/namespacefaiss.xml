@@ -1976,7 +1976,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="625" column="23" declfile="faiss/IndexIVF.h" declline="625" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="626" column="23" declfile="faiss/IndexIVF.h" declline="626" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -1990,7 +1990,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="643" column="32" declfile="faiss/IndexIVF.h" declline="643" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="644" column="32" declfile="faiss/IndexIVF.h" declline="644" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -9734,7 +9734,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/SuperKMeans.h" line="112" column="6" declfile="faiss/SuperKMeans.h" declline="112" declcolumn="6"/>
+        <location file="faiss/SuperKMeans.h" line="117" column="6" declfile="faiss/SuperKMeans.h" declline="117" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::MetricType</type>
