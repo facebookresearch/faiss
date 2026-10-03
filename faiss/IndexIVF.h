@@ -57,7 +57,8 @@ struct Level1Quantizer {
      *
      * Float16 runs k-means natively on the fp16 rows (see
      * Clustering::train_ex). With quantizer_trains_alone == 1 the data is
-     * passed on to quantizer->train_ex(). SuperKMeans requires Float32.
+     * passed on to quantizer->train_ex(). SuperKMeans supports raw Float32
+     * and Float16 input, but not vectors decoded through a codec.
      */
     void train_q1_ex(
             size_t n,

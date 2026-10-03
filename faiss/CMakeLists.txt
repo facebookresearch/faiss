@@ -636,6 +636,11 @@ endif()
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
   target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
+  # GCC requires +fp16 for the vector conversion intrinsics in this source.
+  set_source_files_properties(utils/simd_impl/fp16_kernels_neon.cpp
+    TARGET_DIRECTORY faiss
+    PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+fp16"
+  )
 endif()
 
 # RVV is the baseline SIMD on rv64 builds; the RVV translation units require
