@@ -12,6 +12,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
@@ -175,10 +176,16 @@ void Index::compute_residual_n(
         const float* xs,
         float* residuals,
         const idx_t* keys) const {
+    std::exception_ptr ex;
 #pragma omp parallel for
     for (idx_t i = 0; i < n; ++i) {
-        compute_residual(&xs[i * d], &residuals[i * d], keys[i]);
+        try {
+            compute_residual(&xs[i * d], &residuals[i * d], keys[i]);
+        } catch (...) {
+            omp_capture_exception(ex);
+        }
     }
+    omp_rethrow_if_exception(ex);
 }
 
 size_t Index::sa_code_size() const {
