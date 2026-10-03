@@ -241,7 +241,7 @@ struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     QuantizerFP16(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
-    void encode_vector(const float* x, uint8_t* code) const final {
+    void encode_vector(const float* x, uint8_t* code) const override {
         for (size_t i = 0; i < d; i++) {
             ((uint16_t*)code)[i] = encode_fp16(x[i]);
         }
