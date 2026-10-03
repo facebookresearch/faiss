@@ -81,12 +81,55 @@ class TestExtraDistances(unittest.TestCase):
             scipy.spatial.distance.braycurtis, faiss.METRIC_BrayCurtis
         )
 
-    def xx_test_jensenshannon(self):
-        # this distance does not seem to be implemented in scipy
-        # vectors should probably be L1 normalized
-        self.run_simple_dis_test(
-            scipy.spatial.distance.jensenshannon, faiss.METRIC_JensenShannon
+    def test_jensenshannon(self):
+        xq = np.array(
+            [[0.0, 0.25, 0.75], [0.5, 0.0, 0.5]], dtype="float32"
         )
+        yb = np.array(
+            [[0.2, 0.8, 0.0], [0.0, 0.0, 1.0]], dtype="float32"
+        )
+        ref_dis = np.array(
+            [
+                [scipy.spatial.distance.jensenshannon(x, y) ** 2 for y in yb]
+                for x in xq
+            ]
+        )
+        new_dis = faiss.pairwise_distances(
+            xq, yb, faiss.METRIC_JensenShannon
+        )
+        np.testing.assert_allclose(ref_dis, new_dis, rtol=1e-5, atol=1e-7)
+
+        tiny = np.nextafter(np.float32(0), np.float32(1))
+        tiny_dis = faiss.pairwise_distances(
+            np.array([[tiny, 1.0]], dtype="float32"),
+            np.array([[0.0, 1.0]], dtype="float32"),
+            faiss.METRIC_JensenShannon,
+        )
+        self.assertTrue(np.isfinite(tiny_dis).all())
+
+    def test_jensenshannon_hnsw_sparse(self):
+        xb = np.array(
+            [
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [0.5, 0.5],
+                [0.25, 0.75],
+                [0.75, 0.25],
+                [0.0, 1.0],
+                [1.0, 0.0],
+                [0.1, 0.9],
+                [0.9, 0.1],
+                [0.0, 1.0],
+            ],
+            dtype="float32",
+        )
+        index = faiss.IndexHNSWFlat(2, 10, faiss.METRIC_JensenShannon)
+        index.add(xb)
+
+        distances, labels = index.search(xb[:1], 5)
+
+        self.assertTrue(np.isfinite(distances).all())
+        self.assertTrue((labels >= 0).all())
 
     def test_jaccard(self):
         xq, yb = self.make_example()
