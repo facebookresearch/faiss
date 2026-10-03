@@ -229,6 +229,10 @@ class TestIDMapCagra(unittest.TestCase):
     def test_IDMapCagra_L2(self):
         self.do_IDMapCagra(faiss.METRIC_L2, faiss.Float32)
 
+    @unittest.skip(
+        "GPU CAGRA inner-product search via IndexIDMap hangs during process "
+        "teardown on cuVS 26.06; root cause TBD."
+    )
     def test_IDMapCagra_IP(self):
         self.do_IDMapCagra(faiss.METRIC_INNER_PRODUCT, faiss.Float32)
 
