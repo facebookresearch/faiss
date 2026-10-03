@@ -206,6 +206,47 @@
         </inbodydescription>
         <location file="faiss/impl/ClusteringHelpers.h" line="45" column="7" declfile="faiss/impl/ClusteringHelpers.h" declline="45" declcolumn="7"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1detail_1a9dcb8b233e6ee8cf807c279725f06a77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::detail::init_centroids_fp16</definition>
+        <argsstring>(const ClusteringInitialization &amp;initializer, size_t n, const uint16_t *x, float *centroids, size_t n_existing_centroids=0, const float *existing_centroids=nullptr)</argsstring>
+        <name>init_centroids_fp16</name>
+        <qualifiedname>faiss::detail::init_centroids_fp16</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ClusteringInitialization" kindref="compound">ClusteringInitialization</ref> &amp;</type>
+          <declname>initializer</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_existing_centroids</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>existing_centroids</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Initialize non-random centroids directly from packed IEEE binary16 rows. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringHelpers.h" line="55" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="55" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1a7d308317647c530f45a96359cbc27fe4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::detail::compute_centroids</definition>
@@ -317,7 +358,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ClusteringHelpers.h" line="66" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="66" declcolumn="6"/>
+        <location file="faiss/impl/ClusteringHelpers.h" line="75" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="75" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -379,7 +420,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ClusteringHelpers.h" line="86" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="86" declcolumn="6"/>
+        <location file="faiss/impl/ClusteringHelpers.h" line="95" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="95" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -406,7 +447,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ClusteringHelpers.h" line="103" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="103" declcolumn="6"/>
+        <location file="faiss/impl/ClusteringHelpers.h" line="112" column="6" declfile="faiss/impl/ClusteringHelpers.h" declline="112" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1abafebf68b413f497c0fc8e44a180cfb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -449,7 +490,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ClusteringHelpers.h" line="112" column="5" declfile="faiss/impl/ClusteringHelpers.h" declline="112" declcolumn="5"/>
+        <location file="faiss/impl/ClusteringHelpers.h" line="121" column="5" declfile="faiss/impl/ClusteringHelpers.h" declline="121" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1ace450562f499446f88cfc5596a421e9d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

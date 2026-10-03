@@ -193,74 +193,83 @@
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t**<sp/>x_out,</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">**<sp/>weights_out);</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="54"><highlight class="comment">/**<sp/>compute<sp/>centroids<sp/>as<sp/>(weighted)<sp/>sum<sp/>of<sp/>training<sp/>points</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>training<sp/>vectors,<sp/>size<sp/>n<sp/>*<sp/>code_size<sp/>(from<sp/>codec)</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>@param<sp/>codec<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>how<sp/>to<sp/>decode<sp/>the<sp/>vectors<sp/>(if<sp/>NULL<sp/>then<sp/>cast<sp/>to<sp/>float*)</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>@param<sp/>weights<sp/><sp/><sp/><sp/><sp/><sp/>per-training<sp/>vector<sp/>weight,<sp/>size<sp/>n<sp/>(or<sp/>NULL)</highlight></codeline>
-<codeline lineno="59"><highlight class="comment"><sp/>*<sp/>@param<sp/>assign<sp/><sp/><sp/><sp/><sp/><sp/><sp/>nearest<sp/>centroid<sp/>for<sp/>each<sp/>training<sp/>vector,<sp/>size<sp/>n</highlight></codeline>
-<codeline lineno="60"><highlight class="comment"><sp/>*<sp/>@param<sp/>k_frozen<sp/><sp/><sp/><sp/><sp/>do<sp/>not<sp/>update<sp/>the<sp/>k_frozen<sp/>first<sp/>centroids</highlight></codeline>
-<codeline lineno="61"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroids<sp/><sp/><sp/><sp/>centroid<sp/>vectors<sp/>(output<sp/>only),<sp/>size<sp/>k<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="62"><highlight class="comment"><sp/>*<sp/>@param<sp/>hassign<sp/><sp/><sp/><sp/><sp/><sp/>histogram<sp/>of<sp/>assignments<sp/>per<sp/>centroid<sp/>(size<sp/>k),</highlight></codeline>
-<codeline lineno="63"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>should<sp/>be<sp/>0<sp/>on<sp/>input</highlight></codeline>
+<codeline lineno="54"><highlight class="comment">/**<sp/>Initialize<sp/>non-random<sp/>centroids<sp/>directly<sp/>from<sp/>packed<sp/>IEEE<sp/>binary16<sp/>rows.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="namespacefaiss_1_1detail_1a9dcb8b233e6ee8cf807c279725f06a77" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1a9dcb8b233e6ee8cf807c279725f06a77" kindref="member">init_centroids_fp16</ref>(</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ClusteringInitialization" kindref="compound">ClusteringInitialization</ref>&amp;<sp/>initializer,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids,</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n_existing_centroids<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>existing_centroids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="63"><highlight class="comment">/**<sp/>compute<sp/>centroids<sp/>as<sp/>(weighted)<sp/>sum<sp/>of<sp/>training<sp/>points</highlight></codeline>
 <codeline lineno="64"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="66" refid="namespacefaiss_1_1detail_1a7d308317647c530f45a96359cbc27fe4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1a7d308317647c530f45a96359cbc27fe4" kindref="member">compute_centroids</ref>(</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k_frozen,</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>x,</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>codec,</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>assign,</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>weights,</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>hassign,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="78"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>compute_centroids<sp/>for<sp/>training<sp/>vectors<sp/>stored<sp/>as<sp/>packed<sp/>IEEE</highlight></codeline>
-<codeline lineno="79"><highlight class="comment"><sp/>*<sp/>binary16<sp/>values.</highlight></codeline>
-<codeline lineno="80"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>Rows<sp/>are<sp/>widened<sp/>in<sp/>registers<sp/>and<sp/>accumulated<sp/>directly<sp/>into<sp/>the<sp/>fp32</highlight></codeline>
-<codeline lineno="82"><highlight class="comment"><sp/>*<sp/>centroids:<sp/>there<sp/>is<sp/>no<sp/>per-row<sp/>decode<sp/>call<sp/>and<sp/>no<sp/>decode<sp/>buffer.</highlight></codeline>
-<codeline lineno="83"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>training<sp/>vectors,<sp/>size<sp/>n<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="86" refid="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" kindref="member">compute_centroids_fp16</ref>(</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k_frozen,</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x,</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>assign,</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>weights,</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>hassign,</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="97"><highlight class="comment">/**<sp/>Check<sp/>packed<sp/>IEEE<sp/>binary16<sp/>values<sp/>for<sp/>NaNs<sp/>and<sp/>infinities.</highlight></codeline>
-<codeline lineno="98"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="99"><highlight class="comment"><sp/>*<sp/>The<sp/>check<sp/>runs<sp/>on<sp/>the<sp/>bit<sp/>patterns,<sp/>without<sp/>widening<sp/>to<sp/>fp32.</highlight></codeline>
-<codeline lineno="100"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="101"><highlight class="comment"><sp/>*<sp/>@return<sp/>true<sp/>iff<sp/>none<sp/>of<sp/>the<sp/>`n`<sp/>values<sp/>is<sp/>a<sp/>NaN<sp/>or<sp/>an<sp/>infinity</highlight></codeline>
-<codeline lineno="102"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="103" refid="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" kindref="member">fp16_all_finite</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x);</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="105"><highlight class="comment">/**<sp/>Handle<sp/>empty<sp/>clusters<sp/>by<sp/>splitting<sp/>larger<sp/>ones.</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="107"><highlight class="comment"><sp/>*<sp/>It<sp/>works<sp/>by<sp/>slightly<sp/>changing<sp/>the<sp/>centroids<sp/>to<sp/>make<sp/>2<sp/>clusters<sp/>from</highlight></codeline>
-<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>a<sp/>single<sp/>one.<sp/>Takes<sp/>the<sp/>same<sp/>arguments<sp/>as<sp/>compute_centroids.</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>training<sp/>vectors,<sp/>size<sp/>n<sp/>*<sp/>code_size<sp/>(from<sp/>codec)</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/>*<sp/>@param<sp/>codec<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>how<sp/>to<sp/>decode<sp/>the<sp/>vectors<sp/>(if<sp/>NULL<sp/>then<sp/>cast<sp/>to<sp/>float*)</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>@param<sp/>weights<sp/><sp/><sp/><sp/><sp/><sp/>per-training<sp/>vector<sp/>weight,<sp/>size<sp/>n<sp/>(or<sp/>NULL)</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/>*<sp/>@param<sp/>assign<sp/><sp/><sp/><sp/><sp/><sp/><sp/>nearest<sp/>centroid<sp/>for<sp/>each<sp/>training<sp/>vector,<sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/>*<sp/>@param<sp/>k_frozen<sp/><sp/><sp/><sp/><sp/>do<sp/>not<sp/>update<sp/>the<sp/>k_frozen<sp/>first<sp/>centroids</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroids<sp/><sp/><sp/><sp/>centroid<sp/>vectors<sp/>(output<sp/>only),<sp/>size<sp/>k<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"><sp/>*<sp/>@param<sp/>hassign<sp/><sp/><sp/><sp/><sp/><sp/>histogram<sp/>of<sp/>assignments<sp/>per<sp/>centroid<sp/>(size<sp/>k),</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>should<sp/>be<sp/>0<sp/>on<sp/>input</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="namespacefaiss_1_1detail_1a7d308317647c530f45a96359cbc27fe4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1a7d308317647c530f45a96359cbc27fe4" kindref="member">compute_centroids</ref>(</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k_frozen,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>x,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>codec,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>assign,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>weights,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>hassign,</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="87"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>compute_centroids<sp/>for<sp/>training<sp/>vectors<sp/>stored<sp/>as<sp/>packed<sp/>IEEE</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/>*<sp/>binary16<sp/>values.</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>Rows<sp/>are<sp/>widened<sp/>in<sp/>registers<sp/>and<sp/>accumulated<sp/>directly<sp/>into<sp/>the<sp/>fp32</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/>*<sp/>centroids:<sp/>there<sp/>is<sp/>no<sp/>per-row<sp/>decode<sp/>call<sp/>and<sp/>no<sp/>decode<sp/>buffer.</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>training<sp/>vectors,<sp/>size<sp/>n<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" kindref="member">compute_centroids_fp16</ref>(</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k_frozen,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>assign,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>weights,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>hassign,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="106"><highlight class="comment">/**<sp/>Check<sp/>packed<sp/>IEEE<sp/>binary16<sp/>values<sp/>for<sp/>NaNs<sp/>and<sp/>infinities.</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>The<sp/>check<sp/>runs<sp/>on<sp/>the<sp/>bit<sp/>patterns,<sp/>without<sp/>widening<sp/>to<sp/>fp32.</highlight></codeline>
 <codeline lineno="109"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="110"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nb<sp/>of<sp/>splitting<sp/>operations<sp/>(larger<sp/>is<sp/>worse)</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/>*<sp/>@return<sp/>true<sp/>iff<sp/>none<sp/>of<sp/>the<sp/>`n`<sp/>values<sp/>is<sp/>a<sp/>NaN<sp/>or<sp/>an<sp/>infinity</highlight></codeline>
 <codeline lineno="111"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="112" refid="namespacefaiss_1_1detail_1abafebf68b413f497c0fc8e44a180cfb7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1abafebf68b413f497c0fc8e44a180cfb7" kindref="member">split_clusters</ref>(</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k_frozen,</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>hassign,</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"></highlight></codeline>
-<codeline lineno="120"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>detail</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" kindref="member">fp16_all_finite</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="114"><highlight class="comment">/**<sp/>Handle<sp/>empty<sp/>clusters<sp/>by<sp/>splitting<sp/>larger<sp/>ones.</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"><sp/>*<sp/>It<sp/>works<sp/>by<sp/>slightly<sp/>changing<sp/>the<sp/>centroids<sp/>to<sp/>make<sp/>2<sp/>clusters<sp/>from</highlight></codeline>
+<codeline lineno="117"><highlight class="comment"><sp/>*<sp/>a<sp/>single<sp/>one.<sp/>Takes<sp/>the<sp/>same<sp/>arguments<sp/>as<sp/>compute_centroids.</highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nb<sp/>of<sp/>splitting<sp/>operations<sp/>(larger<sp/>is<sp/>worse)</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121" refid="namespacefaiss_1_1detail_1abafebf68b413f497c0fc8e44a180cfb7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1detail_1abafebf68b413f497c0fc8e44a180cfb7" kindref="member">split_clusters</ref>(</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k_frozen,</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>hassign,</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>detail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/ClusteringHelpers.h"/>
   </compounddef>

@@ -14684,6 +14684,7 @@
     <member refid="namespacefaiss_1_1detail_1ac3611a8d1b22c809d8805a48efddff1a" kind="function"><name>precompute_ad_thresholds</name></member>
     <member refid="namespacefaiss_1_1detail_1ab285156b20d9f45b8a9a2dfdc1727a7c" kind="function"><name>get_actual_rng_seed</name></member>
     <member refid="namespacefaiss_1_1detail_1aa596c6f97973243c643a260861c838de" kind="function"><name>subsample_training_set</name></member>
+    <member refid="namespacefaiss_1_1detail_1a9dcb8b233e6ee8cf807c279725f06a77" kind="function"><name>init_centroids_fp16</name></member>
     <member refid="namespacefaiss_1_1detail_1a7d308317647c530f45a96359cbc27fe4" kind="function"><name>compute_centroids</name></member>
     <member refid="namespacefaiss_1_1detail_1a5ec796f219afd678d9fb2690df78ce62" kind="function"><name>compute_centroids_fp16</name></member>
     <member refid="namespacefaiss_1_1detail_1ac58e8d519c974622189c8ea1aebd342a" kind="function"><name>fp16_all_finite</name></member>
