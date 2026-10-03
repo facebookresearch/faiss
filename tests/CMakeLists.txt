@@ -25,6 +25,7 @@ set(FAISS_TEST_SRC
   test_heap.cpp
   test_pq_code_distance.cpp
   test_hnsw.cpp
+  test_index_pretransform_parallel.cpp
   test_NSG_compressed_graph.cpp
   test_partitioning.cpp
   test_fastscan_perf.cpp
