@@ -279,29 +279,38 @@ void Clustering::train_impl(
                             centroids.data() + (n_input_centroids + i) * d);
                 }
             } else {
-                // For k-means++ and AFK-MC², we need all vectors decoded
-                const float* x_float = nullptr;
-                std::vector<float> x_decoded;
-
-                if (!encoded) {
-                    x_float = reinterpret_cast<const float*>(x);
-                } else {
-                    // Decode all vectors for initialization
-                    x_decoded.resize(nx * d);
-                    decode_rows(nx, x, x_decoded.data());
-                    x_float = x_decoded.data();
-                }
-
                 ClusteringInitialization initializer(d, k_to_init);
                 initializer.method = init_method;
                 initializer.seed = actual_seed + 1 + redo * 15486557L;
                 initializer.afkmc2_chain_length = afkmc2_chain_length;
-                initializer.init_centroids(
-                        nx,
-                        x_float,
-                        centroids.data() + n_input_centroids * d,
-                        n_input_centroids,
-                        n_input_centroids > 0 ? centroids.data() : nullptr);
+
+                if (fp16) {
+                    detail::init_centroids_fp16(
+                            initializer,
+                            nx,
+                            reinterpret_cast<const uint16_t*>(x),
+                            centroids.data() + n_input_centroids * d,
+                            n_input_centroids,
+                            n_input_centroids > 0 ? centroids.data() : nullptr);
+                } else {
+                    const float* x_float = nullptr;
+                    std::vector<float> x_decoded;
+
+                    if (!encoded) {
+                        x_float = reinterpret_cast<const float*>(x);
+                    } else {
+                        x_decoded.resize(nx * d);
+                        decode_rows(nx, x, x_decoded.data());
+                        x_float = x_decoded.data();
+                    }
+
+                    initializer.init_centroids(
+                            nx,
+                            x_float,
+                            centroids.data() + n_input_centroids * d,
+                            n_input_centroids,
+                            n_input_centroids > 0 ? centroids.data() : nullptr);
+                }
             }
         }
 
