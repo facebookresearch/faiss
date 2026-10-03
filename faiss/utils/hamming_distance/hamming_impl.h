@@ -34,6 +34,8 @@
 
 #include <faiss/utils/hamming.h>
 
+#include <omp.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -61,6 +63,99 @@ namespace {
  * HammingComputer-based search templates
  ******************************************************************/
 
+// Database-parallel k-NN, used when there are few queries (nq <= nt / 2):
+// the query-parallel loop in hammings_knn_hc_impl would leave threads idle
+// (a single query is scanned by one thread). Each thread scans a contiguous
+// segment of the database into its own heaps; the heaps are then merged.
+// Mirrors knn_db_parallel_impl in distances.cpp. Distances are identical to
+// the sequential scan; as there, ids may differ among ties at the k-th
+// distance.
+inline bool hamming_use_db_parallel(size_t nq, size_t nb) {
+    const int nt = omp_get_max_threads();
+    // The query-parallel loop already keeps nq threads busy, so the gain is
+    // at most nt / nq; below 2x the merge overhead can cancel it.
+    if (nt <= 1 || 2 * nq > static_cast<size_t>(nt)) {
+        return false;
+    }
+    return nb >= std::max(
+                         hamming_db_parallel_min_vectors,
+                         static_cast<size_t>(nt) * 1024);
+}
+
+template <class HammingComputer>
+void hammings_knn_hc_db_parallel_impl(
+        int bytes_per_code,
+        int_maxheap_array_t* __restrict ha,
+        const uint8_t* __restrict bs1,
+        const uint8_t* __restrict bs2,
+        size_t n2,
+        bool order,
+        const faiss::IDSelector* sel) {
+    using C = CMax<hamdis_t, int64_t>;
+    const size_t k = ha->k;
+    const size_t nq = ha->nh;
+    const int nt = omp_get_max_threads();
+    const size_t bs = 4096; // database rows per cache block
+
+    std::vector<hamdis_t> all_dis(static_cast<size_t>(nt) * nq * k);
+    std::vector<int64_t> all_ids(static_cast<size_t>(nt) * nq * k);
+
+#pragma omp parallel num_threads(nt)
+    {
+        const int tid = omp_get_thread_num();
+        const size_t j_begin = static_cast<size_t>(tid) * n2 / nt;
+        const size_t j_end = static_cast<size_t>(tid + 1) * n2 / nt;
+        hamdis_t* my_dis = all_dis.data() + static_cast<size_t>(tid) * nq * k;
+        int64_t* my_ids = all_ids.data() + static_cast<size_t>(tid) * nq * k;
+
+        for (size_t i = 0; i < nq; i++) {
+            heap_heapify<C>(k, my_dis + i * k, my_ids + i * k);
+        }
+        for (size_t j0 = j_begin; j0 < j_end; j0 += bs) {
+            const size_t j1 = std::min(j0 + bs, j_end);
+            for (size_t i = 0; i < nq; i++) {
+                HammingComputer hc(bs1 + i * bytes_per_code, bytes_per_code);
+                hamdis_t* __restrict bh_val = my_dis + i * k;
+                int64_t* __restrict bh_ids = my_ids + i * k;
+                const uint8_t* __restrict bs2_ = bs2 + j0 * bytes_per_code;
+                for (size_t j = j0; j < j1; j++, bs2_ += bytes_per_code) {
+                    if (sel && !sel->is_member(j)) {
+                        continue;
+                    }
+                    const hamdis_t dis = hc.hamming(bs2_);
+                    if (dis < bh_val[0]) {
+                        faiss::maxheap_replace_top<hamdis_t>(
+                                k, bh_val, bh_ids, dis, j);
+                    }
+                }
+            }
+        }
+    }
+
+    // merge the per-thread heaps (nq < nthreads, so this is cheap)
+    for (size_t i = 0; i < nq; i++) {
+        hamdis_t* out_dis = ha->val + i * k;
+        int64_t* out_ids = ha->ids + i * k;
+        heap_heapify<C>(k, out_dis, out_ids);
+        for (int t = 0; t < nt; t++) {
+            const size_t off = (static_cast<size_t>(t) * nq + i) * k;
+            for (size_t r = 0; r < k; r++) {
+                if (all_ids[off + r] >= 0 && all_dis[off + r] < out_dis[0]) {
+                    faiss::maxheap_replace_top<hamdis_t>(
+                            k,
+                            out_dis,
+                            out_ids,
+                            all_dis[off + r],
+                            all_ids[off + r]);
+                }
+            }
+        }
+        if (order) {
+            heap_reorder<C>(k, out_dis, out_ids);
+        }
+    }
+}
+
 template <class HammingComputer>
 void hammings_knn_hc_impl(
         int bytes_per_code,
@@ -73,6 +168,12 @@ void hammings_knn_hc_impl(
         ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK,
         const faiss::IDSelector* sel = nullptr) {
     size_t k = ha->k;
+    if (init_heap && approx_topk_mode == ApproxTopK_mode_t::EXACT_TOPK &&
+        hamming_use_db_parallel(ha->nh, n2)) {
+        hammings_knn_hc_db_parallel_impl<HammingComputer>(
+                bytes_per_code, ha, bs1, bs2, n2, order, sel);
+        return;
+    }
     if (init_heap) {
         ha->heapify();
     }
@@ -133,6 +234,81 @@ void hammings_knn_hc_impl(
 
 #undef HANDLE_APPROX
 
+// Database-parallel version of the counting k-NN. Each thread keeps one
+// HCounterState per query for a contiguous segment of the database; merging
+// the buckets in increasing distance, and the threads in segment order,
+// gives exactly the same ids as the sequential scan (each bucket holds the
+// first ids of its segment in scan order, and a dropped id is never needed
+// because its own segment already has k better results).
+template <class HammingComputer>
+void hammings_knn_mc_db_parallel_impl(
+        int bytes_per_code,
+        const uint8_t* __restrict a,
+        const uint8_t* __restrict b,
+        size_t na,
+        size_t nb,
+        size_t k,
+        int32_t* __restrict distances,
+        int64_t* __restrict labels,
+        const faiss::IDSelector* sel) {
+    const int nBuckets = bytes_per_code * 8 + 1;
+    const int nt = omp_get_max_threads();
+    const size_t bs = 4096; // database rows per cache block
+    const size_t nslots = static_cast<size_t>(nt) * na;
+    std::vector<int> all_counters(nslots * nBuckets, 0);
+    std::unique_ptr<int64_t[]> all_ids(new int64_t[nslots * nBuckets * k]);
+
+#pragma omp parallel num_threads(nt)
+    {
+        const int tid = omp_get_thread_num();
+        const size_t j_begin = static_cast<size_t>(tid) * nb / nt;
+        const size_t j_end = static_cast<size_t>(tid + 1) * nb / nt;
+        std::vector<HCounterState<HammingComputer>> cs;
+        cs.reserve(na);
+        for (size_t i = 0; i < na; ++i) {
+            const size_t slot = static_cast<size_t>(tid) * na + i;
+            cs.push_back(
+                    HCounterState<HammingComputer>(
+                            all_counters.data() + slot * nBuckets,
+                            all_ids.get() + slot * nBuckets * k,
+                            a + i * bytes_per_code,
+                            8 * bytes_per_code,
+                            k));
+        }
+        for (size_t j0 = j_begin; j0 < j_end; j0 += bs) {
+            const size_t j1 = std::min(j0 + bs, j_end);
+            for (size_t i = 0; i < na; ++i) {
+                for (size_t j = j0; j < j1; ++j) {
+                    if (!sel || sel->is_member(j)) {
+                        cs[i].update_counter(b + j * bytes_per_code, j);
+                    }
+                }
+            }
+        }
+    }
+
+    for (size_t i = 0; i < na; ++i) {
+        size_t nres = 0;
+        for (int dis = 0; dis < nBuckets && nres < k; dis++) {
+            for (int t = 0; t < nt && nres < k; t++) {
+                const size_t slot = static_cast<size_t>(t) * na + i;
+                const int* counters = all_counters.data() + slot * nBuckets;
+                const int64_t* ids = all_ids.get() + slot * nBuckets * k;
+                for (int l = 0; l < counters[dis] && nres < k; l++) {
+                    labels[i * k + nres] = ids[dis * k + l];
+                    distances[i * k + nres] = dis;
+                    nres++;
+                }
+            }
+        }
+        while (nres < k) {
+            labels[i * k + nres] = -1;
+            distances[i * k + nres] = std::numeric_limits<int32_t>::max();
+            ++nres;
+        }
+    }
+}
+
 template <class HammingComputer>
 void hammings_knn_mc_impl(
         int bytes_per_code,
@@ -145,6 +321,14 @@ void hammings_knn_mc_impl(
         int64_t* __restrict labels,
         const faiss::IDSelector* sel) {
     const int nBuckets = bytes_per_code * 8 + 1;
+    // per-thread buckets cost nt * na * nBuckets * k ids: cap at 2^24 ids
+    if (hamming_use_db_parallel(na, nb) &&
+        static_cast<size_t>(omp_get_max_threads()) * na * nBuckets * k <=
+                (size_t(1) << 24)) {
+        hammings_knn_mc_db_parallel_impl<HammingComputer>(
+                bytes_per_code, a, b, na, nb, k, distances, labels, sel);
+        return;
+    }
     std::vector<int> all_counters(na * nBuckets, 0);
     std::unique_ptr<int64_t[]> all_ids_per_dis(new int64_t[na * nBuckets * k]);
 
