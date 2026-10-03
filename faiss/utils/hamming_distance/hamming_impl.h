@@ -71,6 +71,12 @@ namespace {
 // the sequential scan; as there, ids may differ among ties at the k-th
 // distance.
 inline bool hamming_use_db_parallel(size_t nq, size_t nb) {
+    // Inside an active parallel region a nested region usually gets a single
+    // thread, so there is nothing to gain (and the caller already
+    // parallelizes); use the sequential scan.
+    if (omp_in_parallel()) {
+        return false;
+    }
     const int nt = omp_get_max_threads();
     // The query-parallel loop already keeps nq threads busy, so the gain is
     // at most nt / nq; below 2x the merge overhead can cancel it.
@@ -100,11 +106,18 @@ void hammings_knn_hc_db_parallel_impl(
     std::vector<hamdis_t> all_dis(static_cast<size_t>(nt) * nq * k);
     std::vector<int64_t> all_ids(static_cast<size_t>(nt) * nq * k);
 
+    // The runtime may give fewer threads than requested (OMP_DYNAMIC, thread
+    // limits): segment the database by the team size actually obtained.
+    int nt_used = 1;
 #pragma omp parallel num_threads(nt)
     {
+        const int nth = omp_get_num_threads();
         const int tid = omp_get_thread_num();
-        const size_t j_begin = static_cast<size_t>(tid) * n2 / nt;
-        const size_t j_end = static_cast<size_t>(tid + 1) * n2 / nt;
+        if (tid == 0) {
+            nt_used = nth;
+        }
+        const size_t j_begin = static_cast<size_t>(tid) * n2 / nth;
+        const size_t j_end = static_cast<size_t>(tid + 1) * n2 / nth;
         hamdis_t* my_dis = all_dis.data() + static_cast<size_t>(tid) * nq * k;
         int64_t* my_ids = all_ids.data() + static_cast<size_t>(tid) * nq * k;
 
@@ -137,7 +150,7 @@ void hammings_knn_hc_db_parallel_impl(
         hamdis_t* out_dis = ha->val + i * k;
         int64_t* out_ids = ha->ids + i * k;
         heap_heapify<C>(k, out_dis, out_ids);
-        for (int t = 0; t < nt; t++) {
+        for (int t = 0; t < nt_used; t++) {
             const size_t off = (static_cast<size_t>(t) * nq + i) * k;
             for (size_t r = 0; r < k; r++) {
                 if (all_ids[off + r] >= 0 && all_dis[off + r] < out_dis[0]) {
@@ -258,11 +271,16 @@ void hammings_knn_mc_db_parallel_impl(
     std::vector<int> all_counters(nslots * nBuckets, 0);
     std::unique_ptr<int64_t[]> all_ids(new int64_t[nslots * nBuckets * k]);
 
+    int nt_used = 1; // team size actually obtained (see the heap version)
 #pragma omp parallel num_threads(nt)
     {
+        const int nth = omp_get_num_threads();
         const int tid = omp_get_thread_num();
-        const size_t j_begin = static_cast<size_t>(tid) * nb / nt;
-        const size_t j_end = static_cast<size_t>(tid + 1) * nb / nt;
+        if (tid == 0) {
+            nt_used = nth;
+        }
+        const size_t j_begin = static_cast<size_t>(tid) * nb / nth;
+        const size_t j_end = static_cast<size_t>(tid + 1) * nb / nth;
         std::vector<HCounterState<HammingComputer>> cs;
         cs.reserve(na);
         for (size_t i = 0; i < na; ++i) {
@@ -290,7 +308,7 @@ void hammings_knn_mc_db_parallel_impl(
     for (size_t i = 0; i < na; ++i) {
         size_t nres = 0;
         for (int dis = 0; dis < nBuckets && nres < k; dis++) {
-            for (int t = 0; t < nt && nres < k; t++) {
+            for (int t = 0; t < nt_used && nres < k; t++) {
                 const size_t slot = static_cast<size_t>(t) * na + i;
                 const int* counters = all_counters.data() + slot * nBuckets;
                 const int64_t* ids = all_ids.get() + slot * nBuckets * k;
