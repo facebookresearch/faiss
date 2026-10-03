@@ -69,20 +69,38 @@ void InvertedLists::reset() {
 }
 
 void InvertedLists::merge_from(InvertedLists* oivf, size_t add_id) {
+    const auto* oivf_pano =
+            dynamic_cast<const ArrayInvertedListsPanorama*>(oivf);
 #pragma omp parallel for
     for (idx_t i = 0; i < static_cast<idx_t>(nlist); i++) {
         size_t list_size = oivf->list_size(i);
+        if (list_size == 0) {
+            continue;
+        }
         ScopedIds ids(oivf, i);
-        if (add_id == 0) {
-            add_entries(i, list_size, ids.get(), ScopedCodes(oivf, i).get());
-        } else {
-            std::vector<idx_t> new_ids(list_size);
-
+        const idx_t* id_ptr = ids.get();
+        std::vector<idx_t> new_ids;
+        if (add_id != 0) {
+            new_ids.resize(list_size);
             for (size_t j = 0; j < list_size; j++) {
-                new_ids[j] = ids[j] + add_id;
+                new_ids[j] = id_ptr[j] + add_id;
             }
-            add_entries(
-                    i, list_size, new_ids.data(), ScopedCodes(oivf, i).get());
+            id_ptr = new_ids.data();
+        }
+
+        if (oivf_pano) {
+            std::vector<uint8_t> flat_codes(list_size * code_size);
+            for (size_t j = 0; j < list_size; j++) {
+                oivf_pano->pano.reconstruct(
+                        j,
+                        reinterpret_cast<float*>(
+                                flat_codes.data() + j * code_size),
+                        oivf_pano->codes[i].data());
+            }
+            add_entries(i, list_size, id_ptr, flat_codes.data());
+        } else {
+            ScopedCodes codes(oivf, i);
+            add_entries(i, list_size, id_ptr, codes.get());
         }
         oivf->resize(i, 0);
     }
@@ -168,11 +186,29 @@ size_t InvertedLists::copy_subset_to(
         } else if (subset_type == SUBSET_TYPE_INVLIST) {
             if (static_cast<idx_t>(list_no) >= a1 &&
                 static_cast<idx_t>(list_no) < a2) {
-                oivf.add_entries(
-                        list_no,
-                        n,
-                        ScopedIds(this, list_no).get(),
-                        ScopedCodes(this, list_no).get());
+                const auto* this_pano =
+                        dynamic_cast<const ArrayInvertedListsPanorama*>(this);
+                if (this_pano) {
+                    std::vector<uint8_t> flat_codes(n * code_size);
+                    for (size_t j = 0; j < n; j++) {
+                        this_pano->pano.reconstruct(
+                                j,
+                                reinterpret_cast<float*>(
+                                        flat_codes.data() + j * code_size),
+                                this_pano->codes[list_no].data());
+                    }
+                    oivf.add_entries(
+                            list_no,
+                            n,
+                            ScopedIds(this, list_no).get(),
+                            flat_codes.data());
+                } else {
+                    oivf.add_entries(
+                            list_no,
+                            n,
+                            ScopedIds(this, list_no).get(),
+                            ScopedCodes(this, list_no).get());
+                }
                 n_added += n;
             }
         }

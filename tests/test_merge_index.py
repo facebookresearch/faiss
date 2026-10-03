@@ -246,6 +246,63 @@ class TestMerge2(unittest.TestCase):
     def test_merge_IDMap2(self):
         self.do_test_with_ids("Flat,IDMap2")
 
+    def test_merge_IVFFlatPanorama(self):
+        d = 32
+        nb = 400
+        nt = 500
+        nq = 50
+        nlevels = 4
+        ds = SyntheticDataset(d, nt, nb, nq)
+        train_x = ds.get_train()
+        db_x = ds.get_database()
+        q_x = ds.get_queries()
+
+        split = nb // 2
+        xb1 = db_x[:split]
+        xb2 = db_x[split:]
+
+        quantizer1 = faiss.IndexFlatL2(d)
+        index1 = faiss.IndexIVFFlatPanorama(quantizer1, d, 16, nlevels)
+        index1.cp.min_points_per_centroid = 1
+        index1.nprobe = 4
+        index1.train(train_x)
+        index1.add(xb1)
+
+        quantizer2 = faiss.IndexFlatL2(d)
+        index2 = faiss.IndexIVFFlatPanorama(quantizer2, d, 16, nlevels)
+        index2.cp.min_points_per_centroid = 1
+        index2.nprobe = 4
+        index2.train(train_x)
+        index2.add(xb2)
+
+        # Reference index
+        quantizer_ref = faiss.IndexFlatL2(d)
+        index_ref = faiss.IndexIVFFlat(quantizer_ref, d, 16)
+        index_ref.cp.min_points_per_centroid = 1
+        index_ref.nprobe = 4
+        index_ref.train(train_x)
+        index_ref.add(db_x)
+
+        index1.merge_from(index2, split)
+
+        self.assertEqual(index1.ntotal, nb)
+        self.assertEqual(index2.ntotal, 0)
+
+        index1.make_direct_map()
+
+        # Verify reconstruct
+        for i in range(nb):
+            np.testing.assert_allclose(
+                index1.reconstruct(i), db_x[i], rtol=1e-5, atol=1e-5
+            )
+
+        # Verify search
+        D_ref, I_ref = index_ref.search(q_x, 5)
+        D_pano, I_pano = index1.search(q_x, 5)
+        np.testing.assert_allclose(D_pano, D_ref, rtol=1e-5, atol=1e-5)
+        np.testing.assert_array_equal(I_pano, I_ref)
+
+
 
 @for_all_simd_levels
 class TestRemoveFastScan(unittest.TestCase):
