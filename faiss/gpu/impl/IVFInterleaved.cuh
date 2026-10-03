@@ -28,6 +28,26 @@
 namespace faiss {
 namespace gpu {
 
+/// The value that the first-pass k-selection breaks a distance tie on.
+///
+/// The value is the user id when the ids are on the device. If they are not,
+/// the value is the position in the list, which follows insertion order. So
+/// `INDICES_CPU` and `INDICES_IVF` do not repeat a tie.
+/// `runIVFInterleavedScan2` tests the same condition to find whether its input
+/// holds ids.
+__device__ __forceinline__ idx_t ivfSelectionKey(
+        void** allListIndices,
+        IndicesOptions opt,
+        idx_t listId,
+        idx_t vec) {
+    if (opt == INDICES_64_BIT) {
+        return ((idx_t*)allListIndices[listId])[vec];
+    } else if (opt == INDICES_32_BIT) {
+        return (idx_t)((int*)allListIndices[listId])[vec];
+    }
+    return vec;
+}
+
 /// First pass kernel to perform scanning of IVF lists to produce top-k
 /// candidates
 template <
@@ -41,6 +61,8 @@ __global__ void ivfInterleavedScan(
         Tensor<float, 3, true> residualBase,
         Tensor<idx_t, 2, true> listIds,
         void** allListData,
+        void** allListIndices,
+        IndicesOptions opt,
         idx_t* listLengths,
         Codec codec,
         Metric metric,
@@ -88,7 +110,7 @@ __global__ void ivfInterleavedScan(
                     float,
                     idx_t,
                     Metric::kDirection,
-                    Comparator<float>,
+                    TieBreakComparator<float>,
                     NumWarpQ,
                     NumThreadQ,
                     ThreadsPerBlock>
@@ -204,7 +226,9 @@ __global__ void ivfInterleavedScan(
                 }
 
                 if (valid) {
-                    heap.addThreadQ(dist.reduce(), vec);
+                    heap.addThreadQ(
+                            dist.reduce(),
+                            ivfSelectionKey(allListIndices, opt, listId, vec));
                 }
 
                 heap.checkThreadQ();
@@ -254,6 +278,7 @@ void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
+        DeviceVector<idx_t>& listLengths,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,

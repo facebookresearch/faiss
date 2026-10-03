@@ -379,6 +379,13 @@ void CuvsIVFPQ::search(
     cuvs::neighbors::ivf_pq::search_params pams;
     pams.n_probes = nprobe;
     pams.lut_dtype = useFloat16LookupTables_ ? CUDA_R_16F : CUDA_R_32F;
+#if defined(FAISS_CUVS_HAS_STABLE_SELECT)
+    // The warp-sort selector caps at k = 256, so ask for it only where raft
+    // can honour it. Above that raft has no reproducible selector.
+    if (k <= 256 && nprobe <= 256) {
+        pams.select_algo = raft::matrix::SelectAlgo::kWarpDistributedShmStable;
+    }
+#endif
 
     auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
             queries.data(), (idx_t)numQueries, (idx_t)cols);
