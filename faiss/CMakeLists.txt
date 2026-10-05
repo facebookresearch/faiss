@@ -166,6 +166,7 @@ set(FAISS_SRC
   impl/hnsw/MinimaxHeap.cpp
   impl/result_handler/ResultHandler.cpp
   impl/NSG.cpp
+  impl/pipnn/HashPrune.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
   impl/pq_code_distance/pq_code_distance-generic.cpp
@@ -313,6 +314,7 @@ set(FAISS_HEADERS
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
+  impl/pipnn/HashPrune.h
   impl/Panorama.h
   impl/PanoramaStats.h
   impl/PdxLayout.h
