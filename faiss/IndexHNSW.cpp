@@ -9,8 +9,10 @@
 
 #include <faiss/IndexRaBitQ.h>
 
+#include <algorithm>
 #include <atomic>
 #include <cinttypes>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -905,6 +907,257 @@ IndexHNSWFlat::IndexHNSWFlat(int d_in, int M, MetricType metric)
                   M) {
     own_fields = true;
     is_trained = true;
+}
+
+/**************************************************************
+ * IndexHNSW::repair_sinks
+ **************************************************************/
+
+namespace {
+
+// Relative difference below which two distances are equal, for example the
+// distances to two duplicate nodes.
+constexpr float kSinkDistanceTolerance = 1e-5f;
+
+// True when distance (or similarity) a is better than b by more than the
+// tolerance.
+bool is_better(float a, float b, bool similarity) {
+    const float tolerance =
+            kSinkDistanceTolerance * std::max(std::fabs(a), std::fabs(b));
+    return similarity ? a > b + tolerance : a < b - tolerance;
+}
+
+struct SinkScan {
+    size_t n_exact_searches = 0;
+    std::vector<idx_t> sinks; // sorted
+    // For each sink, the nearest nodes of its wrong vectors with their
+    // counts, most frequent first. Ties go to the smaller node ID.
+    std::vector<std::vector<std::pair<idx_t, idx_t>>> targets;
+};
+
+// Searches the n vectors with the HNSW search. Searches the vectors that
+// arrive at candidate sinks also with the storage (exact).
+SinkScan find_sinks(
+        const IndexHNSW& index,
+        idx_t n,
+        const float* x,
+        const HNSWSinkRepairParameters& params) {
+    const size_t ntotal = index.ntotal;
+    const size_t d = index.d;
+    const bool similarity = is_similarity_metric(index.metric_type);
+
+    std::vector<float> distances(n);
+    std::vector<idx_t> labels(n);
+    index.search(
+            n, x, 1, distances.data(), labels.data(), &params.search_params);
+    std::vector<idx_t> counts(ntotal, 0);
+    for (idx_t i = 0; i < n; i++) {
+        if (labels[i] >= 0) {
+            counts[labels[i]]++;
+        }
+    }
+
+    const double min_count =
+            std::max(2.0, params.min_mean_factor * double(n) / ntotal);
+    // candidates: vectors that arrive at candidate sinks
+    std::vector<idx_t> candidates;
+    candidates.reserve(n);
+    for (idx_t i = 0; i < n; i++) {
+        if (labels[i] >= 0 && counts[labels[i]] >= min_count) {
+            candidates.push_back(i);
+        }
+    }
+
+    std::vector<float> exact_distances(candidates.size());
+    std::vector<idx_t> exact_labels(candidates.size());
+    constexpr size_t kChunk = 16384;
+    std::vector<float> chunk;
+    for (size_t begin = 0; begin < candidates.size(); begin += kChunk) {
+        const size_t m = std::min(kChunk, candidates.size() - begin);
+        chunk.resize(m * d);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(chunk.data() + j * d,
+                   x + candidates[begin + j] * d,
+                   d * sizeof(float));
+        }
+        index.storage->search(
+                m,
+                chunk.data(),
+                1,
+                exact_distances.data() + begin,
+                exact_labels.data() + begin);
+    }
+
+    // Compute both distances again with the same distance function. The
+    // batched exact search and the HNSW search round differently, which can
+    // make a node look nearer when the two distances are almost equal.
+    std::vector<uint8_t> nearer(candidates.size(), 0);
+#pragma omp parallel
+    {
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(index.storage));
+#pragma omp for schedule(static)
+        for (int64_t j = 0; j < static_cast<int64_t>(candidates.size()); j++) {
+            const idx_t i = candidates[j];
+            if (exact_labels[j] < 0 || exact_labels[j] == labels[i]) {
+                continue;
+            }
+            dis->set_query(x + i * d);
+            nearer[j] = is_better(
+                    (*dis)(exact_labels[j]), (*dis)(labels[i]), similarity);
+        }
+    }
+
+    // (sink candidate, nearest node) for each vector with a nearer node
+    std::vector<std::pair<idx_t, idx_t>> wrong;
+    wrong.reserve(candidates.size());
+    std::vector<idx_t> closer(ntotal, 0);
+    for (size_t j = 0; j < candidates.size(); j++) {
+        const idx_t i = candidates[j];
+        if (nearer[j]) {
+            closer[labels[i]]++;
+            wrong.emplace_back(labels[i], exact_labels[j]);
+        }
+    }
+    std::sort(wrong.begin(), wrong.end());
+
+    SinkScan scan;
+    scan.n_exact_searches = candidates.size();
+    for (size_t a = 0; a < wrong.size();) {
+        const idx_t sink = wrong[a].first;
+        size_t b = a;
+        while (b < wrong.size() && wrong[b].first == sink) {
+            b++;
+        }
+        if (closer[sink] >= params.min_closer_fraction * counts[sink]) {
+            std::vector<std::pair<idx_t, idx_t>> targets;
+            for (size_t c = a; c < b;) {
+                size_t e = c;
+                while (e < b && wrong[e].second == wrong[c].second) {
+                    e++;
+                }
+                targets.emplace_back(wrong[c].second, e - c);
+                c = e;
+            }
+            std::sort(
+                    targets.begin(),
+                    targets.end(),
+                    [](const auto& p, const auto& q) {
+                        return p.second != q.second ? p.second > q.second
+                                                    : p.first < q.first;
+                    });
+            scan.sinks.push_back(sink);
+            scan.targets.push_back(std::move(targets));
+        }
+        a = b;
+    }
+    return scan;
+}
+
+// Gives `sink` level-0 links to up to `max_links` targets that it does not
+// link to yet: first in free slots, then in place of its farthest links. It
+// keeps at least half of its links. Returns (links added, links replaced).
+std::pair<size_t, size_t> link_sink(
+        HNSW& hnsw,
+        DistanceComputer& dis,
+        HNSW::storage_idx_t sink,
+        const std::vector<std::pair<idx_t, idx_t>>& targets,
+        int max_links,
+        bool similarity) {
+    size_t begin, end;
+    hnsw.neighbor_range(sink, 0, &begin, &end);
+    size_t degree = 0;
+    while (begin + degree < end && hnsw.neighbors[begin + degree] >= 0) {
+        degree++;
+    }
+
+    std::vector<HNSW::storage_idx_t> fresh;
+    for (const auto& [target, count] : targets) {
+        if (static_cast<int>(fresh.size()) >= max_links) {
+            break;
+        }
+        bool linked = target == sink;
+        for (size_t k = begin; k < begin + degree && !linked; k++) {
+            linked = hnsw.neighbors[k] == target;
+        }
+        if (!linked) {
+            fresh.push_back(static_cast<HNSW::storage_idx_t>(target));
+        }
+    }
+
+    const size_t added = std::min(fresh.size(), (end - begin) - degree);
+    for (size_t k = 0; k < added; k++) {
+        hnsw.neighbors[begin + degree + k] = fresh[k];
+    }
+
+    size_t replaced = 0;
+    if (added < fresh.size()) {
+        // (distance from the sink, slot), farthest first
+        std::vector<std::pair<float, size_t>> links;
+        for (size_t k = begin; k < begin + degree; k++) {
+            links.emplace_back(dis.symmetric_dis(sink, hnsw.neighbors[k]), k);
+        }
+        std::sort(
+                links.begin(), links.end(), [&](const auto& p, const auto& q) {
+                    if (p.first != q.first) {
+                        return similarity ? p.first < q.first
+                                          : p.first > q.first;
+                    }
+                    return p.second < q.second;
+                });
+        const size_t replaceable = degree / 2;
+        for (size_t k = added; k < fresh.size() && replaced < replaceable;
+             k++, replaced++) {
+            hnsw.neighbors[links[replaced].second] = fresh[k];
+        }
+    }
+    return {added, replaced};
+}
+
+} // namespace
+
+HNSWSinkRepairStats IndexHNSW::repair_sinks(
+        idx_t n,
+        const float* x,
+        const HNSWSinkRepairParameters& params) {
+    FAISS_THROW_IF_NOT_MSG(storage, "repair_sinks needs storage");
+    FAISS_THROW_IF_NOT(params.max_rounds >= 0 && params.max_links_per_sink > 0);
+    HNSWSinkRepairStats stats;
+    if (ntotal == 0 || n == 0) {
+        return stats;
+    }
+    const bool similarity = is_similarity_metric(metric_type);
+    std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
+
+    for (int round = 0;; round++) {
+        const SinkScan scan = find_sinks(*this, n, x, params);
+        stats.n_exact_searches += scan.n_exact_searches;
+        if (round == 0) {
+            stats.n_sinks_found = scan.sinks.size();
+        }
+        stats.n_sinks_remaining = scan.sinks.size();
+        if (scan.sinks.empty() || round == params.max_rounds) {
+            break;
+        }
+        size_t changed = 0;
+        for (size_t i = 0; i < scan.sinks.size(); i++) {
+            const auto [added, replaced] = link_sink(
+                    hnsw,
+                    *dis,
+                    static_cast<HNSW::storage_idx_t>(scan.sinks[i]),
+                    scan.targets[i],
+                    params.max_links_per_sink,
+                    similarity);
+            stats.n_links_added += added;
+            stats.n_links_replaced += replaced;
+            changed += added + replaced;
+        }
+        if (changed == 0) {
+            break;
+        }
+        stats.n_rounds++;
+    }
+    return stats;
 }
 
 /**************************************************************

@@ -24,6 +24,38 @@ namespace faiss {
 
 struct IndexHNSW;
 
+/// Parameters of IndexHNSW::repair_sinks().
+struct HNSWSinkRepairParameters {
+    /// The search to repair, for example the search that assigns vectors to
+    /// IVF lists with a coarse quantizer.
+    SearchParametersHNSW search_params;
+    /// A sink receives at least this factor times the mean number of
+    /// vectors per node.
+    float min_mean_factor = 3.0f;
+    /// For at least this fraction of the vectors that the search sends to a
+    /// sink, an exact search finds a nearer node.
+    float min_closer_fraction = 0.5f;
+    /// Maximum number of level-0 links added to one sink in one round.
+    int max_links_per_sink = 32;
+    /// Maximum number of rounds of detection and repair.
+    int max_rounds = 3;
+};
+
+struct HNSWSinkRepairStats {
+    /// Sinks found in the first round.
+    size_t n_sinks_found = 0;
+    /// Sinks found after the last round.
+    size_t n_sinks_remaining = 0;
+    /// Level-0 links written into free slots.
+    size_t n_links_added = 0;
+    /// Level-0 links that replaced a link.
+    size_t n_links_replaced = 0;
+    /// Rounds that changed links.
+    int n_rounds = 0;
+    /// Exact searches with the storage, in all rounds.
+    size_t n_exact_searches = 0;
+};
+
 /** The HNSW index is a normal random-access index with a HNSW
  * link structure built on top */
 
@@ -122,6 +154,20 @@ struct IndexHNSW : Index {
     void reorder_links();
 
     void link_singletons();
+
+    /** Changes level-0 links so that the search no longer stops at "sinks":
+     * nodes where it stops for many queries whose nearest node is elsewhere.
+     * With a small efSearch, sinks overfill the lists of an IVF coarse
+     * quantizer.
+     *
+     * x holds n vectors from the searched distribution, for example IVF
+     * training vectors (about 16 per node). Call after the last add().
+     */
+    HNSWSinkRepairStats repair_sinks(
+            idx_t n,
+            const float* x,
+            const HNSWSinkRepairParameters& params =
+                    HNSWSinkRepairParameters());
 
     virtual void permute_entries(const idx_t* perm);
 
