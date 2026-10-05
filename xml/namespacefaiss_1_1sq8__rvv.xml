@@ -1,0 +1,555 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1sq8__rvv" kind="namespace" language="C++">
+    <compoundname>faiss::sq8_rvv</compoundname>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="sq8__rvv__kernel_8h_1a063f5628e8843b7efb871317d7cb8436" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::sq8_rvv::kBlockVectors</definition>
+        <argsstring></argsstring>
+        <name>kBlockVectors</name>
+        <qualifiedname>faiss::sq8_rvv::kBlockVectors</qualifiedname>
+        <initializer>= 64</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Candidates per transposed block. One block fills an f32 LMUL 4 group at VLEN=512, so every lane holds one candidate. On a smaller VLEN the block functions loop over the block in pieces of one vector length. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="30" column="18" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1aa0cc8706d631384c8f015b50ca6ce99f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::l2_distance_block</definition>
+        <argsstring>(const uint8_t *block, const float *a, const float *e, size_t d, float *out)</argsstring>
+        <name>l2_distance_block</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_block</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 for a whole block, from codes stored transposed: the byte for dimension i of lane c sits at <computeroutput>block[i * kBlockVectors + c]</computeroutput>. Each lane accumulates one candidate, so no reduction is needed. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="35" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="35" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a83dcdaed1894a33aafcec165a5a504a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::l2_distance_block_x2</definition>
+        <argsstring>(const uint8_t *block0, const uint8_t *block1, const float *a, const float *e, size_t d, float *out0, float *out1)</argsstring>
+        <name>l2_distance_block_x2</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_block_x2</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block1</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out0</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 for two transposed blocks at once.</para>
+<para>Issuing the loads of both blocks first keeps two loads in flight. Four blocks would need 16 of the 32 vector registers for accumulators and spill. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="64" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="64" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a47efc7c3b9b011de93357fe3b5a52839" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::ip_partial_block_x2</definition>
+        <argsstring>(const uint8_t *block0, const uint8_t *block1, const float *eq, size_t d, float *out0, float *out1)</argsstring>
+        <name>ip_partial_block_x2</name>
+        <qualifiedname>faiss::sq8_rvv::ip_partial_block_x2</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block1</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>eq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out0</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out1</declname>
+        </param>
+        <briefdescription>
+<para>The code-dependent inner product term for two transposed blocks at once. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="101" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="101" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a8f640d77bcdf43b4750b38a4e46fe04e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>vfloat32m4_t</type>
+        <definition>vfloat32m4_t faiss::sq8_rvv::low_nibbles</definition>
+        <argsstring>(vuint8m1_t packed, size_t vl)</argsstring>
+        <name>low_nibbles</name>
+        <qualifiedname>faiss::sq8_rvv::low_nibbles</qualifiedname>
+        <param>
+          <type>vuint8m1_t</type>
+          <declname>packed</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>vl</declname>
+        </param>
+        <briefdescription>
+<para>The low nibbles of a row of packed QT_4bit codes, as floats. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="138" column="21" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="138" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a2fd4a6052683b233da7f9353f7f5635b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::l2_distance_4bit_block</definition>
+        <argsstring>(const uint8_t *block, const float *a, const float *e, size_t d, float *out)</argsstring>
+        <name>l2_distance_4bit_block</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_4bit_block</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 for a transposed block of QT_4bit codes. Faiss packs dimension i into <computeroutput>code[i / 2]</computeroutput>, even dimensions in the low nibble and odd in the high one, so d dimensions occupy (d + 1) / 2 bytes. For an odd d the last byte holds one dimension, in its low nibble. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="148" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="148" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a61dba425a9a9aeee50a1ae156a1cd5f7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::ip_partial_4bit_block</definition>
+        <argsstring>(const uint8_t *block, const float *eq, size_t d, float *out)</argsstring>
+        <name>ip_partial_4bit_block</name>
+        <qualifiedname>faiss::sq8_rvv::ip_partial_4bit_block</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>eq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>The code-dependent inner product term for a transposed QT_4bit block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="190" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="190" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a74fbd5bb4c6ab86393f4a23a5e9c0912" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::l2_distance_4bit_strided</definition>
+        <argsstring>(const uint8_t *p, const float *a, const float *e, size_t d)</argsstring>
+        <name>l2_distance_4bit_strided</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_4bit_strided</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 for one QT_4bit candidate in the transposed layout, for the runs an <computeroutput><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref></computeroutput> produces, which start anywhere. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="226" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="226" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1ac253d7c85e90512a3f42fdfac903244c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::ip_partial_4bit_strided</definition>
+        <argsstring>(const uint8_t *p, const float *eq, size_t d)</argsstring>
+        <name>ip_partial_4bit_strided</name>
+        <qualifiedname>faiss::sq8_rvv::ip_partial_4bit_strided</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>eq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>The code-dependent inner product term for one strided QT_4bit candidate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="249" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="249" bodyend="264"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1aac4cf72306d69eb97d5d2ca258cad3fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::l2_distance_4bit_block_x2</definition>
+        <argsstring>(const uint8_t *block0, const uint8_t *block1, const float *a, const float *e, size_t d, float *out0, float *out1)</argsstring>
+        <name>l2_distance_4bit_block_x2</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_4bit_block_x2</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block1</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out0</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 for two transposed QT_4bit blocks at once: half the bytes of QT_8bit and two loads in flight. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="268" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="268" bodyend="323"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1aaeab87dbd5df03c1507a64f14716c677" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::l2_distance_strided</definition>
+        <argsstring>(const uint8_t *p, const float *a, const float *e, size_t d)</argsstring>
+        <name>l2_distance_strided</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_strided</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 for one candidate whose code is stored transposed: its d bytes sit <computeroutput>kBlockVectors</computeroutput> apart. For runs that do not start on a block boundary, such as the runs an <computeroutput><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref></computeroutput> produces. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="328" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="328" bodyend="352"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a7477a1dbae30b713967e5ab74610b28d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::ip_partial_strided</definition>
+        <argsstring>(const uint8_t *p, const float *eq, size_t d)</argsstring>
+        <name>ip_partial_strided</name>
+        <qualifiedname>faiss::sq8_rvv::ip_partial_strided</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>eq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>The code-dependent inner product term for one transposed candidate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="355" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="355" bodyend="374"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1aa7ec646500e18a6f5ea6a271ebfa77f1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::l2_distance_int_block</definition>
+        <argsstring>(const uint8_t *block, const uint8_t *qcode, const int32_t *w, size_t d, float *out)</argsstring>
+        <name>l2_distance_int_block</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_int_block</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>qcode</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 on the 8-bit grid for a transposed block, with integer weights. The host scales the result back. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="378" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="378" bodyend="400"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a7bdecbd37f324941ef805574251393cb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8_rvv::ip_partial_block</definition>
+        <argsstring>(const uint8_t *block, const float *eq, size_t d, float *out)</argsstring>
+        <name>ip_partial_block</name>
+        <qualifiedname>faiss::sq8_rvv::ip_partial_block</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>eq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>The code-dependent term of the inner product, for a transposed block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="403" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="403" bodyend="421"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a4e537ebf797ea3628e96048aa3f6eb5d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::l2_distance</definition>
+        <argsstring>(const uint8_t *code, const float *a, const float *e, size_t d)</argsstring>
+        <name>l2_distance</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Squared L2 distance between a query and one 8-bit code. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="424" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="424" bodyend="474"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1aec81f3ecc4f7159bb233552267810d60" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::ip_partial</definition>
+        <argsstring>(const uint8_t *code, const float *u, size_t d)</argsstring>
+        <name>ip_partial</name>
+        <qualifiedname>faiss::sq8_rvv::ip_partial</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>u</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Inner product between a query and one 8-bit code, without the constant.</para>
+<para>Expanding the reconstruction, <verbatim>sum q[i] * v[i] = sum q[i]*rmin[i]  +  sum (q[i]*a[i]) * code[i]
+</verbatim> the first term does not depend on the code, so the caller adds it. This computes the second, with u[i] = q[i] * a[i]. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="484" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="484" bodyend="508"/>
+      </memberdef>
+      <memberdef kind="function" id="sq8__rvv__kernel_8h_1a70b20585ccdf92a9b2b1dfa5cbb0e626" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::sq8_rvv::l2_distance_int</definition>
+        <argsstring>(const uint8_t *code, const uint8_t *qcode, const int32_t *w, size_t d)</argsstring>
+        <name>l2_distance_int</name>
+        <qualifiedname>faiss::sq8_rvv::l2_distance_int</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>qcode</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Squared L2 distance with the query quantized onto the same 8-bit grid. <verbatim>sum (q[i] - v[i])^2  =  sum a[i]^2 * (qcode[i] - code[i])^2
+</verbatim> The weights hold a[i]^2 as integers, so the loop is integer only. The caller scales the result back and must keep max(w) * 65025 * d inside int32. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="517" column="14" bodyfile="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" bodystart="517" bodyend="543"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/sq8_rvv_kernel.h" line="25" column="1"/>
+  </compounddef>
+</doxygen>

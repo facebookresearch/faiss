@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1sq8" kind="namespace" language="C++">
+    <compoundname>faiss::sq8</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="sq8__coefficients_8h_1a5914d9ea8d09f488e1e1b49af9935467" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::sq8::make_coefficients</definition>
+        <argsstring>(const float *trained, size_t d, float *a, float *rmin, float levels=255.0f)</argsstring>
+        <name>make_coefficients</name>
+        <qualifiedname>faiss::sq8::make_coefficients</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>trained</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>rmin</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>levels</declname>
+          <defval>255.0f</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Derive the per-dimension scale and offset from a trained quantizer. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>trained</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>2*d floats: vmin[0..d) then vdiff[0..d) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>levels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the largest code value: 255 for QT_8bit, 15 for QT_4bit. Both quantizers reconstruct as rmin[i] + a[i] * code[i], so only the divisor differs. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq8_coefficients.h" line="33" column="13" bodyfile="faiss/impl/scalar_quantizer/sq8_coefficients.h" bodystart="33" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/sq8_coefficients.h" line="26" column="1"/>
+  </compounddef>
+</doxygen>

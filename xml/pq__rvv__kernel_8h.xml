@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="pq__rvv__kernel_8h" kind="file" language="C++">
+    <compoundname>pq_rvv_kernel.h</compoundname>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">riscv_vector.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>faiss/impl/pq_code_distance/pq_rvv_kernel.h</label>
+        <link refid="pq__rvv__kernel_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>riscv_vector.h</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1pq__rvv__kernel">faiss::pq_rvv_kernel</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>8-bit<sp/>product-quantizer<sp/>code<sp/>distance<sp/>for<sp/>RISC-V<sp/>Vector.</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Free-standing<sp/>(no<sp/>exceptions,<sp/>heap<sp/>or<sp/>threads),<sp/>so<sp/>a<sp/>freestanding<sp/>RISC-V</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>target<sp/>can<sp/>compile<sp/>it.<sp/>pq_code_distance/rvv.cpp<sp/>calls<sp/>it;<sp/>no<sp/>Buck<sp/>target</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>here<sp/>builds<sp/>that<sp/>RISC-V<sp/>CPU<sp/>path.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>PQDecoder8<sp/>fixes<sp/>nbits<sp/>=<sp/>8,<sp/>so<sp/>ksub<sp/>=<sp/>256<sp/>and<sp/>the<sp/>scalar<sp/>loop<sp/>is</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>for<sp/>(m<sp/>=<sp/>0;<sp/>m<sp/>&lt;<sp/>M;<sp/>m++)<sp/>result<sp/>+=<sp/>sim_table[m<sp/>*<sp/>256<sp/>+<sp/>code[m]];</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>That<sp/>is<sp/>a<sp/>gather,<sp/>not<sp/>a<sp/>contiguous<sp/>read.<sp/>RVV<sp/>issues<sp/>one<sp/>vluxei32<sp/>per<sp/>strip:</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>build<sp/>the<sp/>element<sp/>offset<sp/>m<sp/>*<sp/>256<sp/>+<sp/>code[m]<sp/>across<sp/>the<sp/>lanes,<sp/>scale<sp/>it<sp/>to</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>bytes,<sp/>then<sp/>index<sp/>sim_table.</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>The<sp/>offset<sp/>stays<sp/>inside<sp/>uint32<sp/>while<sp/>M<sp/>*<sp/>256<sp/>*<sp/>4<sp/>bytes<sp/>does.<sp/>At<sp/>M<sp/>=<sp/>1024</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/>that<sp/>is<sp/>1<sp/>MiB,<sp/>so<sp/>no<sp/>PQ<sp/>shape<sp/>in<sp/>Faiss<sp/>overflows<sp/>it.</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/>The<sp/>accumulator<sp/>is<sp/>LMUL<sp/>4,<sp/>as<sp/>in<sp/>utils/simd_impl/distances_rvv_kernel.h.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/>The<sp/>lanes<sp/>add<sp/>the<sp/>M<sp/>terms<sp/>in<sp/>a<sp/>different<sp/>order<sp/>than<sp/>the<sp/>scalar<sp/>loop,<sp/>so</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/>the<sp/>last<sp/>bits<sp/>can<sp/>differ.</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;riscv_vector.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">pq_rvv_kernel<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="40"><highlight class="comment">///<sp/>Element<sp/>offsets<sp/>into<sp/>sim_table<sp/>for<sp/>subquantizers<sp/>[m,<sp/>m<sp/>+<sp/>vl).</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>vuint32m4_t<sp/>row_offsets(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>m,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vl)<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(m<sp/>+<sp/>lane)<sp/>*<sp/>256</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>vuint32m4_t<sp/>row<sp/>=<sp/>__riscv_vadd_vx_u32m4(__riscv_vid_v_u32m4(vl),<sp/>m,<sp/>vl);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__riscv_vsll_vx_u32m4(row,<sp/>8,<sp/>vl);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="47"><highlight class="comment">///<sp/>Byte<sp/>offsets<sp/>for<sp/>one<sp/>code,<sp/>given<sp/>the<sp/>precomputed<sp/>row<sp/>offsets.</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>vuint32m4_t<sp/>byte_offsets(</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuint32m4_t<sp/>row_off,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>m,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vl)<sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>vuint8m1_t<sp/>cb<sp/>=<sp/>__riscv_vle8_v_u8m1(code<sp/>+<sp/>m,<sp/>vl);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>vuint32m4_t<sp/>idx<sp/>=<sp/>__riscv_vzext_vf4_u32m4(cb,<sp/>vl);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(row<sp/>+<sp/>code)<sp/>*<sp/>sizeof(float)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__riscv_vsll_vx_u32m4(</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__riscv_vadd_vv_u32m4(row_off,<sp/>idx,<sp/>vl),<sp/>2,<sp/>vl);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reduce(vfloat32m4_t<sp/>acc,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vlmax)<sp/>{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>vfloat32m1_t<sp/>zero<sp/>=<sp/>__riscv_vfmv_v_f_f32m1(0.0f,<sp/>1);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>vfloat32m1_t<sp/>sum<sp/>=<sp/>__riscv_vfredusum_vs_f32m4_f32m1(acc,<sp/>zero,<sp/>vlmax);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__riscv_vfmv_f_s_f32m1_f32(sum);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="66"><highlight class="comment">///<sp/>Distance<sp/>between<sp/>a<sp/>query<sp/>and<sp/>one<sp/>8-bit<sp/>PQ<sp/>code.</highlight></codeline>
+<codeline lineno="67"><highlight class="comment">///<sp/>@param<sp/>sim_table<sp/><sp/>M<sp/>*<sp/>256<sp/>floats,<sp/>laid<sp/>out<sp/>(M,<sp/>ksub)</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>distance_8bit(</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>sim_table,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code)<sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vlmax<sp/>=<sp/>__riscv_vsetvlmax_e32m4();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>vfloat32m4_t<sp/>acc<sp/>=<sp/>__riscv_vfmv_v_f_f32m4(0.0f,<sp/>vlmax);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>m<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(m<sp/>&lt;<sp/>M)<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vl<sp/>=<sp/>__riscv_vsetvl_e32m4(M<sp/>-<sp/>m);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuint32m4_t<sp/>off<sp/>=<sp/>byte_offsets(row_offsets(m,<sp/>vl),<sp/>code,<sp/>m,<sp/>vl);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vfloat32m4_t<sp/>v<sp/>=<sp/>__riscv_vluxei32_v_f32m4(sim_table,<sp/>off,<sp/>vl);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Tail-undisturbed:<sp/>lanes<sp/>past<sp/>vl<sp/>keep<sp/>earlier<sp/>partial<sp/>sums,<sp/>and<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>final<sp/>reduction<sp/>covers<sp/>vlmax.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>acc<sp/>=<sp/>__riscv_vfadd_vv_f32m4_tu(acc,<sp/>acc,<sp/>v,<sp/>vl);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m<sp/>+=<sp/>vl;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>reduce(acc,<sp/>vlmax);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>pq_rvv_kernel</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/pq_code_distance/pq_rvv_kernel.h"/>
+  </compounddef>
+</doxygen>

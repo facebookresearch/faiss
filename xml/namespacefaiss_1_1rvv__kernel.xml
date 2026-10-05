@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1rvv__kernel" kind="namespace" language="C++">
+    <compoundname>faiss::rvv_kernel</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="distances__rvv__kernel_8h_1aa711429a5354aca8fbfa0f7e127225f2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::rvv_kernel::l2_sqr</definition>
+        <argsstring>(const float *x, const float *y, size_t d)</argsstring>
+        <name>l2_sqr</name>
+        <qualifiedname>faiss::rvv_kernel::l2_sqr</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Squared L2 distance between two fp32 vectors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_rvv_kernel.h" line="33" column="14" bodyfile="faiss/utils/simd_impl/distances_rvv_kernel.h" bodystart="33" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="distances__rvv__kernel_8h_1a8e05d272279a81ab9ad7eb41d5564454" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::rvv_kernel::inner_product</definition>
+        <argsstring>(const float *x, const float *y, size_t d)</argsstring>
+        <name>inner_product</name>
+        <qualifiedname>faiss::rvv_kernel::inner_product</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Inner product of two fp32 vectors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_rvv_kernel.h" line="51" column="14" bodyfile="faiss/utils/simd_impl/distances_rvv_kernel.h" bodystart="51" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/simd_impl/distances_rvv_kernel.h" line="30" column="1"/>
+  </compounddef>
+</doxygen>

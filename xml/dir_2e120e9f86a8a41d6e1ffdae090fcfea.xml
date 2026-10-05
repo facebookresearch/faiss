@@ -3,6 +3,7 @@
   <compounddef id="dir_2e120e9f86a8a41d6e1ffdae090fcfea" kind="dir">
     <compoundname>faiss/utils/simd_impl</compoundname>
     <innerfile refid="distances__autovec-inl_8h">distances_autovec-inl.h</innerfile>
+    <innerfile refid="distances__rvv__kernel_8h">distances_rvv_kernel.h</innerfile>
     <innerfile refid="distances__simdlib256_8h">distances_simdlib256.h</innerfile>
     <innerfile refid="distances__sse-inl_8h">distances_sse-inl.h</innerfile>
     <innerfile refid="exhaustive__L2sqr__blas__cmax_8h">exhaustive_L2sqr_blas_cmax.h</innerfile>

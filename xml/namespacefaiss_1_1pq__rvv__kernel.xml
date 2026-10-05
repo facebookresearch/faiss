@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1pq__rvv__kernel" kind="namespace" language="C++">
+    <compoundname>faiss::pq_rvv_kernel</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="pq__rvv__kernel_8h_1a12aebee2337329ee049cf01da47681e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>vuint32m4_t</type>
+        <definition>vuint32m4_t faiss::pq_rvv_kernel::row_offsets</definition>
+        <argsstring>(size_t m, size_t vl)</argsstring>
+        <name>row_offsets</name>
+        <qualifiedname>faiss::pq_rvv_kernel::row_offsets</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>vl</declname>
+        </param>
+        <briefdescription>
+<para>Element offsets into sim_table for subquantizers [m, m + vl). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_rvv_kernel.h" line="41" column="20" bodyfile="faiss/impl/pq_code_distance/pq_rvv_kernel.h" bodystart="41" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__rvv__kernel_8h_1a0068f08be8c3ab819e3ab6a98b9ae895" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>vuint32m4_t</type>
+        <definition>vuint32m4_t faiss::pq_rvv_kernel::byte_offsets</definition>
+        <argsstring>(vuint32m4_t row_off, const uint8_t *code, size_t m, size_t vl)</argsstring>
+        <name>byte_offsets</name>
+        <qualifiedname>faiss::pq_rvv_kernel::byte_offsets</qualifiedname>
+        <param>
+          <type>vuint32m4_t</type>
+          <declname>row_off</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>vl</declname>
+        </param>
+        <briefdescription>
+<para>Byte offsets for one code, given the precomputed row offsets. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_rvv_kernel.h" line="48" column="20" bodyfile="faiss/impl/pq_code_distance/pq_rvv_kernel.h" bodystart="48" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__rvv__kernel_8h_1aea1e2fae143386faee71964108adf13d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_rvv_kernel::reduce</definition>
+        <argsstring>(vfloat32m4_t acc, size_t vlmax)</argsstring>
+        <name>reduce</name>
+        <qualifiedname>faiss::pq_rvv_kernel::reduce</qualifiedname>
+        <param>
+          <type>vfloat32m4_t</type>
+          <declname>acc</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>vlmax</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_rvv_kernel.h" line="60" column="14" bodyfile="faiss/impl/pq_code_distance/pq_rvv_kernel.h" bodystart="60" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__rvv__kernel_8h_1a5b86d6df7dd92a5a60c83524ada9cdbd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_rvv_kernel::distance_8bit</definition>
+        <argsstring>(size_t M, const float *sim_table, const uint8_t *code)</argsstring>
+        <name>distance_8bit</name>
+        <qualifiedname>faiss::pq_rvv_kernel::distance_8bit</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Distance between a query and one 8-bit PQ code. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sim_table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>M * 256 floats, laid out (M, ksub) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_rvv_kernel.h" line="68" column="14" bodyfile="faiss/impl/pq_code_distance/pq_rvv_kernel.h" bodystart="68" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/pq_code_distance/pq_rvv_kernel.h" line="38" column="1"/>
+  </compounddef>
+</doxygen>

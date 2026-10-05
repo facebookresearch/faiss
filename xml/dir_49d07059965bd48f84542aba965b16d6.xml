@@ -9,6 +9,8 @@
     <innerfile refid="similarities_8h">similarities.h</innerfile>
     <innerfile refid="sq-avx512-impl_8h">sq-avx512-impl.h</innerfile>
     <innerfile refid="sq-dispatch_8h">sq-dispatch.h</innerfile>
+    <innerfile refid="sq8__coefficients_8h">sq8_coefficients.h</innerfile>
+    <innerfile refid="sq8__rvv__kernel_8h">sq8_rvv_kernel.h</innerfile>
     <innerfile refid="training_8h">training.h</innerfile>
     <briefdescription>
     </briefdescription>
