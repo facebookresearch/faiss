@@ -2411,3 +2411,72 @@ kernel void ivf_merge_lists_grouped(
         outIdx [outBase + i] = i < count ? tgIdx[i] : -1L;
     }
 }
+
+// Exact binary exhaustive search. Keep the best 512 candidates while merging
+// successive 512-vector segments; no per-thread candidate truncation occurs.
+// Byte loads support every byte-aligned binary dimension, including odd strides.
+// params: [nq, nb, code_size, k], 1 <= k <= 512.
+kernel void hamming_distance_topk(
+    device const uchar* queries [[buffer(0)]],
+    device const uchar* database [[buffer(1)]],
+    device int* outDist [[buffer(2)]],
+    device long* outIdx [[buffer(3)]],
+    constant uint* params [[buffer(4)]],
+    uint qi [[threadgroup_position_in_grid]],
+    uint tid [[thread_position_in_threadgroup]]
+) {
+    constexpr uint SEG = 512;
+    constexpr uint CAND = 1024;
+    constexpr uint TG = 256;
+    constexpr int INF = 0x7fffffff;
+    uint nb = params[1], codeSize = params[2], k = params[3];
+    threadgroup int dist[CAND];
+    threadgroup long ids[CAND];
+    for (uint i = tid; i < SEG; i += TG) {
+        dist[i] = INF;
+        ids[i] = -1;
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    // Use 64-bit offsets and counters so the last segment cannot wrap.
+    for (ulong base = 0; base < nb; base += SEG) {
+        for (uint i = tid; i < SEG; i += TG) {
+            ulong vi = base + i;
+            int value = INF;
+            if (vi < nb) {
+                value = 0;
+                for (uint b = 0; b < codeSize; ++b) {
+                    value += popcount(uint(queries[ulong(qi) * codeSize + b] ^
+                                           database[vi * codeSize + b]));
+                }
+            }
+            dist[SEG + i] = value;
+            ids[SEG + i] = vi < nb ? long(vi) : -1L;
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+        // Integer distances avoid loss of precision for large dimensions.
+        // Break ties by increasing 64-bit label for deterministic results.
+        for (uint width = 2; width <= CAND; width *= 2) {
+            for (uint stride = width / 2; stride > 0; stride /= 2) {
+                for (uint i = tid; i < CAND; i += TG) {
+                    uint j = i ^ stride;
+                    if (j > i) {
+                        bool betterJ = dist[j] < dist[i] ||
+                            (dist[j] == dist[i] && ids[j] < ids[i]);
+                        bool betterI = dist[i] < dist[j] ||
+                            (dist[i] == dist[j] && ids[i] < ids[j]);
+                        if ((i & width) == 0 ? betterJ : betterI) {
+                            int dv = dist[i]; dist[i] = dist[j]; dist[j] = dv;
+                            long iv = ids[i]; ids[i] = ids[j]; ids[j] = iv;
+                        }
+                    }
+                }
+                threadgroup_barrier(mem_flags::mem_threadgroup);
+            }
+        }
+        // The first SEG entries are the exact best-so-far for the next round.
+    }
+    for (uint i = tid; i < k; i += TG) {
+        outDist[ulong(qi) * k + i] = dist[i];
+        outIdx[ulong(qi) * k + i] = ids[i];
+    }
+}
