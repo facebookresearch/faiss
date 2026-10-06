@@ -606,6 +606,38 @@ class TestIOFlatMMap(unittest.TestCase):
                 except Exception:
                     pass
 
+    @unittest.skipIf(
+        platform.system() not in ["Windows", "Linux", "Darwin"],
+        "supported OSes only",
+    )
+    def test_mmap_reset(self):
+        xt, xb, xq = get_dataset_2(32, 0, 100, 50)
+        index = faiss.IndexFlatL2(32)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        index2 = None
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertFalse(index2.codes.is_owned)
+            index2.reset()
+            self.assertEqual(index2.ntotal, 0)
+            index2.add(xb)
+            Dnew, Inew = index2.search(xq, 10)
+            np.testing.assert_array_equal(Iref, Inew)
+            np.testing.assert_array_equal(Dref, Dnew)
+        finally:
+            del index2
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
+
     def test_zerocopy(self):
         xt, xb, xq = get_dataset_2(32, 0, 100, 50)
         index = faiss.index_factory(32, "SQfp16", faiss.METRIC_L2)
