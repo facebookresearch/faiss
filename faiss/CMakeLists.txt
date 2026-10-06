@@ -1,4 +1,5 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
+# Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -353,6 +354,7 @@ set(FAISS_HEADERS
   impl/fast_scan/dispatching.h
   impl/fast_scan/fast_scan.h
   impl/fast_scan/decompose_qbs.h
+  impl/fast_scan/kernels_neon.h
   impl/fast_scan/kernels_simd256.h
   impl/fast_scan/kernels_simd512.h
   impl/fast_scan/rabitq_dispatching.h

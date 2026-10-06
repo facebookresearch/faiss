@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -171,11 +172,11 @@ void pq4_accumulate_loop_qbs_fixed_scaler_512(
     // This is rare — pq4_preferred_qbs() covers all values above.
     if constexpr (Scaler::nscale == 0) {
         DummyScaler<SIMDLevel::AVX2> scaler_avx2;
-        pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+        pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                 qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
     } else {
         NormTableScaler<SIMDLevel::AVX2> scaler_avx2(scaler.scale_int);
-        pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+        pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                 qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
     }
 }

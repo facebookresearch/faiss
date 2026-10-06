@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -209,5 +210,18 @@ void pq4_kernel_qbs_256(
         res.handle(q, 0, dis0, dis1);
     }
 }
+
+template <SIMDLevel SL>
+struct PQ4QBSKernel {
+    template <int NQ, class ResultHandler, class Scaler>
+    FAISS_ALWAYS_INLINE static void run(
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            ResultHandler& res,
+            const Scaler& scaler) {
+        pq4_kernel_qbs_256<NQ, SL>(nsq, codes, LUT, res, scaler);
+    }
+};
 
 } // namespace faiss

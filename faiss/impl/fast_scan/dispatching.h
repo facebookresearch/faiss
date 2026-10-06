@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,8 +21,8 @@
  *   #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
  *   #include <faiss/impl/fast_scan/dispatching.h>
  *
- * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path
- * and QBS 256-bit path) and accumulate_loops_512.h (QBS 512-bit path,
+ * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path and
+ * SIMD-level-selected QBS path) and accumulate_loops_512.h (QBS 512-bit path,
  * AVX512 TU only).
  */
 
@@ -34,6 +35,10 @@
 #include <faiss/impl/fast_scan/accumulate_loops.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/simd_levels.h>
+
+#ifdef COMPILE_SIMD_ARM_NEON
+#include <faiss/impl/fast_scan/kernels_neon.h>
+#endif
 
 #if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 #include <faiss/impl/fast_scan/accumulate_loops_512.h>
@@ -126,7 +131,7 @@ struct ScannerMixIn : FastScanCodeScanner {
             if (SIMDConfig::avx512_split) {
                 if (pq2x4_scale) {
                     NormTableScaler<SIMDLevel::AVX2> scaler(pq2x4_scale);
-                    pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                             qbs,
                             nb,
                             nsq,
@@ -137,7 +142,7 @@ struct ScannerMixIn : FastScanCodeScanner {
                             block_stride);
                 } else {
                     DummyScaler<SIMDLevel::AVX2> dummy;
-                    pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                             qbs,
                             nb,
                             nsq,
@@ -174,7 +179,8 @@ struct ScannerMixIn : FastScanCodeScanner {
         } else {
             if (pq2x4_scale) {
                 NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
-                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                pq4_accumulate_loop_qbs_fixed_scaler_simd<
+                        THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
@@ -185,7 +191,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                         block_stride);
             } else {
                 DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
-                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                pq4_accumulate_loop_qbs_fixed_scaler_simd<
+                        THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
