@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pipnn_1_1Hyperplanes" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pipnn::Hyperplanes</compoundname>
+    <includes refid="HashPrune_8h" local="no">HashPrune.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1Hyperplanes_1a51c5923b1333899076772790f545f6d3" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::Hyperplanes::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::pipnn::Hyperplanes::d</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="53" column="9" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1Hyperplanes_1a84895733c7cae1e05745e7911e25a70d" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::Hyperplanes::m</definition>
+        <argsstring></argsstring>
+        <name>m</name>
+        <qualifiedname>faiss::pipnn::Hyperplanes::m</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="54" column="9" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1Hyperplanes_1afb8ca9e2995b24b5d52ef2ab0d73bcb7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::pipnn::Hyperplanes::ht</definition>
+        <argsstring></argsstring>
+        <name>ht</name>
+        <qualifiedname>faiss::pipnn::Hyperplanes::ht</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="55" column="17" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1pipnn_1_1Hyperplanes_1a6d1e95a6d492151d904cda69c885c5db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::pipnn::Hyperplanes::Hyperplanes</definition>
+        <argsstring>()=default</argsstring>
+        <name>Hyperplanes</name>
+        <qualifiedname>faiss::pipnn::Hyperplanes::Hyperplanes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="57" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pipnn_1_1Hyperplanes_1af116ed0a27b6c374dcc8df7fa92d40a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::pipnn::Hyperplanes::Hyperplanes</definition>
+        <argsstring>(int d, int m, int64_t seed)</argsstring>
+        <name>Hyperplanes</name>
+        <qualifiedname>faiss::pipnn::Hyperplanes::Hyperplanes</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>seed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="58" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pipnn_1_1Hyperplanes_1a630e19f5bc3232f74a82a8dc45519240" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::Hyperplanes::sketch</definition>
+        <argsstring>(const float *x, float *out16) const</argsstring>
+        <name>sketch</name>
+        <qualifiedname>faiss::pipnn::Hyperplanes::sketch</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out16</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>out16[i] = sum over ascending j of x[j] * ht[j * 16 + i]. Not inlined, so all call sites produce bitwise-identical sketches. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="62" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>m &lt;= 16 Gaussian hyperplanes from float_randn(seed), stored transposed and zero-padded: ht[j * 16 + i]. </para>
+    </detaileddescription>
+    <location file="faiss/impl/pipnn/HashPrune.h" line="52" column="1" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="52" bodyend="63"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a51c5923b1333899076772790f545f6d3" prot="public" virt="non-virtual"><scope>faiss::pipnn::Hyperplanes</scope><name>d</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1afb8ca9e2995b24b5d52ef2ab0d73bcb7" prot="public" virt="non-virtual"><scope>faiss::pipnn::Hyperplanes</scope><name>ht</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a6d1e95a6d492151d904cda69c885c5db" prot="public" virt="non-virtual"><scope>faiss::pipnn::Hyperplanes</scope><name>Hyperplanes</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1af116ed0a27b6c374dcc8df7fa92d40a7" prot="public" virt="non-virtual"><scope>faiss::pipnn::Hyperplanes</scope><name>Hyperplanes</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a84895733c7cae1e05745e7911e25a70d" prot="public" virt="non-virtual"><scope>faiss::pipnn::Hyperplanes</scope><name>m</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a630e19f5bc3232f74a82a8dc45519240" prot="public" virt="non-virtual"><scope>faiss::pipnn::Hyperplanes</scope><name>sketch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

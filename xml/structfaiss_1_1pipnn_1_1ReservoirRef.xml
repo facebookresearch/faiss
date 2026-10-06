@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pipnn_1_1ReservoirRef" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pipnn::ReservoirRef</compoundname>
+    <includes refid="HashPrune_8h" local="no">HashPrune.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1ReservoirRef_1ac62d28722dcda6b5d1489d3f718135ff" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1pipnn_1_1Slot" kindref="compound">Slot</ref> *</type>
+        <definition>Slot* faiss::pipnn::ReservoirRef::slots</definition>
+        <argsstring></argsstring>
+        <name>slots</name>
+        <qualifiedname>faiss::pipnn::ReservoirRef::slots</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="40" column="10" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1ReservoirRef_1abc472e7e3dd64b2f4ef6f0055fa42cb3" prot="public" static="no" mutable="no">
+        <type>uint8_t *</type>
+        <definition>uint8_t* faiss::pipnn::ReservoirRef::count</definition>
+        <argsstring></argsstring>
+        <name>count</name>
+        <qualifiedname>faiss::pipnn::ReservoirRef::count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="41" column="13" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1ReservoirRef_1a700c7c4425223be089633426ea227e6b" prot="public" static="no" mutable="no">
+        <type>uint8_t *</type>
+        <definition>uint8_t* faiss::pipnn::ReservoirRef::farthest</definition>
+        <argsstring></argsstring>
+        <name>farthest</name>
+        <qualifiedname>faiss::pipnn::ReservoirRef::farthest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="42" column="13" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1ReservoirRef_1a1df1333d4cd650add0719821b0e21278" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::ReservoirRef::capacity</definition>
+        <argsstring></argsstring>
+        <name>capacity</name>
+        <qualifiedname>faiss::pipnn::ReservoirRef::capacity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="43" column="9" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1pipnn_1_1ReservoirRef_1aad8253a66ab2ba4cba893c4a8d32f09c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::pipnn::ReservoirRef::offer</definition>
+        <argsstring>(int32_t id, uint16_t hash, uint16_t key)</argsstring>
+        <name>offer</name>
+        <qualifiedname>faiss::pipnn::ReservoirRef::offer</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>hash</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Keeps the smaller offer on a bucket hit, else inserts or evicts the maximum. An id must always come with the same hash. True iff changed. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="47" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>One point&apos;s reservoir in caller-owned storage; not thread-safe. Slots are sorted by distinct hash, and *farthest caches the slot_less-maximum. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::pipnn::ReservoirRef</label>
+        <link refid="structfaiss_1_1pipnn_1_1ReservoirRef"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>slots</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::pipnn::Slot</label>
+        <link refid="structfaiss_1_1pipnn_1_1Slot"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/pipnn/HashPrune.h" line="39" column="1" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="39" bodyend="48"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1a1df1333d4cd650add0719821b0e21278" prot="public" virt="non-virtual"><scope>faiss::pipnn::ReservoirRef</scope><name>capacity</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1abc472e7e3dd64b2f4ef6f0055fa42cb3" prot="public" virt="non-virtual"><scope>faiss::pipnn::ReservoirRef</scope><name>count</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1a700c7c4425223be089633426ea227e6b" prot="public" virt="non-virtual"><scope>faiss::pipnn::ReservoirRef</scope><name>farthest</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1aad8253a66ab2ba4cba893c4a8d32f09c" prot="public" virt="non-virtual"><scope>faiss::pipnn::ReservoirRef</scope><name>offer</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1ac62d28722dcda6b5d1489d3f718135ff" prot="public" virt="non-virtual"><scope>faiss::pipnn::ReservoirRef</scope><name>slots</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

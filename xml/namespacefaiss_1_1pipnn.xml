@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1pipnn" kind="namespace" language="C++">
+    <compoundname>faiss::pipnn</compoundname>
+    <innerclass refid="structfaiss_1_1pipnn_1_1Hyperplanes" prot="public">faiss::pipnn::Hyperplanes</innerclass>
+    <innerclass refid="structfaiss_1_1pipnn_1_1ReservoirRef" prot="public">faiss::pipnn::ReservoirRef</innerclass>
+    <innerclass refid="structfaiss_1_1pipnn_1_1Slot" prot="public">faiss::pipnn::Slot</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="HashPrune_8h_1a53c3c9bca4e5115a2e00c0b17341f6a2" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr uint8_t</type>
+        <definition>constexpr uint8_t faiss::pipnn::kNoFarthest</definition>
+        <argsstring></argsstring>
+        <name>kNoFarthest</name>
+        <qualifiedname>faiss::pipnn::kNoFarthest</qualifiedname>
+        <initializer>= 0xFF</initializer>
+        <briefdescription>
+<para>&quot;No cached farthest slot&quot;; never a slot index since capacity &lt;= 255. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="25" column="19" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="HashPrune_8h_1a020201bbbafec8555d0c9560026e702c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::pipnn::distance_key</definition>
+        <argsstring>(float v)</argsstring>
+        <name>distance_key</name>
+        <qualifiedname>faiss::pipnn::distance_key</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Monotone 16-bit key of a distance, which may be negative, from its scalar bf16 encoding. NaN maps to +inf and -0 to +0. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="29" column="10" declfile="faiss/impl/pipnn/HashPrune.h" declline="29" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="HashPrune_8h_1a5c654adca537b85aa29d879a95d047c6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::pipnn::slot_less</definition>
+        <argsstring>(uint16_t ka, int32_t ia, uint16_t kb, int32_t ib)</argsstring>
+        <name>slot_less</name>
+        <qualifiedname>faiss::pipnn::slot_less</qualifiedname>
+        <param>
+          <type>uint16_t</type>
+          <declname>ka</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>ia</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>kb</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>ib</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Strict (key, id) order. Deciding key ties by id makes the reservoir independent of the offer order. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="33" column="13" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="33" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="HashPrune_8h_1a9f40c9196f22de05b08c2790628c7002" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::pipnn::residual_hash</definition>
+        <argsstring>(const float *sketch_p, const float *sketch_c, int m)</argsstring>
+        <name>residual_hash</name>
+        <qualifiedname>faiss::pipnn::residual_hash</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>sketch_p</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sketch_c</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+<para>Bit i (i &lt; m &lt;= 16) is set iff sketch_c[i] - sketch_p[i] &gt;= 0. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="66" column="10" declfile="faiss/impl/pipnn/HashPrune.h" declline="66" declcolumn="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/pipnn/HashPrune.h" line="14" column="1"/>
+  </compounddef>
+</doxygen>

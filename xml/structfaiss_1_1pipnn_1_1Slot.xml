@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pipnn_1_1Slot" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pipnn::Slot</compoundname>
+    <includes refid="HashPrune_8h" local="no">HashPrune.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1Slot_1a9c2d607f26f3f3a3e5be42b64dce8479" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t faiss::pipnn::Slot::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>faiss::pipnn::Slot::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="18" column="13" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1Slot_1ad4ee4f4c0443df9353fb96bb2e429dc4" prot="public" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::pipnn::Slot::hash</definition>
+        <argsstring></argsstring>
+        <name>hash</name>
+        <qualifiedname>faiss::pipnn::Slot::hash</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="19" column="14" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1Slot_1aa6690fd13ce7c1daa265d69f51a79f2a" prot="public" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::pipnn::Slot::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>faiss::pipnn::Slot::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/HashPrune.h" line="20" column="14" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>One reservoir slot: candidate id, residual-LSH bucket, order-preserving key. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/pipnn/HashPrune.h" line="17" column="1" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="17" bodyend="21"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pipnn_1_1Slot_1ad4ee4f4c0443df9353fb96bb2e429dc4" prot="public" virt="non-virtual"><scope>faiss::pipnn::Slot</scope><name>hash</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Slot_1a9c2d607f26f3f3a3e5be42b64dce8479" prot="public" virt="non-virtual"><scope>faiss::pipnn::Slot</scope><name>id</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1Slot_1aa6690fd13ce7c1daa265d69f51a79f2a" prot="public" virt="non-virtual"><scope>faiss::pipnn::Slot</scope><name>key</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

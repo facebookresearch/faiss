@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="HashPrune_8h" kind="file" language="C++">
+    <compoundname>HashPrune.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">vector</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>faiss/impl/pipnn/HashPrune.h</label>
+        <link refid="HashPrune_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structfaiss_1_1pipnn_1_1Slot" prot="public">faiss::pipnn::Slot</innerclass>
+    <innerclass refid="structfaiss_1_1pipnn_1_1ReservoirRef" prot="public">faiss::pipnn::ReservoirRef</innerclass>
+    <innerclass refid="structfaiss_1_1pipnn_1_1Hyperplanes" prot="public">faiss::pipnn::Hyperplanes</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1pipnn">faiss::pipnn</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">pipnn<sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="16"><highlight class="comment">///<sp/>One<sp/>reservoir<sp/>slot:<sp/>candidate<sp/>id,<sp/>residual-LSH<sp/>bucket,<sp/>order-preserving<sp/>key.</highlight></codeline>
+<codeline lineno="17" refid="structfaiss_1_1pipnn_1_1Slot" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pipnn_1_1Slot" kindref="compound">Slot</ref><sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>id;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>uint16_t<sp/>hash;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>uint16_t<sp/>key;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="structfaiss_1_1pipnn_1_1Slot" kindref="compound">Slot</ref>)<sp/>==<sp/>8,<sp/></highlight><highlight class="stringliteral">&quot;PiPNN<sp/>reservoir<sp/>slots<sp/>must<sp/>be<sp/>8<sp/>bytes&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="24"><highlight class="comment">///<sp/>&quot;No<sp/>cached<sp/>farthest<sp/>slot&quot;;<sp/>never<sp/>a<sp/>slot<sp/>index<sp/>since<sp/>capacity<sp/>&lt;=<sp/>255.</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>uint8_t<sp/>kNoFarthest<sp/>=<sp/>0xFF;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="27"><highlight class="comment">///<sp/>Monotone<sp/>16-bit<sp/>key<sp/>of<sp/>a<sp/>distance,<sp/>which<sp/>may<sp/>be<sp/>negative,<sp/>from<sp/>its<sp/>scalar</highlight></codeline>
+<codeline lineno="28"><highlight class="comment">///<sp/>bf16<sp/>encoding.<sp/>NaN<sp/>maps<sp/>to<sp/>+inf<sp/>and<sp/>-0<sp/>to<sp/>+0.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"></highlight><highlight class="normal">uint16_t<sp/>distance_key(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>v);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment">///<sp/>Strict<sp/>(key,<sp/>id)<sp/>order.<sp/>Deciding<sp/>key<sp/>ties<sp/>by<sp/>id<sp/>makes<sp/>the<sp/>reservoir</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>independent<sp/>of<sp/>the<sp/>offer<sp/>order.</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>slot_less(uint16_t<sp/>ka,<sp/>int32_t<sp/>ia,<sp/>uint16_t<sp/>kb,<sp/>int32_t<sp/>ib)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ka<sp/>&lt;<sp/>kb<sp/>||<sp/>(ka<sp/>==<sp/>kb<sp/>&amp;&amp;<sp/>ia<sp/>&lt;<sp/>ib);</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="37"><highlight class="comment">///<sp/>One<sp/>point&apos;s<sp/>reservoir<sp/>in<sp/>caller-owned<sp/>storage;<sp/>not<sp/>thread-safe.<sp/>Slots<sp/>are</highlight></codeline>
+<codeline lineno="38"><highlight class="comment">///<sp/>sorted<sp/>by<sp/>distinct<sp/>hash,<sp/>and<sp/>*farthest<sp/>caches<sp/>the<sp/>slot_less-maximum.</highlight></codeline>
+<codeline lineno="39" refid="structfaiss_1_1pipnn_1_1ReservoirRef" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pipnn_1_1ReservoirRef" kindref="compound">ReservoirRef</ref><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1pipnn_1_1Slot" kindref="compound">Slot</ref>*<sp/>slots;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t*<sp/>count;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>when<sp/>fresh</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t*<sp/>farthest;<sp/></highlight><highlight class="comment">//<sp/>kNoFarthest<sp/>when<sp/>fresh<sp/>or<sp/>unknown</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>capacity;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>1..255</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Keeps<sp/>the<sp/>smaller<sp/>offer<sp/>on<sp/>a<sp/>bucket<sp/>hit,<sp/>else<sp/>inserts<sp/>or<sp/>evicts<sp/>the</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>maximum.<sp/>An<sp/>id<sp/>must<sp/>always<sp/>come<sp/>with<sp/>the<sp/>same<sp/>hash.<sp/>True<sp/>iff<sp/>changed.</highlight></codeline>
+<codeline lineno="47" refid="structfaiss_1_1pipnn_1_1ReservoirRef_1aad8253a66ab2ba4cba893c4a8d32f09c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1pipnn_1_1ReservoirRef_1aad8253a66ab2ba4cba893c4a8d32f09c" kindref="member">offer</ref>(int32_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint16_t<sp/>hash,<sp/>uint16_t<sp/>key);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="50"><highlight class="comment">///<sp/>m<sp/>&lt;=<sp/>16<sp/>Gaussian<sp/>hyperplanes<sp/>from<sp/>float_randn(seed),<sp/>stored<sp/>transposed</highlight></codeline>
+<codeline lineno="51"><highlight class="comment">///<sp/>and<sp/>zero-padded:<sp/>ht[j<sp/>*<sp/>16<sp/>+<sp/>i].</highlight></codeline>
+<codeline lineno="52" refid="structfaiss_1_1pipnn_1_1Hyperplanes" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pipnn_1_1Hyperplanes" kindref="compound">Hyperplanes</ref><sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>m<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>ht;<sp/></highlight><highlight class="comment">//<sp/>d<sp/>*<sp/>16</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1pipnn_1_1Hyperplanes" kindref="compound">Hyperplanes</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1pipnn_1_1Hyperplanes" kindref="compound">Hyperplanes</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>m,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>out16[i]<sp/>=<sp/>sum<sp/>over<sp/>ascending<sp/>j<sp/>of<sp/>x[j]<sp/>*<sp/>ht[j<sp/>*<sp/>16<sp/>+<sp/>i].<sp/>Not<sp/>inlined,</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>so<sp/>all<sp/>call<sp/>sites<sp/>produce<sp/>bitwise-identical<sp/>sketches.</highlight></codeline>
+<codeline lineno="62" refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a630e19f5bc3232f74a82a8dc45519240" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a630e19f5bc3232f74a82a8dc45519240" kindref="member">sketch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>out16)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="65"><highlight class="comment">///<sp/>Bit<sp/>i<sp/>(i<sp/>&lt;<sp/>m<sp/>&lt;=<sp/>16)<sp/>is<sp/>set<sp/>iff<sp/>sketch_c[i]<sp/>-<sp/>sketch_p[i]<sp/>&gt;=<sp/>0.</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"></highlight><highlight class="normal">uint16_t<sp/>residual_hash(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>sketch_p,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>sketch_c,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>m);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>pipnn</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/pipnn/HashPrune.h"/>
+  </compounddef>
+</doxygen>

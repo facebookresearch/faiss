@@ -2778,6 +2778,14 @@
     <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573a28818c3eeac36130c18c2e6bac7ee4ef" kind="enumvalue"><name>SUBSET_TYPE_INVLIST</name></member>
     <member refid="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7" kind="variable"><name>INVALID_CODE_SIZE</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pipnn_1_1Hyperplanes" kind="struct"><name>faiss::pipnn::Hyperplanes</name>
+    <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a51c5923b1333899076772790f545f6d3" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a84895733c7cae1e05745e7911e25a70d" kind="variable"><name>m</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1afb8ca9e2995b24b5d52ef2ab0d73bcb7" kind="variable"><name>ht</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a6d1e95a6d492151d904cda69c885c5db" kind="function"><name>Hyperplanes</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1af116ed0a27b6c374dcc8df7fa92d40a7" kind="function"><name>Hyperplanes</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Hyperplanes_1a630e19f5bc3232f74a82a8dc45519240" kind="function"><name>sketch</name></member>
+  </compound>
   <compound refid="structfaiss_1_1lsq_1_1IcmEncoder" kind="struct"><name>faiss::lsq::IcmEncoder</name>
     <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1a310d4c8b7e58157e3e764a88c5bfc4ff" kind="variable"><name>binaries</name></member>
     <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1aff2b33803e7f54ebb62c0447a3b8468b" kind="variable"><name>verbose</name></member>
@@ -12005,6 +12013,13 @@
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1acf5c696ddb1a7c507fa0de0cff998b1c" kind="function"><name>set_list_context</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ae7a493ebdd78f2889531670ed630a4f1" kind="variable"><name>SL256</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pipnn_1_1ReservoirRef" kind="struct"><name>faiss::pipnn::ReservoirRef</name>
+    <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1ac62d28722dcda6b5d1489d3f718135ff" kind="variable"><name>slots</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1abc472e7e3dd64b2f4ef6f0055fa42cb3" kind="variable"><name>count</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1a700c7c4425223be089633426ea227e6b" kind="variable"><name>farthest</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1a1df1333d4cd650add0719821b0e21278" kind="variable"><name>capacity</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1ReservoirRef_1aad8253a66ab2ba4cba893c4a8d32f09c" kind="function"><name>offer</name></member>
+  </compound>
   <compound refid="structfaiss_1_1ReservoirTopN" kind="struct"><name>faiss::ReservoirTopN</name>
     <member refid="structfaiss_1_1ReservoirTopN_1aa69a045c4e21d83e1105c3c6bfdf1e65" kind="typedef"><name>T</name></member>
     <member refid="structfaiss_1_1ReservoirTopN_1a1177b732a5a783a10e2bcf9a575558ca" kind="typedef"><name>TI</name></member>
@@ -13373,6 +13388,11 @@
     <member refid="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1abb6e828d751c385dbcbfb492f65a148f" kind="function"><name>Slot</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1a58fa6d66711e1567ea362504f844fa88" kind="function"><name>Slot</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pipnn_1_1Slot" kind="struct"><name>faiss::pipnn::Slot</name>
+    <member refid="structfaiss_1_1pipnn_1_1Slot_1a9c2d607f26f3f3a3e5be42b64dce8479" kind="variable"><name>id</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Slot_1ad4ee4f4c0443df9353fb96bb2e429dc4" kind="variable"><name>hash</name></member>
+    <member refid="structfaiss_1_1pipnn_1_1Slot_1aa6690fd13ce7c1daa265d69f51a79f2a" kind="variable"><name>key</name></member>
+  </compound>
   <compound refid="structfaiss_1_1SplitMix64RandomGenerator" kind="struct"><name>faiss::SplitMix64RandomGenerator</name>
     <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a85ad5ee01fe609b60c34b5427b4c2229" kind="variable"><name>state</name></member>
     <member refid="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a" kind="function"><name>rand_int</name></member>
@@ -14000,7 +14020,7 @@
     <member refid="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" kind="function"><name>search_multi</name></member>
   </compound>
-  <compound refid="namespace_0d118" kind="namespace"><name>@118</name>
+  <compound refid="namespace_0d119" kind="namespace"><name>@119</name>
   </compound>
   <compound refid="namespacefaiss" kind="namespace"><name>faiss</name>
     <member refid="namespacefaiss_1a3b270886d10d9188ac96726f40b669e8" kind="function"><name>make_binary_hnsw_distance_computer_fixSL</name></member>
@@ -14626,27 +14646,27 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d148" kind="namespace"><name>faiss::@148</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d151" kind="namespace"><name>faiss::@151</name>
+  <compound refid="namespacefaiss_1_1_0d149" kind="namespace"><name>faiss::@149</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d152" kind="namespace"><name>faiss::@152</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d153" kind="namespace"><name>faiss::@153</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d231" kind="namespace"><name>faiss::@231</name>
+  <compound refid="namespacefaiss_1_1_0d154" kind="namespace"><name>faiss::@154</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d235" kind="namespace"><name>faiss::@235</name>
+  <compound refid="namespacefaiss_1_1_0d232" kind="namespace"><name>faiss::@232</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d239" kind="namespace"><name>faiss::@239</name>
+  <compound refid="namespacefaiss_1_1_0d236" kind="namespace"><name>faiss::@236</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d251" kind="namespace"><name>faiss::@251</name>
+  <compound refid="namespacefaiss_1_1_0d240" kind="namespace"><name>faiss::@240</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d264" kind="namespace"><name>faiss::@264</name>
+  <compound refid="namespacefaiss_1_1_0d252" kind="namespace"><name>faiss::@252</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d268" kind="namespace"><name>faiss::@268</name>
+  <compound refid="namespacefaiss_1_1_0d265" kind="namespace"><name>faiss::@265</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d270" kind="namespace"><name>faiss::@270</name>
+  <compound refid="namespacefaiss_1_1_0d269" kind="namespace"><name>faiss::@269</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d271" kind="namespace"><name>faiss::@271</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d69" kind="namespace"><name>faiss::@69</name>
   </compound>
@@ -14940,6 +14960,12 @@
   <compound refid="namespacefaiss_1_1nsg" kind="namespace"><name>faiss::nsg</name>
     <member refid="NSG_8h_1a0e25b3a231c2eb38fcec063865811e52" kind="function"><name>storage_distance_computer</name></member>
   </compound>
+  <compound refid="namespacefaiss_1_1pipnn" kind="namespace"><name>faiss::pipnn</name>
+    <member refid="HashPrune_8h_1a53c3c9bca4e5115a2e00c0b17341f6a2" kind="variable"><name>kNoFarthest</name></member>
+    <member refid="HashPrune_8h_1a020201bbbafec8555d0c9560026e702c" kind="function"><name>distance_key</name></member>
+    <member refid="HashPrune_8h_1a5c654adca537b85aa29d879a95d047c6" kind="function"><name>slot_less</name></member>
+    <member refid="HashPrune_8h_1a9f40c9196f22de05b08c2790628c7002" kind="function"><name>residual_hash</name></member>
+  </compound>
   <compound refid="namespacefaiss_1_1polysemous__training" kind="namespace"><name>faiss::polysemous_training</name>
     <member refid="polysemous__training_2dispatch_8h_1adad7f06c40f3626eb0cace3ce7af7725" kind="variable"><name>SIMD_LEVELS</name></member>
     <member refid="polysemous__training_2dispatch_8h_1a5753d954522964db0ac386dc295e67de" kind="function"><name>hamming_compute_cost</name></member>
@@ -14979,7 +15005,7 @@
     <member refid="pq__code__distance_8h_1a1918813645287593e72cce615ece1863" kind="function"><name>pq_code_distance_single</name></member>
     <member refid="pq__code__distance_8h_1aa271346d82ed780f8b8e65431a8021ce" kind="function"><name>pq_code_distance_four</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d123" kind="namespace"><name>faiss::pq_code_distance::@123</name>
+  <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d124" kind="namespace"><name>faiss::pq_code_distance::@124</name>
   </compound>
   <compound refid="namespacefaiss_1_1pq__rvv__kernel" kind="namespace"><name>faiss::pq_rvv_kernel</name>
     <member refid="pq__rvv__kernel_8h_1a12aebee2337329ee049cf01da47681e7" kind="function"><name>row_offsets</name></member>
@@ -15096,7 +15122,7 @@
     <member refid="training_8h_1a034e56b144961f4bf96372b957fb0885" kind="function"><name>train_NonUniform</name></member>
     <member refid="training_8h_1abf3cbfe5f3be5bb8f2d0f8e720245576" kind="function"><name>train_TurboQuantMSE</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1scalar__quantizer_1_1_0d140" kind="namespace"><name>faiss::scalar_quantizer::@140</name>
+  <compound refid="namespacefaiss_1_1scalar__quantizer_1_1_0d141" kind="namespace"><name>faiss::scalar_quantizer::@141</name>
   </compound>
   <compound refid="namespacefaiss_1_1simd__partitioning" kind="namespace"><name>faiss::simd_partitioning</name>
   </compound>
@@ -15575,6 +15601,8 @@
   </compound>
   <compound refid="PdxLayout_8h" kind="file"><name>PdxLayout.h</name>
   </compound>
+  <compound refid="HashPrune_8h" kind="file"><name>HashPrune.h</name>
+  </compound>
   <compound refid="platform__macros_8h" kind="file"><name>platform_macros.h</name>
     <member refid="platform__macros_8h_1a42c3236f250a1cda84bbf4932470fe89" kind="define"><name>FAISS_API</name></member>
     <member refid="platform__macros_8h_1a8bf69ed1a28e4db9afeea26ef5d0358e" kind="define"><name>posix_memalign_free</name></member>
@@ -15585,6 +15613,7 @@
     <member refid="platform__macros_8h_1af21bb2324a630f7e1e7ec34eecfd564c" kind="define"><name>FAISS_PACK_STRUCTS_END</name></member>
     <member refid="platform__macros_8h_1ad7d30d301b7cb834b0671c66350fdb57" kind="define"><name>FAISS_ALWAYS_INLINE</name></member>
     <member refid="platform__macros_8h_1ad7da871f62652973e7e79c5445bd31a4" kind="define"><name>FAISS_DEPRECATED</name></member>
+    <member refid="platform__macros_8h_1a1899ed4172a429e8aed097e41e027652" kind="define"><name>FAISS_NOINLINE</name></member>
     <member refid="platform__macros_8h_1a623b886a145661236460fb8c95129d83" kind="define"><name>FAISS_PRAGMA_IMPRECISE_LOOP</name></member>
     <member refid="platform__macros_8h_1a0d4be9896374a3068094c050b1fdcb07" kind="define"><name>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</name></member>
     <member refid="platform__macros_8h_1a67c757ea9f8ddbedbacd421c993b5582" kind="define"><name>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</name></member>
@@ -15997,6 +16026,8 @@
   <compound refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir"><name>faiss/invlists</name>
   </compound>
   <compound refid="dir_a183f389f7fdb8e3b256673548812ad2" kind="dir"><name>faiss/gpu/perf</name>
+  </compound>
+  <compound refid="dir_3001c1960c00b8a2f244288c46a9cf08" kind="dir"><name>faiss/impl/pipnn</name>
   </compound>
   <compound refid="dir_91b27e9ef764347773ffca62779352cf" kind="dir"><name>faiss/impl/polysemous_training</name>
   </compound>
