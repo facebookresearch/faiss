@@ -20,6 +20,9 @@
 
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/pipnn/HashPrune.h>
+#include <faiss/impl/pipnn/kernels.h>
+#include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 
 using faiss::pipnn::distance_key;
@@ -308,4 +311,415 @@ TEST(PiPNNSketch, ResidualHash) {
     EXPECT_EQ(residual_hash(p, c, 16), uint16_t(0x6DB6));
     // A zero residual sets all m bits and none above.
     EXPECT_EQ(residual_hash(p, p, 12), uint16_t(0x0FFF));
+}
+
+/*************************************************************
+ * Numeric kernels
+ *************************************************************/
+
+namespace pipnn_kernel_test {
+
+using faiss::pipnn::Ranking;
+
+const Ranking kRankings[] = {Ranking::L2, Ranking::IP, Ranking::Angle};
+
+faiss::AlignedTable<float, 64> random_table(size_t n, int64_t seed) {
+    faiss::AlignedTable<float, 64> t(n);
+    faiss::float_randn(t.get(), n, seed);
+    return t;
+}
+
+// Scratch buffers start as NaN, so a BLAS that reads C with beta == 0 fails.
+faiss::AlignedTable<float, 64> nan_table(size_t n) {
+    faiss::AlignedTable<float, 64> t(n);
+    std::fill(t.get(), t.get() + n, std::numeric_limits<float>::quiet_NaN());
+    return t;
+}
+
+std::vector<float> norms_of(const float* X, size_t n, size_t d) {
+    std::vector<float> norms(n);
+    for (size_t i = 0; i < n; i++) {
+        norms[i] = faiss::fvec_norm_L2sqr(X + i * d, d);
+    }
+    return norms;
+}
+
+double ref_rank(const float* p, const float* l, size_t d, Ranking ranking) {
+    double dot = 0, ln = 0;
+    for (size_t t = 0; t < d; t++) {
+        dot += double(p[t]) * double(l[t]);
+        ln += double(l[t]) * double(l[t]);
+    }
+    if (ranking == Ranking::L2) {
+        return ln - 2 * dot;
+    }
+    return ranking == Ranking::IP ? -dot : -dot / std::sqrt(ln);
+}
+
+std::vector<uint16_t> run_stripe(
+        const float* points,
+        size_t S,
+        const float* leaders,
+        size_t L,
+        size_t d,
+        Ranking ranking,
+        int fanout) {
+    const std::vector<float> norms = norms_of(leaders, L, d);
+    faiss::AlignedTable<float, 64> scratch = nan_table(S * L);
+    std::vector<uint16_t> out(S * size_t(fanout), 0xFFFF);
+    faiss::pipnn::stripe_assign(
+            points,
+            S,
+            leaders,
+            ranking == Ranking::IP ? nullptr : norms.data(),
+            L,
+            d,
+            ranking,
+            fanout,
+            scratch.get(),
+            out.data());
+    return out;
+}
+
+// Full float64 distance matrix: L2 squared, or -dot for IP.
+std::vector<double> ref_distances(
+        const float* X,
+        size_t n,
+        size_t d,
+        faiss::MetricType metric) {
+    std::vector<double> ref(n * n);
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            double acc = 0;
+            for (size_t c = 0; c < d; c++) {
+                const double a = X[i * d + c];
+                const double b = X[j * d + c];
+                acc += metric == faiss::METRIC_L2 ? (a - b) * (a - b) : a * b;
+            }
+            ref[i * n + j] = metric == faiss::METRIC_L2 ? acc : -acc;
+        }
+    }
+    return ref;
+}
+
+void run_leaf(
+        const float* X,
+        size_t s,
+        size_t d,
+        faiss::MetricType metric,
+        int k,
+        std::vector<int32_t>& idx,
+        std::vector<float>& dist) {
+    const std::vector<float> norms = norms_of(X, s, d);
+    faiss::AlignedTable<float, 64> gram = nan_table(s * s);
+    idx.assign(s * size_t(k), 7); // garbage: every slot must be written
+    dist.assign(s * size_t(k), 7.0f);
+    faiss::pipnn::leaf_knn(
+            X,
+            norms.data(),
+            s,
+            d,
+            metric,
+            k,
+            gram.get(),
+            idx.data(),
+            dist.data());
+}
+
+} // namespace pipnn_kernel_test
+
+// Leaders must be distinct, with ranks within 1e-3 of the float64 reference.
+TEST(PiPNNKernels, StripeMatchesFloat64Reference) {
+    namespace pkt = pipnn_kernel_test;
+    struct Case {
+        size_t S, L, d;
+        std::vector<int> fanouts;
+    };
+    const Case cases[] = {
+            {9, 20, 16, {1, 10, 20}},
+            {faiss::pipnn::kStripe, 100, 32, {33, 100}}};
+    for (const Case& c : cases) {
+        const auto points = pkt::random_table(c.S * c.d, 123);
+        const auto leaders = pkt::random_table(c.L * c.d, 456);
+        for (pkt::Ranking ranking : pkt::kRankings) {
+            for (int fanout : c.fanouts) {
+                SCOPED_TRACE(
+                        testing::Message()
+                        << "L=" << c.L << " ranking=" << int(ranking)
+                        << " fanout=" << fanout);
+                const std::vector<uint16_t> out = pkt::run_stripe(
+                        points.get(),
+                        c.S,
+                        leaders.get(),
+                        c.L,
+                        c.d,
+                        ranking,
+                        fanout);
+                for (size_t i = 0; i < c.S; i++) {
+                    std::vector<double> rank(c.L);
+                    for (size_t j = 0; j < c.L; j++) {
+                        rank[j] = pkt::ref_rank(
+                                points.get() + i * c.d,
+                                leaders.get() + j * c.d,
+                                c.d,
+                                ranking);
+                    }
+                    std::vector<double> sorted = rank;
+                    std::sort(sorted.begin(), sorted.end());
+                    const uint16_t* row = out.data() + i * fanout;
+                    ASSERT_EQ(
+                            std::set<uint16_t>(row, row + fanout).size(),
+                            size_t(fanout));
+                    for (int r = 0; r < fanout; r++) {
+                        ASSERT_LT(row[r], c.L);
+                        EXPECT_NEAR(rank[row[r]], sorted[r], 1e-3);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Leaders cycle through the 4 unit directions and the points are (0, 0) and
+// (2, 0): small integers make every rank, and so every tie, exact.
+TEST(PiPNNKernels, StripeTiesPreferLowerLeaderIndex) {
+    namespace pkt = pipnn_kernel_test;
+    const size_t L = 40;
+    const float dirs[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+    faiss::AlignedTable<float, 64> leaders(L * 2);
+    for (size_t j = 0; j < L; j++) {
+        leaders[2 * j] = dirs[j % 4][0];
+        leaders[2 * j + 1] = dirs[j % 4][1];
+    }
+    faiss::AlignedTable<float, 64> points(4);
+    const float pts[4] = {0, 0, 2, 0};
+    std::copy(pts, pts + 4, points.get());
+    // (2, 0) ranks the +x leaders first, then the orthogonal ones, then -x.
+    std::vector<uint16_t> order1;
+    for (size_t first : {0, 1, 2}) {
+        for (size_t j = first; j < L; j += first == 1 ? 2 : 4) {
+            order1.push_back(uint16_t(j));
+        }
+    }
+    for (pkt::Ranking ranking : pkt::kRankings) {
+        for (int fanout : {10, 40}) {
+            SCOPED_TRACE(
+                    testing::Message()
+                    << "ranking=" << int(ranking) << " fanout=" << fanout);
+            std::vector<uint16_t> expected(2 * fanout);
+            for (int r = 0; r < fanout; r++) {
+                expected[r] = uint16_t(r);
+                expected[fanout + r] = order1[r];
+            }
+            EXPECT_EQ(
+                    pkt::run_stripe(
+                            points.get(),
+                            2,
+                            leaders.get(),
+                            L,
+                            2,
+                            ranking,
+                            fanout),
+                    expected);
+        }
+    }
+}
+
+// NaN ranks +inf: a NaN point still gets `fanout` leaders in index order, and
+// a NaN leader is never chosen over a finite one.
+TEST(PiPNNKernels, StripeNaNRanksLast) {
+    namespace pkt = pipnn_kernel_test;
+    const size_t S = 5, L = 40, d = 8;
+    auto points = pkt::random_table(S * d, 7);
+    auto leaders = pkt::random_table(L * d, 8);
+    points[2 * d] = std::numeric_limits<float>::quiet_NaN();
+    leaders[0] = std::numeric_limits<float>::quiet_NaN();
+    for (pkt::Ranking ranking : pkt::kRankings) {
+        for (int fanout : {4, 33}) {
+            SCOPED_TRACE(
+                    testing::Message()
+                    << "ranking=" << int(ranking) << " fanout=" << fanout);
+            const std::vector<uint16_t> out = pkt::run_stripe(
+                    points.get(), S, leaders.get(), L, d, ranking, fanout);
+            for (size_t i = 0; i < S; i++) {
+                for (int r = 0; r < fanout; r++) {
+                    const uint16_t leader = out[i * fanout + r];
+                    if (i == 2) {
+                        EXPECT_EQ(leader, r) << "NaN point, rank " << r;
+                    } else {
+                        EXPECT_NE(leader, 0) << "point " << i << " rank " << r;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Leader 1 is zero and leader 3 underflows to a zero norm; with a positive
+// dot product either would otherwise rank first at -inf under Angle.
+TEST(PiPNNKernels, StripeAngleZeroLeaderRanksLast) {
+    namespace pkt = pipnn_kernel_test;
+    const size_t S = 5, L = 6, d = 4;
+    faiss::AlignedTable<float, 64> points(S * d);
+    faiss::float_rand(points.get(), S * d, 11);
+    for (size_t i = 0; i < S * d; i++) {
+        points[i] += 0.5f;
+    }
+    auto leaders = pkt::random_table(L * d, 12);
+    for (size_t c = 0; c < d; c++) {
+        leaders[1 * d + c] = 0;
+        leaders[3 * d + c] = 1e-30f;
+    }
+    ASSERT_EQ(faiss::fvec_norm_L2sqr(leaders.get() + 3 * d, d), 0.0f);
+    const std::vector<uint16_t> out = pkt::run_stripe(
+            points.get(), S, leaders.get(), L, d, pkt::Ranking::Angle, int(L));
+    for (size_t i = 0; i < S; i++) {
+        EXPECT_EQ(out[i * L + 4], 1) << "point " << i;
+        EXPECT_EQ(out[i * L + 5], 3) << "point " << i;
+    }
+}
+
+// Exact distances: ties go to the lower index, and a NaN point is at +inf
+// from everyone.
+TEST(PiPNNKernels, LeafKnnExactCases) {
+    namespace pkt = pipnn_kernel_test;
+    const float inf = std::numeric_limits<float>::infinity();
+    std::vector<int32_t> idx;
+    std::vector<float> dist;
+
+    const float line[5] = {0, 1, 2, 3, 4};
+    pkt::run_leaf(line, 5, 1, faiss::METRIC_L2, 2, idx, dist);
+    EXPECT_EQ(idx, (std::vector<int32_t>{1, 2, 0, 2, 1, 3, 2, 4, 3, 2}));
+    EXPECT_EQ(dist, (std::vector<float>{1, 4, 1, 1, 1, 1, 1, 1, 1, 4}));
+
+    const float with_nan[8] = {
+            0, 0, 1, 0, 0, 2, std::numeric_limits<float>::quiet_NaN(), 0};
+    pkt::run_leaf(with_nan, 4, 2, faiss::METRIC_L2, 3, idx, dist);
+    EXPECT_EQ(idx, (std::vector<int32_t>{1, 2, 3, 0, 2, 3, 0, 1, 3, 0, 1, 2}));
+    EXPECT_EQ(
+            dist,
+            (std::vector<float>{
+                    1, 4, inf, 1, 5, inf, 4, 5, inf, inf, inf, inf}));
+}
+
+// The Gram entries of a copied row may round differently, so its L2 distance
+// is a small value that must be clamped at 0, never negative.
+TEST(PiPNNKernels, LeafL2CopiedRowIsNearestAndNonNegative) {
+    namespace pkt = pipnn_kernel_test;
+    const size_t s = 33, d = 24;
+    const int k = 4;
+    auto Y = pkt::random_table(s * d, 13);
+    std::copy(Y.get() + 7 * d, Y.get() + 8 * d, Y.get() + 30 * d);
+    std::vector<int32_t> idx;
+    std::vector<float> dist;
+    pkt::run_leaf(Y.get(), s, d, faiss::METRIC_L2, k, idx, dist);
+    EXPECT_GE(*std::min_element(dist.begin(), dist.end()), 0.0f);
+    EXPECT_EQ(idx[7 * k], 30);
+    EXPECT_EQ(idx[30 * k], 7);
+    EXPECT_LE(dist[7 * k], 1e-4f);
+}
+
+// pairwise_distances matches the float64 reference, and leaf_knn equals the
+// (distance, index)-smallest non-self entries of its rows, bitwise, then -1 /
+// +inf padding. The final prune relies on this agreement.
+TEST(PiPNNKernels, LeafKnnMatchesPairwise) {
+    namespace pkt = pipnn_kernel_test;
+    const size_t d = 24;
+    for (faiss::MetricType metric :
+         {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+        for (size_t n : {1, 3, 65}) {
+            const auto X = pkt::random_table(n * d, int64_t(100 + n));
+            const std::vector<float> norms = pkt::norms_of(X.get(), n, d);
+            faiss::AlignedTable<float, 64> D = pkt::nan_table(n * n);
+            faiss::pipnn::pairwise_distances(
+                    X.get(), norms.data(), n, d, metric, D.get());
+            const std::vector<double> ref =
+                    pkt::ref_distances(X.get(), n, d, metric);
+            for (size_t i = 0; i < n * n; i++) {
+                EXPECT_EQ(D[i], D[(i % n) * n + i / n]); // symmetric
+                EXPECT_NEAR(D[i], ref[i], 1e-3);
+            }
+            for (int k : {2, 5}) {
+                SCOPED_TRACE(
+                        testing::Message() << "metric=" << int(metric)
+                                           << " n=" << n << " k=" << k);
+                std::vector<int32_t> want_idx(n * k, -1);
+                std::vector<float> want_dist(
+                        n * k, std::numeric_limits<float>::infinity());
+                for (size_t i = 0; i < n; i++) {
+                    std::vector<std::pair<float, int32_t>> row;
+                    for (size_t j = 0; j < n; j++) {
+                        if (j != i) {
+                            row.emplace_back(D[i * n + j], int32_t(j));
+                        }
+                    }
+                    std::sort(row.begin(), row.end());
+                    for (size_t r = 0; r < std::min(size_t(k), row.size());
+                         r++) {
+                        want_dist[i * k + r] = row[r].first;
+                        want_idx[i * k + r] = row[r].second;
+                    }
+                }
+                std::vector<int32_t> idx;
+                std::vector<float> dist;
+                pkt::run_leaf(X.get(), n, d, metric, k, idx, dist);
+                EXPECT_EQ(idx, want_idx);
+                EXPECT_EQ(dist, want_dist);
+            }
+        }
+    }
+}
+
+TEST(PiPNNKernels, RejectBadArguments) {
+    using faiss::FaissException;
+    const auto X = pipnn_kernel_test::random_table(3 * 4, 1);
+    const std::vector<float> norms(3, 1.0f);
+    faiss::AlignedTable<float, 64> scratch(3 * 3);
+    std::vector<uint16_t> leaders_out(3 * 3);
+    std::vector<int32_t> idx(3 * 2);
+    std::vector<float> dist(3 * 2);
+
+    // 3 points against 3 leaders (the same rows), d = 4.
+    auto stripe = [&](const float* nrm, size_t L, int fanout) {
+        faiss::pipnn::stripe_assign(
+                X.get(),
+                3,
+                X.get(),
+                nrm,
+                L,
+                4,
+                faiss::pipnn::Ranking::L2,
+                fanout,
+                scratch.get(),
+                leaders_out.data());
+    };
+    EXPECT_THROW(stripe(norms.data(), 3, 0), FaissException);
+    EXPECT_THROW(stripe(norms.data(), 3, 4), FaissException); // > L
+    EXPECT_THROW(stripe(nullptr, 3, 1), FaissException);
+    EXPECT_THROW(stripe(norms.data(), 65536, 1), FaissException); // > uint16
+
+    auto leaf = [&](const float* nrm, faiss::MetricType m, int k) {
+        faiss::pipnn::leaf_knn(
+                X.get(),
+                nrm,
+                3,
+                4,
+                m,
+                k,
+                scratch.get(),
+                idx.data(),
+                dist.data());
+    };
+    EXPECT_THROW(leaf(norms.data(), faiss::METRIC_L1, 2), FaissException);
+    EXPECT_THROW(leaf(norms.data(), faiss::METRIC_L2, 0), FaissException);
+    EXPECT_THROW(leaf(nullptr, faiss::METRIC_L2, 2), FaissException);
+    EXPECT_THROW(
+            faiss::pipnn::pairwise_distances(
+                    X.get(),
+                    norms.data(),
+                    3,
+                    4,
+                    faiss::METRIC_L1,
+                    scratch.get()),
+            FaissException);
 }
