@@ -5,6 +5,44 @@
     <innerclass refid="structfaiss_1_1pipnn_1_1Hyperplanes" prot="public">faiss::pipnn::Hyperplanes</innerclass>
     <innerclass refid="structfaiss_1_1pipnn_1_1ReservoirRef" prot="public">faiss::pipnn::ReservoirRef</innerclass>
     <innerclass refid="structfaiss_1_1pipnn_1_1Slot" prot="public">faiss::pipnn::Slot</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="kernels_8h_1aae141051627f043b69a1877593aa2ff2" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>Ranking</name>
+        <qualifiedname>faiss::pipnn::Ranking</qualifiedname>
+        <enumvalue id="kernels_8h_1aae141051627f043b69a1877593aa2ff2a7e6aa2d53f6ee2b1a34b017fa403cb76" prot="public">
+          <name>L2</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="kernels_8h_1aae141051627f043b69a1877593aa2ff2aa12a3079e14ced46e69ba52b8a90b21a" prot="public">
+          <name>IP</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="kernels_8h_1aae141051627f043b69a1877593aa2ff2a45f4ce6c3306644b1efe333f4f8d6929" prot="public">
+          <name>Angle</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="31" column="1" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="31" bodyend="31"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="var">
       <memberdef kind="variable" id="HashPrune_8h_1a53c3c9bca4e5115a2e00c0b17341f6a2" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr uint8_t</type>
@@ -21,6 +59,22 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/pipnn/HashPrune.h" line="25" column="19" bodyfile="faiss/impl/pipnn/HashPrune.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="kernels_8h_1adb896744a24abec0aa41b51da99bf190" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::pipnn::kStripe</definition>
+        <argsstring></argsstring>
+        <name>kStripe</name>
+        <qualifiedname>faiss::pipnn::kStripe</qualifiedname>
+        <initializer>= 1024</initializer>
+        <briefdescription>
+<para>Points per stripe item of the partition kernel. Changing it changes graphs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="29" column="18" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="29" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -100,6 +154,151 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/pipnn/HashPrune.h" line="66" column="10" declfile="faiss/impl/pipnn/HashPrune.h" declline="66" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a6b6f1194ce0b3641500b3b792b70d7d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::stripe_assign</definition>
+        <argsstring>(const float *points, size_t S, const float *leaders, const float *leader_norms, size_t L, size_t d, Ranking ranking, int fanout, float *scratch, uint16_t *out)</argsstring>
+        <name>stripe_assign</name>
+        <qualifiedname>faiss::pipnn::stripe_assign</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>S</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>leaders</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>leader_norms</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>L</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>Ranking</type>
+          <declname>ranking</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>fanout</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>scratch</declname>
+        </param>
+        <param>
+          <type>uint16_t *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>out (S x fanout): each point&apos;s nearest leaders in (rank, index) order, with rank L2 ||l||^2 - 2 p.l, IP -p.l, Angle -p.l / ||l|| (+inf if ||l|| = 0). NaN ranks +inf. scratch: S * L floats; leader_norms may be null for IP. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="36" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="36" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a45d2ccbb81ada446552a4ee76e145f35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::leaf_knn</definition>
+        <argsstring>(const float *X, const float *norms, size_t s, size_t d, MetricType metric, int k, float *gram, int32_t *nn_idx, float *nn_dist)</argsstring>
+        <name>leaf_knn</name>
+        <qualifiedname>faiss::pipnn::leaf_knn</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>X</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>norms</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>gram</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>nn_idx</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>nn_dist</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>k nearest neighbours (s x k) of each leaf point in (dist, index) order; unfilled slots are -1 / +inf. gram: s * s floats; norms null for IP only. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="50" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="50" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a72b9b36917b4ba2c310153852b3de166" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::pairwise_distances</definition>
+        <argsstring>(const float *X, const float *norms, size_t n, size_t d, MetricType metric, float *out)</argsstring>
+        <name>pairwise_distances</name>
+        <qualifiedname>faiss::pipnn::pairwise_distances</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>X</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>norms</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>n x n distances (L2 clamped at 0, IP -dot); out is also the Gram scratch. The L2 diagonal is small and non-negative, but not necessarily 0. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="63" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="63" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

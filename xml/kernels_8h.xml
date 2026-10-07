@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="kernels_8h" kind="file" language="C++">
+    <compoundname>kernels.h</compoundname>
+    <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/pipnn/kernels.h</label>
+        <link refid="kernels_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>atomic</label>
+      </node>
+      <node id="14">
+        <label>cinttypes</label>
+      </node>
+      <node id="16">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdio</label>
+      </node>
+      <node id="5">
+        <label>cstdlib</label>
+      </node>
+      <node id="8">
+        <label>exception</label>
+      </node>
+      <node id="15">
+        <label>limits</label>
+      </node>
+      <node id="9">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>utility</label>
+      </node>
+      <node id="11">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1pipnn">faiss::pipnn</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>Each<sp/>kernel<sp/>makes<sp/>one<sp/>BLAS<sp/>call<sp/>(sgemm_<sp/>or<sp/>ssyrk_),<sp/>and<sp/>results<sp/>are<sp/>bitwise</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>reproducible<sp/>across<sp/>thread<sp/>counts<sp/>only<sp/>if<sp/>that<sp/>call<sp/>runs<sp/>single-threaded.</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>So<sp/>call<sp/>the<sp/>kernels<sp/>inside<sp/>an<sp/>OpenMP<sp/>parallel<sp/>region,<sp/>or<sp/>from<sp/>serial<sp/>code</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>only<sp/>when<sp/>omp_get_max_threads()<sp/>==<sp/>1,<sp/>and<sp/>keep<sp/>BLAS<sp/>from<sp/>threading<sp/>on<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/>own:<sp/>MKL_NUM_THREADS<sp/>unset<sp/>or<sp/>1,<sp/>OPENBLAS_NUM_THREADS=1<sp/>for<sp/>pthreads</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>OpenBLAS,<sp/>VECLIB_MAXIMUM_THREADS=1<sp/>on<sp/>macOS,<sp/>OMP_NUM_THREADS=1<sp/>for<sp/>an</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>OpenMP<sp/>BLAS<sp/>in<sp/>a<sp/>Faiss<sp/>build<sp/>without<sp/>OpenMP.<sp/>Inputs<sp/>should<sp/>be<sp/>64-byte</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>aligned:<sp/>some<sp/>BLAS<sp/>round<sp/>differently<sp/>on<sp/>differently<sp/>aligned<sp/>buffers.</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">pipnn<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="28"><highlight class="comment">///<sp/>Points<sp/>per<sp/>stripe<sp/>item<sp/>of<sp/>the<sp/>partition<sp/>kernel.<sp/>Changing<sp/>it<sp/>changes<sp/>graphs.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>kStripe<sp/>=<sp/>1024;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>Ranking<sp/>:<sp/>uint8_t<sp/>{<sp/>L2<sp/>=<sp/>0,<sp/>IP<sp/>=<sp/>1,<sp/>Angle<sp/>=<sp/>2<sp/>};</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="33"><highlight class="comment">///<sp/>out<sp/>(S<sp/>x<sp/>fanout):<sp/>each<sp/>point&apos;s<sp/>nearest<sp/>leaders<sp/>in<sp/>(rank,<sp/>index)<sp/>order,<sp/>with</highlight></codeline>
+<codeline lineno="34"><highlight class="comment">///<sp/>rank<sp/>L2<sp/>||l||^2<sp/>-<sp/>2<sp/>p.l,<sp/>IP<sp/>-p.l,<sp/>Angle<sp/>-p.l<sp/>/<sp/>||l||<sp/>(+inf<sp/>if<sp/>||l||<sp/>=<sp/>0).</highlight></codeline>
+<codeline lineno="35"><highlight class="comment">///<sp/>NaN<sp/>ranks<sp/>+inf.<sp/>scratch:<sp/>S<sp/>*<sp/>L<sp/>floats;<sp/>leader_norms<sp/>may<sp/>be<sp/>null<sp/>for<sp/>IP.</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>stripe_assign(</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>points,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>S,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>leaders,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>leader_norms,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>L,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Ranking<sp/>ranking,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>fanout,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>scratch,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint16_t*<sp/>out);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="48"><highlight class="comment">///<sp/>k<sp/>nearest<sp/>neighbours<sp/>(s<sp/>x<sp/>k)<sp/>of<sp/>each<sp/>leaf<sp/>point<sp/>in<sp/>(dist,<sp/>index)<sp/>order;</highlight></codeline>
+<codeline lineno="49"><highlight class="comment">///<sp/>unfilled<sp/>slots<sp/>are<sp/>-1<sp/>/<sp/>+inf.<sp/>gram:<sp/>s<sp/>*<sp/>s<sp/>floats;<sp/>norms<sp/>null<sp/>for<sp/>IP<sp/>only.</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>leaf_knn(</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>X,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>norms,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>s,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>gram,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>nn_idx,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>nn_dist);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="61"><highlight class="comment">///<sp/>n<sp/>x<sp/>n<sp/>distances<sp/>(L2<sp/>clamped<sp/>at<sp/>0,<sp/>IP<sp/>-dot);<sp/>out<sp/>is<sp/>also<sp/>the<sp/>Gram<sp/>scratch.</highlight></codeline>
+<codeline lineno="62"><highlight class="comment">///<sp/>The<sp/>L2<sp/>diagonal<sp/>is<sp/>small<sp/>and<sp/>non-negative,<sp/>but<sp/>not<sp/>necessarily<sp/>0.</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>pairwise_distances(</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>X,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>norms,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>out);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>pipnn</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/pipnn/kernels.h"/>
+  </compounddef>
+</doxygen>
