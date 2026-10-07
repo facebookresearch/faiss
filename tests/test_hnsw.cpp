@@ -904,3 +904,124 @@ TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     EXPECT_EQ(I1, Imt);
     EXPECT_EQ(D1, Dmt);
 }
+
+namespace {
+
+constexpr int kSinkDim = 8;
+constexpr size_t kSinkNodes = 4096;
+
+std::vector<float> sink_test_vectors(size_t n, uint32_t seed) {
+    std::mt19937 rng(seed);
+    std::normal_distribution<float> normal;
+    std::vector<float> x(n * kSinkDim);
+    for (auto& v : x) {
+        v = normal(rng);
+    }
+    return x;
+}
+
+// Vectors near the nodes, cycling through all of them.
+std::vector<float> near_nodes(
+        const std::vector<float>& nodes,
+        size_t n,
+        uint32_t seed) {
+    const std::vector<float> noise = sink_test_vectors(n, seed);
+    std::vector<float> x(n * kSinkDim);
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < kSinkDim; j++) {
+            x[i * kSinkDim + j] = nodes[(i % kSinkNodes) * kSinkDim + j] +
+                    0.01f * noise[i * kSinkDim + j];
+        }
+    }
+    return x;
+}
+
+// Removes all links of the entry point, so that every search stops there.
+void plant_sink_at_entry_point(faiss::HNSW& hnsw) {
+    for (int level = 0; level <= hnsw.max_level; level++) {
+        size_t begin, end;
+        hnsw.neighbor_range(hnsw.entry_point, level, &begin, &end);
+        for (size_t k = begin; k < end; k++) {
+            hnsw.neighbors[k] = -1;
+        }
+    }
+}
+
+std::vector<faiss::HNSW::storage_idx_t> links(const faiss::HNSW& hnsw) {
+    return {hnsw.neighbors.begin(), hnsw.neighbors.end()};
+}
+
+// Fraction of the queries for which the index returns the exact nearest node.
+double recall_at_1(
+        const faiss::IndexHNSW& index,
+        const std::vector<float>& xq) {
+    const size_t nq = xq.size() / kSinkDim;
+    std::vector<float> distances(nq);
+    std::vector<faiss::idx_t> labels(nq), exact(nq);
+    index.search(nq, xq.data(), 1, distances.data(), labels.data());
+    index.storage->search(nq, xq.data(), 1, distances.data(), exact.data());
+    size_t correct = 0;
+    for (size_t i = 0; i < nq; i++) {
+        correct += labels[i] == exact[i];
+    }
+    return double(correct) / nq;
+}
+
+void expect_planted_sink_repaired(faiss::MetricType metric) {
+    const std::vector<float> nodes = sink_test_vectors(kSinkNodes, 1);
+    faiss::IndexHNSWFlat index(kSinkDim, 32, metric);
+    index.add(kSinkNodes, nodes.data());
+    plant_sink_at_entry_point(index.hnsw);
+    const std::vector<float> samples = near_nodes(nodes, 40000, 2);
+    // Other noise, so that the check uses vectors that the repair did not see.
+    const std::vector<float> queries = near_nodes(nodes, 8192, 3);
+    ASSERT_LT(recall_at_1(index, queries), 0.01);
+
+    const faiss::HNSWSinkRepairStats stats =
+            index.repair_sinks(40000, samples.data());
+
+    EXPECT_EQ(1, stats.n_sinks_found);
+    EXPECT_EQ(0, stats.n_sinks_remaining);
+    EXPECT_GT(recall_at_1(index, queries), 0.95);
+}
+
+} // namespace
+
+TEST(HNSWSinkRepair, RepairsPlantedSinkL2) {
+    expect_planted_sink_repaired(faiss::METRIC_L2);
+}
+
+TEST(HNSWSinkRepair, RepairsPlantedSinkInnerProduct) {
+    expect_planted_sink_repaired(faiss::METRIC_INNER_PRODUCT);
+}
+
+TEST(HNSWSinkRepair, DoesNotChangeIntactGraph) {
+    const std::vector<float> nodes = sink_test_vectors(kSinkNodes, 1);
+    faiss::IndexHNSWFlat index(kSinkDim, 32);
+    index.add(kSinkNodes, nodes.data());
+    const auto before = links(index.hnsw);
+    const std::vector<float> samples = near_nodes(nodes, 40000, 2);
+
+    const faiss::HNSWSinkRepairStats stats =
+            index.repair_sinks(40000, samples.data());
+
+    EXPECT_EQ(0, stats.n_sinks_found);
+    EXPECT_EQ(before, links(index.hnsw));
+}
+
+TEST(HNSWSinkRepair, SameLinksForAnyThreadCount) {
+    const std::vector<float> nodes = sink_test_vectors(kSinkNodes, 1);
+    const std::vector<float> samples = near_nodes(nodes, 40000, 2);
+    auto repaired_links = [&](int threads) {
+        const int previous = omp_get_max_threads();
+        omp_set_num_threads(threads);
+        faiss::IndexHNSWFlat index(kSinkDim, 32);
+        index.add(kSinkNodes, nodes.data());
+        plant_sink_at_entry_point(index.hnsw);
+        index.repair_sinks(40000, samples.data());
+        omp_set_num_threads(previous);
+        return links(index.hnsw);
+    };
+
+    EXPECT_EQ(repaired_links(1), repaired_links(8));
+}
