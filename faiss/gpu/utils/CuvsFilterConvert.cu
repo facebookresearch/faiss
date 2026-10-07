@@ -86,7 +86,7 @@ void convert_to_bitset_range(
 
     int64_t n_elements_to_set =
             (imax - 1) / original_nbits - imin / original_nbits + 1;
-    auto stream = raft::resource::get_cuda_stream(res);
+    auto stream = raft::resource::get_cuda_stream(res).get();
 
     const int threads_per_block = 256;
     const int blocks =
@@ -182,7 +182,7 @@ void convert_to_bitset_bitmap(
         return;
     }
 
-    auto stream = raft::resource::get_cuda_stream(res);
+    auto stream = raft::resource::get_cuda_stream(res).get();
     auto d_bitmap = raft::make_device_vector<uint8_t, int64_t>(res, n_elements);
     auto d_bitmap_ptr = d_bitmap.data_handle();
     raft::copy(
