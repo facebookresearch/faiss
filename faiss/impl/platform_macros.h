@@ -147,6 +147,18 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_DEPRECATED(msg)
 #endif // GCC or Clang
 
+// Never inlined, so floating-point results do not depend on the compile
+// flags of the call site (e.g. under LTO).
+#if defined(_MSC_VER)
+#define FAISS_NOINLINE __declspec(noinline)
+#elif defined(__clang__)
+#define FAISS_NOINLINE __attribute__((noinline))
+#elif defined(__GNUC__)
+#define FAISS_NOINLINE __attribute__((noinline, noclone))
+#else
+#define FAISS_NOINLINE
+#endif
+
 namespace faiss {
 namespace detail {
 
