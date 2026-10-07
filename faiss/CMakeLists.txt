@@ -17,6 +17,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/approx_topk/avx2.cpp
   impl/binary_hamming/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/simd_impl/fp16_kernels_avx2.cpp
   utils/hamming_distance/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
@@ -57,6 +58,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/binary_hamming/neon.cpp
   impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/simd_impl/fp16_kernels_neon.cpp
   utils/hamming_distance/hamming_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
@@ -164,6 +166,7 @@ set(FAISS_SRC
   impl/hnsw/MinimaxHeap.cpp
   impl/result_handler/ResultHandler.cpp
   impl/NSG.cpp
+  impl/pipnn/HashPrune.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
   impl/pq_code_distance/pq_code_distance-generic.cpp
@@ -311,6 +314,7 @@ set(FAISS_HEADERS
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
+  impl/pipnn/HashPrune.h
   impl/Panorama.h
   impl/PanoramaStats.h
   impl/PdxLayout.h
@@ -331,6 +335,10 @@ set(FAISS_HEADERS
   impl/scalar_quantizer/quantizers.h
   impl/scalar_quantizer/scanners.h
   impl/scalar_quantizer/similarities.h
+  impl/pq_code_distance/pq_rvv_kernel.h
+  impl/scalar_quantizer/sq8_coefficients.h
+  impl/scalar_quantizer/sq8_rvv_kernel.h
+  utils/simd_impl/distances_rvv_kernel.h
   impl/scalar_quantizer/sq-dispatch.h
   impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
@@ -418,6 +426,7 @@ set(FAISS_HEADERS
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h
   utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
+  utils/simd_impl/fp16_kernels.h
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
@@ -564,24 +573,24 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       # Per-file SIMD flags (GCC/Clang)
       set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
         TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt;-mbmi2"
       )
       set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt"
+          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt;-mbmi2"
       )
       # VPOPCNT sources require VPOPCNTDQ and BITALG on top of baseline AVX-512.
       set_source_files_properties(${FAISS_SIMD_AVX512_VPOPCNT_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mbmi2"
       )
       # The remaining SPR sources require the full SPR feature set.
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16;-mbmi2"
       )
     else()
       # Per-file SIMD flags (MSVC)
@@ -633,6 +642,11 @@ endif()
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
   target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
+  # GCC requires +fp16 for the vector conversion intrinsics in this source.
+  set_source_files_properties(utils/simd_impl/fp16_kernels_neon.cpp
+    TARGET_DIRECTORY faiss
+    PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+fp16"
+  )
 endif()
 
 # RVV is the baseline SIMD on rv64 builds; the RVV translation units require

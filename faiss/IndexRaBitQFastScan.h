@@ -218,6 +218,10 @@ struct RaBitQHeapHandler
 
         for (size_t i = 0; i < max_vectors; i++) {
             const size_t db_idx = base_db_idx + i;
+            if (this->sel != nullptr &&
+                !this->sel->is_member(static_cast<int64_t>(db_idx))) {
+                continue;
+            }
             const float normalized_distance = d32tab[i] * one_a + bias;
             const uint8_t* base_ptr = aux_base + i * storage_size;
 

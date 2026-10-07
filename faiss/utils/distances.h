@@ -455,6 +455,36 @@ void knn_L2sqr(
         const float* y_norm2 = nullptr,
         const IDSelector* sel = nullptr);
 
+/** knn_inner_product for packed IEEE binary16 queries (x: nx * d uint16_t).
+ *
+ * The BLAS kernels widen each query tile once and reuse it for all database
+ * tiles, so there is no fp32 copy of the queries. Results are the same as
+ * knn_inner_product on the widened queries.
+ */
+void knn_inner_product_fp16(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        const IDSelector* sel = nullptr);
+
+/// knn_L2sqr for packed IEEE binary16 queries, see knn_inner_product_fp16
+void knn_L2sqr_fp16(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+
 /** Find the max inner product neighbors for nx queries in a set of ny vectors
  * indexed by ids. May be useful for re-ranking a pre-selected vector list
  *

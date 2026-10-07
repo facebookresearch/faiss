@@ -35,6 +35,7 @@
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -474,6 +475,9 @@ void hnsw_search(
                         rq->stats.reset();
                     }
 
+                    // HNSW::search owns the per-query generation advance. The
+                    // reusable-table acquisition above only clears stale TLS
+                    // state before this thread starts processing queries.
                     HNSWStats stats =
                             hnsw.search(*dis, index, *res, *vt, params);
                     n1 += stats.n1;
@@ -485,7 +489,6 @@ void hnsw_search(
                         n_rabitq_refine += rq->stats.n_refine;
                     }
                     res->end();
-                    vt->advance();
                 } catch (...) {
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
@@ -495,8 +498,10 @@ void hnsw_search(
         InterruptCallback::check();
     }
 
-    hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
-    rabitq_stats.add_atomic({n_rabitq_1bit, n_rabitq_refine});
+    if (get_search_stats_enabled()) {
+        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        rabitq_stats.add_atomic({n_rabitq_1bit, n_rabitq_refine});
+    }
 }
 
 } // anonymous namespace
@@ -707,8 +712,10 @@ void IndexHNSW::search_level_0(
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
             }
-            hnsw_stats.combine_atomic(search_stats);
-            rabitq_stats.add_atomic(rq_search_stats);
+            if (get_search_stats_enabled()) {
+                hnsw_stats.combine_atomic(search_stats);
+                rabitq_stats.add_atomic(rq_search_stats);
+            }
         }
         omp_rethrow_if_exception(ex);
     };
@@ -1235,7 +1242,9 @@ void IndexHNSW2Level::search(
         }
         omp_rethrow_if_exception(ex);
 
-        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        if (get_search_stats_enabled()) {
+            hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        }
     }
 }
 
@@ -1437,7 +1446,9 @@ void IndexHNSWCagra::range_search(
         result->do_allocation();
         pres.copy_result();
 
-        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        if (get_search_stats_enabled()) {
+            hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        }
     };
 
     if (is_similarity_metric(metric_type)) {
