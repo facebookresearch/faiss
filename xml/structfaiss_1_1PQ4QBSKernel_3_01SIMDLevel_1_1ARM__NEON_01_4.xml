@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1PQ4QBSKernel_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::PQ4QBSKernel&lt; SIMDLevel::ARM_NEON &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1PQ4QBSKernel_3_01SIMDLevel_1_1ARM__NEON_01_4_1adc039b501edfbcf70f9effe1e2f82b9a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>NQ</declname>
+            <defname>NQ</defname>
+          </param>
+          <param>
+            <type>class <ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref></type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>static FAISS_ALWAYS_INLINE void faiss::PQ4QBSKernel&lt; SIMDLevel::ARM_NEON &gt;::run</definition>
+        <argsstring>(int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
+        <name>run</name>
+        <qualifiedname>faiss::PQ4QBSKernel&lt; SIMDLevel::ARM_NEON &gt;::run</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/kernels_neon.h" line="145" column="37" bodyfile="faiss/impl/fast_scan/kernels_neon.h" bodystart="145" bodyend="152"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/fast_scan/kernels_neon.h" line="143" column="1" bodyfile="faiss/impl/fast_scan/kernels_neon.h" bodystart="143" bodyend="153"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1PQ4QBSKernel_3_01SIMDLevel_1_1ARM__NEON_01_4_1adc039b501edfbcf70f9effe1e2f82b9a" prot="public" virt="non-virtual"><scope>faiss::PQ4QBSKernel&lt; SIMDLevel::ARM_NEON &gt;</scope><name>run</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

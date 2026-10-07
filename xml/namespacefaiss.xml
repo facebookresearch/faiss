@@ -284,6 +284,8 @@
     <innerclass refid="structfaiss_1_1PCAMatrix" prot="public">faiss::PCAMatrix</innerclass>
     <innerclass refid="structfaiss_1_1PermutationObjective" prot="public">faiss::PermutationObjective</innerclass>
     <innerclass refid="structfaiss_1_1PolysemousTraining" prot="public">faiss::PolysemousTraining</innerclass>
+    <innerclass refid="structfaiss_1_1PQ4QBSKernel" prot="public">faiss::PQ4QBSKernel</innerclass>
+    <innerclass refid="structfaiss_1_1PQ4QBSKernel_3_01SIMDLevel_1_1ARM__NEON_01_4" prot="public">faiss::PQ4QBSKernel&lt; SIMDLevel::ARM_NEON &gt;</innerclass>
     <innerclass refid="structfaiss_1_1PQDecoder16" prot="public">faiss::PQDecoder16</innerclass>
     <innerclass refid="structfaiss_1_1PQDecoder8" prot="public">faiss::PQDecoder8</innerclass>
     <innerclass refid="structfaiss_1_1PQDecoderGeneric" prot="public">faiss::PQDecoderGeneric</innerclass>
@@ -3732,7 +3734,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="56" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="56" bodyend="71"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="59" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="59" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3306f3a82cfb339696e1bf1f039c5993" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -3796,9 +3798,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="77" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="77" bodyend="112"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="80" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="80" bodyend="115"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a70eaa3b171d8279456d4c8f8381a05cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a922f10ad55fe654f04ee1e4c2ce4380b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>int</type>
@@ -3807,9 +3809,8 @@
           </param>
           <param>
             <type>SIMDLevel</type>
-            <declname>KernelSL</declname>
-            <defname>KernelSL</defname>
-            <defval>SINGLE_SIMD_LEVEL</defval>
+            <declname>SL</declname>
+            <defname>SL</defname>
           </param>
           <param>
             <type>class ResultHandler</type>
@@ -3819,10 +3820,10 @@
           </param>
         </templateparamlist>
         <type>void</type>
-        <definition>void faiss::accumulate_q_4step_256</definition>
+        <definition>void faiss::accumulate_q_4step_for_simd</definition>
         <argsstring>(size_t ntotal2, int nsq, const uint8_t *codes, const uint8_t *LUT0, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
-        <name>accumulate_q_4step_256</name>
-        <qualifiedname>faiss::accumulate_q_4step_256</qualifiedname>
+        <name>accumulate_q_4step_for_simd</name>
+        <qualifiedname>faiss::accumulate_q_4step_for_simd</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>ntotal2</declname>
@@ -3857,14 +3858,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="123" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="123" bodyend="158"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="122" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="122" bodyend="157"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a87851063b558b58d9a7e88d4cc7e4675" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a758c8c1c33d07b03f080bdcbb2cb2a1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>SIMDLevel</type>
-            <declname>KernelSL</declname>
-            <defname>KernelSL</defname>
+            <declname>SL</declname>
+            <defname>SL</defname>
             <defval>SINGLE_SIMD_LEVEL</defval>
           </param>
           <param>
@@ -3875,10 +3876,10 @@
           </param>
         </templateparamlist>
         <type>void</type>
-        <definition>void faiss::pq4_accumulate_loop_qbs_fixed_scaler_256</definition>
+        <definition>void faiss::pq4_accumulate_loop_qbs_fixed_scaler_simd</definition>
         <argsstring>(int qbs, size_t ntotal2, int nsq, const uint8_t *codes, const uint8_t *LUT0, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
-        <name>pq4_accumulate_loop_qbs_fixed_scaler_256</name>
-        <qualifiedname>faiss::pq4_accumulate_loop_qbs_fixed_scaler_256</qualifiedname>
+        <name>pq4_accumulate_loop_qbs_fixed_scaler_simd</name>
+        <qualifiedname>faiss::pq4_accumulate_loop_qbs_fixed_scaler_simd</qualifiedname>
         <param>
           <type>int</type>
           <declname>qbs</declname>
@@ -3917,7 +3918,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="164" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="164" bodyend="235"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="160" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="160" bodyend="230"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9c768b846686f73773cd8c7370310ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -3970,68 +3971,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="34" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="34" bodyend="52"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1afb19caf756fc3b5e779c11e08b68f16c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>int</type>
-            <declname>QBS</declname>
-            <defname>QBS</defname>
-          </param>
-          <param>
-            <type>SIMDLevel</type>
-            <declname>KernelSL</declname>
-            <defname>KernelSL</defname>
-            <defval>SINGLE_SIMD_LEVEL</defval>
-          </param>
-          <param>
-            <type>class ResultHandler</type>
-          </param>
-          <param>
-            <type>class Scaler</type>
-          </param>
-        </templateparamlist>
-        <type>void</type>
-        <definition>void faiss::accumulate_q_4step</definition>
-        <argsstring>(size_t ntotal2, int nsq, const uint8_t *codes, const uint8_t *LUT0, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
-        <name>accumulate_q_4step</name>
-        <qualifiedname>faiss::accumulate_q_4step</qualifiedname>
-        <param>
-          <type>size_t</type>
-          <declname>ntotal2</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>nsq</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>codes</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>LUT0</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>res</declname>
-        </param>
-        <param>
-          <type>const Scaler &amp;</type>
-          <declname>scaler</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>block_stride</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="60" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="60" bodyend="98"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="45" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="45" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abe878e9026de759b6acffadd1d6fb319" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4092,7 +4032,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="105" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="105" bodyend="116"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="70" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="70" bodyend="81"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af3b48b50d13e993560f281330b2cf34e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4152,68 +4092,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="123" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="123" bodyend="150"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a55127d29ddb5e03c22b1ddba68658952" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>SIMDLevel</type>
-            <declname>KernelSL</declname>
-            <defname>KernelSL</defname>
-            <defval>SINGLE_SIMD_LEVEL</defval>
-          </param>
-          <param>
-            <type>class ResultHandler</type>
-          </param>
-          <param>
-            <type>class Scaler</type>
-          </param>
-        </templateparamlist>
-        <type>void</type>
-        <definition>void faiss::pq4_accumulate_loop_qbs_fixed_scaler</definition>
-        <argsstring>(int qbs, size_t ntotal2, int nsq, const uint8_t *codes, const uint8_t *LUT0, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride=0)</argsstring>
-        <name>pq4_accumulate_loop_qbs_fixed_scaler</name>
-        <qualifiedname>faiss::pq4_accumulate_loop_qbs_fixed_scaler</qualifiedname>
-        <param>
-          <type>int</type>
-          <declname>qbs</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>ntotal2</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>nsq</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>codes</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>LUT0</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>res</declname>
-        </param>
-        <param>
-          <type>const Scaler &amp;</type>
-          <declname>scaler</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>block_stride</declname>
-          <defval>0</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="156" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="156" bodyend="228"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="88" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="88" bodyend="115"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acfe6e3147630ecd2e0638b34b5de1a96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4265,7 +4144,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="213" bodyend="253"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="223" bodyend="263"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a2d3e9cd9d40435718609da7c23eb4ba6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4301,7 +4180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="261" bodyend="278"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="271" bodyend="288"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acb1d57950137617e347418b97d661736" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4345,7 +4224,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="282" bodyend="301"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="292" bodyend="311"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -5500,6 +5379,53 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/fast_scan.h" line="330" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="330" declcolumn="17"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4f0b4e82c62177fec506c3d555348160" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>NQ</declname>
+            <defname>NQ</defname>
+          </param>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::pq4_kernel_qbs_neon</definition>
+        <argsstring>(int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
+        <name>pq4_kernel_qbs_neon</name>
+        <qualifiedname>faiss::pq4_kernel_qbs_neon</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/kernels_neon.h" line="31" column="26" bodyfile="faiss/impl/fast_scan/kernels_neon.h" bodystart="31" bodyend="140"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a88f8d84ab96f0a265d7f5430e609808e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -5556,7 +5482,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="29" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="29" bodyend="119"/>
+        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="37" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="37" bodyend="127"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a974e303dbe99e9d08b4380cdb421097c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -5609,7 +5535,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="130" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="130" bodyend="211"/>
+        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="138" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="138" bodyend="219"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

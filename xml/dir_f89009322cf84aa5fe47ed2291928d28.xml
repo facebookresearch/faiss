@@ -8,6 +8,7 @@
     <innerfile refid="dispatching_8h">dispatching.h</innerfile>
     <innerfile refid="fast__scan_8h">fast_scan.h</innerfile>
     <innerfile refid="FastScanDistancePostProcessing_8h">FastScanDistancePostProcessing.h</innerfile>
+    <innerfile refid="kernels__neon_8h">kernels_neon.h</innerfile>
     <innerfile refid="kernels__simd256_8h">kernels_simd256.h</innerfile>
     <innerfile refid="kernels__simd512_8h">kernels_simd512.h</innerfile>
     <innerfile refid="LookupTableScaler_8h">LookupTableScaler.h</innerfile>
