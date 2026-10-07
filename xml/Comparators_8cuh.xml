@@ -31,6 +31,42 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(T<sp/>a,<sp/>V,<sp/>T<sp/>b,<sp/>V)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&lt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(T<sp/>a,<sp/>V,<sp/>T<sp/>b,<sp/>V)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Orders<sp/>on<sp/>the<sp/>key,<sp/>then<sp/>on<sp/>the<sp/>value,<sp/>as<sp/>`CMin::cmp2`<sp/>does<sp/>in</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>`utils/ordered_key_value.h`.</highlight></codeline>
+<codeline><highlight class="normal">///</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>Do<sp/>not<sp/>select<sp/>over<sp/>padded<sp/>entries.<sp/>A<sp/>pad<sp/>ties<sp/>with<sp/>the<sp/>init<sp/>key,<sp/>so<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>value<sp/>decides<sp/>the<sp/>order<sp/>and<sp/>the<sp/>pad<sp/>can<sp/>reach<sp/>the<sp/>output.</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>TieBreakComparator<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&lt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(T<sp/>a,<sp/>V<sp/>av,<sp/>T<sp/>b,<sp/>V<sp/>bv)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>(a<sp/>&lt;<sp/>b)<sp/>||<sp/>((a<sp/>==<sp/>b)<sp/>&amp;&amp;<sp/>(av<sp/>&lt;<sp/>bv));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(T<sp/>a,<sp/>V<sp/>av,<sp/>T<sp/>b,<sp/>V<sp/>bv)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>(a<sp/>&gt;<sp/>b)<sp/>||<sp/>((a<sp/>==<sp/>b)<sp/>&amp;&amp;<sp/>(av<sp/>&gt;<sp/>bv));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
@@ -49,6 +85,39 @@
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&gt;<sp/>__half2float(b);</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(half<sp/>a,<sp/>V,<sp/>half<sp/>b,<sp/>V)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>lt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(half<sp/>a,<sp/>V,<sp/>half<sp/>b,<sp/>V)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>gt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>TieBreakComparator&lt;half&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Comparator&lt;half&gt;::lt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Comparator&lt;half&gt;::gt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(half<sp/>a,<sp/>V<sp/>av,<sp/>half<sp/>b,<sp/>V<sp/>bv)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Comparator&lt;half&gt;::lt(a,<sp/>b)<sp/>||</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(!Comparator&lt;half&gt;::gt(a,<sp/>b)<sp/>&amp;&amp;<sp/>av<sp/>&lt;<sp/>bv);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(half<sp/>a,<sp/>V<sp/>av,<sp/>half<sp/>b,<sp/>V<sp/>bv)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Comparator&lt;half&gt;::gt(a,<sp/>b)<sp/>||</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(!Comparator&lt;half&gt;::lt(a,<sp/>b)<sp/>&amp;&amp;<sp/>av<sp/>&gt;<sp/>bv);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>

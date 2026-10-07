@@ -50,6 +50,11 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>~IVFBase();</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>See<sp/>GpuIndexIVFConfig::deterministic_tie_break.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>setDeterministicTieBreak(bool<sp/>on)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>deterministicTieBreak_<sp/>=<sp/>on;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Reserve<sp/>GPU<sp/>memory<sp/>in<sp/>our<sp/>inverted<sp/>lists<sp/>for<sp/>this<sp/>number<sp/>of<sp/>vectors</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>reserveMemory(idx_t<sp/>numVecs);</highlight></codeline>
 <codeline></codeline>
@@ -261,6 +266,8 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>How<sp/>are<sp/>user<sp/>indices<sp/>stored<sp/>on<sp/>the<sp/>GPU?</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>IndicesOptions<sp/>indicesOptions_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>deterministicTieBreak_<sp/>=<sp/>false;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>What<sp/>memory<sp/>space<sp/>our<sp/>inverted<sp/>list<sp/>storage<sp/>is<sp/>in</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>MemorySpace<sp/>space_;</highlight></codeline>

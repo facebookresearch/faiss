@@ -167,6 +167,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>initV(initVVal),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numVals(0),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop(initKVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpVTop(initVVal),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedK(smemK),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedV(smemV),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kMinus1(k<sp/>-<sp/>1)<sp/>{</highlight></codeline>
@@ -199,7 +200,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>warpKTop)<sp/>:<sp/>Comp::lt(k,<sp/>warpKTop))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>warpKTop,<sp/>warpVTop)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>warpKTop,<sp/>warpVTop))<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Rotate<sp/>right</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>NumThreadQ<sp/>-<sp/>1;<sp/>i<sp/>&gt;<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
@@ -242,6 +244,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>have<sp/>to<sp/>beat<sp/>at<sp/>least<sp/>this<sp/>element</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop<sp/>=<sp/>warpK[kMinus1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpVTop<sp/>=<sp/>warpV[kMinus1];</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -325,6 +328,8 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>k-th<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)<sp/>element</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>warpKTop;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>value<sp/>paired<sp/>with<sp/>warpKTop</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>warpVTop;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Thread<sp/>queue<sp/>values</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>threadK[NumThreadQ];</highlight></codeline>
@@ -358,7 +363,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>threadK(initK),<sp/>threadV(initV),<sp/>sharedK(smemK),<sp/>sharedV(smemV)<sp/>{}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>threadK,<sp/>threadV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>threadK,<sp/>threadV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -407,7 +413,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>k<sp/>=<sp/>sharedK[i];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>v<sp/>=<sp/>sharedV[i];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>threadK,<sp/>threadV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>threadK,<sp/>threadV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -453,6 +460,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>initV(initVVal),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numVals(0),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop(initKVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpVTop(initVVal),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kLane((k<sp/>-<sp/>1)<sp/>%<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(ThreadsPerBlock),</highlight></codeline>
@@ -476,7 +484,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>warpKTop)<sp/>:<sp/>Comp::lt(k,<sp/>warpKTop))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>warpKTop,<sp/>warpVTop)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>warpKTop,<sp/>warpVTop))<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Rotate<sp/>right</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>NumThreadQ<sp/>-<sp/>1;<sp/>i<sp/>&gt;<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
@@ -518,6 +527,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>have<sp/>to<sp/>beat<sp/>at<sp/>least<sp/>this<sp/>element</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop<sp/>=<sp/>shfl(warpK[kNumWarpQRegisters<sp/>-<sp/>1],<sp/>kLane);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpVTop<sp/>=<sp/>shfl(warpV[kNumWarpQRegisters<sp/>-<sp/>1],<sp/>kLane);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>function<sp/>handles<sp/>sorting<sp/>and<sp/>merging<sp/>together<sp/>the</highlight></codeline>
@@ -579,6 +589,8 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>k-th<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)<sp/>element</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>warpKTop;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>value<sp/>paired<sp/>with<sp/>warpKTop</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>warpVTop;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Thread<sp/>queue<sp/>values</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>threadK[NumThreadQ];</highlight></codeline>
@@ -609,7 +621,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>threadK(initK),<sp/>threadV(initV)<sp/>{}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>threadK,<sp/>threadV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>threadK,<sp/>threadV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>

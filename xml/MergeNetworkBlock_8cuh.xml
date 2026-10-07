@@ -62,26 +62,14 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(AllThreads<sp/>||<sp/>(threadIdx.x<sp/>&lt;<sp/>N<sp/>*<sp/>L))<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
@@ -93,26 +81,15 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(AllThreads<sp/>||<sp/>(threadIdx.x<sp/>&lt;<sp/>N<sp/>*<sp/>L))<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
@@ -149,26 +126,14 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
@@ -185,26 +150,15 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>

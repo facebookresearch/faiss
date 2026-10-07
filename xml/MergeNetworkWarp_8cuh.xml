@@ -120,12 +120,14 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>See<sp/>the<sp/>comment<sp/>above<sp/>how<sp/>performing<sp/>both<sp/>of<sp/>these</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>comparisons<sp/>in<sp/>the<sp/>warp<sp/>seems<sp/>to<sp/>win<sp/>out<sp/>over<sp/>the</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>alternatives<sp/>in<sp/>practice</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::gt(k,<sp/>otherK)<sp/>:<sp/>Comp::lt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>otherK,<sp/>otherV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>otherK,<sp/>otherV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::lt(k,<sp/>otherK)<sp/>:<sp/>Comp::gt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::lt(k,<sp/>v,<sp/>otherK,<sp/>otherV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::gt(k,<sp/>v,<sp/>otherK,<sp/>otherV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -140,12 +142,14 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>small<sp/>=<sp/>!(laneId<sp/>&amp;<sp/>stride);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::gt(k,<sp/>otherK)<sp/>:<sp/>Comp::lt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::gt(k,<sp/>v,<sp/>otherK,<sp/>otherV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(k,<sp/>v,<sp/>otherK,<sp/>otherV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::lt(k,<sp/>otherK)<sp/>:<sp/>Comp::gt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::lt(k,<sp/>v,<sp/>otherK,<sp/>otherV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::gt(k,<sp/>v,<sp/>otherK,<sp/>otherV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -195,7 +199,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k[i<sp/>+<sp/>N<sp/>/<sp/>2];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v[i<sp/>+<sp/>N<sp/>/<sp/>2];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -263,7 +267,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -350,7 +354,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>kb,<sp/>vb)<sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>kb,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -461,14 +465,16 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>ka<sp/>is<sp/>always<sp/>first<sp/>in<sp/>the<sp/>list,<sp/>so<sp/>we<sp/>needn&apos;t<sp/>use<sp/>our<sp/>lane</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>in<sp/>this<sp/>comparison</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swapa<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>otherKb)<sp/>:<sp/>Comp::lt(ka,<sp/>otherKb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swapa<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>va,<sp/>otherKb,<sp/>otherVb)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::lt(ka,<sp/>va,<sp/>otherKb,<sp/>otherVb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(swapa,<sp/>ka,<sp/>otherKb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(swapa,<sp/>va,<sp/>otherVb);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>kb<sp/>is<sp/>always<sp/>second<sp/>in<sp/>the<sp/>list,<sp/>so<sp/>we<sp/>needn&apos;t<sp/>use<sp/>our<sp/>lane</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>in<sp/>this<sp/>comparison</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(FullMerge)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swapb<sp/>=<sp/>Dir<sp/>?<sp/>Comp::lt(kb,<sp/>otherKa)<sp/>:<sp/>Comp::gt(kb,<sp/>otherKa);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swapb<sp/>=<sp/>Dir<sp/>?<sp/>Comp::lt(kb,<sp/>vb,<sp/>otherKa,<sp/>otherVa)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Comp::gt(kb,<sp/>vb,<sp/>otherKa,<sp/>otherVa);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(swapb,<sp/>kb,<sp/>otherKa);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assign(swapb,<sp/>vb,<sp/>otherVa);</highlight></codeline>
 <codeline></codeline>
