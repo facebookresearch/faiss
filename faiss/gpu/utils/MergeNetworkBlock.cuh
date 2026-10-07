@@ -53,26 +53,14 @@ inline __device__ void blockMergeSmall(K* listK, V* listV) {
     if (AllThreads || (threadIdx.x < N * L)) {
         K ka = listK[pos];
         K kb = listK[pos + stride];
-
-        bool swap = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-        listK[pos] = swap ? kb : ka;
-        listK[pos + stride] = swap ? ka : kb;
-
         V va = listV[pos];
         V vb = listV[pos + stride];
+
+        bool swap = Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
+        listK[pos] = swap ? kb : ka;
+        listK[pos + stride] = swap ? ka : kb;
         listV[pos] = swap ? vb : va;
         listV[pos + stride] = swap ? va : vb;
-
-        // FIXME: is this a CUDA 9 compiler bug?
-        // K& ka = listK[pos];
-        // K& kb = listK[pos + stride];
-
-        // bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-        // swap(s, ka, kb);
-
-        // V& va = listV[pos];
-        // V& vb = listV[pos + stride];
-        // swap(s, va, vb);
     }
 
     __syncthreads();
@@ -84,26 +72,15 @@ inline __device__ void blockMergeSmall(K* listK, V* listV) {
         if (AllThreads || (threadIdx.x < N * L)) {
             K ka = listK[pos];
             K kb = listK[pos + stride];
-
-            bool swap = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-            listK[pos] = swap ? kb : ka;
-            listK[pos + stride] = swap ? ka : kb;
-
             V va = listV[pos];
             V vb = listV[pos + stride];
+
+            bool swap =
+                    Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
+            listK[pos] = swap ? kb : ka;
+            listK[pos + stride] = swap ? ka : kb;
             listV[pos] = swap ? vb : va;
             listV[pos + stride] = swap ? va : vb;
-
-            // FIXME: is this a CUDA 9 compiler bug?
-            // K& ka = listK[pos];
-            // K& kb = listK[pos + stride];
-
-            // bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-            // swap(s, ka, kb);
-
-            // V& va = listV[pos];
-            // V& vb = listV[pos + stride];
-            // swap(s, va, vb);
         }
 
         __syncthreads();
@@ -140,26 +117,14 @@ inline __device__ void blockMergeLarge(K* listK, V* listV) {
 
         K ka = listK[pos];
         K kb = listK[pos + stride];
-
-        bool swap = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-        listK[pos] = swap ? kb : ka;
-        listK[pos + stride] = swap ? ka : kb;
-
         V va = listV[pos];
         V vb = listV[pos + stride];
+
+        bool swap = Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
+        listK[pos] = swap ? kb : ka;
+        listK[pos + stride] = swap ? ka : kb;
         listV[pos] = swap ? vb : va;
         listV[pos + stride] = swap ? va : vb;
-
-        // FIXME: is this a CUDA 9 compiler bug?
-        // K& ka = listK[pos];
-        // K& kb = listK[pos + stride];
-
-        // bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-        // swap(s, ka, kb);
-
-        // V& va = listV[pos];
-        // V& vb = listV[pos + stride];
-        // swap(s, va, vb);
     }
 
     __syncthreads();
@@ -176,26 +141,15 @@ inline __device__ void blockMergeLarge(K* listK, V* listV) {
 
             K ka = listK[pos];
             K kb = listK[pos + stride];
-
-            bool swap = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-            listK[pos] = swap ? kb : ka;
-            listK[pos + stride] = swap ? ka : kb;
-
             V va = listV[pos];
             V vb = listV[pos + stride];
+
+            bool swap =
+                    Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
+            listK[pos] = swap ? kb : ka;
+            listK[pos + stride] = swap ? ka : kb;
             listV[pos] = swap ? vb : va;
             listV[pos + stride] = swap ? va : vb;
-
-            // FIXME: is this a CUDA 9 compiler bug?
-            // K& ka = listK[pos];
-            // K& kb = listK[pos + stride];
-
-            // bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
-            // swap(s, ka, kb);
-
-            // V& va = listV[pos];
-            // V& vb = listV[pos + stride];
-            // swap(s, va, vb);
         }
 
         __syncthreads();

@@ -20,10 +20,12 @@ __global__ void ivfInterleavedScan2(
         Tensor<float, 3, true> distanceIn,
         Tensor<idx_t, 3, true> indicesIn,
         Tensor<idx_t, 2, true> listIds,
+        idx_t* listLengths,
         int k,
         void** listIndices,
         IndicesOptions opt,
         bool dir,
+        bool tieBreak,
         Tensor<float, 2, true> distanceOut,
         Tensor<idx_t, 2, true> indicesOut) {
     if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
@@ -46,7 +48,7 @@ __global__ void ivfInterleavedScan2(
                 float,
                 uint32_t,
                 false,
-                Comparator<float>,
+                IVFScanComparator<NumWarpQ>,
                 NumWarpQ,
                 NumThreadQ,
                 ThreadsPerBlock>
@@ -74,9 +76,10 @@ __global__ void ivfInterleavedScan2(
             // together into a uint32_t
             uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-            // The IDs reported from the list may be -1, if a particular IVF
-            // list doesn't even have k entries in it
-            if (listIds[queryId][curProbe] != -1) {
+            // Reject pass-1 padding: a short list leaves padded slots, and
+            // the tie-break can select them.
+            idx_t listId = listIds[queryId][curProbe];
+            if (listId != -1 && (idx_t)curK < listLengths[listId]) {
                 // Adjust the value we are selecting based on the sorting order
                 heap.addThreadQ(distanceBase[i] * adj, index);
             }
@@ -91,7 +94,7 @@ __global__ void ivfInterleavedScan2(
             uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
             idx_t listId = listIds[queryId][curProbe];
-            if (listId != -1) {
+            if (listId != -1 && (idx_t)curK < listLengths[listId]) {
                 heap.addThreadQ(distanceBase[i] * adj, index);
             }
         }
@@ -114,14 +117,19 @@ __global__ void ivfInterleavedScan2(
                 uint32_t curK = packedIndex & 0xffff;
 
                 idx_t listId = listIds[queryId][curProbe];
-                idx_t listOffset = indicesIn[queryId][curProbe][curK];
+                idx_t stored = indicesIn[queryId][curProbe][curK];
 
-                if (opt == INDICES_32_BIT) {
-                    index = (idx_t)((int*)listIndices[listId])[listOffset];
-                } else if (opt == INDICES_64_BIT) {
-                    index = ((idx_t*)listIndices[listId])[listOffset];
+                // With the tie-break, pass 1 already resolved the user id.
+                if (opt == INDICES_32_BIT || opt == INDICES_64_BIT) {
+                    if (tieBreak) {
+                        index = stored;
+                    } else if (opt == INDICES_64_BIT) {
+                        index = ((idx_t*)listIndices[listId])[stored];
+                    } else {
+                        index = (idx_t)((int*)listIndices[listId])[stored];
+                    }
                 } else {
-                    index = (listId << 32 | (idx_t)listOffset);
+                    index = (listId << 32 | (idx_t)stored);
                 }
             }
 
@@ -134,10 +142,12 @@ void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
+        DeviceVector<idx_t>& listLengths,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         bool dir,
+        bool tieBreak,
         Tensor<float, 2, true>& distanceOut,
         Tensor<idx_t, 2, true>& indicesOut,
         cudaStream_t stream) {
@@ -147,10 +157,12 @@ void runIVFInterleavedScan2(
                     distanceIn,                              \
                     indicesIn,                               \
                     listIds,                                 \
+                    listLengths.data(),                      \
                     k,                                       \
                     listIndices.data(),                      \
                     indicesOptions,                          \
                     dir,                                     \
+                    tieBreak,                                \
                     distanceOut,                             \
                     indicesOut)
 
@@ -186,6 +198,7 @@ void runIVFInterleavedScan(
         int k,
         faiss::MetricType metric,
         bool useResidual,
+        bool tieBreak,
         Tensor<float, 3, true>& residualBase,
         GpuScalarQuantizer* scalarQ,
         // output
@@ -195,6 +208,9 @@ void runIVFInterleavedScan(
         GpuResources* res) {
     // caught for exceptions at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
+    // Both passes must agree: with the tie break, pass 1 stores ids, not
+    // list offsets.
+    tieBreak = tieBreak && k <= kMaxTieBreakK;
 
     const auto ivf_interleaved_call = [&](const auto func) {
         func(queries,
@@ -206,6 +222,7 @@ void runIVFInterleavedScan(
              k,
              metric,
              useResidual,
+             tieBreak,
              residualBase,
              scalarQ,
              outDistances,
@@ -216,7 +233,7 @@ void runIVFInterleavedScan(
     if (k == 1) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 1, 1>);
     } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<128, 32, 2>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<64, 32, 2>);
     } else if (k <= 64) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 64, 3>);
     } else if (k <= 128) {
