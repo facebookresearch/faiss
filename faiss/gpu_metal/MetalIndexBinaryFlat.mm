@@ -19,6 +19,14 @@ namespace faiss {
 namespace gpu_metal {
 namespace {
 
+// Metal requires endEncoding even when pipeline lookup throws.
+struct ComputeEncoderScope {
+    id<MTLComputeCommandEncoder> encoder;
+    ~ComputeEncoderScope() {
+        [encoder endEncoding];
+    }
+};
+
 size_t checkedBytes(idx_t count, size_t stride) {
     FAISS_THROW_IF_NOT(count >= 0);
     FAISS_THROW_IF_NOT(
@@ -151,17 +159,19 @@ void MetalIndexBinaryFlat::search(
         FAISS_THROW_IF_NOT(command);
         id<MTLComputeCommandEncoder> encoder = [command computeCommandEncoder];
         FAISS_THROW_IF_NOT(encoder);
-        kernels.encodeHammingDistanceTopK(
-                encoder,
-                queries,
-                vectorsBuf_,
-                outDist,
-                outIdx,
-                uint32_t(n),
-                uint32_t(ntotal),
-                uint32_t(code_size),
-                uint32_t(k));
-        [encoder endEncoding];
+        {
+            ComputeEncoderScope scope{encoder};
+            kernels.encodeHammingDistanceTopK(
+                    encoder,
+                    queries,
+                    vectorsBuf_,
+                    outDist,
+                    outIdx,
+                    uint32_t(n),
+                    uint32_t(ntotal),
+                    uint32_t(code_size),
+                    uint32_t(k));
+        }
         [command commit];
         [command waitUntilCompleted];
         FAISS_THROW_IF_NOT_MSG(
