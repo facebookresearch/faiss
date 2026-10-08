@@ -10,8 +10,11 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <memory>
+#include <typeinfo>
 #include <vector>
 
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 
@@ -291,6 +294,31 @@ void pairwise_distances(
             out[j * n + i] = v;
         }
         oi[i] = gram_to_distance(is_l2, ni, ni, oi[i]);
+    }
+}
+
+void gather_rows(
+        const Index& storage,
+        const int32_t* ids,
+        size_t k,
+        float* out) {
+    const size_t d = static_cast<size_t>(storage.d);
+    if (typeid(storage) == typeid(IndexScalarQuantizer)) {
+        // Not reconstruct: ScalarQuantizer::decode opens an OpenMP region, and
+        // a nested region inside the build's dynamic loops crashes libomp.
+        const auto& sq = static_cast<const IndexScalarQuantizer&>(storage);
+        std::unique_ptr<ScalarQuantizer::SQuantizer> quant(
+                sq.sq.select_quantizer());
+        for (size_t i = 0; i < k; i++) {
+            quant->decode_vector(
+                    sq.codes.data() +
+                            static_cast<size_t>(ids[i]) * sq.code_size,
+                    out + i * d);
+        }
+        return;
+    }
+    for (size_t i = 0; i < k; i++) {
+        storage.reconstruct(ids[i], out + i * d);
     }
 }
 
