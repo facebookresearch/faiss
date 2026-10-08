@@ -131,6 +131,17 @@ class GpuIndexFlat : public GpuIndex {
             idx_t* labels,
             const SearchParameters* params) const override;
 
+    /// Called from GpuIndex for search; Float16 queries are searched without
+    /// conversion against float16 storage
+    void searchImpl_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            int k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params) const override;
+
    protected:
     /// Our configuration options
     const GpuIndexFlatConfig flatConfig_;

@@ -635,7 +635,6 @@ void ScalarQuantizer::train(size_t n, const float* x) {
             trained.push_back(seed_f[0]);
             trained.push_back(seed_f[1]);
             trained.push_back(static_cast<float>(turboq_refine.qjl_type));
-            turboq_refine.init_projection(d);
             break;
         }
         default:
@@ -643,29 +642,11 @@ void ScalarQuantizer::train(size_t n, const float* x) {
     }
 }
 
-void ScalarQuantizer::TurboQuantRefine::init_projection(size_t d) {
-    if (use_fwht()) {
-        padded_d = 1;
-        while (padded_d < d) {
-            padded_d <<= 1;
-        }
-        fwht_signs.resize(padded_d);
-        RandomGenerator rng(seed);
-        for (size_t i = 0; i < padded_d; i++) {
-            fwht_signs[i] = (rng.rand_int(2) == 0) ? 1.0f : -1.0f;
-        }
-    } else {
-        rr_matrix.resize(d * d);
-        float_randn(rr_matrix.data(), d * d, seed);
-        matrix_qr(static_cast<int>(d), static_cast<int>(d), rr_matrix.data());
-    }
-}
-
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     // A SIMD level's factory returns nullptr when the dimension is
     // incompatible (e.g. AVX-512 needs d % 16 == 0); the dispatcher then falls
     // back to the next-lower level (AVX-512 -> AVX2 -> scalar).
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> SQuantizer* {
                 return scalar_quantizer::sq_select_quantizer<SL>(
                         qtype, d, trained);
@@ -702,7 +683,7 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> SQDistanceComputer* {
                 return scalar_quantizer::sq_select_distance_computer<SL>(
                         metric, qtype, d, trained);
@@ -715,7 +696,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    return with_simd_level_fallback<AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR>(
             [&]<SIMDLevel SL>() -> InvertedListScanner* {
                 return scalar_quantizer::sq_select_InvertedListScanner<SL>(
                         qtype,

@@ -59,6 +59,40 @@ void IndexFlat::search(
     }
 }
 
+void IndexFlat::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (numeric_type != NumericType::Float16 ||
+        (metric_type != METRIC_L2 && metric_type != METRIC_INNER_PRODUCT)) {
+        Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+        return;
+    }
+    FAISS_THROW_IF_NOT(k > 0);
+    const IDSelector* sel = params ? params->sel : nullptr;
+    const uint16_t* x16 = static_cast<const uint16_t*>(x);
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        knn_inner_product_fp16(
+                x16, get_xb(), d, n, ntotal, k, distances, labels, sel);
+    } else {
+        knn_L2sqr_fp16(
+                x16,
+                get_xb(),
+                d,
+                n,
+                ntotal,
+                k,
+                distances,
+                labels,
+                nullptr,
+                sel);
+    }
+}
+
 void IndexFlat::range_search(
         idx_t n,
         const float* x,
@@ -270,9 +304,11 @@ struct FlatIPDis : FlatCodesDistanceComputer {
 FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
     FlatCodesDistanceComputer* dc = nullptr;
     if (metric_type == METRIC_L2) {
-        with_simd_level([&]<SIMDLevel SL>() { dc = new FlatL2Dis<SL>(*this); });
+        with_simd_level_with_sve(
+                [&]<SIMDLevel SL>() { dc = new FlatL2Dis<SL>(*this); });
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        with_simd_level([&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
+        with_simd_level_with_sve(
+                [&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
     } else {
         dc = get_extra_distance_computer(d, metric_type, metric_arg, get_xb());
     }
@@ -404,7 +440,7 @@ FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
     if (metric_type == METRIC_L2) {
         if (!cached_l2norms.empty()) {
             FlatCodesDistanceComputer* dc = nullptr;
-            with_simd_level([&]<SIMDLevel SL>() {
+            with_simd_level_with_sve([&]<SIMDLevel SL>() {
                 dc = new FlatL2WithNormsDis<SL>(*this);
             });
             return dc;
@@ -442,6 +478,17 @@ void IndexFlat1D::add(idx_t n, const float* x) {
 void IndexFlat1D::reset() {
     IndexFlatL2::reset();
     perm.clear();
+}
+
+void IndexFlat1D::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search_ex(n, x, numeric_type, k, distances, labels, params);
 }
 
 void IndexFlat1D::search(
@@ -668,6 +715,17 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
 }
 
+void IndexFlatPanorama::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexFlatPanorama::search(
         idx_t n,
         const float* x,
@@ -709,7 +767,7 @@ void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
 }
 
 void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
-    FAISS_THROW_IF_NOT(n == 0 || (i >= 0 && i + n <= ntotal));
+    FAISS_THROW_IF_NOT(i >= 0 && i <= ntotal && n >= 0 && n <= ntotal - i);
     Index::reconstruct_n(i, n, recons);
 }
 
@@ -786,7 +844,7 @@ void IndexFlatPanorama::search_subset(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         with_metric_type(metric_type, [&]<MetricType M>() {
             constexpr bool is_sim = is_similarity_metric(M);
             using C = std::conditional_t<
