@@ -505,6 +505,8 @@ void gpu_sync_all_devices()
 
 %newobject faiss::gpu_metal::index_cpu_to_gpu;
 %newobject faiss::gpu_metal::index_gpu_to_cpu;
+%newobject faiss::gpu_metal::index_binary_cpu_to_gpu;
+%newobject faiss::gpu_metal::index_binary_gpu_to_cpu;
 
 %include <faiss/gpu_metal/MetalPythonBridge.h>
 
