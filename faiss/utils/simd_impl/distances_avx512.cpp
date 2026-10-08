@@ -15,6 +15,7 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
 #include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
+#include <faiss/utils/simd_impl/fp16_kernels.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -47,6 +48,46 @@ int sgemm_(
 #include <faiss/utils/transpose/transpose-avx512-inl.h>
 
 namespace faiss {
+
+namespace detail {
+
+template <>
+void fp16_madd<SIMDLevel::AVX512>(
+        size_t d,
+        const uint16_t* x,
+        float w,
+        float* c) {
+    const __m512 wv = _mm512_set1_ps(w);
+    size_t j = 0;
+    for (; j + 16 <= d; j += 16) {
+        const __m512 xv = _mm512_cvtph_ps(
+                _mm256_loadu_si256(reinterpret_cast<const __m256i*>(x + j)));
+        _mm512_storeu_ps(
+                c + j,
+                _mm512_add_ps(_mm512_loadu_ps(c + j), _mm512_mul_ps(xv, wv)));
+    }
+    for (; j < d; ++j) {
+        c[j] += decode_fp16(x[j]) * w;
+    }
+}
+
+template <>
+void fp16_to_fp32_kernel<SIMDLevel::AVX512>(
+        size_t n,
+        const uint16_t* x,
+        float* out) {
+    size_t j = 0;
+    for (; j + 16 <= n; j += 16) {
+        const __m256i h =
+                _mm256_loadu_si256(reinterpret_cast<const __m256i*>(x + j));
+        _mm512_storeu_ps(out + j, _mm512_cvtph_ps(h));
+    }
+    for (; j < n; ++j) {
+        out[j] = decode_fp16(x[j]);
+    }
+}
+
+} // namespace detail
 
 template <>
 void fvec_madd<SIMDLevel::AVX512>(
@@ -1133,9 +1174,11 @@ int fvec_madd_and_argmin<SIMDLevel::AVX512>(
     return fvec_madd_and_argmin_sse(n, a, bf, b, c);
 }
 
-template <>
-void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
-        const float* x,
+namespace {
+
+template <class QueryTiles>
+void exhaustive_L2sqr_blas_cmax_avx512(
+        QueryTiles& queries,
         const float* y,
         size_t d,
         size_t nx,
@@ -1154,7 +1197,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
 
-    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+    queries.prepare_norms(nx, x_norms.get());
 
     if (!y_norms) {
         float* y_norms2 = new float[ny];
@@ -1168,6 +1211,8 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
         if (i1 > nx) {
             i1 = nx;
         }
+
+        const float* xt = queries.tile(i0, i1, x_norms.get());
 
         res.begin_multiple(i0, i1);
 
@@ -1188,7 +1233,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
                        &one,
                        y + j0 * d,
                        &di,
-                       x + i0 * d,
+                       xt,
                        &di,
                        &zero,
                        ip_block.get(),
@@ -1338,6 +1383,34 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
         res.end_multiple();
         InterruptCallback::check();
     }
+}
+
+} // namespace
+
+template <>
+void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp32QueryTiles queries{x, d};
+    exhaustive_L2sqr_blas_cmax_avx512(queries, y, d, nx, ny, res, y_norms);
+}
+
+template <>
+void exhaustive_L2sqr_blas_cmax_fp16<SIMDLevel::AVX512>(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp16QueryTiles queries(x, d, nx);
+    exhaustive_L2sqr_blas_cmax_avx512(queries, y, d, nx, ny, res, y_norms);
 }
 
 } // namespace faiss

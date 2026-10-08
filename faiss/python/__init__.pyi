@@ -1531,6 +1531,8 @@ class InvertedLists:
     def list_size(self, list_no: int) -> int: ...
     def get_codes(self, list_no: int) -> npt.NDArray[np.uint8]: ...
     def get_ids(self, list_no: int) -> npt.NDArray[np.int64]: ...
+    def release_codes(self, list_no: int, codes: Any) -> None: ...
+    def release_ids(self, list_no: int, ids: Any) -> None: ...
     def add_entries(
         self,
         list_no: int,
@@ -3087,7 +3089,10 @@ SIMDLevel_AVX512_SPR: int
 SIMDLevel_ARM_NEON: int
 SIMDLevel_ARM_SVE: int
 SIMDLevel_RISCV_RVV: int
+SIMDLevel_AVX512_VPOPCNT: int
 SIMDLevel_COUNT: int
+
+def compiled_simd_levels() -> int: ...
 
 class SIMDConfig:
     level: int
@@ -3111,6 +3116,8 @@ class SIMDConfig:
 # Utility functions
 def get_mem_usage_kb() -> int: ...
 def get_compile_options() -> str: ...
+def set_search_stats_enabled(enabled: bool) -> None: ...
+def get_search_stats_enabled() -> bool: ...
 def check_openmp() -> bool: ...
 def shard_ivf_index_centroids(
     index: IndexIVF,
@@ -4154,6 +4161,8 @@ class GpuIndexIVF(GpuIndex, IndexIVFInterface): ...
 class GpuIndexIVFConfig(GpuIndexConfig):
     """Configuration for GPU IVF indices"""
 
+    deterministic_tie_break: bool
+
     def __init__(self) -> None: ...
 
 class GpuIndexIVFPQConfig(GpuIndexIVFConfig):
@@ -4381,7 +4390,6 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
-    hnsw_deterministic_build: bool
 
 cvar: _SwigGlobals
 
@@ -4518,6 +4526,7 @@ class GpuClonerOptions:
     verbose: bool
     use_cuvs: bool
     allowCpuCoarseQuantizer: bool
+    deterministic_tie_break: bool
 
     def __init__(self) -> None: ...
 

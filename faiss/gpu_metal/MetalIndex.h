@@ -24,6 +24,10 @@ struct MetalIndexConfig {
 
     bool useFloat16CoarseQuantizer = false;
 
+    /// Build the IVF-PQ distance lookup tables in half precision. Halves LUT
+    /// bandwidth during the GPU scan at a small accuracy cost.
+    bool useFloat16 = false;
+
     faiss::gpu::IndicesOptions indicesOptions = faiss::gpu::INDICES_64_BIT;
 
     bool interleavedLayout = true;

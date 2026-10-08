@@ -6,12 +6,14 @@
  */
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/utils/prefetch.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/utils/distances.h>
@@ -26,6 +28,11 @@
 namespace faiss {
 
 RaBitQStats rabitq_stats;
+
+void RaBitQStats::add_atomic(const RaBitQStats& other) {
+    detail::atomic_fetch_add_relaxed(n_1bit, other.n_1bit);
+    detail::atomic_fetch_add_relaxed(n_refine, other.n_refine);
+}
 
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
@@ -572,6 +579,42 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
         return distance_to_code_1bit_impl(code, base_fac, size);
     }
 
+    void distance_to_code_1bit_batch_4(
+            const uint8_t* const* codes_in,
+            float* distances) final {
+        if (qb != 4 || centered) {
+            RaBitQDistanceComputer::distance_to_code_1bit_batch_4(
+                    codes_in, distances);
+            return;
+        }
+        const size_t size = (d + 7) / 8;
+        const size_t prefix = size +
+                (nb_bits == 1 ? sizeof(SignBitFactors)
+                              : sizeof(SignBitFactorsWithError));
+        for (int i = 0; i < 4; ++i) {
+            for (size_t offset = 0; offset < prefix; offset += 64) {
+                prefetch_L1(codes_in[i] + offset);
+            }
+        }
+        rabitq::BitwiseAndDotProductResult results[4];
+        rabitq::bitwise_q4_batch_4<SL>(
+                rearranged_rotated_qq.data(), codes_in, size, results);
+        for (int i = 0; i < 4; ++i) {
+            const auto* factors =
+                    reinterpret_cast<const SignBitFactors*>(codes_in[i] + size);
+            float final_dot = 0;
+            final_dot += query_fac.c1 * results[i].dot_product;
+            final_dot += query_fac.c2 * results[i].popcount;
+            final_dot -= query_fac.c34;
+            const float pre_dist = factors->or_minus_c_l2sqr +
+                    query_fac.qr_to_c_L2sqr -
+                    2 * factors->dp_multiplier * final_dot;
+            distances[i] = metric_type == METRIC_L2
+                    ? std::max(0.0f, pre_dist)
+                    : -0.5f * (pre_dist - query_fac.qr_norm_L2sqr);
+        }
+    }
+
     // Compute full distance using 1-bit + ex-bits (accurate)
     float distance_to_code_full(const uint8_t* code) final {
         FAISS_ASSERT(code != nullptr);
@@ -721,12 +764,10 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
     // call the SIMD-specialized rabitq functions directly (no per-call
     // with_simd_level overhead).
     //
-    // Use A0_SPR (which includes AVX512_SPR) so that on Sapphire Rapids
-    // and later x86 microarchitectures the VPOPCNTDQ-based RaBitQ
-    // specialization in rabitq_avx512_spr.cpp is selected. On AVX-512
-    // CPUs without VPOPCNTDQ, dispatch falls through to the AVX512
-    // specialization in rabitq_avx512.cpp.
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0_SPR>(
+    // VPOPCNT rather than SPR: Ice Lake and Zen 4 have VPOPCNTDQ without the
+    // rest of the SPR feature set. Below it, dispatch falls through to
+    // rabitq_avx512.cpp.
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_VPOPCNT>(
             [&]<SIMDLevel SL>() -> FlatCodesDistanceComputer* {
                 if (qb == 0) {
                     auto dc =

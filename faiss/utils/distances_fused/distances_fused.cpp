@@ -51,7 +51,7 @@ bool exhaustive_L2sqr_fused_cmax(
         return true;
     }
 
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>(
             [&]<SIMDLevel SL>() {
                 return exhaustive_L2sqr_fused_cmax<SL>(
                         x, y, d, nx, ny, res, y_norms);

@@ -758,9 +758,11 @@ size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::ARM_SVE>(
     return current_min_idx;
 }
 
-template <>
-void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
-        const float* x,
+namespace {
+
+template <class QueryTiles>
+void exhaustive_L2sqr_blas_cmax_sve(
+        QueryTiles& queries,
         const float* y,
         size_t d,
         size_t nx,
@@ -779,7 +781,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
 
-    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+    queries.prepare_norms(nx, x_norms.get());
 
     const size_t lanes = svcntw();
 
@@ -794,6 +796,8 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
         size_t i1 = i0 + bs_x;
         if (i1 > nx)
             i1 = nx;
+
+        const float* xt = queries.tile(i0, i1, x_norms.get());
 
         res.begin_multiple(i0, i1);
 
@@ -813,7 +817,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
                        &one,
                        y + j0 * d,
                        &di,
-                       x + i0 * d,
+                       xt,
                        &di,
                        &zero,
                        ip_block.get(),
@@ -936,6 +940,34 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
         res.end_multiple();
         InterruptCallback::check();
     }
+}
+
+} // namespace
+
+template <>
+void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp32QueryTiles queries{x, d};
+    exhaustive_L2sqr_blas_cmax_sve(queries, y, d, nx, ny, res, y_norms);
+}
+
+template <>
+void exhaustive_L2sqr_blas_cmax_fp16<SIMDLevel::ARM_SVE>(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp16QueryTiles queries(x, d, nx);
+    exhaustive_L2sqr_blas_cmax_sve(queries, y, d, nx, ny, res, y_norms);
 }
 
 } // namespace faiss

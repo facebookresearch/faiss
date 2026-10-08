@@ -171,6 +171,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         config.use_cuvs = use_cuvs;
         config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
+        config.deterministic_tie_break = deterministic_tie_break;
 
         GpuIndexIVFFlat* res = new GpuIndexIVFFlat(
                 provider, ifl->d, ifl->nlist, ifl->metric_type, config);
@@ -189,6 +190,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         config.use_cuvs = use_cuvs;
         config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
+        config.deterministic_tie_break = deterministic_tie_break;
 
         GpuIndexIVFScalarQuantizer* res = new GpuIndexIVFScalarQuantizer(
                 provider,
@@ -224,6 +226,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.use_cuvs = use_cuvs;
         config.interleavedLayout = use_cuvs;
         config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
+        config.deterministic_tie_break = deterministic_tie_break;
 
         GpuIndexIVFPQ* res = new GpuIndexIVFPQ(provider, ipq, config);
 

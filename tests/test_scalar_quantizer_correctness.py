@@ -603,3 +603,81 @@ class TestTurboQFullDistances(unittest.TestCase):
                 for q in range(len(xq)):
                     for k in range(1, 10):
                         self.assertLessEqual(D[q, k - 1], D[q, k])
+
+
+@for_all_simd_levels
+class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
+    """Every SIMD level must return the exact QT_8bit_direct{,_signed}
+    distances.
+
+    The distances are integers, so this class computes them from the
+    definition and compares. An earlier version measured a second time at
+    SIMDLevel.NONE and compared the two runs. A static build reports only the
+    one level it compiles, and omits NONE, so that version skipped itself in
+    the build shape that ships.
+
+    d = 16 and d = 32 pass the d % 16 == 0 test in sq-dispatch.h. That test
+    routes the query to DistanceComputerByte and DistanceComputerByteSigned.
+    Two dispatch chains reach those kernels, and this class covers both.
+    search() uses sq_select_InvertedListScanner. get_distance_computer() uses
+    sq_select_distance_computer, which is the chain Refine(SQ8) follows.
+    """
+
+    def reference(self, xq, xb, metric):
+        """Returns the exact distances. The values are small integers. Every
+        product and sum stays below 2**24, so the float32 result loses
+        nothing."""
+        a = xq.astype("int64")
+        b = xb.astype("int64")
+        if metric == faiss.METRIC_L2:
+            return ((a[:, None, :] - b[None, :, :]) ** 2).sum(-1)
+        return a @ b.T
+
+    def do_test(self, measure, expect):
+        rng = np.random.RandomState(1234)
+        for qtype in (
+            faiss.ScalarQuantizer.QT_8bit_direct,
+            faiss.ScalarQuantizer.QT_8bit_direct_signed,
+        ):
+            lo, hi = (
+                (-128, 128)
+                if qtype == faiss.ScalarQuantizer.QT_8bit_direct_signed
+                else (0, 256)
+            )
+            for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+                for d in (16, 32):
+                    with self.subTest(qtype=qtype, metric=metric, d=d):
+                        xb = rng.randint(lo, hi, (500, d)).astype("float32")
+                        xq = rng.randint(lo, hi, (10, d)).astype("float32")
+                        index = faiss.IndexScalarQuantizer(d, qtype, metric)
+                        index.add(xb)
+                        got = measure(index, xq)
+                        truth = self.reference(xq, xb, metric)
+                        np.testing.assert_array_equal(got, expect(truth, metric))
+
+    def test_scanner(self):
+        k = 10
+
+        def measure(index, xq):
+            return index.search(xq, k)[0]
+
+        def expect(truth, metric):
+            # search returns L2 ascending and inner product descending.
+            ordered = np.sort(truth, axis=1)
+            if metric == faiss.METRIC_INNER_PRODUCT:
+                ordered = ordered[:, ::-1]
+            return ordered[:, :k]
+
+        self.do_test(measure, expect)
+
+    def test_distance_computer(self):
+        def measure(index, xq):
+            dc = index.get_distance_computer()
+            out = np.empty((len(xq), index.ntotal), dtype="float32")
+            for q in range(len(xq)):
+                dc.set_query(faiss.swig_ptr(xq[q]))
+                for i in range(index.ntotal):
+                    out[q, i] = dc(int(i))
+            return out
+
+        self.do_test(measure, lambda truth, metric: truth)
