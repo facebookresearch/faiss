@@ -57,3 +57,17 @@ set_target_properties(TestMetalIndexIVFPQ PROPERTIES
     OBJCXX_STANDARD_REQUIRED ON
 )
 gtest_discover_tests(TestMetalIndexIVFPQ)
+
+add_executable(TestMetalIndexBinaryFlat TestMetalIndexBinaryFlat.mm)
+target_link_libraries(TestMetalIndexBinaryFlat PRIVATE
+    faiss_metal
+    faiss
+    GTest::gtest_main
+)
+target_include_directories(TestMetalIndexBinaryFlat PRIVATE ${PROJECT_SOURCE_DIR})
+set_target_properties(TestMetalIndexBinaryFlat PROPERTIES
+    OBJCXX_STANDARD 17
+    OBJCXX_STANDARD_REQUIRED ON
+)
+target_compile_options(TestMetalIndexBinaryFlat PRIVATE -fobjc-arc)
+gtest_discover_tests(TestMetalIndexBinaryFlat)
