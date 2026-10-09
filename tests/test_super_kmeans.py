@@ -17,6 +17,34 @@ class SuperKMeansTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             sc.train(x)
 
+    def test_train_float16_matches_rounded_float32(self):
+        d, k, n = 32, 4, 96
+        rows = np.arange(n, dtype="float32")[:, None]
+        dims = np.arange(d, dtype="float32")[None, :]
+        values = (rows % k) * 8.0 + ((rows * 17 + dims * 13) % 31) / 100.0
+        x16 = values.astype("float16")
+        rounded = x16.astype("float32")
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 1234
+        p.niter = 3
+        p.min_points_per_centroid = 1
+        p.decode_block_size = n
+
+        expected = faiss.SuperKMeans(d, k, p)
+        expected.train(rounded)
+        actual = faiss.SuperKMeans(d, k, p)
+        actual.train(x16, numeric_type=faiss.Float16)
+
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(actual.centroids),
+            faiss.vector_to_array(expected.centroids),
+        )
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(actual.gemm_pruning_rates),
+            faiss.vector_to_array(expected.gemm_pruning_rates),
+        )
+
     def test_objective_decreases_monotonically(self):
         d, k, n = 32, 8, 1000
         x = SyntheticDataset(d, n, 0, 0).get_train()

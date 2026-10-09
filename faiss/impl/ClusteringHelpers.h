@@ -51,6 +51,15 @@ idx_t subsample_training_set(
         uint8_t** x_out,
         float** weights_out);
 
+/** Initialize non-random centroids directly from packed IEEE binary16 rows. */
+void init_centroids_fp16(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const uint16_t* x,
+        float* centroids,
+        size_t n_existing_centroids = 0,
+        const float* existing_centroids = nullptr);
+
 /** compute centroids as (weighted) sum of training points
  *
  * @param x            training vectors, size n * code_size (from codec)

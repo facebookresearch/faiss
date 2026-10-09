@@ -12,6 +12,8 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/impl/scalar_quantizer/sq8_coefficients.h>
+#include <faiss/impl/scalar_quantizer/sq8_rvv_kernel.h>
 
 #include <riscv_vector.h>
 #include <algorithm>
@@ -1967,13 +1969,7 @@ struct DCTemplate<
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
             : d(d_in), a_v(d_in, 0.0f), rmin_v(d_in, 0.0f), e_v(d_in, 0.0f) {
-        const float* vmin = trained.data();
-        const float* vdiff = trained.data() + d_in;
-        for (size_t i = 0; i < d_in; i++) {
-            float a = vdiff[i] / 255.0f;
-            a_v[i] = a;
-            rmin_v[i] = vmin[i] + 0.5f * a;
-        }
+        sq8::make_coefficients(trained.data(), d_in, a_v.data(), rmin_v.data());
     }
 
     void set_query(const float* x) final {
@@ -1986,61 +1982,7 @@ struct DCTemplate<
 
     /// Full-precision vector L2 over the 1-byte-per-dim code.
     float compute_l2(const uint8_t* code) const {
-        const float* pa = a_v.data();
-        const float* pe = e_v.data();
-
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group).
-        // d==0: guard so vsetvl(0) doesn't return 0 and the prologue
-        // `if (i + vl <= d)` + chunk loop don't stall.
-        const size_t vl = __riscv_vsetvl_e8m1(d > 0 ? d : 1);
-        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vl);
-
-        size_t i = 0;
-        if (i + vl <= d) {
-            // Software pipeline depth 1: preload the next chunk's code
-            // bytes at the top of this iteration.
-            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vl); // prologue
-            i += vl;
-
-            for (; i + vl <= d; i += vl) {
-                vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
-                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
-                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
-                t = __riscv_vfnmsac_vv_f32m4(
-                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
-                c8 = c8_next; // rotate
-            }
-
-            // Epilogue: process the last full chunk (already loaded).
-            {
-                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
-                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
-                t = __riscv_vfnmsac_vv_f32m4(
-                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
-            }
-        }
-
-        // Tail: fewer than vl dims left; accumulates into the first
-        // lanes of acc (safe: reduction below covers all vl lanes).
-        if (i < d) {
-            size_t vt = __riscv_vsetvl_e8m1(d - i);
-            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vt);
-            vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
-                    __riscv_vzext_vf4_u32m4(c8, vt), vt);
-            vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i, vt);
-            t = __riscv_vfnmsac_vv_f32m4(
-                    t, __riscv_vle32_v_f32m4(pa + i, vt), cf, vt);
-            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t, t, vt);
-        }
-
-        // Horizontal reduce over all vl lanes
-        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(
-                acc, __riscv_vfmv_v_f_f32m1(0.0f, 1), vl);
-        return __riscv_vfmv_f_s_f32m1_f32(red);
+        return sq8_rvv::l2_distance(code, a_v.data(), e_v.data(), d);
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2112,13 +2054,7 @@ struct DCTemplate<
               // vle32 loads stay in bounds (padding lanes never used).
               b_v(d_in + 2 * __riscv_vsetvlmax_e8m1(), 0.0f),
               k_q(0.0f) {
-        const float* vmin = trained.data();
-        const float* vdiff = trained.data() + d_in;
-        for (size_t i = 0; i < d_in; i++) {
-            float a = vdiff[i] / 255.0f;
-            a_v[i] = a;
-            rmin_v[i] = vmin[i] + 0.5f * a;
-        }
+        sq8::make_coefficients(trained.data(), d_in, a_v.data(), rmin_v.data());
     }
 
     void set_query(const float* x) final {

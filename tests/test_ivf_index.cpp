@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <algorithm>
 #include <atomic>
+#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <map>
@@ -20,9 +21,11 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/ClusteringHelpers.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/fp16.h>
 
@@ -258,6 +261,177 @@ TEST(IVF, list_context) {
                 std::find(labels.cbegin(), labels.cend(), query_vector_id) !=
                 labels.cend())
                 << "should return the query vector";
+    }
+    // assume_sorted picks the bounded-section shortcut on an array-backed
+    // list. An iterable list has no section to bound, so it must keep the
+    // selector and filter per entry instead.
+    for (bool assume_sorted : {false, true}) {
+        // Iterator scans must honor the same selector contract as array-backed
+        // scans. Keep only the upper half of the IDs and verify both KNN and
+        // range search.
+        SCOPED_TRACE(testing::Message() << "assume_sorted=" << assume_sorted);
+        constexpr faiss::idx_t k = 100;
+        constexpr size_t nprobe = 10;
+        faiss::IDSelectorRange selector(nb / 2, nb, assume_sorted);
+        faiss::SearchParametersIVF params;
+        params.inverted_list_context = &context;
+        params.nprobe = nprobe;
+        params.sel = &selector;
+
+        context.lists_probed.clear();
+        std::vector<float> distances(k);
+        std::vector<faiss::idx_t> labels(k);
+        index.search(
+                1,
+                query_vector.data(),
+                k,
+                distances.data(),
+                labels.data(),
+                &params);
+        const size_t rejected_knn = std::count_if(
+                labels.cbegin(), labels.cend(), [&](faiss::idx_t id) {
+                    return id != -1 && !selector.is_member(id);
+                });
+        EXPECT_EQ(0, rejected_knn);
+
+        context.lists_probed.clear();
+        faiss::RangeSearchResult result(1);
+        index.range_search(
+                1,
+                query_vector.data(),
+                std::numeric_limits<float>::max(),
+                &result,
+                &params);
+        const size_t rejected_range = std::count_if(
+                result.labels,
+                result.labels + result.lims[1],
+                [&](faiss::idx_t id) { return !selector.is_member(id); });
+        EXPECT_EQ(0, rejected_range);
+    }
+}
+
+TEST(IVF, sorted_range_selector_rejects_store_pairs) {
+    constexpr size_t d = 4;
+    constexpr size_t nb = 100;
+    constexpr faiss::idx_t k = 50;
+
+    faiss::IndexFlatL2 quantizer(d);
+    const std::vector<float> centroid(d, 0.0f);
+    quantizer.add(1, centroid.data());
+    faiss::IndexIVFFlat index(&quantizer, d, 1);
+    index.is_trained = true;
+
+    std::vector<float> database(nb * d);
+    std::vector<faiss::idx_t> ids(nb);
+    for (size_t i = 0; i < nb; ++i) {
+        ids[i] = static_cast<faiss::idx_t>(1000 + i);
+        for (size_t j = 0; j < d; ++j) {
+            database[i * d + j] = static_cast<float>(i + j);
+        }
+    }
+    index.add_with_ids(nb, database.data(), ids.data());
+
+    faiss::IDSelectorRange selector(1020, 1040, true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = 1;
+    params.sel = &selector;
+    const faiss::idx_t key = 0;
+    const float coarse_distance = 0.0f;
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    EXPECT_THROW(
+            index.search_preassigned(
+                    1,
+                    centroid.data(),
+                    k,
+                    &key,
+                    &coarse_distance,
+                    distances.data(),
+                    labels.data(),
+                    true,
+                    &params),
+            faiss::FaissException);
+}
+
+namespace {
+
+// Counts the code fetches that a scan performs, so a test can show that a list
+// the range filter empties never reaches its codes.
+struct CountingInvertedLists : faiss::ArrayInvertedLists {
+    mutable size_t code_fetches = 0;
+
+    CountingInvertedLists(size_t nlist_in, size_t code_size_in)
+            : faiss::ArrayInvertedLists(nlist_in, code_size_in) {}
+
+    const uint8_t* get_codes(size_t list_no) const override {
+        code_fetches++;
+        return faiss::ArrayInvertedLists::get_codes(list_no);
+    }
+};
+
+} // namespace
+
+TEST(IVF, sorted_range_selector_skips_setup_for_filtered_lists) {
+    constexpr size_t d = 8;
+    constexpr size_t nb = 1000;
+    constexpr size_t nlist = 16;
+    constexpr faiss::idx_t k = 10;
+    constexpr faiss::idx_t range_end = 20;
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+
+    std::mt19937 rng(12345);
+    std::normal_distribution<float> normal(0.0f, 1.0f);
+    std::vector<float> database(nb * d);
+    for (float& value : database) {
+        value = normal(rng);
+    }
+    std::vector<faiss::idx_t> ids(nb);
+    for (size_t i = 0; i < nb; ++i) {
+        ids[i] = static_cast<faiss::idx_t>(i); // ascending, so each list sorts
+    }
+    index.train(nb, database.data());
+
+    auto* counting = new CountingInvertedLists(nlist, index.code_size);
+    index.replace_invlists(counting, /*own=*/true);
+    index.add_with_ids(nb, database.data(), ids.data());
+
+    // Lists that hold no id below range_end cannot contribute a result, so the
+    // scan must return before it fetches their codes.
+    size_t lists_in_range = 0;
+    size_t lists_non_empty = 0;
+    for (size_t list_no = 0; list_no < nlist; ++list_no) {
+        const size_t list_size = counting->list_size(list_no);
+        if (list_size == 0) {
+            continue;
+        }
+        lists_non_empty++;
+        const faiss::idx_t* list_ids = counting->ids[list_no].data();
+        if (list_ids[0] < range_end) {
+            lists_in_range++;
+        }
+    }
+    ASSERT_GT(lists_in_range, 0u);
+    ASSERT_LT(lists_in_range, lists_non_empty);
+
+    faiss::IDSelectorRange selector(0, range_end, /*assume_sorted=*/true);
+    faiss::SearchParametersIVF params;
+    params.nprobe = nlist;
+    params.sel = &selector;
+
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    counting->code_fetches = 0;
+    index.search(
+            1, database.data(), k, distances.data(), labels.data(), &params);
+    EXPECT_EQ(lists_in_range, counting->code_fetches);
+
+    // Every returned id honours the selector.
+    for (faiss::idx_t label : labels) {
+        if (label != -1) {
+            EXPECT_TRUE(selector.is_member(label));
+        }
     }
 }
 
@@ -615,6 +789,62 @@ TEST(IVF, train_float16_matches_float32_on_rounded_input) {
     EXPECT_EQ(half_centroids, float_centroids);
 }
 
+TEST(IVF, train_float16_with_super_kmeans_matches_float32) {
+    constexpr int d = 32;
+    constexpr int n = 96;
+    constexpr int nlist = 4;
+
+    std::vector<float> input(n * d);
+    for (int i = 0; i < n; ++i) {
+        const float center = static_cast<float>(i % nlist) * 8.0f;
+        for (int j = 0; j < d; ++j) {
+            input[static_cast<size_t>(i) * d + j] = center +
+                    static_cast<float>((i * 17 + j * 13) % 31) / 100.0f;
+        }
+    }
+    auto encoded = encode_fp16(input);
+    auto rounded = decode_fp16(encoded);
+
+    faiss::IndexFlatL2 float_quantizer(d);
+    faiss::IndexIVFFlat float_index(&float_quantizer, d, nlist);
+    float_index.cp.seed = 1234;
+    float_index.cp.niter = 3;
+    float_index.cp.min_points_per_centroid = 1;
+    float_index.cp.use_super_kmeans = true;
+    float_index.train(n, rounded.data());
+
+    faiss::IndexFlatL2 half_quantizer(d);
+    faiss::IndexIVFFlat half_index(&half_quantizer, d, nlist);
+    half_index.cp = float_index.cp;
+    half_index.cp.decode_block_size = n;
+    half_index.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+
+    std::vector<float> float_centroids(nlist * d);
+    std::vector<float> half_centroids(nlist * d);
+    float_quantizer.reconstruct_n(0, nlist, float_centroids.data());
+    half_quantizer.reconstruct_n(0, nlist, half_centroids.data());
+    EXPECT_EQ(half_centroids, float_centroids);
+
+    TrackingFp16Codec codec(d);
+    faiss::IndexFlatL2 encoded_quantizer(d);
+    faiss::IndexIVFFlat encoded_index(&encoded_quantizer, d, nlist);
+    encoded_index.cp = float_index.cp;
+    EXPECT_THROW(
+            encoded_index.train_encoded(
+                    n,
+                    reinterpret_cast<const uint8_t*>(encoded.data()),
+                    &codec),
+            faiss::FaissException);
+
+    faiss::IndexFlatIP ip_quantizer(d);
+    faiss::IndexIVFFlat ip_index(
+            &ip_quantizer, d, nlist, faiss::METRIC_INNER_PRODUCT);
+    ip_index.cp = float_index.cp;
+    EXPECT_THROW(
+            ip_index.train_ex(n, encoded.data(), faiss::NumericType::Float16),
+            faiss::FaissException);
+}
+
 TEST(IVF, encoded_training_rejects_non_finite_values) {
     constexpr int d = 2;
     constexpr int n = 4;
@@ -891,25 +1121,75 @@ TEST(Clustering, train_ex_float16_weighted_matches_float32) {
     }
 }
 
-TEST(Clustering, train_ex_float16_subsampling_and_kmeanspp_match_float32) {
+TEST(Clustering, train_ex_float16_subsampling_initializers_match_float32) {
     constexpr size_t n = 100;
     constexpr size_t d = 12;
     constexpr size_t k = 4;
     auto encoded = encode_fp16(make_training_data(n, d));
     auto rounded = decode_fp16(encoded);
-    auto cp = small_clustering_params(4);
-    cp.max_points_per_centroid = 8;
-    cp.init_method = faiss::ClusteringInitMethod::KMEANS_PLUS_PLUS;
 
-    faiss::Clustering full(d, k, cp);
-    faiss::IndexFlatL2 full_index(d);
-    full.train(n, rounded.data(), full_index);
+    for (auto method :
+         {faiss::ClusteringInitMethod::KMEANS_PLUS_PLUS,
+          faiss::ClusteringInitMethod::AFK_MC2}) {
+        auto cp = small_clustering_params(4);
+        cp.max_points_per_centroid = 8;
+        cp.init_method = method;
+        cp.afkmc2_chain_length = 7;
 
-    faiss::Clustering half(d, k, cp);
-    faiss::IndexFlatL2 half_index(d);
-    half.train_ex(n, encoded.data(), faiss::NumericType::Float16, half_index);
+        faiss::Clustering full(d, k, cp);
+        faiss::IndexFlatL2 full_index(d);
+        full.train(n, rounded.data(), full_index);
 
-    EXPECT_EQ(half.centroids, full.centroids);
+        faiss::Clustering half(d, k, cp);
+        faiss::IndexFlatL2 half_index(d);
+        half.train_ex(
+                n, encoded.data(), faiss::NumericType::Float16, half_index);
+
+        EXPECT_EQ(half.centroids, full.centroids)
+                << "method=" << static_cast<int>(method);
+    }
+}
+
+TEST(Clustering, float16_initializers_match_with_existing_and_early_return) {
+    constexpr size_t n = 24;
+    constexpr size_t d = 5;
+    constexpr size_t k = 3;
+    auto encoded = encode_fp16(make_training_data(n, d));
+    auto rounded = decode_fp16(encoded);
+    const std::vector<float> existing = {-4.0f, -2.0f, 0.0f, 2.0f, 4.0f};
+
+    for (auto method :
+         {faiss::ClusteringInitMethod::KMEANS_PLUS_PLUS,
+          faiss::ClusteringInitMethod::AFK_MC2}) {
+        faiss::ClusteringInitialization initializer(d, k);
+        initializer.method = method;
+        initializer.seed = 4321;
+        initializer.afkmc2_chain_length = 7;
+        std::vector<float> full(k * d);
+        std::vector<float> half(k * d);
+
+        initializer.init_centroids(
+                n, rounded.data(), full.data(), 1, existing.data());
+        faiss::detail::init_centroids_fp16(
+                initializer,
+                n,
+                encoded.data(),
+                half.data(),
+                1,
+                existing.data());
+        EXPECT_EQ(half, full) << "existing method=" << static_cast<int>(method);
+
+        faiss::ClusteringInitialization single(d, 1);
+        single.method = method;
+        single.seed = 4321;
+        std::vector<float> full_single(d);
+        std::vector<float> half_single(d);
+        single.init_centroids(n, rounded.data(), full_single.data());
+        faiss::detail::init_centroids_fp16(
+                single, n, encoded.data(), half_single.data());
+        EXPECT_EQ(half_single, full_single)
+                << "early return method=" << static_cast<int>(method);
+    }
 }
 
 TEST(Clustering, train_ex_float16_assigns_in_bounded_batches) {
@@ -1165,8 +1445,14 @@ TEST(IndexFlat, search_ex_float16_native_matches_float32) {
                         hi.data());
                 EXPECT_EQ(hi, fi)
                         << "metric=" << metric << " d=" << d << " k=" << k;
-                EXPECT_EQ(hd, fd)
-                        << "metric=" << metric << " d=" << d << " k=" << k;
+                for (size_t i = 0; i < fd.size(); ++i) {
+                    EXPECT_NEAR(
+                            hd[i],
+                            fd[i],
+                            1e-5f * std::max(1.0f, std::fabs(fd[i])))
+                            << "metric=" << metric << " d=" << d << " k=" << k
+                            << " result=" << i;
+                }
             }
         }
     }

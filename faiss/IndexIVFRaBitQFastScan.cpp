@@ -402,12 +402,14 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         uint8_t qb_param,
         bool centered_param,
         std::vector<float>& rotated_q,
-        std::vector<float>& centroid_buf) const {
+        std::vector<float>& centroid_buf,
+        std::vector<uint8_t>& rotated_qq,
+        float* rotated_q_out) const {
     const size_t d_val = static_cast<size_t>(d);
     FAISS_THROW_IF_NOT(d_val > 0);
     rotated_q.resize(d_val);
     centroid_buf.resize(d_val);
-    std::vector<uint8_t> rotated_qq(d_val);
+    rotated_qq.resize(d_val);
 
     // Compute residual
     quantizer->reconstruct(centroid_id, centroid_buf.data());
@@ -415,7 +417,9 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         rotated_q[i] = query[i] - centroid_buf[i];
     }
 
-    // Compute query factors using shared utility
+    // Keep the caller's rotated_q capacity across the assignment below, so a
+    // reused QueryFactorsData does not reallocate on every call.
+    std::vector<float> rotated_q_keep = std::move(query_factors.rotated_q);
     query_factors = rabitq_utils::compute_query_factors(
             rotated_q.data(),
             d_val,
@@ -433,7 +437,12 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
     }
 
     if (rabitq.nb_bits > 1) {
-        query_factors.rotated_q = rotated_q;
+        if (rotated_q_out != nullptr) {
+            std::copy(rotated_q.begin(), rotated_q.end(), rotated_q_out);
+        } else {
+            rotated_q_keep.assign(rotated_q.begin(), rotated_q.end());
+            query_factors.rotated_q = std::move(rotated_q_keep);
+        }
     }
 
     // Build LUT using branchless subset-sum construction
@@ -529,8 +538,15 @@ void IndexIVFRaBitQFastScan::search_preassigned(
     }
 
     std::vector<QueryFactorsData> query_factors_storage(n * cur_nprobe);
+    // One block for the multi-bit rotated queries, allocated here rather than
+    // per (query, probe) on OpenMP workers: under jemalloc heap profiling on
+    // aarch64, worker-thread allocations are very expensive to sample.
+    // Left uninitialised; every slot read is written by compute_LUT first.
+    std::unique_ptr<float[]> rotated_q_storage(
+            rabitq.nb_bits > 1 ? new float[n * cur_nprobe * d] : nullptr);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
+    context.rotated_q = rotated_q_storage.get();
     context.nprobe = cur_nprobe;
     context.qb = used_qb;
     context.centered = used_centered;
@@ -571,6 +587,7 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     {
         std::vector<float> rotated_q(d);
         std::vector<float> centroid_buf(d);
+        std::vector<uint8_t> rotated_qq(d);
 
 #pragma omp for
         for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
@@ -588,7 +605,10 @@ void IndexIVFRaBitQFastScan::compute_LUT(
                         used_qb,
                         used_centered,
                         rotated_q,
-                        centroid_buf);
+                        centroid_buf,
+                        rotated_qq,
+                        context.rotated_q ? context.rotated_q + ij * d
+                                          : nullptr);
 
                 if (context.query_factors != nullptr) {
                     context.query_factors[ij] = std::move(query_factors_data);
@@ -629,6 +649,7 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
         AlignedTable<float> lut_float(cur_nprobe * dim12);
         std::vector<float> rotated_q(d);
         std::vector<float> centroid_buf(d);
+        std::vector<uint8_t> rotated_qq(d);
         std::vector<float> all_mins(cur_nprobe * M);
         std::vector<float> probe_b(cur_nprobe);
         std::vector<float> probe_span(cur_nprobe);
@@ -652,10 +673,13 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
                             used_qb,
                             used_centered,
                             rotated_q,
-                            centroid_buf);
+                            centroid_buf,
+                            rotated_qq,
+                            context.rotated_q ? context.rotated_q + ij * d
+                                              : nullptr);
 
                     if (context.query_factors != nullptr) {
-                        context.query_factors[ij] = qf;
+                        context.query_factors[ij] = std::move(qf);
                     }
                 } else {
                     memset(lut_float.get() + j * dim12,
@@ -879,6 +903,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
     AlignedTable<float> lut_float;
     std::vector<float> rotated_q;
     std::vector<float> centroid_buf;
+    std::vector<uint8_t> rotated_qq;
     QueryFactorsData query_factors;
     FastScanDistancePostProcessing context;
     std::vector<int> probe_map;
@@ -900,6 +925,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
               lut_float(16 * index_in.M),
               rotated_q(index_in.d),
               centroid_buf(index_in.d),
+              rotated_qq(index_in.d),
               probe_map({0}),
               mins_buf(index_in.M) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
@@ -931,7 +957,9 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                 qb,
                 centered,
                 rotated_q,
-                centroid_buf);
+                centroid_buf,
+                rotated_qq,
+                nullptr);
 
         // Single-probe quantization (simplified inline, no OMP, no 3D)
         const size_t M = index.M;

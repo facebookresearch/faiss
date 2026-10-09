@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +18,7 @@
  *
  * Drives the handler through the actual fast_scan accumulate loop
  * by building an IndexPQFastScan, computing its quantized LUT,
- * and calling pq4_accumulate_loop_qbs_fixed_scaler_256 directly.
+ * and calling pq4_accumulate_loop_qbs_fixed_scaler_simd directly.
  */
 
 #include <algorithm>
@@ -89,7 +97,7 @@ std::vector<std::pair<int64_t, float>> run_collect_handler(
 
     // 5. Run the accumulate loop
     DummyScaler<> scaler;
-    pq4_accumulate_loop_qbs_fixed_scaler_256(
+    pq4_accumulate_loop_qbs_fixed_scaler_simd(
             qbs,
             index.ntotal2,
             index.M2,

@@ -17,6 +17,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <limits>
+#include <optional>
 
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
@@ -70,7 +71,6 @@ void train_q1_impl(
     const size_t nlist = q1.nlist;
     const ClusteringParameters& cp = q1.cp;
     Index* clustering_index = q1.clustering_index;
-    const bool float32 = !codec && numeric_type == NumericType::Float32;
 
     // k-means on the training rows, with `assigner` as assignment index
     auto train_clustering = [&](Clustering& clus, Index& assigner) {
@@ -116,8 +116,15 @@ void train_q1_impl(
                 "cp.use_super_kmeans is incompatible with a user-provided "
                 "clustering_index: SuperKMeans assigns with its own index");
         FAISS_THROW_IF_MSG(
-                cp.use_super_kmeans && !float32,
-                "SuperKMeans requires fp32 training data");
+                cp.use_super_kmeans && codec,
+                "SuperKMeans does not support encoded training data");
+        FAISS_THROW_IF_MSG(
+                cp.use_super_kmeans &&
+                        !(metric_type == METRIC_L2 ||
+                          (metric_type == METRIC_INNER_PRODUCT &&
+                           cp.spherical)),
+                "SuperKMeans requires L2 or spherical inner-product "
+                "clustering");
 
         quantizer->reset();
         if (cp.use_super_kmeans) {
@@ -125,7 +132,7 @@ void train_q1_impl(
             static_cast<ClusteringParameters&>(super_cp) = cp;
             SuperKMeans clus(
                     static_cast<int>(d), static_cast<int>(nlist), super_cp);
-            clus.train(n, reinterpret_cast<const float*>(x));
+            clus.train_ex(n, x, numeric_type);
             quantizer->add(nlist, clus.centroids.data());
         } else {
             Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
@@ -508,18 +515,20 @@ void IndexIVF::search_preassigned(
     const bool ensure_topk_full = params ? params->ensure_topk_full : false;
 
     IDSelector* sel = params ? params->sel : nullptr;
+    FAISS_THROW_IF_NOT_MSG(
+            !(sel && store_pairs),
+            "selector and store_pairs cannot be combined");
+
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
     if (selr) {
-        if (selr->assume_sorted) {
+        // The sorted-range shortcut bounds a section of an array-backed list,
+        // so an iterable list has to keep the selector and filter per entry.
+        if (selr->assume_sorted && !invlists->use_iterator) {
             sel = nullptr; // use special IDSelectorRange processing
         } else {
             selr = nullptr; // use generic processing
         }
     }
-
-    FAISS_THROW_IF_NOT_MSG(
-            !(sel && store_pairs),
-            "selector and store_pairs cannot be combined");
 
     FAISS_THROW_IF_NOT_MSG(
             !invlists->use_iterator ||
@@ -639,10 +648,9 @@ void IndexIVF::search_preassigned(
                     return (size_t)0;
                 }
 
-                scanner->set_list(key, coarse_dis_i);
-
                 nlistv++;
                 if (invlists->use_iterator) {
+                    scanner->set_list(key, coarse_dis_i);
                     size_t list_size = 0;
                     std::unique_ptr<InvertedListsIterator> it(
                             invlists->get_iterator(key, inverted_list_context));
@@ -657,30 +665,29 @@ void IndexIVF::search_preassigned(
                         list_size = static_cast<size_t>(list_size_max);
                     }
 
-                    InvertedLists::ScopedCodes scodes(invlists, key);
-                    const uint8_t* codes = scodes.get();
-
-                    std::unique_ptr<InvertedLists::ScopedIds> sids;
+                    std::optional<InvertedLists::ScopedIds> sids;
                     const idx_t* ids = nullptr;
-
                     if (!store_pairs) {
-                        sids = std::make_unique<InvertedLists::ScopedIds>(
-                                invlists, key);
+                        sids.emplace(invlists, key);
                         ids = sids->get();
                     }
 
+                    size_t jmin = 0;
                     if (selr) { // IDSelectorRange
                         // restrict search to a section of the inverted list
-                        size_t jmin, jmax;
+                        size_t jmax;
                         selr->find_sorted_ids_bounds(
                                 list_size, ids, &jmin, &jmax);
                         list_size = jmax - jmin;
                         if (list_size == 0) {
                             return (size_t)0;
                         }
-                        codes += jmin * code_size;
                         ids += jmin;
                     }
+
+                    scanner->set_list(key, coarse_dis_i);
+                    InvertedLists::ScopedCodes scodes(invlists, key);
+                    const uint8_t* codes = scodes.get() + jmin * code_size;
 
                     size_t old_scan_cnt = 0;
                     size_t old_heap_updates = 0;
@@ -1688,6 +1695,9 @@ size_t InvertedListScanner::iterate_codes(
     if (!keep_max) {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
+            if (sel && !sel->is_member(id_and_codes.first)) {
+                continue;
+            }
             float dis = distance_to_code(id_and_codes.second);
             if (has_cb) {
                 it->on_distance_computed(id_and_codes.first, dis);
@@ -1704,6 +1714,9 @@ size_t InvertedListScanner::iterate_codes(
     } else {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
+            if (sel && !sel->is_member(id_and_codes.first)) {
+                continue;
+            }
             float dis = distance_to_code(id_and_codes.second);
             if (has_cb) {
                 it->on_distance_computed(id_and_codes.first, dis);
@@ -1751,6 +1764,9 @@ void InvertedListScanner::iterate_codes_range(
     list_size = 0;
     for (; it->is_available(); it->next()) {
         auto id_and_codes = it->get_id_and_codes();
+        if (sel && !sel->is_member(id_and_codes.first)) {
+            continue;
+        }
         float dis = distance_to_code(id_and_codes.second);
         bool keep = !keep_max
                 ? dis < radius
