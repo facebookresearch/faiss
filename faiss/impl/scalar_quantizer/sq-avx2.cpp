@@ -236,7 +236,8 @@ struct QuantizerTemplate<
  **********************************************************/
 
 // 1-bit MSE: boundary is always at centroids midpoint.
-// Encode: 8 comparisons → 1 byte via movemask.
+// Encode: 8 comparisons → 1 byte via movemask. NLT_UQ is !(x < b), matching
+// the scalar upper_bound tie-break: x == b (and NaN) encodes to the upper bin.
 // Decode: gather 8 centroids via index unpack.
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
@@ -260,7 +261,7 @@ struct QuantizerLloydMax<1, SIMDLevel::AVX2>
         for (size_t i = 0; i < this->d; i += 8) {
             __m256 vals = _mm256_loadu_ps(x + i);
             int mask = _mm256_movemask_ps(
-                    _mm256_cmp_ps(vals, boundary, _CMP_GT_OQ));
+                    _mm256_cmp_ps(vals, boundary, _CMP_NLT_UQ));
             code[i / 8] = static_cast<uint8_t>(mask);
         }
     }
@@ -295,7 +296,8 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
     }
 
     void encode_vector(const float* x, uint8_t* code) const final {
-        // 3 boundaries → branchless: idx = (x>b0) + (x>b1) + (x>b2)
+        // 3 boundaries → branchless: idx = !(x<b0) + !(x<b1) + !(x<b2),
+        // matching the scalar upper_bound tie-break.
         // _mm256_cmp_ps returns all-ones (-1 as int32) for true,
         // so we negate the sum to get positive indices.
         __m256 b0 = _mm256_set1_ps(this->boundaries[0]);
@@ -303,16 +305,16 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
         __m256 b2 = _mm256_set1_ps(this->boundaries[2]);
         for (size_t i = 0; i < this->d; i += 8) {
             __m256 vals = _mm256_loadu_ps(x + i);
-            __m256i gt0 =
-                    _mm256_castps_si256(_mm256_cmp_ps(vals, b0, _CMP_GT_OQ));
-            __m256i gt1 =
-                    _mm256_castps_si256(_mm256_cmp_ps(vals, b1, _CMP_GT_OQ));
-            __m256i gt2 =
-                    _mm256_castps_si256(_mm256_cmp_ps(vals, b2, _CMP_GT_OQ));
-            // Each gt is 0 or -1 (0xFFFFFFFF). Sum = -(index).
+            __m256i ge0 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b0, _CMP_NLT_UQ));
+            __m256i ge1 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b1, _CMP_NLT_UQ));
+            __m256i ge2 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b2, _CMP_NLT_UQ));
+            // Each ge is 0 or -1 (0xFFFFFFFF). Sum = -(index).
             __m256i idx = _mm256_sub_epi32(
                     _mm256_setzero_si256(),
-                    _mm256_add_epi32(_mm256_add_epi32(gt0, gt1), gt2));
+                    _mm256_add_epi32(_mm256_add_epi32(ge0, ge1), ge2));
             // Pack 8 x 2-bit indices into 2 bytes.
             // Store to temp array and pack scalarly - faster than
             // extract+permute.

@@ -275,6 +275,40 @@ void check_lloyd_max_distance_path_parity(
     }
 }
 
+// Random data never lands exactly on a boundary, so the distance-path parity
+// checks cannot catch a SIMD encoder whose tie-break differs from the scalar
+// upper_bound (x == b encodes to the upper bin). Encode the boundaries
+// themselves and require byte-identical codes.
+void check_lloyd_max_boundary_encode_parity(
+        faiss::SIMDLevel level,
+        faiss::ScalarQuantizer::QuantizerType qtype) {
+    ScopedSIMDLevel scoped(level);
+    const size_t d = 32;
+    faiss::ScalarQuantizer sq = make_trained_lloyd_max_sq(d, qtype);
+
+    const size_t k = (sq.trained.size() + 1) / 2;
+    const float* boundaries = sq.trained.data() + k;
+    std::vector<float> x(d);
+    for (size_t i = 0; i < d; i++) {
+        x[i] = boundaries[i % (k - 1)];
+    }
+    x[d - 2] = 0.0f;
+    x[d - 1] = -0.0f;
+
+    std::unique_ptr<faiss::ScalarQuantizer::SQuantizer> scalar_quant(
+            faiss::scalar_quantizer::sq_select_quantizer<
+                    faiss::SIMDLevel::NONE>(qtype, d, sq.trained));
+    std::unique_ptr<faiss::ScalarQuantizer::SQuantizer> simd_quant(
+            sq.select_quantizer());
+    ASSERT_NE(scalar_quant, nullptr);
+    ASSERT_NE(simd_quant, nullptr);
+
+    std::vector<uint8_t> ref(sq.code_size, 0), out(sq.code_size, 0);
+    scalar_quant->encode_vector(x.data(), ref.data());
+    simd_quant->encode_vector(x.data(), out.data());
+    EXPECT_EQ(ref, out);
+}
+
 // Parity between a SIMD level and the scalar (NONE) path for one quantizer
 // type, metric and dimension. Covers quantizer decoding, the
 // SQDistanceComputer APIs (query_to_code, query_to_codes_batch_4,
@@ -899,6 +933,32 @@ TEST(ScalarQuantizer, EDENSimdDistancePathParity) {
                 level, faiss::ScalarQuantizer::QT_4bit_eden);
         check_lloyd_max_distance_path_parity<8>(
                 level, faiss::ScalarQuantizer::QT_8bit_eden);
+    }
+}
+
+TEST(ScalarQuantizer, LloydMaxSimdBoundaryEncodeParity) {
+    const std::vector<faiss::SIMDLevel> levels =
+            available_sq_parity_simd_levels();
+    if (levels.empty()) {
+        GTEST_SKIP() << "No SIMD level available for Lloyd-Max parity tests";
+    }
+
+    for (faiss::SIMDLevel level : levels) {
+        SCOPED_TRACE(faiss::to_string(level));
+        for (auto qtype :
+             {faiss::ScalarQuantizer::QT_1bit_tqmse,
+              faiss::ScalarQuantizer::QT_2bit_tqmse,
+              faiss::ScalarQuantizer::QT_3bit_tqmse,
+              faiss::ScalarQuantizer::QT_4bit_tqmse,
+              faiss::ScalarQuantizer::QT_8bit_tqmse,
+              faiss::ScalarQuantizer::QT_1bit_eden,
+              faiss::ScalarQuantizer::QT_2bit_eden,
+              faiss::ScalarQuantizer::QT_3bit_eden,
+              faiss::ScalarQuantizer::QT_4bit_eden,
+              faiss::ScalarQuantizer::QT_8bit_eden}) {
+            SCOPED_TRACE(static_cast<int>(qtype));
+            check_lloyd_max_boundary_encode_parity(level, qtype);
+        }
     }
 }
 
