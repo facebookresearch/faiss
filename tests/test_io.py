@@ -15,6 +15,7 @@ from multiprocessing.pool import ThreadPool
 import faiss
 import numpy as np
 from common_faiss_tests import get_dataset_2
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
 d = 32
@@ -502,8 +503,9 @@ class Test_IO_IndexIVFSpectralHash(unittest.TestCase):
 class TestIVFPQRead(unittest.TestCase):
     def test_reader(self):
         d, n = 32, 1000
-        xq = np.random.uniform(size=(n, d)).astype("float32")
-        xb = np.random.uniform(size=(n, d)).astype("float32")
+        rs = np.random.RandomState(123)
+        xq = rs.uniform(size=(n, d)).astype("float32")
+        xb = rs.uniform(size=(n, d)).astype("float32")
 
         index = faiss.index_factory(32, "IVF32,PQ16np", faiss.METRIC_L2)
         index.train(xb)
@@ -521,8 +523,9 @@ class TestIVFPQRead(unittest.TestCase):
 
             Da, Ia = index_a.search(xq, 10)
             Db, Ib = index_b.search(xq, 10)
-            np.testing.assert_array_equal(Ia, Ib)
-            np.testing.assert_almost_equal(Da, Db, decimal=5)
+            # The precomputed table changes the order of float operations, so
+            # near-tied neighbors can swap.
+            check_ref_knn_with_draws(Da, Ia, Db, Ib)
 
             codes_a = index_a.sa_encode(xq)
             codes_b = index_b.sa_encode(xq)
