@@ -1140,6 +1140,7 @@
   <compound refid="structfaiss_1_1FastScanDistancePostProcessing" kind="struct"><name>faiss::FastScanDistancePostProcessing</name>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1adbed751c1ad95d945653ee81180e6076" kind="variable"><name>pq2x4_scale</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" kind="variable"><name>query_factors</name></member>
+    <member refid="structfaiss_1_1FastScanDistancePostProcessing_1aac5166cdc865a5f626d1bdfe490322ac" kind="variable"><name>rotated_q</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a7fa9dc73bbfcb22e2a4e6da006743f65" kind="variable"><name>nprobe</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a8a05afa90338169122572393396ee934" kind="variable"><name>qb</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1aa1e66d42367fa07caed36a32f8f8491d" kind="variable"><name>centered</name></member>
@@ -6309,7 +6310,7 @@
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1463a1ea2123d2b672e7d74069a711f0" kind="function"><name>sa_decode</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ae1013ee474cdad64e150de031c50ab36" kind="function"><name>compute_per_vector_storage_size</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1af949465388e9b34e972cdac5ca8c3cb6" kind="function"><name>compute_LUT_uint8</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a42b8783aae79c03e722a00b9c8948637" kind="function"><name>compute_residual_LUT</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0a3bf0e3e553d439e30a5c0963503628" kind="function"><name>compute_residual_LUT</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ae2461eb5b9a699eb6885b85dd2bbe989" kind="function"><name>lookup_table_is_3d</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1e2ad8e8007fa1009219b0472d3e50c1" kind="function"><name>compute_LUT</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a478a27e31f57e091cbab939970ad0ff7" kind="function"><name>search_preassigned</name></member>
