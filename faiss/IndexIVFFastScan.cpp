@@ -1063,6 +1063,7 @@ void IndexIVFFastScan::search_implem_10(
     // Allocate probe_map once and reuse it
     std::vector<int> probe_map;
     probe_map.reserve(1);
+    const size_t block_stride = get_block_stride();
 
     for (idx_t i = 0; i < n; i++) {
         const uint8_t* LUT = nullptr;
@@ -1137,7 +1138,7 @@ void IndexIVFFastScan::search_implem_10(
                     codes.get(),
                     LUT,
                     context.pq2x4_scale,
-                    get_block_stride());
+                    block_stride);
 
             ndis += ls;
             nlist_visited++;
@@ -1229,6 +1230,9 @@ void IndexIVFFastScan::search_implem_12(
     // Allocate vectors once and reuse them
     std::vector<int> probe_map;
     probe_map.reserve(actual_qbs2);
+    std::vector<int> q_map(actual_qbs2), lut_entries(actual_qbs2);
+    AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
+    const size_t block_stride = get_block_stride();
 
     size_t i0 = 0;
     uint64_t t_copy_pack = 0, t_scan = 0;
@@ -1255,8 +1259,6 @@ void IndexIVFFastScan::search_implem_12(
         // re-organize LUTs and biases into the right order
         int nc = static_cast<int>(i1 - i0);
 
-        std::vector<int> q_map(nc), lut_entries(nc);
-        AlignedTable<uint8_t> LUT(nc * dim12);
         memset(LUT.get(), -1, nc * dim12);
         int qbs_for_list = pq4_preferred_qbs(nc);
 
@@ -1306,7 +1308,7 @@ void IndexIVFFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 context.pq2x4_scale,
-                get_block_stride());
+                block_stride);
         // prepare for next loop
         i0 = i1;
     }
@@ -1464,6 +1466,9 @@ void IndexIVFFastScan::search_implem_14(
         // Allocate probe_map once per thread and reuse it
         std::vector<int> probe_map;
         probe_map.reserve(actual_qbs2);
+        std::vector<int> q_map(actual_qbs2), lut_entries(actual_qbs2);
+        AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
+        const size_t block_stride = get_block_stride();
 
 #pragma omp for schedule(dynamic)
         for (idx_t cluster = 0; cluster < static_cast<idx_t>(ses.size());
@@ -1477,8 +1482,6 @@ void IndexIVFFastScan::search_implem_14(
             // re-organize LUTs and biases into the right order
             int nc = static_cast<int>(i1 - i0);
 
-            std::vector<int> q_map(nc), lut_entries(nc);
-            AlignedTable<uint8_t> LUT(nc * dim12);
             memset(LUT.get(), -1, nc * dim12);
             int qbs_for_list = pq4_preferred_qbs(nc);
 
@@ -1529,7 +1532,7 @@ void IndexIVFFastScan::search_implem_14(
                     codes.get(),
                     LUT.get(),
                     context.pq2x4_scale,
-                    get_block_stride());
+                    block_stride);
         }
 
         // labels is in-place for HeapHC
