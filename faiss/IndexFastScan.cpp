@@ -55,7 +55,7 @@ IndexFastScan::IndexFastScan()
 
 void IndexFastScan::reset() {
     codes.resize(0);
-    ntotal = 0;
+    ntotal = ntotal2 = 0;
 }
 
 void IndexFastScan::add(idx_t n, const float* x) {

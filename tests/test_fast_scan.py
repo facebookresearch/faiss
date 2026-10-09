@@ -567,6 +567,21 @@ class TestAdd(unittest.TestCase):
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
 
+    def test_reset(self):
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+
+        index = faiss.IndexPQFastScan(d, d // 2, 4)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal2, 0)
+
+        D, I = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, -1)
+
 
 class TestAQFastScan(unittest.TestCase):
 
