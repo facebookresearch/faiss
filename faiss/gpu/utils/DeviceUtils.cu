@@ -8,9 +8,12 @@
 #include <cuda_profiler_api.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <algorithm>
+#include <cstring>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <mutex>
 #include <unordered_map>
+#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -148,6 +151,217 @@ int getDeviceForAddress(const void* p) {
     }
 #endif
 #endif
+}
+
+#ifdef USE_AMD_ROCM
+namespace {
+
+// ROCm copies pageable host memory of more than 64 KiB by pinning the user's
+// pages for the copy. On MI350X that path takes GPU memory access faults when
+// the process unmaps other host memory meanwhile, so copy through our own
+// pinned buffers instead, as CUDA does internally.
+constexpr size_t kMinStagedCopyBytes = 64 * 1024;
+constexpr size_t kStagingChunkBytes = 16 * 1024 * 1024;
+// Double buffering: the host copy of one chunk overlaps the device copy of the
+// other
+constexpr int kStagingBuffers = 2;
+
+struct PinnedStaging {
+    PinnedStaging() {
+        for (int i = 0; i < kStagingBuffers; ++i) {
+            auto err = hipHostMalloc(
+                    &buf[i], kStagingChunkBytes, hipHostMallocPortable);
+            if (err == hipSuccess) {
+                err = hipEventCreateWithFlags(&done[i], hipEventDisableTiming);
+            }
+            if (err != hipSuccess) {
+                // A sticky error would fail a later, unrelated launch check
+                (void)hipGetLastError();
+                releaseAfterFailure();
+                FAISS_THROW_FMT(
+                        "failed to allocate a %zu byte pinned staging buffer "
+                        "for a pageable host copy (error %d %s)",
+                        kStagingChunkBytes,
+                        (int)err,
+                        hipGetErrorString(err));
+            }
+        }
+    }
+
+    void releaseAfterFailure() {
+        for (int i = 0; i < kStagingBuffers; ++i) {
+            if (done[i]) {
+                (void)hipEventDestroy(done[i]);
+            }
+            if (buf[i]) {
+                (void)hipHostFree(buf[i]);
+            }
+        }
+    }
+
+    void wait(int b) {
+        if (pending[b]) {
+            CUDA_VERIFY(hipEventSynchronize(done[b]));
+            pending[b] = false;
+        }
+    }
+
+    void waitAll() {
+        for (int b = 0; b < kStagingBuffers; ++b) {
+            wait(b);
+        }
+    }
+
+    void record(int b, hipStream_t stream) {
+        CUDA_VERIFY(hipEventRecord(done[b], stream));
+        pending[b] = true;
+    }
+
+    void* buf[kStagingBuffers] = {};
+    hipEvent_t done[kStagingBuffers] = {};
+    bool pending[kStagingBuffers] = {};
+};
+
+// Free staging buffers per device (events belong to a device). The pool is
+// never destroyed: freeing pinned memory from a static or thread_local
+// destructor crashes once the HIP runtime has shut down at exit.
+struct StagingPool {
+    std::mutex mutex;
+    std::unordered_map<int, std::vector<PinnedStaging*>> free;
+};
+
+StagingPool& stagingPool() {
+    static auto* pool = new StagingPool();
+    return *pool;
+}
+
+// Takes a staging buffer set for the current device for one copy
+class StagingLease {
+   public:
+    StagingLease() : device_(getCurrentDevice()) {
+        auto& pool = stagingPool();
+        std::lock_guard<std::mutex> lock(pool.mutex);
+        auto& list = pool.free[device_];
+        if (list.empty()) {
+            staging_ = new PinnedStaging();
+        } else {
+            staging_ = list.back();
+            list.pop_back();
+        }
+    }
+
+    ~StagingLease() {
+        // An event must not be waited on after its stream may be destroyed:
+        // hipEventSynchronize dereferences the stream of the last record
+        staging_->waitAll();
+        auto& pool = stagingPool();
+        std::lock_guard<std::mutex> lock(pool.mutex);
+        pool.free[device_].push_back(staging_);
+    }
+
+    StagingLease(const StagingLease&) = delete;
+    StagingLease& operator=(const StagingLease&) = delete;
+
+    PinnedStaging& operator*() const {
+        return *staging_;
+    }
+
+   private:
+    int device_;
+    PinnedStaging* staging_;
+};
+
+bool isPageableHostMemory(const void* p) {
+    hipPointerAttribute_t att;
+    if (hipPointerGetAttributes(&att, p) != hipSuccess) {
+        (void)hipGetLastError();
+        return true;
+    }
+    return att.type == hipMemoryTypeUnregistered;
+}
+
+void stagedHostToDevice(
+        char* dst,
+        const char* src,
+        size_t bytes,
+        hipStream_t stream) {
+    StagingLease lease;
+    auto& s = *lease;
+    for (size_t off = 0, i = 0; off < bytes; off += kStagingChunkBytes, ++i) {
+        const int b = i % kStagingBuffers;
+        const size_t n = std::min(kStagingChunkBytes, bytes - off);
+        s.wait(b);
+        std::memcpy(s.buf[b], src + off, n);
+        CUDA_VERIFY(hipMemcpyAsync(
+                dst + off, s.buf[b], n, hipMemcpyHostToDevice, stream));
+        s.record(b, stream);
+    }
+}
+
+void stagedDeviceToHost(
+        char* dst,
+        const char* src,
+        size_t bytes,
+        hipStream_t stream) {
+    StagingLease lease;
+    auto& s = *lease;
+    // The host copy of chunk i - 1 overlaps the device copy of chunk i
+    auto drain = [&](int b, size_t off, size_t n) {
+        s.wait(b);
+        std::memcpy(dst + off, s.buf[b], n);
+    };
+    int prevB = -1;
+    size_t prevOff = 0;
+    size_t prevN = 0;
+    for (size_t off = 0, i = 0; off < bytes; off += kStagingChunkBytes, ++i) {
+        const int b = i % kStagingBuffers;
+        const size_t n = std::min(kStagingChunkBytes, bytes - off);
+        s.wait(b);
+        CUDA_VERIFY(hipMemcpyAsync(
+                s.buf[b], src + off, n, hipMemcpyDeviceToHost, stream));
+        s.record(b, stream);
+        if (prevB >= 0) {
+            drain(prevB, prevOff, prevN);
+        }
+        prevB = b;
+        prevOff = off;
+        prevN = n;
+    }
+    if (prevB >= 0) {
+        drain(prevB, prevOff, prevN);
+    }
+}
+
+} // namespace
+#endif
+
+void memcpyHostDeviceAsync(
+        void* dst,
+        const void* src,
+        size_t bytes,
+        cudaMemcpyKind kind,
+        cudaStream_t stream) {
+#ifdef USE_AMD_ROCM
+    if (bytes > kMinStagedCopyBytes) {
+        if (kind == hipMemcpyHostToDevice && isPageableHostMemory(src)) {
+            stagedHostToDevice(
+                    static_cast<char*>(dst),
+                    static_cast<const char*>(src),
+                    bytes,
+                    stream);
+            return;
+        }
+        if (kind == hipMemcpyDeviceToHost && isPageableHostMemory(dst)) {
+            stagedDeviceToHost(
+                    static_cast<char*>(dst),
+                    static_cast<const char*>(src),
+                    bytes,
+                    stream);
+            return;
+        }
+    }
+#endif
+    CUDA_VERIFY(cudaMemcpyAsync(dst, src, bytes, kind, stream));
 }
 
 bool getFullUnifiedMemSupport(int device) {
