@@ -254,6 +254,7 @@ struct QuantizerTemplate<
  **********************************************************/
 
 // 1-bit Lloyd-Max AVX512: 16 comparisons → 2 bytes via mask compare.
+// NLT_UQ is !(x < b), matching the scalar upper_bound tie-break.
 template <>
 struct QuantizerLloydMax<1, SIMDLevel::AVX512>
         : QuantizerLloydMax<1, SIMDLevel::NONE> {
@@ -276,7 +277,7 @@ struct QuantizerLloydMax<1, SIMDLevel::AVX512>
         __m512 boundary = _mm512_set1_ps(this->boundaries[0]);
         for (size_t i = 0; i < this->d; i += 16) {
             __m512 vals = _mm512_loadu_ps(x + i);
-            __mmask16 mask = _mm512_cmp_ps_mask(vals, boundary, _CMP_GT_OQ);
+            __mmask16 mask = _mm512_cmp_ps_mask(vals, boundary, _CMP_NLT_UQ);
             uint16_t bits = _cvtmask16_u32(mask);
             memcpy(code + i / 8, &bits, sizeof(uint16_t));
         }
