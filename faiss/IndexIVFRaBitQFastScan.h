@@ -131,7 +131,9 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             uint8_t qb_param,
             bool centered_param,
             std::vector<float>& rotated_q,
-            std::vector<float>& centroid_buf) const;
+            std::vector<float>& centroid_buf,
+            std::vector<uint8_t>& rotated_qq,
+            float* rotated_q_out) const;
 
    private:
     /// Decode FastScan code to RaBitQ residual vector with explicit
@@ -399,7 +401,8 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
             unpack_buf.data(),
             ex_code,
             ex_fac,
-            query_factors.rotated_q.data(),
+            context->rotated_q ? context->rotated_q + storage_idx_val * dim
+                               : query_factors.rotated_q.data(),
             is_similarity ? query_factors.q_dot_c : query_factors.qr_to_c_L2sqr,
             dim,
             ex_bits,

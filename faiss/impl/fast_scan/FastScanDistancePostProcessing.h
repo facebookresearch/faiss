@@ -29,6 +29,10 @@ struct FastScanDistancePostProcessing {
     /// QueryFactorsData subset for this context.
     rabitq_utils::QueryFactorsData* query_factors = nullptr;
 
+    /// Multi-bit IVF RaBitQ: rotated query per (query, probe), d floats each,
+    /// indexed like query_factors (nullptr if unused).
+    float* rotated_q = nullptr;
+
     /// The nprobe value used when allocating query_factors storage.
     /// This is needed because the allocation size (n * nprobe) may use a
     /// different nprobe than index->nprobe if search params override it.

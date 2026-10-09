@@ -663,6 +663,9 @@ void IndexIVFFastScan::search_dispatch_implem(
                     if (thread_context.query_factors != nullptr) {
                         thread_context.query_factors += i0 * cur_nprobe;
                     }
+                    if (thread_context.rotated_q != nullptr) {
+                        thread_context.rotated_q += i0 * cur_nprobe * d;
+                    }
 
                     auto scanner = make_knn_scanner(
                             is_max,
