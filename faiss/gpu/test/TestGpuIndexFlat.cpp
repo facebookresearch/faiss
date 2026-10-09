@@ -991,6 +991,37 @@ TEST(TestGpuIndexFlat, ClusteringTrainExFloat16) {
     }
 }
 
+// add and reconstruct_n copy the whole vector set between host and device in
+// one copy. On ROCm, a pageable copy of more than 64 KiB goes through 16 MiB
+// pinned chunks: 17 vectors take one chunk, and 10,500 vectors take two full
+// chunks and a partial one. Each size has its own resources, so the second
+// size reuses the pinned chunks after the streams of the first are destroyed.
+TEST(TestGpuIndexFlat, LargeHostCopyRoundTrip) {
+    int dim = 1000;
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+    for (int numVecs : {17, 10500}) {
+        faiss::gpu::StandardGpuResources res;
+        res.noTempMemory();
+
+        faiss::gpu::GpuIndexFlatConfig config;
+        config.device = device;
+
+        faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
+        std::vector<float> vecs = faiss::gpu::randVecs(numVecs, dim);
+        gpuIndex.add(numVecs, vecs.data());
+
+        std::vector<float> out(vecs.size());
+        gpuIndex.reconstruct_n(0, numVecs, out.data());
+
+        // Report the first difference; printing millions of values is useless
+        size_t firstDiff =
+                std::mismatch(out.begin(), out.end(), vecs.begin()).first -
+                out.begin();
+        EXPECT_EQ(firstDiff, out.size()) << "numVecs " << numVecs;
+    }
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
 

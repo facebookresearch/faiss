@@ -77,12 +77,12 @@ class DeviceVector {
 
         if (num_ > 0) {
             FAISS_ASSERT(data());
-            CUDA_VERIFY(cudaMemcpyAsync(
+            memcpyHostDeviceAsync(
                     out.data(),
                     data(),
                     num_ * sizeof(T),
                     cudaMemcpyDeviceToHost,
-                    stream));
+                    stream);
         }
 
         return out;
@@ -108,12 +108,12 @@ class DeviceVector {
 
             int dev = getDeviceForAddress(d);
             if (dev == -1) {
-                CUDA_VERIFY(cudaMemcpyAsync(
+                memcpyHostDeviceAsync(
                         data() + num_,
                         d,
                         n * sizeof(T),
                         cudaMemcpyHostToDevice,
-                        stream));
+                        stream);
             } else {
                 CUDA_VERIFY(cudaMemcpyAsync(
                         data() + num_,
