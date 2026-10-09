@@ -27,6 +27,7 @@ void IVFINT_RUN<
         const int k,
         SUB_METRIC_TYPE metric,
         const bool useResidual,
+        const bool tieBreak,
         Tensor<float, 3, true>& residualBase,
         GpuScalarQuantizer* scalarQ,
         Tensor<float, 2, true>& outDistances,
@@ -60,22 +61,27 @@ void IVFINT_RUN<
                     residualBase,
                     listIds,
                     listData.data(),
+                    listIndices.data(),
+                    indicesOptions,
                     listLengths.data(),
                     codec,
                     metric,
                     k,
                     distanceTemp,
                     indicesTemp,
-                    useResidual);
+                    useResidual,
+                    tieBreak);
 
     runIVFInterleavedScan2(
             distanceTemp,
             indicesTemp,
             listIds,
+            listLengths,
             k,
             listIndices,
             indicesOptions,
             SUB_METRIC_TYPE::kDirection,
+            tieBreak,
             outDistances,
             outIndices,
             stream);
