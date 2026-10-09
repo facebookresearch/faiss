@@ -156,7 +156,7 @@ struct InvertedLists {
      * high level functions  */
 
     /// move all entries from oivf (empty on output)
-    void merge_from(InvertedLists* oivf, size_t add_id);
+    virtual void merge_from(InvertedLists* oivf, size_t add_id);
 
     // how to copy a subset of elements from the inverted lists
     // This depends on two integers, a1 and a2.

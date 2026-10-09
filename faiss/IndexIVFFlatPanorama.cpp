@@ -199,4 +199,14 @@ void IndexIVFFlatPanorama::reconstruct_from_offset(
            code_size);
 }
 
+void IndexIVFFlatPanorama::check_compatible_for_merge(
+        const Index& otherIndex) const {
+    IndexIVF::check_compatible_for_merge(otherIndex);
+    const IndexIVFFlatPanorama* other =
+            dynamic_cast<const IndexIVFFlatPanorama*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->n_levels == n_levels);
+    FAISS_THROW_IF_NOT(other->batch_size == batch_size);
+}
+
 } // namespace faiss
