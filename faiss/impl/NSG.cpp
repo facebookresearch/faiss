@@ -15,6 +15,7 @@
 
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -352,7 +353,7 @@ void NSG::link(
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
 
-#pragma omp for schedule(dynamic, 100)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC, 100)
         for (int i = 0; i < ntotal; i++) {
             storage->reconstruct(i, vec.get());
             dis->set_query(vec.get());
@@ -375,7 +376,7 @@ void NSG::link(
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
 
-#pragma omp for schedule(dynamic, 100)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC, 100)
         for (int i = 0; i < ntotal; ++i) {
             add_reverse_links(i, locks, *dis, graph);
         }

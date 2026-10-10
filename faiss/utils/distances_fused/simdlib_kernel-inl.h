@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
 
 namespace faiss {
@@ -267,7 +268,7 @@ void exhaustive_L2sqr_fused_cmax(
 
     const size_t nx_p = (nx / NX_POINTS_PER_LOOP) * NX_POINTS_PER_LOOP;
     // the main loop.
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (int64_t i = 0; i < static_cast<int64_t>(nx_p);
          i += NX_POINTS_PER_LOOP) {
         kernel<DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP, SL>(
