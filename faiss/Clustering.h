@@ -86,8 +86,9 @@ struct ClusteringParameters {
 };
 
 struct ClusteringIterationStats {
-    float obj;   ///< objective values (sum of distances reported by index)
-    double time; ///< seconds for iteration
+    /// Sum of distances reported by index, weighted if weights are provided.
+    float obj;
+    double time;             ///< seconds for iteration
     double time_search;      ///< seconds for just search
     double imbalance_factor; ///< imbalance factor of iteration
     int nsplit;              ///< number of cluster splits
