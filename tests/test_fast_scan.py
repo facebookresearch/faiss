@@ -821,3 +821,26 @@ class TestBlockDecode(unittest.TestCase):
             0, ::100
         ]
         np.testing.assert_array_equal(decoded, index.reconstruct(0)[::100])
+
+
+@for_all_simd_levels
+class TestQBSDefaultImplem(unittest.TestCase):
+    """QBS values through the default search implementation, whose 4-step
+    QBS loop is also instantiated in the AVX512 TU (AVX2 fallback and the
+    Zen 4 split path). AVX512 code reached from the AVX2 path only fails
+    here on a CPU without AVX512 (or under qemu-x86_64); on other hosts the
+    symbol-isolation scan is what catches it."""
+
+    def test_qbs_match_default(self):
+        rs = np.random.RandomState(123)
+        d = 32
+        xb = rs.rand(5000, d).astype("float32")
+        xq = rs.rand(64, d).astype("float32")
+        index = faiss.index_factory(d, "PQ16x4fs")
+        index.train(xb)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+        for qbs in (0x6, 0x34, 0x222):
+            index.qbs = qbs
+            D, I = index.search(xq, 10)
+            verify_with_draws(self, Dref, Iref, D, I)

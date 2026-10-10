@@ -132,29 +132,17 @@ struct ScannerMixIn : FastScanCodeScanner {
             // a process-constant runtime branch, hoisted out of the inner
             // accumulate loop. Intel AVX-512 keeps the 512-bit kernel.
             if (SIMDConfig::avx512_split) {
-                if (pq2x4_scale) {
-                    NormTableScaler<SIMDLevel::AVX2> scaler(pq2x4_scale);
-                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
-                            qbs,
-                            nb,
-                            nsq,
-                            codes,
-                            LUT,
-                            handler_,
-                            scaler,
-                            block_stride);
-                } else {
-                    DummyScaler<SIMDLevel::AVX2> dummy;
-                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
-                            qbs,
-                            nb,
-                            nsq,
-                            codes,
-                            LUT,
-                            handler_,
-                            dummy,
-                            block_stride);
-                }
+                // Not the shared AVX2 instantiation: see
+                // pq4_accumulate_loop_qbs_avx2_in_avx512_tu.
+                pq4_accumulate_loop_qbs_avx2_in_avx512_tu(
+                        qbs,
+                        nb,
+                        nsq,
+                        codes,
+                        LUT,
+                        handler_,
+                        pq2x4_scale,
+                        block_stride);
             } else if (pq2x4_scale) {
                 // Use 512-bit QBS kernels with properly-leveled scalers.
                 NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);

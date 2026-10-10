@@ -218,8 +218,16 @@ struct StoreResultHandler : SIMDResultHandler<SL> {
     }
 };
 
-/** stores results in fixed-size matrix. */
-template <int NQ, int BB, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+/** stores results in fixed-size matrix.
+ *
+ * LinkageTag is unused by the handler. Passing a type local to a TU gives the
+ * instantiation (and its out-of-line virtual handle()) internal linkage, so a
+ * copy compiled with other SIMD flags cannot be shared with other TUs. */
+template <
+        int NQ,
+        int BB,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256,
+        class LinkageTag = void>
 struct FixedStorageHandler : SIMDResultHandler<SL> {
     using typename SIMDResultHandler<SL>::simd16uint16;
 

@@ -44,6 +44,43 @@ namespace faiss {
 
 using namespace simd_result_handlers;
 
+namespace {
+
+// The fallback below runs the AVX2 QBS loop. Instantiated with a scaler type
+// local to this TU, that loop and its kernels get internal linkage. With the
+// shared AVX2 scaler types they would be the same symbols the AVX2 TU emits,
+// compiled here with AVX512 flags, and the linker could hand these copies to
+// the AVX2 path, which then raises SIGILL on CPUs without AVX512.
+struct Avx512TUDummyScaler : DummyScaler<SIMDLevel::AVX2> {};
+
+struct Avx512TUNormTableScaler : NormTableScaler<SIMDLevel::AVX2> {
+    using NormTableScaler<SIMDLevel::AVX2>::NormTableScaler;
+};
+
+} // namespace
+
+/// The AVX2 QBS loop, for callers in this TU (scale 0 means no norm table).
+template <class ResultHandler>
+void pq4_accumulate_loop_qbs_avx2_in_avx512_tu(
+        int qbs,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT0,
+        ResultHandler& res,
+        int scale,
+        size_t block_stride) {
+    if (scale) {
+        Avx512TUNormTableScaler scaler(scale);
+        pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
+                qbs, ntotal2, nsq, codes, LUT0, res, scaler, block_stride);
+    } else {
+        Avx512TUDummyScaler scaler;
+        pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
+                qbs, ntotal2, nsq, codes, LUT0, res, scaler, block_stride);
+    }
+}
+
 /***************************************************************
  * FixedStorage512: non-virtual intermediate result storage
  * for 512-bit kernels.
@@ -177,15 +214,12 @@ void pq4_accumulate_loop_qbs_fixed_scaler_512(
 
     // Fallback for unknown QBS values: use 256-bit path.
     // This is rare — pq4_preferred_qbs() covers all values above.
-    if constexpr (Scaler::nscale == 0) {
-        DummyScaler<SIMDLevel::AVX2> scaler_avx2;
-        pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
-                qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
-    } else {
-        NormTableScaler<SIMDLevel::AVX2> scaler_avx2(scaler.scale_int);
-        pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
-                qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
+    int scale = 0;
+    if constexpr (Scaler::nscale != 0) {
+        scale = scaler.scale_int;
     }
+    pq4_accumulate_loop_qbs_avx2_in_avx512_tu(
+            qbs, ntotal2, nsq, codes, LUT0, res, scale, block_stride);
 }
 
 } // namespace faiss
