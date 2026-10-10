@@ -149,6 +149,7 @@ void hammings_knn_mc_impl(
     std::unique_ptr<int64_t[]> all_ids_per_dis(new int64_t[na * nBuckets * k]);
 
     std::vector<HCounterState<HammingComputer>> cs;
+    cs.reserve(na);
     for (size_t i = 0; i < na; ++i) {
         cs.push_back(
                 HCounterState<HammingComputer>(

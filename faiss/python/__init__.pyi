@@ -1531,6 +1531,8 @@ class InvertedLists:
     def list_size(self, list_no: int) -> int: ...
     def get_codes(self, list_no: int) -> npt.NDArray[np.uint8]: ...
     def get_ids(self, list_no: int) -> npt.NDArray[np.int64]: ...
+    def release_codes(self, list_no: int, codes: Any) -> None: ...
+    def release_ids(self, list_no: int, ids: Any) -> None: ...
     def add_entries(
         self,
         list_no: int,
@@ -1939,12 +1941,23 @@ class HNSWStats:
     n3: int
     ndis: int
     nreorder: int
+class RaBitQStats:
+    n_1bit: int
+    n_refine: int
+
+    def reset(self) -> None: ...
+    def add(self, other: RaBitQStats) -> None: ...
+    def refine_ratio(self) -> float: ...
 
 class HNSW:
+    SM_DEFAULT: int
+    SM_PANORAMA: int
+    SM_RABITQ: int
     max_level: int
     entry_point: int
     efConstruction: int
     efSearch: int
+    search_method: int
     hnsw_stats: HNSWStats
     assign_probas: Float32Vector
     cum_nneighbor_per_level: Int32Vector
@@ -2005,6 +2018,15 @@ class IndexHNSWSQ(IndexHNSW):
         d: int,
         sq: ScalarQuantizer,
         M: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+
+class IndexHNSWRaBitQ(IndexHNSW):
+    def __init__(
+        self,
+        d: int,
+        M: int,
+        nb_bits: int = 1,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
 
@@ -2628,6 +2650,7 @@ class ClusteringParameters:
     init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
+    use_super_kmeans: bool  # route through SuperKMeans when supported
 
     def __init__(self) -> None: ...
 
@@ -3066,7 +3089,10 @@ SIMDLevel_AVX512_SPR: int
 SIMDLevel_ARM_NEON: int
 SIMDLevel_ARM_SVE: int
 SIMDLevel_RISCV_RVV: int
+SIMDLevel_AVX512_VPOPCNT: int
 SIMDLevel_COUNT: int
+
+def compiled_simd_levels() -> int: ...
 
 class SIMDConfig:
     level: int
@@ -3090,6 +3116,8 @@ class SIMDConfig:
 # Utility functions
 def get_mem_usage_kb() -> int: ...
 def get_compile_options() -> str: ...
+def set_search_stats_enabled(enabled: bool) -> None: ...
+def get_search_stats_enabled() -> bool: ...
 def check_openmp() -> bool: ...
 def shard_ivf_index_centroids(
     index: IndexIVF,
@@ -3905,6 +3933,7 @@ class IndexSVSVamana(Index):
     use_full_search_history: bool
     is_static: bool
     storage_kind: SVSStorageKind
+    store_vectors: bool
 
     def __init__(
         self,
@@ -3913,6 +3942,7 @@ class IndexSVSVamana(Index):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_FP32,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
     @staticmethod
     def is_lvq_leanvec_enabled() -> bool: ...
@@ -3925,6 +3955,7 @@ class IndexSVSVamanaLVQ(IndexSVSVamana):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_LVQ4x0,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSVamanaLeanVec(IndexSVSVamana):
@@ -3938,6 +3969,7 @@ class IndexSVSVamanaLeanVec(IndexSVSVamana):
         leanvec_dims: int = 0,
         storage: SVSStorageKind = SVS_LeanVec4x4,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSIVF(Index):
@@ -4128,6 +4160,8 @@ class GpuIndexIVF(GpuIndex, IndexIVFInterface): ...
 
 class GpuIndexIVFConfig(GpuIndexConfig):
     """Configuration for GPU IVF indices"""
+
+    deterministic_tie_break: bool
 
     def __init__(self) -> None: ...
 
@@ -4356,7 +4390,6 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
-    hnsw_deterministic_build: bool
 
 cvar: _SwigGlobals
 
@@ -4493,6 +4526,7 @@ class GpuClonerOptions:
     verbose: bool
     use_cuvs: bool
     allowCpuCoarseQuantizer: bool
+    deterministic_tie_break: bool
 
     def __init__(self) -> None: ...
 

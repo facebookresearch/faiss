@@ -5,14 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/Clustering.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/utils/fp16.h>
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <cstdint>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -806,6 +811,185 @@ TEST(TestCuvsGpuIndexFlat, IDSelector_IP) {
     testIDSelectorFlat(faiss::METRIC_INNER_PRODUCT);
 }
 #endif
+
+// Packs float vectors as IEEE binary16, the Float16 input of search_ex
+std::vector<uint16_t> toFp16(const std::vector<float>& v) {
+    std::vector<uint16_t> out(v.size());
+    std::transform(v.begin(), v.end(), out.begin(), [](float f) {
+        return faiss::encode_fp16(f);
+    });
+    return out;
+}
+
+std::vector<float> fromFp16(const std::vector<uint16_t>& v) {
+    std::vector<float> out(v.size());
+    std::transform(v.begin(), v.end(), out.begin(), [](uint16_t h) {
+        return faiss::decode_fp16(h);
+    });
+    return out;
+}
+
+// A copy of host data on a GPU device
+struct DeviceCopy {
+    DeviceCopy(int device, const void* src, size_t bytes) {
+        faiss::gpu::DeviceScope scope(device);
+        CUDA_VERIFY(cudaMalloc(&data, bytes));
+        CUDA_VERIFY(cudaMemcpy(data, src, bytes, cudaMemcpyHostToDevice));
+    }
+
+    DeviceCopy(const DeviceCopy&) = delete;
+    DeviceCopy& operator=(const DeviceCopy&) = delete;
+
+    ~DeviceCopy() {
+        CUDA_VERIFY(cudaFree(data));
+    }
+
+    void* data = nullptr;
+};
+
+// search_ex on Float16 queries must return exactly what search returns on the
+// float32 queries rounded to fp16, as the rounded values are what the index
+// computes with, whether the queries are on the host (paged or not) or on the
+// device
+void testSearchExFloat16(faiss::gpu::GpuIndex& index) {
+    int numQuery = faiss::gpu::randVal(1, 512);
+    int k = std::min(faiss::gpu::randVal(1, 50), int(index.ntotal));
+
+    auto queries = faiss::gpu::randVecs(numQuery, index.d);
+    auto queries16 = toFp16(queries);
+    auto roundedQueries = fromFp16(queries16);
+
+    std::vector<float> refDistances(numQuery * k);
+    std::vector<faiss::idx_t> refLabels(numQuery * k);
+    index.search(
+            numQuery,
+            roundedQueries.data(),
+            k,
+            refDistances.data(),
+            refLabels.data());
+
+    auto expectSearchExMatches = [&](const void* x, const std::string& where) {
+        std::vector<float> distances(numQuery * k, 0);
+        std::vector<faiss::idx_t> labels(numQuery * k, -1);
+        index.search_ex(
+                numQuery,
+                x,
+                faiss::NumericType::Float16,
+                k,
+                distances.data(),
+                labels.data());
+
+        EXPECT_EQ(labels, refLabels) << where;
+        EXPECT_EQ(distances, refDistances) << where;
+    };
+
+    expectSearchExMatches(queries16.data(), "host queries");
+
+    auto minPagingSize = index.getMinPagingSize();
+    index.setMinPagingSize(0);
+    expectSearchExMatches(queries16.data(), "paged host queries");
+    index.setMinPagingSize(minPagingSize);
+
+    DeviceCopy queries16Device(
+            index.getDevice(),
+            queries16.data(),
+            queries16.size() * sizeof(uint16_t));
+    expectSearchExMatches(queries16Device.data, "device queries");
+}
+
+// Covers both float32 storage (queries widened on the device) and float16
+// storage (queries searched natively)
+template <typename GpuIndexFlatT>
+void testFlatSearchExFloat16() {
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    int dim = faiss::gpu::randVal(50, 400);
+    int numVecs = faiss::gpu::randVal(1000, 5000);
+    auto vecs = faiss::gpu::randVecs(numVecs, dim);
+
+    for (bool useFloat16 : {false, true}) {
+        faiss::gpu::GpuIndexFlatConfig config;
+        config.device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+        config.useFloat16 = useFloat16;
+
+        GpuIndexFlatT gpuIndex(&res, dim, config);
+        gpuIndex.add(numVecs, vecs.data());
+
+        SCOPED_TRACE(useFloat16 ? "useFloat16" : "float32 storage");
+        testSearchExFloat16(gpuIndex);
+    }
+}
+
+TEST(TestGpuIndexFlat, SearchExFloat16_L2) {
+    testFlatSearchExFloat16<faiss::gpu::GpuIndexFlatL2>();
+}
+
+TEST(TestGpuIndexFlat, SearchExFloat16_IP) {
+    testFlatSearchExFloat16<faiss::gpu::GpuIndexFlatIP>();
+}
+
+// Indexes without a native fp16 search widen the queries on the device
+TEST(TestGpuIndexFlat, SearchExFloat16_IVFFlatDefault) {
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    int dim = 64;
+    int numVecs = 5000;
+    auto vecs = faiss::gpu::randVecs(numVecs, dim);
+
+    faiss::gpu::GpuIndexIVFFlatConfig config;
+    config.device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+    int numLists = 32;
+    faiss::gpu::GpuIndexIVFFlat gpuIndex(
+            &res, dim, numLists, faiss::METRIC_L2, config);
+    gpuIndex.nprobe = 4;
+    gpuIndex.train(numVecs, vecs.data());
+    gpuIndex.add(numVecs, vecs.data());
+
+    testSearchExFloat16(gpuIndex);
+}
+
+// k-means on fp16 data with a GPU assignment index must match k-means on the
+// float32 rounding of that data with the same kind of index
+TEST(TestGpuIndexFlat, ClusteringTrainExFloat16) {
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    int dim = 32;
+    int numCentroids = 20;
+    // Fits in a single decode block, so that both runs search the same batches
+    int numVecs = 2000;
+    auto vecs = faiss::gpu::randVecs(numVecs, dim);
+    auto vecs16 = toFp16(vecs);
+    auto roundedVecs = fromFp16(vecs16);
+
+    faiss::ClusteringParameters cp;
+    cp.niter = 10;
+
+    for (bool useFloat16 : {false, true}) {
+        faiss::gpu::GpuIndexFlatConfig config;
+        config.device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+        config.useFloat16 = useFloat16;
+
+        faiss::gpu::GpuIndexFlatL2 refIndex(&res, dim, config);
+        faiss::Clustering refClustering(dim, numCentroids, cp);
+        refClustering.train(numVecs, roundedVecs.data(), refIndex);
+
+        faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
+        faiss::Clustering clustering(dim, numCentroids, cp);
+        clustering.train_ex(
+                numVecs, vecs16.data(), faiss::NumericType::Float16, gpuIndex);
+
+        ASSERT_EQ(clustering.centroids.size(), refClustering.centroids.size());
+        for (size_t i = 0; i < clustering.centroids.size(); ++i) {
+            EXPECT_NEAR(
+                    clustering.centroids[i], refClustering.centroids[i], 1e-5f)
+                    << "useFloat16 " << useFloat16 << " element " << i;
+        }
+    }
+}
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

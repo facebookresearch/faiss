@@ -6,6 +6,7 @@
  */
 
 #include <faiss/IndexIVF.h>
+#include <faiss/SuperKMeans.h>
 
 #include <omp.h>
 #include <atomic>
@@ -16,7 +17,9 @@
 #include <cinttypes>
 #include <cstdio>
 #include <limits>
+#include <optional>
 
+#include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexFlat.h>
@@ -52,42 +55,96 @@ Level1Quantizer::~Level1Quantizer() {
     }
 }
 
-void Level1Quantizer::train_q1(
+namespace {
+
+/** Trains `q1` on rows encoded by `codec` or, if codec is null, stored as
+ * `numeric_type`. */
+void train_q1_impl(
+        Level1Quantizer& q1,
         size_t n,
-        const float* x,
+        const uint8_t* x,
+        NumericType numeric_type,
+        const Index* codec,
         bool verbose,
         MetricType metric_type) {
+    Index* quantizer = q1.quantizer;
+    const size_t nlist = q1.nlist;
+    const ClusteringParameters& cp = q1.cp;
+    Index* clustering_index = q1.clustering_index;
+
+    // k-means on the training rows, with `assigner` as assignment index
+    auto train_clustering = [&](Clustering& clus, Index& assigner) {
+        if (codec) {
+            clus.train_encoded(n, x, codec, assigner);
+        } else {
+            clus.train_ex(n, x, numeric_type, assigner);
+        }
+    };
+
     FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     size_t d = quantizer->d;
+    FAISS_THROW_IF_NOT_FMT(
+            !codec || static_cast<size_t>(codec->d) == d,
+            "Codec dimension %d not the same as quantizer dimension %d",
+            codec ? codec->d : 0,
+            int(d));
     if (quantizer->is_trained &&
         (static_cast<size_t>(quantizer->ntotal) == nlist)) {
         if (verbose) {
             printf("IVF quantizer does not need training.\n");
         }
-    } else if (quantizer_trains_alone == 1) {
+    } else if (q1.quantizer_trains_alone == 1) {
+        FAISS_THROW_IF_MSG(
+                codec,
+                "encoded training is not supported when the IVF quantizer "
+                "trains alone");
         if (verbose) {
             printf("IVF quantizer trains alone...\n");
         }
         quantizer->verbose = verbose;
-        quantizer->train(n, x);
+        quantizer->train_ex(n, x, numeric_type);
         FAISS_THROW_IF_NOT_MSG(
                 static_cast<size_t>(quantizer->ntotal) == nlist,
                 "nlist not consistent with quantizer size");
-    } else if (quantizer_trains_alone == 0) {
+    } else if (q1.quantizer_trains_alone == 0) {
         if (verbose) {
             printf("Training level-1 quantizer on %zd vectors in %zdD\n", n, d);
         }
 
-        Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
+        FAISS_THROW_IF_MSG(
+                cp.use_super_kmeans && clustering_index,
+                "cp.use_super_kmeans is incompatible with a user-provided "
+                "clustering_index: SuperKMeans assigns with its own index");
+        FAISS_THROW_IF_MSG(
+                cp.use_super_kmeans && codec,
+                "SuperKMeans does not support encoded training data");
+        FAISS_THROW_IF_MSG(
+                cp.use_super_kmeans &&
+                        !(metric_type == METRIC_L2 ||
+                          (metric_type == METRIC_INNER_PRODUCT &&
+                           cp.spherical)),
+                "SuperKMeans requires L2 or spherical inner-product "
+                "clustering");
+
         quantizer->reset();
-        if (clustering_index) {
-            clus.train(n, x, *clustering_index);
+        if (cp.use_super_kmeans) {
+            SuperKMeansParameters super_cp;
+            static_cast<ClusteringParameters&>(super_cp) = cp;
+            SuperKMeans clus(
+                    static_cast<int>(d), static_cast<int>(nlist), super_cp);
+            clus.train_ex(n, x, numeric_type);
             quantizer->add(nlist, clus.centroids.data());
         } else {
-            clus.train(n, x, *quantizer);
+            Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
+            if (clustering_index) {
+                train_clustering(clus, *clustering_index);
+                quantizer->add(nlist, clus.centroids.data());
+            } else {
+                train_clustering(clus, *quantizer);
+            }
         }
         quantizer->is_trained = true;
-    } else if (quantizer_trains_alone == 2) {
+    } else if (q1.quantizer_trains_alone == 2) {
         if (verbose) {
             printf("Training L2 quantizer on %zd vectors in %zdD%s\n",
                    n,
@@ -103,9 +160,9 @@ void Level1Quantizer::train_q1(
         Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
         if (!clustering_index) {
             IndexFlatL2 assigner(d);
-            clus.train(n, x, assigner);
+            train_clustering(clus, assigner);
         } else {
-            clus.train(n, x, *clustering_index);
+            train_clustering(clus, *clustering_index);
         }
         if (verbose) {
             printf("Adding centroids to quantizer\n");
@@ -118,6 +175,42 @@ void Level1Quantizer::train_q1(
         }
         quantizer->add(nlist, clus.centroids.data());
     }
+}
+
+} // namespace
+
+void Level1Quantizer::train_q1(
+        size_t n,
+        const float* x,
+        bool verbose,
+        MetricType metric_type) {
+    train_q1_ex(n, x, NumericType::Float32, verbose, metric_type);
+}
+
+void Level1Quantizer::train_q1_ex(
+        size_t n,
+        const void* x,
+        NumericType numeric_type,
+        bool verbose,
+        MetricType metric_type) {
+    train_q1_impl(
+            *this,
+            n,
+            static_cast<const uint8_t*>(x),
+            numeric_type,
+            nullptr,
+            verbose,
+            metric_type);
+}
+
+void Level1Quantizer::train_q1_encoded(
+        size_t n,
+        const uint8_t* x,
+        const Index* codec,
+        bool verbose,
+        MetricType metric_type) {
+    train_q1_impl(
+            *this, n, x, NumericType::Float32, codec, verbose, metric_type);
 }
 
 size_t Level1Quantizer::coarse_code_size() const {
@@ -422,18 +515,20 @@ void IndexIVF::search_preassigned(
     const bool ensure_topk_full = params ? params->ensure_topk_full : false;
 
     IDSelector* sel = params ? params->sel : nullptr;
+    FAISS_THROW_IF_NOT_MSG(
+            !(sel && store_pairs),
+            "selector and store_pairs cannot be combined");
+
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
     if (selr) {
-        if (selr->assume_sorted) {
+        // The sorted-range shortcut bounds a section of an array-backed list,
+        // so an iterable list has to keep the selector and filter per entry.
+        if (selr->assume_sorted && !invlists->use_iterator) {
             sel = nullptr; // use special IDSelectorRange processing
         } else {
             selr = nullptr; // use generic processing
         }
     }
-
-    FAISS_THROW_IF_NOT_MSG(
-            !(sel && store_pairs),
-            "selector and store_pairs cannot be combined");
 
     FAISS_THROW_IF_NOT_MSG(
             !invlists->use_iterator ||
@@ -553,10 +648,9 @@ void IndexIVF::search_preassigned(
                     return (size_t)0;
                 }
 
-                scanner->set_list(key, coarse_dis_i);
-
                 nlistv++;
                 if (invlists->use_iterator) {
+                    scanner->set_list(key, coarse_dis_i);
                     size_t list_size = 0;
                     std::unique_ptr<InvertedListsIterator> it(
                             invlists->get_iterator(key, inverted_list_context));
@@ -571,30 +665,29 @@ void IndexIVF::search_preassigned(
                         list_size = static_cast<size_t>(list_size_max);
                     }
 
-                    InvertedLists::ScopedCodes scodes(invlists, key);
-                    const uint8_t* codes = scodes.get();
-
-                    std::unique_ptr<InvertedLists::ScopedIds> sids;
+                    std::optional<InvertedLists::ScopedIds> sids;
                     const idx_t* ids = nullptr;
-
                     if (!store_pairs) {
-                        sids = std::make_unique<InvertedLists::ScopedIds>(
-                                invlists, key);
+                        sids.emplace(invlists, key);
                         ids = sids->get();
                     }
 
+                    size_t jmin = 0;
                     if (selr) { // IDSelectorRange
                         // restrict search to a section of the inverted list
-                        size_t jmin, jmax;
+                        size_t jmax;
                         selr->find_sorted_ids_bounds(
                                 list_size, ids, &jmin, &jmax);
                         list_size = jmax - jmin;
                         if (list_size == 0) {
                             return (size_t)0;
                         }
-                        codes += jmin * code_size;
                         ids += jmin;
                     }
+
+                    scanner->set_list(key, coarse_dis_i);
+                    InvertedLists::ScopedCodes scodes(invlists, key);
+                    const uint8_t* codes = scodes.get() + jmin * code_size;
 
                     size_t old_scan_cnt = 0;
                     size_t old_heap_updates = 0;
@@ -1293,6 +1386,125 @@ void IndexIVF::update_vectors(int n, const idx_t* new_ids, const float* x) {
             invlists, n, new_ids, assign.data(), flat_codes.data());
 }
 
+namespace {
+
+/** Trains the encoder of `ivf` on training rows that are not fp32.
+ *
+ * Only the train_encoder_num_vectors() rows sampled for the encoder are
+ * widened to fp32. `decode_rows(n, rows, out)` widens n consecutive rows of
+ * `row_size` bytes.
+ */
+template <class DecodeRows>
+void train_encoder_on_encoded_rows(
+        IndexIVF& ivf,
+        idx_t n,
+        const uint8_t* x,
+        size_t row_size,
+        const DecodeRows& decode_rows) {
+    const size_t d = ivf.d;
+    idx_t max_nt = ivf.train_encoder_num_vectors();
+    if (max_nt <= 0 || n <= max_nt) {
+        max_nt = n;
+    }
+
+    std::vector<float> decoded(static_cast<size_t>(max_nt) * d);
+    if (max_nt == n) {
+        decode_rows(n, x, decoded.data());
+    } else {
+        FAISS_THROW_IF_NOT_FMT(
+                n <= static_cast<idx_t>(std::numeric_limits<int>::max()),
+                "Dataset too large (%" PRId64 ") for standard subsampling",
+                n);
+        if (ivf.verbose) {
+            printf("  Input training set too big (max size is %" PRId64
+                   "), sampling %" PRId64 " / %" PRId64 " vectors\n",
+                   max_nt,
+                   max_nt,
+                   n);
+        }
+        std::vector<int> subset(static_cast<size_t>(n));
+        rand_perm(subset.data(), n, 1234);
+        for (idx_t i = 0; i < max_nt; ++i) {
+            decode_rows(
+                    1,
+                    x + static_cast<size_t>(subset[i]) * row_size,
+                    decoded.data() + static_cast<size_t>(i) * d);
+        }
+    }
+    n = max_nt;
+
+    if (ivf.by_residual) {
+        FAISS_THROW_IF_NOT_MSG(ivf.quantizer, "IVF quantizer must not be null");
+        std::vector<idx_t> assign(n);
+        ivf.quantizer->assign(n, decoded.data(), assign.data());
+
+        std::vector<float> residuals(static_cast<size_t>(n) * d);
+        ivf.quantizer->compute_residual_n(
+                n, decoded.data(), residuals.data(), assign.data());
+
+        ivf.train_encoder(n, residuals.data(), assign.data());
+    } else {
+        ivf.train_encoder(n, decoded.data(), nullptr);
+    }
+}
+
+} // namespace
+
+void IndexIVF::train_ex(idx_t n, const void* x, NumericType numeric_type) {
+    if (numeric_type != NumericType::Float16) {
+        Index::train_ex(n, x, numeric_type);
+        return;
+    }
+    FAISS_THROW_IF_NOT_MSG(x, "training data must not be null");
+    if (verbose) {
+        printf("Training level-1 quantizer on fp16 data\n");
+    }
+
+    train_q1_ex(n, x, numeric_type, verbose, metric_type);
+
+    if (verbose) {
+        printf("Training IVF residual\n");
+    }
+
+    const size_t dim = d;
+    train_encoder_on_encoded_rows(
+            *this,
+            n,
+            static_cast<const uint8_t*>(x),
+            sizeof(uint16_t) * dim,
+            [dim](idx_t ni, const uint8_t* rows, float* out) {
+                fp16_to_fp32(
+                        ni * dim, reinterpret_cast<const uint16_t*>(rows), out);
+            });
+
+    is_trained = true;
+}
+
+void IndexIVF::train_encoded(idx_t n, const uint8_t* x, const Index* codec) {
+    FAISS_THROW_IF_NOT_MSG(codec, "encoded training requires a codec");
+    FAISS_THROW_IF_NOT_MSG(x, "encoded training data must not be null");
+    if (verbose) {
+        printf("Training level-1 quantizer\n");
+    }
+
+    train_q1_encoded(n, x, codec, verbose, metric_type);
+
+    if (verbose) {
+        printf("Training IVF residual\n");
+    }
+
+    train_encoder_on_encoded_rows(
+            *this,
+            n,
+            x,
+            codec->sa_code_size(),
+            [codec](idx_t ni, const uint8_t* rows, float* out) {
+                codec->sa_decode(ni, rows, out);
+            });
+
+    is_trained = true;
+}
+
 void IndexIVF::train(idx_t n, const float* x) {
     if (verbose) {
         printf("Training level-1 quantizer\n");
@@ -1483,6 +1695,9 @@ size_t InvertedListScanner::iterate_codes(
     if (!keep_max) {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
+            if (sel && !sel->is_member(id_and_codes.first)) {
+                continue;
+            }
             float dis = distance_to_code(id_and_codes.second);
             if (has_cb) {
                 it->on_distance_computed(id_and_codes.first, dis);
@@ -1499,6 +1714,9 @@ size_t InvertedListScanner::iterate_codes(
     } else {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
+            if (sel && !sel->is_member(id_and_codes.first)) {
+                continue;
+            }
             float dis = distance_to_code(id_and_codes.second);
             if (has_cb) {
                 it->on_distance_computed(id_and_codes.first, dis);
@@ -1546,6 +1764,9 @@ void InvertedListScanner::iterate_codes_range(
     list_size = 0;
     for (; it->is_available(); it->next()) {
         auto id_and_codes = it->get_id_and_codes();
+        if (sel && !sel->is_member(id_and_codes.first)) {
+            continue;
+        }
         float dis = distance_to_code(id_and_codes.second);
         bool keep = !keep_max
                 ? dis < radius

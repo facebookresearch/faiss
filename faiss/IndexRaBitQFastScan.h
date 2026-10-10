@@ -195,10 +195,12 @@ struct RaBitQHeapHandler
         float* const heap_dis = heap_distances + q * k;
         int64_t* const heap_ids = heap_labels + q * k;
 
-        rabitq_utils::QueryFactorsData query_factors_data = {};
-        if (context && context->query_factors != nullptr) {
-            query_factors_data = context->query_factors[q];
-        }
+        // Not a copy: QueryFactorsData owns a std::vector (malloc per block).
+        static const rabitq_utils::QueryFactorsData kNoQueryFactors{};
+        const rabitq_utils::QueryFactorsData& query_factors_data =
+                (context && context->query_factors != nullptr)
+                ? context->query_factors[q]
+                : kNoQueryFactors;
 
         const float one_a = normalizers ? (1.0f / normalizers[2 * q]) : 1.0f;
         const float bias = normalizers ? normalizers[2 * q + 1] : 0.0f;
@@ -218,6 +220,10 @@ struct RaBitQHeapHandler
 
         for (size_t i = 0; i < max_vectors; i++) {
             const size_t db_idx = base_db_idx + i;
+            if (this->sel != nullptr &&
+                !this->sel->is_member(static_cast<int64_t>(db_idx))) {
+                continue;
+            }
             const float normalized_distance = d32tab[i] * one_a + bias;
             const uint8_t* base_ptr = aux_base + i * storage_size;
 

@@ -17,7 +17,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 15
-#define FAISS_VERSION_PATCH 0
+#define FAISS_VERSION_PATCH 1
 
 // Macro to combine the version components into a single string
 #ifndef FAISS_STRINGIFY
@@ -212,6 +212,12 @@ struct Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
 
+    /** search() for queries of the given numeric type
+     *
+     * Float32 calls search(). By default, Float16 queries (packed IEEE
+     * binary16, size n * d) are widened to fp32 in bounded blocks and passed
+     * to search(); indexes with a native fp16 search override this.
+     */
     virtual void search_ex(
             idx_t n,
             const void* x,
@@ -219,18 +225,7 @@ struct Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const SearchParameters* params = nullptr) const {
-        if (numeric_type == NumericType::Float32) {
-            search(n,
-                   static_cast<const float*>(x),
-                   k,
-                   distances,
-                   labels,
-                   params);
-        } else {
-            FAISS_THROW_MSG("Index::search: unsupported numeric type");
-        }
-    }
+            const SearchParameters* params = nullptr) const;
 
     /** search one vector with a custom result handler */
     virtual void search1(

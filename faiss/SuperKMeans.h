@@ -13,8 +13,9 @@
 //   "A Super Fast K-means for Indexing Vector Embeddings."
 //   arXiv preprint arXiv:2603.20009.
 //
-// Use when: L2 metric, k >= 1024, d >= 128, dense float embeddings.
-// Do not use for: IP/cosine (use Clustering with cp.spherical=true), small k,
+// Use when: L2 metric, or spherical inner-product clustering with
+// cp.spherical=true, k >= 1024, d >= 128, dense float embeddings.
+// Do not use for: small k,
 // binary data (use IndexBinaryIVF), or near-unit-sphere embeddings with
 // k < 4096 (chi-squared assumption breaks down).
 //
@@ -88,11 +89,16 @@ struct SuperKMeans {
 
     SuperKMeans(int d, int k, const SuperKMeansParameters& cp = {});
 
-    /// Train on `n` row-major vectors of dimension `d`. Honors the applicable
-    /// ClusteringParameters fields (niter, seed, verbose,
-    /// max_points_per_centroid, use_faster_subsampling,
-    /// check_input_data_for_NaNs).
+    /// Train on `n` row-major fp32 vectors of dimension `d`.
     void train(idx_t n, const float* x);
+
+    /** Train on vectors of the given numeric type.
+     *
+     * Float32 is the same as train(). Float16 takes packed IEEE binary16
+     * vectors and widens bounded blocks while rotating them into the fp32
+     * training workspace. Centroids and all iteration state remain fp32.
+     */
+    void train_ex(idx_t n, const void* x, NumericType numeric_type);
 };
 
 /// Reusable scratch for super_kmeans_assign_iteration; pass one instance across

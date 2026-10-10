@@ -59,7 +59,7 @@ namespace {
 struct TrainState {
     /// Orthogonal rotation. Train in rotated space (X_tilde = X * R);
     /// un-rotate centroids before return.
-    faiss::RandomRotationMatrix R;
+    std::unique_ptr<faiss::VectorTransform> R;
 
     std::vector<float> X_tilde; // (n, d) row-major
     int n = 0;
@@ -77,7 +77,17 @@ struct TrainState {
     int low_pruning_streak = 0;
     bool low_pruning_warning_printed = false;
 
-    explicit TrainState(int d) : R(d, d) {}
+    explicit TrainState(int d, bool spherical)
+            : R([d, spherical]() -> std::unique_ptr<faiss::VectorTransform> {
+                  // Spherical (inner-product) clustering only: a power-of-two
+                  // dimension can use the fast Hadamard rotation instead of
+                  // the generic random rotation. L2 training keeps the
+                  // original RandomRotationMatrix path unchanged.
+                  if (spherical && d > 0 && (d & (d - 1)) == 0) {
+                      return std::make_unique<faiss::HadamardRotation>(d);
+                  }
+                  return std::make_unique<faiss::RandomRotationMatrix>(d, d);
+              }()) {}
 };
 
 /// PDX block layout for the trailing pruning sweep: block b covers original
@@ -256,9 +266,9 @@ float adapt_d_prime(
 }
 
 /// Pre-loop setup: subsample, rotate, Forgy init, build ADSampling table,
-/// size the label scratch. Returned `sampled_x_owner` keeps the subsampled
-/// buffer alive when subsampling occurred (otherwise empty).
-std::unique_ptr<uint8_t[]> setup_train_state(
+/// and size the label scratch. The subsampled input only needs to remain alive
+/// through the rotation and is released before the iteration loop starts.
+void setup_train_state(
         TrainState& state,
         std::vector<int64_t>& labels64,
         std::vector<float>& hassign,
@@ -266,10 +276,13 @@ std::unique_ptr<uint8_t[]> setup_train_state(
         int d,
         int k,
         idx_t n,
-        const float* x) {
-    const size_t line_size = sizeof(float) * static_cast<size_t>(d);
+        const void* x,
+        NumericType numeric_type) {
+    const bool fp16 = numeric_type == NumericType::Float16;
+    const size_t line_size =
+            (fp16 ? sizeof(uint16_t) : sizeof(float)) * static_cast<size_t>(d);
     idx_t nx = n;
-    const uint8_t* x_bytes = reinterpret_cast<const uint8_t*>(x);
+    const uint8_t* x_bytes = static_cast<const uint8_t*>(x);
     std::unique_ptr<uint8_t[]> sampled_x_owner;
     if (static_cast<size_t>(nx) >
         static_cast<size_t>(k) * cp.max_points_per_centroid) {
@@ -288,17 +301,44 @@ std::unique_ptr<uint8_t[]> setup_train_state(
         sampled_x_owner.reset(x_new);
         x_bytes = x_new;
     }
-    const float* x_sampled = reinterpret_cast<const float*>(x_bytes);
 
     FAISS_THROW_IF_NOT_MSG(
             nx <= static_cast<idx_t>(std::numeric_limits<int>::max()),
             "SuperKMeans: training set size exceeds INT_MAX after sampling");
     state.n = static_cast<int>(nx);
 
-    state.R.init(cp.seed);
+    if (auto* R = dynamic_cast<HadamardRotation*>(state.R.get())) {
+        R->init(cp.seed);
+    } else {
+        auto* dense_rotation =
+                dynamic_cast<RandomRotationMatrix*>(state.R.get());
+        FAISS_ASSERT(dense_rotation != nullptr);
+        dense_rotation->init(cp.seed);
+    }
 
     state.X_tilde.resize(static_cast<size_t>(state.n) * d);
-    state.R.apply_noalloc(state.n, x_sampled, state.X_tilde.data());
+    if (!fp16) {
+        state.R->apply_noalloc(
+                state.n,
+                reinterpret_cast<const float*>(x_bytes),
+                state.X_tilde.data());
+    } else {
+        const size_t block_size =
+                std::min(static_cast<size_t>(state.n), cp.decode_block_size);
+        std::vector<float> decoded(block_size * d);
+        const uint16_t* x16 = reinterpret_cast<const uint16_t*>(x_bytes);
+        for (size_t i0 = 0; i0 < static_cast<size_t>(state.n);
+             i0 += block_size) {
+            const size_t i1 =
+                    std::min(static_cast<size_t>(state.n), i0 + block_size);
+            fp16_to_fp32((i1 - i0) * d, x16 + i0 * d, decoded.data());
+            state.R->apply_noalloc(
+                    static_cast<idx_t>(i1 - i0),
+                    decoded.data(),
+                    state.X_tilde.data() + i0 * d);
+        }
+    }
+    sampled_x_owner.reset();
 
     // Forgy init: pick k random rows from the rotated pool as initial
     // centroids. These remain in rotated space; un-rotation happens
@@ -312,6 +352,9 @@ std::unique_ptr<uint8_t[]> setup_train_state(
                     state.Y_tilde.data() + static_cast<size_t>(j) * d,
                     state.X_tilde.data() + static_cast<size_t>(perm[j]) * d,
                     sizeof(float) * d);
+        }
+        if (cp.spherical) {
+            fvec_renorm_L2(d, k, state.Y_tilde.data());
         }
     }
 
@@ -331,15 +374,13 @@ std::unique_ptr<uint8_t[]> setup_train_state(
     hassign.assign(k, 0.0f);
 
     labels64.resize(state.n);
-
-    return sampled_x_owner;
 }
 
 /// Un-rotate centroids into output buffer. R orthogonal, so
 /// reverse_transform applies R^T = R^-1.
 void untransform_centroids(
         std::vector<float>& centroids,
-        const RandomRotationMatrix& R,
+        const VectorTransform& R,
         int d,
         int k,
         const float* Y_tilde) {
@@ -391,15 +432,36 @@ SuperKMeans::SuperKMeans(int d, int k, const SuperKMeansParameters& cp_in)
 }
 
 void SuperKMeans::train(idx_t n, const float* x) {
+    train_ex(n, x, NumericType::Float32);
+}
+
+void SuperKMeans::train_ex(idx_t n, const void* x, NumericType numeric_type) {
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == NumericType::Float32 ||
+                    numeric_type == NumericType::Float16,
+            "SuperKMeans::train_ex: unsupported numeric type");
     FAISS_THROW_IF_NOT_MSG(n > 0, "SuperKMeans: n must be positive");
     FAISS_THROW_IF_MSG(x == nullptr, "SuperKMeans: x must not be null");
     FAISS_THROW_IF_NOT_MSG(
             n >= static_cast<idx_t>(k), "SuperKMeans: n must be >= k");
+    const bool fp16 = numeric_type == NumericType::Float16;
+    FAISS_THROW_IF_NOT_MSG(
+            !fp16 || cp.decode_block_size > 0,
+            "SuperKMeans: decode_block_size must be positive");
     if (cp.check_input_data_for_NaNs) {
-        for (size_t i = 0; i < static_cast<size_t>(n) * d; i++) {
+        const size_t num_values = static_cast<size_t>(n) * d;
+        if (fp16) {
             FAISS_THROW_IF_NOT_MSG(
-                    std::isfinite(x[i]),
+                    detail::fp16_all_finite(
+                            num_values, static_cast<const uint16_t*>(x)),
                     "SuperKMeans: input contains NaN's or Inf's");
+        } else {
+            const float* x32 = static_cast<const float*>(x);
+            for (size_t i = 0; i < num_values; i++) {
+                FAISS_THROW_IF_NOT_MSG(
+                        std::isfinite(x32[i]),
+                        "SuperKMeans: input contains NaN's or Inf's");
+            }
         }
     }
     if (cp.verbose && n < static_cast<idx_t>(k) * cp.min_points_per_centroid) {
@@ -411,12 +473,11 @@ void SuperKMeans::train(idx_t n, const float* x) {
                static_cast<idx_t>(k) * cp.min_points_per_centroid);
     }
 
-    TrainState state(d);
+    TrainState state(d, cp.spherical);
     std::vector<int64_t> labels64;
     SuperKMeansAssignScratch assign_scratch;
     std::vector<float> hassign;
-    [[maybe_unused]] auto sampled_x_owner =
-            setup_train_state(state, labels64, hassign, cp, d, k, n, x);
+    setup_train_state(state, labels64, hassign, cp, d, k, n, x, numeric_type);
 
     iteration_stats.clear();
     iteration_stats.reserve(cp.niter);
@@ -446,6 +507,9 @@ void SuperKMeans::train(idx_t n, const float* x) {
 
         const int nsplit =
                 update_centroids_and_split(d, k, state, labels64, hassign);
+        if (cp.spherical) {
+            fvec_renorm_L2(d, k, state.Y_tilde.data());
+        }
         const float pruning_rate = (iter == 0)
                 ? 0.0f
                 : adapt_d_prime(d, cp, state, total_pairs, pruned_at_gemm);
@@ -492,7 +556,7 @@ void SuperKMeans::train(idx_t n, const float* x) {
                (getmillisecs() - t_train_start) / 1000.0);
     }
 
-    untransform_centroids(centroids, state.R, d, k, state.Y_tilde.data());
+    untransform_centroids(centroids, *state.R, d, k, state.Y_tilde.data());
 }
 
 void super_kmeans_assign_iteration(
@@ -598,7 +662,7 @@ void super_kmeans_assign_iteration(
             }
 
             // One SIMD dispatch per (xi, yj) tile.
-            with_simd_level([&]<SIMDLevel SL>() {
+            with_simd_level_with_sve([&]<SIMDLevel SL>() {
                 [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
                 int64_t tile_total = 0;
                 int64_t tile_pruned = 0;

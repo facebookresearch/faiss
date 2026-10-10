@@ -211,6 +211,27 @@ class TestRounding(unittest.TestCase):
         self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
 
+class TestManyPQSubQuantizers(unittest.TestCase):
+    def do_test_recall_matches_pq(self, d):
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 50)
+        # M = d gives one dimension per sub-quantizer.
+        pq = faiss.IndexPQ(d, d, 4)
+        pq.train(ds.get_train())
+        pq.add(ds.get_database())
+
+        fs = faiss.IndexPQFastScan(d, d, 4)
+        fs.train(ds.get_train())
+        fs.add(ds.get_database())
+
+        Dref, Iref = pq.search(ds.get_queries(), 10)
+        D, I = fs.search(ds.get_queries(), 10)
+        agree = (Iref[:, :1] == I[:, :1]).sum() / Iref.shape[0]
+        self.assertGreater(agree, 0.9)
+
+    def test_m_1024(self):
+        self.do_test_recall_matches_pq(1024)
+
+
 @for_all_simd_levels
 class TestReconstruct(unittest.TestCase):
 
@@ -545,6 +566,21 @@ class TestAdd(unittest.TestCase):
         D3, I3 = index3.search(ds.get_queries(), 10)
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
+
+    def test_reset(self):
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+
+        index = faiss.IndexPQFastScan(d, d // 2, 4)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal2, 0)
+
+        D, I = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, -1)
 
 
 class TestAQFastScan(unittest.TestCase):

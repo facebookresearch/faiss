@@ -212,3 +212,18 @@ class TestPQTables(unittest.TestCase):
 
     def test_4bit(self):
         self.do_test(32, 4, nbit=4)
+
+    def test_dsub2_4bit(self):
+        # ksub = 16, so the SIMD dsub2 kernels run. M = 8 is even.
+        self.do_test(16, 2, nbit=4)
+
+    def test_dsub2_4bit_odd(self):
+        # M = 9 is odd, so the dsub2 kernels must also write the last
+        # subquantizer. test_dsub2_odd cannot cover this case, because
+        # nbit=8 does not reach the dsub2 kernels.
+        self.do_test(18, 2, nbit=4)
+
+    def test_dsub2_2bit(self):
+        # ksub = 4 is not a multiple of 8, so the dsub2 kernels must be
+        # skipped in favour of the generic path
+        self.do_test(16, 2, nbit=2)

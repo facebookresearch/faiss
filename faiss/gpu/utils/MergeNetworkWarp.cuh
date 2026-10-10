@@ -111,12 +111,14 @@ inline __device__ void warpBitonicMergeLE16(K& k, V& v) {
             // See the comment above how performing both of these
             // comparisons in the warp seems to win out over the
             // alternatives in practice
-            bool s = small ? Comp::gt(k, otherK) : Comp::lt(k, otherK);
+            bool s = small ? Comp::gt(k, v, otherK, otherV)
+                           : Comp::lt(k, v, otherK, otherV);
             assign(s, k, otherK);
             assign(s, v, otherV);
 
         } else {
-            bool s = small ? Comp::lt(k, otherK) : Comp::gt(k, otherK);
+            bool s = small ? Comp::lt(k, v, otherK, otherV)
+                           : Comp::gt(k, v, otherK, otherV);
             assign(s, k, otherK);
             assign(s, v, otherV);
         }
@@ -131,12 +133,14 @@ inline __device__ void warpBitonicMergeLE16(K& k, V& v) {
         bool small = !(laneId & stride);
 
         if (Dir) {
-            bool s = small ? Comp::gt(k, otherK) : Comp::lt(k, otherK);
+            bool s = small ? Comp::gt(k, v, otherK, otherV)
+                           : Comp::lt(k, v, otherK, otherV);
             assign(s, k, otherK);
             assign(s, v, otherV);
 
         } else {
-            bool s = small ? Comp::lt(k, otherK) : Comp::gt(k, otherK);
+            bool s = small ? Comp::lt(k, v, otherK, otherV)
+                           : Comp::gt(k, v, otherK, otherV);
             assign(s, k, otherK);
             assign(s, v, otherV);
         }
@@ -186,7 +190,7 @@ struct BitonicMergeStep<K, V, N, Dir, Comp, Low, true> {
             K& kb = k[i + N / 2];
             V& vb = v[i + N / 2];
 
-            bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
+            bool s = Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
             swap(s, ka, kb);
             swap(s, va, vb);
         }
@@ -254,7 +258,7 @@ struct BitonicMergeStep<K, V, N, Dir, Comp, true, false> {
             K& kb = k[i + kNextHighestPowerOf2 / 2];
             V& vb = v[i + kNextHighestPowerOf2 / 2];
 
-            bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
+            bool s = Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
             swap(s, ka, kb);
             swap(s, va, vb);
         }
@@ -341,7 +345,7 @@ struct BitonicMergeStep<K, V, N, Dir, Comp, false, false> {
             K& kb = k[i + kNextHighestPowerOf2 / 2];
             V& vb = v[i + kNextHighestPowerOf2 / 2];
 
-            bool s = Dir ? Comp::gt(ka, kb) : Comp::lt(ka, kb);
+            bool s = Dir ? Comp::gt(ka, va, kb, vb) : Comp::lt(ka, va, kb, vb);
             swap(s, ka, kb);
             swap(s, va, vb);
         }
@@ -452,14 +456,16 @@ inline __device__ void warpMergeAnyRegisters(
 
         // ka is always first in the list, so we needn't use our lane
         // in this comparison
-        bool swapa = Dir ? Comp::gt(ka, otherKb) : Comp::lt(ka, otherKb);
+        bool swapa = Dir ? Comp::gt(ka, va, otherKb, otherVb)
+                         : Comp::lt(ka, va, otherKb, otherVb);
         assign(swapa, ka, otherKb);
         assign(swapa, va, otherVb);
 
         // kb is always second in the list, so we needn't use our lane
         // in this comparison
         if (FullMerge) {
-            bool swapb = Dir ? Comp::lt(kb, otherKa) : Comp::gt(kb, otherKa);
+            bool swapb = Dir ? Comp::lt(kb, vb, otherKa, otherVa)
+                             : Comp::gt(kb, vb, otherKa, otherVa);
             assign(swapb, kb, otherKa);
             assign(swapb, vb, otherVa);
 

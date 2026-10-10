@@ -1060,6 +1060,11 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::AVX2>(
             &fvec_L2sqr_ny_nearest_D8<SIMDLevel::AVX2>);
 }
 
+// Internal linkage: the same template is compiled with other -m flags in
+// the other per-SIMD distances TU, and a shared symbol would let the linker
+// hand one level the other's code.
+namespace {
+
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
         float* /*distances_tmp_buffer*/,
@@ -1176,6 +1181,8 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
     return current_min_index;
 }
 
+} // namespace
+
 template <>
 size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::AVX2>(
         float* distances_tmp_buffer,
@@ -1213,9 +1220,11 @@ int fvec_madd_and_argmin<SIMDLevel::AVX2>(
     return fvec_madd_and_argmin_sse(n, a, bf, b, c);
 }
 
-template <>
-void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX2>(
-        const float* x,
+namespace {
+
+template <class QueryTiles>
+void exhaustive_L2sqr_blas_cmax_avx2(
+        QueryTiles& queries,
         const float* y,
         size_t d,
         size_t nx,
@@ -1235,7 +1244,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX2>(
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
 
-    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+    queries.prepare_norms(nx, x_norms.get());
 
     if (!y_norms) {
         float* y_norms2 = new float[ny];
@@ -1249,6 +1258,8 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX2>(
         if (i1 > nx) {
             i1 = nx;
         }
+
+        const float* xt = queries.tile(i0, i1, x_norms.get());
 
         res.begin_multiple(i0, i1);
 
@@ -1269,7 +1280,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX2>(
                        &one,
                        y + j0 * d,
                        &di,
-                       x + i0 * d,
+                       xt,
                        &di,
                        &zero,
                        ip_block.get(),
@@ -1425,6 +1436,34 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX2>(
         res.end_multiple();
         InterruptCallback::check();
     }
+}
+
+} // namespace
+
+template <>
+void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX2>(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp32QueryTiles queries{x, d};
+    exhaustive_L2sqr_blas_cmax_avx2(queries, y, d, nx, ny, res, y_norms);
+}
+
+template <>
+void exhaustive_L2sqr_blas_cmax_fp16<SIMDLevel::AVX2>(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp16QueryTiles queries(x, d, nx);
+    exhaustive_L2sqr_blas_cmax_avx2(queries, y, d, nx, ny, res, y_norms);
 }
 
 } // namespace faiss

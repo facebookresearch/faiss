@@ -75,6 +75,14 @@ struct ClusteringParameters {
     /// so the training process stops only if an error
     /// is unchanged from the previous iteration.
     double early_stop_threshold = 0.0;
+
+    /// Whether to use the SuperKMeans (super fast k-means) variant instead of
+    /// the vanilla Clustering implementation. Only honored by callers that
+    /// explicitly support it (e.g. IVF level-1 quantizer training). Cannot be
+    /// combined with a user-provided clustering index: SuperKMeans assigns
+    /// with its own index, so callers that supply both get an exception rather
+    /// than a silent downgrade to vanilla Clustering.
+    bool use_super_kmeans = false;
 };
 
 struct ClusteringIterationStats {
@@ -140,11 +148,40 @@ struct Clustering : ClusteringParameters {
             Index& index,
             const float* weights = nullptr);
 
+    /** run k-means on vectors of the given numeric type
+     *
+     * Float32 is the same as train(). Float16 takes packed IEEE binary16
+     * vectors (n * d uint16_t) and runs k-means natively on them: the NaN
+     * check, subsampling, initialization and centroid updates read the fp16
+     * rows directly, and the assignment step passes blocks of at most
+     * decode_block_size fp16 rows to index.search_ex(Float16). Indexes with a
+     * native fp16 search consume them directly; the Index::search_ex default
+     * widens them block by block. There is no fp32 copy of the training set,
+     * unless init_method needs one. Centroids are fp32.
+     */
+    void train_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            Index& index,
+            const float* weights = nullptr);
+
     /// Post-process the centroids after each centroid update.
     /// includes optional L2 normalization and nearest integer rounding
     void post_process_centroids();
 
     virtual ~Clustering() {}
+
+   protected:
+    /// k-means on rows encoded by `codec` or, if codec is null, stored as
+    /// `numeric_type` (Float32 or Float16)
+    void train_impl(
+            idx_t nx,
+            const uint8_t* x_in,
+            const Index* codec,
+            NumericType numeric_type,
+            Index& index,
+            const float* weights);
 };
 
 /** Exact 1D clustering algorithm

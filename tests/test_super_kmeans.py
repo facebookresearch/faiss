@@ -17,6 +17,34 @@ class SuperKMeansTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             sc.train(x)
 
+    def test_train_float16_matches_rounded_float32(self):
+        d, k, n = 32, 4, 96
+        rows = np.arange(n, dtype="float32")[:, None]
+        dims = np.arange(d, dtype="float32")[None, :]
+        values = (rows % k) * 8.0 + ((rows * 17 + dims * 13) % 31) / 100.0
+        x16 = values.astype("float16")
+        rounded = x16.astype("float32")
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 1234
+        p.niter = 3
+        p.min_points_per_centroid = 1
+        p.decode_block_size = n
+
+        expected = faiss.SuperKMeans(d, k, p)
+        expected.train(rounded)
+        actual = faiss.SuperKMeans(d, k, p)
+        actual.train(x16, numeric_type=faiss.Float16)
+
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(actual.centroids),
+            faiss.vector_to_array(expected.centroids),
+        )
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(actual.gemm_pruning_rates),
+            faiss.vector_to_array(expected.gemm_pruning_rates),
+        )
+
     def test_objective_decreases_monotonically(self):
         d, k, n = 32, 8, 1000
         x = SyntheticDataset(d, n, 0, 0).get_train()
@@ -52,6 +80,55 @@ class SuperKMeansTest(unittest.TestCase):
         v_stats = vanilla.iteration_stats
         v_final = v_stats.at(v_stats.size() - 1).obj
         self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
+
+    def test_spherical_objective_close_to_vanilla_spherical(self):
+        # With cp.spherical=true, SuperKMeans unit-normalizes centroids so the
+        # L2 assignment it computes is equivalent to inner-product assignment.
+        # The final objective must track vanilla spherical Clustering.
+        d, k, n = 64, 16, 2000
+        x = SyntheticDataset(d, n, 0, 0).get_train()
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 42
+        p.niter = 10
+        p.spherical = True
+        sc = faiss.SuperKMeans(d, k, p)
+        sc.train(x)
+
+        quant = faiss.IndexFlatL2(d)
+        vanilla = faiss.Clustering(d, k)
+        vanilla.seed = 42
+        vanilla.niter = 10
+        vanilla.spherical = True
+        vanilla.train(x, quant)
+
+        sc_final = sc.iteration_stats.at(sc.iteration_stats.size() - 1).obj
+        v_stats = vanilla.iteration_stats
+        v_final = v_stats.at(v_stats.size() - 1).obj
+        self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
+
+    def test_spherical_produces_unit_centroids(self):
+        d, k, n = 64, 16, 2000
+        x = SyntheticDataset(d, n, 0, 0).get_train()
+
+        p = faiss.SuperKMeansParameters()
+        p.seed = 42
+        p.niter = 10
+        p.spherical = True
+        sc = faiss.SuperKMeans(d, k, p)
+        sc.train(x)
+
+        centroids = faiss.vector_to_array(sc.centroids).reshape(k, d)
+        norms = np.linalg.norm(centroids, axis=1)
+        np.testing.assert_allclose(norms, 1.0, atol=1e-4)
+
+    def test_use_super_kmeans_field_is_inherited(self):
+        # use_super_kmeans lives on ClusteringParameters and is inherited by
+        # SuperKMeansParameters; it must be settable from Python.
+        p = faiss.SuperKMeansParameters()
+        self.assertFalse(p.use_super_kmeans)
+        p.use_super_kmeans = True
+        self.assertTrue(p.use_super_kmeans)
 
     def test_pruning_rate_in_expected_range(self):
         # The 10-d intrinsic manifold of SyntheticDataset gives ADSampling
