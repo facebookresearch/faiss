@@ -185,6 +185,13 @@ void CuvsIVFSQ::search(
             resources_->getRaftHandleCurrentDevice();
     cuvs::neighbors::ivf_sq::search_params pams;
     pams.n_probes = nprobe;
+#if defined(FAISS_CUVS_HAS_STABLE_SELECT)
+    // The warp-sort selector caps at k = 256. Above that raft has no
+    // reproducible selector.
+    if (deterministicTieBreak_ && k <= 256 && nprobe <= 256) {
+        pams.select_algo = raft::matrix::SelectAlgo::kWarpDistributedShmStable;
+    }
+#endif
 
     auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
             queries.data(), (idx_t)numQueries, (idx_t)cols);

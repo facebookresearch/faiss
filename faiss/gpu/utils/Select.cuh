@@ -158,6 +158,7 @@ struct BlockSelect {
               initV(initVVal),
               numVals(0),
               warpKTop(initKVal),
+              warpVTop(initVVal),
               sharedK(smemK),
               sharedV(smemV),
               kMinus1(k - 1) {
@@ -190,7 +191,8 @@ struct BlockSelect {
     }
 
     __device__ inline void addThreadQ(K k, V v) {
-        if (Dir ? Comp::gt(k, warpKTop) : Comp::lt(k, warpKTop)) {
+        if (Dir ? Comp::gt(k, v, warpKTop, warpVTop)
+                : Comp::lt(k, v, warpKTop, warpVTop)) {
             // Rotate right
 #pragma unroll
             for (int i = NumThreadQ - 1; i > 0; --i) {
@@ -233,6 +235,7 @@ struct BlockSelect {
 
         // We have to beat at least this element
         warpKTop = warpK[kMinus1];
+        warpVTop = warpV[kMinus1];
 
         warpFence();
     }
@@ -316,6 +319,8 @@ struct BlockSelect {
 
     // The k-th highest (Dir) or lowest (!Dir) element
     K warpKTop;
+    // The value paired with warpKTop
+    V warpVTop;
 
     // Thread queue values
     K threadK[NumThreadQ];
@@ -349,7 +354,8 @@ struct BlockSelect<K, V, Dir, Comp, 1, NumThreadQ, ThreadsPerBlock> {
             : threadK(initK), threadV(initV), sharedK(smemK), sharedV(smemV) {}
 
     __device__ inline void addThreadQ(K k, V v) {
-        bool swap = Dir ? Comp::gt(k, threadK) : Comp::lt(k, threadK);
+        bool swap = Dir ? Comp::gt(k, v, threadK, threadV)
+                        : Comp::lt(k, v, threadK, threadV);
         threadK = swap ? k : threadK;
         threadV = swap ? v : threadV;
     }
@@ -398,7 +404,8 @@ struct BlockSelect<K, V, Dir, Comp, 1, NumThreadQ, ThreadsPerBlock> {
                 K k = sharedK[i];
                 V v = sharedV[i];
 
-                bool swap = Dir ? Comp::gt(k, threadK) : Comp::lt(k, threadK);
+                bool swap = Dir ? Comp::gt(k, v, threadK, threadV)
+                                : Comp::lt(k, v, threadK, threadV);
                 threadK = swap ? k : threadK;
                 threadV = swap ? v : threadV;
             }
@@ -444,6 +451,7 @@ struct WarpSelect {
               initV(initVVal),
               numVals(0),
               warpKTop(initKVal),
+              warpVTop(initVVal),
               kLane((k - 1) % kWarpSize) {
         static_assert(
                 utils::isPowerOf2(ThreadsPerBlock),
@@ -467,7 +475,8 @@ struct WarpSelect {
     }
 
     __device__ inline void addThreadQ(K k, V v) {
-        if (Dir ? Comp::gt(k, warpKTop) : Comp::lt(k, warpKTop)) {
+        if (Dir ? Comp::gt(k, v, warpKTop, warpVTop)
+                : Comp::lt(k, v, warpKTop, warpVTop)) {
             // Rotate right
 #pragma unroll
             for (int i = NumThreadQ - 1; i > 0; --i) {
@@ -509,6 +518,7 @@ struct WarpSelect {
 
         // We have to beat at least this element
         warpKTop = shfl(warpK[kNumWarpQRegisters - 1], kLane);
+        warpVTop = shfl(warpV[kNumWarpQRegisters - 1], kLane);
     }
 
     /// This function handles sorting and merging together the
@@ -570,6 +580,8 @@ struct WarpSelect {
 
     // The k-th highest (Dir) or lowest (!Dir) element
     K warpKTop;
+    // The value paired with warpKTop
+    V warpVTop;
 
     // Thread queue values
     K threadK[NumThreadQ];
@@ -600,7 +612,8 @@ struct WarpSelect<K, V, Dir, Comp, 1, NumThreadQ, ThreadsPerBlock> {
             : threadK(initK), threadV(initV) {}
 
     __device__ inline void addThreadQ(K k, V v) {
-        bool swap = Dir ? Comp::gt(k, threadK) : Comp::lt(k, threadK);
+        bool swap = Dir ? Comp::gt(k, v, threadK, threadV)
+                        : Comp::lt(k, v, threadK, threadV);
         threadK = swap ? k : threadK;
         threadV = swap ? v : threadV;
     }

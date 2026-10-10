@@ -44,8 +44,13 @@ dependencies = [
   "nvidia-cublas>=13.2,<14",
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
-  "libcuvs-cu13>=26.06,<27",
-  "librmm-cu13>=26.06,<27",
+  # Exact-series pin, not a range: RAPIDS >=26.08 wraps RMM in a per-release
+  # inline namespace (rmm::_RMM_26_8::), so each minor series renames the
+  # symbols libfaiss.so is linked against. libraft is listed because
+  # _preload_gpu_libs dlopens it directly.
+  "libcuvs-cu13==26.06.*",
+  "libraft-cu13==26.06.*",
+  "librmm-cu13==26.06.*",
 ]
 
 [project.urls]
@@ -114,8 +119,9 @@ test-requires = [
   "nvidia-cublas>=13.2,<14",
   "nvidia-curand>=10.3.7,<11",
   "nvidia-nvjitlink>=13.2,<14",
-  "libcuvs-cu13>=26.06,<27",
-  "librmm-cu13>=26.06,<27",
+  "libcuvs-cu13==26.06.*",
+  "libraft-cu13==26.06.*",
+  "librmm-cu13==26.06.*",
 ]
 test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
 
@@ -135,7 +141,7 @@ before-all = "dnf install -y gcc-toolset-14 epel-release && dnf install -y openb
 # auditwheel excludes (not vendored; supplied at runtime by nvidia-* / libcuvs-cu13
 # wheels): host driver libcuda, CUDA runtime/math libs (cusparse/cusolver are explicit —
 # under the cuda-toolkit RPM, not /opt/cuvs), and every RAPIDS .so found under /opt/cuvs.
-repair-wheel-command = "bash -c 'EXCLUDES=\"--exclude libcuda.so.1 --exclude libcudart.so.13 --exclude libcublas.so.13 --exclude libcublasLt.so.13 --exclude libcurand.so.10 --exclude libnvJitLink.so.13 --exclude libcusparse.so.12 --exclude libcusolver.so.11\"; for f in $(find /opt/cuvs -name \"lib*.so*\" -printf \"%f\\n\" | sort -u); do EXCLUDES=\"$EXCLUDES --exclude $f\"; done; auditwheel repair -w {dest_dir} {wheel} $EXCLUDES'"
+repair-wheel-command = "bash -c 'EXCLUDES=\"--exclude libcuda.so.1 --exclude libcudart.so.13 --exclude libcublas.so.13 --exclude libcublasLt.so.13 --exclude libcurand.so.10 --exclude libnvJitLink.so.13 --exclude libcusparse.so.12 --exclude libcusolver.so.12\"; for f in $(find /opt/cuvs -name \"lib*.so*\" -printf \"%f\\n\" | sort -u); do EXCLUDES=\"$EXCLUDES --exclude $f\"; done; auditwheel repair -w {dest_dir} {wheel} $EXCLUDES'"
 # Canary: ensure the host GPU is actually visible to the container before tests
 # run. Without this, smoke tests would silently skip on broken --gpus passthrough.
 before-test = "nvidia-smi || (echo 'GPU not visible to container; check container-engine create-args' && exit 1)"

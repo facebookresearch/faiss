@@ -18,7 +18,6 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/Panorama.h>
-#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -52,11 +51,6 @@ struct IndexHNSW : Index {
 
     // See impl/VisitedTable.h.
     std::optional<bool> use_visited_hashset;
-
-    // Per-node locks for HNSW graph construction.
-    LockVector locks;
-    // locks are freed after each call to add() unless this flag is set.
-    bool retain_locks = false;
 
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
@@ -214,6 +208,36 @@ struct IndexHNSWSQ : IndexHNSW {
             ScalarQuantizer::QuantizerType qtype,
             int M,
             MetricType metric = METRIC_L2);
+};
+
+/** HNSW index whose storage is RaBitQ-compressed.
+ *
+ * The graph is built directly from the compressed codes. Neighbor-diversity
+ * pruning uses a fast 1-bit symmetric L2 estimator, including when the storage
+ * contains multi-bit codes.
+ *
+ * With nb_bits >= 2 the codes carry a per-vector error factor, so search uses
+ * the staged search method: a 1-bit estimate for every neighbor and the full
+ * multi-bit distance only for candidates the error bound cannot rule out.
+ * nb_bits = 1 has no error factor and uses ordinary HNSW search.
+ */
+struct IndexHNSWRaBitQ : IndexHNSW {
+    IndexHNSWRaBitQ();
+    IndexHNSWRaBitQ(
+            int d,
+            int M,
+            uint8_t nb_bits = 1,
+            MetricType metric = METRIC_L2);
+
+    IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
+
+   private:
+    // clone_index() replaces the shallow-copied storage with a deep copy
+    // before returning it. Keep ordinary C++ copies from sharing ownership.
+    IndexHNSWRaBitQ(const IndexHNSWRaBitQ&) = default;
+#ifndef SWIG
+    friend IndexHNSW* clone_IndexHNSW(const IndexHNSW* index);
+#endif
 };
 
 /** 2-level code structure with fast random access

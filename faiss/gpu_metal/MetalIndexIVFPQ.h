@@ -75,13 +75,51 @@ class MetalIndexIVFPQ : public MetalIndex {
     std::unique_ptr<faiss::IndexIVFPQ> cpuIndex_;
     std::unique_ptr<MetalIVFPQImpl> gpuIvf_;
 
+    // Reusable GPU scratch buffers for the search path, grown on demand.
+    mutable id<MTLBuffer> searchQueriesBuf_ = nil;
+    mutable id<MTLBuffer> searchCoarseBuf_ = nil;
+    mutable id<MTLBuffer> searchOutDistBuf_ = nil;
+    mutable id<MTLBuffer> searchOutIdxBuf_ = nil;
+    mutable id<MTLBuffer> searchPerListDistBuf_ = nil;
+    mutable id<MTLBuffer> searchPerListIdxBuf_ = nil;
+    mutable id<MTLBuffer> lookupTableBuf_ = nil;
+    mutable id<MTLBuffer> lookupTableHalfBuf_ = nil;
+    mutable id<MTLBuffer> searchCoarseDistBuf_ = nil;
+    mutable id<MTLBuffer> searchQTermBuf_ = nil;
+    mutable id<MTLBuffer> searchMergeDistBuf_ = nil;
+    mutable id<MTLBuffer> searchMergeIdxBuf_ = nil;
+    mutable size_t searchQueriesCap_ = 0;
+    mutable size_t searchCoarseCap_ = 0;
+    mutable size_t searchOutDistCap_ = 0;
+    mutable size_t searchOutIdxCap_ = 0;
+    mutable size_t searchPerListDistCap_ = 0;
+    mutable size_t searchPerListIdxCap_ = 0;
+    mutable size_t lookupTableCap_ = 0;
+    mutable size_t lookupTableHalfCap_ = 0;
+    mutable size_t searchCoarseDistCap_ = 0;
+    mutable size_t searchQTermCap_ = 0;
+    mutable size_t searchMergeDistCap_ = 0;
+    mutable size_t searchMergeIdxCap_ = 0;
+
+    // Coarse centroids mirrored on the GPU for the L2 lookup-table build.
+    mutable id<MTLBuffer> centroidBuf_ = nil;
+
+    // Query-independent term of the L2 precomputed-table decomposition
+    // (nlist * M * 256 floats), built once per trained index on the GPU.
+    mutable id<MTLBuffer> term2Buf_ = nil;
+
     void verifyPQSettings_() const;
+    void precomputeTerm2_() const;
 
     void encodeResidualAndAppend_(
             idx_t n,
             const float* x,
             const idx_t* list_nos,
             const idx_t* xids);
+
+    void ensureSearchBuf_(id<MTLBuffer>& buf, size_t& cap, size_t needed) const;
+    void uploadCentroids_() const;
+    void uploadPQCentroids_() const;
 };
 
 } // namespace gpu_metal

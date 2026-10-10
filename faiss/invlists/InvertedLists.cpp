@@ -127,7 +127,9 @@ size_t InvertedLists::copy_subset_to(
         } else if (subset_type == SUBSET_TYPE_ID_MOD) {
             for (size_t i = 0; i < n; i++) {
                 idx_t id = ids_in[i];
-                if (id % a1 == a2) {
+                // C++ gives a negative remainder, so a plain `id % a1` never
+                // matches for a negative id. Fold it into [0, a1) instead.
+                if (((id % a1) + a1) % a1 == a2) {
                     oivf.add_entry(
                             list_no,
                             get_single_id(list_no, i),
@@ -440,8 +442,11 @@ void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(
         size_t list_no,
         size_t offset) const {
-    assert(list_no < nlist);
-    assert(offset < ids[list_no].size());
+    // Throw rather than assert: Panorama::reconstruct takes an unsized
+    // pointer, so these are the only bounds available and they must hold
+    // in opt builds too.
+    FAISS_THROW_IF_NOT(list_no < nlist);
+    FAISS_THROW_IF_NOT(offset < ids[list_no].size());
 
     uint8_t* recons_buffer = new uint8_t[code_size];
 

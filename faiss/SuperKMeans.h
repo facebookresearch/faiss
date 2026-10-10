@@ -89,11 +89,16 @@ struct SuperKMeans {
 
     SuperKMeans(int d, int k, const SuperKMeansParameters& cp = {});
 
-    /// Train on `n` row-major vectors of dimension `d`. Honors the applicable
-    /// ClusteringParameters fields (niter, seed, verbose,
-    /// max_points_per_centroid, use_faster_subsampling,
-    /// check_input_data_for_NaNs).
+    /// Train on `n` row-major fp32 vectors of dimension `d`.
     void train(idx_t n, const float* x);
+
+    /** Train on vectors of the given numeric type.
+     *
+     * Float32 is the same as train(). Float16 takes packed IEEE binary16
+     * vectors and widens bounded blocks while rotating them into the fp32
+     * training workspace. Centroids and all iteration state remain fp32.
+     */
+    void train_ex(idx_t n, const void* x, NumericType numeric_type);
 };
 
 /// Reusable scratch for super_kmeans_assign_iteration; pass one instance across

@@ -6,34 +6,31 @@
  */
 
 /**
- * @file rabitq_avx512_spr.cpp
+ * @file rabitq_avx512_vpopcnt.cpp
  *
- * RaBitQ SIMD kernels specialized for SIMDLevel::AVX512_SPR.
+ * RaBitQ SIMD kernels specialized for SIMDLevel::AVX512_VPOPCNT.
  *
- * Sapphire Rapids (SPR) and later Intel microarchitectures expose
- * AVX-512 VPOPCNTDQ (vpopcntq), which performs a per-lane 64-bit
- * popcount in a single instruction. This is used here to replace the
- * multi-step shuffle/pshufb-based popcount used by the generic AVX-512
- * specialization in rabitq_avx512.cpp. The popcount-heavy kernels
- * (bitwise_and_dot_product, bitwise_xor_dot_product, popcount) become
- * substantially shorter and faster on SPR+ as a result.
+ * AVX-512 VPOPCNTDQ performs a per-lane 64-bit popcount in a single
+ * instruction. It is available on CPUs including Ice Lake, Zen 4, and
+ * Sapphire Rapids, independently of the other SPR-only extensions. This
+ * replaces the multi-step shuffle-based popcount used by the generic
+ * AVX-512 specialization in rabitq_avx512.cpp.
  *
  * Build / dispatch behavior:
  *   - faiss_avx512 (AVX-512 only, no SPR features): NOT compiled.
  *     The existing AVX512 specialization in rabitq_avx512.cpp is used.
- *   - faiss_avx512_spr (statically built for SPR+): compiled. The
- *     SINGLE_SIMD_LEVEL is AVX512_SPR, so this specialization is
- *     selected by static dispatch.
+ *   - faiss_avx512_spr: compiled alongside the full SPR specialization and
+ *     selected through the SPR -> VPOPCNT fallback.
  *   - faiss with FAISS_OPT_LEVEL=dd (dynamic dispatch): compiled with
  *     -mavx512vpopcntdq as a per-file flag. Selected at runtime when
- *     SIMDConfig::level == SIMDLevel::AVX512_SPR.
+ *     the CPU exposes AVX512_VPOPCNTDQ.
  *
  * The floating-point multi-bit inner-product kernel does not benefit
- * from VPOPCNTDQ, so this TU forwards compute_inner_product<SPR> to
+ * from VPOPCNTDQ, so this TU forwards compute_inner_product<VPOPCNT> to
  * the AVX512 implementation to avoid duplicating that code path.
  */
 
-#ifdef COMPILE_SIMD_AVX512_SPR
+#ifdef COMPILE_SIMD_AVX512_VPOPCNT
 
 #include <faiss/utils/popcount.h>
 #include <faiss/utils/rabitq_simd.h>
@@ -47,7 +44,7 @@
 namespace faiss::rabitq {
 
 // Forward declarations for the AVX512 specializations defined in
-// rabitq_avx512.cpp. They live in the same TU group on SPR builds, so
+// rabitq_avx512.cpp. They live in the same TU group in supported builds, so
 // we can reuse them as a tail handler / fallback. Declaring rather
 // than redefining avoids ODR risk and keeps a single source of truth
 // for the floating-point kernel.
@@ -66,6 +63,43 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
 template <>
 uint64_t popcount<SIMDLevel::AVX512>(const uint8_t* data, size_t size);
 
+template <>
+void bitwise_q4_batch_4<SIMDLevel::AVX512_VPOPCNT>(
+        const uint8_t* query,
+        const uint8_t* const* data,
+        size_t size,
+        BitwiseAndDotProductResult* results) {
+    __m512i dots[4], pops[4];
+    for (int i = 0; i < 4; ++i) {
+        dots[i] = pops[i] = _mm512_setzero_si512();
+    }
+    for (size_t off = 0; off < size; off += 64) {
+        const size_t count = std::min(size - off, size_t(64));
+        const __mmask64 mask =
+                count == 64 ? ~__mmask64(0) : (__mmask64(1) << count) - 1;
+        __m512i x[4];
+        for (int i = 0; i < 4; ++i) {
+            x[i] = _mm512_maskz_loadu_epi8(mask, data[i] + off);
+            pops[i] = _mm512_add_epi64(pops[i], _mm512_popcnt_epi64(x[i]));
+        }
+        for (int bit = 0; bit < 4; ++bit) {
+            // Load each query plane once for four independent database codes.
+            const __m512i q =
+                    _mm512_maskz_loadu_epi8(mask, query + bit * size + off);
+            for (int i = 0; i < 4; ++i) {
+                const __m512i p =
+                        _mm512_popcnt_epi64(_mm512_and_si512(q, x[i]));
+                dots[i] = _mm512_add_epi64(dots[i], _mm512_slli_epi64(p, bit));
+            }
+        }
+    }
+    for (int i = 0; i < 4; ++i) {
+        results[i] = {
+                static_cast<uint64_t>(_mm512_reduce_add_epi64(dots[i])),
+                static_cast<uint64_t>(_mm512_reduce_add_epi64(pops[i]))};
+    }
+}
+
 namespace {
 
 // 512-bit popcount using AVX-512 VPOPCNTDQ (vpopcntq).
@@ -75,8 +109,8 @@ inline __m512i popcount_512_vpopcntdq(__m512i v) {
 }
 
 // 256-bit popcount using AVX-512VL VPOPCNTDQ.
-// AVX512VL is part of the SPR feature set, so vpopcntq is available
-// on 256-bit registers via _mm256_popcnt_epi64.
+// Baseline AVX-512 includes AVX512VL, so VPOPCNTDQ is also available on
+// 256-bit registers via _mm256_popcnt_epi64.
 inline __m256i popcount_256_vpopcntdq(__m256i v) {
     return _mm256_popcnt_epi64(v);
 }
@@ -101,7 +135,7 @@ inline uint64_t reduce_add_128(__m128i v) {
 } // namespace
 
 template <>
-uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_SPR>(
+uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_VPOPCNT>(
         const uint8_t* query,
         const uint8_t* data,
         size_t size,
@@ -167,10 +201,11 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_SPR>(
 
     // 64-bit scalar tail.
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         for (size_t j = 0; j < qb; j++) {
-            const auto qv = *reinterpret_cast<const uint64_t*>(
-                    query + j * size + offset);
+            uint64_t qv;
+            std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += static_cast<uint64_t>(popcount64(qv & yv)) << j;
         }
     }
@@ -187,7 +222,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512_SPR>(
 
 template <>
 BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
-        SIMDLevel::AVX512_SPR>(
+        SIMDLevel::AVX512_VPOPCNT>(
         const uint8_t* query,
         const uint8_t* data,
         size_t size,
@@ -258,11 +293,12 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     popcount_sum += reduce_add_128(pop_128);
 
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         popcount_sum += popcount64(yv);
         for (size_t j = 0; j < qb; j++) {
-            const auto qv = *reinterpret_cast<const uint64_t*>(
-                    query + j * size + offset);
+            uint64_t qv;
+            std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             dot_product += static_cast<uint64_t>(popcount64(qv & yv)) << j;
         }
     }
@@ -278,7 +314,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
 }
 
 template <>
-uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_SPR>(
+uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_VPOPCNT>(
         const uint8_t* query,
         const uint8_t* data,
         size_t size,
@@ -339,10 +375,11 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_SPR>(
     sum += reduce_add_128(sum_128);
 
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         for (size_t j = 0; j < qb; j++) {
-            const auto qv = *reinterpret_cast<const uint64_t*>(
-                    query + j * size + offset);
+            uint64_t qv;
+            std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += static_cast<uint64_t>(popcount64(qv ^ yv)) << j;
         }
     }
@@ -357,7 +394,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512_SPR>(
 }
 
 template <>
-uint64_t popcount<SIMDLevel::AVX512_SPR>(const uint8_t* data, size_t size) {
+uint64_t popcount<SIMDLevel::AVX512_VPOPCNT>(const uint8_t* data, size_t size) {
     uint64_t sum = 0;
     size_t offset = 0;
 
@@ -392,7 +429,8 @@ uint64_t popcount<SIMDLevel::AVX512_SPR>(const uint8_t* data, size_t size) {
     sum += reduce_add_128(sum_128);
 
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
-        const auto yv = *reinterpret_cast<const uint64_t*>(data + offset);
+        uint64_t yv;
+        std::memcpy(&yv, data + offset, sizeof(yv));
         sum += popcount64(yv);
     }
     for (; offset < size; ++offset) {
@@ -419,7 +457,7 @@ float compute_inner_product<SIMDLevel::AVX512>(
         float cb);
 
 template <>
-float compute_inner_product<SIMDLevel::AVX512_SPR>(
+float compute_inner_product<SIMDLevel::AVX512_VPOPCNT>(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
         const float* __restrict rotated_q,
@@ -432,4 +470,4 @@ float compute_inner_product<SIMDLevel::AVX512_SPR>(
 
 } // namespace faiss::rabitq::multibit
 
-#endif // COMPILE_SIMD_AVX512_SPR
+#endif // COMPILE_SIMD_AVX512_VPOPCNT
