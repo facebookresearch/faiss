@@ -42,6 +42,7 @@
 // redefine the GCC intrinsics with Windows equivalents
 #ifdef _MSC_VER
 
+#include <faiss/impl/platform_macros.h>
 #include <intrin.h>
 #include <limits.h>
 
@@ -253,4 +254,21 @@ inline void atomic_fetch_add_relaxed(T& target, T value) {
 #else
 #define FAISS_MAYBE_UNUSED [[maybe_unused]]
 #define FAISS_FINAL final
+#endif
+
+/*******************************************************
+ * OpenMP dynamic scheduling
+ *******************************************************/
+
+// Use as schedule(FAISS_OMP_DYNAMIC) or schedule(FAISS_OMP_DYNAMIC, chunk).
+// OpenMP 5.0 makes schedule(FAISS_OMP_DYNAMIC) nonmonotonic, and libomp 12 runs
+// nonmonotonic dynamic loops with its static-steal scheduler, which crashes
+// intermittently under load (libomp itself keeps it off by default). MSVC's
+// OpenMP 2.0 has no schedule modifiers.
+#ifdef _MSC_VER
+#define FAISS_OMP_DYNAMIC dynamic
+#else
+#define FAISS_OMP_DYNAMIC \
+    monotonic:            \
+    dynamic
 #endif

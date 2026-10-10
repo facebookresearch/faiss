@@ -22,6 +22,7 @@
 #include <faiss/impl/ClusteringHelpers.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/PdxLayout.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
@@ -666,7 +667,7 @@ void super_kmeans_assign_iteration(
                 [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
                 int64_t tile_total = 0;
                 int64_t tile_pruned = 0;
-#pragma omp parallel for schedule(dynamic, omp_chunk_local) \
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC, omp_chunk_local) \
         reduction(+ : tile_total) reduction(+ : tile_pruned)
                 for (int i = 0; i < bx; ++i) {
                     const float xnp_i = x_norms_partial[xi + i];
