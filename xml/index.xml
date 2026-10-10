@@ -11047,12 +11047,12 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" kind="function"><name>distance_four_codes</name></member>
   </compound>
   <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kind="struct"><name>faiss::pq_code_distance::PQCodeDistanceScalar</name>
-    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a8c961f237a2d2b2c56ff6deaf9c7d5ff" kind="typedef"><name>PQDecoder</name></member>
-    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a8c961f237a2d2b2c56ff6deaf9c7d5ff" kind="typedef"><name>PQDecoder</name></member>
-    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ada869c139227aafbdec6e2afbbb96906" kind="function"><name>distance_single_code</name></member>
-    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad2cd4c81c19de2dc8e6fcf67058a591d" kind="function"><name>distance_four_codes</name></member>
-    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ada869c139227aafbdec6e2afbbb96906" kind="function"><name>distance_single_code</name></member>
-    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad2cd4c81c19de2dc8e6fcf67058a591d" kind="function"><name>distance_four_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a0b5ed02d5bceb53a6b55ac5bea335051" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a0b5ed02d5bceb53a6b55ac5bea335051" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a71039b0dc8cbcbdaec464897f1f7c419" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad3222fd1bdaaa427093f421db9e21d7a" kind="function"><name>distance_four_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a71039b0dc8cbcbdaec464897f1f7c419" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad3222fd1bdaaa427093f421db9e21d7a" kind="function"><name>distance_four_codes</name></member>
   </compound>
   <compound refid="structfaiss_1_1PQDecoder16" kind="struct"><name>faiss::PQDecoder16</name>
     <member refid="structfaiss_1_1PQDecoder16_1a69eda3d6560cfbde9ddf9a2e55684582" kind="variable"><name>nbits</name></member>

@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="160" column="5" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="160" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="164" column="5" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="164" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a92c8225de4266b4f34b7889e64dada89" prot="public" static="no">
         <type>PQDecoderT</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/pq_code_distance.h" line="153" column="5" bodyfile="faiss/utils/pq_code_distance.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/utils/pq_code_distance.h" line="157" column="5" bodyfile="faiss/utils/pq_code_distance.h" bodystart="157" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-attrib">
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="161" column="32" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="161" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="165" column="32" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="165" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -89,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="163" column="18" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="163" bodyend="174"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="167" column="18" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="167" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -147,7 +147,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="176" column="17" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="176" bodyend="214"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="180" column="17" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="180" bodyend="218"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a319459004d7bdee95b605e6cf270446a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -177,7 +177,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/pq_code_distance.h" line="155" column="18" bodyfile="faiss/utils/pq_code_distance.h" bodystart="155" bodyend="166"/>
+        <location file="faiss/utils/pq_code_distance.h" line="159" column="18" bodyfile="faiss/utils/pq_code_distance.h" bodystart="159" bodyend="170"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -235,7 +235,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/pq_code_distance.h" line="168" column="17" bodyfile="faiss/utils/pq_code_distance.h" bodystart="168" bodyend="207"/>
+        <location file="faiss/utils/pq_code_distance.h" line="172" column="17" bodyfile="faiss/utils/pq_code_distance.h" bodystart="172" bodyend="211"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -243,7 +243,7 @@
     <detaileddescription>
 <para>Primary template — always complete. For <ref refid="structfaiss_1_1PQDecoder8" kindref="compound">PQDecoder8</ref>, delegates to _impl dispatch bridges (resolved at link time to per-SIMD implementations). For other decoders, uses scalar — their sequential decode() methods don&apos;t benefit from SIMD. </para>
     </detaileddescription>
-    <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="159" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="159" bodyend="215"/>
+    <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="163" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="163" bodyend="219"/>
     <listofallmembers>
       <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistance</scope><name>distance_four_codes</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistance</scope><name>distance_four_codes</name></member>
