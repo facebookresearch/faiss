@@ -62,10 +62,14 @@ namespace pq_code_distance {
  *********************************************************************/
 
 /// Scalar PQ code distance implementation.
-/// Templated only on decoder type, independent of SIMD level.
 /// Used directly by non-PQDecoder8 decoders (PQDecoder16,
 /// PQDecoderGeneric) and as fallback for PQDecoder8 at NONE/NEON.
-template <typename PQDecoderT>
+// SL keeps each SIMD-level TU's instantiation a distinct symbol. Without it
+// the linker merges them and may keep one compiled with -mavx512*, which
+// then runs on the AVX2 path and raises SIGILL on CPUs without AVX512.
+// The default keeps callers outside faiss that name only the decoder (e.g.
+// unicorn/features/encoders/PQFSTable.h) compiling; faiss passes SL itself.
+template <typename PQDecoderT, SIMDLevel SL = SIMDLevel::NONE>
 struct PQCodeDistanceScalar {
     using PQDecoder = PQDecoderT;
 
@@ -168,7 +172,7 @@ struct PQCodeDistance {
         if constexpr (std::is_same_v<PQDecoderT, PQDecoder8>) {
             return pq_code_distance_8bit_single_impl<SL>(M, sim_table, code);
         } else {
-            return PQCodeDistanceScalar<PQDecoderT>::distance_single_code(
+            return PQCodeDistanceScalar<PQDecoderT, SL>::distance_single_code(
                     M, nbits, sim_table, code);
         }
     }
@@ -198,7 +202,7 @@ struct PQCodeDistance {
                     result2,
                     result3);
         } else {
-            PQCodeDistanceScalar<PQDecoderT>::distance_four_codes(
+            PQCodeDistanceScalar<PQDecoderT, SL>::distance_four_codes(
                     M,
                     nbits,
                     sim_table,
