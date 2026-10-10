@@ -94,6 +94,9 @@ struct QuantizerTemplate<
     }
 
     void decode_vector(const uint8_t* code, float* x) const final {
+        const auto d = this->d;
+        const auto vmin = this->vmin;
+        const auto vdiff = this->vdiff;
         for (size_t i = 0; i < d; i++) {
             float xi = Codec::decode_component(code, i);
             x[i] = vmin + xi * vdiff;
@@ -119,18 +122,16 @@ struct QuantizerTemplate<
     QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : d(d_in), vmin(trained.data()), vdiff(trained.data() + d_in) {}
 
+    ATTR_NO_TRAPPING_MATH
     void encode_vector(const float* x, uint8_t* code) const final {
+        const auto d = this->d;
+        const auto vmin = this->vmin;
+        const auto vdiff = this->vdiff;
         for (size_t i = 0; i < d; i++) {
-            float xi = 0;
-            if (vdiff[i] != 0) {
-                xi = (x[i] - vmin[i]) / vdiff[i];
-                if (xi < 0) {
-                    xi = 0;
-                }
-                if (xi > 1.0) {
-                    xi = 1.0;
-                }
-            }
+            float xi = (x[i] - vmin[i]) / (vdiff[i] == 0 ? 1 : vdiff[i]);
+            xi = xi < 0 ? 0 : xi;
+            xi = xi > 1.0 ? 1.0 : xi;
+            xi = vdiff[i] == 0 ? 0.0f : xi;
             Codec::encode_component(xi, code, i);
         }
     }
