@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pipnn_1_1PartitionStats" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pipnn::PartitionStats</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a4702b6fad7376161919c2cb19b46ba57" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionStats::n_leaves</definition>
+        <argsstring></argsstring>
+        <name>n_leaves</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::n_leaves</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="39" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a88fa8e31c5fe1a665d84ec5a9fa43c21" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionStats::n_point_instances</definition>
+        <argsstring></argsstring>
+        <name>n_point_instances</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::n_point_instances</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="40" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a3040ac2c3af6a8a0370daf3599c81e98" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionStats::max_leaf</definition>
+        <argsstring></argsstring>
+        <name>max_leaf</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::max_leaf</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="41" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1ac8ad6b89b6a95fe68b9987d61fab0954" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionStats::n_slice_fallbacks</definition>
+        <argsstring></argsstring>
+        <name>n_slice_fallbacks</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::n_slice_fallbacks</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="42" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a9c7c099d151356fc26102ffc1d503448" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionStats::n_l2_repartitions</definition>
+        <argsstring></argsstring>
+        <name>n_l2_repartitions</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::n_l2_repartitions</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="42" column="31" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a38bf77d23256d1264295d5385530b171" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::PartitionStats::max_depth_seen</definition>
+        <argsstring></argsstring>
+        <name>max_depth_seen</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::max_depth_seen</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="43" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1ab3b3c44e794afe287e739b6eb492b25b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; size_t &gt;</type>
+        <definition>std::vector&lt;size_t&gt; faiss::pipnn::PartitionStats::leaf_size_histogram</definition>
+        <argsstring></argsstring>
+        <name>leaf_size_histogram</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::leaf_size_histogram</qualifiedname>
+        <briefdescription>
+<para>leaf_size_histogram[i] counts leaves of size in [64 i + 1, 64 (i + 1)]. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="45" column="17" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a26e86a54bbdf216f21ec7c77bbab2f7a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionStats::n_waves</definition>
+        <argsstring></argsstring>
+        <name>n_waves</name>
+        <qualifiedname>faiss::pipnn::PartitionStats::n_waves</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="46" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/pipnn/Partition.h" line="38" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="38" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1ab3b3c44e794afe287e739b6eb492b25b" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>leaf_size_histogram</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a38bf77d23256d1264295d5385530b171" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>max_depth_seen</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a3040ac2c3af6a8a0370daf3599c81e98" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>max_leaf</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a9c7c099d151356fc26102ffc1d503448" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>n_l2_repartitions</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a4702b6fad7376161919c2cb19b46ba57" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>n_leaves</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a88fa8e31c5fe1a665d84ec5a9fa43c21" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>n_point_instances</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1ac8ad6b89b6a95fe68b9987d61fab0954" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>n_slice_fallbacks</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a26e86a54bbdf216f21ec7c77bbab2f7a" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>n_waves</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

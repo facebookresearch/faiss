@@ -4,6 +4,7 @@
     <compoundname>faiss/impl/pipnn</compoundname>
     <innerfile refid="HashPrune_8h">HashPrune.h</innerfile>
     <innerfile refid="kernels_8h">kernels.h</innerfile>
+    <innerfile refid="Partition_8h">Partition.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

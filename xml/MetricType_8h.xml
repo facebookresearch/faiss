@@ -19,6 +19,7 @@
     <includedby refid="RaBitQUtils_8h" local="no">faiss/impl/RaBitQUtils.h</includedby>
     <includedby refid="RaBitQuantizer_8h" local="no">faiss/impl/RaBitQuantizer.h</includedby>
     <includedby refid="RaBitQuantizerMultiBit_8h" local="no">faiss/impl/RaBitQuantizerMultiBit.h</includedby>
+    <includedby refid="Partition_8h" local="no">faiss/impl/pipnn/Partition.h</includedby>
     <includedby refid="kernels_8h" local="no">faiss/impl/pipnn/kernels.h</includedby>
     <includedby refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includedby>
     <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
@@ -653,6 +654,8 @@
         </childnode>
         <childnode refid="166" relation="include">
         </childnode>
+        <childnode refid="167" relation="include">
+        </childnode>
         <childnode refid="156" relation="include">
         </childnode>
         <childnode refid="128" relation="include">
@@ -1195,6 +1198,10 @@
         <link refid="kmeans1d_8h_source"/>
       </node>
       <node id="166">
+        <label>faiss/impl/pipnn/Partition.h</label>
+        <link refid="Partition_8h_source"/>
+      </node>
+      <node id="167">
         <label>faiss/impl/pipnn/kernels.h</label>
         <link refid="kernels_8h_source"/>
       </node>

@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pipnn_1_1PartitionParams" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pipnn::PartitionParams</compoundname>
+    <includes refid="Partition_8h" local="no">Partition.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1a1076c90c431705d0c1aad6c719b37258" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::PartitionParams::c_max</definition>
+        <argsstring></argsstring>
+        <name>c_max</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::c_max</qualifiedname>
+        <initializer>= 1024</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="26" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1ac90bec92c56f4a7bfc3321bcc9d56b00" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::PartitionParams::c_min</definition>
+        <argsstring></argsstring>
+        <name>c_min</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::c_min</qualifiedname>
+        <initializer>= 128</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="27" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1afdddef4f9ba877278fdbbc19c28d66c9" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::PartitionParams::leader_cap</definition>
+        <argsstring></argsstring>
+        <name>leader_cap</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::leader_cap</qualifiedname>
+        <initializer>= 1000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="28" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1a3e7dcf34e7f4ef43e8f727e200643c46" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::pipnn::PartitionParams::leader_fraction</definition>
+        <argsstring></argsstring>
+        <name>leader_fraction</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::leader_fraction</qualifiedname>
+        <initializer>= 0.005f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="29" column="11" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1a6d8905638c5133e3f1994614c6f153b4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; faiss::pipnn::PartitionParams::fanout</definition>
+        <argsstring></argsstring>
+        <name>fanout</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::fanout</qualifiedname>
+        <initializer>= {10, 3}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="30" column="17" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1a83897b0870fd7c65eac71cb5df122ead" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::pipnn::PartitionParams::metric</definition>
+        <argsstring></argsstring>
+        <name>metric</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::metric</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="31" column="16" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1ad5e8fd633e4af2c73d4da62a56c4edcc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::pipnn::PartitionParams::ip_partition_by_angle</definition>
+        <argsstring></argsstring>
+        <name>ip_partition_by_angle</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::ip_partition_by_angle</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="32" column="10" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1ac57cbb7ee6ab198f15344567cb5566d3" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::PartitionParams::wave_budget</definition>
+        <argsstring></argsstring>
+        <name>wave_budget</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::wave_budget</qualifiedname>
+        <initializer>= size_t(1) &lt;&lt; 30</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="33" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionParams_1ac8ee038378cb43e4f65552d887d06110" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pipnn::PartitionParams::max_depth</definition>
+        <argsstring></argsstring>
+        <name>max_depth</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::max_depth</qualifiedname>
+        <initializer>= 32</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="34" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1pipnn_1_1PartitionParams_1ad31df140723110919bd489abd02d1796" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::pipnn::PartitionParams::fanout_at</definition>
+        <argsstring>(int depth) const</argsstring>
+        <name>fanout_at</name>
+        <qualifiedname>faiss::pipnn::PartitionParams::fanout_at</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>depth</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="35" column="9"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Randomized Ball Carving settings (paper Alg. 5). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/pipnn/Partition.h" line="25" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="25" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1a1076c90c431705d0c1aad6c719b37258" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>c_max</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1ac90bec92c56f4a7bfc3321bcc9d56b00" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>c_min</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1a6d8905638c5133e3f1994614c6f153b4" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>fanout</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1ad31df140723110919bd489abd02d1796" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>fanout_at</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1ad5e8fd633e4af2c73d4da62a56c4edcc" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>ip_partition_by_angle</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1afdddef4f9ba877278fdbbc19c28d66c9" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>leader_cap</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1a3e7dcf34e7f4ef43e8f727e200643c46" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>leader_fraction</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1ac8ee038378cb43e4f65552d887d06110" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>max_depth</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1a83897b0870fd7c65eac71cb5df122ead" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>metric</name></member>
+      <member refid="structfaiss_1_1pipnn_1_1PartitionParams_1ac57cbb7ee6ab198f15344567cb5566d3" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionParams</scope><name>wave_budget</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

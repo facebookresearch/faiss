@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1pipnn_1_1detail" kind="namespace" language="C++">
+    <compoundname>faiss::pipnn::detail</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1a95c18a7de961d444007c86febee03e3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::pipnn::detail::leader_count</definition>
+        <argsstring>(size_t size, const PartitionParams &amp;p, int depth)</argsstring>
+        <name>leader_count</name>
+        <qualifiedname>faiss::pipnn::detail::leader_count</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1pipnn_1_1PartitionParams" kindref="compound">PartitionParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>depth</declname>
+        </param>
+        <briefdescription>
+<para>min(max(ceil(leader_fraction * size), 4 * fanout(depth)), leader_cap, size) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="72" column="8" declfile="faiss/impl/pipnn/Partition.h" declline="72" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1aef28b1824f8c5cc4285401e6b00f4b78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::detail::sample_positions</definition>
+        <argsstring>(size_t N, size_t k, uint64_t seed, std::vector&lt; size_t &gt; &amp;out)</argsstring>
+        <name>sample_positions</name>
+        <qualifiedname>faiss::pipnn::detail::sample_positions</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>N</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>seed</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; size_t &gt; &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>k distinct positions of [0, N), ascending (Floyd&apos;s algorithm). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="75" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="75" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1ae1f5935ad80fd5413f8f207c709aec8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Ranking</type>
+        <definition>Ranking faiss::pipnn::detail::ranking_for</definition>
+        <argsstring>(const PartitionParams &amp;p, bool force_l2)</argsstring>
+        <name>ranking_for</name>
+        <qualifiedname>faiss::pipnn::detail::ranking_for</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1pipnn_1_1PartitionParams" kindref="compound">PartitionParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>force_l2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="81" column="9" declfile="faiss/impl/pipnn/Partition.h" declline="81" declcolumn="9"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Building blocks of partition_and_visit, exposed for unit tests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/pipnn/Partition.h" line="69" column="1"/>
+  </compounddef>
+</doxygen>

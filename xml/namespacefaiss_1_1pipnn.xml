@@ -3,8 +3,11 @@
   <compounddef id="namespacefaiss_1_1pipnn" kind="namespace" language="C++">
     <compoundname>faiss::pipnn</compoundname>
     <innerclass refid="structfaiss_1_1pipnn_1_1Hyperplanes" prot="public">faiss::pipnn::Hyperplanes</innerclass>
+    <innerclass refid="structfaiss_1_1pipnn_1_1PartitionParams" prot="public">faiss::pipnn::PartitionParams</innerclass>
+    <innerclass refid="structfaiss_1_1pipnn_1_1PartitionStats" prot="public">faiss::pipnn::PartitionStats</innerclass>
     <innerclass refid="structfaiss_1_1pipnn_1_1ReservoirRef" prot="public">faiss::pipnn::ReservoirRef</innerclass>
     <innerclass refid="structfaiss_1_1pipnn_1_1Slot" prot="public">faiss::pipnn::Slot</innerclass>
+    <innernamespace refid="namespacefaiss_1_1pipnn_1_1detail">faiss::pipnn::detail</innernamespace>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="kernels_8h_1aae141051627f043b69a1877593aa2ff2" prot="public" static="no" strong="yes">
         <type>uint8_t</type>
@@ -40,7 +43,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="31" column="1" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="31" bodyend="31"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="34" column="1" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="34" bodyend="34"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="Partition_8h_1a3eb9cd49377f8f42a86b0a7db28b6467" prot="public" static="no">
+        <type>std::function&lt; void(const int32_t *ids, size_t s)&gt;</type>
+        <definition>using faiss::pipnn::LeafVisitor = typedef std::function&lt;void(const int32_t* ids, size_t s)&gt;</definition>
+        <argsstring></argsstring>
+        <name>LeafVisitor</name>
+        <qualifiedname>faiss::pipnn::LeafVisitor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Called once per leaf with its sorted, unique ids (s &lt;= c_max), concurrently from partition_and_visit&apos;s OpenMP region: omp_get_thread_num() identifies the calling thread. <computeroutput>ids</computeroutput> is valid only during the call. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="52" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="52" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="var">
@@ -74,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="29" column="18" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="32" column="18" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="32" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -208,7 +228,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="36" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="36" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="39" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="39" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="kernels_8h_1a45d2ccbb81ada446552a4ee76e145f35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -259,7 +279,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="50" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="50" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="53" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="53" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="kernels_8h_1a72b9b36917b4ba2c310153852b3de166" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -298,7 +318,96 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="63" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="63" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="66" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="66" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a2d94d6212454123c173bead0ce03ba45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::gather_rows</definition>
+        <argsstring>(const Index &amp;storage, const int32_t *ids, size_t k, float *out)</argsstring>
+        <name>gather_rows</name>
+        <qualifiedname>faiss::pipnn::gather_rows</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Rows ids[0..k) of <computeroutput>storage</computeroutput> as floats into out (k x d). SQ rows are decoded directly; other types use reconstruct(), which must not open OpenMP regions. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="76" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="76" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="Partition_8h_1a10e402ed1a6a4d801ac295a5c0ff9ee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::partition_and_visit</definition>
+        <argsstring>(const Index &amp;storage, const PartitionParams &amp;p, uint64_t root_seed, const LeafVisitor &amp;on_leaf, PartitionStats *stats)</argsstring>
+        <name>partition_and_visit</name>
+        <qualifiedname>faiss::pipnn::partition_and_visit</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1pipnn_1_1PartitionParams" kindref="compound">PartitionParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>root_seed</declname>
+        </param>
+        <param>
+          <type>const LeafVisitor &amp;</type>
+          <declname>on_leaf</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1pipnn_1_1PartitionStats" kindref="compound">PartitionStats</ref> *</type>
+          <declname>stats</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Randomized Ball Carving with multi-level fanout. Calls <computeroutput>on_leaf</computeroutput> exactly once per leaf and fills <computeroutput>*stats</computeroutput> (if not null). On an exception or an interrupt it rethrows with some leaves unvisited and <computeroutput>*stats</computeroutput> unchanged. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="57" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="57" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="Partition_8h_1a937d784191c66bd80de02e0a24d9aea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::pipnn::mix_seed</definition>
+        <argsstring>(uint64_t a, uint64_t b)</argsstring>
+        <name>mix_seed</name>
+        <qualifiedname>faiss::pipnn::mix_seed</qualifiedname>
+        <param>
+          <type>uint64_t</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Deterministic hash of (a, b) for derived seeds. For a fixed a, distinct b give distinct results. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="66" column="10" declfile="faiss/impl/pipnn/Partition.h" declline="66" declcolumn="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
