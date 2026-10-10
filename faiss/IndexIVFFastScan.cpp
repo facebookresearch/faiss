@@ -646,8 +646,22 @@ void IndexIVFFastScan::search_dispatch_implem(
                 search_implem_14(
                         n, x, k, distances, labels, cq, impl, context, params);
             } else {
+                // Size each thread's LUT table here, on the calling thread:
+                // a heap-profiler sample taken on an OpenMP worker unwinds
+                // through libomp, which is very slow on aarch64. Slices differ
+                // by at most one query, so the rounded capacity is reused.
+                std::vector<AlignedTable<uint8_t>> thread_dis_tables(
+                        omp_get_max_threads());
+                const size_t max_slice_n = (n + nslice - 1) / nslice;
+                const size_t lut_per_query =
+                        ksub * M2 * (lookup_table_is_3d() ? cur_nprobe : 1);
+                for (auto& t : thread_dis_tables) {
+                    t.resize(max_slice_n * lut_per_query);
+                }
 #pragma omp parallel for reduction(+ : ndis, nlist_visited)
                 for (int slice = 0; slice < nslice; slice++) {
+                    AlignedTable<uint8_t>* dis_tables_buf =
+                            &thread_dis_tables[omp_get_thread_num()];
                     idx_t i0 = n * slice / nslice;
                     idx_t i1 = n * (slice + 1) / nslice;
                     float* dis_i = distances + i0 * k;
@@ -687,7 +701,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                                 &nlist_visited,
                                 thread_context,
                                 params,
-                                *scanner);
+                                *scanner,
+                                dis_tables_buf);
                     } else {
                         search_implem_10(
                                 i1 - i0,
@@ -699,7 +714,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                                 &nlist_visited,
                                 thread_context,
                                 params,
-                                *scanner);
+                                *scanner,
+                                dis_tables_buf);
                     }
                 }
             }
@@ -1023,9 +1039,12 @@ void IndexIVFFastScan::search_implem_10(
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
         const IVFSearchParameters* params,
-        FastScanCodeScanner& scanner) const {
+        FastScanCodeScanner& scanner,
+        AlignedTable<uint8_t>* dis_tables_buf) const {
     size_t dim12 = ksub * M2;
-    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint8_t> local_dis_tables;
+    AlignedTable<uint8_t>& dis_tables =
+            dis_tables_buf ? *dis_tables_buf : local_dis_tables;
     AlignedTable<uint16_t> biases;
     std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
@@ -1176,14 +1195,17 @@ void IndexIVFFastScan::search_implem_12(
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
         const IVFSearchParameters* /* params */,
-        FastScanCodeScanner& scanner) const {
+        FastScanCodeScanner& scanner,
+        AlignedTable<uint8_t>* dis_tables_buf) const {
     if (n == 0) { // does not work well with reservoir
         return;
     }
     FAISS_THROW_IF_NOT(bbs == 32);
 
     size_t dim12 = ksub * M2;
-    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint8_t> local_dis_tables;
+    AlignedTable<uint8_t>& dis_tables =
+            dis_tables_buf ? *dis_tables_buf : local_dis_tables;
     AlignedTable<uint16_t> biases;
     std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
@@ -1200,6 +1222,7 @@ void IndexIVFFastScan::search_implem_12(
     size_t cur_nprobe = cq.nprobe;
 
     std::vector<QC> qcs;
+    qcs.reserve(n * cur_nprobe);
     {
         size_t ij = 0;
         for (idx_t i = 0; i < n; i++) {
@@ -1356,6 +1379,7 @@ void IndexIVFFastScan::search_implem_14(
     size_t cur_nprobe = cq.nprobe;
 
     std::vector<QC> qcs;
+    qcs.reserve(n * cur_nprobe);
     {
         size_t ij = 0;
         for (idx_t i = 0; i < n; i++) {
