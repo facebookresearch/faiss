@@ -684,25 +684,28 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         // compute covariance matrix, store it in PCA matrix
         PCAMat.resize(d_in * d_in);
         float* cov = PCAMat.data();
-        { // initialize with  mean * mean^T term
-            float* ci = cov;
-            for (int i = 0; i < d_in; i++) {
+        const float* covariance_data = x;
+        std::vector<float> xc;
+        if (have_bias) {
+            xc.resize(n * d_in);
+            for (idx_t i = 0; i < n; i++) {
                 for (int j = 0; j < d_in; j++) {
-                    *ci++ = -n * mean[i] * mean[j];
+                    xc[i * d_in + j] = x[i * d_in + j] - mean[j];
                 }
             }
+            covariance_data = xc.data();
         }
         {
             FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
-            float one = 1.0;
+            float one = 1.0, zero = 0.0;
             ssyrk_("Up",
                    "Non transposed",
                    &di,
                    &ni,
                    &one,
-                   (float*)x,
+                   const_cast<float*>(covariance_data),
                    &di,
-                   &one,
+                   &zero,
                    cov,
                    &di);
         }
