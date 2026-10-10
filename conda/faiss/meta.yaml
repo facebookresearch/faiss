@@ -84,11 +84,18 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
+        # Relax the openmp_* build-string constraint so libfaiss co-installs
+        # with packages (numpy, scipy) that link pthreads libopenblas on
+        # linux-aarch64. libfaiss.so is ABI-compatible with either variant;
+        # the openmp_* build is pinned in `host` so the artifact itself is
+        # built against openmp. The test environment pins openmp explicitly
+        # via test.requires to preserve the openblas_get_parallel() check.
+        - libopenblas >=0.3.28  # [linux and not x86_64]
         - libopenblas =0.3.34  # [osx]
     test:
       requires:
         - conda-build =25.3.1
+        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
