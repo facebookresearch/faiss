@@ -10,6 +10,7 @@
 #include <faiss/impl/simdlib/simdlib_neon.h>
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
@@ -623,55 +624,128 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
 
 namespace {
 
-// The accumulator stays unsigned: a vmull_u8 square reaches 255*255 = 65025,
-// which an int16 lane would read as negative.
-FAISS_ALWAYS_INLINE int neon_byte_l2sqr(
-        const uint8_t* code1,
-        const uint8_t* code2,
-        int d) {
-    uint32x4_t accu = vdupq_n_u32(0);
-    for (int i = 0; i < d; i += 16) {
-        const uint8x16_t diff =
-                vabdq_u8(vld1q_u8(code1 + i), vld1q_u8(code2 + i));
-        accu = vpadalq_u16(
-                accu, vmull_u8(vget_low_u8(diff), vget_low_u8(diff)));
-        accu = vpadalq_u16(
-                accu, vmull_u8(vget_high_u8(diff), vget_high_u8(diff)));
-    }
-    return static_cast<int>(vaddvq_u32(accu));
-}
-
-FAISS_ALWAYS_INLINE int neon_byte_ip(
-        const uint8_t* code1,
-        const uint8_t* code2,
-        int d) {
-    uint32x4_t accu = vdupq_n_u32(0);
-    for (int i = 0; i < d; i += 16) {
-        const uint8x16_t c1 = vld1q_u8(code1 + i);
-        const uint8x16_t c2 = vld1q_u8(code2 + i);
-        accu = vpadalq_u16(accu, vmull_u8(vget_low_u8(c1), vget_low_u8(c2)));
-        accu = vpadalq_u16(accu, vmull_u8(vget_high_u8(c1), vget_high_u8(c2)));
-    }
-    return static_cast<int>(vaddvq_u32(accu));
-}
-
-// The codes store value + 128. For x in 0 to 255, x ^ 0x80 read as int8 is
-// exactly x - 128, which is how the bias comes off before vmull_s8.
-FAISS_ALWAYS_INLINE int neon_byte_ip_unbias(
-        const uint8_t* code1,
-        const uint8_t* code2,
-        int d) {
+template <MetricType metric, bool biased, size_t N, bool split = N == 1>
+FAISS_ALWAYS_INLINE std::array<uint32x4_t, N> neon_byte_accumulators(
+        const uint8_t* query,
+        const std::array<const uint8_t*, N>& codes,
+        int start,
+        int end) {
+    static_assert(!split || N == 1);
     const uint8x16_t bias = vdupq_n_u8(0x80);
-    int32x4_t accu = vdupq_n_s32(0);
-    for (int i = 0; i < d; i += 16) {
-        const int8x16_t c1 =
-                vreinterpretq_s8_u8(veorq_u8(vld1q_u8(code1 + i), bias));
-        const int8x16_t c2 =
-                vreinterpretq_s8_u8(veorq_u8(vld1q_u8(code2 + i), bias));
-        accu = vpadalq_s16(accu, vmull_s8(vget_low_s8(c1), vget_low_s8(c2)));
-        accu = vpadalq_s16(accu, vmull_s8(vget_high_s8(c1), vget_high_s8(c2)));
+    std::array<uint32x4_t, N> accumulators;
+    // Longer single-candidate loops use independent low/high chains.
+    std::array<uint32x4_t, N> high_accumulators;
+    for (size_t j = 0; j < N; ++j) {
+        accumulators[j] = vdupq_n_u32(0);
+        if constexpr (split) {
+            high_accumulators[j] = vdupq_n_u32(0);
+        }
     }
-    return static_cast<int>(vaddvq_s32(accu));
+    auto accumulate = [&](int i) {
+        uint8x16_t q = vld1q_u8(query + i);
+        if constexpr (metric == METRIC_INNER_PRODUCT && biased) {
+            q = veorq_u8(q, bias);
+        }
+        for (size_t j = 0; j < N; ++j) {
+            auto& high = split ? high_accumulators[j] : accumulators[j];
+            uint8x16_t c = vld1q_u8(codes[j] + i);
+            if constexpr (metric == METRIC_L2) {
+                const uint8x16_t diff = vabdq_u8(q, c);
+                accumulators[j] = vpadalq_u16(
+                        accumulators[j],
+                        vmull_u8(vget_low_u8(diff), vget_low_u8(diff)));
+                high = vpadalq_u16(
+                        high, vmull_u8(vget_high_u8(diff), vget_high_u8(diff)));
+            } else if constexpr (biased) {
+                // Stored signed bytes are value+128; xor removes the bias.
+                const int8x16_t qs = vreinterpretq_s8_u8(q);
+                const int8x16_t cs = vreinterpretq_s8_u8(veorq_u8(c, bias));
+                accumulators[j] = vreinterpretq_u32_s32(vpadalq_s16(
+                        vreinterpretq_s32_u32(accumulators[j]),
+                        vmull_s8(vget_low_s8(qs), vget_low_s8(cs))));
+                high = vreinterpretq_u32_s32(vpadalq_s16(
+                        vreinterpretq_s32_u32(high),
+                        vmull_s8(vget_high_s8(qs), vget_high_s8(cs))));
+            } else {
+                accumulators[j] = vpadalq_u16(
+                        accumulators[j],
+                        vmull_u8(vget_low_u8(q), vget_low_u8(c)));
+                high = vpadalq_u16(
+                        high, vmull_u8(vget_high_u8(q), vget_high_u8(c)));
+            }
+        }
+    };
+    if constexpr (split) {
+        int i = start;
+        for (; end - i >= 32; i += 32) {
+            accumulate(i);
+            accumulate(i + 16);
+        }
+        if (i < end) {
+            accumulate(i);
+        }
+        accumulators[0] = vaddq_u32(accumulators[0], high_accumulators[0]);
+    } else {
+        for (int i = start; i < end; i += 16) {
+            accumulate(i);
+        }
+    }
+    return accumulators;
+}
+
+template <MetricType metric, bool biased, size_t N>
+FAISS_ALWAYS_INLINE void neon_byte_distances(
+        const uint8_t* query,
+        const std::array<const uint8_t*, N>& codes,
+        int d,
+        float* distances) {
+    if constexpr (N == 1) {
+        // Avoid loop setup and the wide-vector guard for one or two chunks.
+        if (d <= 32) {
+            if (d == 16) {
+                const auto accumulators =
+                        neon_byte_accumulators<metric, biased, N, false>(
+                                query, codes, 0, 16);
+                distances[0] = static_cast<float>(
+                        vaddvq_s32(vreinterpretq_s32_u32(accumulators[0])));
+                return;
+            }
+            if (d == 32) {
+                const auto accumulators =
+                        neon_byte_accumulators<metric, biased, N, false>(
+                                query, codes, 0, 32);
+                distances[0] = static_cast<float>(
+                        vaddvq_s32(vreinterpretq_s32_u32(accumulators[0])));
+                return;
+            }
+        }
+    }
+    // Each block's entire sum fits int32 (32768 * 255^2 < INT32_MAX).
+    constexpr int block_size = 32768;
+    if (d <= block_size) {
+        const auto accumulators =
+                neon_byte_accumulators<metric, biased, N>(query, codes, 0, d);
+        for (size_t j = 0; j < N; ++j) {
+            distances[j] = static_cast<float>(
+                    vaddvq_s32(vreinterpretq_s32_u32(accumulators[j])));
+        }
+        return;
+    }
+
+    // Widen before adding blocks, not after a full-vector reduction.
+    std::array<int64_t, N> totals{};
+    for (int start = 0; start < d;) {
+        const int end = start + std::min(d - start, block_size);
+        const auto accumulators = neon_byte_accumulators<metric, biased, N>(
+                query, codes, start, end);
+        for (size_t j = 0; j < N; ++j) {
+            totals[j] += vaddvq_s32(vreinterpretq_s32_u32(accumulators[j]));
+        }
+        start = end;
+    }
+    for (size_t j = 0; j < N; ++j) {
+        distances[j] = static_cast<float>(totals[j]);
+    }
 }
 
 } // namespace
@@ -688,13 +762,13 @@ struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
         FAISS_THROW_IF_NOT(d % 16 == 0);
     }
 
-    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        if constexpr (Sim::metric_type == METRIC_INNER_PRODUCT) {
-            return neon_byte_ip(code1, code2, d);
-        } else {
-            return neon_byte_l2sqr(code1, code2, d);
-        }
+    FAISS_ALWAYS_INLINE float compute_code_distance(
+            const uint8_t* code1,
+            const uint8_t* code2) const {
+        float distance;
+        neon_byte_distances<Sim::metric_type, false, 1>(
+                code1, {code2}, d, &distance);
+        return distance;
     }
 
     void set_query(const float* x) final {
@@ -703,7 +777,7 @@ struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
         }
     }
 
-    int compute_distance(const float* x, const uint8_t* code) {
+    float compute_distance(const float* x, const uint8_t* code) {
         set_query(x);
         return compute_code_distance(tmp.data(), code);
     }
@@ -715,6 +789,24 @@ struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
 
     float query_to_code(const uint8_t* code) const final {
         return compute_code_distance(tmp.data(), code);
+    }
+
+    void query_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const override {
+        float distances[4];
+        neon_byte_distances<Sim::metric_type, false, 4>(
+                tmp.data(), {code_0, code_1, code_2, code_3}, d, distances);
+        dis0 = distances[0];
+        dis1 = distances[1];
+        dis2 = distances[2];
+        dis3 = distances[3];
     }
 };
 
@@ -731,14 +823,13 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::ARM_NEON>
         FAISS_THROW_IF_NOT(d % 16 == 0);
     }
 
-    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        if constexpr (Sim::metric_type == METRIC_INNER_PRODUCT) {
-            return neon_byte_ip_unbias(code1, code2, d);
-        } else {
-            // The bias cancels in the difference.
-            return neon_byte_l2sqr(code1, code2, d);
-        }
+    FAISS_ALWAYS_INLINE float compute_code_distance(
+            const uint8_t* code1,
+            const uint8_t* code2) const {
+        float distance;
+        neon_byte_distances<Sim::metric_type, true, 1>(
+                code1, {code2}, d, &distance);
+        return distance;
     }
 
     void set_query(const float* x) final {
@@ -747,7 +838,7 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::ARM_NEON>
         }
     }
 
-    int compute_distance(const float* x, const uint8_t* code) {
+    float compute_distance(const float* x, const uint8_t* code) {
         set_query(x);
         return compute_code_distance(tmp.data(), code);
     }
@@ -759,6 +850,24 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::ARM_NEON>
 
     float query_to_code(const uint8_t* code) const final {
         return compute_code_distance(tmp.data(), code);
+    }
+
+    void query_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const override {
+        float distances[4];
+        neon_byte_distances<Sim::metric_type, true, 4>(
+                tmp.data(), {code_0, code_1, code_2, code_3}, d, distances);
+        dis0 = distances[0];
+        dis1 = distances[1];
+        dis2 = distances[2];
+        dis3 = distances[3];
     }
 };
 

@@ -81,6 +81,250 @@ struct ScopedSIMDLevel {
     }
 };
 
+TEST(ScalarQuantizerNEONByte, WideIntegerDistances) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::ARM_NEON)) {
+        GTEST_SKIP() << "NEON is unavailable";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::ARM_NEON);
+    for (bool signed_codes : {false, true}) {
+        const auto qtype = signed_codes
+                ? faiss::ScalarQuantizer::QT_8bit_direct_signed
+                : faiss::ScalarQuantizer::QT_8bit_direct;
+        for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+            for (size_t d :
+                 {16,
+                  8192,
+                  8208,
+                  32768,
+                  32784,
+                  33024,
+                  33040,
+                  66064,
+                  131088,
+                  132112,
+                  264208}) {
+                SCOPED_TRACE(
+                        ::testing::Message()
+                        << "signed=" << signed_codes << " metric=" << metric
+                        << " d=" << d);
+                faiss::ScalarQuantizer sq(d, qtype);
+                const float q = metric == faiss::METRIC_L2
+                        ? (signed_codes ? -128.0f : 0.0f)
+                        : (signed_codes ? -128.0f : 255.0f);
+                std::vector<float> query(d, q);
+                std::vector<float> database(4 * d);
+                const std::array<int, 4> values = signed_codes
+                        ? std::array<int, 4>{-128, 127, 0, -1}
+                        : std::array<int, 4>{0, 255, 128, 1};
+                for (size_t i = 0; i < values.size(); ++i) {
+                    std::fill_n(database.data() + i * d, d, values[i]);
+                }
+                std::vector<uint8_t> codes(4 * d);
+                sq.compute_codes(database.data(), codes.data(), 4);
+                std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> dc(
+                        sq.get_distance_computer(metric));
+                dc->codes = codes.data();
+                dc->code_size = d;
+                dc->set_query(query.data());
+                std::array<float, 4> distances;
+                dc->query_to_codes_batch_4(
+                        codes.data(),
+                        codes.data() + d,
+                        codes.data() + 2 * d,
+                        codes.data() + 3 * d,
+                        distances[0],
+                        distances[1],
+                        distances[2],
+                        distances[3]);
+                for (size_t i = 0; i < values.size(); ++i) {
+                    const int64_t diff = static_cast<int>(q) - values[i];
+                    const int64_t per_component = metric == faiss::METRIC_L2
+                            ? diff * diff
+                            : static_cast<int64_t>(q) * values[i];
+                    const float expected = static_cast<float>(
+                            per_component * static_cast<int64_t>(d));
+                    EXPECT_EQ(
+                            dc->query_to_code(codes.data() + i * d), expected);
+                    EXPECT_EQ(distances[i], expected);
+                    const int64_t symmetric_diff = values[0] - values[i];
+                    const int64_t symmetric_component =
+                            metric == faiss::METRIC_L2
+                            ? symmetric_diff * symmetric_diff
+                            : static_cast<int64_t>(values[0]) * values[i];
+                    EXPECT_EQ(
+                            dc->symmetric_dis(0, i),
+                            static_cast<float>(
+                                    symmetric_component *
+                                    static_cast<int64_t>(d)));
+                }
+            }
+        }
+    }
+}
+
+TEST(ScalarQuantizerNEONByte, BatchedDistancesMatchIntegerReference) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::ARM_NEON)) {
+        GTEST_SKIP() << "NEON is unavailable";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::ARM_NEON);
+    std::mt19937 rng(4931);
+    for (bool signed_codes : {false, true}) {
+        const auto qtype = signed_codes
+                ? faiss::ScalarQuantizer::QT_8bit_direct_signed
+                : faiss::ScalarQuantizer::QT_8bit_direct;
+        std::uniform_int_distribution<int> dist(
+                signed_codes ? -128 : 0, signed_codes ? 127 : 255);
+        for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+            for (size_t d :
+                 {16,
+                  32,
+                  48,
+                  64,
+                  96,
+                  112,
+                  128,
+                  144,
+                  160,
+                  192,
+                  240,
+                  256,
+                  384,
+                  768,
+                  1536,
+                  8208,
+                  32784,
+                  66064}) {
+                faiss::ScalarQuantizer sq(d, qtype);
+                std::vector<float> query(d);
+                std::vector<float> database(4 * d);
+                for (auto& value : query) {
+                    const int integer = dist(rng);
+                    value = integer + (integer < 0 ? -0.25f : 0.25f);
+                }
+                for (auto& value : database) {
+                    value = dist(rng);
+                }
+                std::vector<uint8_t> codes(4 * d);
+                sq.compute_codes(database.data(), codes.data(), 4);
+                std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> dc(
+                        sq.get_distance_computer(metric));
+                dc->set_query(query.data());
+                for (size_t offset : {0, 1, 3, 15}) {
+                    std::vector<uint8_t> unaligned(codes.size() + offset);
+                    std::copy(
+                            codes.begin(),
+                            codes.end(),
+                            unaligned.begin() + offset);
+                    const uint8_t* base = unaligned.data() + offset;
+                    dc->codes = base;
+                    dc->code_size = d;
+                    std::array<float, 4> distances;
+                    dc->query_to_codes_batch_4(
+                            base + 3 * d,
+                            base,
+                            base + 3 * d,
+                            base + d,
+                            distances[0],
+                            distances[1],
+                            distances[2],
+                            distances[3]);
+                    for (size_t i = 0; i < distances.size(); ++i) {
+                        const size_t index =
+                                std::array<size_t, 4>{3, 0, 3, 1}[i];
+                        int64_t expected = 0;
+                        for (size_t j = 0; j < d; ++j) {
+                            const int q = static_cast<int>(query[j]);
+                            const int value = database[index * d + j];
+                            const int64_t diff = q - value;
+                            expected += metric == faiss::METRIC_L2
+                                    ? diff * diff
+                                    : static_cast<int64_t>(q) * value;
+                        }
+                        EXPECT_EQ(distances[i], static_cast<float>(expected));
+                        EXPECT_EQ(
+                                distances[i],
+                                dc->query_to_code(base + index * d));
+                    }
+                }
+            }
+        }
+    }
+}
+
+TEST(ScalarQuantizerNEONByte, WideFlatSearch) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::ARM_NEON)) {
+        GTEST_SKIP() << "NEON is unavailable";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::ARM_NEON);
+    for (auto qtype :
+         {faiss::ScalarQuantizer::QT_8bit_direct,
+          faiss::ScalarQuantizer::QT_8bit_direct_signed}) {
+        const bool signed_codes =
+                qtype == faiss::ScalarQuantizer::QT_8bit_direct_signed;
+        const int low = signed_codes ? -128 : 0;
+        const int high = low + 255;
+        for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+            const size_t d =
+                    signed_codes && metric == faiss::METRIC_INNER_PRODUCT
+                    ? 131088
+                    : 33040;
+            const int q =
+                    metric == faiss::METRIC_L2 || signed_codes ? low : high;
+            std::vector<float> query(d, q);
+            std::vector<float> database(2 * d, high);
+            std::fill(database.begin() + d, database.end(), low);
+            faiss::IndexScalarQuantizer index(d, qtype, metric);
+            index.add(2, database.data());
+            std::array<float, 2> distances;
+            std::array<faiss::idx_t, 2> labels;
+            index.search(1, query.data(), 2, distances.data(), labels.data());
+            const bool low_first = metric == faiss::METRIC_L2 || signed_codes;
+            EXPECT_EQ(labels[0], low_first ? 1 : 0);
+            EXPECT_EQ(labels[1], low_first ? 0 : 1);
+            for (size_t i = 0; i < labels.size(); ++i) {
+                const int value = labels[i] == 0 ? high : low;
+                const int64_t diff = q - value;
+                const int64_t per_component = metric == faiss::METRIC_L2
+                        ? diff * diff
+                        : static_cast<int64_t>(q) * value;
+                EXPECT_EQ(
+                        distances[i],
+                        static_cast<float>(
+                                per_component * static_cast<int64_t>(d)));
+            }
+        }
+    }
+}
+
+TEST(ScalarQuantizerNEONByte, ZeroDimension) {
+    if (!faiss::SIMDConfig::is_simd_level_available(
+                faiss::SIMDLevel::ARM_NEON)) {
+        GTEST_SKIP() << "NEON is unavailable";
+    }
+    ScopedSIMDLevel scoped(faiss::SIMDLevel::ARM_NEON);
+    for (auto qtype :
+         {faiss::ScalarQuantizer::QT_8bit_direct,
+          faiss::ScalarQuantizer::QT_8bit_direct_signed}) {
+        faiss::ScalarQuantizer sq(0, qtype);
+        for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+            std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> dc(
+                    sq.get_distance_computer(metric));
+            dc->set_query(nullptr);
+            EXPECT_EQ(dc->query_to_code(nullptr), 0.0f);
+            float d0, d1, d2, d3;
+            dc->query_to_codes_batch_4(
+                    nullptr, nullptr, nullptr, nullptr, d0, d1, d2, d3);
+            EXPECT_EQ(d0, 0.0f);
+            EXPECT_EQ(d1, 0.0f);
+            EXPECT_EQ(d2, 0.0f);
+            EXPECT_EQ(d3, 0.0f);
+        }
+    }
+}
+
 std::vector<faiss::SIMDLevel> available_lloyd_max_simd_levels() {
     std::vector<faiss::SIMDLevel> levels;
     for (faiss::SIMDLevel level :
