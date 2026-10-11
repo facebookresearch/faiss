@@ -35,6 +35,13 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      # openblas's own run_exports would inject openblas==0.3.34 openmp_* into
+      # libfaiss's run requirements, overriding the relaxed libopenblas >=0.3.28
+      # run dep below and causing unsatisfiable dependency errors on linux-aarch64
+      # (where conda-forge's pthreads libopenblas conflicts with the openmp pin).
+      # Suppress the host run_export so the explicit run dep takes effect.
+      ignore_run_exports_from:
+        - openblas  # [linux and not x86_64]
     requirements:
       build:
         - python {{ python }}
