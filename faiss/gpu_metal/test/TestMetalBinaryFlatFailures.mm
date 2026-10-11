@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 using namespace faiss::gpu_metal;
 
@@ -47,6 +48,72 @@ id<MTLComputePipelineState> rejectPipeline(
     return reinterpret_cast<CreatePipeline*>(original)(
             self, selector, function, error);
 }
+size_t allocationCount = 0;
+size_t allocatedBytes = 0;
+bool rejectAllocation = false;
+typedef id<MTLBuffer> Allocate(id, SEL, NSUInteger, MTLResourceOptions)
+        __attribute__((ns_returns_retained));
+id<MTLBuffer> trackAllocation(
+        id self,
+        SEL selector,
+        NSUInteger size,
+        MTLResourceOptions options) __attribute__((ns_returns_retained));
+id<MTLBuffer> trackAllocation(
+        id self,
+        SEL selector,
+        NSUInteger size,
+        MTLResourceOptions options) {
+    ++allocationCount;
+    allocatedBytes += size;
+    if (rejectAllocation) {
+        return nil;
+    }
+    return reinterpret_cast<Allocate*>(original)(self, selector, size, options);
+}
+
+bool checkGrowth(std::shared_ptr<MetalResources> resources) {
+    auto device = resources->getDevice();
+    Method method = class_getInstanceMethod(
+            [device class], @selector(newBufferWithLength:options:));
+    original = method_setImplementation(
+            method, reinterpret_cast<IMP>(trackAllocation));
+    MetalIndexBinaryFlat index(resources, 24);
+    constexpr int n = 1025;
+    for (int i = 0; i < n; ++i) {
+        uint8_t code[] = {uint8_t(i), uint8_t(i >> 8), 0};
+        index.add(1, code);
+    }
+    // Bound work rather than a particular initial capacity or growth factor.
+    bool valid = allocationCount <= 16 && allocatedBytes <= 4 * n * 3;
+    rejectAllocation = true;
+    std::vector<uint8_t> extra(1024 * 3);
+    bool caught = false;
+    try {
+        index.add(1024, extra.data()); // exceeds the geometrically grown buffer
+    } catch (const std::exception&) {
+        caught = true;
+    }
+    valid = valid && caught && index.ntotal == n;
+    for (int i = 0; i < n; ++i) {
+        uint8_t actual[3];
+        index.reconstruct(i, actual);
+        valid = valid && actual[0] == uint8_t(i) &&
+                actual[1] == uint8_t(i >> 8) && actual[2] == 0;
+    }
+    // An append within spare capacity must succeed even if GPU allocations
+    // are rejected. It must not recopy the existing prefix.
+    size_t before = allocationCount;
+    uint8_t code[] = {1, 4, 0};
+    index.add(1, code);
+    valid = valid && allocationCount == before && index.ntotal == n + 1;
+    rejectAllocation = false;
+    method_setImplementation(method, original);
+    int32_t distance = -1;
+    faiss::idx_t label = -1;
+    index.search(1, code, 1, &distance, &label);
+    return valid && distance == 0 && label == n;
+}
+
 } // namespace
 
 // Run each fault in a fresh process: pipeline caches must start empty and Metal
@@ -58,6 +125,9 @@ int main(int argc, char** argv) {
         auto resources = std::make_shared<MetalResources>();
         if (!resources->isAvailable()) {
             return 77;
+        }
+        if (argc == 2 && std::strcmp(argv[1], "growth") == 0) {
+            return checkGrowth(resources) ? 0 : 1;
         }
         auto device = resources->getDevice();
         Method method;

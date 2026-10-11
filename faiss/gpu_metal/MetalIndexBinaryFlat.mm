@@ -83,23 +83,33 @@ void MetalIndexBinaryFlat::add(idx_t n, const uint8_t* x) {
     FAISS_THROW_IF_NOT(x);
     FAISS_THROW_IF_NOT(n <= std::numeric_limits<idx_t>::max() - ntotal);
     size_t bytes = checkedBytes(ntotal + n, code_size);
-    // Prepare both copies before changing index state. Failed allocation must
-    // not leave the CPU and GPU databases out of sync.
     auto device = resources_->getDevice();
-    FAISS_THROW_IF_NOT(bytes <= device.maxBufferLength);
-    id<MTLBuffer> buffer =
-            [device newBufferWithLength:bytes
-                                options:MTLResourceStorageModeShared];
-    FAISS_THROW_IF_NOT_MSG(buffer, "MetalIndexBinaryFlat: allocation failed");
+    size_t limit = device.maxBufferLength;
+    FAISS_THROW_IF_NOT(bytes <= limit);
+    // Grow geometrically, capped before doubling to avoid overflow. Keep the
+    // replacement local until the CPU append succeeds, so allocation failure
+    // leaves both published copies and ntotal unchanged.
+    id<MTLBuffer> buffer = vectorsBuf_;
+    size_t capacity = buffer.length;
     size_t oldBytes = checkedBytes(ntotal, code_size);
-    if (oldBytes) {
-        std::memcpy(buffer.contents, cpuIndex_.xb.data(), oldBytes);
+    if (bytes > capacity) {
+        size_t doubled = capacity > limit / 2 ? limit : capacity * 2;
+        size_t newCapacity = std::max(bytes, doubled);
+        buffer = [device newBufferWithLength:newCapacity
+                                     options:MTLResourceStorageModeShared];
+        FAISS_THROW_IF_NOT_MSG(
+                buffer, "MetalIndexBinaryFlat: allocation failed");
+        if (oldBytes) {
+            std::memcpy(buffer.contents, vectorsBuf_.contents, oldBytes);
+        }
     }
+    cpuIndex_.add(n, x);
+    // The CPU append is the last throwing operation. Copy only the new codes;
+    // use the owned CPU bytes in case its vector reallocation invalidated x.
     std::memcpy(
             static_cast<uint8_t*>(buffer.contents) + oldBytes,
-            x,
+            cpuIndex_.xb.data() + oldBytes,
             bytes - oldBytes);
-    cpuIndex_.add(n, x);
     vectorsBuf_ = buffer;
     ntotal = cpuIndex_.ntotal;
 }
