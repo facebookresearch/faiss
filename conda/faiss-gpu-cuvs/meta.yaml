@@ -134,6 +134,7 @@ outputs:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
 {% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
+        - timeout 30 python -c "import faiss; n = faiss.get_num_gpus(); print(f'GPUs found: {n}'); assert n > 0, f'Expected >0 CUDA GPUs, found {n} -- aborting GPU tests'"
         - rc=0; for f in faiss/gpu/test/test_*.py; do echo "=== Running $f ==="; timeout --kill-after=30 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
 {% if cuda_major == 12 and cuda_minor >= 9 %}
         - rc=0; for f in faiss/gpu/test/torch_*.py; do echo "=== Running $f ==="; timeout --kill-after=30 900 pytest --timeout=600 -v "$f" || { echo "=== FAILED or TIMED OUT $f ==="; rc=1; }; done; exit $rc
