@@ -35,6 +35,12 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      # openblas's own run_exports would re-inject openblas==0.3.34 openmp_*
+      # into libfaiss consumers on linux-aarch64, conflicting with pytorch-cpu
+      # (and other packages) that resolve the pthreads libopenblas variant.
+      # Suppress it so the explicit libopenblas run dep below takes effect.
+      ignore_run_exports_from:
+        - openblas  # [linux and not x86_64]
     requirements:
       build:
         - python {{ python }}
@@ -84,7 +90,11 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
+        # Relaxed from "openblas =0.3.34 openmp_*" so that environments
+        # containing pytorch-cpu (which requires the pthreads libopenblas on
+        # linux-aarch64) can coexist with libfaiss.  The build still uses
+        # OpenMP OpenBLAS from the host dep; only the run/test pin is loosened.
+        - libopenblas >=0.3.28  # [linux and not x86_64]
         - libopenblas =0.3.34  # [osx]
     test:
       requires:
@@ -96,7 +106,9 @@ outputs:
         - test -f $PREFIX/lib/MetalDistance.metallib   # [osx and arm64]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
-        - python -c "import ctypes; lib = ctypes.CDLL('libopenblas.so.0'); assert lib.openblas_get_parallel() == 2"  # [linux and not x86_64]
+        # Accept either pthreads (1) or OpenMP (2) — the run dep no longer pins
+        # to openmp_*, so the test env may resolve the pthreads variant on aarch64.
+        - python -c "import ctypes; lib = ctypes.CDLL('libopenblas.so.0'); assert lib.openblas_get_parallel() >= 1, f'Expected parallel OpenBLAS (>=1), got {lib.openblas_get_parallel()}'"  # [linux and not x86_64]
 
   - name: faiss-cpu
     script: build-pkg.sh  # [x86_64 and not win and not osx]
