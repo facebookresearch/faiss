@@ -37,6 +37,7 @@
     <includedby refid="index__io_8h" local="no">faiss/index_io.h</includedby>
     <includedby refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includedby>
     <includedby refid="distances_8h" local="no">faiss/utils/distances.h</includedby>
+    <includedby refid="simdlib__kernel-inl_8h" local="no">faiss/utils/distances_fused/simdlib_kernel-inl.h</includedby>
     <includedby refid="fp16_8h" local="no">faiss/utils/fp16.h</includedby>
     <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <includedby refid="common_8h" local="no">faiss/utils/hamming_distance/common.h</includedby>
@@ -1520,6 +1521,8 @@
         </childnode>
         <childnode refid="204" relation="include">
         </childnode>
+        <childnode refid="70" relation="include">
+        </childnode>
         <childnode refid="206" relation="include">
         </childnode>
         <childnode refid="172" relation="include">
@@ -2371,6 +2374,17 @@
         </inbodydescription>
         <location file="faiss/impl/platform_macros.h" line="255" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="255" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="define" id="platform__macros_8h_1abf6a5ab3176f433c65daf103e3e5b156" prot="public" static="no">
+        <name>FAISS_OMP_DYNAMIC</name>
+        <initializer>monotonic : dynamic</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/platform_macros.h" line="271" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="271" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -2632,7 +2646,24 @@
 <codeline lineno="253"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="254"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_MAYBE_UNUSED<sp/>[[maybe_unused]]</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="255"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_FINAL<sp/>final</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="256"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"></highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************</highlight></codeline>
+<codeline lineno="259"><highlight class="comment"><sp/>*<sp/>OpenMP<sp/>dynamic<sp/>scheduling</highlight></codeline>
+<codeline lineno="260"><highlight class="comment"><sp/>*******************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Use<sp/>as<sp/>schedule(FAISS_OMP_DYNAMIC)<sp/>or<sp/>schedule(FAISS_OMP_DYNAMIC,<sp/>chunk).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="263"><highlight class="normal"></highlight><highlight class="comment">//<sp/>OpenMP<sp/>5.0<sp/>makes<sp/>schedule(dynamic)<sp/>nonmonotonic,<sp/>and<sp/>libomp<sp/>12<sp/>runs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="264"><highlight class="normal"></highlight><highlight class="comment">//<sp/>nonmonotonic<sp/>dynamic<sp/>loops<sp/>with<sp/>its<sp/>static-steal<sp/>scheduler,<sp/>which<sp/>crashes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight><highlight class="comment">//<sp/>intermittently<sp/>under<sp/>load<sp/>(libomp<sp/>itself<sp/>keeps<sp/>it<sp/>off<sp/>by<sp/>default).<sp/>MSVC&apos;s</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="comment">//<sp/>OpenMP<sp/>2.0<sp/>has<sp/>no<sp/>schedule<sp/>modifiers.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>off</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_MSC_VER</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_OMP_DYNAMIC<sp/>dynamic</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_OMP_DYNAMIC<sp/>monotonic<sp/>:<sp/>dynamic</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="273"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>on</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/platform_macros.h"/>
   </compounddef>
