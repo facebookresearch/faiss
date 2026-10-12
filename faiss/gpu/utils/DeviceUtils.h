@@ -63,6 +63,17 @@ size_t getMaxSharedMemPerBlockCurrentDevice();
 /// a device (deviceId >= 0) or the host (-1).
 int getDeviceForAddress(const void* p);
 
+/// cudaMemcpyAsync, except that on ROCm a copy of more than 64 KiB to or from
+/// pageable host memory goes through pinned staging buffers. As with CUDA's
+/// pageable copies, a host-to-device copy returns once the source can be
+/// reused, and a device-to-host copy returns once the data is on the host.
+void memcpyHostDeviceAsync(
+        void* dst,
+        const void* src,
+        size_t bytes,
+        cudaMemcpyKind kind,
+        cudaStream_t stream);
+
 /// Does the given device support full unified memory sharing host
 /// memory?
 bool getFullUnifiedMemSupport(int device);
