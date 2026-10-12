@@ -23,6 +23,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/pipnn/kernels.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
@@ -276,7 +277,7 @@ std::unique_ptr<uint16_t[]> assign_leaders(
         AlignedTable<float, 64> stripe_vecs, leader_vecs, dist;
         std::vector<float> leader_norms;
         size_t n_done = 0;
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
         for (int64_t i = 0; i < static_cast<int64_t>(plan.items.size()); i++) {
             if (interrupt.load(std::memory_order_relaxed)) {
                 continue;
@@ -346,7 +347,7 @@ const int32_t* scatter_children(
         }
     }
     std::unique_ptr<size_t[]> counts(new size_t[plan.n_counts]);
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (int64_t i = 0; i < static_cast<int64_t>(blocks.size()); i++) {
         const SplitInfo& sp = splits[blocks[i].first];
         const size_t b = blocks[i].second;
@@ -379,7 +380,7 @@ const int32_t* scatter_children(
     }
     next_storage.child_ids.reset(new int32_t[plan.n_instances]);
     int32_t* child_ids = next_storage.child_ids.get();
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (int64_t i = 0; i < static_cast<int64_t>(blocks.size()); i++) {
         const SplitInfo& sp = splits[blocks[i].first];
         const size_t b = blocks[i].second;
@@ -474,7 +475,7 @@ void collect_children(
         LevelStorage& next_storage) {
     std::vector<SplitOutput> outputs(splits.size());
     std::exception_ptr ex;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (int64_t s = 0; s < static_cast<int64_t>(splits.size()); s++) {
         try {
             classify_children(

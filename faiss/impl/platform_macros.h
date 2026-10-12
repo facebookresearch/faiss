@@ -254,3 +254,20 @@ inline void atomic_fetch_add_relaxed(T& target, T value) {
 #define FAISS_MAYBE_UNUSED [[maybe_unused]]
 #define FAISS_FINAL final
 #endif
+
+/*******************************************************
+ * OpenMP dynamic scheduling
+ *******************************************************/
+
+// Use as schedule(FAISS_OMP_DYNAMIC) or schedule(FAISS_OMP_DYNAMIC, chunk).
+// OpenMP 5.0 makes schedule(dynamic) nonmonotonic, and libomp 12 runs
+// nonmonotonic dynamic loops with its static-steal scheduler, which crashes
+// intermittently under load (libomp itself keeps it off by default). MSVC's
+// OpenMP 2.0 has no schedule modifiers.
+// clang-format off
+#ifdef _MSC_VER
+#define FAISS_OMP_DYNAMIC dynamic
+#else
+#define FAISS_OMP_DYNAMIC monotonic : dynamic
+#endif
+// clang-format on
