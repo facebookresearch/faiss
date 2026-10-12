@@ -350,7 +350,7 @@
         <name>set_block_origin</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::set_block_origin</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a52370624697a0a43fc50809ac46cab76">set_block_origin</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f0539582da9ce8c60011e4739fe9fb9">set_block_origin</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ac4427f2b6e650b495d369ef9920e00de">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d">set_block_origin</reimplementedby>
@@ -451,7 +451,7 @@
         </childnode>
       </node>
       <node id="10">
-        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;</label>
+        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"/>
         <childnode refid="8" relation="public-inheritance">
         </childnode>

@@ -190,20 +190,15 @@
 <codeline lineno="177"><highlight class="normal"></highlight></codeline>
 <codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Fallback<sp/>for<sp/>unknown<sp/>QBS<sp/>values:<sp/>use<sp/>256-bit<sp/>path.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>rare<sp/>—<sp/>pq4_preferred_qbs()<sp/>covers<sp/>all<sp/>values<sp/>above.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(Scaler::nscale<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DummyScaler&lt;SIMDLevel::AVX2&gt;<sp/>scaler_avx2;</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pq4_accumulate_loop_qbs_fixed_scaler_simd&lt;SIMDLevel::AVX2&gt;(</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>qbs,<sp/>ntotal2,<sp/>nsq,<sp/>codes,<sp/>LUT0,<sp/>res,<sp/>scaler_avx2,<sp/>block_stride);</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NormTableScaler&lt;SIMDLevel::AVX2&gt;<sp/>scaler_avx2(scaler.scale_int);</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pq4_accumulate_loop_qbs_fixed_scaler_simd&lt;SIMDLevel::AVX2&gt;(</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>qbs,<sp/>ntotal2,<sp/>nsq,<sp/>codes,<sp/>LUT0,<sp/>res,<sp/>scaler_avx2,<sp/>block_stride);</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="189"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"></highlight></codeline>
-<codeline lineno="191"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="192"><highlight class="normal"></highlight></codeline>
-<codeline lineno="193"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>COMPILE_SIMD_AVX512<sp/>&amp;&amp;<sp/>__AVX512F__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>caller&apos;s<sp/>AVX512-level<sp/>scaler<sp/>gives<sp/>these<sp/>instantiations<sp/>symbol<sp/>names</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>that<sp/>the<sp/>AVX2<sp/>TU<sp/>does<sp/>not<sp/>emit.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>pq4_accumulate_loop_qbs_fixed_scaler_simd&lt;SIMDLevel::AVX2&gt;(</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>qbs,<sp/>ntotal2,<sp/>nsq,<sp/>codes,<sp/>LUT0,<sp/>res,<sp/>scaler,<sp/>block_stride);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>COMPILE_SIMD_AVX512<sp/>&amp;&amp;<sp/>__AVX512F__</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/fast_scan/accumulate_loops_512.h"/>
   </compounddef>

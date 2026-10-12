@@ -4,7 +4,7 @@
     <compoundname>faiss::SIMDResultHandler</compoundname>
     <basecompoundref refid="structfaiss_1_1SIMDResultHandlerToFloat" prot="public" virt="non-virtual">faiss::SIMDResultHandlerToFloat</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" prot="public" virt="non-virtual">faiss::simd_result_handlers::DummyResultHandler&lt; SL &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" prot="public" virt="non-virtual">faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" prot="public" virt="non-virtual">faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler" prot="public" virt="non-virtual">faiss::simd_result_handlers::StoreResultHandler&lt; SL &gt;</derivedcompoundref>
     <includes refid="simd__result__handlers_8h" local="no">simd_result_handlers.h</includes>
@@ -59,7 +59,7 @@
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a778199739bb46ad755f9ccf3dd6ad5c2">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a9e92972fbc69055d2a61c1464a8a15ab">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1abde45326f30291212997991d35b1379f">handle</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a71d26266cc9d330e86df77709516048a">handle</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1aef4b38eeb9b0cd2e5609df805e608f5e">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a2c4c5bd95bc64875b76c1bb66a753ab3">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1abd71c0c8e055a567d1839705070b5d07">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1ae57402c393969fae3fcdee59d2ed9069">handle</reimplementedby>
@@ -247,7 +247,7 @@
         <name>set_block_origin</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::set_block_origin</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a52370624697a0a43fc50809ac46cab76">set_block_origin</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f0539582da9ce8c60011e4739fe9fb9">set_block_origin</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ac4427f2b6e650b495d369ef9920e00de">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a979c821005787f6ce1073cfa3f6d651d">set_block_origin</reimplementedby>
@@ -483,7 +483,7 @@
         </childnode>
       </node>
       <node id="4">
-        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;</label>
+        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>

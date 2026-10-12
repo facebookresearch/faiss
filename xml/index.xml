@@ -1183,8 +1183,8 @@
     <member refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" kind="struct"><name>faiss::simd_result_handlers::FixedStorageHandler</name>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a6461eae96b1936d66b231d407e6a79a9" kind="variable"><name>dis</name></member>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a449976888df8383225d84be8ca73bbed" kind="variable"><name>i0</name></member>
+    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae3df54abf30835dc9705d28bdc25c35e" kind="variable"><name>dis</name></member>
+    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a651ec7dc52685e7f3b8869f30902370a" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a49f49013e5e6d40ed8643798d957ef83" kind="variable"><name>is_CMax</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a2888bde7a0907e7f1f3f1acb2ec96336" kind="variable"><name>sizeof_ids</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a7a72f56901a69265da592167b484c00c" kind="variable"><name>with_fields</name></member>
@@ -1197,9 +1197,9 @@
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" kind="variable"><name>dbias</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a5cab3c9b7ffdcd62d507147aa99ab4c5" kind="variable"><name>normalizers</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a46f20a1f71eff2fca145c440ef997939" kind="variable"><name>scan_cnt</name></member>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a71d26266cc9d330e86df77709516048a" kind="function"><name>handle</name></member>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f0539582da9ce8c60011e4739fe9fb9" kind="function"><name>set_block_origin</name></member>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f93731c8b37b56d234ae5441f2c9aa0" kind="function"><name>to_other_handler</name></member>
+    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1aef4b38eeb9b0cd2e5609df805e608f5e" kind="function"><name>handle</name></member>
+    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ac4427f2b6e650b495d369ef9920e00de" kind="function"><name>set_block_origin</name></member>
+    <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a52ed9ceaf3c85a275ebc1361f66aee37" kind="function"><name>to_other_handler</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ac8d227a65f209475e668b2ef625b2d09" kind="function"><name>SIMDResultHandlerToFloat</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ae11e305aeb4d8845fe9efe6a7a833ae8" kind="function"><name>SIMDResultHandlerToFloat</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a74f32a4cce1b9da87de4a2149d8efb44" kind="function"><name>begin</name></member>

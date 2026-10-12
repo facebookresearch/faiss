@@ -162,7 +162,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/dispatching.h" line="110" column="10" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="110" bodyend="209"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="110" column="10" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="110" bodyend="205"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -193,7 +193,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/fast_scan/dispatching.h" line="63" column="1" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="63" bodyend="210"/>
+    <location file="faiss/impl/fast_scan/dispatching.h" line="63" column="1" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="63" bodyend="206"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ScannerMixIn_1a71dea2c0711aa373b1e060e9d5da3e22" prot="public" virt="virtual"><scope>faiss::ScannerMixIn</scope><name>accumulate_loop</name></member>
       <member refid="structfaiss_1_1ScannerMixIn_1a6cef6f862cf777bfbec80bdc340b575e" prot="public" virt="virtual"><scope>faiss::ScannerMixIn</scope><name>accumulate_loop_qbs</name></member>

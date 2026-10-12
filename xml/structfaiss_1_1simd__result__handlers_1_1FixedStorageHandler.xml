@@ -21,11 +21,15 @@
         <defname>SL</defname>
         <defval><ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref></defval>
       </param>
+      <param>
+        <type>class LinkageTag</type>
+        <defval>void</defval>
+      </param>
     </templateparamlist>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a6461eae96b1936d66b231d407e6a79a9" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae3df54abf30835dc9705d28bdc25c35e" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref></type>
-        <definition>simd16uint16 faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;::dis[NQ][BB]</definition>
+        <definition>simd16uint16 faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;::dis[NQ][BB]</definition>
         <argsstring>[NQ][BB]</argsstring>
         <name>dis</name>
         <qualifiedname>faiss::simd_result_handlers::FixedStorageHandler::dis</qualifiedname>
@@ -35,11 +39,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="226" column="18" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="226" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="235" column="18" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="235" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a449976888df8383225d84be8ca73bbed" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a651ec7dc52685e7f3b8869f30902370a" prot="public" static="no" mutable="no">
         <type>int</type>
-        <definition>int faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;::i0</definition>
+        <definition>int faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;::i0</definition>
         <argsstring></argsstring>
         <name>i0</name>
         <qualifiedname>faiss::simd_result_handlers::FixedStorageHandler::i0</qualifiedname>
@@ -50,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="227" column="9" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="227" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="236" column="9" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="236" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a49f49013e5e6d40ed8643798d957ef83" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -236,9 +240,9 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a71d26266cc9d330e86df77709516048a" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1aef4b38eeb9b0cd2e5609df805e608f5e" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;::handle</definition>
+        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;::handle</definition>
         <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final</argsstring>
         <name>handle</name>
         <qualifiedname>faiss::simd_result_handlers::FixedStorageHandler::handle</qualifiedname>
@@ -265,11 +269,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="229" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="229" bodyend="232"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="238" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="238" bodyend="241"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f0539582da9ce8c60011e4739fe9fb9" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ac4427f2b6e650b495d369ef9920e00de" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;::set_block_origin</definition>
+        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;::set_block_origin</definition>
         <argsstring>(size_t i0_in, size_t j0_in) final</argsstring>
         <name>set_block_origin</name>
         <qualifiedname>faiss::simd_result_handlers::FixedStorageHandler::set_block_origin</qualifiedname>
@@ -288,16 +292,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="234" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="234" bodyend="237"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="243" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="243" bodyend="246"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f93731c8b37b56d234ae5441f2c9aa0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a52ed9ceaf3c85a275ebc1361f66aee37" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>class OtherResultHandler</type>
           </param>
         </templateparamlist>
         <type>void</type>
-        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;::to_other_handler</definition>
+        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;::to_other_handler</definition>
         <argsstring>(OtherResultHandler &amp;other) const</argsstring>
         <name>to_other_handler</name>
         <qualifiedname>faiss::simd_result_handlers::FixedStorageHandler::to_other_handler</qualifiedname>
@@ -311,7 +315,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="240" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="240" bodyend="246"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="249" column="10" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="249" bodyend="255"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDResultHandler_1ac8d227a65f209475e668b2ef625b2d09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -503,7 +507,8 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>stores results in fixed-size matrix. </para>
+<para>stores results in fixed-size matrix.</para>
+<para>LinkageTag is unused by the handler. A tag type that only one TU uses gives the instantiation (and its out-of-line virtual handle()) a symbol name of its own, so a copy compiled with other SIMD flags cannot replace the copy of another TU. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">
@@ -517,7 +522,7 @@
         <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
       </node>
       <node id="1">
-        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;</label>
+        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
@@ -539,7 +544,7 @@
         <link refid="structfaiss_1_1simd256bit__tpl"/>
       </node>
       <node id="1">
-        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL &gt;</label>
+        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB, SL, LinkageTag &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
@@ -554,15 +559,15 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="223" column="1" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="223" bodyend="247"/>
+    <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="232" column="1" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="232" bodyend="256"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a74f32a4cce1b9da87de4a2149d8efb44" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>begin</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a23a416943defceea8d0cd7811a61fa60" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>count_scanned_rows</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>dbias</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a6461eae96b1936d66b231d407e6a79a9" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae3df54abf30835dc9705d28bdc25c35e" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>dis</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a707f8e0cbcd9674627d734518ae29fb6" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>end</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a71d26266cc9d330e86df77709516048a" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>handle</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a449976888df8383225d84be8ca73bbed" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1aef4b38eeb9b0cd2e5609df805e608f5e" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a651ec7dc52685e7f3b8869f30902370a" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>i0</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1aa0cd900277b35f820861167b221f3b07" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>id_map</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a722f2bb64370b1891808d328f2094cf8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>in_range_num</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a49f49013e5e6d40ed8643798d957ef83" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>is_CMax</name></member>
@@ -573,14 +578,14 @@
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a7242b05f6297ae26519d5a90e07403a8" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>num_updates</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a434326ed5aca83b4d48f5c85587b8c48" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>q_map</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a46f20a1f71eff2fca145c440ef997939" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>scan_cnt</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f0539582da9ce8c60011e4739fe9fb9" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ac4427f2b6e650b495d369ef9920e00de" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>set_block_origin</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1acf5c696ddb1a7c507fa0de0cff998b1c" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>set_list_context</name></member>
       <member refid="structfaiss_1_1SIMDResultHandler_1a2b2ed4eb9b4e3b05e03c7085c6092240" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>simd16uint16</name></member>
       <member refid="structfaiss_1_1SIMDResultHandler_1ac8d227a65f209475e668b2ef625b2d09" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>SIMDResultHandlerToFloat</name></member>
       <member refid="structfaiss_1_1SIMDResultHandler_1ae11e305aeb4d8845fe9efe6a7a833ae8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>SIMDResultHandlerToFloat</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a2888bde7a0907e7f1f3f1acb2ec96336" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>sizeof_ids</name></member>
       <member refid="structfaiss_1_1SIMDResultHandler_1ae7a493ebdd78f2889531670ed630a4f1" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>SL256</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a1f93731c8b37b56d234ae5441f2c9aa0" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>to_other_handler</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a52ed9ceaf3c85a275ebc1361f66aee37" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>to_other_handler</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a7a72f56901a69265da592167b484c00c" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>with_fields</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a06d023979100286e8353342e400cfc89" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>~SIMDResultHandlerToFloat</name></member>
     </listofallmembers>
