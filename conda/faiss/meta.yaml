@@ -35,6 +35,13 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      # Suppress openblas's own run_exports on linux-aarch64 so it does not
+      # re-inject the openmp_* build-string constraint into libfaiss consumers.
+      # The relaxed libopenblas run dep below is intentional: pytorch-cpu (a
+      # faiss-cpu test dep) on aarch64 requires the pthreads variant, which
+      # conflicts with an openmp_* pin from run_exports.
+      ignore_run_exports_from:
+        - openblas  # [linux and not x86_64]
     requirements:
       build:
         - python {{ python }}
@@ -84,7 +91,11 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
+        # Relaxed to libopenblas without a threading-model build-string so that
+        # environments containing pytorch-cpu (pthreads) can coexist with
+        # libfaiss on linux-aarch64.  The openmp_* constraint is kept in host
+        # (for building) and verified in the libfaiss test below.
+        - libopenblas >=0.3.28  # [linux and not x86_64]
         - libopenblas =0.3.34  # [osx]
     test:
       requires:
