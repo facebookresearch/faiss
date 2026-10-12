@@ -104,6 +104,7 @@ outputs:
         - setuptools
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        - openblas =0.3.34 openmp_* # [not x86_64]
       run:
         - mkl >=2024.2.2,<2026  # [x86_64]
         - python {{ python }}
