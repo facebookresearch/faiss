@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="143" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="143" bodyend="151"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="154" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="154" bodyend="162"/>
       </memberdef>
       <memberdef kind="define" id="DeviceUtils_8h_1a5c840d06d8e05735ee2902b93ab62512" prot="public" static="no">
         <name>CUDA_TEST_ERROR</name>
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="162" column="10" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="162" bodyend="165"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="173" column="10" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="173" bodyend="176"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -227,152 +227,163 @@
 <codeline lineno="63"><highlight class="comment">///<sp/>a<sp/>device<sp/>(deviceId<sp/>&gt;=<sp/>0)<sp/>or<sp/>the<sp/>host<sp/>(-1).</highlight></codeline>
 <codeline lineno="64" refid="namespacefaiss_1_1gpu_1a90940c17958ddf1b0f5a7f86b556788b" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a90940c17958ddf1b0f5a7f86b556788b" kindref="member">getDeviceForAddress</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p);</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="66"><highlight class="comment">///<sp/>Does<sp/>the<sp/>given<sp/>device<sp/>support<sp/>full<sp/>unified<sp/>memory<sp/>sharing<sp/>host</highlight></codeline>
-<codeline lineno="67"><highlight class="comment">///<sp/>memory?</highlight></codeline>
-<codeline lineno="68" refid="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" kindref="member">getFullUnifiedMemSupport</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="70"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getFullUnifiedMemSupport(getCurrentDevice())</highlight></codeline>
-<codeline lineno="71" refid="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" kindref="member">getFullUnifiedMemSupportCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="73"><highlight class="comment">///<sp/>Does<sp/>the<sp/>given<sp/>device<sp/>support<sp/>tensor<sp/>core<sp/>operations?</highlight></codeline>
-<codeline lineno="74" refid="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" kindref="member">getTensorCoreSupport</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="76"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getTensorCoreSupport(getCurrentDevice())</highlight></codeline>
-<codeline lineno="77" refid="namespacefaiss_1_1gpu_1abf99b9aa3d1433ad0a69e7cccd949817" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1abf99b9aa3d1433ad0a69e7cccd949817" kindref="member">getTensorCoreSupportCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="79"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>warp<sp/>size<sp/>of<sp/>the<sp/>given<sp/>GPU<sp/>device</highlight></codeline>
-<codeline lineno="80" refid="namespacefaiss_1_1gpu_1a4f1b25409e96c8fee1814a0631470a23" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a4f1b25409e96c8fee1814a0631470a23" kindref="member">getWarpSize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="82"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getWarpSize(getCurrentDevice())</highlight></codeline>
-<codeline lineno="83" refid="namespacefaiss_1_1gpu_1a59e67ef6dc543409cc9f981d755df14b" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a59e67ef6dc543409cc9f981d755df14b" kindref="member">getWarpSizeCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="85"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>amount<sp/>of<sp/>currently<sp/>available<sp/>memory<sp/>on<sp/>the<sp/>given<sp/>device</highlight></codeline>
-<codeline lineno="86" refid="namespacefaiss_1_1gpu_1a202fab8f3a469474cb41064f0f5c8732" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a202fab8f3a469474cb41064f0f5c8732" kindref="member">getFreeMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="88"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getFreeMemory(getCurrentDevice())</highlight></codeline>
-<codeline lineno="89" refid="namespacefaiss_1_1gpu_1a5a1d0d4863e18f7c0c154089d57dd61a" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a5a1d0d4863e18f7c0c154089d57dd61a" kindref="member">getFreeMemoryCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="91"><highlight class="comment">///<sp/>RAII<sp/>object<sp/>to<sp/>set<sp/>the<sp/>current<sp/>device,<sp/>and<sp/>restore<sp/>the<sp/>previous</highlight></codeline>
-<codeline lineno="92"><highlight class="comment">///<sp/>device<sp/>upon<sp/>destruction</highlight></codeline>
-<codeline lineno="93" refid="classfaiss_1_1gpu_1_1DeviceScope" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref><sp/>{</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">~DeviceScope</ref>();</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>prevDevice_;</highlight></codeline>
-<codeline lineno="100"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="66"><highlight class="comment">///<sp/>cudaMemcpyAsync,<sp/>except<sp/>that<sp/>on<sp/>ROCm<sp/>a<sp/>copy<sp/>of<sp/>more<sp/>than<sp/>64<sp/>KiB<sp/>to<sp/>or<sp/>from</highlight></codeline>
+<codeline lineno="67"><highlight class="comment">///<sp/>pageable<sp/>host<sp/>memory<sp/>goes<sp/>through<sp/>pinned<sp/>staging<sp/>buffers.<sp/>As<sp/>with<sp/>CUDA&apos;s</highlight></codeline>
+<codeline lineno="68"><highlight class="comment">///<sp/>pageable<sp/>copies,<sp/>a<sp/>host-to-device<sp/>copy<sp/>returns<sp/>once<sp/>the<sp/>source<sp/>can<sp/>be</highlight></codeline>
+<codeline lineno="69"><highlight class="comment">///<sp/>reused,<sp/>and<sp/>a<sp/>device-to-host<sp/>copy<sp/>returns<sp/>once<sp/>the<sp/>data<sp/>is<sp/>on<sp/>the<sp/>host.</highlight></codeline>
+<codeline lineno="70" refid="namespacefaiss_1_1gpu_1ad68b662d2ee5f773967534aca0808a0f" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1ad68b662d2ee5f773967534aca0808a0f" kindref="member">memcpyHostDeviceAsync</ref>(</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>dst,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>src,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bytes,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaMemcpyKind<sp/>kind,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="77"><highlight class="comment">///<sp/>Does<sp/>the<sp/>given<sp/>device<sp/>support<sp/>full<sp/>unified<sp/>memory<sp/>sharing<sp/>host</highlight></codeline>
+<codeline lineno="78"><highlight class="comment">///<sp/>memory?</highlight></codeline>
+<codeline lineno="79" refid="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" kindref="member">getFullUnifiedMemSupport</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="81"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getFullUnifiedMemSupport(getCurrentDevice())</highlight></codeline>
+<codeline lineno="82" refid="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" kindref="member">getFullUnifiedMemSupportCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="84"><highlight class="comment">///<sp/>Does<sp/>the<sp/>given<sp/>device<sp/>support<sp/>tensor<sp/>core<sp/>operations?</highlight></codeline>
+<codeline lineno="85" refid="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" kindref="member">getTensorCoreSupport</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="87"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getTensorCoreSupport(getCurrentDevice())</highlight></codeline>
+<codeline lineno="88" refid="namespacefaiss_1_1gpu_1abf99b9aa3d1433ad0a69e7cccd949817" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1abf99b9aa3d1433ad0a69e7cccd949817" kindref="member">getTensorCoreSupportCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="90"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>warp<sp/>size<sp/>of<sp/>the<sp/>given<sp/>GPU<sp/>device</highlight></codeline>
+<codeline lineno="91" refid="namespacefaiss_1_1gpu_1a4f1b25409e96c8fee1814a0631470a23" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a4f1b25409e96c8fee1814a0631470a23" kindref="member">getWarpSize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="93"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getWarpSize(getCurrentDevice())</highlight></codeline>
+<codeline lineno="94" refid="namespacefaiss_1_1gpu_1a59e67ef6dc543409cc9f981d755df14b" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a59e67ef6dc543409cc9f981d755df14b" kindref="member">getWarpSizeCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="96"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>amount<sp/>of<sp/>currently<sp/>available<sp/>memory<sp/>on<sp/>the<sp/>given<sp/>device</highlight></codeline>
+<codeline lineno="97" refid="namespacefaiss_1_1gpu_1a202fab8f3a469474cb41064f0f5c8732" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a202fab8f3a469474cb41064f0f5c8732" kindref="member">getFreeMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>getFreeMemory(getCurrentDevice())</highlight></codeline>
+<codeline lineno="100" refid="namespacefaiss_1_1gpu_1a5a1d0d4863e18f7c0c154089d57dd61a" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a5a1d0d4863e18f7c0c154089d57dd61a" kindref="member">getFreeMemoryCurrentDevice</ref>();</highlight></codeline>
 <codeline lineno="101"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="102"><highlight class="comment">///<sp/>RAII<sp/>object<sp/>to<sp/>manage<sp/>a<sp/>cublasHandle_t</highlight></codeline>
-<codeline lineno="103" refid="classfaiss_1_1gpu_1_1CublasHandleScope" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref><sp/>{</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref>();</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">~CublasHandleScope</ref>();</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>get()<sp/>{</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>blasHandle_;</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>blasHandle_;</highlight></codeline>
-<codeline lineno="114"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"></highlight></codeline>
-<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment">//<sp/>RAII<sp/>object<sp/>to<sp/>manage<sp/>a<sp/>cudaEvent_t</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="117" refid="classfaiss_1_1gpu_1_1CudaEvent" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref><sp/>{</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Creates<sp/>an<sp/>event<sp/>and<sp/>records<sp/>it<sp/>in<sp/>this<sp/>stream</highlight></codeline>
-<codeline lineno="120" refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" kindref="member">CudaEvent</ref>(cudaStream_t<sp/>stream,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>timer<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">~CudaEvent</ref>();</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>cudaEvent_t<sp/>get()<sp/>{</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>event_;</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Wait<sp/>on<sp/>this<sp/>event<sp/>in<sp/>this<sp/>stream</highlight></codeline>
-<codeline lineno="130" refid="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb" kindref="member">streamWaitOnEvent</ref>(cudaStream_t<sp/>stream);</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="132"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Have<sp/>the<sp/>CPU<sp/>wait<sp/>for<sp/>the<sp/>completion<sp/>of<sp/>this<sp/>event</highlight></codeline>
-<codeline lineno="133" refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" kindref="member">cpuWaitOnEvent</ref>();</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaEvent_t<sp/>event_;</highlight></codeline>
-<codeline lineno="140"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="142"><highlight class="comment">///<sp/>Wrapper<sp/>to<sp/>test<sp/>return<sp/>status<sp/>of<sp/>CUDA<sp/>functions</highlight></codeline>
-<codeline lineno="143"><highlight class="comment"></highlight><highlight class="preprocessor">#define<sp/>CUDA_VERIFY(X)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="144"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="145"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>err__<sp/>=<sp/>(X);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="146"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="147"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>err__<sp/>==<sp/>cudaSuccess,<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;CUDA<sp/>error<sp/>%d<sp/>%s&quot;,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="149"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int)err__,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="150"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaGetErrorString(err__));<sp/>\</highlight></codeline>
-<codeline lineno="151"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="comment">///<sp/>RAII<sp/>object<sp/>to<sp/>set<sp/>the<sp/>current<sp/>device,<sp/>and<sp/>restore<sp/>the<sp/>previous</highlight></codeline>
+<codeline lineno="103"><highlight class="comment">///<sp/>device<sp/>upon<sp/>destruction</highlight></codeline>
+<codeline lineno="104" refid="classfaiss_1_1gpu_1_1DeviceScope" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">~DeviceScope</ref>();</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>prevDevice_;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="113"><highlight class="comment">///<sp/>RAII<sp/>object<sp/>to<sp/>manage<sp/>a<sp/>cublasHandle_t</highlight></codeline>
+<codeline lineno="114" refid="classfaiss_1_1gpu_1_1CublasHandleScope" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref><sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref>();</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">~CublasHandleScope</ref>();</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>get()<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>blasHandle_;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>blasHandle_;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="comment">//<sp/>RAII<sp/>object<sp/>to<sp/>manage<sp/>a<sp/>cudaEvent_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="classfaiss_1_1gpu_1_1CudaEvent" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref><sp/>{</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Creates<sp/>an<sp/>event<sp/>and<sp/>records<sp/>it<sp/>in<sp/>this<sp/>stream</highlight></codeline>
+<codeline lineno="131" refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" kindref="member">CudaEvent</ref>(cudaStream_t<sp/>stream,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>timer<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">~CudaEvent</ref>();</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>cudaEvent_t<sp/>get()<sp/>{</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>event_;</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Wait<sp/>on<sp/>this<sp/>event<sp/>in<sp/>this<sp/>stream</highlight></codeline>
+<codeline lineno="141" refid="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb" kindref="member">streamWaitOnEvent</ref>(cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Have<sp/>the<sp/>CPU<sp/>wait<sp/>for<sp/>the<sp/>completion<sp/>of<sp/>this<sp/>event</highlight></codeline>
+<codeline lineno="144" refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" kindref="member">cpuWaitOnEvent</ref>();</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaEvent_t<sp/>event_;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="153"><highlight class="comment">///<sp/>Wrapper<sp/>to<sp/>synchronously<sp/>probe<sp/>for<sp/>CUDA<sp/>errors</highlight></codeline>
-<codeline lineno="154"><highlight class="comment"></highlight><highlight class="comment">//<sp/>#define<sp/>FAISS_GPU_SYNC_ERROR<sp/>1</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="155"><highlight class="normal"></highlight></codeline>
-<codeline lineno="156"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>FAISS_GPU_SYNC_ERROR</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CUDA_TEST_ERROR()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="158"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="159"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaDeviceSynchronize());<sp/>\</highlight></codeline>
-<codeline lineno="160"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="161"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CUDA_TEST_ERROR()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="163"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="164"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaGetLastError());<sp/>\</highlight></codeline>
-<codeline lineno="165"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="168"><highlight class="comment">///<sp/>Call<sp/>for<sp/>a<sp/>collection<sp/>of<sp/>streams<sp/>to<sp/>wait<sp/>on</highlight></codeline>
-<codeline lineno="169"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L1,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L2&gt;</highlight></codeline>
-<codeline lineno="170" refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L1&amp;<sp/>listWaiting,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L2&amp;<sp/>listWaitOn)<sp/>{</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>all<sp/>the<sp/>streams<sp/>we<sp/>are<sp/>waiting<sp/>on,<sp/>create<sp/>an<sp/>event</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;cudaEvent_t&gt;<sp/>events;</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>stream<sp/>:<sp/>listWaitOn)<sp/>{</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaEvent_t<sp/>event;</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaEventCreateWithFlags(&amp;event,<sp/>cudaEventDisableTiming));</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaEventRecord(event,<sp/>stream));</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>events.push_back(event);</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"></highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>all<sp/>the<sp/>streams<sp/>that<sp/>are<sp/>waiting,<sp/>issue<sp/>a<sp/>wait</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>stream<sp/>:<sp/>listWaiting)<sp/>{</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>event<sp/>:<sp/>events)<sp/>{</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaStreamWaitEvent(stream,<sp/>event,<sp/>0));</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"></highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>event<sp/>:<sp/>events)<sp/>{</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaEventDestroy(event));</highlight></codeline>
+<codeline lineno="153"><highlight class="comment">///<sp/>Wrapper<sp/>to<sp/>test<sp/>return<sp/>status<sp/>of<sp/>CUDA<sp/>functions</highlight></codeline>
+<codeline lineno="154"><highlight class="comment"></highlight><highlight class="preprocessor">#define<sp/>CUDA_VERIFY(X)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="155"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="156"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>err__<sp/>=<sp/>(X);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="157"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="158"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>err__<sp/>==<sp/>cudaSuccess,<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="159"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;CUDA<sp/>error<sp/>%d<sp/>%s&quot;,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="160"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int)err__,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="161"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaGetErrorString(err__));<sp/>\</highlight></codeline>
+<codeline lineno="162"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="164"><highlight class="comment">///<sp/>Wrapper<sp/>to<sp/>synchronously<sp/>probe<sp/>for<sp/>CUDA<sp/>errors</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"></highlight><highlight class="comment">//<sp/>#define<sp/>FAISS_GPU_SYNC_ERROR<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>FAISS_GPU_SYNC_ERROR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CUDA_TEST_ERROR()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="169"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="170"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaDeviceSynchronize());<sp/>\</highlight></codeline>
+<codeline lineno="171"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CUDA_TEST_ERROR()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="174"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="175"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaGetLastError());<sp/>\</highlight></codeline>
+<codeline lineno="176"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="179"><highlight class="comment">///<sp/>Call<sp/>for<sp/>a<sp/>collection<sp/>of<sp/>streams<sp/>to<sp/>wait<sp/>on</highlight></codeline>
+<codeline lineno="180"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L1,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L2&gt;</highlight></codeline>
+<codeline lineno="181" refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L1&amp;<sp/>listWaiting,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L2&amp;<sp/>listWaitOn)<sp/>{</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>all<sp/>the<sp/>streams<sp/>we<sp/>are<sp/>waiting<sp/>on,<sp/>create<sp/>an<sp/>event</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;cudaEvent_t&gt;<sp/>events;</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>stream<sp/>:<sp/>listWaitOn)<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaEvent_t<sp/>event;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaEventCreateWithFlags(&amp;event,<sp/>cudaEventDisableTiming));</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaEventRecord(event,<sp/>stream));</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>events.push_back(event);</highlight></codeline>
 <codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="190"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="192"><highlight class="comment">///<sp/>These<sp/>versions<sp/>allow<sp/>usage<sp/>of<sp/>initializer_list<sp/>as<sp/>arguments,<sp/>since</highlight></codeline>
-<codeline lineno="193"><highlight class="comment">///<sp/>otherwise<sp/>{...}<sp/>doesn&apos;t<sp/>have<sp/>a<sp/>type</highlight></codeline>
-<codeline lineno="194"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L1&gt;</highlight></codeline>
-<codeline lineno="195" refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kindref="member">streamWait</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L1&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(a,<sp/>b);</highlight></codeline>
-<codeline lineno="197"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"></highlight></codeline>
-<codeline lineno="199"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L2&gt;</highlight></codeline>
-<codeline lineno="200"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kindref="member">streamWait</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L2&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(a,<sp/>b);</highlight></codeline>
-<codeline lineno="202"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="203"><highlight class="normal"></highlight></codeline>
-<codeline lineno="204"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kindref="member">streamWait</ref>(</highlight></codeline>
-<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>a,</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>all<sp/>the<sp/>streams<sp/>that<sp/>are<sp/>waiting,<sp/>issue<sp/>a<sp/>wait</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>stream<sp/>:<sp/>listWaiting)<sp/>{</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>event<sp/>:<sp/>events)<sp/>{</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaStreamWaitEvent(stream,<sp/>event,<sp/>0));</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>event<sp/>:<sp/>events)<sp/>{</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaEventDestroy(event));</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="201"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="203"><highlight class="comment">///<sp/>These<sp/>versions<sp/>allow<sp/>usage<sp/>of<sp/>initializer_list<sp/>as<sp/>arguments,<sp/>since</highlight></codeline>
+<codeline lineno="204"><highlight class="comment">///<sp/>otherwise<sp/>{...}<sp/>doesn&apos;t<sp/>have<sp/>a<sp/>type</highlight></codeline>
+<codeline lineno="205"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L1&gt;</highlight></codeline>
+<codeline lineno="206" refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kindref="member">streamWait</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L1&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>b)<sp/>{</highlight></codeline>
 <codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(a,<sp/>b);</highlight></codeline>
 <codeline lineno="208"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="209"><highlight class="normal"></highlight></codeline>
-<codeline lineno="210"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="211"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>L2&gt;</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kindref="member">streamWait</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>L2&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(a,<sp/>b);</highlight></codeline>
+<codeline lineno="213"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kindref="member">streamWait</ref>(</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::initializer_list&lt;cudaStream_t&gt;&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kindref="member">streamWaitBase</ref>(a,<sp/>b);</highlight></codeline>
+<codeline lineno="219"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/DeviceUtils.h"/>
   </compounddef>

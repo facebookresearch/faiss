@@ -14904,6 +14904,7 @@
     <member refid="namespacefaiss_1_1gpu_1ab671a87a6284fc4d2fec44400ca5d163" kind="function"><name>getMaxSharedMemPerBlock</name></member>
     <member refid="namespacefaiss_1_1gpu_1accf2b1c27fb6cbd2b384266d42f8c9a3" kind="function"><name>getMaxSharedMemPerBlockCurrentDevice</name></member>
     <member refid="namespacefaiss_1_1gpu_1a90940c17958ddf1b0f5a7f86b556788b" kind="function"><name>getDeviceForAddress</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ad68b662d2ee5f773967534aca0808a0f" kind="function"><name>memcpyHostDeviceAsync</name></member>
     <member refid="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" kind="function"><name>getFullUnifiedMemSupport</name></member>
     <member refid="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" kind="function"><name>getFullUnifiedMemSupportCurrentDevice</name></member>
     <member refid="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" kind="function"><name>getTensorCoreSupport</name></member>

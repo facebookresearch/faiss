@@ -126,8 +126,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(dst);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(dev<sp/>==<sp/>-1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dst,<sp/>src,<sp/>num<sp/>*<sp/>sizeof(T),<sp/>cudaMemcpyDeviceToHost,<sp/>stream));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memcpyHostDeviceAsync(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dst,<sp/>src,<sp/>num<sp/>*<sp/>sizeof(T),<sp/>cudaMemcpyDeviceToHost,<sp/>stream);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStreamSynchronize(stream);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>

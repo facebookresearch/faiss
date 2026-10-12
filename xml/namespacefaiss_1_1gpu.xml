@@ -2005,6 +2005,41 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="64" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="64" declcolumn="5"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1ad68b662d2ee5f773967534aca0808a0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::memcpyHostDeviceAsync</definition>
+        <argsstring>(void *dst, const void *src, size_t bytes, cudaMemcpyKind kind, cudaStream_t stream)</argsstring>
+        <name>memcpyHostDeviceAsync</name>
+        <qualifiedname>faiss::gpu::memcpyHostDeviceAsync</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>bytes</declname>
+        </param>
+        <param>
+          <type>cudaMemcpyKind</type>
+          <declname>kind</declname>
+        </param>
+        <param>
+          <type>cudaStream_t</type>
+          <declname>stream</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>cudaMemcpyAsync, except that on ROCm a copy of more than 64 KiB to or from pageable host memory goes through pinned staging buffers. As with CUDA&apos;s pageable copies, a host-to-device copy returns once the source can be reused, and a device-to-host copy returns once the data is on the host. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="70" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="70" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool faiss::gpu::getFullUnifiedMemSupport</definition>
@@ -2022,7 +2057,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="68" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="68" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="79" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="79" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -2037,7 +2072,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="71" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="71" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="82" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="82" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -2056,7 +2091,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="74" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="74" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="85" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="85" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1abf99b9aa3d1433ad0a69e7cccd949817" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -2071,7 +2106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="77" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="77" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="88" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="88" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a4f1b25409e96c8fee1814a0631470a23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2090,7 +2125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="80" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="80" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="91" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="91" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a59e67ef6dc543409cc9f981d755df14b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2105,7 +2140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="83" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="83" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="94" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="94" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a202fab8f3a469474cb41064f0f5c8732" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -2124,7 +2159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="86" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="86" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="97" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="97" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a5a1d0d4863e18f7c0c154089d57dd61a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -2139,7 +2174,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="89" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="89" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="100" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="100" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2170,7 +2205,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="170" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="170" bodyend="190"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="181" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="181" bodyend="201"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2198,7 +2233,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="195" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="195" bodyend="197"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="206" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="206" bodyend="208"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a26377a820f76459a3451aa2664b6326f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2225,7 +2260,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="200" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="200" bodyend="202"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="211" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="211" bodyend="213"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a0ef5a2acf5c02c590e5029c061f463d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2247,7 +2282,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="204" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="204" bodyend="208"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="215" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="215" bodyend="219"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
