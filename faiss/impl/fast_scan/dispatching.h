@@ -123,17 +123,13 @@ struct ScannerMixIn : FastScanCodeScanner {
         constexpr bool use_avx512_qbs = false;
 #endif
         if constexpr (use_avx512_qbs) {
-            // AMD Zen 4 / Zen 4c ("Bergamo", family 0x19) split 512-bit
-            // ops over a 256-bit datapath, so the 512-bit QBS kernel yields no
-            // throughput gain but pays extra per-block LUT-assembly and
-            // cross-lane reduction overhead (measured ~14% search regression
-            // for PQ8x4fs / PQ16x4fs). Route those CPUs to the 256-bit (AVX2)
-            // QBS kernel instead -- same output, no downside on Zen 4. This is
-            // a process-constant runtime branch, hoisted out of the inner
-            // accumulate loop. Intel AVX-512 keeps the 512-bit kernel.
+            // Zen 4 runs 512-bit ops on a 256-bit datapath, so the 512-bit QBS
+            // kernel is slower there; use the AVX2 kernel.
             if (SIMDConfig::avx512_split) {
+                // THE_LEVEL_TO_DISPATCH scalers give these AVX2-loop
+                // instantiations symbol names that the AVX2 TU does not emit.
                 if (pq2x4_scale) {
-                    NormTableScaler<SIMDLevel::AVX2> scaler(pq2x4_scale);
+                    NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
                     pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                             qbs,
                             nb,
@@ -144,7 +140,7 @@ struct ScannerMixIn : FastScanCodeScanner {
                             scaler,
                             block_stride);
                 } else {
-                    DummyScaler<SIMDLevel::AVX2> dummy;
+                    DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
                     pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                             qbs,
                             nb,

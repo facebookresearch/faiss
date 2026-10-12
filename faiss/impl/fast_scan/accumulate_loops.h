@@ -134,7 +134,8 @@ void accumulate_q_4step_for_simd(
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
     for_each_block<32>(ntotal2, codes, block_stride, res, [&](size_t) {
-        FixedStorageHandler<SQ, 2, SL> res2;
+        // Scaler as LinkageTag: see FixedStorageHandler.
+        FixedStorageHandler<SQ, 2, SL, Scaler> res2;
         const uint8_t* LUT = LUT0;
         PQ4QBSKernel<SL>::template run<Q1>(nsq, codes, LUT, res2, scaler);
         LUT += Q1 * nsq * 16;
