@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="34" column="1" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="34" bodyend="34"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="35" column="1" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="35" bodyend="35"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
@@ -60,10 +60,26 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="52" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="52" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="57" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="57" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="var">
+      <memberdef kind="variable" id="PiPNN_8h_1a04488ad7a4ec1ddc7370cd35b9e76329" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::pipnn::kMedoidBlock</definition>
+        <argsstring></argsstring>
+        <name>kMedoidBlock</name>
+        <qualifiedname>faiss::pipnn::kMedoidBlock</qualifiedname>
+        <initializer>= size_t(1) &lt;&lt; 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Points per medoid block. It fixes the summation order of the mean, so changing it changes the entry point. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="29" column="18" bodyfile="faiss/impl/PiPNN.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="HashPrune_8h_1a53c3c9bca4e5115a2e00c0b17341f6a2" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr uint8_t</type>
         <definition>constexpr uint8_t faiss::pipnn::kNoFarthest</definition>
@@ -94,10 +110,108 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="32" column="18" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="33" column="18" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="Partition_8h_1a98852f107aec096b38d669ce307c505c" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::pipnn::kMaxCMax</definition>
+        <argsstring></argsstring>
+        <name>kMaxCMax</name>
+        <qualifiedname>faiss::pipnn::kMaxCMax</qualifiedname>
+        <initializer>= 4096</initializer>
+        <briefdescription>
+<para>Each partition thread holds a c_max x c_max float matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="39" column="22" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="Partition_8h_1ab787efea7bf5747332f391a2c4736b3e" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::pipnn::kMaxLeaderCap</definition>
+        <argsstring></argsstring>
+        <name>kMaxLeaderCap</name>
+        <qualifiedname>faiss::pipnn::kMaxLeaderCap</qualifiedname>
+        <initializer>= 65535</initializer>
+        <briefdescription>
+<para>Leader indices are stored as uint16_t. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/Partition.h" line="41" column="22" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="41" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
+      <memberdef kind="function" id="PiPNN_8h_1a67ab578e3249135db72c92914f2eac35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t faiss::pipnn::medoid_and_validate</definition>
+        <argsstring>(const Index &amp;storage)</argsstring>
+        <name>medoid_and_validate</name>
+        <qualifiedname>faiss::pipnn::medoid_and_validate</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Throws unless every vector is finite with squared norm &lt;= FLT_MAX / 8, and returns the L2 medoid: the point closest to the mean, lowest id on ties. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="33" column="9" declfile="faiss/impl/PiPNN.h" declline="33" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="PiPNN_8h_1af11f43adc5e8c0f944c563fa0640f45a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::robust_prune</definition>
+        <argsstring>(const float *D, size_t m, const int32_t *cand, MetricType metric, float alpha, int R, int *order, int32_t *out)</argsstring>
+        <name>robust_prune</name>
+        <qualifiedname>faiss::pipnn::robust_prune</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>D</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>cand</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>alpha</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>R</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>order</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>RobustPrune of x (row 0 of the m x m D) over cand[t] (row 1 + t) in (D, id) order; writes &lt;= R ids to out, -1 padded. order: m - 1 ints. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="37" column="6" declfile="faiss/impl/PiPNN.h" declline="37" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="HashPrune_8h_1a020201bbbafec8555d0c9560026e702c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint16_t</type>
         <definition>uint16_t faiss::pipnn::distance_key</definition>
@@ -228,7 +342,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="39" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="39" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="40" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="40" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="kernels_8h_1a45d2ccbb81ada446552a4ee76e145f35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -279,7 +393,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="53" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="53" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="54" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="54" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="kernels_8h_1a72b9b36917b4ba2c310153852b3de166" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -318,7 +432,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="66" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="66" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="67" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="67" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="kernels_8h_1a2d94d6212454123c173bead0ce03ba45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -349,7 +463,30 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/kernels.h" line="76" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="76" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/kernels.h" line="77" column="6" declfile="faiss/impl/pipnn/kernels.h" declline="77" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a7c7b37eba7bf3d3a133b7d84c15e5a2c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::ensure_size</definition>
+        <argsstring>(AlignedTable&lt; float, 64 &gt; &amp;table, size_t n)</argsstring>
+        <name>ensure_size</name>
+        <qualifiedname>faiss::pipnn::ensure_size</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable</ref>&lt; float, 64 &gt; &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Grows a per-thread scratch table and never shrinks it: AlignedTable::resize reallocates whenever the rounded capacity changes, shrinking included. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pipnn/kernels.h" line="85" column="13" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="85" bodyend="89"/>
       </memberdef>
       <memberdef kind="function" id="Partition_8h_1a10e402ed1a6a4d801ac295a5c0ff9ee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -384,7 +521,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="57" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="57" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="62" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="62" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="Partition_8h_1a937d784191c66bd80de02e0a24d9aea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
@@ -407,13 +544,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="66" column="10" declfile="faiss/impl/pipnn/Partition.h" declline="66" declcolumn="10"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="71" column="10" declfile="faiss/impl/pipnn/Partition.h" declline="71" declcolumn="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/pipnn/HashPrune.h" line="14" column="1"/>
+    <location file="faiss/impl/PiPNN.h" line="22" column="1"/>
   </compounddef>
 </doxygen>

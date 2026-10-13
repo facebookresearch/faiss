@@ -16,6 +16,7 @@
     <includedby refid="EDENQuantizer_8h" local="no">faiss/impl/EDENQuantizer.h</includedby>
     <includedby refid="IDSelector_8h" local="no">faiss/impl/IDSelector.h</includedby>
     <includedby refid="Panorama_8h" local="no">faiss/impl/Panorama.h</includedby>
+    <includedby refid="PiPNN_8h" local="no">faiss/impl/PiPNN.h</includedby>
     <includedby refid="RaBitQUtils_8h" local="no">faiss/impl/RaBitQUtils.h</includedby>
     <includedby refid="RaBitQuantizer_8h" local="no">faiss/impl/RaBitQuantizer.h</includedby>
     <includedby refid="RaBitQuantizerMultiBit_8h" local="no">faiss/impl/RaBitQuantizerMultiBit.h</includedby>
@@ -648,13 +649,15 @@
         </childnode>
         <childnode refid="164" relation="include">
         </childnode>
-        <childnode refid="116" relation="include">
-        </childnode>
         <childnode refid="165" relation="include">
+        </childnode>
+        <childnode refid="116" relation="include">
         </childnode>
         <childnode refid="166" relation="include">
         </childnode>
         <childnode refid="167" relation="include">
+        </childnode>
+        <childnode refid="168" relation="include">
         </childnode>
         <childnode refid="156" relation="include">
         </childnode>
@@ -979,6 +982,10 @@
         <childnode refid="156" relation="include">
         </childnode>
       </node>
+      <node id="164">
+        <label>faiss/impl/PiPNN.h</label>
+        <link refid="PiPNN_8h_source"/>
+      </node>
       <node id="57">
         <label>faiss/impl/PolysemousTraining.h</label>
         <link refid="PolysemousTraining_8h_source"/>
@@ -1017,7 +1024,7 @@
         <childnode refid="63" relation="include">
         </childnode>
       </node>
-      <node id="164">
+      <node id="165">
         <label>faiss/impl/RaBitQUtils.h</label>
         <link refid="RaBitQUtils_8h_source"/>
         <childnode refid="17" relation="include">
@@ -1026,7 +1033,7 @@
         </childnode>
         <childnode refid="116" relation="include">
         </childnode>
-        <childnode refid="165" relation="include">
+        <childnode refid="166" relation="include">
         </childnode>
         <childnode refid="144" relation="include">
         </childnode>
@@ -1047,7 +1054,7 @@
         <childnode refid="84" relation="include">
         </childnode>
       </node>
-      <node id="165">
+      <node id="166">
         <label>faiss/impl/RaBitQuantizerMultiBit.h</label>
         <link refid="RaBitQuantizerMultiBit_8h_source"/>
       </node>
@@ -1197,11 +1204,11 @@
         <label>faiss/impl/kmeans1d.h</label>
         <link refid="kmeans1d_8h_source"/>
       </node>
-      <node id="166">
+      <node id="167">
         <label>faiss/impl/pipnn/Partition.h</label>
         <link refid="Partition_8h_source"/>
       </node>
-      <node id="167">
+      <node id="168">
         <label>faiss/impl/pipnn/kernels.h</label>
         <link refid="kernels_8h_source"/>
       </node>

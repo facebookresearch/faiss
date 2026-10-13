@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="PiPNN_8h" kind="file" language="C++">
+    <compoundname>PiPNN.h</compoundname>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">vector</includes>
+    <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
+    <includes refid="maybe__owned__vector_8h" local="no">faiss/impl/maybe_owned_vector.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/PiPNN.h</label>
+        <link refid="PiPNN_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/impl/maybe_owned_vector.h</label>
+        <link refid="maybe__owned__vector_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>atomic</label>
+      </node>
+      <node id="15">
+        <label>cinttypes</label>
+      </node>
+      <node id="2">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
+        <label>cstdlib</label>
+      </node>
+      <node id="18">
+        <label>cstring</label>
+      </node>
+      <node id="10">
+        <label>exception</label>
+      </node>
+      <node id="16">
+        <label>limits</label>
+      </node>
+      <node id="19">
+        <label>memory</label>
+      </node>
+      <node id="11">
+        <label>string</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structfaiss_1_1PiPNN" prot="public">faiss::PiPNN</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1pipnn">faiss::pipnn</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1pipnn_1_1detail">faiss::pipnn::detail</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/maybe_owned_vector.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">Index;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">PiPNN;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">pipnn<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Internal<sp/>build<sp/>pieces,<sp/>exposed<sp/>for<sp/>tests;<sp/>hidden<sp/>from<sp/>SWIG.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SWIG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="27"><highlight class="comment">///<sp/>Points<sp/>per<sp/>medoid<sp/>block.<sp/>It<sp/>fixes<sp/>the<sp/>summation<sp/>order<sp/>of<sp/>the<sp/>mean,<sp/>so</highlight></codeline>
+<codeline lineno="28"><highlight class="comment">///<sp/>changing<sp/>it<sp/>changes<sp/>the<sp/>entry<sp/>point.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>kMedoidBlock<sp/>=<sp/>size_t(1)<sp/>&lt;&lt;<sp/>16;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment">///<sp/>Throws<sp/>unless<sp/>every<sp/>vector<sp/>is<sp/>finite<sp/>with<sp/>squared<sp/>norm<sp/>&lt;=<sp/>FLT_MAX<sp/>/<sp/>8,<sp/>and</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>returns<sp/>the<sp/>L2<sp/>medoid:<sp/>the<sp/>point<sp/>closest<sp/>to<sp/>the<sp/>mean,<sp/>lowest<sp/>id<sp/>on<sp/>ties.</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"></highlight><highlight class="normal">int32_t<sp/>medoid_and_validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index&amp;<sp/>storage);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment">///<sp/>RobustPrune<sp/>of<sp/>x<sp/>(row<sp/>0<sp/>of<sp/>the<sp/>m<sp/>x<sp/>m<sp/>D)<sp/>over<sp/>cand[t]<sp/>(row<sp/>1<sp/>+<sp/>t)<sp/>in</highlight></codeline>
+<codeline lineno="36"><highlight class="comment">///<sp/>(D,<sp/>id)<sp/>order;<sp/>writes<sp/>&lt;=<sp/>R<sp/>ids<sp/>to<sp/>out,<sp/>-1<sp/>padded.<sp/>order:<sp/>m<sp/>-<sp/>1<sp/>ints.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>robust_prune(</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>D,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>m,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>cand,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>R,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>order,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>out);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="namespacefaiss_1_1pipnn_1_1detail" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">detail<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="49"><highlight class="comment">///<sp/>PiPNN::build<sp/>with<sp/>a<sp/>given<sp/>reservoir<sp/>chunk<sp/>size,<sp/>for<sp/>tests.</highlight></codeline>
+<codeline lineno="50" refid="namespacefaiss_1_1pipnn_1_1detail_1aa9d4b26dad3df7d750eda30d0bb5dab5" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1pipnn_1_1detail_1aa9d4b26dad3df7d750eda30d0bb5dab5" kindref="member">build_with_chunk</ref>(</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PiPNN" kindref="compound">PiPNN</ref>&amp;<sp/>p,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>&amp;<sp/>storage,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>reservoir_chunk,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>detail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>SWIG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>pipnn</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="62"><highlight class="comment">///<sp/>PiPNN<sp/>graph<sp/>(Rubel<sp/>et<sp/>al.,<sp/>KDD<sp/>&apos;26,<sp/>arXiv:2602.21247).</highlight></codeline>
+<codeline lineno="63" refid="structfaiss_1_1PiPNN" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1PiPNN" kindref="compound">PiPNN</ref><sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>build<sp/>parameters</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" kindref="member">R</ref><sp/>=<sp/>64;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>max<sp/>out-degree</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="structfaiss_1_1PiPNN_1ad04c3ff63ac047640246754c6d71517d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1ad04c3ff63ac047640246754c6d71517d" kindref="member">leaf_k</ref><sp/>=<sp/>2;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>neighbours<sp/>each<sp/>point<sp/>offers<sp/>per<sp/>leaf</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="structfaiss_1_1PiPNN_1a3d0db57d5c9d9834a3a5b09e0cfbe075" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a3d0db57d5c9d9834a3a5b09e0cfbe075" kindref="member">hash_bits</ref><sp/>=<sp/>12;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>HashPrune<sp/>keeps<sp/>one<sp/>candidate<sp/>per<sp/>hash<sp/>bucket</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="structfaiss_1_1PiPNN_1ad796b8cd5ab20808141724363e201954" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1ad796b8cd5ab20808141724363e201954" kindref="member">reservoir_size</ref><sp/>=<sp/>64;<sp/></highlight><highlight class="comment">///&lt;<sp/>candidates<sp/>kept<sp/>per<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" kindref="member">c_max</ref><sp/>=<sp/>1024;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>largest<sp/>leaf</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" kindref="member">c_min</ref><sp/>=<sp/>128;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>smaller<sp/>partition<sp/>children<sp/>are<sp/>merged</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="structfaiss_1_1PiPNN_1ac6eda5d3056c5ae0309b028301096864" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1ac6eda5d3056c5ae0309b028301096864" kindref="member">leader_cap</ref><sp/>=<sp/>1000;<sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>most<sp/>leaders<sp/>per<sp/>split</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" kindref="member">replicas</ref><sp/>=<sp/>1;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>independent<sp/>partitions,<sp/>shared<sp/>reservoirs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73" refid="structfaiss_1_1PiPNN_1a65a0c0bf3ecc3f635c4f67b9ce45a519" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a65a0c0bf3ecc3f635c4f67b9ce45a519" kindref="member">leader_fraction</ref><sp/>=<sp/>0.005f;<sp/></highlight><highlight class="comment">///&lt;<sp/>leaders<sp/>per<sp/>split,<sp/>fraction<sp/>of<sp/>its<sp/>size</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" kindref="member">alpha</ref><sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>0<sp/>=<sp/>metric<sp/>default<sp/>(L2<sp/>1.2,<sp/>IP<sp/>1.0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" kindref="member">fanout</ref><sp/>=<sp/>{10,<sp/>3};<sp/></highlight><highlight class="comment">///&lt;<sp/>leaders<sp/>joined<sp/>per<sp/>depth,<sp/>then<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>seed<sp/>=<sp/>1234;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="77"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>IP:<sp/>rank<sp/>partition<sp/>leaders<sp/>by<sp/>angle,<sp/>not<sp/>inner<sp/>product</highlight></codeline>
+<codeline lineno="78" refid="structfaiss_1_1PiPNN_1a829b3bc5f2aba5fe1da209733a5d8d77" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a829b3bc5f2aba5fe1da209733a5d8d77" kindref="member">ip_partition_by_angle</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>point<sp/>instances<sp/>per<sp/>partition<sp/>wave,<sp/>which<sp/>bounds<sp/>memory</highlight></codeline>
+<codeline lineno="80" refid="structfaiss_1_1PiPNN_1ae47bb3062a5cb2b811c000a2c81b3f2c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1ae47bb3062a5cb2b811c000a2c81b3f2c" kindref="member">partition_wave_budget</ref><sp/>=<sp/>size_t(1)<sp/>&lt;&lt;<sp/>30;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>result</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;int32_t&gt;</ref><sp/><ref refid="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" kindref="member">graph</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>ntotal<sp/>x<sp/>R,<sp/>-1<sp/>padded</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/><ref refid="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" kindref="member">entry_point</ref><sp/>=<sp/>-1;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>L2<sp/>medoid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>ntotal<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PiPNN" kindref="compound">PiPNN</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN" kindref="compound">PiPNN</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" kindref="member">R</ref>)<sp/>:<sp/><ref refid="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" kindref="member">R</ref>(<ref refid="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" kindref="member">R</ref>)<sp/>{}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>effective_alpha(<ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_params()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SWIG</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Builds<sp/>over<sp/>the<sp/>vectors<sp/>and<sp/>metric<sp/>of<sp/>storage.<sp/>Strong<sp/>guarantee:<sp/>graph,</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>entry_point<sp/>and<sp/>ntotal<sp/>are<sp/>unchanged<sp/>if<sp/>it<sp/>throws.</highlight></codeline>
+<codeline lineno="97" refid="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" kindref="member">build</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>&amp;<sp/>storage,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Empties<sp/>the<sp/>graph;<sp/>entry_point<sp/>=<sp/>-1,<sp/>ntotal<sp/>=<sp/>0.</highlight></codeline>
+<codeline lineno="101" refid="structfaiss_1_1PiPNN_1ae5ad97cfc8e37f74203c9b618234d17c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PiPNN_1ae5ad97cfc8e37f74203c9b618234d17c" kindref="member">reset</ref>();</highlight></codeline>
+<codeline lineno="102"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/PiPNN.h"/>
+  </compounddef>
+</doxygen>

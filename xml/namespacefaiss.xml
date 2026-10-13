@@ -283,6 +283,7 @@
     <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
     <innerclass refid="structfaiss_1_1PCAMatrix" prot="public">faiss::PCAMatrix</innerclass>
     <innerclass refid="structfaiss_1_1PermutationObjective" prot="public">faiss::PermutationObjective</innerclass>
+    <innerclass refid="structfaiss_1_1PiPNN" prot="public">faiss::PiPNN</innerclass>
     <innerclass refid="structfaiss_1_1PolysemousTraining" prot="public">faiss::PolysemousTraining</innerclass>
     <innerclass refid="structfaiss_1_1PQ4QBSKernel" prot="public">faiss::PQ4QBSKernel</innerclass>
     <innerclass refid="structfaiss_1_1PQ4QBSKernel_3_01SIMDLevel_1_1ARM__NEON_01_4" prot="public">faiss::PQ4QBSKernel&lt; SIMDLevel::ARM_NEON &gt;</innerclass>

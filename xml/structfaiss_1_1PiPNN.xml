@@ -1,0 +1,427 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1PiPNN" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::PiPNN</compoundname>
+    <includes refid="PiPNN_8h" local="no">PiPNN.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::R</definition>
+        <argsstring></argsstring>
+        <name>R</name>
+        <qualifiedname>faiss::PiPNN::R</qualifiedname>
+        <initializer>= 64</initializer>
+        <briefdescription>
+<para>max out-degree </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="65" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ad04c3ff63ac047640246754c6d71517d" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::leaf_k</definition>
+        <argsstring></argsstring>
+        <name>leaf_k</name>
+        <qualifiedname>faiss::PiPNN::leaf_k</qualifiedname>
+        <initializer>= 2</initializer>
+        <briefdescription>
+<para>neighbours each point offers per leaf </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="66" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a3d0db57d5c9d9834a3a5b09e0cfbe075" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::hash_bits</definition>
+        <argsstring></argsstring>
+        <name>hash_bits</name>
+        <qualifiedname>faiss::PiPNN::hash_bits</qualifiedname>
+        <initializer>= 12</initializer>
+        <briefdescription>
+<para>HashPrune keeps one candidate per hash bucket. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="67" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ad796b8cd5ab20808141724363e201954" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::reservoir_size</definition>
+        <argsstring></argsstring>
+        <name>reservoir_size</name>
+        <qualifiedname>faiss::PiPNN::reservoir_size</qualifiedname>
+        <initializer>= 64</initializer>
+        <briefdescription>
+<para>candidates kept per point </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="68" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::c_max</definition>
+        <argsstring></argsstring>
+        <name>c_max</name>
+        <qualifiedname>faiss::PiPNN::c_max</qualifiedname>
+        <initializer>= 1024</initializer>
+        <briefdescription>
+<para>largest leaf </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="69" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::c_min</definition>
+        <argsstring></argsstring>
+        <name>c_min</name>
+        <qualifiedname>faiss::PiPNN::c_min</qualifiedname>
+        <initializer>= 128</initializer>
+        <briefdescription>
+<para>smaller partition children are merged </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="70" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ac6eda5d3056c5ae0309b028301096864" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::leader_cap</definition>
+        <argsstring></argsstring>
+        <name>leader_cap</name>
+        <qualifiedname>faiss::PiPNN::leader_cap</qualifiedname>
+        <initializer>= 1000</initializer>
+        <briefdescription>
+<para>most leaders per split </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="71" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::replicas</definition>
+        <argsstring></argsstring>
+        <name>replicas</name>
+        <qualifiedname>faiss::PiPNN::replicas</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+<para>independent partitions, shared reservoirs </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="72" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a65a0c0bf3ecc3f635c4f67b9ce45a519" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::PiPNN::leader_fraction</definition>
+        <argsstring></argsstring>
+        <name>leader_fraction</name>
+        <qualifiedname>faiss::PiPNN::leader_fraction</qualifiedname>
+        <initializer>= 0.005f</initializer>
+        <briefdescription>
+<para>leaders per split, fraction of its size </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="73" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::PiPNN::alpha</definition>
+        <argsstring></argsstring>
+        <name>alpha</name>
+        <qualifiedname>faiss::PiPNN::alpha</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>0 = metric default (L2 1.2, IP 1.0) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="74" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; faiss::PiPNN::fanout</definition>
+        <argsstring></argsstring>
+        <name>fanout</name>
+        <qualifiedname>faiss::PiPNN::fanout</qualifiedname>
+        <initializer>= {10, 3}</initializer>
+        <briefdescription>
+<para>leaders joined per depth, then 1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="75" column="17" bodyfile="faiss/impl/PiPNN.h" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a356a13b0518734202d61ba82ec0056af" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::PiPNN::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <qualifiedname>faiss::PiPNN::seed</qualifiedname>
+        <initializer>= 1234</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="76" column="13" bodyfile="faiss/impl/PiPNN.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a829b3bc5f2aba5fe1da209733a5d8d77" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::PiPNN::ip_partition_by_angle</definition>
+        <argsstring></argsstring>
+        <name>ip_partition_by_angle</name>
+        <qualifiedname>faiss::PiPNN::ip_partition_by_angle</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>IP: rank partition leaders by angle, not inner product. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="78" column="10" bodyfile="faiss/impl/PiPNN.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ae47bb3062a5cb2b811c000a2c81b3f2c" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::PiPNN::partition_wave_budget</definition>
+        <argsstring></argsstring>
+        <name>partition_wave_budget</name>
+        <qualifiedname>faiss::PiPNN::partition_wave_budget</qualifiedname>
+        <initializer>= size_t(1) &lt;&lt; 30</initializer>
+        <briefdescription>
+<para>point instances per partition wave, which bounds memory </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="80" column="12" bodyfile="faiss/impl/PiPNN.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; int32_t &gt;</type>
+        <definition>MaybeOwnedVector&lt;int32_t&gt; faiss::PiPNN::graph</definition>
+        <argsstring></argsstring>
+        <name>graph</name>
+        <qualifiedname>faiss::PiPNN::graph</qualifiedname>
+        <briefdescription>
+<para>ntotal x R, -1 padded </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="83" column="22" bodyfile="faiss/impl/PiPNN.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t faiss::PiPNN::entry_point</definition>
+        <argsstring></argsstring>
+        <name>entry_point</name>
+        <qualifiedname>faiss::PiPNN::entry_point</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>L2 medoid. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="84" column="13" bodyfile="faiss/impl/PiPNN.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1aeb442fb111a5d291207cf9c6372582ba" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::PiPNN::ntotal</definition>
+        <argsstring></argsstring>
+        <name>ntotal</name>
+        <qualifiedname>faiss::PiPNN::ntotal</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="85" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1a9617a630e2fca305fcd6abe209ce3fb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::PiPNN::PiPNN</definition>
+        <argsstring>()=default</argsstring>
+        <name>PiPNN</name>
+        <qualifiedname>faiss::PiPNN::PiPNN</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="87" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1a9b8897afab62a4c9937e6faea7da90e0" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::PiPNN::PiPNN</definition>
+        <argsstring>(int R)</argsstring>
+        <name>PiPNN</name>
+        <qualifiedname>faiss::PiPNN::PiPNN</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>R</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="88" column="14" bodyfile="faiss/impl/PiPNN.h" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1a844669f152d61c0acde5a3020262d915" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::PiPNN::effective_alpha</definition>
+        <argsstring>(MetricType metric) const</argsstring>
+        <name>effective_alpha</name>
+        <qualifiedname>faiss::PiPNN::effective_alpha</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="90" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1a86c1e8aed2845b61254ddd2dbcf5fa7d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PiPNN::check_params</definition>
+        <argsstring>() const</argsstring>
+        <name>check_params</name>
+        <qualifiedname>faiss::PiPNN::check_params</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="92" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PiPNN::build</definition>
+        <argsstring>(const Index &amp;storage, bool verbose=false)</argsstring>
+        <name>build</name>
+        <qualifiedname>faiss::PiPNN::build</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Builds over the vectors and metric of storage. Strong guarantee: graph, entry_point and ntotal are unchanged if it throws. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="97" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1ae5ad97cfc8e37f74203c9b618234d17c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PiPNN::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <qualifiedname>faiss::PiPNN::reset</qualifiedname>
+        <briefdescription>
+<para>Empties the graph; entry_point = -1, ntotal = 0. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="101" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structfaiss_1_1PiPNN" kindref="compound">PiPNN</ref> graph (Rubel et al., KDD &apos;26, arXiv:2602.21247). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::MaybeOwnedVector&lt; int32_t &gt;</label>
+        <link refid="structfaiss_1_1MaybeOwnedVector"/>
+      </node>
+      <node id="1">
+        <label>faiss::PiPNN</label>
+        <link refid="structfaiss_1_1PiPNN"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>graph</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/PiPNN.h" line="63" column="1" bodyfile="faiss/impl/PiPNN.h" bodystart="63" bodyend="102"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>alpha</name></member>
+      <member refid="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>build</name></member>
+      <member refid="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>c_max</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>c_min</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a86c1e8aed2845b61254ddd2dbcf5fa7d" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>check_params</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a844669f152d61c0acde5a3020262d915" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>effective_alpha</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>entry_point</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>fanout</name></member>
+      <member refid="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>graph</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a3d0db57d5c9d9834a3a5b09e0cfbe075" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>hash_bits</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a829b3bc5f2aba5fe1da209733a5d8d77" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>ip_partition_by_angle</name></member>
+      <member refid="structfaiss_1_1PiPNN_1ac6eda5d3056c5ae0309b028301096864" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>leader_cap</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a65a0c0bf3ecc3f635c4f67b9ce45a519" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>leader_fraction</name></member>
+      <member refid="structfaiss_1_1PiPNN_1ad04c3ff63ac047640246754c6d71517d" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>leaf_k</name></member>
+      <member refid="structfaiss_1_1PiPNN_1aeb442fb111a5d291207cf9c6372582ba" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1PiPNN_1ae47bb3062a5cb2b811c000a2c81b3f2c" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>partition_wave_budget</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a9617a630e2fca305fcd6abe209ce3fb6" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>PiPNN</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a9b8897afab62a4c9937e6faea7da90e0" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>PiPNN</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a07fe5dc1488e679d4c09888514ccf5cd" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>R</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>replicas</name></member>
+      <member refid="structfaiss_1_1PiPNN_1ad796b8cd5ab20808141724363e201954" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>reservoir_size</name></member>
+      <member refid="structfaiss_1_1PiPNN_1ae5ad97cfc8e37f74203c9b618234d17c" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a356a13b0518734202d61ba82ec0056af" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>seed</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

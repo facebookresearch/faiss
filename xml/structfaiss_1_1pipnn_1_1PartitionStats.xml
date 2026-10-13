@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="39" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="44" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a88fa8e31c5fe1a665d84ec5a9fa43c21" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="40" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="45" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="45" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a3040ac2c3af6a8a0370daf3599c81e98" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="41" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="46" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1ac8ad6b89b6a95fe68b9987d61fab0954" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -61,7 +61,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="42" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="47" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a9c7c099d151356fc26102ffc1d503448" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="42" column="31" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="47" column="31" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a38bf77d23256d1264295d5385530b171" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -91,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="43" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="48" column="9" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1ab3b3c44e794afe287e739b6eb492b25b" prot="public" static="no" mutable="no">
         <type>std::vector&lt; size_t &gt;</type>
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="45" column="17" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="45" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="50" column="17" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="50" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pipnn_1_1PartitionStats_1a26e86a54bbdf216f21ec7c77bbab2f7a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -121,14 +121,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="46" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="51" column="12" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="51" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/pipnn/Partition.h" line="38" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="38" bodyend="47"/>
+    <location file="faiss/impl/pipnn/Partition.h" line="43" column="1" bodyfile="faiss/impl/pipnn/Partition.h" bodystart="43" bodyend="52"/>
     <listofallmembers>
       <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1ab3b3c44e794afe287e739b6eb492b25b" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>leaf_size_histogram</name></member>
       <member refid="structfaiss_1_1pipnn_1_1PartitionStats_1a38bf77d23256d1264295d5385530b171" prot="public" virt="non-virtual"><scope>faiss::pipnn::PartitionStats</scope><name>max_depth_seen</name></member>

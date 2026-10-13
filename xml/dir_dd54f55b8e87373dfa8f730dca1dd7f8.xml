@@ -39,6 +39,7 @@
     <innerfile refid="Panorama_8h">Panorama.h</innerfile>
     <innerfile refid="PanoramaStats_8h">PanoramaStats.h</innerfile>
     <innerfile refid="PdxLayout_8h">PdxLayout.h</innerfile>
+    <innerfile refid="PiPNN_8h">PiPNN.h</innerfile>
     <innerfile refid="platform__macros_8h">platform_macros.h</innerfile>
     <innerfile refid="PolysemousTraining_8h">PolysemousTraining.h</innerfile>
     <innerfile refid="ProductAdditiveQuantizer_8h">ProductAdditiveQuantizer.h</innerfile>

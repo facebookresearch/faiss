@@ -3,6 +3,37 @@
   <compounddef id="namespacefaiss_1_1pipnn_1_1detail" kind="namespace" language="C++">
     <compoundname>faiss::pipnn::detail</compoundname>
     <sectiondef kind="func">
+      <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1aa9d4b26dad3df7d750eda30d0bb5dab5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pipnn::detail::build_with_chunk</definition>
+        <argsstring>(PiPNN &amp;p, const Index &amp;storage, size_t reservoir_chunk, bool verbose)</argsstring>
+        <name>build_with_chunk</name>
+        <qualifiedname>faiss::pipnn::detail::build_with_chunk</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1PiPNN" kindref="compound">PiPNN</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>reservoir_chunk</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <briefdescription>
+<para><ref refid="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" kindref="member">PiPNN::build</ref> with a given reservoir chunk size, for tests. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="50" column="6" declfile="faiss/impl/PiPNN.h" declline="50" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1a95c18a7de961d444007c86febee03e3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::pipnn::detail::leader_count</definition>
@@ -28,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="72" column="8" declfile="faiss/impl/pipnn/Partition.h" declline="72" declcolumn="8"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="77" column="8" declfile="faiss/impl/pipnn/Partition.h" declline="77" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1aef28b1824f8c5cc4285401e6b00f4b78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -59,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="75" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="75" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="80" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="80" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1ae1f5935ad80fd5413f8f207c709aec8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>Ranking</type>
@@ -81,7 +112,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="81" column="9" declfile="faiss/impl/pipnn/Partition.h" declline="81" declcolumn="9"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="86" column="9" declfile="faiss/impl/pipnn/Partition.h" declline="86" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -89,6 +120,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/pipnn/Partition.h" line="69" column="1"/>
+    <location file="faiss/impl/PiPNN.h" line="47" column="1"/>
   </compounddef>
 </doxygen>
