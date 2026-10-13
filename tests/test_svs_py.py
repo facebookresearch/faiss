@@ -675,6 +675,192 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
         return idx
 
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSVamanaSetIndexParameter(unittest.TestCase):
+    """Test the Vamana parameters exposed through ParameterSpace"""
+
+    target_class = None  # set in setUpClass
+
+    @classmethod
+    def setUpClass(cls):
+        # need to configure target_class here to avoid issues when
+        # SVS support is not compiled in
+        cls.target_class = faiss.IndexSVSVamana
+        cls.d = 64
+        cls.nb = 1000
+        cls.nq = 50
+        np.random.seed(1234)
+        cls.xb = np.random.random((cls.nb, cls.d)).astype("float32")
+        cls.xq = np.random.random((cls.nq, cls.d)).astype("float32")
+        ref = faiss.IndexFlatL2(cls.d)
+        ref.add(cls.xb)
+        _, cls.gt = ref.search(cls.xq, 4)
+
+    def setUp(self):
+        self.ps = faiss.ParameterSpace()
+
+    def _create_instance(self):
+        """Create an SVS Vamana index that is ready to accept vectors"""
+        return self.target_class(self.d, 64)
+
+    def _storage_kind(self):
+        """A storage kind the index under test can be switched to"""
+        return faiss.SVS_FP16
+
+    def _build_parameters(self):
+        """(name, value) pairs covering every build-time parameter"""
+        return [
+            ("graph_max_degree", 32),
+            ("prune_to", 28),
+            ("alpha", 1.5),
+            ("construction_window_size", 80),
+            ("max_candidate_pool_size", 150),
+            ("use_full_search_history", 0),
+            ("storage_kind", self._storage_kind()),
+            ("is_static", 1),
+        ]
+
+    def _recall(self, index):
+        """Fraction of the exact 4 nearest neighbours the index returns"""
+        _, I = index.search(self.xq, self.gt.shape[1])
+        found = sum(len(set(a) & set(b)) for a, b in zip(I, self.gt))
+        return found / self.gt.size
+
+    def test_build_parameters(self):
+        index = self._create_instance()
+        for name, value in self._build_parameters():
+            self.ps.set_index_parameter(index, name, value)
+
+        self.assertEqual(index.graph_max_degree, 32)
+        self.assertEqual(index.prune_to, 28)
+        self.assertAlmostEqual(index.alpha, 1.5, places=6)
+        self.assertEqual(index.construction_window_size, 80)
+        self.assertEqual(index.max_candidate_pool_size, 150)
+        self.assertFalse(index.use_full_search_history)
+        self.assertEqual(index.storage_kind, self._storage_kind())
+        self.assertTrue(index.is_static)
+
+        # the values are accepted by the SVS backend
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+        _, I = index.search(self.xq, 4)
+        self.assertEqual(I.shape, (self.nq, 4))
+        self.assertTrue((I >= 0).all())
+
+    def test_build_parameters_rejected_after_build(self):
+        index = self._create_instance()
+        index.add(self.xb)
+        for name, value in self._build_parameters():
+            with self.assertRaises(RuntimeError):
+                self.ps.set_index_parameter(index, name, value)
+
+    def test_search_parameters(self):
+        index = self._create_instance()
+        index.add(self.xb)
+
+        # search parameters are tunable after the index has been built
+        self.ps.set_index_parameters(
+            index, "search_window_size=4,search_buffer_capacity=4"
+        )
+        narrow_recall = self._recall(index)
+
+        self.ps.set_index_parameter(index, "search_window_size", 128)
+        self.ps.set_index_parameter(index, "search_buffer_capacity", 160)
+        self.assertEqual(index.search_window_size, 128)
+        self.assertEqual(index.search_buffer_capacity, 160)
+
+        # the values reach the SVS backend: a wider search window explores
+        # more of the graph and finds more of the true neighbours
+        self.assertGreater(self._recall(index), narrow_recall)
+
+    def test_store_vectors(self):
+        index = self._create_instance()
+        index.add(self.xb)
+
+        self.ps.set_index_parameter(index, "store_vectors", 0)
+        self.assertFalse(index.store_vectors)
+        index.add(self.xb)  # drops the copy of the vectors
+
+        # re-enabling would leave the copy misaligned with the ids
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "store_vectors", 1)
+
+    def test_leanvec_d(self):
+        """leanvec_d applies to IndexSVSVamanaLeanVec only"""
+        index = self.target_class(self.d, 64)
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "leanvec_d", 32)
+
+    def test_invalid_values_rejected(self):
+        index = self._create_instance()
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "graph_max_degree", -1)
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "graph_max_degree", 1.5)
+        with self.assertRaises(RuntimeError):
+            # larger than 2**64: must not overflow the size_t cast
+            self.ps.set_index_parameter(index, "graph_max_degree", 1e30)
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "storage_kind", faiss.SVS_count)
+        # a parameter of another index type is still an error
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "efSearch", 32)
+
+    def test_coarse_quantizer_parameters(self):
+        index = faiss.index_factory(self.d, "IVF16_SVSVamana32,Flat")
+        self.ps.set_index_parameter(index, "quantizer_search_window_size", 24)
+        self.ps.set_index_parameter(index, "quantizer_graph_max_degree", 48)
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.search_window_size, 24)
+        self.assertEqual(quantizer.graph_max_degree, 48)
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSVamanaSetIndexParameterLVQ(TestSVSVamanaSetIndexParameter):
+    """Repeat the ParameterSpace tests on the LVQ variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.target_class = faiss.IndexSVSVamanaLVQ
+
+    def _storage_kind(self):
+        return faiss.SVS_LVQ4x8
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSVamanaSetIndexParameterLeanVec(TestSVSVamanaSetIndexParameter):
+    """Repeat the ParameterSpace tests on the LeanVec variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.target_class = faiss.IndexSVSVamanaLeanVec
+
+    def _storage_kind(self):
+        return faiss.SVS_LeanVec4x8
+
+    def _create_instance(self):
+        # LeanVec has to be trained before vectors can be added
+        index = self.target_class(self.d, 64)
+        index.train(self.xb)
+        return index
+
+    def test_leanvec_d(self):
+        """leanvec_d is accepted, but only before train()"""
+        index = self.target_class(self.d, 64)
+        self.ps.set_index_parameter(index, "leanvec_d", 32)
+        self.assertEqual(index.leanvec_d, 32)
+
+        index.train(self.xb)
+        # train() has consumed leanvec_d, so it is too late to change it
+        with self.assertRaises(RuntimeError):
+            self.ps.set_index_parameter(index, "leanvec_d", 16)
+
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+
+
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSLeanVecOOD(unittest.TestCase):
     """Test out-of-distribution training for LeanVec SVS indices"""

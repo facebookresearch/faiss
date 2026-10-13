@@ -7,12 +7,15 @@
 
 #ifdef COMPILE_SIMD_RISCV_RVV
 
+#include <riscv_vector.h>
+
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
+#include <faiss/impl/pq_code_distance/pq_rvv_kernel.h>
 
 namespace faiss {
 namespace pq_code_distance {
 
-// RISCV_RVV: no RVV-optimized PQ code distance exists yet. Use scalar.
+// The kernel lives in pq_rvv_kernel.h. See that header for the gather layout.
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
@@ -20,8 +23,7 @@ float pq_code_distance_8bit_single_impl<SIMDLevel::RISCV_RVV>(
         size_t M,
         const float* sim_table,
         const uint8_t* code) {
-    return PQCodeDistanceScalar<PQDecoder8>::distance_single_code(
-            M, 8, sim_table, code);
+    return pq_rvv_kernel::distance_8bit(M, sim_table, code);
 }
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
@@ -37,18 +39,47 @@ void pq_code_distance_8bit_four_impl<SIMDLevel::RISCV_RVV>(
         float& result1,
         float& result2,
         float& result3) {
-    PQCodeDistanceScalar<PQDecoder8>::distance_four_codes(
-            M,
-            8,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
+    const size_t vlmax = __riscv_vsetvlmax_e32m4();
+    vfloat32m4_t acc0 = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
+    vfloat32m4_t acc1 = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
+    vfloat32m4_t acc2 = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
+    vfloat32m4_t acc3 = __riscv_vfmv_v_f_f32m4(0.0f, vlmax);
+
+    size_t m = 0;
+    while (m < M) {
+        const size_t vl = __riscv_vsetvl_e32m4(M - m);
+        // The row term is the same for all four codes, so compute it once.
+        vuint32m4_t row_off = pq_rvv_kernel::row_offsets(m, vl);
+
+        vfloat32m4_t v0 = __riscv_vluxei32_v_f32m4(
+                sim_table,
+                pq_rvv_kernel::byte_offsets(row_off, code0, m, vl),
+                vl);
+        vfloat32m4_t v1 = __riscv_vluxei32_v_f32m4(
+                sim_table,
+                pq_rvv_kernel::byte_offsets(row_off, code1, m, vl),
+                vl);
+        vfloat32m4_t v2 = __riscv_vluxei32_v_f32m4(
+                sim_table,
+                pq_rvv_kernel::byte_offsets(row_off, code2, m, vl),
+                vl);
+        vfloat32m4_t v3 = __riscv_vluxei32_v_f32m4(
+                sim_table,
+                pq_rvv_kernel::byte_offsets(row_off, code3, m, vl),
+                vl);
+
+        acc0 = __riscv_vfadd_vv_f32m4_tu(acc0, acc0, v0, vl);
+        acc1 = __riscv_vfadd_vv_f32m4_tu(acc1, acc1, v1, vl);
+        acc2 = __riscv_vfadd_vv_f32m4_tu(acc2, acc2, v2, vl);
+        acc3 = __riscv_vfadd_vv_f32m4_tu(acc3, acc3, v3, vl);
+
+        m += vl;
+    }
+
+    result0 = pq_rvv_kernel::reduce(acc0, vlmax);
+    result1 = pq_rvv_kernel::reduce(acc1, vlmax);
+    result2 = pq_rvv_kernel::reduce(acc2, vlmax);
+    result3 = pq_rvv_kernel::reduce(acc3, vlmax);
 }
 
 } // namespace pq_code_distance

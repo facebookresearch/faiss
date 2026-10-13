@@ -29,37 +29,8 @@
 
 using faiss::SIMDLevel;
 
-namespace {
-
-std::vector<uint8_t> random_bytes(size_t n, uint32_t seed) {
-    std::mt19937 rng(seed);
-    std::vector<uint8_t> v(n);
-    for (size_t i = 0; i < n; i++) {
-        v[i] = static_cast<uint8_t>(rng());
-    }
-    return v;
-}
-
-// Widths on either side of every register boundary the kernels step over.
-const std::vector<size_t> kDims = {
-        1,
-        8,
-        16,
-        31,
-        32,
-        33,
-        100,
-        128,
-        255,
-        256,
-        257,
-        384,
-        512,
-        768,
-        1024,
-        2048};
-
-} // namespace
+using faiss_test::kDims;
+using faiss_test::random_bytes;
 
 TEST(RaBitQVpopcnt, BitwiseKernelsMatchScalarAcrossTails) {
     if (!faiss::SIMDConfig::is_simd_level_available(

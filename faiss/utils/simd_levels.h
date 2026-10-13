@@ -26,7 +26,11 @@ enum class SIMDLevel {
     ARM_NEON,
     ARM_SVE, // Scalable Vector Extension (ARMv8.2+)
     // riscv
-    RISCV_RVV, // RISC-V Vector Extension (rv64gcv)
+    // RISC-V Vector Extension. The minimum ISA for this level is rv64gcv
+    // plus Zvfhmin (FP16 vector conversion), which the QT_fp16 kernels
+    // require; RVV translation units are compiled with
+    // -march=rv64gcv_zvfhmin.
+    RISCV_RVV,
 
     // Appended to preserve the numeric values of the existing public enum.
     // AVX-512 core features plus AVX512_VPOPCNTDQ and AVX512_BITALG

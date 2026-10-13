@@ -11,9 +11,11 @@
 #include <cstddef>
 #include <limits>
 #include <random>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/impl/FaissAssert.h>
@@ -22,6 +24,68 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
+#include <omp.h>
+
+namespace {
+
+struct SearchStatsEnabledGuard {
+    explicit SearchStatsEnabledGuard(bool enabled)
+            : previous(faiss::get_search_stats_enabled()) {
+        faiss::set_search_stats_enabled(enabled);
+    }
+    ~SearchStatsEnabledGuard() {
+        faiss::set_search_stats_enabled(previous);
+    }
+    bool previous;
+};
+
+} // namespace
+
+TEST(HNSWStats, DisabledCollectionSkipsGlobalStats) {
+    faiss::IndexBinaryHNSW index(8, 2);
+    const uint8_t database = 0;
+    index.add(1, &database);
+    index.hnsw.efSearch = 1;
+    SearchStatsEnabledGuard guard(false);
+    faiss::hnsw_stats.reset();
+
+    int32_t distance;
+    faiss::idx_t label;
+    index.search(1, &database, 1, &distance, &label);
+
+    EXPECT_EQ(0, faiss::hnsw_stats.n1);
+}
+
+TEST(HNSWStats, EnabledCollectionAggregatesConcurrentSearchesExactly) {
+    constexpr size_t num_threads = 16;
+    constexpr size_t searches_per_thread = 100;
+
+    faiss::IndexBinaryHNSW index(8, 2);
+    const uint8_t database = 0;
+    index.add(1, &database);
+    index.hnsw.efSearch = 1;
+    SearchStatsEnabledGuard guard(true);
+    faiss::hnsw_stats.reset();
+
+    std::vector<std::thread> threads;
+    threads.reserve(num_threads);
+    for (size_t i = 0; i < num_threads; ++i) {
+        threads.emplace_back([&] {
+            omp_set_num_threads(1);
+            int32_t distance;
+            faiss::idx_t label;
+            for (size_t j = 0; j < searches_per_thread; ++j) {
+                index.search(1, &database, 1, &distance, &label);
+            }
+        });
+    }
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    EXPECT_EQ(num_threads * searches_per_thread, faiss::hnsw_stats.n1);
+}
 
 int reference_pop_min(faiss::MinimaxHeap& heap, float* vmin_out) {
     assert(heap.k > 0);
@@ -783,6 +847,26 @@ struct ScopedOmpThreads {
         omp_set_num_threads(saved);
     }
 };
+
+TEST_F(HNSWTest, TEST_search_advances_one_generation_per_query) {
+    ScopedOmpThreads omp_guard;
+    omp_set_num_threads(1);
+    index->hnsw.use_visited_hashset = false;
+
+    auto& reusable = dynamic_cast<faiss::VisitedTableVector&>(
+            faiss::VisitedTable::get_reusable(index->ntotal, false));
+    std::fill(reusable.visited.begin(), reusable.visited.end(), 0);
+    reusable.visno = 10;
+
+    std::vector<faiss::idx_t> labels(k);
+    std::vector<float> distances(k);
+    index->search(1, xq->data(), k, distances.data(), labels.data());
+
+    // Acquiring the reusable table advances 10 -> 11 to clear stale state.
+    // HNSW::search then advances 11 -> 12 after the query. The outer wrapper
+    // must not perform a third advance.
+    EXPECT_EQ(12, reusable.visno);
+}
 
 TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     ScopedOmpThreads omp_guard;

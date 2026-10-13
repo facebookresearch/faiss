@@ -315,6 +315,8 @@ struct HNSWStats {
         ndis += other.ndis;
         nhops += other.nhops;
     }
+
+    void combine_atomic(const HNSWStats& other);
 };
 
 // global var that collects them all

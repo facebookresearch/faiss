@@ -127,7 +127,9 @@ size_t InvertedLists::copy_subset_to(
         } else if (subset_type == SUBSET_TYPE_ID_MOD) {
             for (size_t i = 0; i < n; i++) {
                 idx_t id = ids_in[i];
-                if (id % a1 == a2) {
+                // C++ gives a negative remainder, so a plain `id % a1` never
+                // matches for a negative id. Fold it into [0, a1) instead.
+                if (((id % a1) + a1) % a1 == a2) {
                     oivf.add_entry(
                             list_no,
                             get_single_id(list_no, i),
