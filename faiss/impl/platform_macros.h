@@ -8,6 +8,7 @@
 #pragma once
 
 // basic int types and size_t
+#include <atomic>
 #include <cstdint>
 #include <cstdio>
 
@@ -146,6 +147,33 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_DEPRECATED(msg)
 #endif // GCC or Clang
 
+// Never inlined, so floating-point results do not depend on the compile
+// flags of the call site (e.g. under LTO).
+#if defined(_MSC_VER)
+#define FAISS_NOINLINE __declspec(noinline)
+#elif defined(__clang__)
+#define FAISS_NOINLINE __attribute__((noinline))
+#elif defined(__GNUC__)
+#define FAISS_NOINLINE __attribute__((noinline, noclone))
+#else
+#define FAISS_NOINLINE
+#endif
+
+namespace faiss {
+namespace detail {
+
+template <typename T>
+inline void atomic_fetch_add_relaxed(T& target, T value) {
+#if defined(__cpp_lib_atomic_ref) && __cpp_lib_atomic_ref >= 201806L
+    std::atomic_ref<T>(target).fetch_add(value, std::memory_order_relaxed);
+#else
+    __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+#endif
+}
+
+} // namespace detail
+} // namespace faiss
+
 // Localized enablement of imprecise floating point operations
 // You need to use all 3 macros to cover all compilers.
 #if defined(_MSC_VER)
@@ -226,3 +254,20 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_MAYBE_UNUSED [[maybe_unused]]
 #define FAISS_FINAL final
 #endif
+
+/*******************************************************
+ * OpenMP dynamic scheduling
+ *******************************************************/
+
+// Use as schedule(FAISS_OMP_DYNAMIC) or schedule(FAISS_OMP_DYNAMIC, chunk).
+// OpenMP 5.0 makes schedule(dynamic) nonmonotonic, and libomp 12 runs
+// nonmonotonic dynamic loops with its static-steal scheduler, which crashes
+// intermittently under load (libomp itself keeps it off by default). MSVC's
+// OpenMP 2.0 has no schedule modifiers.
+// clang-format off
+#ifdef _MSC_VER
+#define FAISS_OMP_DYNAMIC dynamic
+#else
+#define FAISS_OMP_DYNAMIC monotonic : dynamic
+#endif
+// clang-format on

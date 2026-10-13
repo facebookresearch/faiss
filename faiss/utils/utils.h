@@ -48,6 +48,14 @@ size_t get_mem_usage_kb();
 
 uint64_t get_cycles();
 
+/** Enable or disable the collection of global search statistics (enabled by
+ * default). The flag is process-wide. When it is disabled, searches may skip
+ * updates to global stats objects, so their values are unspecified. At the
+ * moment, the flag controls hnsw_stats and rabitq_stats.
+ */
+void set_search_stats_enabled(bool enabled);
+bool get_search_stats_enabled();
+
 /***************************************************************************
  * Misc  matrix and vector manipulation functions
  ***************************************************************************/
@@ -155,6 +163,14 @@ void binary_to_real(size_t d, const uint8_t* x_in, float* x_out);
  * @param x_out  output binary vector (uint8_t table of size d / 8)
  */
 void real_to_binary(size_t d, const float* x_in, uint8_t* x_out);
+
+/** Convert packed IEEE binary16 values to fp32 (exact).
+ *
+ * @param n    number of values
+ * @param x    input fp16 values, size n
+ * @param out  output fp32 values, size n
+ */
+void fp16_to_fp32(size_t n, const uint16_t* x, float* out);
 
 /** A reasonable hashing function */
 uint64_t hash_bytes(const uint8_t* bytes, int64_t n);

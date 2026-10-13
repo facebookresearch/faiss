@@ -28,6 +28,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <atomic>
 #include <set>
 #include <type_traits>
 #include <unordered_set>
@@ -35,7 +36,9 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/simd_impl/fp16_kernels.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -173,6 +176,18 @@ uint64_t get_cycles() {
 #else
     return 0;
 #endif
+}
+
+namespace {
+std::atomic<bool> search_stats_enabled{true};
+} // namespace
+
+void set_search_stats_enabled(bool enabled) {
+    search_stats_enabled.store(enabled, std::memory_order_relaxed);
+}
+
+bool get_search_stats_enabled() {
+    return search_stats_enabled.load(std::memory_order_relaxed);
 }
 
 #ifdef __linux__
@@ -625,6 +640,24 @@ void CombinerRangeKNN<T>::write_result(T* D_res, int64_t* I_res) {
 // explicit template instantiations
 template struct CombinerRangeKNN<float>;
 template struct CombinerRangeKNN<int16_t>;
+
+void fp16_to_fp32(size_t n, const uint16_t* x, float* out) {
+    // below this many values, stay on the calling thread
+    constexpr size_t block = size_t(1) << 16;
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>([&]<SIMDLevel SL>() {
+        if (n <= block) {
+            detail::fp16_to_fp32_kernel<SL>(n, x, out);
+            return;
+        }
+        const int64_t nblock = static_cast<int64_t>((n + block - 1) / block);
+#pragma omp parallel for
+        for (int64_t b = 0; b < nblock; b++) {
+            const size_t j0 = static_cast<size_t>(b) * block;
+            detail::fp16_to_fp32_kernel<SL>(
+                    std::min(block, n - j0), x + j0, out + j0);
+        }
+    });
+}
 
 void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
     for (size_t i = 0; i < n; i++) {

@@ -32,12 +32,17 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <random>
 #include <vector>
 
+#include <faiss/impl/ClusteringHelpers.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/fp16.h>
 #include <faiss/utils/simd_levels.h>
+#include <faiss/utils/utils.h>
 
 using namespace faiss;
 
@@ -60,8 +65,29 @@ std::vector<SIMDLevel> available_levels() {
             SIMDLevel::AVX2,
             SIMDLevel::AVX512,
             SIMDLevel::AVX512_SPR,
+            SIMDLevel::AVX512_VPOPCNT,
             SIMDLevel::ARM_NEON,
             SIMDLevel::ARM_SVE,
+    };
+    std::vector<SIMDLevel> out;
+    for (auto lv : all) {
+        if (SIMDConfig::is_simd_level_available(lv)) {
+            out.push_back(lv);
+        }
+    }
+    return out;
+}
+
+std::vector<SIMDLevel> available_fp16_levels() {
+    static const std::vector<SIMDLevel> all = {
+            SIMDLevel::NONE,
+            SIMDLevel::AVX2,
+            SIMDLevel::AVX512,
+            SIMDLevel::AVX512_SPR,
+            SIMDLevel::AVX512_VPOPCNT,
+            SIMDLevel::ARM_NEON,
+            SIMDLevel::ARM_SVE,
+            SIMDLevel::RISCV_RVV,
     };
     std::vector<SIMDLevel> out;
     for (auto lv : all) {
@@ -141,6 +167,118 @@ void check_index_at_levels(Fn fn, const std::vector<SIMDLevel>& levels) {
 }
 
 } // namespace
+
+TEST(DistancesDispatch, Fp16ConversionTails_AllLevels) {
+    SIMDLevelGuard guard;
+    auto levels = available_fp16_levels();
+    constexpr uint16_t kValues[] = {
+            0x0000,
+            0x8000,
+            0x3c00,
+            0xc000,
+            0x3555,
+            0x0400,
+            0x03ff,
+            0x7bff,
+            0x0001,
+    };
+    std::vector<size_t> sizes;
+    for (size_t n = 1; n <= 31; ++n) {
+        sizes.push_back(n);
+    }
+    sizes.push_back((size_t(1) << 16) + 17);
+
+    for (size_t n : sizes) {
+        std::vector<uint16_t> input(n);
+        std::vector<float> expected(n);
+        for (size_t i = 0; i < n; ++i) {
+            input[i] = kValues[i % (sizeof(kValues) / sizeof(kValues[0]))];
+            expected[i] = decode_fp16(input[i]);
+        }
+        for (auto lv : levels) {
+            SIMDConfig::set_level(lv);
+            std::vector<float> actual(n);
+            fp16_to_fp32(n, input.data(), actual.data());
+            EXPECT_EQ(
+                    0,
+                    std::memcmp(
+                            expected.data(), actual.data(), n * sizeof(float)))
+                    << "diverged at level " << static_cast<int>(lv) << " size "
+                    << n;
+        }
+    }
+}
+
+TEST(DistancesDispatch, Fp16CentroidMaddTails_AllLevels) {
+    SIMDLevelGuard guard;
+    auto levels = available_fp16_levels();
+    constexpr size_t n = 3;
+    constexpr int64_t kUnweightedAssign[n] = {0, 1, 0};
+    constexpr int64_t kWeightedAssign[n] = {0, 0, 0};
+    constexpr float kWeights[n] = {0.1f, 0.3f, 0.7f};
+    constexpr float kValues[] = {0.0f, 0.5f, -1.0f, 2.0f, -0.25f, 4.0f, 0.125f};
+
+    for (size_t d = 1; d <= 31; ++d) {
+        std::vector<uint16_t> input(n * d);
+        for (size_t i = 0; i < input.size(); ++i) {
+            input[i] = encode_fp16(
+                    kValues[i % (sizeof(kValues) / sizeof(kValues[0]))]);
+        }
+
+        auto check_case = [&](size_t k,
+                              const int64_t* assign,
+                              const float* weights,
+                              const char* case_name) {
+            std::vector<float> expected_hassign(k, 0.0f);
+            std::vector<float> expected(k * d, 0.0f);
+            for (size_t i = 0; i < n; ++i) {
+                const size_t ci = static_cast<size_t>(assign[i]);
+                const float weight = weights ? weights[i] : 1.0f;
+                expected_hassign[ci] += weight;
+                for (size_t j = 0; j < d; ++j) {
+                    expected[ci * d + j] +=
+                            decode_fp16(input[i * d + j]) * weight;
+                }
+            }
+            for (size_t ci = 0; ci < k; ++ci) {
+                for (size_t j = 0; j < d; ++j) {
+                    expected[ci * d + j] /= expected_hassign[ci];
+                }
+            }
+
+            for (auto lv : levels) {
+                SIMDConfig::set_level(lv);
+                std::vector<float> hassign(k, 0.0f);
+                std::vector<float> actual(k * d);
+                detail::compute_centroids_fp16(
+                        d,
+                        k,
+                        n,
+                        0,
+                        input.data(),
+                        assign,
+                        weights,
+                        hassign.data(),
+                        actual.data());
+                for (size_t ci = 0; ci < k; ++ci) {
+                    EXPECT_NEAR(expected_hassign[ci], hassign[ci], tol_for_d(d))
+                            << case_name << " histogram diverged at level "
+                            << static_cast<int>(lv) << " dimension " << d
+                            << " centroid " << ci;
+                }
+                for (size_t i = 0; i < actual.size(); ++i) {
+                    EXPECT_NEAR(expected[i], actual[i], tol_for_d(d))
+                            << case_name << " centroid diverged at level "
+                            << static_cast<int>(lv) << " dimension " << d
+                            << " index " << i;
+                }
+            }
+        };
+
+        check_case(2, kUnweightedAssign, nullptr, "unweighted");
+        check_case(1, kWeightedAssign, kWeights, "weighted");
+    }
+}
 
 TEST(DistancesDispatch, FvecL1_AllLevels) {
     SIMDLevelGuard guard;
@@ -297,5 +435,70 @@ TEST(DistancesDispatch, FvecL2sqrNyNearest_AllLevels) {
                             tmp.data(), x.data(), y.data(), d, ny);
                 },
                 levels);
+    }
+}
+
+// The low-dimensional nearest path (d in {2,4,8}, one SIMD lane per
+// centroid) must agree with the generic implementation for any ny, including
+// values around common SIMD widths and non-multiple tails.
+TEST(DistancesDispatch, FvecL2sqrNyNearest_LowDim) {
+    SIMDLevelGuard guard;
+    auto levels = available_levels();
+    SKIP_IF_SINGLE_LEVEL(levels);
+    constexpr size_t kLowDims[] = {2, 4, 8};
+    constexpr size_t kNy[] = {
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            15,
+            16,
+            17,
+            23,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            255,
+            256,
+            257};
+    for (size_t d : kLowDims) {
+        for (size_t ny : kNy) {
+            auto x = rand_vec(d, 40);
+            auto y = rand_vec(d * ny, 41);
+            check_index_at_levels(
+                    [&]() {
+                        std::vector<float> tmp(ny);
+                        return fvec_L2sqr_ny_nearest(
+                                tmp.data(), x.data(), y.data(), d, ny);
+                    },
+                    levels);
+        }
+    }
+}
+
+TEST(DistancesDispatch, FvecL2sqrNyNearest_LowDimKeepsFirstTie) {
+    SIMDLevelGuard guard;
+    auto levels = available_levels();
+    SKIP_IF_SINGLE_LEVEL(levels);
+    constexpr size_t kLowDims[] = {2, 4, 8};
+    constexpr size_t ny = 23;
+    constexpr size_t expected = 3;
+    for (size_t d : kLowDims) {
+        std::vector<float> x(d, 0.0f);
+        std::vector<float> y(d * ny, 1.0f);
+        std::fill_n(y.data() + expected * d, d, 0.0f);
+        std::fill_n(y.data() + 17 * d, d, 0.0f);
+        auto nearest = [&]() {
+            std::vector<float> tmp(ny);
+            return fvec_L2sqr_ny_nearest(tmp.data(), x.data(), y.data(), d, ny);
+        };
+        SIMDConfig::set_level(SIMDLevel::NONE);
+        EXPECT_EQ(expected, nearest());
+        check_index_at_levels(nearest, levels);
     }
 }

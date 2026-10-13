@@ -3,6 +3,74 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.15.1] - 2026-09-15
+
+Added
+- 3b3711c112fbf7dfb9c64b6fcf90ffc3ca412548 Add explicit IVFPQ scanner distance modes (#5632)
+- 4fdbc9dc18adbfef3cd410a2446aa4c757320a8a Support ZeroCopyIOReader for IndexRaBitQ deserialization (#5629)
+- b5a14632a6f2bfdc824c86d683b9d6e9205c2604 Run the eight SIMD kernel tests that no build executed (#5620)
+- e6bd1d252caa5b9315a04390269d382845984ae2 Add AVX512 VPOPCNT dynamic dispatch level (#5531)
+- 7f4cedda9c384de652c7bd5690db0f808d668216 Add staged RaBitQ storage to HNSW (#5526)
+- cfbf4ec5ff68d0bca4701d0b24b8a0736e110932 SVS: allow option to disable vector storing (#5525)
+- cda4f6e7133c629e502c2ea9bc51e0ef51847ab1 Expose `IndexBinaryIVF.set_direct_map_type` via the C API (#5451)
+- 256980cb6ea6610e4b0edf497a038086df8bbfce Add SVE low-dimensional nearest fast path and spherical SuperKMeans support (#5530)
+- 3a716ead1a3c4562fe6e96d982d26789c58e19ed Add Windows ARM64 support to CI (#5544)
+- 7059eaf7da7eddda62e71367e684d4bdedd7f94f Add AVX512 bitplane kernel for multi-bit RaBitQ inner product (#5522)
+- a424dcb809fd725c44dd976d9063febd4837d16a faiss HNSW: add opt-in deterministic lock-free graph build (faiss::hnsw_deterministic_build) (#5486)
+- da3191e754b49ca67b6503a9262e96ce5a3d8ed8 IDSelectorWithContext: extend context hook to IVFPQ/PQR, multibit RaBitQ, and Panorama scanners (#5491)
+- edddbc998e858f16330f9b226dfd72f73d4d1d46 IDSelectorWithContext: scan-context hook for locality-aware selectors (#5490)
+
+Changed
+- 3bb48643ab8ea9e50162b354d2463270acd6ed9c Pin faiss-gpu-cuvs RAPIDS deps to the 26.06 build series (#5643)
+- 6bbb068ad8dab612b84304400846da1b14539085 Measure 20-byte Hamming codes eight at a time (#5587)
+- 3c7042f17a467c38d99f490ef39e4dfa615dc510 Let the binary Hamming paths reach the VPOPCNT kernels
+- 9f993087b07e83f026248addb01dd99e99b15a3e Name the SIMD level masks after what they hold (#5600)
+- e2cf9e1ebf24c14b888fa69eee96713aa6d64b1a Accept ragged code sizes in faiss::hammings(), and fix the vectorization axis for wide codes (#5520)
+- 545550f6a27031c2269881d97237fd6a5bef15df Use unittest assertions and f-strings in test_index_composite (#5571)
+- af9eeffcf70d7795107c2b0511bdba507ac45339 Reserve cs vector capacity in hammings_knn_mc_impl to avoid reallocations (#5548)
+- 317a207bcacfcfa695d98289c3f4ea562b782837 ARM SVE optimization for L2 distance kernels adapted to new simd_impl structure (#5098)
+- 2027d3b33144dbf19674b540ec0e31b2f842b1cc Make cuVS dispatch opt-in rather than build-implied (#5529)
+- a39e2606887bbacc6c8f54e783c4b42da00cf4b3 Fold multi-GPU CAGRA build into train(), delete trainMultiGpu (#5521)
+- 1f93154314afbef210f0ebebeab840da22f9ec7d Revert D114685755: Fold multi-GPU CAGRA build into train(), delete trainMultiGpu
+- 6644dcfa5576221b1a4417fd766a8b2af71d869e Fold multi-GPU CAGRA build into train(), delete trainMultiGpu (#5500)
+- 80a16564f86530dbf0bfaf96c2b71feffeb5093f Enable Faiss dynamic dispatch for OVIS and VeST fbpkgs (#5515)
+- 2688c34f942c8462d97c8632c720a53653456270 Parallelize the k-means++ D^2 seeding update (#5457)
+- 76c67b7b736ca80c2b3ea29528434d6583adc88b Update default Panorama batch size to 1024 (#5441)
+- 3b50babc5914570576b09da043f64dfd7d62a075 Optimize RVV batch-4 distance kernels (#5469)
+
+Fixed
+- 7c3b55c01b8418dc044881625a260fceae9c712b Make Panorama bounds checks overflow-safe (#5616)
+- fb2d57a3121c073828d2ed7d04ccf09d8bea771c Fix leak and unbounded lists[] in OnDisk invlist deserialization (#5560)
+- fc13c81fb8b22f76e4c2c7bd2f027bd049b9a207 Stop aarch64 falling back to SIMDLevel::NONE in faiss dispatch (#5572)
+- 00928e3f7628b8288c17cfece5ee9600a8287f56 Fix ROCm CI: build in a dedicated conda env instead of the runner's broken base (#5545)
+- 1e5780fbbfbe191f3ed3517f93ace8301239e9b2 Fix OOB read in `Panorama::reconstruct` via `IndexPreTransform` (T287094917) (#5562)
+- 2ed4c106e9fb9686e7727e5daf8ad6ad1e164109 Fix: Windows SIMD detection (#5497)
+- b4c66ba6031d1f659163e43430f8ce745b0dbe79 Fix reverse_index_factory/get_code_size round-trip for HNSW, IMI and IVFPQR (#5564)
+- c0084f5cd2534236acda05cf7b8e0fc8062ddec3 Clamp EDEN unbiased L2 distances to be non-negative (#5569)
+- 6457e941f5f4808303bb480679cb78df0df51934 Contain DirectoryArchiver entries within the extraction root (#5561)
+- ac60182fc009476c91a2788e639191d1f624157f RaBitQ: Fix zero residual sign convention (#5553)
+- 1a0cfa64e015923d5009d8c7d917aa591e9eac9a Apply the deserialization byte limit to SVS IVF (#5568)
+- 718002f7cf269f3f3752dde04a4cc3f8eabb0050 Fix distance conversion in IndexBinaryFromFloat for non-L2 metrics (#5549)
+- 02ea14372c9983f3eaa15698512180dc62ea234d Fix range_search_max_results to respect all similarity metrics (#5533)
+- bd7087453e6d2262b6e6c76ab0cfa1e2dfeddebf fix(faiss): use is_similarity_metric for IndexShardsIVF merge (#5541)
+- 561e6ecdf3337e32542b82c735bfaf83d9e3afaa Merge shard results by metric type rather than assuming similarity (#5509)
+- 613e0acac507c7593ff14dee2c6204a83a539acb Fix IndexIDMap range search parameters (#5536)
+- 8b01f308f09cce7f259a1b8978f82c90fcd54c48 Validate IndexScalarQuantizer codes buffer size on deserialization (#5540)
+- 2832ac3f671f83617087789691c79670ee57c728 Fix empty-index BLAS search results (#5528)
+- e135a1a667a1cfd326faece69d33cf9708a97a7c Fix OSX arm64 nightly: bump libopenblas from 0.3.33 to 0.3.34 (#5538)
+- 920a631851cc7fefe0645c9af81071bb7b2c1237 Don't raise HNSW entry_point to a point that isn't linked yet (#5524)
+- e2f9ccaccc38b4cc3b65c1c70cb076bb639ef8ca Fix SQtqmse codebook scale: fold 1/sqrt(d) into Lloyd-Max table (#5517)
+- 151452ec94b0df219820b120a365c5396f63bef0 Fix SIMD level detection in Faiss (#5507)
+- 02dbb4e42f49aa2ce57cd78977b0e47a11f7cb91 Fix data race in NNDescent::update() (#5413)
+- a9ecee221dd3887b3af886b68c7598d8553a5acd Reject AdditiveQuantizer with zero-bit code size on deserialization (#5506)
+- 4de3bbb6017910ecb3db1d3a9086318c517f6e39 Faiss OSS nightly autofix (#5505)
+- b5ca016ded0921401b532bfd256c2f636406df38 Fix IndexBinaryIVF reconstruct_n and search_and_reconstruct byte stride (#5463)
+- b3942aba5aa318f39e04d36baa00cb118098dc74 Avoid signed int overflow in VStackInvertedLists binary search (#5482)
+
+Deprecated
+- a74867cf56a73234ad5d957e40c35c9616d4d273 faiss HNSW: delete the flag and the lock-based graph build (#5611)
+- 5702cafcb75359780cefbc5d50b512ac2e5cfde7 Remove dead TurboQuant projection state (#5618)
+
 ## [1.15.0] - 2026-07-31
 
 Added
@@ -1412,7 +1480,8 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.15.0...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.15.1...HEAD
+[1.15.1]: https://github.com/facebookresearch/faiss/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/facebookresearch/faiss/compare/v1.14.3...v1.15.0
 [1.14.3]: https://github.com/facebookresearch/faiss/compare/v1.14.2...v1.14.3
 [1.14.2]: https://github.com/facebookresearch/faiss/compare/v1.14.1...v1.14.2

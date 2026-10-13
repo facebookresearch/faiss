@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,8 +28,8 @@
  *   #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
  *   #include <faiss/impl/fast_scan/dispatching.h>
  *
- * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path
- * and QBS 256-bit path) and accumulate_loops_512.h (QBS 512-bit path,
+ * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path and
+ * SIMD-level-selected QBS path) and accumulate_loops_512.h (QBS 512-bit path,
  * AVX512 TU only).
  */
 
@@ -115,18 +123,14 @@ struct ScannerMixIn : FastScanCodeScanner {
         constexpr bool use_avx512_qbs = false;
 #endif
         if constexpr (use_avx512_qbs) {
-            // AMD Zen 4 / Zen 4c ("Bergamo", family 0x19) split 512-bit
-            // ops over a 256-bit datapath, so the 512-bit QBS kernel yields no
-            // throughput gain but pays extra per-block LUT-assembly and
-            // cross-lane reduction overhead (measured ~14% search regression
-            // for PQ8x4fs / PQ16x4fs). Route those CPUs to the 256-bit (AVX2)
-            // QBS kernel instead -- same output, no downside on Zen 4. This is
-            // a process-constant runtime branch, hoisted out of the inner
-            // accumulate loop. Intel AVX-512 keeps the 512-bit kernel.
+            // Zen 4 runs 512-bit ops on a 256-bit datapath, so the 512-bit QBS
+            // kernel is slower there; use the AVX2 kernel.
             if (SIMDConfig::avx512_split) {
+                // THE_LEVEL_TO_DISPATCH scalers give these AVX2-loop
+                // instantiations symbol names that the AVX2 TU does not emit.
                 if (pq2x4_scale) {
-                    NormTableScaler<SIMDLevel::AVX2> scaler(pq2x4_scale);
-                    pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                    NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                             qbs,
                             nb,
                             nsq,
@@ -136,8 +140,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                             scaler,
                             block_stride);
                 } else {
-                    DummyScaler<SIMDLevel::AVX2> dummy;
-                    pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
+                    DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
                             qbs,
                             nb,
                             nsq,
@@ -174,7 +178,8 @@ struct ScannerMixIn : FastScanCodeScanner {
         } else {
             if (pq2x4_scale) {
                 NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
-                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                pq4_accumulate_loop_qbs_fixed_scaler_simd<
+                        THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
@@ -185,7 +190,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                         block_stride);
             } else {
                 DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
-                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                pq4_accumulate_loop_qbs_fixed_scaler_simd<
+                        THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
