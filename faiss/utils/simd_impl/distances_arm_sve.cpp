@@ -568,6 +568,48 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_SVE>(
     }
 }
 
+namespace {
+
+/// Low-dimensional L2sqr nearest (D in {2,4,8}). The data is row-major
+/// (centroid c is y[c*D .. c*D+D]). Each SVE lane tracks one centroid across
+/// batches, keeping the lane-local minimum and index in registers. The scratch
+/// buffer is not written, matching the AVX2/AVX512 D2/D4/D8 implementations.
+template <int D>
+size_t fvec_L2sqr_ny_nearest_lowdim(
+        float* /*distances_tmp_buffer*/,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    const size_t lanes = svcntw();
+    svfloat32_t global_mins = svdup_n_f32(HUGE_VALF);
+    svuint32_t global_ids = svdup_n_u32(0);
+    svuint32_t current_ids = svindex_u32(0, 1);
+
+    for (size_t c = 0; c < ny; c += lanes) {
+        const svbool_t pg = svwhilelt_b32_u64(c, ny);
+        svfloat32_t distances = svdup_n_f32(0.0f);
+        for (uint32_t j = 0; j < D; ++j) {
+            const svuint32_t offsets = svindex_u32(j, D);
+            const svfloat32_t yv =
+                    svld1_gather_u32index_f32(pg, y + c * D, offsets);
+            const svfloat32_t diff = svsub_n_f32_x(pg, yv, x[j]);
+            distances = svmla_f32_m(pg, distances, diff, diff);
+        }
+
+        const svbool_t closer = svcmplt_f32(pg, distances, global_mins);
+        global_mins = svsel_f32(closer, distances, global_mins);
+        global_ids = svsel_u32(closer, current_ids, global_ids);
+        current_ids =
+                svadd_n_u32_x(pg, current_ids, static_cast<uint32_t>(lanes));
+    }
+
+    const svbool_t all = svptrue_b32();
+    const float global_min = svminv_f32(all, global_mins);
+    return svminv_u32(svcmpeq_n_f32(all, global_mins, global_min), global_ids);
+}
+
+} // namespace
+
 template <>
 size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
         float* distances_tmp_buffer,
@@ -575,6 +617,18 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
         const float* y,
         size_t d,
         size_t ny) {
+    switch (d) {
+        case 2:
+            return fvec_L2sqr_ny_nearest_lowdim<2>(
+                    distances_tmp_buffer, x, y, ny);
+        case 4:
+            return fvec_L2sqr_ny_nearest_lowdim<4>(
+                    distances_tmp_buffer, x, y, ny);
+        case 8:
+            return fvec_L2sqr_ny_nearest_lowdim<8>(
+                    distances_tmp_buffer, x, y, ny);
+    }
+
     const size_t lanes = static_cast<size_t>(svcntw());
 
     size_t nearest_idx = 0;
@@ -704,9 +758,11 @@ size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::ARM_SVE>(
     return current_min_idx;
 }
 
-template <>
-void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
-        const float* x,
+namespace {
+
+template <class QueryTiles>
+void exhaustive_L2sqr_blas_cmax_sve(
+        QueryTiles& queries,
         const float* y,
         size_t d,
         size_t nx,
@@ -725,7 +781,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
 
-    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+    queries.prepare_norms(nx, x_norms.get());
 
     const size_t lanes = svcntw();
 
@@ -740,6 +796,8 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
         size_t i1 = i0 + bs_x;
         if (i1 > nx)
             i1 = nx;
+
+        const float* xt = queries.tile(i0, i1, x_norms.get());
 
         res.begin_multiple(i0, i1);
 
@@ -759,7 +817,7 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
                        &one,
                        y + j0 * d,
                        &di,
-                       x + i0 * d,
+                       xt,
                        &di,
                        &zero,
                        ip_block.get(),
@@ -882,6 +940,34 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
         res.end_multiple();
         InterruptCallback::check();
     }
+}
+
+} // namespace
+
+template <>
+void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp32QueryTiles queries{x, d};
+    exhaustive_L2sqr_blas_cmax_sve(queries, y, d, nx, ny, res, y_norms);
+}
+
+template <>
+void exhaustive_L2sqr_blas_cmax_fp16<SIMDLevel::ARM_SVE>(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    Fp16QueryTiles queries(x, d, nx);
+    exhaustive_L2sqr_blas_cmax_sve(queries, y, d, nx, ny, res, y_norms);
 }
 
 } // namespace faiss

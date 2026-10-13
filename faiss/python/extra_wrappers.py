@@ -656,8 +656,10 @@ class SuperKmeans(Kmeans):
     `iteration_stats`, and `assign()` surface; additionally exposes
     `gemm_pruning_rates`.
 
-    kwargs are forwarded to `SuperKMeansParameters`. Fields not present on it
-    (e.g. `spherical`, `int_centroids`, `nredo`, `frozen_centroids`,
+    kwargs are forwarded to `SuperKMeansParameters`. Fields inherited from
+    `ClusteringParameters` such as `spherical` are supported (unit-normalized
+    centroids enable inner-product clustering). Fields not present on it
+    (e.g. `int_centroids`, `nredo`, `frozen_centroids`,
     `init_method`, `update_index`, `early_stop_threshold`,
     `progressive_dim_steps`, `gpu`) raise `AttributeError`.
     """

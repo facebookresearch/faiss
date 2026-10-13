@@ -32,6 +32,11 @@ FAISS_API extern size_t precomputed_table_max_bytes;
  * vector is encoded as a product quantizer code.
  */
 struct IndexIVFPQ : IndexIVF {
+    enum class ScannerMode {
+        Precomputed,
+        OnTheFly,
+    };
+
     ProductQuantizer pq; ///< produces the codes
 
     bool do_polysemous_training; ///< reorder PQ centroids after training?
@@ -143,6 +148,12 @@ struct IndexIVFPQ : IndexIVF {
             bool store_pairs,
             const IDSelector* sel,
             const IVFSearchParameters* params) const override;
+
+    /** Returns a scanner with a fixed PQ distance-computation strategy. */
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs,
+            const IDSelector* sel,
+            ScannerMode mode) const;
 
     /// build precomputed table
     void precompute_table();

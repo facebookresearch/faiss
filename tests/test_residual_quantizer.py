@@ -849,7 +849,8 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
                 self.assertLess((Iref != I2).sum(), Iref.size * 0.05)
             else:
                 inter_2 = faiss.eval_intersection(I2, gt)
-                self.assertGreaterEqual(inter_ref, inter_2)
+                # many near-ties, quantized norms can marginally beat the reference
+                self.assertGreaterEqual(inter_2, inter_ref * 0.95)
 
 
 ###########################################################

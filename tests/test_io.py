@@ -15,6 +15,7 @@ from multiprocessing.pool import ThreadPool
 import faiss
 import numpy as np
 from common_faiss_tests import get_dataset_2
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
 d = 32
@@ -502,8 +503,9 @@ class Test_IO_IndexIVFSpectralHash(unittest.TestCase):
 class TestIVFPQRead(unittest.TestCase):
     def test_reader(self):
         d, n = 32, 1000
-        xq = np.random.uniform(size=(n, d)).astype("float32")
-        xb = np.random.uniform(size=(n, d)).astype("float32")
+        rs = np.random.RandomState(123)
+        xq = rs.uniform(size=(n, d)).astype("float32")
+        xb = rs.uniform(size=(n, d)).astype("float32")
 
         index = faiss.index_factory(32, "IVF32,PQ16np", faiss.METRIC_L2)
         index.train(xb)
@@ -521,8 +523,9 @@ class TestIVFPQRead(unittest.TestCase):
 
             Da, Ia = index_a.search(xq, 10)
             Db, Ib = index_b.search(xq, 10)
-            np.testing.assert_array_equal(Ia, Ib)
-            np.testing.assert_almost_equal(Da, Db, decimal=5)
+            # The precomputed table changes the order of float operations, so
+            # near-tied neighbors can swap.
+            check_ref_knn_with_draws(Da, Ia, Db, Ib)
 
             codes_a = index_a.sa_encode(xq)
             codes_b = index_b.sa_encode(xq)
@@ -595,6 +598,38 @@ class TestIOFlatMMap(unittest.TestCase):
             faiss.write_index(index, fname)
             index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
             index2.nprobe = 8
+            Dnew, Inew = index2.search(xq, 10)
+            np.testing.assert_array_equal(Iref, Inew)
+            np.testing.assert_array_equal(Dref, Dnew)
+        finally:
+            del index2
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
+
+    @unittest.skipIf(
+        platform.system() not in ["Windows", "Linux", "Darwin"],
+        "supported OSes only",
+    )
+    def test_mmap_reset(self):
+        xt, xb, xq = get_dataset_2(32, 0, 100, 50)
+        index = faiss.IndexFlatL2(32)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        index2 = None
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertFalse(index2.codes.is_owned)
+            index2.reset()
+            self.assertEqual(index2.ntotal, 0)
+            index2.add(xb)
             Dnew, Inew = index2.search(xq, 10)
             np.testing.assert_array_equal(Iref, Inew)
             np.testing.assert_array_equal(Dref, Dnew)
@@ -775,8 +810,8 @@ class Test_IO_HNSW(unittest.TestCase):
         index = faiss.IndexHNSWFlat(d, 16)
         index.train(self.xt)
         index.add(self.xb)
-        # Note: RaBitQ lacks symmetric_distance, so it can be used for
-        # `search()`, but not `add()`.
+        # Build the graph with Flat storage, then verify that swapping in an
+        # equivalent RaBitQ storage preserves useful search results.
         I_flat = index.storage.assign(self.xq, 10)
         I_hnsw_flat = index.assign(self.xq, 10)
         index.storage = faiss.IndexRaBitQ(d)

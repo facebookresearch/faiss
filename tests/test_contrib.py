@@ -1021,6 +1021,56 @@ class TestFactoryTools(unittest.TestCase):
         code_size = factory_tools.get_code_size(d, factory_str)
         self.assertEqual(code_size, d * 4 + 16 * 2 * 4)
 
+    def test_hnsw_storage_reverse_index_factory(self):
+        d = 128
+        # flat storage stays implicit, everything else must be spelled out
+        cases = {
+            "HNSW32,Flat": "HNSW32",
+            "HNSW32,SQ8": "HNSW32,SQ8",
+            "HNSW32,SQfp16": "HNSW32,SQfp16",
+            "HNSW32,PQ16x8": "HNSW32,PQ16x8",
+        }
+        for key, expected in cases.items():
+            index = faiss.index_factory(d, key)
+            factory_str = factory_tools.reverse_index_factory(index)
+            self.assertEqual(factory_str, expected)
+            # the string must rebuild the same index class
+            rebuilt = faiss.index_factory(d, factory_str)
+            self.assertEqual(type(rebuilt), type(index))
+
+    def test_get_code_size_hnsw_non_flat_storage(self):
+        d = 128
+        graph = 32 * 2 * 4
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32,SQ8"), d + graph
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32,SQfp16"), d * 2 + graph
+        )
+        self.assertEqual(
+            factory_tools.get_code_size(d, "HNSW32,PQ16x8"), 16 + graph
+        )
+
+    def test_get_code_size_imi(self):
+        # the coarse quantizer adds no per-vector bytes
+        d = 64
+        self.assertEqual(factory_tools.get_code_size(d, "IMI2x10,PQ16"), 16)
+        self.assertEqual(factory_tools.get_code_size(d, "IMI2x5,Flat"), d * 4)
+        # round-trip: get_code_size must parse what reverse emits
+        index = faiss.index_factory(d, "IMI2x5,PQ8")
+        factory_str = factory_tools.reverse_index_factory(index)
+        self.assertEqual(factory_str, "IMI2x5,PQ8x8")
+        self.assertEqual(factory_tools.get_code_size(d, factory_str), 8)
+
+    def test_ivfpqr_reverse_index_factory(self):
+        d = 128
+        index = faiss.index_factory(d, "IVF64,PQ8+16")
+        factory_str = factory_tools.reverse_index_factory(index)
+        self.assertEqual(factory_str, "IVF64,PQ8+16")
+        rebuilt = faiss.index_factory(d, factory_str)
+        self.assertEqual(type(rebuilt), type(index))
+        self.assertEqual(factory_tools.get_code_size(d, factory_str), 8 + 16)
+
     def test_rabitq_reverse_index_factory(self):
         d = 64
         quantizer = faiss.IndexFlatL2(d)

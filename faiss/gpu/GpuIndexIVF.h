@@ -32,6 +32,12 @@ struct GpuIndexIVFConfig : public GpuIndexConfig {
     /// throw an exception for indices not implemented on GPU. When set to
     /// true, it will fallback to a CPU implementation.
     bool allowCpuCoarseQuantizer = false;
+
+    /// Break a distance tie on the smaller id, so a search repeats. Honoured
+    /// by GpuIndexIVFFlat and GpuIndexIVFScalarQuantizer with the interleaved
+    /// layout for k up to 1024, and by the cuVS GpuIndexIVFScalarQuantizer
+    /// and GpuIndexIVFPQ for k and nprobe up to 256.
+    bool deterministic_tie_break = false;
 };
 
 /// Base class of all GPU IVF index types. This (for now) deliberately does not

@@ -733,7 +733,9 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {
+        FAISS_THROW_IF_NOT(d % 16 == 0);
+    }
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
@@ -796,7 +798,9 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX2>
     std::vector<uint8_t> tmp;
 
     DistanceComputerByteSigned(int d, const std::vector<float>&)
-            : d(d), tmp(d) {}
+            : d(d), tmp(d) {
+        FAISS_THROW_IF_NOT(d % 16 == 0);
+    }
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {

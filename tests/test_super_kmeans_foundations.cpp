@@ -18,6 +18,7 @@
 #include <faiss/impl/AdSampling.h>
 #include <faiss/impl/PdxLayout.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/fp16.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/simd_impl/super_kmeans_dispatch.h>
 #include <faiss/utils/simd_impl/super_kmeans_kernels.h>
@@ -494,4 +495,165 @@ TEST(SuperKMeansAssignIteration, MultipleTilesMatchBruteForce) {
         }
     }
     EXPECT_GE(matches, n - 10); // <= 5% ADSampling false-prune tolerance
+}
+
+namespace {
+
+std::vector<uint16_t> encode_fp16_values(const std::vector<float>& values) {
+    std::vector<uint16_t> encoded(values.size());
+    for (size_t i = 0; i < values.size(); ++i) {
+        encoded[i] = faiss::encode_fp16(values[i]);
+    }
+    return encoded;
+}
+
+std::vector<float> decode_fp16_values(const std::vector<uint16_t>& values) {
+    std::vector<float> decoded(values.size());
+    for (size_t i = 0; i < values.size(); ++i) {
+        decoded[i] = faiss::decode_fp16(values[i]);
+    }
+    return decoded;
+}
+
+std::vector<float> make_super_kmeans_training_data(int n, int d) {
+    std::vector<float> x(static_cast<size_t>(n) * d);
+    for (int i = 0; i < n; ++i) {
+        const float center = static_cast<float>(i % 4) * 8.0f;
+        for (int j = 0; j < d; ++j) {
+            x[static_cast<size_t>(i) * d + j] = center +
+                    static_cast<float>((i * 17 + j * 13) % 31) / 100.0f;
+        }
+    }
+    return x;
+}
+
+void expect_same_super_kmeans_result(
+        const faiss::SuperKMeans& actual,
+        const faiss::SuperKMeans& expected) {
+    EXPECT_EQ(actual.centroids, expected.centroids);
+    ASSERT_EQ(actual.iteration_stats.size(), expected.iteration_stats.size());
+    for (size_t i = 0; i < actual.iteration_stats.size(); ++i) {
+        EXPECT_EQ(
+                actual.iteration_stats[i].obj, expected.iteration_stats[i].obj);
+        EXPECT_EQ(
+                actual.iteration_stats[i].nsplit,
+                expected.iteration_stats[i].nsplit);
+    }
+    EXPECT_EQ(actual.gemm_pruning_rates, expected.gemm_pruning_rates);
+}
+
+faiss::SuperKMeansParameters small_super_kmeans_params() {
+    faiss::SuperKMeansParameters cp;
+    cp.seed = 1234;
+    cp.niter = 3;
+    cp.min_points_per_centroid = 1;
+    return cp;
+}
+
+} // namespace
+
+TEST(SuperKMeans, TrainExFloat16SingleBlockMatchesRoundedFloat32) {
+    constexpr int n = 96, d = 32, k = 4;
+    auto encoded = encode_fp16_values(make_super_kmeans_training_data(n, d));
+    auto rounded = decode_fp16_values(encoded);
+    auto cp = small_super_kmeans_params();
+    cp.decode_block_size = n;
+
+    faiss::SuperKMeans expected(d, k, cp);
+    expected.train(n, rounded.data());
+
+    faiss::SuperKMeans float32_ex(d, k, cp);
+    float32_ex.train_ex(n, rounded.data(), faiss::NumericType::Float32);
+    expect_same_super_kmeans_result(float32_ex, expected);
+
+    faiss::SuperKMeans actual(d, k, cp);
+    actual.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+    expect_same_super_kmeans_result(actual, expected);
+}
+
+TEST(SuperKMeans, TrainExFloat16SubsamplingMatchesRoundedFloat32) {
+    constexpr int n = 129, d = 32, k = 4;
+    auto encoded = encode_fp16_values(make_super_kmeans_training_data(n, d));
+    auto rounded = decode_fp16_values(encoded);
+    auto cp = small_super_kmeans_params();
+    cp.max_points_per_centroid = 16;
+    cp.decode_block_size = n;
+
+    faiss::SuperKMeans expected(d, k, cp);
+    expected.train(n, rounded.data());
+    faiss::SuperKMeans actual(d, k, cp);
+    actual.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+
+    expect_same_super_kmeans_result(actual, expected);
+}
+
+TEST(SuperKMeans, TrainExFloat16MultiBlockMatchesRoundedFloat32) {
+    constexpr int n = 129, d = 32, k = 4;
+    auto encoded = encode_fp16_values(make_super_kmeans_training_data(n, d));
+    auto rounded = decode_fp16_values(encoded);
+    auto cp = small_super_kmeans_params();
+    cp.decode_block_size = 64;
+
+    faiss::SuperKMeans expected(d, k, cp);
+    expected.train(n, rounded.data());
+    faiss::SuperKMeans actual(d, k, cp);
+    actual.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+
+    ASSERT_EQ(actual.centroids.size(), expected.centroids.size());
+    for (size_t i = 0; i < actual.centroids.size(); ++i) {
+        EXPECT_NEAR(actual.centroids[i], expected.centroids[i], 1e-4f);
+    }
+    ASSERT_EQ(actual.iteration_stats.size(), expected.iteration_stats.size());
+    for (size_t i = 0; i < actual.iteration_stats.size(); ++i) {
+        EXPECT_NEAR(
+                actual.iteration_stats[i].obj,
+                expected.iteration_stats[i].obj,
+                1e-3f);
+        EXPECT_EQ(
+                actual.iteration_stats[i].nsplit,
+                expected.iteration_stats[i].nsplit);
+    }
+
+    cp.spherical = true;
+    faiss::SuperKMeans spherical_expected(d, k, cp);
+    spherical_expected.train(n, rounded.data());
+    faiss::SuperKMeans spherical_actual(d, k, cp);
+    spherical_actual.train_ex(n, encoded.data(), faiss::NumericType::Float16);
+    expect_same_super_kmeans_result(spherical_actual, spherical_expected);
+    for (int i = 0; i < k; ++i) {
+        EXPECT_NEAR(
+                faiss::fvec_norm_L2sqr(
+                        spherical_actual.centroids.data() + i * d, d),
+                1.0f,
+                1e-5f);
+    }
+}
+
+TEST(SuperKMeans, TrainExFloat16ValidatesInput) {
+    constexpr int n = 8, d = 32, k = 2;
+    auto encoded = encode_fp16_values(make_super_kmeans_training_data(n, d));
+    auto cp = small_super_kmeans_params();
+    cp.niter = 1;
+
+    for (uint16_t bad :
+         {uint16_t(0x7e00), uint16_t(0x7c00), uint16_t(0xfc00)}) {
+        auto invalid = encoded;
+        invalid.back() = bad;
+        faiss::SuperKMeans clustering(d, k, cp);
+        EXPECT_THROW(
+                clustering.train_ex(
+                        n, invalid.data(), faiss::NumericType::Float16),
+                faiss::FaissException);
+    }
+
+    cp.decode_block_size = 0;
+    faiss::SuperKMeans zero_block(d, k, cp);
+    EXPECT_THROW(
+            zero_block.train_ex(n, encoded.data(), faiss::NumericType::Float16),
+            faiss::FaissException);
+
+    faiss::SuperKMeans unsupported(d, k, small_super_kmeans_params());
+    EXPECT_THROW(
+            unsupported.train_ex(n, encoded.data(), faiss::NumericType::UInt8),
+            faiss::FaissException);
 }
