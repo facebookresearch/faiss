@@ -1,0 +1,527 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <faiss/impl/PiPNN.h>
+
+#include <omp.h>
+
+#include <algorithm>
+#include <atomic>
+#include <cfloat>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <exception>
+#include <limits>
+#include <memory>
+#include <mutex>
+#include <numeric>
+#include <utility>
+#include <vector>
+
+#include <faiss/Index.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissException.h>
+#include <faiss/impl/pipnn/HashPrune.h>
+#include <faiss/impl/pipnn/Partition.h>
+#include <faiss/impl/pipnn/kernels.h>
+#include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/ordered_key_value.h>
+#include <faiss/utils/utils.h>
+
+namespace faiss {
+
+namespace pipnn {
+
+namespace {
+
+constexpr size_t kMedoidBatch = 1024;
+// distances stay finite: at most 4x this in GEMM form
+constexpr float kMaxSquaredNorm = FLT_MAX / 8;
+constexpr size_t kNumLocks = size_t(1) << 16;
+
+/// Reservoirs are allocated, and released after their final prune, in chunks
+/// of this many points.
+constexpr size_t kReservoirChunk = size_t(1) << 20;
+
+/// Reservoirs of points [begin, begin + np) in one buffer: np * capacity
+/// slots, then np counts, then np cached-farthest indices.
+struct ReservoirChunk {
+    std::unique_ptr<uint8_t[]> buf;
+    size_t begin = 0;
+    size_t np = 0;
+};
+
+/// Reservoirs of one build and the graph its final prune writes.
+struct BuildState {
+    size_t capacity;
+    size_t chunk_size;
+    std::vector<ReservoirChunk> chunks;
+    // uninitialized; rows written by the final prune
+    std::unique_ptr<int32_t[]> graph;
+
+    BuildState(size_t n, const PiPNN& p, size_t chunk)
+            : capacity(size_t(p.reservoir_size)), chunk_size(chunk) {
+        const size_t per_point = capacity * sizeof(Slot) + 2;
+        for (size_t begin = 0; begin < n; begin += chunk_size) {
+            ReservoirChunk ch;
+            ch.begin = begin;
+            ch.np = std::min(chunk_size, n - begin);
+            ch.buf.reset(new uint8_t[ch.np * per_point]);
+            chunks.push_back(std::move(ch));
+        }
+        graph.reset(new int32_t[n * size_t(p.R)]);
+        // Touch every reservoir page now so an oversized build fails early;
+        // small static blocks interleave the pages over NUMA nodes.
+#pragma omp parallel for schedule(static, 8)
+        for (int64_t i = 0; i < int64_t(n); i++) {
+            const ReservoirRef r = reservoir(size_t(i));
+            std::memset(r.slots, 0, capacity * sizeof(Slot));
+            *r.count = 0;
+            *r.farthest = kNoFarthest;
+        }
+    }
+
+    ReservoirRef reservoir(size_t i) {
+        ReservoirChunk& ch = chunks[i / chunk_size];
+        const size_t off = i - ch.begin;
+        Slot* slots = reinterpret_cast<Slot*>(ch.buf.get());
+        uint8_t* counts = reinterpret_cast<uint8_t*>(slots + ch.np * capacity);
+        return ReservoirRef{
+                slots + off * capacity,
+                counts + off,
+                counts + ch.np + off,
+                int(capacity)};
+    }
+};
+
+/// Keeps the graph alive as long as a MaybeOwnedVector views it.
+struct GraphOwner : MaybeOwnedVectorOwner {
+    std::unique_ptr<int32_t[]> data;
+    explicit GraphOwner(std::unique_ptr<int32_t[]> d) : data(std::move(d)) {}
+};
+
+} // namespace
+
+int32_t medoid_and_validate(const Index& storage) {
+    const size_t d = size_t(storage.d);
+    const size_t n = size_t(storage.ntotal);
+    FAISS_THROW_IF_MSG(n == 0, "PiPNN: the medoid of 0 vectors is undefined");
+    FAISS_THROW_IF_MSG(
+            n > size_t(std::numeric_limits<int32_t>::max()),
+            "PiPNN: more than 2^31 - 1 vectors");
+    const size_t nblocks = (n + kMedoidBlock - 1) / kMedoidBlock;
+    std::vector<double> sums(nblocks * d);
+    std::vector<float> mean(d);
+    // (distance to the mean, id): pairs order ties by the lower id
+    std::vector<std::pair<float, int32_t>> block_best(nblocks);
+
+    // pass 0: validate and sum per block; pass 1: per-block argmin
+    for (int pass = 0; pass < 2; pass++) {
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
+#pragma omp parallel
+        {
+            AlignedTable<float, 64> buf;
+            int32_t ids[kMedoidBatch];
+#pragma omp for schedule(dynamic)
+            for (int64_t b = 0; b < int64_t(nblocks); b++) {
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
+                }
+                try {
+                    ensure_size(buf, kMedoidBatch * d);
+                    const size_t i0 = size_t(b) * kMedoidBlock;
+                    const size_t i1 = std::min(n, i0 + kMedoidBlock);
+                    double* acc = sums.data() + size_t(b) * d;
+                    std::pair<float, int32_t> best{
+                            std::numeric_limits<float>::infinity(), -1};
+                    for (size_t j0 = i0; j0 < i1; j0 += kMedoidBatch) {
+                        const size_t k = std::min(kMedoidBatch, i1 - j0);
+                        std::iota(ids, ids + k, int32_t(j0));
+                        gather_rows(storage, ids, k, buf.get());
+                        for (size_t r = 0; r < k; r++) {
+                            const float* x = buf.get() + r * d;
+                            if (pass == 0) {
+                                // NaN and inf fail this comparison too
+                                const float nrm = fvec_norm_L2sqr(x, d);
+                                FAISS_THROW_IF_NOT_FMT(
+                                        nrm <= kMaxSquaredNorm,
+                                        "PiPNN: vector %zu has squared norm "
+                                        "%g; need finite and <= FLT_MAX / 8",
+                                        j0 + r,
+                                        double(nrm));
+                                for (size_t j = 0; j < d; j++) {
+                                    acc[j] += double(x[j]);
+                                }
+                            } else {
+                                best = std::min(
+                                        best,
+                                        {fvec_L2sqr(x, mean.data(), d),
+                                         int32_t(j0 + r)});
+                            }
+                        }
+                    }
+                    if (pass == 1) {
+                        block_best[b] = best;
+                    }
+                    // blocks are large: poll after every one
+                    if (omp_get_thread_num() == 0 &&
+                        InterruptCallback::is_interrupted()) {
+                        FAISS_THROW_MSG("computation interrupted");
+                    }
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
+            }
+        }
+        omp_rethrow_if_exception(ex);
+        if (pass == 0) {
+            for (size_t j = 0; j < d; j++) {
+                double s = 0;
+                for (size_t b = 0; b < nblocks; b++) {
+                    s += sums[b * d + j];
+                }
+                mean[j] = float(s / double(n));
+            }
+        }
+    }
+    return std::min_element(block_best.begin(), block_best.end())->second;
+}
+
+namespace {
+
+PartitionParams partition_params(const PiPNN& p, MetricType metric) {
+    return {.c_max = p.c_max,
+            .c_min = p.c_min,
+            .leader_cap = p.leader_cap,
+            .leader_fraction = p.leader_fraction,
+            .fanout = p.fanout,
+            .metric = metric,
+            .ip_partition_by_angle = p.ip_partition_by_angle,
+            .wave_budget = p.partition_wave_budget};
+}
+
+/// Offers the nearest neighbours of every leaf point, in every replica, to the
+/// HashPrune reservoirs.
+void fill_reservoirs(
+        BuildState& st,
+        const Index& storage,
+        const PiPNN& p,
+        bool verbose) {
+    const size_t n = size_t(storage.ntotal);
+    const size_t d = size_t(storage.d);
+    const MetricType metric = storage.metric_type;
+    const bool is_ip = metric == METRIC_INNER_PRODUCT;
+    // n <= c_max is a single leaf; there each point offers its
+    // reservoir_size nearest instead of its leaf_k nearest.
+    const size_t k =
+            n <= size_t(p.c_max) ? size_t(p.reservoir_size) : size_t(p.leaf_k);
+
+    const Hyperplanes hp(storage.d, p.hash_bits, p.seed);
+    std::vector<std::mutex> locks(kNumLocks);
+
+    struct LeafScratch {
+        AlignedTable<float, 64> vecs, gram;
+        std::vector<float> norms, nn_dist, sketches;
+        std::vector<int32_t> nn_idx;
+    };
+    std::vector<LeafScratch> scratch(omp_get_max_threads());
+    const LeafVisitor on_leaf = [&](const int32_t* ids, size_t s) {
+        LeafScratch& sc = scratch[omp_get_thread_num()];
+        ensure_size(sc.vecs, s * d);
+        gather_rows(storage, ids, s, sc.vecs.get());
+        sc.norms.resize(s);
+        sc.sketches.resize(s * 16);
+        for (size_t i = 0; i < s; i++) {
+            const float* x = sc.vecs.get() + i * d;
+            sc.norms[i] = fvec_norm_L2sqr(x, d);
+            hp.sketch(x, sc.sketches.data() + i * 16);
+        }
+        ensure_size(sc.gram, s * s);
+        sc.nn_idx.resize(s * k);
+        sc.nn_dist.resize(s * k);
+        leaf_knn(
+                sc.vecs.get(),
+                sc.norms.data(),
+                s,
+                d,
+                metric,
+                int(k),
+                sc.gram.get(),
+                sc.nn_idx.data(),
+                sc.nn_dist.data());
+        // Offers leaf point b to the reservoir of leaf point a. Keys are
+        // dist - d(a, a), so near candidates sit near 0 where bf16 is finest.
+        auto offer = [&](size_t a, size_t b, float dist) {
+            const uint16_t hash = residual_hash(
+                    sc.sketches.data() + a * 16,
+                    sc.sketches.data() + b * 16,
+                    p.hash_bits);
+            const uint16_t key =
+                    distance_key(is_ip ? dist + sc.norms[a] : dist);
+            std::lock_guard<std::mutex> guard(
+                    locks[uint32_t(ids[a]) & (kNumLocks - 1)]);
+            st.reservoir(size_t(ids[a])).offer(ids[b], hash, key);
+        };
+        for (size_t i = 0; i < s; i++) {
+            for (size_t t = 0; t < k; t++) {
+                const int32_t j = sc.nn_idx[i * k + t];
+                if (j < 0) {
+                    break;
+                }
+                offer(i, size_t(j), sc.nn_dist[i * k + t]);
+                offer(size_t(j), i, sc.nn_dist[i * k + t]);
+            }
+        }
+    };
+
+    const PartitionParams pp = partition_params(p, metric);
+    for (int r = 0; r < p.replicas; r++) {
+        const double t0 = getmillisecs();
+        PartitionStats stats;
+        partition_and_visit(
+                storage,
+                pp,
+                mix_seed(uint64_t(p.seed), uint64_t(r)),
+                on_leaf,
+                &stats);
+        if (verbose) {
+            printf("PiPNN: replica %d: %.3f s, %zu leaves, replication %.2f\n",
+                   r,
+                   (getmillisecs() - t0) / 1000,
+                   stats.n_leaves,
+                   double(stats.n_point_instances) / double(n));
+        }
+    }
+}
+
+/// Prunes each reservoir into its graph row, freeing each chunk once pruned.
+void final_prune(BuildState& st, const Index& storage, float alpha, int R) {
+    const size_t d = size_t(storage.d);
+    const MetricType metric = storage.metric_type;
+    int32_t* graph = st.graph.get();
+    for (ReservoirChunk& ch : st.chunks) {
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
+#pragma omp parallel
+        {
+            AlignedTable<float, 64> X;
+            AlignedTable<float, 64> D;
+            std::vector<float> norms;
+            std::vector<int32_t> ids;
+            std::vector<int> order;
+            size_t n_done = 0;
+#pragma omp for schedule(dynamic, 64)
+            for (int64_t i = int64_t(ch.begin); i < int64_t(ch.begin + ch.np);
+                 i++) {
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
+                }
+                try {
+                    const ReservoirRef r = st.reservoir(size_t(i));
+                    const size_t l = *r.count;
+                    const size_t m = l + 1;
+                    ensure_size(X, m * d);
+                    ensure_size(D, m * m);
+                    norms.resize(m);
+                    ids.resize(m);
+                    order.resize(l);
+                    ids[0] = int32_t(i);
+                    for (size_t t = 0; t < l; t++) {
+                        ids[1 + t] = r.slots[t].id;
+                    }
+                    gather_rows(storage, ids.data(), m, X.get());
+                    for (size_t t = 0; t < m; t++) {
+                        norms[t] = fvec_norm_L2sqr(X.get() + t * d, d);
+                    }
+                    pairwise_distances(
+                            X.get(), norms.data(), m, d, metric, D.get());
+                    robust_prune(
+                            D.get(),
+                            m,
+                            ids.data() + 1,
+                            metric,
+                            alpha,
+                            R,
+                            order.data(),
+                            graph + size_t(i) * size_t(R));
+                    if (omp_get_thread_num() == 0 && n_done++ % 64 == 0 &&
+                        InterruptCallback::is_interrupted()) {
+                        FAISS_THROW_MSG("computation interrupted");
+                    }
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
+            }
+        }
+        omp_rethrow_if_exception(ex);
+        ch.buf.reset();
+    }
+}
+
+} // namespace
+
+void robust_prune(
+        const float* D,
+        size_t m,
+        const int32_t* cand,
+        MetricType metric,
+        float alpha,
+        int R,
+        int* order,
+        int32_t* out) {
+    const size_t l = m - 1;
+    std::iota(order, order + l, 0);
+    std::sort(order, order + l, [&](int a, int b) {
+        return CMin<float, int32_t>::cmp2(D[1 + a], D[1 + b], cand[a], cand[b]);
+    });
+    const bool is_ip = metric == METRIC_INNER_PRODUCT;
+    int na = 0;
+    for (size_t t = 0; t < l && na < R; t++) {
+        const int c = order[t];
+        const float dxc = D[1 + c];
+        const bool kept = std::none_of(order, order + na, [&](int y) {
+            const float dyc = D[size_t(1 + y) * m + 1 + c];
+            return is_ip ? dyc < alpha * dxc : alpha * dyc < dxc;
+        });
+        if (kept) {
+            order[na++] = c; // na <= t: never overwrites an unread entry
+        }
+    }
+    for (int u = 0; u < na; u++) {
+        out[u] = cand[order[u]];
+    }
+    std::fill(out + na, out + R, -1);
+}
+
+namespace detail {
+
+void build_with_chunk(
+        PiPNN& p,
+        const Index& storage,
+        size_t reservoir_chunk,
+        bool verbose) {
+    p.check_params();
+    const float alpha =
+            p.effective_alpha(storage.metric_type); // rejects other metrics
+    const size_t n = size_t(storage.ntotal);
+    if (n == 0) {
+        p.reset();
+        return;
+    }
+
+    const double t0 = getmillisecs();
+    InterruptCallback::check();
+    const int32_t ep = medoid_and_validate(storage);
+    if (verbose) {
+        printf("PiPNN: medoid and validation of %zu vectors (d=%d): %.3f s\n",
+               n,
+               storage.d,
+               (getmillisecs() - t0) / 1000);
+    }
+
+    BuildState st(n, p, reservoir_chunk);
+    fill_reservoirs(st, storage, p, verbose);
+
+    const double t1 = getmillisecs();
+    final_prune(st, storage, alpha, p.R);
+    InterruptCallback::check();
+    if (verbose) {
+        printf("PiPNN: final prune: %.3f s\n", (getmillisecs() - t1) / 1000);
+    }
+
+    // Publish: nothing below can throw after the members start changing.
+    auto owner = std::make_shared<GraphOwner>(std::move(st.graph));
+    p.graph = MaybeOwnedVector<int32_t>::create_view(
+            owner->data.get(), n * size_t(p.R), owner);
+    p.entry_point = ep;
+    p.ntotal = idx_t(n);
+}
+
+} // namespace detail
+
+} // namespace pipnn
+
+float PiPNN::effective_alpha(MetricType metric) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
+            "PiPNN supports only METRIC_L2 and METRIC_INNER_PRODUCT");
+    if (alpha != 0) {
+        return alpha;
+    }
+    return metric == METRIC_INNER_PRODUCT ? 1.0f : 1.2f;
+}
+
+void PiPNN::check_params() const {
+    FAISS_THROW_IF_NOT_FMT(R >= 1, "PiPNN: R must be >= 1, got %d", R);
+    FAISS_THROW_IF_NOT_FMT(
+            leaf_k >= 1 && leaf_k <= c_max,
+            "PiPNN: need 1 <= leaf_k <= c_max, got leaf_k=%d c_max=%d",
+            leaf_k,
+            c_max);
+    FAISS_THROW_IF_NOT_FMT(
+            hash_bits >= 1 && hash_bits <= 16,
+            "PiPNN: hash_bits must be in [1, 16], got %d",
+            hash_bits);
+    FAISS_THROW_IF_NOT_FMT(
+            reservoir_size >= 1 && reservoir_size <= 255,
+            "PiPNN: reservoir_size must be in [1, 255], got %d",
+            reservoir_size);
+    FAISS_THROW_IF_NOT_FMT(
+            R <= reservoir_size,
+            "PiPNN: need R <= reservoir_size, got R=%d reservoir_size=%d",
+            R,
+            reservoir_size);
+    FAISS_THROW_IF_NOT_FMT(
+            replicas >= 1, "PiPNN: replicas must be >= 1, got %d", replicas);
+    for (int f : fanout) {
+        FAISS_THROW_IF_NOT_FMT(
+                f >= 1, "PiPNN: every fanout must be >= 1, got %d", f);
+    }
+    FAISS_THROW_IF_NOT_FMT(
+            c_min >= 1 && c_min <= c_max,
+            "PiPNN: need 1 <= c_min <= c_max, got c_min=%d c_max=%d",
+            c_min,
+            c_max);
+    FAISS_THROW_IF_NOT_FMT(
+            c_max <= pipnn::kMaxCMax,
+            "PiPNN: c_max must be <= %d, got %d",
+            pipnn::kMaxCMax,
+            c_max);
+    FAISS_THROW_IF_NOT_FMT(
+            leader_cap >= 1 && leader_cap <= pipnn::kMaxLeaderCap,
+            "PiPNN: leader_cap must be in [1, %d], got %d",
+            pipnn::kMaxLeaderCap,
+            leader_cap);
+    FAISS_THROW_IF_NOT_FMT(
+            leader_fraction >= 0 && leader_fraction <= 1,
+            "PiPNN: leader_fraction must be in [0, 1], got %g",
+            double(leader_fraction));
+    FAISS_THROW_IF_NOT_FMT(
+            alpha == 0 || (std::isfinite(alpha) && alpha >= 1),
+            "PiPNN: alpha must be 0 (metric default) or finite and >= 1, "
+            "got %g",
+            double(alpha));
+}
+
+void PiPNN::build(const Index& storage, bool verbose) {
+    pipnn::detail::build_with_chunk(
+            *this, storage, pipnn::kReservoirChunk, verbose);
+}
+
+void PiPNN::reset() {
+    // not graph.clear(): it asserts on the view build() publishes
+    graph = MaybeOwnedVector<int32_t>();
+    entry_point = -1;
+    ntotal = 0;
+}
+
+} // namespace faiss
