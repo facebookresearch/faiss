@@ -93,7 +93,8 @@ CMAKE_SHARED_LINKER_FLAGS = "-Wl,--gc-sections -Wl,--strip-all"
 CMAKE_MODULE_LINKER_FLAGS = "-Wl,--gc-sections -Wl,--strip-all"
 BUILD_TESTING = "OFF"
 BUILD_SHARED_LIBS = "ON"
-# cuVS + transitive deps (raft, rmm, rapids_logger, header-only cutlass/cuco/nvtx3)
+# cuVS + transitive deps (raft, rmm, kvikio, rapids_logger, and header-only
+# cutlass/cuco/nvtx3)
 # are found via CMAKE_PREFIX_PATH (environment block below) at the RAPIDS wheel roots,
 # mirroring the conda build — no explicit *_DIR, agnostic to lib/ vs lib64/.
 
@@ -137,7 +138,7 @@ test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
 # `pip install --target /opt/cuvs` — ABI-clean, so no libstdc++/libgcc_s/libgomp strip
 # or RMM symlink shim. cp311 interpreter is explicit (manylinux puts no `pip` on PATH).
 manylinux-x86_64-image = "manylinux_2_28"
-before-all = "dnf install -y gcc-toolset-14 epel-release dnf-plugins-core && dnf install -y openblas-devel openblas-openmp swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y --setopt=obsoletes=0 cuda-toolkit-13-2 && /opt/python/cp311-cp311/bin/python -m pip install --target /opt/cuvs --no-deps --only-binary ':all:' --extra-index-url https://pypi.nvidia.com 'libcuvs-cu13==26.10.*' 'libraft-cu13==26.10.*' 'librmm-cu13==26.10.*' 'rapids-logger'"
+before-all = "dnf install -y gcc-toolset-14 epel-release dnf-plugins-core && dnf install -y openblas-devel openblas-openmp swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y --setopt=obsoletes=0 cuda-toolkit-13-2 && /opt/python/cp311-cp311/bin/python -m pip install --target /opt/cuvs --no-deps --only-binary ':all:' --extra-index-url https://pypi.nvidia.com 'libcuvs-cu13==26.10.*' 'libraft-cu13==26.10.*' 'librmm-cu13==26.10.*' 'libkvikio-cu13==26.10.*' 'rapids-logger'"
 # auditwheel excludes (not vendored; supplied at runtime by nvidia-* / libcuvs-cu13
 # wheels): host driver libcuda, CUDA runtime/math libs (cusparse/cusolver are explicit —
 # under the cuda-toolkit RPM, not /opt/cuvs), and every RAPIDS .so found under /opt/cuvs.
@@ -165,4 +166,4 @@ CUDACXX = "/usr/local/cuda-13.2/bin/nvcc"
 CC = "/opt/rh/gcc-toolset-14/root/usr/bin/gcc"
 CXX = "/opt/rh/gcc-toolset-14/root/usr/bin/g++"
 CUDAHOSTCXX = "/opt/rh/gcc-toolset-14/root/usr/bin/g++"
-CMAKE_PREFIX_PATH = "/opt/cuvs/libcuvs:/opt/cuvs/libraft:/opt/cuvs/librmm:/opt/cuvs/rapids_logger"
+CMAKE_PREFIX_PATH = "/opt/cuvs/libcuvs:/opt/cuvs/libraft:/opt/cuvs/librmm:/opt/cuvs/libkvikio:/opt/cuvs/rapids_logger"

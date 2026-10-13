@@ -379,7 +379,7 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
         } else {
             auto host_centroids = toHost<float, 2>(
                     cuvs_ivfsq_index.value().centers().data_handle(),
-                    raft_handle.get_stream(),
+                    asCudaStream(raft_handle.get_stream()),
                     {idx_t(nlist), this->d});
             quantizer->train(nlist, host_centroids.data());
             quantizer->add(nlist, host_centroids.data());
