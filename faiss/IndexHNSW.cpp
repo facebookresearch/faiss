@@ -784,7 +784,7 @@ void IndexHNSW::init_level_0_from_entry_points(
                 storage_distance_computer(storage));
         std::vector<float> vec(storage->d);
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
         for (int i = 0; i < n; i++) {
             storage_idx_t pt_id = points[i];
             storage_idx_t nearest = nearests[i];

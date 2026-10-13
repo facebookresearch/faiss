@@ -23,6 +23,7 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/approx_topk/approx_topk.h>
+#include <faiss/impl/platform_macros.h>
 
 // this is needed for prefetching
 
@@ -602,7 +603,7 @@ void LocalSearchQuantizer::icm_encode_step(
 
     // Resolve SIMD level once, not per iteration of the n × n_iters × M loop.
     with_simd_level_256bit([&]<SIMDLevel SL>() {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
         for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             std::vector<float> objs(K);
 

@@ -172,6 +172,7 @@ set(FAISS_SRC
   impl/result_handler/ResultHandler.cpp
   impl/NSG.cpp
   impl/pipnn/HashPrune.cpp
+  impl/pipnn/Partition.cpp
   impl/pipnn/kernels.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
@@ -321,6 +322,7 @@ set(FAISS_HEADERS
   impl/NNDescent.h
   impl/NSG.h
   impl/pipnn/HashPrune.h
+  impl/pipnn/Partition.h
   impl/pipnn/kernels.h
   impl/Panorama.h
   impl/PanoramaStats.h

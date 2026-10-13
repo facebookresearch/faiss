@@ -23,6 +23,9 @@
  */
 
 namespace faiss {
+
+struct Index;
+
 namespace pipnn {
 
 /// Points per stripe item of the partition kernel. Changing it changes graphs.
@@ -66,6 +69,14 @@ void pairwise_distances(
         size_t n,
         size_t d,
         MetricType metric,
+        float* out);
+
+/// Rows ids[0..k) of `storage` as floats into out (k x d). SQ rows are decoded
+/// directly; other types use reconstruct(), which must not open OpenMP regions.
+void gather_rows(
+        const Index& storage,
+        const int32_t* ids,
+        size_t k,
         float* out);
 
 } // namespace pipnn

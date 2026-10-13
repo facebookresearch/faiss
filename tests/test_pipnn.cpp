@@ -6,6 +6,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <omp.h>
 
 #include <algorithm>
 #include <cmath>
@@ -13,13 +14,20 @@
 #include <cstring>
 #include <limits>
 #include <map>
+#include <memory>
+#include <mutex>
 #include <set>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/pipnn/HashPrune.h>
+#include <faiss/impl/pipnn/Partition.h>
 #include <faiss/impl/pipnn/kernels.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/distances.h>
@@ -722,4 +730,435 @@ TEST(PiPNNKernels, RejectBadArguments) {
                     faiss::METRIC_L1,
                     scratch.get()),
             FaissException);
+}
+
+/*************************************************************
+ * PiPNN storage access and Randomized Ball Carving
+ *************************************************************/
+
+namespace pipnn_partition_test {
+
+std::vector<float> gaussian_data(size_t n, size_t d, int64_t seed) {
+    std::vector<float> x(n * d);
+    faiss::float_randn(x.data(), x.size(), seed);
+    return x;
+}
+
+/// x_i = (1 + 10 i / n) * u for one direction u: under max-IP every point ranks
+/// leaders by norm, so all points pick the same `fanout` leaders.
+std::vector<float> collinear_data(size_t n, size_t d, int64_t seed) {
+    std::vector<float> u(d);
+    faiss::float_rand(u.data(), d, seed);
+    std::vector<float> x(n * d);
+    for (size_t i = 0; i < n; i++) {
+        const float scale = 1.0f + 10.0f * float(i) / float(n);
+        for (size_t j = 0; j < d; j++) {
+            x[i * d + j] = scale * u[j];
+        }
+    }
+    return x;
+}
+
+struct FlatData {
+    faiss::IndexFlat index;
+
+    FlatData(const std::vector<float>& x, size_t d, faiss::MetricType metric)
+            : index(d, metric) {
+        index.add(x.size() / d, x.data());
+    }
+};
+
+const uint64_t kSeed = faiss::pipnn::mix_seed(1234, 0);
+
+faiss::pipnn::PartitionParams small_params(faiss::MetricType metric) {
+    faiss::pipnn::PartitionParams p;
+    p.c_max = 64;
+    p.c_min = 16;
+    p.metric = metric;
+    return p;
+}
+
+/// Sets the OpenMP thread count for its lifetime, then restores it.
+struct ScopedOmpThreads {
+    const int saved = omp_get_max_threads();
+    explicit ScopedOmpThreads(int n) {
+        omp_set_num_threads(n);
+    }
+    ~ScopedOmpThreads() {
+        omp_set_num_threads(saved);
+    }
+};
+
+using Leaves = std::vector<std::vector<int32_t>>;
+
+/// Leaves are non-empty, strictly increasing, at most c_max long, and cover
+/// every point.
+void expect_valid_cover(const Leaves& leaves, size_t n, int c_max);
+
+/// Runs partition_and_visit, checks that its leaves are a valid cover, and
+/// returns them sorted.
+Leaves visit_all(
+        const faiss::Index& storage,
+        const faiss::pipnn::PartitionParams& p,
+        uint64_t seed,
+        faiss::pipnn::PartitionStats* stats = nullptr) {
+    std::mutex mu;
+    Leaves leaves;
+    faiss::pipnn::partition_and_visit(
+            storage,
+            p,
+            seed,
+            [&](const int32_t* ids, size_t s) {
+                std::vector<int32_t> leaf(ids, ids + s);
+                std::lock_guard<std::mutex> lock(mu);
+                leaves.push_back(std::move(leaf));
+            },
+            stats);
+    std::sort(leaves.begin(), leaves.end());
+    expect_valid_cover(leaves, size_t(storage.ntotal), p.c_max);
+    return leaves;
+}
+
+void expect_valid_cover(const Leaves& leaves, size_t n, int c_max) {
+    std::vector<char> seen(n, 0);
+    for (const std::vector<int32_t>& leaf : leaves) {
+        ASSERT_FALSE(leaf.empty());
+        ASSERT_LE(leaf.size(), size_t(c_max));
+        for (size_t i = 0; i < leaf.size(); i++) {
+            ASSERT_GE(leaf[i], 0);
+            ASSERT_LT(size_t(leaf[i]), n);
+            if (i > 0) {
+                ASSERT_LT(leaf[i - 1], leaf[i]);
+            }
+            seen[leaf[i]] = 1;
+        }
+    }
+    for (size_t i = 0; i < n; i++) {
+        ASSERT_TRUE(seen[i]) << "point " << i << " is in no leaf";
+    }
+}
+
+/// Fraction of points that share a leaf with their nearest other point (L2), or
+/// with the other point of largest inner product (IP).
+double fraction_with_neighbour(
+        const Leaves& leaves,
+        const std::vector<float>& x,
+        size_t d,
+        faiss::MetricType metric) {
+    const size_t n = x.size() / d;
+    faiss::IndexFlat index(d, metric);
+    index.add(n, x.data());
+    std::vector<float> D(2 * n);
+    std::vector<faiss::idx_t> I(2 * n);
+    index.search(n, x.data(), 2, D.data(), I.data());
+    std::vector<std::vector<size_t>> leaves_of(n);
+    for (size_t l = 0; l < leaves.size(); l++) {
+        for (int32_t id : leaves[l]) {
+            leaves_of[id].push_back(l);
+        }
+    }
+    size_t hits = 0;
+    for (size_t i = 0; i < n; i++) {
+        const faiss::idx_t j =
+                I[2 * i] == faiss::idx_t(i) ? I[2 * i + 1] : I[2 * i];
+        const std::vector<size_t>& a = leaves_of[i];
+        const std::vector<size_t>& b = leaves_of[j];
+        if (std::find_first_of(a.begin(), a.end(), b.begin(), b.end()) !=
+            a.end()) {
+            hits++;
+        }
+    }
+    return double(hits) / double(n);
+}
+
+} // namespace pipnn_partition_test
+
+TEST(PiPNNStorage, GatherSQRowsMatchesReconstruct) {
+    const int d = 12;
+    const size_t n = 200;
+    const std::vector<float> x = pipnn_partition_test::gaussian_data(n, d, 7);
+    faiss::IndexScalarQuantizer sq(d, faiss::ScalarQuantizer::QT_8bit);
+    sq.train(n, x.data());
+    sq.add(n, x.data());
+    const int32_t ids[3] = {5, 0, 199};
+    faiss::AlignedTable<float, 64> out(3 * d);
+    faiss::pipnn::gather_rows(sq, ids, 3, out.data());
+    std::vector<float> expected(d);
+    for (size_t i = 0; i < 3; i++) {
+        sq.reconstruct(ids[i], expected.data());
+        EXPECT_EQ(
+                0,
+                std::memcmp(
+                        out.data() + i * d, expected.data(), sizeof(float) * d))
+                << "row " << i;
+    }
+}
+
+// Pinned values: changing any of them changes every graph.
+TEST(PiPNNPartition, SeededHelpersGolden) {
+    using faiss::pipnn::mix_seed;
+    using faiss::pipnn::detail::sample_positions;
+    EXPECT_EQ(mix_seed(1234, 1), 0x626e95467131d717ULL);
+
+    std::vector<size_t> pos;
+    sample_positions(100, 5, 42, pos);
+    EXPECT_EQ(pos, (std::vector<size_t>{6, 45, 50, 84, 85}));
+    sample_positions(10, 10, 7, pos);
+    EXPECT_EQ(pos, (std::vector<size_t>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+}
+
+TEST(PiPNNPartition, ParameterHelpers) {
+    using faiss::pipnn::Ranking;
+    using faiss::pipnn::detail::leader_count;
+    using faiss::pipnn::detail::ranking_for;
+    faiss::pipnn::PartitionParams p;
+    EXPECT_EQ(p.fanout_at(1), 3);
+    EXPECT_EQ(p.fanout_at(2), 1);
+    EXPECT_EQ(leader_count(1025, p, 0), 40u);       // 4 * fanout floor
+    EXPECT_EQ(leader_count(100000, p, 0), 500u);    // ceil(P_samp * |P|)
+    EXPECT_EQ(leader_count(10000000, p, 0), 1000u); // leader_cap
+    EXPECT_EQ(leader_count(300, p, 1), 12u);
+    EXPECT_EQ(leader_count(3, p, 5), 3u); // never more than |P|
+    p.leader_cap = 7;
+    EXPECT_EQ(leader_count(1025, p, 0), 7u);
+
+    p.ip_partition_by_angle = true;
+    EXPECT_EQ(ranking_for(p, false), Ranking::L2);
+    p.metric = faiss::METRIC_INNER_PRODUCT;
+    EXPECT_EQ(ranking_for(p, false), Ranking::Angle);
+    EXPECT_EQ(ranking_for(p, true), Ranking::L2);
+    p.ip_partition_by_angle = false;
+    EXPECT_EQ(ranking_for(p, false), Ranking::IP);
+}
+
+TEST(PiPNNPartition, SizesAroundCMax) {
+    namespace ppt = pipnn_partition_test;
+    const size_t d = 8;
+    const faiss::pipnn::PartitionParams p = ppt::small_params(faiss::METRIC_L2);
+
+    ppt::FlatData empty({}, d, faiss::METRIC_L2);
+    EXPECT_TRUE(ppt::visit_all(empty.index, p, 1).empty());
+
+    const size_t n = size_t(p.c_max);
+    ppt::FlatData one_leaf(ppt::gaussian_data(n, d, 5), d, faiss::METRIC_L2);
+    std::vector<int32_t> all(n);
+    for (size_t i = 0; i < n; i++) {
+        all[i] = int32_t(i);
+    }
+    EXPECT_EQ(ppt::visit_all(one_leaf.index, p, 1), ppt::Leaves{all});
+
+    ppt::FlatData above(ppt::gaussian_data(n + 1, d, 11), d, faiss::METRIC_L2);
+    // One split whose small children are merged: no leaf is below c_min
+    // (without merging, 25 of its 40 leaves are).
+    for (const std::vector<int32_t>& leaf : ppt::visit_all(above.index, p, 9)) {
+        EXPECT_GE(leaf.size(), size_t(p.c_min));
+    }
+}
+
+// The root's 70,000 points span two 65,536-point counting-sort blocks, so the
+// per-block counts and cursors must combine into valid children.
+TEST(PiPNNPartition, RootSpansCountingSortBlocks) {
+    namespace ppt = pipnn_partition_test;
+    const size_t n = 70000, d = 2;
+    ppt::FlatData data(ppt::gaussian_data(n, d, 31), d, faiss::METRIC_L2);
+    EXPECT_FALSE(
+            ppt::visit_all(
+                    data.index, ppt::small_params(faiss::METRIC_L2), ppt::kSeed)
+                    .empty());
+}
+
+TEST(PiPNNPartition, LeavesGroupNeighbours) {
+    namespace ppt = pipnn_partition_test;
+    const size_t n = 5000, d = 16;
+    const std::vector<float> x = ppt::gaussian_data(n, d, 2024);
+    ppt::FlatData l2(x, d, faiss::METRIC_L2);
+    ppt::FlatData ip(x, d, faiss::METRIC_INNER_PRODUCT);
+    faiss::IndexScalarQuantizer sq(
+            d, faiss::ScalarQuantizer::QT_8bit, faiss::METRIC_L2);
+    sq.train(n, x.data());
+    sq.add(n, x.data());
+    struct Case {
+        const char* name;
+        const faiss::Index* storage;
+        faiss::MetricType metric;
+        int c_min;
+        bool by_angle;
+        double min_fraction; // measured: 0.986 for L2, 0.950 for IP
+    };
+    const Case cases[] = {
+            {"L2", &l2.index, faiss::METRIC_L2, 16, false, 0.95},
+            {"L2, no merging", &l2.index, faiss::METRIC_L2, 1, false, 0.95},
+            {"IP", &ip.index, faiss::METRIC_INNER_PRODUCT, 16, false, 0.9},
+            {"IP by angle",
+             &ip.index,
+             faiss::METRIC_INNER_PRODUCT,
+             16,
+             true,
+             0.9},
+            {"SQ8", &sq, faiss::METRIC_L2, 16, false, 0.95}};
+    for (const Case& c : cases) {
+        SCOPED_TRACE(c.name);
+        faiss::pipnn::PartitionParams p = ppt::small_params(c.metric);
+        p.c_min = c.c_min;
+        p.ip_partition_by_angle = c.by_angle;
+        const ppt::Leaves leaves = ppt::visit_all(*c.storage, p, ppt::kSeed);
+        EXPECT_GE(
+                ppt::fraction_with_neighbour(leaves, x, d, c.metric),
+                c.min_fraction);
+    }
+}
+
+TEST(PiPNNPartition, StatsDescribeLeaves) {
+    namespace ppt = pipnn_partition_test;
+    const size_t d = 16;
+    ppt::FlatData data(ppt::gaussian_data(5000, d, 2024), d, faiss::METRIC_L2);
+    const faiss::pipnn::PartitionParams p = ppt::small_params(faiss::METRIC_L2);
+    faiss::pipnn::PartitionStats stats;
+    const ppt::Leaves leaves =
+            ppt::visit_all(data.index, p, ppt::kSeed, &stats);
+    size_t instances = 0;
+    size_t max_leaf = 0;
+    for (const std::vector<int32_t>& leaf : leaves) {
+        instances += leaf.size();
+        max_leaf = std::max(max_leaf, leaf.size());
+    }
+    EXPECT_EQ(stats.n_leaves, leaves.size());
+    EXPECT_EQ(stats.n_point_instances, instances);
+    EXPECT_EQ(stats.max_leaf, max_leaf);
+    EXPECT_GE(stats.max_depth_seen, 3);
+    size_t histogram_total = 0;
+    for (size_t h : stats.leaf_size_histogram) {
+        histogram_total += h;
+    }
+    EXPECT_EQ(histogram_total, stats.n_leaves);
+    // Replicas rely on a different seed giving different leaves.
+    EXPECT_FALSE(
+            leaves ==
+            ppt::visit_all(data.index, p, faiss::pipnn::mix_seed(1234, 1)));
+}
+
+TEST(PiPNNPartition, IPDegenerateChildUsesL2) {
+    namespace ppt = pipnn_partition_test;
+    const size_t d = 16;
+    ppt::FlatData data(
+            ppt::collinear_data(5000, d, 31), d, faiss::METRIC_INNER_PRODUCT);
+    const faiss::pipnn::PartitionParams p =
+            ppt::small_params(faiss::METRIC_INNER_PRODUCT);
+    faiss::pipnn::PartitionStats stats;
+    ppt::visit_all(data.index, p, ppt::kSeed, &stats);
+    // The children of the 10 largest-norm leaders hold all points and are
+    // flagged; their descendants rank by L2 and are not flagged again.
+    EXPECT_EQ(stats.n_l2_repartitions, 10u);
+}
+
+TEST(PiPNNPartition, AllZeroDataUsesSliceFallback) {
+    namespace ppt = pipnn_partition_test;
+    // All products are 0, so every point picks leaders 0..9, whose children
+    // equal the root and are cut into id slices.
+    const size_t n = 3000;
+    ppt::FlatData data(std::vector<float>(n, 0.0f), 1, faiss::METRIC_L2);
+    faiss::pipnn::PartitionStats stats;
+    ppt::visit_all(
+            data.index,
+            ppt::small_params(faiss::METRIC_L2),
+            ppt::kSeed,
+            &stats);
+    EXPECT_EQ(stats.n_slice_fallbacks, 10u);
+    EXPECT_EQ(stats.n_leaves, 10u * ((n + 63) / 64));
+}
+
+TEST(PiPNNPartition, DuplicateGroupTerminatesAndCovers) {
+    namespace ppt = pipnn_partition_test;
+    const size_t n = 3000, d = 16;
+    std::vector<float> x = ppt::gaussian_data(n, d, 77);
+    std::fill(x.begin() + 1000 * d, x.begin() + 1500 * d, 10.0f);
+    ppt::FlatData data(x, d, faiss::METRIC_L2);
+    const faiss::pipnn::PartitionParams p = ppt::small_params(faiss::METRIC_L2);
+    faiss::pipnn::PartitionStats stats;
+    ppt::visit_all(data.index, p, ppt::kSeed, &stats);
+    // The group is sliced once a child equals its parent (depth 7 here), well
+    // before the depth limit.
+    EXPECT_LT(stats.max_depth_seen, p.max_depth);
+}
+
+TEST(PiPNNPartition, DepthLimitPrecedesL2Repartition) {
+    namespace ppt = pipnn_partition_test;
+    // 10 root children hold all points; with max_depth = 1 the depth limit
+    // applies before the L2 re-partition rule, so none is flagged.
+    const size_t n = 5000, d = 16;
+    ppt::FlatData data(
+            ppt::collinear_data(n, d, 31), d, faiss::METRIC_INNER_PRODUCT);
+    faiss::pipnn::PartitionParams p =
+            ppt::small_params(faiss::METRIC_INNER_PRODUCT);
+    p.max_depth = 1;
+    faiss::pipnn::PartitionStats stats;
+    ppt::visit_all(data.index, p, ppt::kSeed, &stats);
+    EXPECT_EQ(stats.n_l2_repartitions, 0u);
+    EXPECT_EQ(stats.n_slice_fallbacks, 10u);
+}
+
+TEST(PiPNNPartition, WavesDoNotChangeLeaves) {
+    namespace ppt = pipnn_partition_test;
+    // Waves that carry L2 re-partition flags.
+    const size_t n = 5000, d = 16;
+    ppt::FlatData ip(
+            ppt::collinear_data(n, d, 31), d, faiss::METRIC_INNER_PRODUCT);
+    faiss::pipnn::PartitionParams p_ip =
+            ppt::small_params(faiss::METRIC_INNER_PRODUCT);
+    const ppt::Leaves one_wave = ppt::visit_all(ip.index, p_ip, ppt::kSeed);
+    p_ip.wave_budget = 3000;
+    faiss::pipnn::PartitionStats ip_stats;
+    EXPECT_TRUE(
+            one_wave == ppt::visit_all(ip.index, p_ip, ppt::kSeed, &ip_stats));
+    EXPECT_GT(ip_stats.n_waves, 1u);
+}
+
+namespace pipnn_partition_test {
+
+struct AlwaysInterrupt : faiss::InterruptCallback {
+    bool want_interrupt() override {
+        return true;
+    }
+};
+
+/// Clears the global interrupt callback when the test scope ends.
+struct InterruptGuard {
+    ~InterruptGuard() {
+        faiss::InterruptCallback::clear_instance();
+    }
+};
+
+} // namespace pipnn_partition_test
+
+TEST(PiPNNPartition, InterruptStopsWithin64Items) {
+    namespace ppt = pipnn_partition_test;
+    // All-zero data gives one region of 470 slice leaves. With one thread the
+    // master polls after items 0, 64, ...; the interrupt is set while visiting
+    // item 9, so items 10..64 still run.
+    ppt::FlatData data(std::vector<float>(3000, 0.0f), 1, faiss::METRIC_L2);
+    const faiss::pipnn::PartitionParams p = ppt::small_params(faiss::METRIC_L2);
+    const size_t install_at = 10;
+    std::string what;
+    size_t visited = 0;
+    {
+        ppt::InterruptGuard guard;
+        ppt::ScopedOmpThreads one_thread(1);
+        try {
+            faiss::pipnn::partition_and_visit(
+                    data.index,
+                    p,
+                    ppt::kSeed,
+                    [&](const int32_t*, size_t) {
+                        if (++visited == install_at) {
+                            faiss::InterruptCallback::instance.reset(
+                                    new ppt::AlwaysInterrupt());
+                        }
+                    },
+                    nullptr);
+        } catch (const faiss::FaissException& e) {
+            what = e.what();
+        }
+    }
+    EXPECT_NE(what.find("interrupted"), std::string::npos) << what;
+    EXPECT_EQ(visited - install_at, 55u);
 }
