@@ -17,6 +17,7 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/impl/scalar_quantizer/sq8_coefficients.h>
 
 namespace faiss {
 
@@ -105,14 +106,15 @@ template <>
 struct Codec8bit<SIMDLevel::ARM_NEON> : Codec8bit<SIMDLevel::NONE> {
     static FAISS_ALWAYS_INLINE simd8float32
     decode_8_components(const uint8_t* code, size_t i) {
-        float32_t result[8] = {};
-        for (size_t j = 0; j < 8; j++) {
-            result[j] =
-                    Codec8bit<SIMDLevel::NONE>::decode_component(code, i + j);
-        }
-        float32x4_t res1 = vld1q_f32(result);
-        float32x4_t res2 = vld1q_f32(result + 4);
-        return simd8float32(float32x4x2_t{res1, res2});
+        const uint16x8_t c16 = vmovl_u8(vld1_u8(code + i));
+        const float32x4_t lo = vcvtq_f32_u32(vmovl_u16(vget_low_u16(c16)));
+        const float32x4_t hi = vcvtq_f32_u32(vmovl_u16(vget_high_u16(c16)));
+        const float32x4_t one_255 = vdupq_n_f32(1.f / 255.f);
+        const float32x4_t half_one_255 = vdupq_n_f32(0.5f / 255.f);
+        return simd8float32(
+                float32x4x2_t{
+                        vfmaq_f32(half_one_255, lo, one_255),
+                        vfmaq_f32(half_one_255, hi, one_255)});
     }
 };
 
@@ -615,6 +617,97 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
         dis1 = sim1.result_8();
         dis2 = sim2.result_8();
         dis3 = sim3.result_8();
+    }
+};
+
+// QT_8bit + L2. With a, rmin from sq8_coefficients.h and e = q - rmin, each
+// term is (e_i - a_i * c_i)^2: one fmls and one fmla per 4 dims, instead of
+// separate codec, vmin/vdiff, sub, mul and add steps.
+template <>
+struct DCTemplate<
+        QuantizerTemplate<
+                Codec8bit<SIMDLevel::ARM_NEON>,
+                QuantizerTemplateScaling::NON_UNIFORM,
+                SIMDLevel::ARM_NEON>,
+        SimilarityL2<SIMDLevel::ARM_NEON>,
+        SIMDLevel::ARM_NEON> : SQDistanceComputer {
+    using Sim = SimilarityL2<SIMDLevel::ARM_NEON>;
+
+    size_t d;
+    std::vector<float> a, rmin, e;
+
+    DCTemplate(size_t d_in, const std::vector<float>& trained)
+            : d(d_in), a(d_in), rmin(d_in), e(d_in) {
+        assert(d % 8 == 0);
+        sq8::make_coefficients(trained.data(), d, a.data(), rmin.data());
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+        for (size_t i = 0; i < d; i++) {
+            e[i] = x[i] - rmin[i];
+        }
+    }
+
+    // Each code has its own accumulators, so the batched results equal the
+    // single-code ones bit for bit.
+    template <size_t N>
+    FAISS_ALWAYS_INLINE void l2(
+            const uint8_t* const (&codes)[N],
+            float (&dis)[N]) const {
+        float32x4_t acc[N][2] = {};
+        for (size_t i = 0; i < d; i += 8) {
+            const float32x4_t a0 = vld1q_f32(a.data() + i);
+            const float32x4_t a1 = vld1q_f32(a.data() + i + 4);
+            const float32x4_t e0 = vld1q_f32(e.data() + i);
+            const float32x4_t e1 = vld1q_f32(e.data() + i + 4);
+            for (size_t n = 0; n < N; n++) {
+                const uint16x8_t c16 = vmovl_u8(vld1_u8(codes[n] + i));
+                const float32x4_t t0 = vfmsq_f32(
+                        e0, a0, vcvtq_f32_u32(vmovl_u16(vget_low_u16(c16))));
+                const float32x4_t t1 =
+                        vfmsq_f32(e1, a1, vcvtq_f32_u32(vmovl_high_u16(c16)));
+                acc[n][0] = vfmaq_f32(acc[n][0], t0, t0);
+                acc[n][1] = vfmaq_f32(acc[n][1], t1, t1);
+            }
+        }
+        for (size_t n = 0; n < N; n++) {
+            dis[n] = vaddvq_f32(vaddq_f32(acc[n][0], acc[n][1]));
+        }
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        float dis[1];
+        l2<1>({code}, dis);
+        return dis[0];
+    }
+
+    void query_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const final {
+        float dis[4];
+        l2<4>({code_0, code_1, code_2, code_3}, dis);
+        dis0 = dis[0];
+        dis1 = dis[1];
+        dis2 = dis[2];
+        dis3 = dis[3];
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        const uint8_t* c1 = codes + i * code_size;
+        const uint8_t* c2 = codes + j * code_size;
+        float accu = 0;
+        for (size_t k = 0; k < d; k++) {
+            const float diff = a[k] * float(int(c1[k]) - int(c2[k]));
+            accu += diff * diff;
+        }
+        return accu;
     }
 };
 
