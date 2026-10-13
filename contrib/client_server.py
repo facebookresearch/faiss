@@ -32,6 +32,9 @@ class SearchServer(rpc.Server):
     def get_metric_type(self) -> int:
         return self.index.metric_type
 
+    def set_omp_num_threads(self, nt: int) -> None:
+        faiss.omp_set_num_threads(nt)
+
     def __getattr__(self, f):
         # all other functions get forwarded to the index
         return getattr(self.index, f)

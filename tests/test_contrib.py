@@ -1167,6 +1167,11 @@ class TestClientServer(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.connect(shards)
 
+    def test_set_omp_num_threads(self):
+        client_index = self.connect([faiss.index_factory(32, "IVF4,Flat")])
+        # the server runs in this process, so keep the current setting
+        client_index.set_omp_num_threads(faiss.omp_get_max_threads())
+
     def test_unknown_method(self):
         client_index = self.connect([faiss.index_factory(32, "IVF4,Flat")])
         sub_index = client_index.sub_indexes[0]
