@@ -1151,6 +1151,22 @@ class TestClientServer(unittest.TestCase):
     def test_search_L2(self):
         self.do_test_search(faiss.METRIC_L2)
 
+    def test_search_IP(self):
+        self.do_test_search(faiss.METRIC_INNER_PRODUCT)
+
+    def test_metric_type(self):
+        for metric in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
+            shards = [faiss.index_factory(32, "IVF4,Flat", metric)] * 2
+            self.assertEqual(self.connect(shards).metric_type, metric)
+
+    def test_mixed_metric_types(self):
+        shards = [
+            faiss.index_factory(32, "IVF4,Flat", metric)
+            for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT)
+        ]
+        with self.assertRaises(RuntimeError):
+            self.connect(shards)
+
     def test_unknown_method(self):
         client_index = self.connect([faiss.index_factory(32, "IVF4,Flat")])
         sub_index = client_index.sub_indexes[0]

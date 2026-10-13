@@ -29,6 +29,9 @@ class SearchServer(rpc.Server):
     def get_ntotal(self) -> int:
         return self.index.ntotal
 
+    def get_metric_type(self) -> int:
+        return self.index.metric_type
+
     def __getattr__(self, f):
         # all other functions get forwarded to the index
         return getattr(self.index, f)
@@ -60,6 +63,7 @@ class ClientIndex:
         self.pool = ThreadPool(self.ni)
         # test connection...
         self.ntotal = self.get_ntotal()
+        self.metric_type = self.get_metric_type()
         self.verbose = False
 
     def set_nprobe(self, nprobe: int) -> None:
@@ -73,9 +77,21 @@ class ClientIndex:
             self.pool.map(lambda idx: idx.get_ntotal(), self.sub_indexes)
         )
 
+    def get_metric_type(self) -> int:
+        """metric type of the sub-indexes, which must all be the same"""
+        metric_types = set(
+            self.pool.map(lambda idx: idx.get_metric_type(), self.sub_indexes)
+        )
+        if len(metric_types) != 1:
+            raise RuntimeError(
+                f"sub-indexes have different metric types {metric_types}"
+            )
+        return metric_types.pop()
+
     def search(self, x, k: int):
 
-        rh = faiss.ResultHeap(x.shape[0], k)
+        keep_max = faiss.is_similarity_metric(self.metric_type)
+        rh = faiss.ResultHeap(x.shape[0], k, keep_max=keep_max)
 
         for Di, Ii in self.pool.imap(
             lambda idx: idx.search(x, k), self.sub_indexes
