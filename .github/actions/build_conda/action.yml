@@ -100,7 +100,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            -c pytorch -c rapidsai-nightly -c rapidsai -c conda-forge -c nvidia
+            -c pytorch -c rapidsai -c conda-forge -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -110,7 +110,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai-nightly -c rapidsai -c conda-forge -c nvidia
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c conda-forge -c nvidia
     - name: Check installed packages channel
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |

@@ -24,6 +24,7 @@ import unittest
 import numpy as np
 from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 
 import faiss
 
@@ -346,10 +347,13 @@ class TestCuvsRapidsPinning(unittest.TestCase):
                 version = importlib.metadata.version(dist)
             except importlib.metadata.PackageNotFoundError:
                 self.fail(f"{dist} is declared but not installed")
+            parsed_version = Version(version)
+            self.assertFalse(
+                parsed_version.is_prerelease,
+                f"{dist} {version} is a prerelease; stable RAPIDS is required",
+            )
             self.assertTrue(
-                # Nightlies version as 26.10.0a*; SpecifierSet drops
-                # prereleases unless asked.
-                _RAPIDS_SERIES.contains(version, prereleases=True),
+                _RAPIDS_SERIES.contains(parsed_version),
                 f"{dist} {version} is outside the {_RAPIDS_SERIES} series "
                 f"the wheel was built against",
             )

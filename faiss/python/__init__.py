@@ -121,10 +121,9 @@ def _preload_gpu_libs():
         raise RuntimeError(
             "faiss-gpu-cuvs installed but the cuVS runtime wheels are "
             "missing — "
-            "pip install --pre 'libcuvs-cu13==26.10.*' "
+            "pip install 'libcuvs-cu13==26.10.*' "
             "'libraft-cu13==26.10.*' 'librmm-cu13==26.10.*' "
-            "--extra-index-url "
-            "https://pypi.anaconda.org/rapidsai-wheels-nightly/simple"
+            "--extra-index-url https://pypi.nvidia.com"
         ) from e
 
     for _mod in (librmm, libraft, libcuvs):
