@@ -18,8 +18,12 @@ runs separately in the cmake-based CI.
 """
 
 import functools
+import importlib.metadata
+import re
 import unittest
 import numpy as np
+from packaging.requirements import Requirement
+from packaging.specifiers import SpecifierSet
 
 import faiss
 
@@ -247,3 +251,104 @@ class TestCuvsCagra(unittest.TestCase):
         self.assertEqual(I.shape, (nq, 10))
         # CAGRA is approximate, so allow itself-as-first-NN as the contract.
         np.testing.assert_array_equal(I[:, 0], np.arange(nq))
+
+
+# Keep in step with the `libcuvs-cu13==<series>.*` pins in
+# pyproject-gpu-cuvs.toml. The wheel does not ship that file, so nothing else
+# ties the two together. Compared via SpecifierSet, never by string prefix:
+# PEP 440 strips the leading zero, so the series pinned as `26.06` installs as
+# `26.6.0`.
+_RAPIDS_SERIES = SpecifierSet("==26.06.*")
+
+# RAPIDS >=26.08 wraps RMM in a per-release inline namespace
+# (rmm::_RMM_26_8::), so a neighbouring series renames every rmm:: symbol
+# libfaiss.so is linked against. RAPIDS ships six series a year, YY.02 to
+# YY.12; probing them lets the declared spec be compared against
+# _RAPIDS_SERIES by behaviour, so bumping the series needs no edit here.
+_RAPIDS_PROBES = tuple(
+    f"{year}.{month}.0"
+    for year in (25, 26, 27)
+    for month in (2, 4, 6, 8, 10, 12)
+)
+
+# RAPIDS distributions faiss dlopens at import; see _preload_gpu_libs in
+# faiss/python/__init__.py.
+_RAPIDS_DISTS = ("librmm-cu13", "libraft-cu13", "libcuvs-cu13")
+
+
+def _canonical(name):
+    return re.sub(r"[-_.]+", "-", name).lower()
+
+
+def _cuvs_wheel_requirements():
+    """Requires-Dist of the installed faiss-gpu-cuvs wheel, grouped by
+    canonical name, or None when faiss did not come from that wheel.
+
+    Values are lists: one name can appear several times under different
+    markers or extras, and collapsing them would hide a bad pin.
+    """
+    try:
+        specs = importlib.metadata.requires("faiss-gpu-cuvs")
+    except importlib.metadata.PackageNotFoundError:
+        return None
+    grouped = {}
+    for req in map(Requirement, specs or ()):
+        grouped.setdefault(_canonical(req.name), []).append(req)
+    return grouped
+
+
+_CUVS_WHEEL_REQS = _cuvs_wheel_requirements() if _CUVS_BUILD else None
+_skip_unless_cuvs_wheel = unittest.skipUnless(
+    _CUVS_WHEEL_REQS is not None,
+    "Skipping cuVS packaging tests: not a faiss-gpu-cuvs wheel install",
+)
+
+
+@_skip_unless_cuvs_wheel
+class TestCuvsRapidsPinning(unittest.TestCase):
+    """Catch: RAPIDS build/runtime skew, undeclared RAPIDS deps.
+
+    The wheel is compiled against one RAPIDS series but resolves RAPIDS at
+    install time. A declared range wider than that series lets the installer
+    pick a librmm that no longer exports the symbols libfaiss.so was linked
+    against; `import faiss` then dies during collection, before any other
+    test in this file runs.
+    """
+
+    def _declared(self, dist):
+        reqs = _CUVS_WHEEL_REQS.get(_canonical(dist))
+        self.assertTrue(
+            reqs,
+            f"{dist} is dlopened at import but not declared by the wheel, "
+            f"so its version floats on other packages' metadata",
+        )
+        return reqs
+
+    def test_preloaded_rapids_dists_are_declared(self):
+        for dist in _RAPIDS_DISTS:
+            self._declared(dist)
+
+    def test_rapids_dists_admit_only_the_build_series(self):
+        for dist in _RAPIDS_DISTS:
+            for req in self._declared(dist):
+                for probe in _RAPIDS_PROBES:
+                    self.assertEqual(
+                        _RAPIDS_SERIES.contains(probe),
+                        req.specifier.contains(probe),
+                        f"{dist} spec '{req.specifier}' disagrees with the "
+                        f"build series {_RAPIDS_SERIES} on RAPIDS {probe}; "
+                        f"a spec spanning series renames the rmm:: symbols "
+                        f"libfaiss.so is linked against",
+                    )
+
+    def test_installed_rapids_matches_the_build_series(self):
+        for dist in _RAPIDS_DISTS:
+            try:
+                version = importlib.metadata.version(dist)
+            except importlib.metadata.PackageNotFoundError:
+                self.fail(f"{dist} is declared but not installed")
+            self.assertTrue(
+                _RAPIDS_SERIES.contains(version),
+                f"{dist} {version} is outside the {_RAPIDS_SERIES} series "
+                f"the wheel was built against",
+            )

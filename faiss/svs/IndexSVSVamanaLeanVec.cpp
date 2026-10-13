@@ -44,8 +44,15 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         MetricType metric,
         size_t leanvec_dims,
         SVSStorageKind storage_kind,
-        bool is_static)
-        : IndexSVSVamana(d, degree, metric, storage_kind, is_static) {
+        bool is_static,
+        bool store_vectors)
+        : IndexSVSVamana(
+                  d,
+                  degree,
+                  metric,
+                  storage_kind,
+                  is_static,
+                  store_vectors) {
     is_trained = false;
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
 }

@@ -5,17 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifndef HAMMING_COMPUTER_AVX512_SPR_H
-#define HAMMING_COMPUTER_AVX512_SPR_H
+#ifndef HAMMING_COMPUTER_AVX512_VPOPCNT_H
+#define HAMMING_COMPUTER_AVX512_VPOPCNT_H
 
-// AVX512_SPR HammingComputer specializations using VPOPCNTDQ.
-// On Sapphire Rapids+, _mm512_popcnt_epi64 (and _mm256_popcnt_epi64 with VL)
-// are unconditionally available. This gives a faster path than the scalar
-// popcount fallback used in the base AVX512 specializations when compiled
-// without -mavx512vpopcntdq.
+// AVX512_VPOPCNT HammingComputer specializations. The 32/64/Default kernels
+// use VPOPCNTDQ; the batched 20-byte kernel uses AVX512_BITALG. This gives
+// a faster path than the scalar popcount fallback used in the base AVX512
+// specializations when compiled without -mavx512vpopcntdq.
 
 #include <cassert>
 #include <cstdint>
+#include <cstring>
+
+#include <faiss/utils/popcount.h>
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/hamming_distance/hamming_computer-avx512.h>
@@ -25,31 +27,90 @@
 namespace faiss {
 
 /***************************************************************************
- * AVX512_SPR inheriting specializations for types without custom SPR code.
+ * AVX512_VPOPCNT inheriting specializations without custom VPOPCNT code.
  ***************************************************************************/
 
-#define FAISS_INHERIT_HAMMING_SPR(Class)                                   \
-    template <>                                                            \
-    struct Class##                                                         \
-            _tpl<SIMDLevel::AVX512_SPR> : Class##_tpl<SIMDLevel::AVX512> { \
-        using Class##_tpl<SIMDLevel::AVX512>::Class##_tpl;                 \
+#define FAISS_INHERIT_HAMMING_VPOPCNT(Class)                                   \
+    template <>                                                                \
+    struct Class##                                                             \
+            _tpl<SIMDLevel::AVX512_VPOPCNT> : Class##_tpl<SIMDLevel::AVX512> { \
+        using Class##_tpl<SIMDLevel::AVX512>::Class##_tpl;                     \
     }
 
-FAISS_INHERIT_HAMMING_SPR(HammingComputer16);
-FAISS_INHERIT_HAMMING_SPR(HammingComputer20);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputer8);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputer16);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputer32);
-FAISS_INHERIT_HAMMING_SPR(GenHammingComputerM8);
+FAISS_INHERIT_HAMMING_VPOPCNT(HammingComputer16);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputer8);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputer16);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputer32);
+FAISS_INHERIT_HAMMING_VPOPCNT(GenHammingComputerM8);
 
-#undef FAISS_INHERIT_HAMMING_SPR
+#undef FAISS_INHERIT_HAMMING_VPOPCNT
 
 /***************************************************************************
- * Custom AVX512_SPR specializations using VPOPCNTDQ.
+ * Custom AVX512_VPOPCNT specializations using VPOPCNTDQ.
  ***************************************************************************/
 
 template <>
-struct HammingComputer32_tpl<SIMDLevel::AVX512_SPR> {
+struct HammingComputer20_tpl<SIMDLevel::AVX512_VPOPCNT>
+        : HammingComputer20_tpl<SIMDLevel::AVX512> {
+    using HammingComputer20_tpl<SIMDLevel::AVX512>::HammingComputer20_tpl;
+
+    static constexpr size_t batch_size = 8;
+    static constexpr size_t kStride = get_code_size();
+    // 160 bytes is what the three loads in hamming_batch() cover, and the
+    // 16+4 or 4+16 split it applies per lane is written out for 20 bytes:
+    // the literal offsets and the two group indices are not derived from
+    // kStride, so another width needs the body reworked, not just retuned.
+    static_assert(batch_size * kStride == 160);
+    static_assert(kStride == 20, "hamming_batch() hardcodes the 16+4 split");
+    static constexpr __mmask64 kTailMask = 0xFFFFFFFFull;
+
+    /// Writes the query repeated batch_size times. The caller owns the buffer,
+    /// so a computer used only through hamming() carries no batch state.
+    static void build_batch_query(const uint8_t* a8, uint8_t* tile) {
+        for (size_t k = 0; k < batch_size; k++) {
+            memcpy(tile + k * kStride, a8, kStride);
+        }
+    }
+
+    static void hamming_batch(
+            const uint8_t* tile,
+            const uint8_t* codes,
+            int32_t* dis) {
+        const __m512i zero = _mm512_setzero_si512();
+        const __m512i p0 = _mm512_popcnt_epi8(_mm512_xor_si512(
+                _mm512_loadu_si512(codes), _mm512_loadu_si512(tile)));
+        const __m512i p1 = _mm512_popcnt_epi8(_mm512_xor_si512(
+                _mm512_loadu_si512(codes + 64), _mm512_loadu_si512(tile + 64)));
+        const __m512i p2 = _mm512_popcnt_epi8(_mm512_xor_si512(
+                _mm512_maskz_loadu_epi8(kTailMask, codes + 128),
+                _mm512_maskz_loadu_epi8(kTailMask, tile + 128)));
+
+        alignas(64) uint64_t grp[24];
+        _mm512_store_si512(grp, _mm512_sad_epu8(p0, zero));
+        _mm512_store_si512(grp + 8, _mm512_sad_epu8(p1, zero));
+        _mm512_store_si512(grp + 16, _mm512_sad_epu8(p2, zero));
+
+        for (size_t k = 0; k < batch_size; k++) {
+            const size_t s = k * kStride;
+            const size_t g = s / 8;
+            uint32_t xh, qh;
+            if (s % 8 == 0) {
+                memcpy(&xh, codes + s + 16, 4);
+                memcpy(&qh, tile + s + 16, 4);
+                dis[k] = static_cast<int32_t>(
+                        grp[g] + grp[g + 1] + popcount32(xh ^ qh));
+            } else {
+                memcpy(&xh, codes + s, 4);
+                memcpy(&qh, tile + s, 4);
+                dis[k] = static_cast<int32_t>(
+                        popcount32(xh ^ qh) + grp[g + 1] + grp[g + 2]);
+            }
+        }
+    }
+};
+
+template <>
+struct HammingComputer32_tpl<SIMDLevel::AVX512_VPOPCNT> {
     const uint8_t* a8;
 
     HammingComputer32_tpl() {}
@@ -81,7 +142,7 @@ struct HammingComputer32_tpl<SIMDLevel::AVX512_SPR> {
 };
 
 template <>
-struct HammingComputer64_tpl<SIMDLevel::AVX512_SPR> {
+struct HammingComputer64_tpl<SIMDLevel::AVX512_VPOPCNT> {
     const uint8_t* a8;
 
     HammingComputer64_tpl() {}
@@ -108,7 +169,7 @@ struct HammingComputer64_tpl<SIMDLevel::AVX512_SPR> {
 };
 
 template <>
-struct HammingComputerDefault_tpl<SIMDLevel::AVX512_SPR> {
+struct HammingComputerDefault_tpl<SIMDLevel::AVX512_VPOPCNT> {
     const uint8_t* a8;
     int quotient8;
     int remainder8;

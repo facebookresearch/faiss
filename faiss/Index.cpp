@@ -13,8 +13,11 @@
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/utils.h>
 
+#include <algorithm>
 #include <cstring>
+#include <vector>
 
 namespace faiss {
 
@@ -121,6 +124,39 @@ void Index::search_subset(
         float* /*distances*/,
         idx_t* /*labels*/) const {
     FAISS_THROW_MSG("search_subset not implemented for this type of index");
+}
+
+void Index::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (numeric_type == NumericType::Float32) {
+        search(n, static_cast<const float*>(x), k, distances, labels, params);
+        return;
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == NumericType::Float16,
+            "Index::search: unsupported numeric type");
+    FAISS_THROW_IF_NOT(d > 0);
+    // widen blocks of at most 64 MiB of fp32 queries
+    const idx_t bs = std::max<idx_t>(
+            1, idx_t(64) * 1024 * 1024 / (sizeof(float) * idx_t(d)));
+    const uint16_t* x16 = static_cast<const uint16_t*>(x);
+    std::vector<float> buffer(size_t(std::min(n, bs)) * d);
+    for (idx_t i0 = 0; i0 < n; i0 += bs) {
+        const idx_t i1 = std::min(n, i0 + bs);
+        fp16_to_fp32(size_t(i1 - i0) * d, x16 + i0 * d, buffer.data());
+        search(i1 - i0,
+               buffer.data(),
+               k,
+               distances + i0 * k,
+               labels + i0 * k,
+               params);
+    }
 }
 
 void Index::search1(const float*, ResultHandler&, SearchParameters*) const {
