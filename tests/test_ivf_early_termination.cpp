@@ -320,6 +320,67 @@ TEST(IVFEarlyTermination, RangeEarlyExitRejectsUnsupportedParallelMode) {
             faiss::FaissException);
 }
 
+// max_codes in range_search actually truncates and limits distances computed
+TEST(IVFEarlyTermination, RangeSearchHonorsMaxCodes) {
+    auto index = build_ivf_flat();
+    auto* ivf = dynamic_cast<faiss::IndexIVFFlat*>(index.get());
+    ASSERT_NE(ivf, nullptr);
+
+    auto xq = make_data(nq, 0xfacefeed);
+    const float radius = 1.0f;
+
+    faiss::RangeSearchResult full(nq);
+    faiss::SearchParametersIVF p_full;
+    p_full.nprobe = nlist;
+
+    auto& stats = faiss::indexIVF_stats;
+    stats.reset();
+    index->range_search(nq, xq.data(), radius, &full, &p_full);
+    const size_t ndis_full = stats.ndis;
+
+    const size_t target_ndis = ndis_full / (nq * 2);
+    ASSERT_GT(target_ndis, 0);
+
+    faiss::RangeSearchResult early(nq);
+    faiss::SearchParametersIVF p_early;
+    p_early.nprobe = nlist;
+    p_early.max_codes = target_ndis;
+    stats.reset();
+    index->range_search(nq, xq.data(), radius, &early, &p_early);
+    const size_t ndis_early = stats.ndis;
+
+    EXPECT_LE(ndis_early, target_ndis * nq);
+    EXPECT_LT(ndis_early, ndis_full);
+
+    for (size_t q = 0; q < early.nq; q++) {
+        std::set<faiss::idx_t> full_ids(
+                full.labels + full.lims[q], full.labels + full.lims[q + 1]);
+        std::set<faiss::idx_t> early_ids(
+                early.labels + early.lims[q], early.labels + early.lims[q + 1]);
+        for (auto id : early_ids) {
+            EXPECT_TRUE(full_ids.count(id));
+        }
+    }
+}
+
+// max_codes in range_search is only supported in parallel_mode == 0.
+TEST(IVFEarlyTermination, RangeSearchMaxCodesRejectsUnsupportedParallelMode) {
+    auto index = build_ivf_flat();
+    auto* ivf = dynamic_cast<faiss::IndexIVFFlat*>(index.get());
+    ASSERT_NE(ivf, nullptr);
+    ivf->parallel_mode = 1;
+
+    auto xq = make_data(1, 0xbbbb);
+    faiss::RangeSearchResult res(1);
+
+    faiss::SearchParametersIVF params;
+    params.nprobe = 4;
+    params.max_codes = 10;
+    EXPECT_THROW(
+            index->range_search(1, xq.data(), 1.0f, &res, &params),
+            faiss::FaissException);
+}
+
 // IndexIVFStats::ndis is documented as "nb of distances computed".
 // Verify that the post-filter scan_count flowing through
 // InvertedListScannerStats actually populates ndis according to that

@@ -933,13 +933,23 @@ void IndexIVF::range_search_preassigned(
             max_empty_result_buckets == 0 || parallel_mode == 0,
             "max_empty_result_buckets supported only for parallel_mode = 0");
 
+    int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
+
+    FAISS_THROW_IF_NOT_MSG(
+            cur_max_codes == 0 || pmode == 0,
+            "max_codes supported only for parallel_mode = 0");
+
+    const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
+    if (cur_max_codes == 0) {
+        cur_max_codes = unlimited_list_size;
+    }
+
     size_t nlistv = 0, ndis = 0;
 
     std::exception_ptr ex;
 
     std::vector<RangeSearchPartialResult*> all_pres(omp_get_max_threads());
 
-    int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     // don't start parallel section if single query
     [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
             (pmode == 3           ? false
@@ -961,12 +971,15 @@ void IndexIVF::range_search_preassigned(
 
             // prepare the list scanning function
 
-            auto scan_list_func = [&](size_t i,
-                                      size_t ik,
-                                      RangeQueryResult& qres) {
+            auto scan_list_func =
+                    [&](size_t i,
+                        size_t ik,
+                        RangeQueryResult& qres,
+                        idx_t list_size_max =
+                                std::numeric_limits<idx_t>::max()) -> size_t {
                 idx_t key = keys[i * cur_nprobe + ik]; /* select the list */
                 if (key < 0) {
-                    return;
+                    return 0;
                 }
 
                 FAISS_THROW_IF_NOT_FMT(
@@ -977,7 +990,7 @@ void IndexIVF::range_search_preassigned(
                         nlist);
 
                 if (invlists->is_empty(key, inverted_list_context)) {
-                    return;
+                    return 0;
                 }
 
                 scanner->set_list(key, coarse_dis[i * cur_nprobe + ik]);
@@ -994,12 +1007,17 @@ void IndexIVF::range_search_preassigned(
                     InvertedLists::ScopedCodes scodes(invlists, key);
                     InvertedLists::ScopedIds ids(invlists, key);
                     size_t list_size = invlists->list_size(key);
+                    if (list_size > static_cast<size_t>(list_size_max)) {
+                        list_size = static_cast<size_t>(list_size_max);
+                    }
 
                     scanner->scan_codes_range(
                             list_size, scodes.get(), ids.get(), radius, qres);
                 }
                 nlistv++;
-                ndis += qres.stats.scan_cnt - scan_cnt0;
+                const size_t scanned_in_list = qres.stats.scan_cnt - scan_cnt0;
+                ndis += scanned_in_list;
+                return scanned_in_list;
             };
 
             if (parallel_mode == 0) {
@@ -1013,8 +1031,10 @@ void IndexIVF::range_search_preassigned(
                         // results. A hit resets the counter.
                         size_t prev_nres = qres.nres;
                         size_t ndup = 0;
+                        idx_t nscan = 0;
                         for (idx_t ik = 0; ik < cur_nprobe; ik++) {
-                            scan_list_func(i, ik, qres);
+                            const idx_t list_size_max = cur_max_codes - nscan;
+                            nscan += scan_list_func(i, ik, qres, list_size_max);
                             if (max_empty_result_buckets > 0) {
                                 // Early-stop check: stop range search after
                                 // enough consecutive empty probes.
@@ -1023,6 +1043,9 @@ void IndexIVF::range_search_preassigned(
                                     break;
                                 }
                                 prev_nres = qres.nres;
+                            }
+                            if (nscan >= cur_max_codes) {
+                                break;
                             }
                         }
                     } catch (...) {

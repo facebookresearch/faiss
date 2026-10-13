@@ -570,6 +570,50 @@ class TestSearchParams(unittest.TestCase):
             if stats.ndis < target_ndis:
                 np.testing.assert_equal(I0[q], Iq[0])
 
+    def test_max_codes_range_search(self):
+        "tests whether max_codes is taken into account during range_search"
+        ds = datasets.SyntheticDataset(32, 1000, 100, 20)
+        index = faiss.index_factory(ds.d, "IVF32,Flat")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        radius = 20.0
+        stats = faiss.cvar.indexIVF_stats
+        stats.reset()
+        lims0, D0, I0 = index.range_search(
+            ds.get_queries(),
+            radius,
+            params=faiss.SearchParametersIVF(nprobe=8),
+        )
+        ndis0 = stats.ndis
+        target_ndis = ndis0 // ds.nq
+
+        for q in range(ds.nq):
+            stats.reset()
+            limsq, Dq, Iq = index.range_search(
+                ds.get_queries()[q : q + 1],
+                radius,
+                params=faiss.SearchParametersIVF(
+                    nprobe=8, max_codes=target_ndis
+                ),
+            )
+            self.assertLessEqual(stats.ndis, target_ndis)
+            # early exit results must be a subset of full probe results
+            full_ids = set(I0[lims0[q] : lims0[q + 1]])
+            early_ids = set(Iq)
+            self.assertTrue(early_ids.issubset(full_ids))
+
+        # Test direct index.max_codes attribute
+        index.max_codes = target_ndis
+        stats.reset()
+        index.range_search(ds.get_queries()[:1], radius)
+        self.assertLessEqual(stats.ndis, target_ndis)
+
+        # Test that unsupported parallel_mode raises RuntimeError
+        index.parallel_mode = 1
+        with self.assertRaises(RuntimeError):
+            index.range_search(ds.get_queries()[:1], radius)
+
     def test_ownership(self):
         # see https://github.com/facebookresearch/faiss/issues/2996
         subset = np.arange(0, 50)
