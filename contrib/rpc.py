@@ -29,6 +29,8 @@ PORT = 12032
 safe_modules = {
     "numpy",
     "numpy.core.multiarray",
+    # numpy >= 2 pickles arrays with numpy._core.multiarray._reconstruct
+    "numpy._core.multiarray",
 }
 
 
