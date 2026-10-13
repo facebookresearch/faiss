@@ -147,8 +147,12 @@ void queryTest(Options opt, faiss::MetricType metricType) {
             : (faiss::Index*)&coarseQuantizerIP;
 
     faiss::IndexIVFPQ cpuIndex(
-            quantizer, opt.dim, opt.numCentroids, opt.codes, opt.bitsPerCode);
-    cpuIndex.metric_type = metricType;
+            quantizer,
+            opt.dim,
+            opt.numCentroids,
+            opt.codes,
+            opt.bitsPerCode,
+            metricType);
     cpuIndex.nprobe = opt.nprobe;
     cpuIndex.train(opt.numTrain, trainVecs.data());
     cpuIndex.add(opt.numAdd, addVecs.data());
@@ -385,9 +389,13 @@ void addTest(Options opt, faiss::MetricType metricType) {
             : (faiss::Index*)&coarseQuantizerIP;
 
     faiss::IndexIVFPQ cpuIndex(
-            quantizer, opt.dim, opt.numCentroids, opt.codes, opt.bitsPerCode);
+            quantizer,
+            opt.dim,
+            opt.numCentroids,
+            opt.codes,
+            opt.bitsPerCode,
+            metricType);
     cpuIndex.nprobe = opt.nprobe;
-    cpuIndex.metric_type = metricType;
     cpuIndex.train(opt.numTrain, trainVecs.data());
 
     // Use the default temporary memory management to test the memory
@@ -911,8 +919,12 @@ void testIDSelectorIVFPQ(faiss::MetricType metricType) {
             : (faiss::Index*)&quantizerIP;
 
     faiss::IndexIVFPQ cpuIndex(
-            quantizer, opt.dim, opt.numCentroids, opt.codes, opt.bitsPerCode);
-    cpuIndex.metric_type = metricType;
+            quantizer,
+            opt.dim,
+            opt.numCentroids,
+            opt.codes,
+            opt.bitsPerCode,
+            metricType);
     cpuIndex.train(opt.numTrain, trainVecs.data());
     cpuIndex.add(opt.numAdd, addVecs.data());
 
