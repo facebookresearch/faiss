@@ -26,6 +26,12 @@
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 
+#include <cuvs/selection/select_k.hpp>
+#include <raft/core/device_mdarray.hpp>
+
+#include <algorithm>
+#include <optional>
+
 namespace faiss {
 namespace gpu {
 
@@ -89,6 +95,7 @@ void CuvsIVFRaBitQ::train(idx_t n, const float* x) {
                         cuvs::neighbors::ivf_rabitq::build(
                                 raft_handle, params, dataset));
     }
+    size_ = n;
 }
 
 void CuvsIVFRaBitQ::search(
@@ -101,13 +108,17 @@ void CuvsIVFRaBitQ::search(
     FAISS_ASSERT(cuvs_index_);
     const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
     const auto n = queries.getSize(0);
+    const int searchK =
+            static_cast<int>(std::min<idx_t>(static_cast<idx_t>(k), size_));
+    FAISS_ASSERT(searchK > 0);
 
     auto queriesView = raft::make_device_matrix_view<const float, int64_t>(
             queries.data(), n, dim_);
-    auto distancesView = raft::make_device_matrix_view<float, int64_t>(
-            outDistances.data(), n, k);
-    auto indicesView = raft::make_device_matrix_view<int64_t, int64_t>(
-            outIndices.data(), n, k);
+
+    auto rawDistances =
+            raft::make_device_matrix<float, int64_t>(raft_handle, n, searchK);
+    auto rawIndices =
+            raft::make_device_matrix<int64_t, int64_t>(raft_handle, n, searchK);
 
     cuvs::neighbors::ivf_rabitq::search_params params;
     params.n_probes = nprobe;
@@ -117,12 +128,66 @@ void CuvsIVFRaBitQ::search(
             params,
             *cuvs_index_,
             queriesView,
-            indicesView,
-            distancesView);
+            rawIndices.view(),
+            rawDistances.view());
+
+    auto rawDistancesView = raft::make_device_matrix_view<const float, int64_t>(
+            rawDistances.data_handle(), n, searchK);
+    auto rawIndicesView = raft::make_device_matrix_view<const int64_t, int64_t>(
+            rawIndices.data_handle(), n, searchK);
+
+    if (searchK == k) {
+        auto distancesView = raft::make_device_matrix_view<float, int64_t>(
+                outDistances.data(), n, k);
+        auto indicesView = raft::make_device_matrix_view<int64_t, int64_t>(
+                outIndices.data(), n, k);
+        cuvs::selection::select_k(
+                raft_handle,
+                rawDistancesView,
+                std::make_optional(rawIndicesView),
+                distancesView,
+                indicesView,
+                /*select_min=*/true,
+                /*sorted=*/true);
+        finalizeCuvsL2Results(
+                resources_,
+                queries,
+                outDistances.data(),
+                outIndices.data(),
+                k,
+                outDistances.data(),
+                outIndices.data(),
+                k,
+                size_);
+    } else {
+        auto sortedDistances = raft::make_device_matrix<float, int64_t>(
+                raft_handle, n, searchK);
+        auto sortedIndices = raft::make_device_matrix<int64_t, int64_t>(
+                raft_handle, n, searchK);
+        cuvs::selection::select_k(
+                raft_handle,
+                rawDistancesView,
+                std::make_optional(rawIndicesView),
+                sortedDistances.view(),
+                sortedIndices.view(),
+                /*select_min=*/true,
+                /*sorted=*/true);
+        finalizeCuvsL2Results(
+                resources_,
+                queries,
+                sortedDistances.data_handle(),
+                sortedIndices.data_handle(),
+                searchK,
+                outDistances.data(),
+                outIndices.data(),
+                k,
+                size_);
+    }
 }
 
 void CuvsIVFRaBitQ::reset() {
     cuvs_index_.reset();
+    size_ = 0;
 }
 
 } // namespace gpu

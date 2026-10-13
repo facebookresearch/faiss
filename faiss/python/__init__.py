@@ -67,7 +67,7 @@ def _preload_gpu_libs():
                 "faiss-gpu-cuvs installed but the CUDA 13 runtime wheels are "
                 "missing — pip install 'nvidia-cuda-runtime>=13.2,<14' "
                 "'nvidia-cublas>=13.2,<14' 'nvidia-curand>=10.3.7,<11' "
-                "'nvidia-nvjitlink>=13.2,<14'"
+                "'nvidia-nvjitlink>=13.3,<14'"
             ) from e
         # nvjitlink before cublas: cublas 13 links it.
         for _soname in (
@@ -121,11 +121,8 @@ def _preload_gpu_libs():
         raise RuntimeError(
             "faiss-gpu-cuvs installed but the cuVS runtime wheels are "
             "missing — "
-            "pip install --pre --extra-index-url "
-            "https://pypi.anaconda.org/rapidsai-wheels-nightly/simple "
-            "'libcuvs-cu13==26.10.*,>=0.0.0a0' "
-            "'libraft-cu13==26.10.*,>=0.0.0a0' "
-            "'librmm-cu13==26.10.*,>=0.0.0a0'"
+            "pip install 'libcuvs-cu13==26.10.*' "
+            "'libraft-cu13==26.10.*' 'librmm-cu13==26.10.*'"
         ) from e
 
     for _mod in (librmm, libraft, libcuvs):

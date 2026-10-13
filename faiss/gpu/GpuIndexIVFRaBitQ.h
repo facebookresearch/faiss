@@ -78,9 +78,13 @@ struct SearchParametersIVFRaBitQ : SearchParameters {
 
 /// GPU-native IVF-RaBitQ index backed by cuVS.
 ///
-/// cuVS builds IVF-RaBitQ from a complete dataset. Consequently, the first
-/// call to train() or add() constructs the complete index and incremental
-/// additions are not supported.
+/// cuVS builds IVF-RaBitQ from a complete dataset. Consequently, train() and
+/// the first add() are equivalent: the input becomes the complete indexed
+/// dataset, ntotal is set to n, and implicit IDs are assigned in [0, n).
+/// Incremental additions and custom IDs are not supported. reset() discards
+/// both the index and its trained state, after which train() or add() may build
+/// a replacement. CPU/GPU cloning and Faiss index serialization are not
+/// supported for this GPU-native index.
 class GpuIndexIVFRaBitQ : public GpuIndex {
    public:
     GpuIndexIVFRaBitQ(
@@ -94,8 +98,9 @@ class GpuIndexIVFRaBitQ : public GpuIndex {
 
     void train(idx_t n, const float* x) override;
 
-    /// Build the index from x. This is equivalent to train() for this index.
+    /// Build the complete index from x. This is equivalent to train().
     void add(idx_t n, const float* x) override;
+    void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     void reset() override;
 

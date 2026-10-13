@@ -23,8 +23,10 @@
 
 #include <faiss/gpu/GpuIndexIVFRaBitQ.h>
 
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/CuvsIVFRaBitQ.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
 
 #include <algorithm>
 #include <limits>
@@ -49,6 +51,16 @@ GpuIndexIVFRaBitQ::GpuIndexIVFRaBitQ(
             config.bitsPerDim >= 1 && config.bitsPerDim <= 9,
             "GpuIndexIVFRaBitQ bitsPerDim must be in [1, 9]");
     FAISS_THROW_IF_NOT_MSG(
+            config.kmeansNIterations > 0,
+            "GpuIndexIVFRaBitQ kmeansNIterations must be greater than zero");
+    FAISS_THROW_IF_NOT_MSG(
+            config.maxTrainPointsPerCluster > 0,
+            "GpuIndexIVFRaBitQ maxTrainPointsPerCluster must be greater than "
+            "zero");
+    FAISS_THROW_IF_NOT_MSG(
+            config.streamingBatchSize > 0,
+            "GpuIndexIVFRaBitQ streamingBatchSize must be greater than zero");
+    FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2, "GpuIndexIVFRaBitQ supports METRIC_L2 only");
     FAISS_THROW_IF_NOT_MSG(
             should_use_cuvs(config),
@@ -63,6 +75,9 @@ void GpuIndexIVFRaBitQ::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(
             n > 0, "GpuIndexIVFRaBitQ cannot train on an empty dataset");
+    FAISS_THROW_IF_NOT_MSG(
+            n <= static_cast<idx_t>(std::numeric_limits<uint32_t>::max()),
+            "GpuIndexIVFRaBitQ supports at most UINT32_MAX vectors");
 
     if (is_trained) {
         return;
@@ -70,7 +85,21 @@ void GpuIndexIVFRaBitQ::train(idx_t n, const float* x) {
 
     index_ = std::make_shared<CuvsIVFRaBitQ>(
             resources_.get(), d, nlist_, metric_type, ivfRabitqConfig_);
-    index_->train(n, x);
+
+    const int inputDevice = getDeviceForAddress(x);
+    if (inputDevice >= 0 && inputDevice != config_.device) {
+        auto stream = resources_->getDefaultStreamCurrentDevice();
+        auto dataset = toDeviceTemporary<float, 2>(
+                resources_.get(),
+                config_.device,
+                const_cast<float*>(x),
+                stream,
+                {n, d});
+        index_->train(n, dataset.data());
+    } else {
+        // Keep host input on the host so cuVS can use its streaming build.
+        index_->train(n, x);
+    }
     ntotal = n;
     is_trained = true;
 }
@@ -81,6 +110,16 @@ void GpuIndexIVFRaBitQ::add(idx_t n, const float* x) {
             "GpuIndexIVFRaBitQ does not support incremental additions; "
             "call reset() before building a new index");
     train(n, x);
+}
+
+void GpuIndexIVFRaBitQ::add_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == NumericType::Float32,
+            "GpuIndexIVFRaBitQ only supports Float32 input");
+    add(n, static_cast<const float*>(x));
 }
 
 bool GpuIndexIVFRaBitQ::addImplRequiresIDs_() const {
@@ -116,8 +155,7 @@ void GpuIndexIVFRaBitQ::searchImpl_(
     uint32_t nprobe = params ? params->nprobe : ivfRabitqConfig_.nprobe;
     const auto searchMode =
             params ? params->searchMode : ivfRabitqConfig_.searchMode;
-    FAISS_THROW_IF_NOT_MSG(
-            nprobe > 0, "GpuIndexIVFRaBitQ nprobe must be greater than zero");
+    validateNProbe(nprobe, true);
     nprobe = std::min(nprobe, static_cast<uint32_t>(nlist_));
 
     Tensor<float, 2, true> queries(const_cast<float*>(x), {n, d});

@@ -118,9 +118,11 @@ class BinaryCuvsCagra {
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
-    std::shared_ptr<cuvs::neighbors::cagra::device_standard_index<uint8_t, uint32_t>>
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_standard_index<uint8_t, uint32_t>>
             cuvs_index{nullptr};
-    std::shared_ptr<cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
             cuvs_padded_index{nullptr};
     std::unique_ptr<cuvs::neighbors::device_padded_dataset<uint8_t, int64_t>>
             dataset_storage_;

@@ -155,9 +155,11 @@ class CuvsCagra {
     /// Parameter to use MST optimization to guarantee graph connectivity
     bool guarantee_connectivity_ = false;
 
-    std::shared_ptr<cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>>
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_standard_index<data_t, uint32_t>>
             cuvs_index{nullptr};
-    std::shared_ptr<cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
             cuvs_padded_index{nullptr};
     std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
             dataset_storage_;

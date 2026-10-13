@@ -60,6 +60,7 @@ class CuvsIVFRaBitQ {
     const idx_t nlist_;
     const faiss::MetricType metric_;
     const GpuIndexIVFRaBitQConfig config_;
+    idx_t size_ = 0;
     std::shared_ptr<cuvs::neighbors::ivf_rabitq::index<int64_t>> cuvs_index_;
 };
 
