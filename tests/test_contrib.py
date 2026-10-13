@@ -1151,6 +1151,16 @@ class TestClientServer(unittest.TestCase):
     def test_search_L2(self):
         self.do_test_search(faiss.METRIC_L2)
 
+    def test_unknown_method(self):
+        client_index = self.connect([faiss.index_factory(32, "IVF4,Flat")])
+        sub_index = client_index.sub_indexes[0]
+        with self.assertRaisesRegex(
+            rpc.ServerException, "unknown method no_such_method"
+        ):
+            sub_index.no_such_method()
+        # the connection is still usable
+        self.assertEqual(sub_index.get_ntotal(), 0)
+
     def test_unpickle_array(self):
         x = np.arange(12, dtype="float32").reshape(3, 4)
         buf = io.BytesIO(pickle.dumps(x, protocol=4))
