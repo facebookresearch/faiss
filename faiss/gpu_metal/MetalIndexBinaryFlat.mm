@@ -40,6 +40,24 @@ int checkedDimension(const faiss::IndexBinaryFlat* index) {
     return index->d;
 }
 
+id<MTLBuffer> reserveSearchBuffer(
+        id<MTLDevice> device,
+        id<MTLBuffer> current,
+        size_t bytes) {
+    const size_t limit = device.maxBufferLength;
+    FAISS_THROW_IF_NOT(bytes > 0 && bytes <= limit);
+    const size_t capacity = current.length;
+    if (capacity >= bytes) {
+        return current;
+    }
+    const size_t doubled = capacity > limit / 2 ? limit : capacity * 2;
+    auto buffer = [device newBufferWithLength:std::max(bytes, doubled)
+                                      options:MTLResourceStorageModeShared];
+    FAISS_THROW_IF_NOT_MSG(
+            buffer, "MetalIndexBinaryFlat: search allocation failed");
+    return buffer;
+}
+
 } // namespace
 
 MetalIndexBinaryFlat::MetalIndexBinaryFlat(
@@ -117,6 +135,9 @@ void MetalIndexBinaryFlat::add(idx_t n, const uint8_t* x) {
 void MetalIndexBinaryFlat::reset() {
     cpuIndex_.reset();
     vectorsBuf_ = nil;
+    queryBuf_ = nil;
+    distanceBuf_ = nil;
+    labelBuf_ = nil;
     ntotal = 0;
 }
 
@@ -150,17 +171,23 @@ void MetalIndexBinaryFlat::search(
 
     @autoreleasepool {
         auto device = resources_->getDevice();
-        id<MTLBuffer> queries = upload(x, checkedBytes(n, code_size));
+        size_t queryBytes = checkedBytes(n, code_size);
         size_t distBytes = checkedBytes(n, checkedBytes(k, sizeof(int32_t)));
         size_t labelBytes = checkedBytes(n, checkedBytes(k, sizeof(idx_t)));
-        FAISS_THROW_IF_NOT(labelBytes <= device.maxBufferLength);
+        // Prepare all replacements before publishing any of them. Partial
+        // allocation failure releases local replacements and retains the old
+        // scratch capacities; neither outputs nor database state are changed.
+        id<MTLBuffer> queries =
+                reserveSearchBuffer(device, queryBuf_, queryBytes);
         id<MTLBuffer> outDist =
-                [device newBufferWithLength:distBytes
-                                    options:MTLResourceStorageModeShared];
+                reserveSearchBuffer(device, distanceBuf_, distBytes);
         id<MTLBuffer> outIdx =
-                [device newBufferWithLength:labelBytes
-                                    options:MTLResourceStorageModeShared];
+                reserveSearchBuffer(device, labelBuf_, labelBytes);
         FAISS_THROW_IF_NOT(outDist && outIdx && vectorsBuf_);
+        queryBuf_ = queries;
+        distanceBuf_ = outDist;
+        labelBuf_ = outIdx;
+        std::memcpy(queries.contents, x, queryBytes);
         auto& kernels = getMetalKernels(device);
         FAISS_THROW_IF_NOT_MSG(
                 kernels.isValid(), "Metal Hamming library unavailable");

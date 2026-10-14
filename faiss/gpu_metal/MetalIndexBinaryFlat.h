@@ -56,6 +56,11 @@ class MetalIndexBinaryFlat : public faiss::IndexBinary {
     std::shared_ptr<MetalResources> resources_;
     faiss::IndexBinaryFlat cpuIndex_;
     id<MTLBuffer> vectorsBuf_ = nil;
+    // Search is synchronous and callers serialize access, so scratch buffers
+    // can be reused after waitUntilCompleted. ARC releases them on destruction.
+    mutable id<MTLBuffer> queryBuf_ = nil;
+    mutable id<MTLBuffer> distanceBuf_ = nil;
+    mutable id<MTLBuffer> labelBuf_ = nil;
 
     id<MTLBuffer> upload(const uint8_t* data, size_t bytes) const;
 };

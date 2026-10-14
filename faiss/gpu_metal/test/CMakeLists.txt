@@ -83,7 +83,7 @@ target_compile_options(TestMetalBinaryFlatFailures PRIVATE -fobjc-arc)
 target_compile_definitions(TestMetalBinaryFlatFailures PRIVATE
     FAISS_TEST_METALLIB_PATH="${PROJECT_BINARY_DIR}/faiss/gpu_metal/MetalDistance.metallib"
 )
-foreach(fault function pipeline growth)
+foreach(fault function pipeline growth scratch)
     add_test(NAME TestMetalIndexBinaryFlat.Reject_${fault}
         COMMAND TestMetalBinaryFlatFailures ${fault})
     set_tests_properties(TestMetalIndexBinaryFlat.Reject_${fault} PROPERTIES

@@ -8,6 +8,7 @@
 
 #include <faiss/gpu_metal/MetalIndexBinaryFlat.h>
 #import <objc/runtime.h>
+#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <vector>
@@ -51,6 +52,7 @@ id<MTLComputePipelineState> rejectPipeline(
 size_t allocationCount = 0;
 size_t allocatedBytes = 0;
 bool rejectAllocation = false;
+size_t rejectAt = 0;
 typedef id<MTLBuffer> Allocate(id, SEL, NSUInteger, MTLResourceOptions)
         __attribute__((ns_returns_retained));
 id<MTLBuffer> trackAllocation(
@@ -65,7 +67,7 @@ id<MTLBuffer> trackAllocation(
         MTLResourceOptions options) {
     ++allocationCount;
     allocatedBytes += size;
-    if (rejectAllocation) {
+    if (rejectAllocation || (rejectAt && allocationCount == rejectAt)) {
         return nil;
     }
     return reinterpret_cast<Allocate*>(original)(self, selector, size, options);
@@ -114,6 +116,64 @@ bool checkGrowth(std::shared_ptr<MetalResources> resources) {
     return valid && distance == 0 && label == n;
 }
 
+bool checkScratch(std::shared_ptr<MetalResources> resources) {
+    MetalIndexBinaryFlat index(resources, 24);
+    std::vector<uint8_t> codes(257 * 3, 0);
+    index.add(257, codes.data());
+    constexpr int nq = 7, k = 64;
+    std::vector<uint8_t> queries(513 * 3, 0);
+    std::vector<int32_t> distances(513 * k, -123);
+    std::vector<faiss::idx_t> labels(513 * k, -123);
+    index.search(nq, queries.data(), k, distances.data(), labels.data());
+    auto device = resources->getDevice();
+    Method method = class_getInstanceMethod(
+            [device class], @selector(newBufferWithLength:options:));
+    original = method_setImplementation(
+            method, reinterpret_cast<IMP>(trackAllocation));
+    bool valid = true;
+    // Every individual allocation in a larger search may fail. None may
+    // publish a partial replacement or write any caller output.
+    for (size_t failure : {1u, 2u, 3u}) {
+        std::fill(distances.begin(), distances.end(), -123);
+        std::fill(labels.begin(), labels.end(), -123);
+        allocationCount = 0;
+        rejectAt = failure;
+        bool caught = false;
+        try {
+            index.search(
+                    513, queries.data(), k, distances.data(), labels.data());
+        } catch (const std::exception&) {
+            caught = true;
+        }
+        valid = valid && caught && allocationCount == failure &&
+                std::all_of(
+                        distances.begin(),
+                        distances.end(),
+                        [](int32_t value) { return value == -123; }) &&
+                std::all_of(
+                        labels.begin(), labels.end(), [](faiss::idx_t value) {
+                            return value == -123;
+                        });
+        rejectAt = 0;
+        rejectAllocation = true;
+        allocationCount = 0;
+        index.search(nq, queries.data(), k, distances.data(), labels.data());
+        valid = valid && allocationCount == 0;
+        for (int q = 0; q < nq; ++q) {
+            for (int j = 0; j < k; ++j) {
+                valid = valid && distances[q * k + j] == 0 &&
+                        labels[q * k + j] == j;
+            }
+        }
+        rejectAllocation = false;
+    }
+    method_setImplementation(method, original);
+    index.reset();
+    index.add(257, codes.data());
+    index.search(nq, queries.data(), k, distances.data(), labels.data());
+    return valid && index.ntotal == 257;
+}
+
 } // namespace
 
 // Run each fault in a fresh process: pipeline caches must start empty and Metal
@@ -128,6 +188,9 @@ int main(int argc, char** argv) {
         }
         if (argc == 2 && std::strcmp(argv[1], "growth") == 0) {
             return checkGrowth(resources) ? 0 : 1;
+        }
+        if (argc == 2 && std::strcmp(argv[1], "scratch") == 0) {
+            return checkScratch(resources) ? 0 : 1;
         }
         auto device = resources->getDevice();
         Method method;
