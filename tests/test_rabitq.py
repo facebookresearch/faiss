@@ -685,6 +685,29 @@ class TestMultiBitRaBitQ(unittest.TestCase):
 
     # ==================== Serialization Tests ====================
 
+    def test_deserialize_rejects_truncated_center(self):
+        """A trained IndexRaBitQ whose stored center is shorter than d must
+        be rejected at read time. Otherwise reconstruct() reads center[j] for
+        j in [0, d), overflowing the undersized buffer (fuzzer-found ASAN
+        heap-buffer-overflow in RaBitQuantizer::decode_core)."""
+        ds = datasets.SyntheticDataset(32, 100, 50, 0)
+        # nb_bits == 1 exercises the Ixrq path; nb_bits > 1 the Ixrr path.
+        for nb_bits in [1, 2]:
+            with self.subTest(nb_bits=nb_bits):
+                index = faiss.IndexRaBitQ(ds.d, faiss.METRIC_L2, nb_bits)
+                index.train(ds.get_train())
+                index.add(ds.get_database())
+
+                # Simulate a malformed stream: a trained index whose center
+                # has fewer than d entries.
+                faiss.copy_array_to_vector(
+                    np.zeros(1, dtype="float32"), index.center
+                )
+                index_bytes = faiss.serialize_index(index)
+
+                with self.assertRaises(RuntimeError):
+                    faiss.deserialize_index(index_bytes)
+
     def test_serialization(self):
         """Test serialize/deserialize preserves search results."""
         ds = datasets.SyntheticDataset(64, 150, 200, 10)
