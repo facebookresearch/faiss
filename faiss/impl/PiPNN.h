@@ -16,8 +16,11 @@
 
 namespace faiss {
 
+struct DistanceComputer;
+struct IDSelector;
 struct Index;
 struct PiPNN;
+struct VisitedTable;
 
 namespace pipnn {
 
@@ -79,6 +82,8 @@ struct PiPNN {
     /// point instances per partition wave, which bounds memory
     size_t partition_wave_budget = size_t(1) << 30;
 
+    int search_L = 64; ///< default beam width of search
+
     // result
     MaybeOwnedVector<int32_t> graph; ///< ntotal x R, -1 padded
     int32_t entry_point = -1;        ///< L2 medoid
@@ -95,6 +100,17 @@ struct PiPNN {
     /// Builds over the vectors and metric of storage. Strong guarantee: graph,
     /// entry_point and ntotal are unchanged if it throws.
     void build(const Index& storage, bool verbose = false);
+
+    /// Beam max(L, k); qdis smaller-is-better; vt: ntotal slots, clean in/out.
+    /// Writes the k nearest in sel by (dis, id), padded; sel does not prune.
+    void search(
+            DistanceComputer& qdis,
+            int L,
+            idx_t k,
+            idx_t* I,
+            float* D,
+            VisitedTable& vt,
+            const IDSelector* sel) const;
 #endif
 
     /// Empties the graph; entry_point = -1, ntotal = 0.
