@@ -25,6 +25,14 @@ IndexBinary::IndexBinary(idx_t d_, MetricType metric)
 
 IndexBinary::~IndexBinary() = default;
 
+void IndexBinary::train(const gpu::Dataset&) {
+    FAISS_THROW_MSG("Dataset input is not supported by this index");
+}
+
+void IndexBinary::add(const gpu::Dataset&) {
+    FAISS_THROW_MSG("Dataset input is not supported by this index");
+}
+
 void IndexBinary::train(idx_t, const uint8_t*) {
     // Does nothing by default.
 }

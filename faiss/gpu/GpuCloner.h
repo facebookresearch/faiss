@@ -22,6 +22,43 @@ namespace gpu {
 
 class GpuResourcesProvider;
 
+#ifndef SWIG
+/** Import a CPU HNSW-CAGRA graph while borrowing caller-owned vector storage.
+ * The Dataset allocation must outlive the returned index and queued GPU work.
+ * The caller owns the returned index. Requires a cuVS-enabled build.
+ */
+faiss::Index* indexCpuToGpu(
+        GpuResourcesProvider* provider,
+        int device,
+        const faiss::Index* index,
+        const Dataset& dataset);
+faiss::IndexBinary* indexBinaryCpuToGpu(
+        GpuResourcesProvider* provider,
+        int device,
+        const faiss::IndexBinary* index,
+        const Dataset& dataset);
+faiss::Index* indexCpuToGpu(
+        GpuResourcesProvider*,
+        int,
+        const faiss::Index*,
+        Dataset&&) = delete;
+faiss::IndexBinary* indexBinaryCpuToGpu(
+        GpuResourcesProvider*,
+        int,
+        const faiss::IndexBinary*,
+        Dataset&&) = delete;
+faiss::Index* indexCpuToGpu(
+        GpuResourcesProvider*,
+        int,
+        const faiss::Index*,
+        const Dataset&&) = delete;
+faiss::IndexBinary* indexBinaryCpuToGpu(
+        GpuResourcesProvider*,
+        int,
+        const faiss::IndexBinary*,
+        const Dataset&&) = delete;
+#endif
+
 /// Cloner specialized for GPU -> CPU
 struct ToCPUCloner : faiss::Cloner {
     void merge_index(Index* dst, Index* src, bool successive_ids);

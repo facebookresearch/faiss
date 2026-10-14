@@ -22,6 +22,7 @@
  */
 
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
@@ -36,6 +37,18 @@
 
 #include <raft/core/resource/cuda_stream.hpp>
 #include <raft/stats/neighborhood_recall.cuh>
+
+// Explicit owner kept by each test for the lifetime of its borrowing index.
+faiss::gpu::Dataset makeSearchDataset(
+        faiss::gpu::GpuResourcesProvider* resources,
+        faiss::idx_t n,
+        int dim,
+        const void* data,
+        faiss::NumericType type,
+        int device) {
+    auto source = faiss::gpu::Dataset::viewHost(data, n, dim, type, dim);
+    return faiss::gpu::Dataset::makeDevicePadded(resources, source, device);
+}
 
 struct Options {
     Options() {
@@ -98,8 +111,17 @@ void queryTest(
             config.nn_descent_niter = 20;
         }
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, cpuIndex.d, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim / 8,
+                trainVecs.data(),
+                faiss::NumericType::UInt8,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randBinaryVecs(opt.numQuery, opt.dim);
@@ -209,8 +231,17 @@ void copyToTest(
             config.nn_descent_niter = 20;
         }
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim / 8,
+                trainVecs.data(),
+                faiss::NumericType::UInt8,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         faiss::IndexBinaryHNSWCagra copiedCpuIndex(
                 opt.dim, opt.graphDegree / 2);
@@ -338,8 +369,10 @@ void copyFromTest(
         res.noTempMemory();
 
         // convert to gpu index
+        auto importedDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
+                &res, cpuIndex, 0);
         faiss::gpu::GpuIndexBinaryCagra copiedGpuIndex(&res, cpuIndex.d);
-        copiedGpuIndex.copyFrom(&cpuIndex);
+        copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -351,8 +384,17 @@ void copyFromTest(
             config.nn_descent_niter = 20;
         }
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim / 8,
+                trainVecs.data(),
+                faiss::NumericType::UInt8,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randBinaryVecs(opt.numQuery, opt.dim);
@@ -447,8 +489,17 @@ void testIDSelectorBinaryCagra(std::string selectorName) {
     config.build_algo = faiss::gpu::graph_build_algo::NN_DESCENT;
     config.nn_descent_niter = 20;
 
+    std::optional<faiss::gpu::Dataset> trainingDataset;
+
     faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
-    gpuIndex.train(opt.numTrain, trainVecs.data());
+    trainingDataset.emplace(makeSearchDataset(
+            &res,
+            opt.numTrain,
+            opt.dim / 8,
+            trainVecs.data(),
+            faiss::NumericType::UInt8,
+            opt.device));
+    gpuIndex.train(*trainingDataset);
 
     auto queryVecs = faiss::gpu::randBinaryVecs(opt.numQuery, opt.dim);
     faiss::gpu::TestIDSelectorStruct selector_struct(opt.numTrain);

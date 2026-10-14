@@ -1,157 +1,41 @@
-# @lint-ignore-every LICENSELINT
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-#
-# Copyright (c) 2025, NVIDIA CORPORATION.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+# This source code is licensed under the MIT license in the LICENSE file.
 
-import numpy as np
+"""Dataset is C++ only; binary graph/search coverage lives in C++ tests."""
 import unittest
-
+import numpy as np
 import faiss
 
-from faiss.contrib import evaluation
 
-
-@unittest.skip(
-    "GpuIndexBinaryCagra Python searches deadlock or hit illegal memory "
-    "accesses nondeterministically with cuVS 26.06; covered by C++ tests."
-)
-@unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
-)
-class TestInterop(unittest.TestCase):
-
-    def do_interop(self):
-        d = 64 * 8
-        k = 12
-
+@unittest.skipIf("CUVS" not in faiss.get_compile_options(), "requires cuVS")
+class TestBinaryCagraDatasetBoundary(unittest.TestCase):
+    def test_pointer_build_requires_dataset(self):
         res = faiss.StandardGpuResources()
+        index = faiss.GpuIndexBinaryCagra(res, 160)
+        xb = np.zeros((64, 20), dtype="uint8")
+        for method in (index.train, index.add):
+            with self.assertRaisesRegex(RuntimeError, "Dataset"):
+                method(xb)
+        self.assertFalse(hasattr(index, "updateDataset"))
+        self.assertEqual(index.ntotal, 0)
 
-        index = faiss.GpuIndexBinaryCagra(res, d)
-        xb = np.random.randint(
-            low=0, high=256, size=(1000000, d // 8), dtype=np.uint8
-        )
-        index.train(xb)
-        queries = np.random.randint(
-            low=0, high=256, size=(1000, d // 8), dtype=np.uint8
-        )
-        Dnew, Inew = index.search(queries, k)
-
-        cpu_index = faiss.index_binary_gpu_to_cpu(index)
-        Dref, Iref = cpu_index.search(queries, k)
-
-        evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
-
-        deserialized_index = faiss.deserialize_index_binary(
-            faiss.serialize_index_binary(cpu_index)
-        )
-
-        gpu_index = faiss.index_binary_cpu_to_gpu(res, 0, deserialized_index)
-        Dnew2, Inew2 = gpu_index.search(queries, k)
-
-        evaluation.check_ref_knn_with_draws(Dnew2, Inew2, Dnew, Inew, k)
-
-    def test_interop(self):
-        self.do_interop()
-
-
-@unittest.skip(
-    "GpuIndexBinaryCagra Python searches deadlock or hit illegal memory "
-    "accesses nondeterministically with cuVS 26.06; covered by C++ tests."
-)
-@unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
-)
-class TestComputeGT(unittest.TestCase):
-
-    def do_compute_GT(self, build_algo=None):
-        d = 64 * 8
-        k = 12
-        flat_index = faiss.IndexBinaryFlat(d)
-        xb = np.random.randint(
-            low=0, high=256, size=(1000000, d // 8), dtype=np.uint8
-        )
-        flat_index.add(xb)
-        queries = np.random.randint(
-            low=0, high=256, size=(1000, d // 8), dtype=np.uint8
-        )
-        Dref, Iref = flat_index.search(queries, k)
-
+    def test_cpu_hnsw_serialization_and_clone_boundary(self):
+        xb = np.random.RandomState(7).randint(0, 256, (128, 20)).astype("uint8")
+        cpu = faiss.IndexBinaryHNSWCagra(160, 16)
+        cpu.add(xb)
+        expected_d, expected_i = cpu.search(xb[:8], 4)
+        loaded = faiss.deserialize_index_binary(faiss.serialize_index_binary(cpu))
+        actual_d, actual_i = loaded.search(xb[:8], 4)
+        np.testing.assert_array_equal(actual_i, expected_i)
+        np.testing.assert_array_equal(actual_d, expected_d)
         res = faiss.StandardGpuResources()
+        with self.assertRaisesRegex(RuntimeError, "Dataset"):
+            faiss.index_binary_cpu_to_gpu(res, 0, loaded)
 
-        # Configure the index with specified build algorithm
-        config = faiss.GpuIndexCagraConfig()
-        if build_algo is not None:
-            config.build_algo = build_algo
-            if build_algo == faiss.graph_build_algo_NN_DESCENT:
-                config.nn_descent_niter = 20
-
-        index = faiss.GpuIndexBinaryCagra(res, d, config)
-        index.train(xb)
-        Dnew, Inew = index.search(queries, k)
-
-        evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
-
-    def test_compute_GT_nn_descent(self):
-        self.do_compute_GT(faiss.graph_build_algo_NN_DESCENT)
-
-    def test_compute_GT_iterative_search(self):
-        self.do_compute_GT(faiss.graph_build_algo_ITERATIVE_SEARCH)
-
-
-@unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(), "only if cuVS is compiled in"
-)
-class TestIndexBinaryIDMap(unittest.TestCase):
-    """Test IndexBinaryIDMap functionality with GpuIndexBinaryCagra"""
-
-    @unittest.skip(
-        "GPU binary-CAGRA search via IndexBinaryIDMap deadlocks at "
-        "d=1024 on CUDA 12.9; root cause TBD."
-    )
-    def test_add_with_ids(self):
-        d = 128 * 8
-        k = 10
-        n = 100000
-
+    def test_idmap_does_not_bypass_dataset_requirement(self):
         res = faiss.StandardGpuResources()
-
-        # Create GpuIndexBinaryCagra with IDMap
-        index_gpu = faiss.GpuIndexBinaryCagra(res, d)
-        index_idmap = faiss.IndexBinaryIDMap(index_gpu)
-
-        xb = np.random.randint(
-            low=0, high=256, size=(n, d // 8), dtype=np.uint8
-        )
-        ids = np.arange(1000000, 1000000 + n).astype(np.int64)
-
-        index_idmap.add_with_ids(xb, ids)
-
-        nq = 1000
-        xq = np.random.randint(
-            low=0, high=256, size=(nq, d // 8), dtype=np.uint8
-        )
-        D, I = index_idmap.search(xq, k)
-
-        self.assertTrue(np.all(I >= 1000000))
-        self.assertTrue(np.all(I < 1000000 + n))
-
-        D_exact, I_exact = index_idmap.search(xb[:10], 1)
-        expected_ids = ids[:10].reshape(-1, 1)
-        np.testing.assert_array_equal(I_exact, expected_ids)
-        np.testing.assert_array_equal(D_exact, np.zeros((10, 1)))
+        cagra = faiss.GpuIndexBinaryCagra(res, 160)
+        index = faiss.IndexBinaryIDMap(cagra)
+        xb = np.zeros((64, 20), dtype="uint8")
+        with self.assertRaisesRegex(RuntimeError, "Dataset"):
+            index.add_with_ids(xb, np.arange(64, dtype="int64"))

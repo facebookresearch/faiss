@@ -33,6 +33,9 @@ namespace faiss {
 namespace gpu {
 
 class BinaryCuvsCagra;
+#ifndef SWIG
+class Dataset;
+#endif
 
 struct GpuIndexBinaryCagra : public IndexBinary {
    public:
@@ -49,21 +52,43 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// stream and handle resources on the GPU
     std::shared_ptr<GpuResources> getResources();
 
-    /// Trains CAGRA based on the given vector data and add them along with ids.
-    /// NB: The use of the add function here is to build the CAGRA graph on
-    /// the base dataset. Use this function when you want to add vectors with
-    /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
+    /// Pointer-based construction is unsupported. Use a caller-owned Dataset.
     void add(idx_t n, const uint8_t* x) override;
-
-    /// Trains CAGRA based on the given vector data.
-    /// NB: The use of the train function here is to build the CAGRA graph on
-    /// the base dataset and is currently the only function to add the full set
-    /// of vectors (without IDs) to the index. There is no external quantizer to
-    /// be trained here.
     void train(idx_t n, const uint8_t* x) override;
+    void add_ex(idx_t n, const void* x, NumericType numericType) override;
+    void train_ex(idx_t n, const void* x, NumericType numericType) override;
 
-    /// Initialize ourselves from the given CPU index; will overwrite
-    /// all data in ourselves
+#ifndef SWIG
+    /// Build the full graph, borrowing UInt8 vectors with dim == d / 8.
+    /// The backing storage must remain alive and unchanged until all index
+    /// operations have completed. Reset before building a second graph.
+    void train(const Dataset& dataset) override;
+    void add(const Dataset& dataset) override;
+    void train(Dataset&&) = delete;
+    void train(const Dataset&&) = delete;
+    void add(Dataset&&) = delete;
+    void add(const Dataset&&) = delete;
+
+    /// Rebind search storage without changing the graph. The vectors and their
+    /// ordering must match the training data. Requires compatible device data;
+    /// any padding must be zero and the caller retains ownership. Previous
+    /// work on the index stream completes before rebinding.
+    void updateDataset(const Dataset& dataset);
+    void updateDataset(Dataset&&) = delete;
+    void updateDataset(const Dataset&&) = delete;
+    bool isSearchReady() const;
+
+    /// Copy the CPU graph while borrowing caller-supplied vectors in the same
+    /// order as the CPU index. The CPU index can be released after this call
+    /// when the supplied Dataset does not borrow its vector storage.
+    void copyFrom(
+            const faiss::IndexBinaryHNSWCagra* index,
+            const Dataset& dataset);
+    void copyFrom(const faiss::IndexBinaryHNSWCagra*, Dataset&&) = delete;
+    void copyFrom(const faiss::IndexBinaryHNSWCagra*, const Dataset&&) = delete;
+#endif
+
+    /// Unsupported without an explicit caller-owned Dataset.
     void copyFrom(const faiss::IndexBinaryHNSWCagra* index);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
