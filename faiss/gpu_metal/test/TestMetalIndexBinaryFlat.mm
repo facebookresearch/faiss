@@ -148,6 +148,85 @@ TEST_F(TestMetalIndexBinaryFlat, DirectCompiledKernelAdversarialCandidates) {
             static_cast<const idx_t*>(ids.contents));
 }
 
+TEST_F(TestMetalIndexBinaryFlat, PackedAndOddStridesSelectionBoundaries) {
+    // Exercise the CUDA-style word path and its byte-stride fallback. Values
+    // around powers of two cover selection capacities and partial segments.
+    for (int cs : {3, 4, 8, 12, 16, 32, 64, 128, 129, 132}) {
+        SCOPED_TRACE(cs);
+        constexpr int nb = 2053, nq = 3;
+        auto database = randomBytes(nb * cs, 177);
+        auto queries = randomBytes(nq * cs, 991);
+        MetalIndexBinaryFlat metal(resources, cs * 8);
+        metal.add(nb, database.data());
+        for (int k :
+             {1,
+              2,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512}) {
+            SCOPED_TRACE(k);
+            std::vector<int32_t> distances(nq * k);
+            std::vector<idx_t> labels(nq * k);
+            metal.search(
+                    nq, queries.data(), k, distances.data(), labels.data());
+            checkExact(
+                    database, queries, cs, k, distances.data(), labels.data());
+        }
+    }
+}
+
+TEST_F(TestMetalIndexBinaryFlat, LateImprovementsAndCutoffTies) {
+    constexpr int cs = 8, nb = 8193;
+    std::vector<uint8_t> database(nb * cs, 0), query(cs, 0);
+    for (int v = 0; v < nb; ++v) {
+        // Repeatedly improve the current cutoff, including the last partial
+        // segment, with enough equal distances to require deterministic IDs.
+        int distance = (nb - v) % (cs * 8 + 1);
+        for (int bit = 0; bit < distance; ++bit) {
+            database[v * cs + bit / 8] |= uint8_t(1u << (bit % 8));
+        }
+    }
+    MetalIndexBinaryFlat metal(resources, cs * 8);
+    metal.add(nb, database.data());
+    for (int k : {1, 20, 128, 512}) {
+        std::vector<int32_t> distances(k);
+        std::vector<idx_t> labels(k);
+        metal.search(1, query.data(), k, distances.data(), labels.data());
+        checkExact(database, query, cs, k, distances.data(), labels.data());
+    }
+}
+
+TEST_F(TestMetalIndexBinaryFlat, IntegerDistancesBeyondFloatPrecision) {
+    constexpr int cs = (1 << 21) + 1, d = cs * 8;
+    std::vector<uint8_t> database(size_t(3) * cs, 255), query(cs, 0);
+    database[cs] = 254;
+    std::fill(database.begin() + 2 * cs, database.end(), 0);
+    MetalIndexBinaryFlat metal(resources, d);
+    metal.add(3, database.data());
+    int32_t distances[4];
+    idx_t labels[4];
+    metal.search(1, query.data(), 4, distances, labels);
+    EXPECT_EQ(distances[0], 0);
+    EXPECT_EQ(distances[1], d - 1);
+    EXPECT_EQ(distances[2], d);
+    EXPECT_EQ(distances[3], std::numeric_limits<int32_t>::max());
+    EXPECT_EQ(labels[0], 2);
+    EXPECT_EQ(labels[1], 1);
+    EXPECT_EQ(labels[2], 0);
+    EXPECT_EQ(labels[3], -1);
+}
+
 TEST_F(TestMetalIndexBinaryFlat, EmptyShortAndReset) {
     constexpr int cs = 5, nq = 3, k = 512;
     auto queries = randomBytes(nq * cs, 42);
