@@ -218,6 +218,27 @@ class Shards(unittest.TestCase):
         np.testing.assert_equal(Inew, Iref)
         np.testing.assert_allclose(Dnew, Dref)
 
+    def test_shards_negative_ids(self):
+        # Only -1 marks a missing result, so the merge keeps other negative
+        # ids.
+        ds = SyntheticDataset(32, 0, 900, 20)
+        xb = ds.get_database()
+        ids = -np.arange(1, ds.nb + 1, dtype="int64") * 1000
+        ref_index = faiss.IndexIDMap(faiss.IndexFlatL2(ds.d))
+        ref_index.add_with_ids(xb, ids)
+        Dref, Iref = ref_index.search(ds.get_queries(), 10)
+
+        sharded_index = faiss.IndexShards(ds.d, False, False)
+        for shard in range(3):
+            index_i = faiss.IndexIDMap(faiss.IndexFlatL2(ds.d))
+            sl = slice(shard * ds.nb // 3, (shard + 1) * ds.nb // 3)
+            index_i.add_with_ids(xb[sl], ids[sl])
+            sharded_index.add_shard(index_i)
+        Dnew, Inew = sharded_index.search(ds.get_queries(), 10)
+
+        np.testing.assert_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref, rtol=1e-5)
+
     def test_shards_ivf_train_add(self):
         ds = SyntheticDataset(32, 1000, 600, 20)
         quantizer = faiss.IndexFlatL2(ds.d)

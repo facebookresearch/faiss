@@ -24,6 +24,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
 #include <faiss/impl/simd_dispatch.h>
 
@@ -121,7 +122,9 @@ void IndexBinaryHNSW::search(
         }
     }
 
-    hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+    if (get_search_stats_enabled()) {
+        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+    }
 
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; ++i) {
@@ -270,7 +273,9 @@ void IndexBinaryHNSWCagra::search(
 
                 res.end();
             }
-            hnsw_stats.combine_atomic(search_stats);
+            if (get_search_stats_enabled()) {
+                hnsw_stats.combine_atomic(search_stats);
+            }
         }
 
 #pragma omp parallel for

@@ -358,6 +358,7 @@ void IVFFlat::searchImpl_(
                 k,
                 metric_,
                 useResidual_,
+                deterministicTieBreak_,
                 ivfCentroids,
                 scalarQ_.get(),
                 outDistances,

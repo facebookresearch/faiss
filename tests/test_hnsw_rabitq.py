@@ -10,6 +10,11 @@ import numpy as np
 
 
 class TestHNSWRaBitQ(unittest.TestCase):
+    def setUp(self):
+        self.addCleanup(
+            faiss.set_search_stats_enabled, faiss.get_search_stats_enabled()
+        )
+
     def make_data(self, d=32, nt=400, nb=600, nq=20):
         rs = np.random.RandomState(123)
         xt = rs.randn(nt, d).astype("float32")
@@ -39,6 +44,13 @@ class TestHNSWRaBitQ(unittest.TestCase):
     def test_staged_search_quality(self):
         index, xb, xq = self.make_index(nb_bits=3)
 
+        faiss.set_search_stats_enabled(False)
+        faiss.cvar.rabitq_stats.reset()
+        index.search(xq, 10)
+        self.assertEqual(faiss.cvar.rabitq_stats.n_1bit, 0)
+        self.assertEqual(faiss.cvar.rabitq_stats.n_refine, 0)
+
+        faiss.set_search_stats_enabled(True)
         faiss.cvar.rabitq_stats.reset()
         D, I = index.search(xq, 10)
         stats = faiss.cvar.rabitq_stats
@@ -130,6 +142,7 @@ class TestHNSWRaBitQ(unittest.TestCase):
     def test_one_bit_fallback(self):
         index, _, xq = self.make_index(nb_bits=1)
         self.assertEqual(index.hnsw.search_method, 0)
+        faiss.set_search_stats_enabled(True)
         faiss.cvar.rabitq_stats.reset()
         D, I = index.search(xq, 10)
         self.assertTrue(np.all(I >= 0))
