@@ -143,6 +143,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexRefine.h>
 
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexRowwiseInt8.h>
 
 #include <faiss/impl/FaissAssert.h>
 
@@ -378,6 +379,7 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexRowwiseInt8.h>
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
@@ -726,6 +728,7 @@ void gpu_sync_all_devices()
 %include  <faiss/MetaIndexes.h>
 
 %include  <faiss/IndexRowwiseMinMax.h>
+%include  <faiss/IndexRowwiseInt8.h>
 
 %include <faiss/utils/NeuralNet.h>
 %template(Tensor2D) faiss::nn::Tensor2DTemplate<float>;
@@ -809,6 +812,7 @@ typedef int cudaDataType_t;
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
 %include  <faiss/gpu/GpuIndexFlat.h>
+%include  <faiss/gpu/GpuIndexRowwiseInt8.h>
 %include  <faiss/gpu/GpuIndexIVF.h>
 %include  <faiss/gpu/GpuIndexIVFPQ.h>
 %include  <faiss/gpu/GpuIndexIVFFlat.h>
@@ -939,6 +943,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+    DOWNCAST ( IndexRowwiseInt8 )
 #ifdef FAISS_ENABLE_SVS
     DOWNCAST ( IndexSVSFlat )
     DOWNCAST ( IndexSVSVamanaLeanVec )
@@ -957,6 +962,7 @@ typedef int cudaDataType_t;
     DOWNCAST_GPU ( GpuIndexIVFFlat )
     DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
     DOWNCAST_GPU ( GpuIndexFlat )
+    DOWNCAST_GPU ( GpuIndexRowwiseInt8 )
 #endif
     // default for non-recognized classes
     DOWNCAST ( Index )
@@ -1428,6 +1434,10 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 %inline %{
 uint8_t * cast_integer_to_uint8_ptr (int64_t x) {
     return (uint8_t*)x;
+}
+
+int8_t * cast_integer_to_int8_ptr (int64_t x) {
+    return (int8_t*)x;
 }
 
 float * cast_integer_to_float_ptr (int64_t x) {
