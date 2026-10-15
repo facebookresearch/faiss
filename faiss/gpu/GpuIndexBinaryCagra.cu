@@ -69,7 +69,9 @@ GpuIndexBinaryCagra::GpuIndexBinaryCagra(
     this->is_trained = false;
 }
 
-GpuIndexBinaryCagra::~GpuIndexBinaryCagra() {}
+GpuIndexBinaryCagra::~GpuIndexBinaryCagra() {
+    reset();
+}
 
 int GpuIndexBinaryCagra::getDevice() const {
     return cagraConfig_.device;

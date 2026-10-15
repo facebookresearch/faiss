@@ -22,11 +22,15 @@
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
+#include <faiss/gpu/utils/CopyUtils.cuh>
 
 #include <algorithm>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <random>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -36,6 +40,73 @@ using faiss::gpu::Dataset;
 using faiss::gpu::GpuIndexBinaryCagra;
 using faiss::gpu::GpuIndexCagra;
 using faiss::gpu::StandardGpuResources;
+
+struct TrainDataset {
+    template <typename Index, typename Data>
+    auto operator()(Index& index, Data&& data) const
+            -> decltype(index.train(std::forward<Data>(data)));
+};
+
+struct AddDataset {
+    template <typename Index, typename Data>
+    auto operator()(Index& index, Data&& data) const
+            -> decltype(index.add(std::forward<Data>(data)));
+};
+
+struct UpdateDataset {
+    template <typename Index, typename Data>
+    auto operator()(Index& index, Data&& data) const
+            -> decltype(index.updateDataset(std::forward<Data>(data)));
+};
+
+struct CopyDataset {
+    template <typename Index, typename CpuIndex, typename Data>
+    auto operator()(Index& index, const CpuIndex* source, Data&& data) const
+            -> decltype(index.copyFrom(source, std::forward<Data>(data)));
+};
+
+struct CloneDataset {
+    template <typename Data>
+    auto operator()(Data&& data) const -> decltype(faiss::gpu::indexCpuToGpu(
+            nullptr,
+            0,
+            nullptr,
+            std::forward<Data>(data)));
+};
+
+struct CloneBinaryDataset {
+    template <typename Data>
+    auto operator()(Data&& data) const
+            -> decltype(faiss::gpu::indexBinaryCpuToGpu(
+                    nullptr,
+                    0,
+                    nullptr,
+                    std::forward<Data>(data)));
+};
+
+template <typename Operation, typename... Args>
+constexpr bool acceptsDatasetLvaluesOnly =
+        std::is_invocable_v<Operation, Args..., Dataset&> &&
+        std::is_invocable_v<Operation, Args..., const Dataset&> &&
+        !std::is_invocable_v<Operation, Args..., Dataset&&> &&
+        !std::is_invocable_v<Operation, Args..., const Dataset&&>;
+
+static_assert(acceptsDatasetLvaluesOnly<TrainDataset, GpuIndexCagra&>);
+static_assert(acceptsDatasetLvaluesOnly<AddDataset, GpuIndexCagra&>);
+static_assert(acceptsDatasetLvaluesOnly<UpdateDataset, GpuIndexCagra&>);
+static_assert(acceptsDatasetLvaluesOnly<
+              CopyDataset,
+              GpuIndexCagra&,
+              const faiss::IndexHNSWCagra*>);
+static_assert(acceptsDatasetLvaluesOnly<TrainDataset, GpuIndexBinaryCagra&>);
+static_assert(acceptsDatasetLvaluesOnly<AddDataset, GpuIndexBinaryCagra&>);
+static_assert(acceptsDatasetLvaluesOnly<UpdateDataset, GpuIndexBinaryCagra&>);
+static_assert(acceptsDatasetLvaluesOnly<
+              CopyDataset,
+              GpuIndexBinaryCagra&,
+              const faiss::IndexBinaryHNSWCagra*>);
+static_assert(acceptsDatasetLvaluesOnly<CloneDataset>);
+static_assert(acceptsDatasetLvaluesOnly<CloneBinaryDataset>);
 
 constexpr idx_t kRows = 512;
 
@@ -246,6 +317,19 @@ TEST(CagraDataset, GraphOnlyHostExportAndExplicitAttachment) {
             storage.getRowStride() * sizeof(float),
             0);
     EXPECT_THROW(index.updateDataset(wrongType), faiss::FaissException);
+    auto wrongDim = Dataset::viewDevice(
+            storage.getData(),
+            kRows,
+            dim - 1,
+            NumericType::Float32,
+            storage.getRowStride(),
+            0);
+    EXPECT_THROW(index.updateDataset(wrongDim), faiss::FaissException);
+    EXPECT_THROW(index.updateDataset(source), faiss::FaissException);
+    if (faiss::gpu::getNumDevices() > 1) {
+        auto wrongDevice = Dataset::makeDevicePadded(&resources, source, 1);
+        EXPECT_THROW(index.updateDataset(wrongDevice), faiss::FaissException);
+    }
     EXPECT_TRUE(index.isSearchReady());
     EXPECT_EQ(index.get_knngraph(), graph);
     checkFloatSearch(index, values.data());
@@ -270,6 +354,113 @@ TEST(CagraDataset, GraphOnlyHostExportAndExplicitAttachment) {
     index.reset();
     checkFloatSearch(*imported, values.data());
     checkFloatSearch(cpu, values.data());
+}
+
+template <bool Binary>
+void checkAsyncDatasetLifetime() {
+    constexpr int dim = 19;
+    constexpr int nq = 64;
+    using Value = std::conditional_t<Binary, uint8_t, float>;
+    using Distance = std::conditional_t<Binary, int, float>;
+    using Index =
+            std::conditional_t<Binary, GpuIndexBinaryCagra, GpuIndexCagra>;
+    std::vector<Value> values;
+    if constexpr (Binary) {
+        values = binaryData(dim);
+    } else {
+        values = floatData(dim);
+    }
+    faiss::gpu::DeviceScope scope(0);
+    cudaStream_t alternateStream;
+    ASSERT_EQ(
+            cudaStreamCreateWithFlags(&alternateStream, cudaStreamNonBlocking),
+            cudaSuccess);
+    const auto destroyStream = [](cudaStream_t stream) {
+        EXPECT_EQ(cudaStreamDestroy(stream), cudaSuccess);
+    };
+    // cuVS descriptor caches retain their allocation stream in the resource
+    // handle, so the external stream must also outlive those resources.
+    std::unique_ptr<
+            std::remove_pointer_t<cudaStream_t>,
+            decltype(destroyStream)>
+            streamOwner(alternateStream, destroyStream);
+    StandardGpuResources resources;
+    auto source = Dataset::viewHost(
+            values.data(),
+            kRows,
+            dim,
+            Binary ? NumericType::UInt8 : NumericType::Float32,
+            dim);
+    std::optional<Dataset> first(
+            Dataset::makeDevicePadded(&resources, source, 0));
+    std::optional<Dataset> second(
+            Dataset::makeDevicePadded(&resources, source, 0));
+    std::unique_ptr<Index> index;
+    if constexpr (Binary) {
+        index = std::make_unique<Index>(&resources, dim * 8, config());
+    } else {
+        index = std::make_unique<Index>(
+                &resources, dim, faiss::METRIC_L2, config());
+    }
+    index->train(*first);
+
+    auto gpuResources = resources.getResources();
+    auto originalStream = gpuResources->getDefaultStream(0);
+    auto queries = faiss::gpu::toDeviceTemporary(
+            gpuResources.get(), values, originalStream);
+    auto alloc = faiss::gpu::makeTempAlloc(
+            faiss::gpu::AllocType::Other, originalStream);
+    faiss::gpu::DeviceTensor<Distance, 2, true> distances(
+            gpuResources.get(), alloc, {nq, 1});
+    faiss::gpu::DeviceTensor<idx_t, 2, true> labels(
+            gpuResources.get(), alloc, {nq, 1});
+    resources.setDefaultStream(0, alternateStream);
+    auto checkResults = [&](cudaStream_t stream) {
+        std::vector<Distance> actualDistances(nq);
+        std::vector<idx_t> actualLabels(nq);
+        faiss::gpu::fromDevice(distances, actualDistances.data(), stream);
+        faiss::gpu::fromDevice(labels, actualLabels.data(), stream);
+        int selfHits = 0;
+        for (int i = 0; i < nq; ++i) {
+            EXPECT_GE(actualLabels[i], 0);
+            EXPECT_LT(actualLabels[i], kRows);
+            if (actualLabels[i] == i) {
+                ++selfHits;
+                EXPECT_NEAR(actualDistances[i], 0, 1e-5);
+            }
+        }
+        EXPECT_GE(selfHits, nq * 3 / 4);
+    };
+
+    // These searches keep both inputs and outputs on device and queue work.
+    // Rebind/reset must finish use of the old allocation before its release.
+    index->search(nq, queries.data(), 1, distances.data(), labels.data());
+    index->updateDataset(*second);
+    first.reset();
+    checkResults(alternateStream);
+    index->search(nq, queries.data(), 1, distances.data(), labels.data());
+    index->reset();
+    second.reset();
+    checkResults(alternateStream);
+
+    // Build on B, then search on A and destroy without an explicit reset.
+    // Keep the caller-owned data alive to isolate graph-storage destruction.
+    std::optional<Dataset> third(
+            Dataset::makeDevicePadded(&resources, source, 0));
+    index->train(*third);
+    resources.revertDefaultStream(0);
+    index->search(nq, queries.data(), 1, distances.data(), labels.data());
+    index.reset();
+    checkResults(originalStream);
+    third.reset();
+}
+
+TEST(CagraDataset, FloatAsyncRebindResetAndDestruction) {
+    checkAsyncDatasetLifetime<false>();
+}
+
+TEST(CagraDataset, BinaryAsyncRebindResetAndDestruction) {
+    checkAsyncDatasetLifetime<true>();
 }
 
 TEST(CagraDataset, MultiGpuDatasetBuildAndCpuExport) {

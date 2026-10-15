@@ -327,8 +327,10 @@ graphOnly.updateDataset(padded);
 vectors in the same order, shape, and dtype. It checks metadata but cannot verify
 vector identity. Keep all borrowed allocations alive and unchanged through
 index use and queued GPU work; make data ready on the index resource's stream
-before use. `reset()` clears the borrowed binding and allows rebuilding. A moved
-owning Dataset retains the allocation and existing bindings. Dimensions and row
+before use. Caller-supplied CUDA streams must also outlive GPU resources that
+cache cuVS allocations, even after reverting the default stream. `reset()` clears
+the borrowed binding and allows rebuilding. A moved owning Dataset retains the
+allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
 

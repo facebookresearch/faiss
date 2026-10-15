@@ -84,6 +84,10 @@ GpuIndexCagra::GpuIndexCagra(
     this->is_trained = false;
 }
 
+GpuIndexCagra::~GpuIndexCagra() {
+    reset();
+}
+
 void GpuIndexCagra::train(const Dataset& dataset) {
     FAISS_THROW_IF_MSG(
             is_trained, "CAGRA is already trained; call reset before train");

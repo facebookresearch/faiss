@@ -105,7 +105,9 @@ class Dataset {
     bool isCagraCompatible() const;
 
     /// Copy metadata without retaining ownership of the backing allocation.
-    Dataset borrow() const;
+    Dataset borrow() const&;
+    Dataset borrow() && = delete;
+    Dataset borrow() const&& = delete;
 
     /// Copy logical columns into packed host storage. destination must have
     /// numRows * dim * sizeof(element) bytes. Completes all device work using

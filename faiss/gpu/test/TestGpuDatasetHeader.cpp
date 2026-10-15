@@ -19,6 +19,41 @@
 namespace {
 using faiss::gpu::Dataset;
 
+// Detect calls, including overload resolution against deleted rvalue overloads.
+struct BorrowDataset {
+    template <typename Data>
+    auto operator()(Data&& data) const
+            -> decltype(std::forward<Data>(data).borrow());
+};
+
+struct TrainDataset {
+    template <typename Index, typename Data>
+    auto operator()(Index& index, Data&& data) const
+            -> decltype(index.train(std::forward<Data>(data)));
+};
+
+struct AddDataset {
+    template <typename Index, typename Data>
+    auto operator()(Index& index, Data&& data) const
+            -> decltype(index.add(std::forward<Data>(data)));
+};
+
+template <typename Operation, typename Index>
+constexpr bool acceptsDatasetLvaluesOnly =
+        std::is_invocable_v<Operation, Index&, Dataset&> &&
+        std::is_invocable_v<Operation, Index&, const Dataset&> &&
+        !std::is_invocable_v<Operation, Index&, Dataset&&> &&
+        !std::is_invocable_v<Operation, Index&, const Dataset&&>;
+
+static_assert(std::is_invocable_v<BorrowDataset, Dataset&>);
+static_assert(std::is_invocable_v<BorrowDataset, const Dataset&>);
+static_assert(!std::is_invocable_v<BorrowDataset, Dataset&&>);
+static_assert(!std::is_invocable_v<BorrowDataset, const Dataset&&>);
+static_assert(acceptsDatasetLvaluesOnly<TrainDataset, faiss::Index>);
+static_assert(acceptsDatasetLvaluesOnly<AddDataset, faiss::Index>);
+static_assert(acceptsDatasetLvaluesOnly<TrainDataset, faiss::IndexBinary>);
+static_assert(acceptsDatasetLvaluesOnly<AddDataset, faiss::IndexBinary>);
+
 static_assert(!std::is_copy_constructible_v<Dataset>);
 static_assert(!std::is_copy_assignable_v<Dataset>);
 static_assert(std::is_nothrow_move_constructible_v<Dataset>);

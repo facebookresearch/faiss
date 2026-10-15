@@ -316,6 +316,8 @@ struct GpuIndexCagra : public GpuIndex {
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexCagraConfig config = GpuIndexCagraConfig());
 
+    ~GpuIndexCagra() override;
+
 #ifndef SWIG
     /// Build the full graph while borrowing dataset storage. The backing
     /// allocation must remain alive and unchanged through index use and all
