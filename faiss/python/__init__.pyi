@@ -301,6 +301,10 @@ class SearchParametersSVSIVF(SearchParameters):
     k_reorder: float
     def __init__(self) -> None: ...
 
+class SearchParametersPiPNN(SearchParameters):
+    search_L: int
+    def __init__(self) -> None: ...
+
 # Base Index class
 class Index:
     d: int  # vector dimension
@@ -1531,6 +1535,8 @@ class InvertedLists:
     def list_size(self, list_no: int) -> int: ...
     def get_codes(self, list_no: int) -> npt.NDArray[np.uint8]: ...
     def get_ids(self, list_no: int) -> npt.NDArray[np.int64]: ...
+    def release_codes(self, list_no: int, codes: Any) -> None: ...
+    def release_ids(self, list_no: int, ids: Any) -> None: ...
     def add_entries(
         self,
         list_no: int,
@@ -3413,6 +3419,57 @@ class IndexNSGSQ(IndexNSG):
 
     def __init__(self, d: int, sq: ScalarQuantizer, R: int) -> None: ...
 
+# IndexPiPNN (PiPNN graph index)
+class PiPNN:
+    R: int
+    leaf_k: int
+    hash_bits: int
+    reservoir_size: int
+    c_max: int
+    c_min: int
+    leader_cap: int
+    replicas: int
+    leader_fraction: float
+    alpha: float
+    fanout: Int32Vector
+    seed: int
+    ip_partition_by_angle: bool
+    partition_wave_budget: int
+    search_L: int
+    graph: MaybeOwnedVectorInt32
+    entry_point: int
+    ntotal: int
+
+    def __init__(self, R: int = 64) -> None: ...
+    def effective_alpha(self, metric: MetricType) -> float: ...
+    def check_params(self) -> None: ...
+    def reset(self) -> None: ...
+
+class IndexPiPNN(Index):
+    pipnn: PiPNN
+    storage: Index
+    own_fields: bool
+    defer_build: bool
+
+    @overload
+    def __init__(self) -> None: ...
+    @overload
+    def __init__(self, storage: Index, R: int = 64) -> None: ...
+    def build(self) -> None: ...
+    def is_built(self) -> bool: ...
+    @staticmethod
+    def check_storage_supported(storage: Index) -> None: ...
+
+class IndexPiPNNFlat(IndexPiPNN):
+    def __init__(
+        self, d: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
+
+class IndexPiPNNSQ(IndexPiPNN):
+    def __init__(
+        self, d: int, qtype: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
+
 # IndexNNDescent
 class IndexNNDescent(Index):
     nndescent: Any  # faiss::nndescent::NNDescent
@@ -4159,6 +4216,8 @@ class GpuIndexIVF(GpuIndex, IndexIVFInterface): ...
 class GpuIndexIVFConfig(GpuIndexConfig):
     """Configuration for GPU IVF indices"""
 
+    deterministic_tie_break: bool
+
     def __init__(self) -> None: ...
 
 class GpuIndexIVFPQConfig(GpuIndexIVFConfig):
@@ -4522,6 +4581,7 @@ class GpuClonerOptions:
     verbose: bool
     use_cuvs: bool
     allowCpuCoarseQuantizer: bool
+    deterministic_tie_break: bool
 
     def __init__(self) -> None: ...
 

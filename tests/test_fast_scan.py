@@ -567,6 +567,21 @@ class TestAdd(unittest.TestCase):
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
 
+    def test_reset(self):
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+
+        index = faiss.IndexPQFastScan(d, d // 2, 4)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal2, 0)
+
+        D, I = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, -1)
+
 
 class TestAQFastScan(unittest.TestCase):
 
@@ -806,3 +821,29 @@ class TestBlockDecode(unittest.TestCase):
             0, ::100
         ]
         np.testing.assert_array_equal(decoded, index.reconstruct(0)[::100])
+
+
+@for_all_simd_levels
+class TestImplemDefault(TestImplems):
+    """QBS values through the default implementation. Its QBS loop is also
+    instantiated in the AVX512 TU (the AVX2 fallback and the Zen 4 split
+    path). AVX512 code reached from the AVX2 path only fails here on a CPU
+    without AVX512 (or under qemu-x86_64); on other hosts the
+    symbol-isolation scan is what catches it."""
+
+    def build_fast_scan_index(self, index, qbs):
+        index2 = faiss.IndexPQFastScan(index)
+        index2.qbs = qbs
+        return index2
+
+    def test_qbs6(self):
+        self.do_with_params(32, 0x6)
+
+    def test_qbs34(self):
+        self.do_with_params(32, 0x34)
+
+    def test_qbs222(self):
+        self.do_with_params(32, 0x222)
+
+    def test_qbs_not_in_512_kernels(self):
+        self.do_with_params(32, 0x1113)

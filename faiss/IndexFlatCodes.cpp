@@ -45,7 +45,12 @@ void IndexFlatCodes::add_sa_codes(
 }
 
 void IndexFlatCodes::reset() {
-    codes.clear();
+    if (codes.is_owned) {
+        codes.clear();
+    } else {
+        // a view (mmap / zero-copy load) cannot be cleared in place
+        codes = MaybeOwnedVector<uint8_t>();
+    }
     ntotal = 0;
 }
 

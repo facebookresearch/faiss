@@ -141,18 +141,23 @@ def handle_Clustering(the_class):
 
 def handle_SuperKMeans(the_class):
 
-    def replacement_train(self, x):
+    def replacement_train(self, x, *, numeric_type=faiss.Float32):
         """Perform SuperKMeans clustering on a set of vectors.
 
         Parameters
         ----------
         x : array_like
-            Training vectors, shape (n, self.d). `dtype` must be float32.
+            Training vectors, shape (n, self.d).
+        numeric_type : faiss.NumericType, optional
+            Numeric type of the input vectors.
         """
         n, d = x.shape
         assert d == self.d
-        x = np.ascontiguousarray(x, dtype="float32")
-        self.train_c(n, swig_ptr(x))
+        x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+        if numeric_type == faiss.Float32:
+            self.train_c(n, swig_ptr(x))
+        else:
+            self.train_ex(n, swig_ptr(x), numeric_type)
 
     replace_method(the_class, "train", replacement_train)
 

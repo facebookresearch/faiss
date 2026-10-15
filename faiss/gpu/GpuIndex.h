@@ -213,6 +213,9 @@ class GpuIndex : public faiss::Index {
             idx_t* labels,
             const SearchParameters* params) const = 0;
 
+    /// Search with queries of the given numeric type; all data is guaranteed
+    /// to be resident on our device. The default handles Float32 and widens
+    /// Float16 queries to float32 on the device before calling searchImpl_
     virtual void searchImpl_ex_(
             idx_t n,
             const void* x,
@@ -220,19 +223,7 @@ class GpuIndex : public faiss::Index {
             int k,
             float* distances,
             idx_t* labels,
-            const SearchParameters* params) const {
-        if (numeric_type == NumericType::Float32) {
-            searchImpl_(
-                    n,
-                    static_cast<const float*>(x),
-                    k,
-                    distances,
-                    labels,
-                    params);
-        } else {
-            FAISS_THROW_MSG("GpuIndex::searchImpl_: unsupported numeric type");
-        }
-    }
+            const SearchParameters* params) const;
 
    private:
     /// Calls addImpl_ for a single page of GPU-resident data

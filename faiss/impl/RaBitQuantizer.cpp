@@ -6,6 +6,7 @@
  */
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/utils/prefetch.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -576,6 +577,42 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
                 ? reinterpret_cast<const SignBitFactors*>(code + size)
                 : reinterpret_cast<const SignBitFactorsWithError*>(code + size);
         return distance_to_code_1bit_impl(code, base_fac, size);
+    }
+
+    void distance_to_code_1bit_batch_4(
+            const uint8_t* const* codes_in,
+            float* distances) final {
+        if (qb != 4 || centered) {
+            RaBitQDistanceComputer::distance_to_code_1bit_batch_4(
+                    codes_in, distances);
+            return;
+        }
+        const size_t size = (d + 7) / 8;
+        const size_t prefix = size +
+                (nb_bits == 1 ? sizeof(SignBitFactors)
+                              : sizeof(SignBitFactorsWithError));
+        for (int i = 0; i < 4; ++i) {
+            for (size_t offset = 0; offset < prefix; offset += 64) {
+                prefetch_L1(codes_in[i] + offset);
+            }
+        }
+        rabitq::BitwiseAndDotProductResult results[4];
+        rabitq::bitwise_q4_batch_4<SL>(
+                rearranged_rotated_qq.data(), codes_in, size, results);
+        for (int i = 0; i < 4; ++i) {
+            const auto* factors =
+                    reinterpret_cast<const SignBitFactors*>(codes_in[i] + size);
+            float final_dot = 0;
+            final_dot += query_fac.c1 * results[i].dot_product;
+            final_dot += query_fac.c2 * results[i].popcount;
+            final_dot -= query_fac.c34;
+            const float pre_dist = factors->or_minus_c_l2sqr +
+                    query_fac.qr_to_c_L2sqr -
+                    2 * factors->dp_multiplier * final_dot;
+            distances[i] = metric_type == METRIC_L2
+                    ? std::max(0.0f, pre_dist)
+                    : -0.5f * (pre_dist - query_fac.qr_norm_L2sqr);
+        }
     }
 
     // Compute full distance using 1-bit + ex-bits (accurate)

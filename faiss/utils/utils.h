@@ -164,6 +164,14 @@ void binary_to_real(size_t d, const uint8_t* x_in, float* x_out);
  */
 void real_to_binary(size_t d, const float* x_in, uint8_t* x_out);
 
+/** Convert packed IEEE binary16 values to fp32 (exact).
+ *
+ * @param n    number of values
+ * @param x    input fp16 values, size n
+ * @param out  output fp32 values, size n
+ */
+void fp16_to_fp32(size_t n, const uint16_t* x, float* out);
+
 /** A reasonable hashing function */
 uint64_t hash_bytes(const uint8_t* bytes, int64_t n);
 

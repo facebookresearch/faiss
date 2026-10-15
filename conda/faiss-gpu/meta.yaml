@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -60,11 +61,11 @@ outputs:
         - cuda-toolkit {{ cudatoolkit }}
       host:
         - mkl >=2024.2.2,<2026  # [x86_64]
-        - openblas =0.3.34 # [not x86_64]
+        - openblas =0.3.34 openmp_* # [not x86_64]
         - libsvs-runtime =0.4.0  # [x86_64 and linux]
       run:
         - mkl >=2024.2.2,<2026  # [x86_64]
-        - openblas =0.3.34 # [not x86_64]
+        - openblas =0.3.34 openmp_* # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
         - libsvs-runtime =0.4.0  # [x86_64 and linux]
@@ -76,6 +77,7 @@ outputs:
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+        - python -c "import ctypes; lib = ctypes.CDLL('libopenblas.so.0'); assert lib.openblas_get_parallel() == 2"  # [linux and not x86_64]
 
   - name: faiss-gpu
     script: build-pkg.sh  # [x86_64 and not win and not osx]

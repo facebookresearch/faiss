@@ -11,6 +11,7 @@
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
+#include <algorithm>
 #include <cinttypes>
 #include <cmath>
 #include <cstdio>
@@ -63,6 +64,47 @@ void Clustering::train_encoded(
         const Index* codec,
         Index& index,
         const float* weights) {
+    train_impl(nx, x_in, codec, NumericType::Float32, index, weights);
+}
+
+void Clustering::train_ex(
+        idx_t nx,
+        const void* x_in,
+        NumericType numeric_type,
+        Index& index,
+        const float* weights) {
+    if (numeric_type == NumericType::Float32) {
+        train(nx, static_cast<const float*>(x_in), index, weights);
+        return;
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == NumericType::Float16,
+            "Clustering::train_ex: unsupported numeric type");
+    train_impl(
+            nx,
+            static_cast<const uint8_t*>(x_in),
+            nullptr,
+            numeric_type,
+            index,
+            weights);
+}
+
+void Clustering::train_impl(
+        idx_t nx,
+        const uint8_t* x_in,
+        const Index* codec,
+        NumericType numeric_type,
+        Index& index,
+        const float* weights) {
+    FAISS_THROW_IF_NOT_MSG(
+            codec || numeric_type == NumericType::Float32 ||
+                    numeric_type == NumericType::Float16,
+            "unsupported numeric type for clustering");
+    // packed IEEE binary16 rows, consumed without a codec
+    const bool fp16 = !codec && numeric_type == NumericType::Float16;
+    // rows that are not fp32 are widened by blocks for the assignment index
+    const bool encoded = codec || fp16;
+
     FAISS_THROW_IF_NOT_FMT(
             nx >= static_cast<idx_t>(k),
             "Number of training points (%" PRId64
@@ -70,6 +112,7 @@ void Clustering::train_encoded(
             "as large as number of clusters (%zd)",
             nx,
             k);
+    FAISS_THROW_IF_NOT_MSG(x_in, "training data must not be null");
 
     FAISS_THROW_IF_NOT_FMT(
             (!codec || static_cast<size_t>(codec->d) == d),
@@ -83,23 +126,46 @@ void Clustering::train_encoded(
             int(index.d),
             int(d));
 
+    FAISS_THROW_IF_NOT_MSG(
+            !encoded || decode_block_size > 0,
+            "decode_block_size must be positive");
+
     double t0 = getmillisecs();
 
     if (!codec && check_input_data_for_NaNs) {
         // Check for NaNs in input data. Normally it is the user's
-        // responsibility, but it may spare us some hard-to-debug
-        // reports.
-        const float* x = reinterpret_cast<const float*>(x_in);
-        for (size_t i = 0; i < nx * d; i++) {
+        // responsibility, but it may spare us some hard-to-debug reports.
+        if (fp16) {
             FAISS_THROW_IF_NOT_MSG(
-                    std::isfinite(x[i]), "input contains NaN's or Inf's");
+                    detail::fp16_all_finite(
+                            nx * d, reinterpret_cast<const uint16_t*>(x_in)),
+                    "input contains NaN's or Inf's");
+        } else {
+            const float* x = reinterpret_cast<const float*>(x_in);
+            for (size_t i = 0; i < nx * d; i++) {
+                FAISS_THROW_IF_NOT_MSG(
+                        std::isfinite(x[i]), "input contains NaN's or Inf's");
+            }
         }
     }
 
     const uint8_t* x = x_in;
     std::unique_ptr<uint8_t[]> del1;
     std::unique_ptr<float[]> del3;
-    size_t line_size = codec ? codec->sa_code_size() : sizeof(float) * d;
+    size_t line_size = codec ? codec->sa_code_size()
+            : fp16           ? sizeof(uint16_t) * d
+                             : sizeof(float) * d;
+
+    // widen n consecutive training rows to fp32
+    auto decode_rows = [&](size_t n, const uint8_t* rows, float* out) {
+        if (codec) {
+            codec->sa_decode(n, rows, out);
+        } else if (fp16) {
+            fp16_to_fp32(n * d, reinterpret_cast<const uint16_t*>(rows), out);
+        } else {
+            memcpy(out, rows, n * line_size);
+        }
+    };
 
     if (static_cast<size_t>(nx) > k * max_points_per_centroid) {
         uint8_t* x_new;
@@ -129,11 +195,7 @@ void Clustering::train_encoded(
                    nx);
         }
         centroids.resize(d * k);
-        if (!codec) {
-            memcpy(centroids.data(), x_in, sizeof(float) * d * k);
-        } else {
-            codec->sa_decode(nx, x_in, centroids.data());
-        }
+        decode_rows(k, x_in, centroids.data());
 
         // one fake iteration...
         ClusteringIterationStats stats = {0.0, 0.0, 0.0, 1.0, 0};
@@ -153,9 +215,8 @@ void Clustering::train_encoded(
                k,
                nredo,
                niter);
-        if (codec) {
-            printf("Input data encoded in %zd bytes per vector\n",
-                   codec->sa_code_size());
+        if (encoded) {
+            printf("Input data encoded in %zd bytes per vector\n", line_size);
         }
     }
 
@@ -191,8 +252,10 @@ void Clustering::train_encoded(
     // initialize seed
     const uint64_t actual_seed = detail::get_actual_rng_seed(seed);
 
-    // temporary buffer to decode vectors during the optimization
-    std::vector<float> decode_buffer(codec ? d * decode_block_size : 0);
+    // temporary buffer to decode codec-encoded vectors during the optimization
+    std::vector<float> decode_buffer(
+            codec ? d * std::min(static_cast<size_t>(nx), decode_block_size)
+                  : 0);
 
     for (int redo = 0; redo < nredo; redo++) {
         if (verbose && nredo > 1) {
@@ -210,41 +273,44 @@ void Clustering::train_encoded(
                 std::vector<int> perm(nx);
                 rand_perm(perm.data(), nx, actual_seed + 1 + redo * 15486557L);
                 for (size_t i = 0; i < k_to_init; i++) {
-                    if (!codec) {
-                        memcpy(centroids.data() + (n_input_centroids + i) * d,
-                               x + perm[n_input_centroids + i] * line_size,
-                               line_size);
-                    } else {
-                        codec->sa_decode(
-                                1,
-                                x + perm[n_input_centroids + i] * line_size,
-                                centroids.data() + (n_input_centroids + i) * d);
-                    }
+                    decode_rows(
+                            1,
+                            x + perm[n_input_centroids + i] * line_size,
+                            centroids.data() + (n_input_centroids + i) * d);
                 }
             } else {
-                // For k-means++ and AFK-MC², we need all vectors decoded
-                const float* x_float = nullptr;
-                std::vector<float> x_decoded;
-
-                if (!codec) {
-                    x_float = reinterpret_cast<const float*>(x);
-                } else {
-                    // Decode all vectors for initialization
-                    x_decoded.resize(nx * d);
-                    codec->sa_decode(nx, x, x_decoded.data());
-                    x_float = x_decoded.data();
-                }
-
                 ClusteringInitialization initializer(d, k_to_init);
                 initializer.method = init_method;
                 initializer.seed = actual_seed + 1 + redo * 15486557L;
                 initializer.afkmc2_chain_length = afkmc2_chain_length;
-                initializer.init_centroids(
-                        nx,
-                        x_float,
-                        centroids.data() + n_input_centroids * d,
-                        n_input_centroids,
-                        n_input_centroids > 0 ? centroids.data() : nullptr);
+
+                if (fp16) {
+                    detail::init_centroids_fp16(
+                            initializer,
+                            nx,
+                            reinterpret_cast<const uint16_t*>(x),
+                            centroids.data() + n_input_centroids * d,
+                            n_input_centroids,
+                            n_input_centroids > 0 ? centroids.data() : nullptr);
+                } else {
+                    const float* x_float = nullptr;
+                    std::vector<float> x_decoded;
+
+                    if (!encoded) {
+                        x_float = reinterpret_cast<const float*>(x);
+                    } else {
+                        x_decoded.resize(nx * d);
+                        decode_rows(nx, x, x_decoded.data());
+                        x_float = x_decoded.data();
+                    }
+
+                    initializer.init_centroids(
+                            nx,
+                            x_float,
+                            centroids.data() + n_input_centroids * d,
+                            n_input_centroids,
+                            n_input_centroids > 0 ? centroids.data() : nullptr);
+                }
             }
         }
 
@@ -268,7 +334,7 @@ void Clustering::train_encoded(
         for (int i = 0; i < niter; i++) {
             double t0s = getmillisecs();
 
-            if (!codec) {
+            if (!encoded) {
                 index.search(
                         nx,
                         reinterpret_cast<const float*>(x),
@@ -277,15 +343,26 @@ void Clustering::train_encoded(
                         assign.get());
             } else {
                 // search by blocks of decode_block_size vectors
-                size_t code_size = codec->sa_code_size();
                 for (size_t i0 = 0; i0 < static_cast<size_t>(nx);
                      i0 += decode_block_size) {
                     size_t i1 = i0 + decode_block_size;
                     if (i1 > static_cast<size_t>(nx)) {
                         i1 = nx;
                     }
-                    codec->sa_decode(
-                            i1 - i0, x + code_size * i0, decode_buffer.data());
+                    if (fp16) {
+                        // the index consumes fp16 queries itself (natively
+                        // if it can, see Index::search_ex)
+                        index.search_ex(
+                                i1 - i0,
+                                x + line_size * i0,
+                                NumericType::Float16,
+                                1,
+                                dis.get() + i0,
+                                assign.get() + i0);
+                        continue;
+                    }
+                    decode_rows(
+                            i1 - i0, x + line_size * i0, decode_buffer.data());
                     index.search(
                             i1 - i0,
                             decode_buffer.data(),
@@ -308,17 +385,30 @@ void Clustering::train_encoded(
             std::vector<float> hassign(k);
 
             size_t k_frozen = frozen_centroids ? n_input_centroids : 0;
-            detail::compute_centroids(
-                    d,
-                    k,
-                    nx,
-                    k_frozen,
-                    x,
-                    codec,
-                    assign.get(),
-                    weights,
-                    hassign.data(),
-                    centroids.data());
+            if (fp16) {
+                detail::compute_centroids_fp16(
+                        d,
+                        k,
+                        nx,
+                        k_frozen,
+                        reinterpret_cast<const uint16_t*>(x),
+                        assign.get(),
+                        weights,
+                        hassign.data(),
+                        centroids.data());
+            } else {
+                detail::compute_centroids(
+                        d,
+                        k,
+                        nx,
+                        k_frozen,
+                        x,
+                        codec,
+                        assign.get(),
+                        weights,
+                        hassign.data(),
+                        centroids.data());
+            }
 
             int nsplit = detail::split_clusters(
                     d, k, nx, k_frozen, hassign.data(), centroids.data());
