@@ -234,7 +234,7 @@ class TestCuvsKnnGpu(unittest.TestCase):
 
 @_skip_unless_cuvs_build
 class TestCuvsCagra(unittest.TestCase):
-    """Catch: GpuIndexCagra construction + cuVS CAGRA graph build."""
+    """Catch: CAGRA construction and the C++-only Dataset boundary."""
 
     @skip_if_no_gpu
     def test_gpu_index_cagra(self):
@@ -244,14 +244,12 @@ class TestCuvsCagra(unittest.TestCase):
 
         res = faiss.StandardGpuResources()
         index = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2)
-        index.train(xb)
-        # CAGRA is a graph-based index; ntotal reflects the training set.
-        self.assertEqual(index.ntotal, n)
-
-        D, I = index.search(xb[:nq], 10)
-        self.assertEqual(I.shape, (nq, 10))
-        # CAGRA is approximate, so allow itself-as-first-NN as the contract.
-        np.testing.assert_array_equal(I[:, 0], np.arange(nq))
+        # Dataset is deliberately C++ only. The graph/search smoke test is
+        # TestGpuCagraDataset; Python must report the ownership migration.
+        with self.assertRaisesRegex(RuntimeError, "Dataset"):
+            index.train(xb)
+        self.assertEqual(index.ntotal, 0)
+        self.assertFalse(hasattr(faiss, "Dataset"))
 
 
 # Keep in step with the libcuvs-cu13 pin in pyproject-gpu-cuvs.toml. The

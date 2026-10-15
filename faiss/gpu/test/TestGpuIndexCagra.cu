@@ -24,6 +24,7 @@
 #include <cuda_fp16.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/MetricType.h>
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
@@ -38,6 +39,18 @@
 
 #include <raft/core/resource/cuda_stream.hpp>
 #include <raft/stats/neighborhood_recall.cuh>
+
+// Explicit owner kept by each test for the lifetime of its borrowing index.
+faiss::gpu::Dataset makeSearchDataset(
+        faiss::gpu::GpuResourcesProvider* resources,
+        faiss::idx_t n,
+        int dim,
+        const void* data,
+        faiss::NumericType type,
+        int device) {
+    auto source = faiss::gpu::Dataset::viewHost(data, n, dim, type, dim);
+    return faiss::gpu::Dataset::makeDevicePadded(resources, source, device);
+}
 
 struct Options {
     Options() {
@@ -108,8 +121,17 @@ void queryTest(faiss::MetricType metric, double expected_recall) {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim,
+                trainVecs.data(),
+                faiss::NumericType::Float32,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -226,6 +248,8 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
 
         // Create half vector
@@ -235,10 +259,14 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
-        gpuIndex.train_ex(
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
                 opt.numTrain,
-                static_cast<void*>(trainVecs_half.data()),
-                faiss::NumericType::Float16);
+                opt.dim,
+                trainVecs_half.data(),
+                faiss::NumericType::Float16,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -364,8 +392,17 @@ void copyToTest(
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim,
+                trainVecs.data(),
+                faiss::NumericType::Float32,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         faiss::IndexHNSWCagra copiedCpuIndex(
                 opt.dim, opt.graphDegree / 2, metric);
@@ -527,11 +564,17 @@ void copyToTestFP16(
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train_ex(
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
                 opt.numTrain,
-                static_cast<void*>(trainVecs_half.data()),
-                faiss::NumericType::Float16);
+                opt.dim,
+                trainVecs_half.data(),
+                faiss::NumericType::Float16,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         faiss::IndexHNSWCagra copiedCpuIndex(
                 opt.dim,
@@ -664,8 +707,10 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
+        auto importedDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
+                &res, cpuIndex, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom(&cpuIndex);
+        copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -674,8 +719,17 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim,
+                trainVecs.data(),
+                faiss::NumericType::Float32,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -782,8 +836,10 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
+        auto importedDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
+                &res, cpuIndex, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom_ex(&cpuIndex, faiss::NumericType::Float16);
+        copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -795,6 +851,8 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         // faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         // gpuIndex.train(opt.numTrain, trainVecs.data());
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
 
         // Create half vector
@@ -804,10 +862,14 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
-        gpuIndex.train_ex(
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
                 opt.numTrain,
-                static_cast<void*>(trainVecs_half.data()),
-                faiss::NumericType::Float16);
+                opt.dim,
+                trainVecs_half.data(),
+                faiss::NumericType::Float16,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -913,8 +975,17 @@ void testIDSelectorCagra(faiss::MetricType metricType) {
     // Use only IVF_PQ to avoid NN_DESCENT + IP combination
     config.build_algo = faiss::gpu::graph_build_algo::IVF_PQ;
 
+    std::optional<faiss::gpu::Dataset> trainingDataset;
+
     faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metricType, config);
-    gpuIndex.train(opt.numTrain, trainVecs.data());
+    trainingDataset.emplace(makeSearchDataset(
+            &res,
+            opt.numTrain,
+            opt.dim,
+            trainVecs.data(),
+            faiss::NumericType::Float32,
+            opt.device));
+    gpuIndex.train(*trainingDataset);
 
     auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
     if (metricType == faiss::METRIC_INNER_PRODUCT) {
