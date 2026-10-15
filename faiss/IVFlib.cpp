@@ -303,12 +303,31 @@ ArrayInvertedLists* get_invlist_range(const Index* index, long i0, long i1) {
 
     ArrayInvertedLists* il = new ArrayInvertedLists(i1 - i0, src->code_size);
 
+    const auto* src_pano = dynamic_cast<const ArrayInvertedListsPanorama*>(src);
+
     for (long i = i0; i < i1; i++) {
-        il->add_entries(
-                i - i0,
-                src->list_size(i),
-                InvertedLists::ScopedIds(src, i).get(),
-                InvertedLists::ScopedCodes(src, i).get());
+        size_t lsz = src->list_size(i);
+        if (src_pano) {
+            std::vector<uint8_t> flat_codes(lsz * src->code_size);
+            for (size_t j = 0; j < lsz; j++) {
+                src_pano->pano.reconstruct(
+                        j,
+                        reinterpret_cast<float*>(
+                                flat_codes.data() + j * src->code_size),
+                        src_pano->codes[i].data());
+            }
+            il->add_entries(
+                    i - i0,
+                    lsz,
+                    InvertedLists::ScopedIds(src, i).get(),
+                    flat_codes.data());
+        } else {
+            il->add_entries(
+                    i - i0,
+                    lsz,
+                    InvertedLists::ScopedIds(src, i).get(),
+                    InvertedLists::ScopedCodes(src, i).get());
+        }
     }
     return il;
 }
