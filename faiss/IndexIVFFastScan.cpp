@@ -21,6 +21,7 @@
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
@@ -1470,7 +1471,7 @@ void IndexIVFFastScan::search_implem_14(
         AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
         const size_t block_stride = get_block_stride();
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
         for (idx_t cluster = 0; cluster < static_cast<idx_t>(ses.size());
              cluster++) {
             size_t i0 = ses[cluster].start;
