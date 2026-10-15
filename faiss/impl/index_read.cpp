@@ -3017,6 +3017,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxq->qb <= 8,
                 "invalid RaBitQ qb=%d (must be in [0, 8])",
                 idxq->qb);
+        FAISS_THROW_IF_NOT_MSG(
+                !idxq->is_trained ||
+                        idxq->center.size() == static_cast<size_t>(idxq->d),
+                "IndexRaBitQ center size mismatch");
 
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         idxq->code_size = idxq->rabitq.code_size;
@@ -3036,6 +3040,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 idxq->qb <= 8,
                 "invalid RaBitQ qb=%d (must be in [0, 8])",
                 idxq->qb);
+        FAISS_THROW_IF_NOT_MSG(
+                !idxq->is_trained ||
+                        idxq->center.size() == static_cast<size_t>(idxq->d),
+                "IndexRaBitQ center size mismatch");
 
         idxq->code_size = idxq->rabitq.code_size;
         idx = std::move(idxq);
