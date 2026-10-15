@@ -150,6 +150,7 @@ set(FAISS_SRC
   IndexSQFastScan.cpp
   IndexIVFSQFastScan.cpp
   IndexScalarQuantizer.cpp
+  IndexSQFP16Gemm.cpp
   IndexShards.cpp
   IndexShardsIVF.cpp
   IndexNeuralNetCodec.cpp
@@ -190,6 +191,7 @@ set(FAISS_SRC
   impl/ProductAdditiveQuantizer.cpp
   impl/ScalarQuantizer.cpp
   impl/scalar_quantizer/training.cpp
+  impl/scalar_quantizer/sq-fp16-gemm-common.cpp
   impl/index_read.cpp
   impl/index_write.cpp
   impl/io.cpp
@@ -290,6 +292,7 @@ set(FAISS_HEADERS
   IndexSQFastScan.h
   IndexIVFSQFastScan.h
   IndexScalarQuantizer.h
+  IndexSQFP16Gemm.h
   IndexShards.h
   IndexShardsIVF.h
   MatrixStats.h
@@ -353,6 +356,7 @@ set(FAISS_HEADERS
   impl/scalar_quantizer/sq8_rvv_kernel.h
   utils/simd_impl/distances_rvv_kernel.h
   impl/scalar_quantizer/sq-dispatch.h
+  impl/scalar_quantizer/sq-fp16-gemm.h
   impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
@@ -474,6 +478,37 @@ if(COMPILER_SUPPORTS_BMI2)
   set(FAISS_BMI2_FLAGS "-mbmi2")
 else()
   set(FAISS_BMI2_FLAGS "")
+endif()
+
+# =============================================================================
+# fp16 gemm kernels for IndexSQFP16Gemm (an IVF-coarse-quantizer
+# accelerator for QT_fp16). Unlike the AVX2/AVX512/.../AMX library variants
+# above, these are compiled into every faiss target unconditionally and
+# pick a kernel per-process via CPUID at runtime (see
+# sq-fp16-gemm-common.cpp), so IndexSQFP16Gemm behaves the same regardless
+# of FAISS_OPT_LEVEL. The scalar kernel (always available, portable) lives
+# in sq-fp16-gemm-common.cpp, already part of FAISS_SRC above.
+# =============================================================================
+if(NOT WIN32 AND CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+  list(APPEND FAISS_SRC impl/scalar_quantizer/sq-fp16-gemm-fma.cpp)
+  set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-fma.cpp PROPERTIES
+    COMPILE_OPTIONS "-mavx512f;-mavx512bw;-mf16c;-mfma")
+
+  # AMX-FP16 needs a newer compiler than the rest of faiss requires, so it
+  # is opt-in: IndexSQFP16Gemm still works with the FMA/scalar kernels when
+  # this is not available, it just never resolves GemmKernel::AUTO to AMX.
+  check_cxx_compiler_flag("-mamx-fp16" FAISS_COMPILER_SUPPORTS_AMX_FP16)
+  if(FAISS_COMPILER_SUPPORTS_AMX_FP16)
+    list(APPEND FAISS_SRC impl/scalar_quantizer/sq-fp16-gemm-amx.cpp)
+    set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-amx.cpp PROPERTIES
+      COMPILE_OPTIONS "-mamx-tile;-mamx-fp16")
+    set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-common.cpp PROPERTIES
+      COMPILE_DEFINITIONS "FAISS_AMX_FP16_COMPILED=1")
+  else()
+    message(STATUS "Compiler does not support -mamx-fp16: IndexSQFP16Gemm will not offer an AMX kernel (FMA/scalar still available).")
+  endif()
+else()
+  message(STATUS "IndexSQFP16Gemm fp16 gemm kernels need x86_64 with GCC/Clang flags; only the portable scalar kernel will be available.")
 endif()
 
 add_library(faiss ${FAISS_SRC})
