@@ -301,6 +301,10 @@ class SearchParametersSVSIVF(SearchParameters):
     k_reorder: float
     def __init__(self) -> None: ...
 
+class SearchParametersPiPNN(SearchParameters):
+    search_L: int
+    def __init__(self) -> None: ...
+
 # Base Index class
 class Index:
     d: int  # vector dimension
@@ -3414,6 +3418,57 @@ class IndexNSGSQ(IndexNSG):
     sq: ScalarQuantizer
 
     def __init__(self, d: int, sq: ScalarQuantizer, R: int) -> None: ...
+
+# IndexPiPNN (PiPNN graph index)
+class PiPNN:
+    R: int
+    leaf_k: int
+    hash_bits: int
+    reservoir_size: int
+    c_max: int
+    c_min: int
+    leader_cap: int
+    replicas: int
+    leader_fraction: float
+    alpha: float
+    fanout: Int32Vector
+    seed: int
+    ip_partition_by_angle: bool
+    partition_wave_budget: int
+    search_L: int
+    graph: MaybeOwnedVectorInt32
+    entry_point: int
+    ntotal: int
+
+    def __init__(self, R: int = 64) -> None: ...
+    def effective_alpha(self, metric: MetricType) -> float: ...
+    def check_params(self) -> None: ...
+    def reset(self) -> None: ...
+
+class IndexPiPNN(Index):
+    pipnn: PiPNN
+    storage: Index
+    own_fields: bool
+    defer_build: bool
+
+    @overload
+    def __init__(self) -> None: ...
+    @overload
+    def __init__(self, storage: Index, R: int = 64) -> None: ...
+    def build(self) -> None: ...
+    def is_built(self) -> bool: ...
+    @staticmethod
+    def check_storage_supported(storage: Index) -> None: ...
+
+class IndexPiPNNFlat(IndexPiPNN):
+    def __init__(
+        self, d: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
+
+class IndexPiPNNSQ(IndexPiPNN):
+    def __init__(
+        self, d: int, qtype: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 # IndexNNDescent
 class IndexNNDescent(Index):

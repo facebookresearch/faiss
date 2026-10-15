@@ -37,6 +37,9 @@
 #include <cuvs/neighbors/ivf_pq.hpp>
 #include <raft/core/device_mdarray.hpp>
 
+// FAISS_CUVS_LEGACY_CAGRA_API selects the cuVS CAGRA API from before the
+// dataset view types (cuVS 26.02 and older).
+
 namespace faiss {
 
 /// Algorithm used to build underlying CAGRA graph
@@ -128,9 +131,18 @@ class CuvsCagra {
     /// Expected dimensionality of the vectors
     const int dim_;
 
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
     /// Controls the underlying cuVS index if it should support search
     /// capabilities on the index.
     bool searchable_index_ = true;
+#else  // FAISS_CUVS_LEGACY_CAGRA_API
+    /// Controls the underlying cuVS index if it should store the dataset in
+    /// device memory. Default set to true for enabling search capabilities on
+    /// the index.
+    /// NB: This is also required to be set to true for deserializing
+    /// an IndexHNSWCagra object.
+    bool store_dataset_ = true;
+#endif // FAISS_CUVS_LEGACY_CAGRA_API
 
     /// Metric type of the index
     faiss::MetricType metric_;
@@ -153,14 +165,21 @@ class CuvsCagra {
     /// Parameter to use MST optimization to guarantee graph connectivity
     bool guarantee_connectivity_ = false;
 
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
     /// Device padded copy when `storage_` is host memory (KNN-graph ctor path).
     std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
             device_padded_dataset_;
 
+#endif // !FAISS_CUVS_LEGACY_CAGRA_API
     /// Instance of trained cuVS CAGRA index
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
     std::shared_ptr<
             cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
             cuvs_index{nullptr};
+#else  // FAISS_CUVS_LEGACY_CAGRA_API
+    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
+            nullptr};
+#endif // FAISS_CUVS_LEGACY_CAGRA_API
 };
 } // namespace gpu
 } // namespace faiss

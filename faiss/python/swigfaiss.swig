@@ -135,6 +135,9 @@ typedef uint64_t size_t;
 #include <faiss/impl/NSG.h>
 #include <faiss/IndexNSG.h>
 
+#include <faiss/impl/PiPNN.h>
+#include <faiss/IndexPiPNN.h>
+
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexIDMap.h>
 #include <faiss/IndexRefine.h>
@@ -646,6 +649,9 @@ void gpu_sync_all_devices()
 
 %include  <faiss/IndexNSG.h>
 
+%include  <faiss/impl/PiPNN.h>
+%include  <faiss/IndexPiPNN.h>
+
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
 %ignore OnDiskInvertedListsIOHook;
@@ -932,6 +938,9 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
+    DOWNCAST ( IndexPiPNNFlat )
+    DOWNCAST ( IndexPiPNNSQ )
+    DOWNCAST ( IndexPiPNN )
     DOWNCAST ( Index2Layer )
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
