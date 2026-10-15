@@ -247,7 +247,9 @@ struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    // Not final: the RISCV_RVV specialization overrides decode_vector with
+    // an RVV kernel while inheriting this scalar reference.
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             x[i] = decode_fp16(((uint16_t*)code)[i]);
         }
@@ -324,7 +326,9 @@ struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    // Not final: the RISCV_RVV specialization overrides decode_vector with
+    // an RVV kernel while inheriting this scalar reference.
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             x[i] = code[i];
         }
@@ -365,7 +369,9 @@ struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    // Not final: the RISCV_RVV specialization overrides decode_vector with
+    // an RVV kernel while inheriting this scalar reference.
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             x[i] = code[i] - 128;
         }
