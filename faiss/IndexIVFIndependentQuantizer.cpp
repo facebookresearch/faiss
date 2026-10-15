@@ -81,6 +81,7 @@ void IndexIVFIndependentQuantizer::add(idx_t n, const float* x) {
     VTransformedVectors tv(vt, n, x);
 
     index_ivf->add_core(n, tv.x, nullptr, I.data());
+    ntotal = index_ivf->ntotal;
 }
 
 void IndexIVFIndependentQuantizer::search(
