@@ -115,6 +115,42 @@ class TestClustering(unittest.TestCase):
         self.assertGreater(cdis1_last, cdis1_first * 2)
         self.assertGreater(cdis2_first, cdis2_last * 2)
 
+    def test_weighted_objective(self):
+        weights = np.array([1.0, 10.0, 30.0], dtype="float32")
+        for spherical in (False, True):
+            if spherical:
+                x = np.array([[1, 0], [0.8, 0.6], [0, 1]], dtype="float32")
+                initial = np.eye(2, dtype="float32")
+                scores = (x @ initial.T).max(axis=1)
+            else:
+                x = np.array([[-5], [0], [5]], dtype="float32")
+                initial = np.array([[-5], [0]], dtype="float32")
+                scores = ((x[:, None] - initial) ** 2).sum(axis=2).min(axis=1)
+            for sample_weights in (None, weights):
+                with self.subTest(spherical=spherical,
+                                  weighted=sample_weights is not None):
+                    km = faiss.Kmeans(
+                        x.shape[1], 2, niter=1, spherical=spherical,
+                        min_points_per_centroid=1)
+                    km.train(x, weights=sample_weights,
+                             init_centroids=initial)
+                    expected = (scores.sum() if sample_weights is None
+                                else (scores * sample_weights).sum())
+                    np.testing.assert_allclose(km.obj[0], expected,
+                                               rtol=1e-6)
+
+    def test_weighted_redos(self):
+        x = np.array([[-5], [0], [5]], dtype="float32")
+        weights = np.array([1.0, 10.0, 30.0], dtype="float32")
+        losses = []
+        for nredo in (1, 2):
+            km = faiss.Kmeans(1, 2, niter=10, nredo=nredo, seed=0,
+                             min_points_per_centroid=1)
+            km.train(x, weights=weights)
+            distances, _ = km.index.search(x, 1)
+            losses.append((distances[:, 0] * weights).sum())
+        self.assertLessEqual(losses[1], losses[0] + 1e-5)
+
     def test_encoded(self):
         d = 32
         k = 5
