@@ -48,6 +48,10 @@ struct IndexSQFP16Gemm : IndexScalarQuantizer {
 
     explicit IndexSQFP16Gemm(int d, MetricType metric = METRIC_INNER_PRODUCT);
     IndexSQFP16Gemm();
+    /// Copies codes and settings; the packed cache is not shared and is
+    /// rebuilt on the copy's first search (used by clone_index).
+    IndexSQFP16Gemm(const IndexSQFP16Gemm& other);
+    IndexSQFP16Gemm& operator=(const IndexSQFP16Gemm&) = delete;
 
     void train(idx_t n, const float* x) override;
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;

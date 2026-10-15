@@ -45,6 +45,13 @@ size_t input_size(idx_t n, int d) {
     return static_cast<size_t>(n) * static_cast<size_t>(d);
 }
 
+// Below this many multiply-adds (n * ntotal * d) a search is not split
+// across threads by centroid block: thread start-up would dominate.
+constexpr size_t kMinSplitWork = size_t{1} << 22;
+// Caps the per-thread top-k buffers used when splitting by centroid block
+// (number of (distance, id) entries summed over all threads).
+constexpr size_t kMaxSplitHeapEntries = size_t{1} << 22;
+
 struct ScopedSingleThread {
     int saved = -1;
     explicit ScopedSingleThread([[maybe_unused]] bool on) {
@@ -127,6 +134,16 @@ IndexSQFP16Gemm::IndexSQFP16Gemm(int dim, MetricType metric)
 
 IndexSQFP16Gemm::IndexSQFP16Gemm()
         : IndexScalarQuantizer(0, ScalarQuantizer::QT_fp16) {}
+
+IndexSQFP16Gemm::IndexSQFP16Gemm(const IndexSQFP16Gemm& other)
+        : IndexScalarQuantizer(other),
+          kernel(other.kernel),
+          use_gemm(other.use_gemm),
+          bs_x(other.bs_x),
+          bs_y(other.bs_y),
+          rescore_native(other.rescore_native),
+          nb_gemm_queries(
+                  other.nb_gemm_queries.load(std::memory_order_relaxed)) {}
 
 void IndexSQFP16Gemm::check_format() const {
     FAISS_THROW_IF_NOT_MSG(
@@ -309,6 +326,7 @@ void IndexSQFP16Gemm::knn_gemm(
         const PackedCache& cache) const {
     const size_t dd = static_cast<size_t>(d);
     const size_t ny = static_cast<size_t>(ntotal);
+    const size_t kk_size = static_cast<size_t>(k);
     const size_t bsx = std::max(round_up(bs_x, 32), size_t{32});
     const size_t bsy = cache.bs_y;
     const fp16_gemm::GemmFn gemm = fp16_gemm::get_gemm_fn(kernel);
@@ -316,9 +334,221 @@ void IndexSQFP16Gemm::knn_gemm(
     // multiple of 16 rows, FMA and scalar process rows one at a time.
     const size_t row_multiple = fp16_gemm::gemm_row_multiple(kernel);
     const bool is_l2 = metric_type == METRIC_L2;
-    const ScopedSingleThread thread_guard(n <= static_cast<idx_t>(bsx));
+
+    // Encodes queries [i0, i0 + nm) into abuf (zero-padded to mpad rows)
+    // and, for L2, their squared norms into xnorm.
+    auto encode_block = [&](idx_t i0,
+                            size_t nm,
+                            std::vector<uint16_t>& abuf,
+                            std::vector<float>& xnorm) {
+        const size_t mpad = round_up(nm, row_multiple);
+        if (abuf.size() < mpad * dd) {
+            abuf.resize(mpad * dd);
+        }
+        fp16_gemm::encode_rows(
+                x + static_cast<size_t>(i0) * dd, abuf.data(), nm, dd);
+        fp16_gemm::validate_codes(
+                reinterpret_cast<const uint8_t*>(abuf.data()), nm * dd);
+        std::fill(
+                abuf.begin() + nm * dd, abuf.begin() + mpad * dd, uint16_t{0});
+        if (is_l2) {
+            if (xnorm.size() < nm) {
+                xnorm.resize(nm);
+            }
+            for (size_t i = 0; i < nm; ++i) {
+                float sum = 0;
+                for (size_t kk = 0; kk < dd; ++kk) {
+                    const float v = decode_fp16(abuf[i * dd + kk]);
+                    sum += v * v;
+                }
+                xnorm[i] = sum;
+            }
+        }
+        return mpad;
+    };
+
+    // Scores the nm encoded queries against centroids [j0, j0 + nj) and
+    // leaves the nm x nj distance matrix packed (row stride nj) in ipblk.
+    auto score_block = [&](const std::vector<uint16_t>& abuf,
+                           size_t nm,
+                           size_t mpad,
+                           const std::vector<float>& xnorm,
+                           size_t j0,
+                           std::vector<float>& ipblk) {
+        const size_t nj = std::min(bsy, ny - j0);
+        if (ipblk.size() < mpad * bsy) {
+            ipblk.resize(mpad * bsy);
+        }
+        const uint16_t* packed = cache.packed.empty()
+                ? nullptr
+                : cache.packed.data() + cache.offset[j0 / bsy];
+        gemm(abuf.data(),
+             mpad,
+             dd,
+             packed,
+             cache.rows.data() + j0 * dd,
+             dd,
+             round_up(nj, 32),
+             nj,
+             dd,
+             ipblk.data(),
+             bsy);
+        if (is_l2) {
+            for (size_t i = 0; i < nm; ++i) {
+                for (size_t j = 0; j < nj; ++j) {
+                    ipblk[i * bsy + j] = std::max(
+                            0.f,
+                            xnorm[i] + cache.norms[j0 + j] -
+                                    2.f * ipblk[i * bsy + j]);
+                }
+            }
+        }
+        if (nj != bsy) {
+            for (size_t i = 1; i < nm; ++i) {
+                std::memmove(
+                        ipblk.data() + i * nj,
+                        ipblk.data() + i * bsy,
+                        nj * sizeof(float));
+            }
+        }
+        return nj;
+    };
+
+    const size_t n_query_blocks = (static_cast<size_t>(n) + bsx - 1) / bsx;
+    const size_t n_centroid_blocks = (ny + bsy - 1) / bsy;
+    int max_threads = 1;
+#ifdef _OPENMP
+    if (!omp_in_parallel()) {
+        max_threads = omp_get_max_threads();
+    }
+#endif
+    // With fewer query blocks than threads, parallelizing over query blocks
+    // alone leaves most threads idle (a batch of up to bs_x queries would
+    // run on a single thread). Split the centroid blocks across threads
+    // instead, each keeping its own top-k, then merge. Single queries keep
+    // the single-threaded path, like IndexScalarQuantizer::search does, so
+    // that callers already running one search per thread are unaffected.
+    size_t split_threads =
+            std::min(static_cast<size_t>(max_threads), n_centroid_blocks);
+    const size_t local_entries = std::min(bsx, static_cast<size_t>(n)) *
+            kk_size; // per thread, per query block
+    split_threads = std::min(
+            split_threads,
+            std::max(size_t{1}, kMaxSplitHeapEntries / local_entries));
+    const bool split_centroids = n > 1 && split_threads > 1 &&
+            split_threads > n_query_blocks &&
+            static_cast<size_t>(n) * ny * dd >= kMinSplitWork;
+
     std::exception_ptr error;
     std::atomic<bool> failed{false};
+    auto record_error = [&]() {
+#pragma omp critical(fp16_search_exception)
+        {
+            if (!error) {
+                error = std::current_exception();
+            }
+        }
+        failed.store(true, std::memory_order_relaxed);
+    };
+
+    if (split_centroids) {
+        std::vector<uint16_t> abuf;
+        std::vector<float> xnorm;
+        std::vector<float> local_dis(split_threads * local_entries);
+        std::vector<idx_t> local_ids(split_threads * local_entries);
+        for (idx_t i0 = 0; i0 < n; i0 += static_cast<idx_t>(bsx)) {
+            const idx_t i1 = std::min<idx_t>(i0 + bsx, n);
+            const size_t nm = static_cast<size_t>(i1 - i0);
+            const size_t mpad = encode_block(i0, nm, abuf, xnorm);
+            const size_t entries = nm * kk_size;
+#pragma omp parallel num_threads(static_cast<int>(split_threads))
+            {
+                static thread_local std::vector<float> ipblk;
+                static thread_local std::vector<std::pair<float, idx_t>> merged;
+                size_t t = 0;
+                size_t team = 1;
+#ifdef _OPENMP
+                t = static_cast<size_t>(omp_get_thread_num());
+                team = static_cast<size_t>(omp_get_num_threads());
+#endif
+                HeapBlockResultHandler<C> topk(
+                        nm,
+                        local_dis.data() + t * entries,
+                        local_ids.data() + t * entries,
+                        k);
+                topk.begin_multiple(0, nm);
+#pragma omp for schedule(dynamic, 1)
+                for (size_t cb = 0; cb < n_centroid_blocks; ++cb) {
+                    if (failed.load(std::memory_order_relaxed)) {
+                        continue;
+                    }
+                    try {
+                        const size_t j0 = cb * bsy;
+                        const size_t nj =
+                                score_block(abuf, nm, mpad, xnorm, j0, ipblk);
+                        topk.add_results(j0, j0 + nj, ipblk.data());
+                    } catch (...) {
+                        record_error();
+                    }
+                }
+                // Every thread kept the exact top-k of its own centroids
+                // under the (distance, smaller id first) order, so the top-k
+                // of their union under that same order is exactly what a
+                // single pass over all centroids would have kept.
+#pragma omp for schedule(static)
+                for (size_t i = 0; i < nm; ++i) {
+                    if (failed.load(std::memory_order_relaxed)) {
+                        continue;
+                    }
+                    try {
+                        merged.resize(team * kk_size);
+                        size_t count = 0;
+                        for (size_t tt = 0; tt < team; ++tt) {
+                            const size_t base = tt * entries + i * kk_size;
+                            for (size_t j = 0; j < kk_size; ++j) {
+                                if (local_ids[base + j] >= 0) {
+                                    merged[count++] = {
+                                            local_dis[base + j],
+                                            local_ids[base + j]};
+                                }
+                            }
+                        }
+                        const size_t keep = std::min(count, kk_size);
+                        std::partial_sort(
+                                merged.begin(),
+                                merged.begin() + keep,
+                                merged.begin() + count,
+                                [is_l2](const auto& a, const auto& b) {
+                                    if (a.first != b.first) {
+                                        return is_l2 ? a.first < b.first
+                                                     : a.first > b.first;
+                                    }
+                                    return a.second < b.second;
+                                });
+                        const size_t row = static_cast<size_t>(i0) + i;
+                        float* ds = distances + row * kk_size;
+                        idx_t* ids = labels + row * kk_size;
+                        for (size_t j = 0; j < keep; ++j) {
+                            ds[j] = merged[j].first;
+                            ids[j] = merged[j].second;
+                        }
+                        for (size_t j = keep; j < kk_size; ++j) {
+                            ds[j] = C::neutral();
+                            ids[j] = -1;
+                        }
+                    } catch (...) {
+                        record_error();
+                    }
+                }
+            }
+            if (error) {
+                std::rethrow_exception(error);
+            }
+        }
+        return;
+    }
+
+    const ScopedSingleThread thread_guard(n_query_blocks <= 1);
 #pragma omp parallel
     {
         static thread_local std::vector<uint16_t> abuf;
@@ -330,36 +560,9 @@ void IndexSQFP16Gemm::knn_gemm(
                 continue;
             }
             try {
-                if (abuf.size() < bsx * dd) {
-                    abuf.resize(bsx * dd);
-                }
-                if (ipblk.size() < bsx * bsy) {
-                    ipblk.resize(bsx * bsy);
-                }
-                if (is_l2 && xnorm.size() < bsx) {
-                    xnorm.resize(bsx);
-                }
                 const idx_t i1 = std::min<idx_t>(i0 + bsx, n);
                 const size_t nm = static_cast<size_t>(i1 - i0);
-                const size_t mpad = round_up(nm, row_multiple);
-                fp16_gemm::encode_rows(
-                        x + static_cast<size_t>(i0) * dd, abuf.data(), nm, dd);
-                fp16_gemm::validate_codes(
-                        reinterpret_cast<const uint8_t*>(abuf.data()), nm * dd);
-                std::fill(
-                        abuf.begin() + nm * dd,
-                        abuf.begin() + mpad * dd,
-                        uint16_t{0});
-                if (is_l2) {
-                    for (size_t i = 0; i < nm; ++i) {
-                        float sum = 0;
-                        for (size_t kk = 0; kk < dd; ++kk) {
-                            const float v = decode_fp16(abuf[i * dd + kk]);
-                            sum += v * v;
-                        }
-                        xnorm[i] = sum;
-                    }
-                }
+                const size_t mpad = encode_block(i0, nm, abuf, xnorm);
                 using NativeTop1C = std::conditional_t<
                         C::is_max,
                         CMax<float, idx_t>,
@@ -372,39 +575,8 @@ void IndexSQFP16Gemm::knn_gemm(
                     topk.begin_multiple(i0, i1);
                 }
                 for (size_t j0 = 0; j0 < ny; j0 += bsy) {
-                    const size_t nj = std::min(bsy, ny - j0);
-                    const uint16_t* packed = cache.packed.empty()
-                            ? nullptr
-                            : cache.packed.data() + cache.offset[j0 / bsy];
-                    gemm(abuf.data(),
-                         mpad,
-                         dd,
-                         packed,
-                         cache.rows.data() + j0 * dd,
-                         dd,
-                         round_up(nj, 32),
-                         nj,
-                         dd,
-                         ipblk.data(),
-                         bsy);
-                    if (is_l2) {
-                        for (size_t i = 0; i < nm; ++i) {
-                            for (size_t j = 0; j < nj; ++j) {
-                                ipblk[i * bsy + j] = std::max(
-                                        0.f,
-                                        xnorm[i] + cache.norms[j0 + j] -
-                                                2.f * ipblk[i * bsy + j]);
-                            }
-                        }
-                    }
-                    if (nj != bsy) {
-                        for (size_t i = 1; i < nm; ++i) {
-                            std::memmove(
-                                    ipblk.data() + i * nj,
-                                    ipblk.data() + i * bsy,
-                                    nj * sizeof(float));
-                        }
-                    }
+                    const size_t nj =
+                            score_block(abuf, nm, mpad, xnorm, j0, ipblk);
                     if (k == 1) {
                         top1.add_results(j0, j0 + nj, ipblk.data());
                     } else {
@@ -417,13 +589,7 @@ void IndexSQFP16Gemm::knn_gemm(
                     topk.end_multiple();
                 }
             } catch (...) {
-#pragma omp critical(fp16_search_exception)
-                {
-                    if (!error) {
-                        error = std::current_exception();
-                    }
-                }
-                failed.store(true, std::memory_order_relaxed);
+                record_error();
             }
         }
     }

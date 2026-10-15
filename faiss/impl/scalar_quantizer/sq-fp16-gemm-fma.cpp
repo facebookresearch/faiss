@@ -8,16 +8,51 @@
 // Decodes fp16 inputs to float and multiply-accumulates in fp32. This file
 // is compiled with its own AVX-512F/BW, F16C and FMA flags (see
 // CMakeLists.txt); the rest of the fp16 gemm kernels do not require them.
+//
+// Because of those flags this file deliberately avoids inline functions and
+// templates shared with other translation units (faiss/utils/fp16.h,
+// std::fma, std::vector, ...): their out-of-line copies are emitted as weak
+// symbols, and the linker may keep the AVX-512 one for the whole library,
+// which would then fault on CPUs without it.
 #include <faiss/impl/scalar_quantizer/sq-fp16-gemm.h>
 
 #include <immintrin.h>
-#include <cmath>
-#include <vector>
-
-#include <faiss/utils/fp16.h>
 
 namespace faiss {
 namespace fp16_gemm {
+
+namespace {
+// Same round-to-nearest-even conversion as the 16-wide path below.
+inline uint16_t encode_one(float x) {
+    return static_cast<uint16_t>(_cvtss_sh(x, _MM_FROUND_TO_NEAREST_INT));
+}
+inline float decode_one(uint16_t x) {
+    return _cvtsh_ss(x);
+}
+inline float fused_mul_add(float a, float b, float c) {
+    return _mm_cvtss_f32(
+            _mm_fmadd_ss(_mm_set_ss(a), _mm_set_ss(b), _mm_set_ss(c)));
+}
+
+// Per-thread decode buffer, reused across calls.
+struct ExpandBuffer {
+    float* data = nullptr;
+    size_t size = 0;
+    float* reserve(size_t n) {
+        if (size < n) {
+            delete[] data;
+            data = nullptr;
+            size = 0;
+            data = new float[n];
+            size = n;
+        }
+        return data;
+    }
+    ~ExpandBuffer() {
+        delete[] data;
+    }
+};
+} // namespace
 
 void encode_array_fma(const float* src, uint16_t* dst, size_t n) {
     size_t i = 0;
@@ -30,7 +65,7 @@ void encode_array_fma(const float* src, uint16_t* dst, size_t n) {
     // The tail uses the exact same round-to-nearest-even path, so results
     // never depend on position or length.
     for (; i < n; ++i) {
-        dst[i] = faiss::encode_fp16(src[i]);
+        dst[i] = encode_one(src[i]);
     }
 }
 
@@ -108,11 +143,9 @@ void gemm_fma_impl(
     const size_t full = (d / kFP16TileK) * kFP16TileK;
     constexpr size_t max_rows = 8;
     // One decode buffer per thread, reused across calls instead of
-    // allocating and zeroing it every time.
-    static thread_local std::vector<float> expanded;
-    if (expanded.size() < max_rows * full) {
-        expanded.resize(max_rows * full);
-    }
+    // allocating it every time.
+    static thread_local ExpandBuffer buffer;
+    float* const expanded = buffer.reserve(max_rows * full);
 
     // At most 8 rows per pass; the last pass handles however many real
     // rows remain.
@@ -124,10 +157,10 @@ void gemm_fma_impl(
                 const __m256i half = _mm256_loadu_si256(
                         reinterpret_cast<const __m256i*>(row + kk));
                 _mm512_storeu_ps(
-                        expanded.data() + r * full + kk, _mm512_cvtph_ps(half));
+                        expanded + r * full + kk, _mm512_cvtph_ps(half));
             }
         }
-        const float* e = expanded.data();
+        const float* e = expanded;
         float* o = out + i * out_stride;
         switch (rows) {
             case 8:
@@ -162,9 +195,9 @@ void gemm_fma_impl(
             for (size_t j = 0; j < n_real; ++j) {
                 float acc = out[i * out_stride + j];
                 for (size_t kk = full; kk < d; ++kk) {
-                    acc = std::fma(
-                            faiss::decode_fp16(a[i * a_stride + kk]),
-                            faiss::decode_fp16(b_rows[j * b_stride + kk]),
+                    acc = fused_mul_add(
+                            decode_one(a[i * a_stride + kk]),
+                            decode_one(b_rows[j * b_stride + kk]),
                             acc);
                 }
                 out[i * out_stride + j] = acc;

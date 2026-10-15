@@ -493,6 +493,10 @@ if(NOT WIN32 AND CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   list(APPEND FAISS_SRC impl/scalar_quantizer/sq-fp16-gemm-fma.cpp)
   set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-fma.cpp PROPERTIES
     COMPILE_OPTIONS "-mavx512f;-mavx512bw;-mf16c;-mfma")
+  # sq-fp16-gemm-common.cpp only references the FMA (and AMX) kernel symbols
+  # when told they were compiled in, so that it still links on targets that
+  # skip this block.
+  set(FAISS_FP16_GEMM_DEFINITIONS "FAISS_FP16_GEMM_FMA_COMPILED=1")
 
   # AMX-FP16 needs a newer compiler than the rest of faiss requires, so it
   # is opt-in: IndexSQFP16Gemm still works with the FMA/scalar kernels when
@@ -502,11 +506,12 @@ if(NOT WIN32 AND CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     list(APPEND FAISS_SRC impl/scalar_quantizer/sq-fp16-gemm-amx.cpp)
     set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-amx.cpp PROPERTIES
       COMPILE_OPTIONS "-mamx-tile;-mamx-fp16")
-    set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-common.cpp PROPERTIES
-      COMPILE_DEFINITIONS "FAISS_AMX_FP16_COMPILED=1")
+    list(APPEND FAISS_FP16_GEMM_DEFINITIONS "FAISS_AMX_FP16_COMPILED=1")
   else()
     message(STATUS "Compiler does not support -mamx-fp16: IndexSQFP16Gemm will not offer an AMX kernel (FMA/scalar still available).")
   endif()
+  set_source_files_properties(impl/scalar_quantizer/sq-fp16-gemm-common.cpp PROPERTIES
+    COMPILE_DEFINITIONS "${FAISS_FP16_GEMM_DEFINITIONS}")
 else()
   message(STATUS "IndexSQFP16Gemm fp16 gemm kernels need x86_64 with GCC/Clang flags; only the portable scalar kernel will be available.")
 endif()

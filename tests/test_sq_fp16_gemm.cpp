@@ -23,6 +23,7 @@
 
 #include <faiss/IndexSQFP16Gemm.h>
 #include <faiss/IndexScalarQuantizer.h>
+#include <faiss/clone_index.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/scalar_quantizer/sq-fp16-gemm.h>
@@ -855,29 +856,66 @@ void check_lifecycle(fp16_gemm::GemmKernel kernel) {
             << "merge_from did not clear the source's pack cache";
     compare_with_native(index, q);
 
-    // FAISS serialization only knows about the native IndexScalarQuantizer
-    // state; our own fields (kernel, block sizes, rescore_native) are not
-    // part of the file format and must be restored by the caller.
+    // Serialization ("IxSG") and clone_index both keep the index type and
+    // its search settings, and the copy searches exactly like the original.
+    index.bs_x = 64;
+    index.rescore_native = false;
+    auto expect_same_index = [&](const faiss::Index* copy, const char* what) {
+        SCOPED_TRACE(what);
+        auto* g = dynamic_cast<const faiss::IndexSQFP16Gemm*>(copy);
+        ASSERT_NE(g, nullptr) << "copy is not an IndexSQFP16Gemm";
+        EXPECT_EQ(g->kernel, index.kernel);
+        EXPECT_EQ(g->use_gemm, index.use_gemm);
+        EXPECT_EQ(g->bs_x, index.bs_x);
+        EXPECT_EQ(g->bs_y, index.bs_y);
+        EXPECT_EQ(g->rescore_native, index.rescore_native);
+        EXPECT_EQ(g->metric_type, index.metric_type);
+        EXPECT_EQ(g->ntotal, index.ntotal);
+        EXPECT_EQ(g->codes, index.codes);
+        const idx_t nq = static_cast<idx_t>(q.size() / d);
+        const idx_t k = std::min<idx_t>(5, index.ntotal);
+        std::vector<float> da(nq * k), db(nq * k);
+        std::vector<idx_t> ia(nq * k), ib(nq * k);
+        index.search(nq, q.data(), k, da.data(), ia.data());
+        g->search(nq, q.data(), k, db.data(), ib.data());
+        EXPECT_EQ(ia, ib) << "copy returned different ids";
+        EXPECT_EQ(0, std::memcmp(da.data(), db.data(), da.size() * 4))
+                << "copy returned different distances";
+        compare_with_native(*g, q);
+    };
     faiss::VectorIOWriter writer;
     faiss::write_index(&index, &writer);
-    faiss::VectorIOReader reader;
-    reader.data = writer.data;
-    std::unique_ptr<faiss::Index> loaded(faiss::read_index(&reader));
-    auto* loaded_sq = dynamic_cast<faiss::IndexScalarQuantizer*>(loaded.get());
-    ASSERT_NE(loaded_sq, nullptr)
-            << "serialized index did not come back as IndexScalarQuantizer";
-    EXPECT_EQ(loaded_sq->sq.qtype, faiss::ScalarQuantizer::QT_fp16);
-    EXPECT_EQ(loaded_sq->metric_type, index.metric_type);
-    EXPECT_EQ(dynamic_cast<faiss::IndexSQFP16Gemm*>(loaded.get()), nullptr)
-            << "a plain IndexScalarQuantizer file must not deserialize as IndexSQFP16Gemm";
-
-    faiss::IndexSQFP16Gemm restored(d, loaded_sq->metric_type);
-    restored.kernel = kernel;
-    restored.bs_x = index.bs_x;
-    restored.bs_y = index.bs_y;
-    restored.rescore_native = index.rescore_native;
-    restored.add_sa_codes(loaded_sq->ntotal, loaded_sq->codes.data(), nullptr);
-    compare_with_native(restored, q);
+    {
+        faiss::VectorIOReader reader;
+        reader.data = writer.data;
+        std::unique_ptr<faiss::Index> loaded(faiss::read_index(&reader));
+        expect_same_index(loaded.get(), "read_index");
+    }
+    {
+        std::unique_ptr<faiss::Index> cloned(faiss::clone_index(&index));
+        expect_same_index(cloned.get(), "clone_index");
+    }
+    // The settings trail the codes: kernel (int32), use_gemm (bool), bs_x,
+    // bs_y (uint64) and rescore_native (bool). Corrupt values are rejected.
+    {
+        faiss::VectorIOReader reader;
+        reader.data = writer.data;
+        const int32_t bad_kernel = 7;
+        std::memcpy(
+                reader.data.data() + reader.data.size() - 22, &bad_kernel, 4);
+        EXPECT_ANY_THROW(faiss::read_index(&reader))
+                << "out-of-range kernel was not rejected";
+    }
+    {
+        faiss::VectorIOReader reader;
+        reader.data = writer.data;
+        const uint64_t bad_block = 0;
+        std::memcpy(reader.data.data() + reader.data.size() - 9, &bad_block, 8);
+        EXPECT_ANY_THROW(faiss::read_index(&reader))
+                << "zero block size was not rejected";
+    }
+    index.bs_x = 256;
+    index.rescore_native = true;
 
     // Concurrent read-only search() calls must be safe.
     index.invalidate_pack();
@@ -993,6 +1031,73 @@ TEST(SQFP16GemmIndex, QueryCountsRowConsistency) {
         }
     }
 }
+
+#ifdef _OPENMP
+// With fewer query blocks than threads, search() splits the centroid blocks
+// across threads and merges per-thread top-k lists. The result must match
+// the single-threaded pass bit for bit, including which of several equal
+// distances in different centroid blocks is kept (the smaller id).
+TEST(SQFP16GemmIndex, CentroidSplitMatchesSingleThread) {
+    constexpr idx_t nb = 4096;
+    constexpr int d = 65;
+    const int saved_threads = omp_get_max_threads();
+    auto x = sample(nb, d, 5153);
+    // Exact duplicates of vector 5 in three other centroid blocks.
+    for (idx_t dup : {1000, 2000, 4095}) {
+        std::copy(x.begin() + 5 * d, x.begin() + 6 * d, x.begin() + dup * d);
+    }
+    auto q = sample(300, d, 5281);
+    std::copy(x.begin() + 5 * d, x.begin() + 6 * d, q.begin() + 1 * d);
+    for (const auto kernel : available_kernels()) {
+        SCOPED_TRACE(fp16_gemm::kernel_name(kernel));
+        for (auto metric : {faiss::METRIC_INNER_PRODUCT, faiss::METRIC_L2}) {
+            faiss::IndexSQFP16Gemm index(d, metric);
+            index.kernel = kernel;
+            index.bs_y = 128;
+            index.add(nb, x.data());
+            for (bool rescore : {false, true}) {
+                index.rescore_native = rescore;
+                for (idx_t nq : {2, 17, 256, 300}) {
+                    for (idx_t k : {1, 7, 100}) {
+                        SCOPED_TRACE(
+                                "nq=" + std::to_string(nq) +
+                                " k=" + std::to_string(k) +
+                                " rescore=" + std::to_string(rescore));
+                        std::vector<float> d1(nq * k), d8(nq * k);
+                        std::vector<idx_t> i1(nq * k), i8(nq * k);
+                        omp_set_num_threads(1);
+                        index.search(nq, q.data(), k, d1.data(), i1.data());
+                        omp_set_num_threads(8);
+                        index.search(nq, q.data(), k, d8.data(), i8.data());
+                        EXPECT_EQ(i1, i8) << "ids depend on thread count";
+                        EXPECT_EQ(
+                                0,
+                                std::memcmp(
+                                        d1.data(),
+                                        d8.data(),
+                                        d1.size() * sizeof(float)))
+                                << "distances depend on thread count";
+                        if (metric == faiss::METRIC_L2 && k >= 4) {
+                            const std::vector<idx_t> ties(
+                                    i8.begin() + k, i8.begin() + k + 4);
+                            EXPECT_EQ(
+                                    ties,
+                                    (std::vector<idx_t>{5, 1000, 2000, 4095}))
+                                    << "equal distances not ordered by id";
+                        }
+                    }
+                }
+            }
+            // Native IndexScalarQuantizer does not order exact ties by id,
+            // so leave out the queries that hit the duplicates.
+            omp_set_num_threads(8);
+            compare_with_native(
+                    index, std::vector<float>(q.begin() + 2 * d, q.end()));
+        }
+    }
+    omp_set_num_threads(saved_threads);
+}
+#endif
 
 // Exercises IndexSQFP16Gemm::search()'s non-gemm path (use_gemm == false),
 // which rounds the whole query batch with round_values_parallel before

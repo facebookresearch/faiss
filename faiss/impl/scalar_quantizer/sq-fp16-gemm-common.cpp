@@ -33,6 +33,12 @@
 #include <unistd.h>
 #endif
 
+// Both are set by CMakeLists.txt only when the corresponding kernel source
+// file is part of the build; without them this file must not reference the
+// kernel symbols at all, or the library fails to link (e.g. on aarch64).
+#ifndef FAISS_FP16_GEMM_FMA_COMPILED
+#define FAISS_FP16_GEMM_FMA_COMPILED 0
+#endif
 #ifndef FAISS_AMX_FP16_COMPILED
 #define FAISS_AMX_FP16_COMPILED 0
 #endif
@@ -40,6 +46,7 @@
 namespace faiss {
 namespace fp16_gemm {
 
+#if FAISS_FP16_GEMM_FMA_COMPILED
 void encode_array_fma(const float*, uint16_t*, size_t);
 void gemm_fma_impl(
         const uint16_t*,
@@ -53,6 +60,7 @@ void gemm_fma_impl(
         size_t,
         float*,
         size_t);
+#endif
 #if FAISS_AMX_FP16_COMPILED
 AMXSubnormalBehavior amx_subnormal_behavior_impl();
 void gemm_amx_impl(
@@ -151,7 +159,7 @@ bool amx_fp16_compiled() {
     return FAISS_AMX_FP16_COMPILED != 0;
 }
 bool fma_available() {
-    return cpu_caps().fma;
+    return FAISS_FP16_GEMM_FMA_COMPILED != 0 && cpu_caps().fma;
 }
 bool amx_fp16_available() {
     return amx_fp16_compiled() && cpu_caps().amx && thread_tile_permission();
@@ -213,10 +221,12 @@ const char* kernel_name(GemmKernel kernel) {
 }
 
 void encode_array(const float* src, uint16_t* dst, size_t n) {
+#if FAISS_FP16_GEMM_FMA_COMPILED
     if (fma_available()) {
         encode_array_fma(src, dst, n);
         return;
     }
+#endif
     for (size_t i = 0; i < n; ++i) {
         dst[i] = faiss::encode_fp16(src[i]);
     }
@@ -429,6 +439,7 @@ void gemm_fma(
     resolve_kernel(GemmKernel::FMA);
     validate_gemm_shape(
             m, a_stride, b_stride, n_padded, n_real, d, out_stride, 1);
+#if FAISS_FP16_GEMM_FMA_COMPILED
     gemm_fma_impl(
             a,
             m,
@@ -441,6 +452,15 @@ void gemm_fma(
             d,
             out,
             out_stride);
+#else
+    // unreachable: resolve_kernel() already throws above when this build has
+    // no FMA kernel.
+    (void)a;
+    (void)packed;
+    (void)b_rows;
+    (void)out;
+    FAISS_THROW_MSG("this build was not compiled with an FP16 FMA kernel");
+#endif
 }
 
 void gemm_amx(

@@ -84,7 +84,7 @@ void round_values_range(const float* src, float* dst, size_t begin, size_t end);
 // match round_values; falls back to it when there is only one chunk,
 // already inside a parallel region, or only one thread is available. Safe
 // to call with dst == src; on exception the contents of dst are undefined.
-constexpr size_t kRoundBlock = size_t{1} << 16;
+constexpr size_t kRoundBlock = 65536; // 2^16
 void round_values_parallel(
         const float* src,
         float* dst,

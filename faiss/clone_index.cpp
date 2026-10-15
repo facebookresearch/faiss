@@ -41,6 +41,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFP16Gemm.h>
 #include <faiss/IndexScalarQuantizer.h>
 
 #include <faiss/MetaIndexes.h>
@@ -295,6 +296,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexPQFastScan, index)
     TRYCLONE(IndexEDEN, index)
 
+    TRYCLONE(IndexSQFP16Gemm, index)
     TRYCLONE(IndexScalarQuantizer, index)
     TRYCLONE(IndexRaBitQ, index)
     TRYCLONE(MultiIndexQuantizer, index)
