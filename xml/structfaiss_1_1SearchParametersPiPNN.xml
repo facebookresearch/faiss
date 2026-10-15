@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SearchParametersPiPNN" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SearchParametersPiPNN</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersPiPNN_1a5f2ecd5417223a36a73b4fdfac4c8e54" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SearchParametersPiPNN::search_L</definition>
+        <argsstring></argsstring>
+        <name>search_L</name>
+        <qualifiedname>faiss::SearchParametersPiPNN::search_L</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>beam width L; if 0, pipnn.search_L is used </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPiPNN.h" line="20" column="9" bodyfile="faiss/IndexPiPNN.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>IDSelector* faiss::SearchParameters::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <qualifiedname>faiss::SearchParameters::sel</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>if non-null, only these IDs will be considered during search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="90" column="16" bodyfile="faiss/Index.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::SearchParametersPiPNN</label>
+        <link refid="structfaiss_1_1SearchParametersPiPNN"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::SearchParametersPiPNN</label>
+        <link refid="structfaiss_1_1SearchParametersPiPNN"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IndexPiPNN.h" line="18" column="1" bodyfile="faiss/IndexPiPNN.h" bodystart="18" bodyend="21"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SearchParametersPiPNN_1a5f2ecd5417223a36a73b4fdfac4c8e54" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPiPNN</scope><name>search_L</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPiPNN</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParametersPiPNN</scope><name>~SearchParameters</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

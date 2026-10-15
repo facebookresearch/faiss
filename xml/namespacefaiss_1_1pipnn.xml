@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="29" column="18" bodyfile="faiss/impl/PiPNN.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="32" column="18" bodyfile="faiss/impl/PiPNN.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="HashPrune_8h_1a53c3c9bca4e5115a2e00c0b17341f6a2" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr uint8_t</type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="33" column="9" declfile="faiss/impl/PiPNN.h" declline="33" declcolumn="9"/>
+        <location file="faiss/impl/PiPNN.h" line="36" column="9" declfile="faiss/impl/PiPNN.h" declline="36" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="PiPNN_8h_1af11f43adc5e8c0f944c563fa0640f45a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="37" column="6" declfile="faiss/impl/PiPNN.h" declline="37" declcolumn="6"/>
+        <location file="faiss/impl/PiPNN.h" line="40" column="6" declfile="faiss/impl/PiPNN.h" declline="40" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="HashPrune_8h_1a020201bbbafec8555d0c9560026e702c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint16_t</type>
@@ -551,6 +551,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/PiPNN.h" line="22" column="1"/>
+    <location file="faiss/impl/PiPNN.h" line="25" column="1"/>
   </compounddef>
 </doxygen>

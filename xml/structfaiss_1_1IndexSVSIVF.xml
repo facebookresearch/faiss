@@ -1132,6 +1132,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPiPNN_1aa0050513afdff6856a74d77888a0ddb6">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1afc92036fae3041caf6331b67754b599c">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869">reconstruct</reimplementedby>

@@ -522,6 +522,7 @@
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a11e65f02f9edb9c09fc0152486b96aff">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a024c25f4757df14fb741ca9a6fb4cfcb">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSGPQ_1afa79e49f634ed87c0f597b9d9fc2f111">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPiPNN_1a54f8f9fa558cd0a759f06cab25af7e5d">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a87898add5ab4d86ba901ca79778fc11e">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a6fa1d1a295eb2d4377b8de5096ab3ef4">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a553b9a33e9be7f231ffdc0ac53c59e7c">train</reimplementedby>
@@ -815,6 +816,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFSQFastScan_1a8dae7bfc5354adba04c9c0bfd60f311b">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1ad2111361ac164b69f4658be446845f88">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a88fbd9b8c4fc905a51ba202c1a447e34">reset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPiPNN_1a7d3ed078013e86fc353b276646f5bdd0">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a4808ce22fcc95c7af902b97969f2a90d">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1ae1ecff1b7b2d5d61a65492a5c5cf863b">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42">reset</reimplementedby>
@@ -883,6 +885,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPiPNN_1aa0050513afdff6856a74d77888a0ddb6">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1afc92036fae3041caf6331b67754b599c">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869">reconstruct</reimplementedby>

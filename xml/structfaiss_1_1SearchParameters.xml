@@ -7,6 +7,7 @@
     <derivedcompoundref refid="structfaiss_1_1SearchParametersHNSW" prot="public" virt="non-virtual">faiss::SearchParametersHNSW</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPQ" prot="public" virt="non-virtual">faiss::SearchParametersPQ</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1SearchParametersPiPNN" prot="public" virt="non-virtual">faiss::SearchParametersPiPNN</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPreTransform" prot="public" virt="non-virtual">faiss::SearchParametersPreTransform</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" prot="public" virt="non-virtual">faiss::SearchParametersResidualCoarseQuantizer</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersSVSIVF" prot="public" virt="non-virtual">faiss::SearchParametersSVSIVF</derivedcompoundref>
@@ -108,30 +109,36 @@
         </childnode>
       </node>
       <node id="10">
+        <label>faiss::SearchParametersPiPNN</label>
+        <link refid="structfaiss_1_1SearchParametersPiPNN"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss::SearchParametersPreTransform</label>
         <link refid="structfaiss_1_1SearchParametersPreTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss::SearchParametersResidualCoarseQuantizer</label>
         <link refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss::SearchParametersSVSIVF</label>
         <link refid="structfaiss_1_1SearchParametersSVSIVF"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss::SearchParametersSVSVamana</label>
         <link refid="structfaiss_1_1SearchParametersSVSVamana"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss::gpu::SearchParametersCagra</label>
         <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
         <childnode refid="1" relation="public-inheritance">

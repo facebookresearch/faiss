@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="65" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="65" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="68" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ad04c3ff63ac047640246754c6d71517d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="66" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="69" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="69" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a3d0db57d5c9d9834a3a5b09e0cfbe075" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="67" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="70" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ad796b8cd5ab20808141724363e201954" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="68" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="68" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="71" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="69" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="69" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="72" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="72" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="70" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="73" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="73" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ac6eda5d3056c5ae0309b028301096864" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -114,7 +114,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="71" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="74" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="74" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -130,7 +130,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="72" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="72" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="75" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a65a0c0bf3ecc3f635c4f67b9ce45a519" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="73" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="73" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="76" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="76" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -162,7 +162,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="74" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="74" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="77" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="77" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" prot="public" static="no" mutable="no">
         <type>std::vector&lt; int &gt;</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="75" column="17" bodyfile="faiss/impl/PiPNN.h" bodystart="75" bodyend="75"/>
+        <location file="faiss/impl/PiPNN.h" line="78" column="17" bodyfile="faiss/impl/PiPNN.h" bodystart="78" bodyend="78"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a356a13b0518734202d61ba82ec0056af" prot="public" static="no" mutable="no">
         <type>int64_t</type>
@@ -193,7 +193,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="76" column="13" bodyfile="faiss/impl/PiPNN.h" bodystart="76" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="79" column="13" bodyfile="faiss/impl/PiPNN.h" bodystart="79" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a829b3bc5f2aba5fe1da209733a5d8d77" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -209,7 +209,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="78" column="10" bodyfile="faiss/impl/PiPNN.h" bodystart="78" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="81" column="10" bodyfile="faiss/impl/PiPNN.h" bodystart="81" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ae47bb3062a5cb2b811c000a2c81b3f2c" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -225,7 +225,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="80" column="12" bodyfile="faiss/impl/PiPNN.h" bodystart="80" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="83" column="12" bodyfile="faiss/impl/PiPNN.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a1139045c734f925c23c44fcdaeff1265" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PiPNN::search_L</definition>
+        <argsstring></argsstring>
+        <name>search_L</name>
+        <qualifiedname>faiss::PiPNN::search_L</qualifiedname>
+        <initializer>= 64</initializer>
+        <briefdescription>
+<para>default beam width of search </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="85" column="9" bodyfile="faiss/impl/PiPNN.h" bodystart="85" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; int32_t &gt;</type>
@@ -240,7 +256,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="83" column="22" bodyfile="faiss/impl/PiPNN.h" bodystart="83" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="88" column="22" bodyfile="faiss/impl/PiPNN.h" bodystart="88" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" prot="public" static="no" mutable="no">
         <type>int32_t</type>
@@ -256,7 +272,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="84" column="13" bodyfile="faiss/impl/PiPNN.h" bodystart="84" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="89" column="13" bodyfile="faiss/impl/PiPNN.h" bodystart="89" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PiPNN_1aeb442fb111a5d291207cf9c6372582ba" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -271,7 +287,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="85" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/impl/PiPNN.h" line="90" column="11" bodyfile="faiss/impl/PiPNN.h" bodystart="90" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -287,7 +303,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="87" column="5"/>
+        <location file="faiss/impl/PiPNN.h" line="92" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PiPNN_1a9b8897afab62a4c9937e6faea7da90e0" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
@@ -305,7 +321,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="88" column="14" bodyfile="faiss/impl/PiPNN.h" bodystart="88" bodyend="88"/>
+        <location file="faiss/impl/PiPNN.h" line="93" column="14" bodyfile="faiss/impl/PiPNN.h" bodystart="93" bodyend="93"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PiPNN_1a844669f152d61c0acde5a3020262d915" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -323,7 +339,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="90" column="11"/>
+        <location file="faiss/impl/PiPNN.h" line="95" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PiPNN_1a86c1e8aed2845b61254ddd2dbcf5fa7d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -337,7 +353,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="92" column="10"/>
+        <location file="faiss/impl/PiPNN.h" line="97" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -361,7 +377,50 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="97" column="10"/>
+        <location file="faiss/impl/PiPNN.h" line="102" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1afecdd8a6a7fce16ec533a1aeb5f71694" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PiPNN::search</definition>
+        <argsstring>(DistanceComputer &amp;qdis, int L, idx_t k, idx_t *I, float *D, VisitedTable &amp;vt, const IDSelector *sel) const</argsstring>
+        <name>search</name>
+        <qualifiedname>faiss::PiPNN::search</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>L</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>I</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>D</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Beam max(L, k); qdis smaller-is-better; vt: ntotal slots, clean in/out. Writes the k nearest in sel by (dis, id), padded; sel does not prune. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PiPNN.h" line="106" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PiPNN_1ae5ad97cfc8e37f74203c9b618234d17c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -376,7 +435,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/PiPNN.h" line="101" column="10"/>
+        <location file="faiss/impl/PiPNN.h" line="117" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -397,7 +456,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/PiPNN.h" line="63" column="1" bodyfile="faiss/impl/PiPNN.h" bodystart="63" bodyend="102"/>
+    <location file="faiss/impl/PiPNN.h" line="66" column="1" bodyfile="faiss/impl/PiPNN.h" bodystart="66" bodyend="118"/>
     <listofallmembers>
       <member refid="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>alpha</name></member>
       <member refid="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>build</name></member>
@@ -421,6 +480,8 @@
       <member refid="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>replicas</name></member>
       <member refid="structfaiss_1_1PiPNN_1ad796b8cd5ab20808141724363e201954" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>reservoir_size</name></member>
       <member refid="structfaiss_1_1PiPNN_1ae5ad97cfc8e37f74203c9b618234d17c" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1PiPNN_1afecdd8a6a7fce16ec533a1aeb5f71694" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>search</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a1139045c734f925c23c44fcdaeff1265" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>search_L</name></member>
       <member refid="structfaiss_1_1PiPNN_1a356a13b0518734202d61ba82ec0056af" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>seed</name></member>
     </listofallmembers>
   </compounddef>
