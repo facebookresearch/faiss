@@ -11,9 +11,9 @@
 // for the AMX kernel never silently falls back to another one.
 #include <faiss/impl/scalar_quantizer/sq-fp16-gemm.h>
 
+#include <immintrin.h>
 #include <cmath>
 #include <cstring>
-#include <immintrin.h>
 #include <stdexcept>
 
 #include <faiss/impl/FaissAssert.h>
@@ -71,8 +71,8 @@ AMXSubnormalBehavior probe_subnormals() {
     _tile_release();
     const float expected = faiss::decode_fp16(1);
     FAISS_THROW_IF_NOT_MSG(
-            (c[0] == 0 || c[0] == expected) && (c[17] == 0 || c[17] == expected) &&
-                    c[0] == c[17],
+            (c[0] == 0 || c[0] == expected) &&
+                    (c[17] == 0 || c[17] == expected) && c[0] == c[17],
             "AMX-FP16 subnormal probe behaved inconsistently or unexpectedly "
             "between the two input sides");
     return {c[0], c[17], c[0] == expected};
@@ -86,9 +86,16 @@ AMXSubnormalBehavior amx_subnormal_behavior_impl() {
 }
 
 void gemm_amx_impl(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed_b, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed_b,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride) {
     const size_t full = (d / 32) * 32;
     const size_t kblocks = full / 32;
@@ -165,7 +172,8 @@ void gemm_amx_impl(
                 const float af = faiss::decode_fp16(av);
                 for (size_t j = 0; j < n_real; ++j) {
                     out[i * out_stride + j] = std::fma(
-                            af, faiss::decode_fp16(b_rows[j * b_stride + kk]),
+                            af,
+                            faiss::decode_fp16(b_rows[j * b_stride + kk]),
                             out[i * out_stride + j]);
                 }
             }
@@ -183,7 +191,9 @@ void gemm_amx_impl(
                         continue; // already added above
                     }
                     out[i * out_stride + j] = std::fma(
-                            faiss::decode_fp16(av), bf, out[i * out_stride + j]);
+                            faiss::decode_fp16(av),
+                            bf,
+                            out[i * out_stride + j]);
                 }
             }
         }

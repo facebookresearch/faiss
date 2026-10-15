@@ -10,8 +10,8 @@
 // CMakeLists.txt); the rest of the fp16 gemm kernels do not require them.
 #include <faiss/impl/scalar_quantizer/sq-fp16-gemm.h>
 
-#include <cmath>
 #include <immintrin.h>
+#include <cmath>
 #include <vector>
 
 #include <faiss/utils/fp16.h>
@@ -41,8 +41,13 @@ namespace {
 // the pass, and matches bit-for-bit what a dedicated 1-row-at-a-time pass
 // would produce.
 template <size_t ROWS>
-void fma_rows(const float* expanded, size_t full, const uint16_t* packed_b,
-              size_t n_padded, float* out, size_t out_stride) {
+void fma_rows(
+        const float* expanded,
+        size_t full,
+        const uint16_t* packed_b,
+        size_t n_padded,
+        float* out,
+        size_t out_stride) {
     const size_t kblocks = full / kFP16TileK;
     for (size_t j = 0; j < n_padded; j += kFP16BlockN) {
         // Every dimension of a 16-centroid group is stored contiguously;
@@ -63,9 +68,11 @@ void fma_rows(const float* expanded, size_t full, const uint16_t* packed_b,
                 const __m512i b0 = _mm512_loadu_si512(block0 + kk * 32);
                 const __m512i b1 = _mm512_loadu_si512(block1 + kk * 32);
                 const __m512 b0e = _mm512_cvtph_ps(_mm512_cvtepi32_epi16(b0));
-                const __m512 b0o = _mm512_cvtph_ps(_mm512_cvtepi32_epi16(_mm512_srli_epi32(b0, 16)));
+                const __m512 b0o = _mm512_cvtph_ps(
+                        _mm512_cvtepi32_epi16(_mm512_srli_epi32(b0, 16)));
                 const __m512 b1e = _mm512_cvtph_ps(_mm512_cvtepi32_epi16(b1));
-                const __m512 b1o = _mm512_cvtph_ps(_mm512_cvtepi32_epi16(_mm512_srli_epi32(b1, 16)));
+                const __m512 b1o = _mm512_cvtph_ps(
+                        _mm512_cvtepi32_epi16(_mm512_srli_epi32(b1, 16)));
                 for (size_t r = 0; r < ROWS; ++r) {
                     const float* row = expanded + r * full + kb * 32;
                     const __m512 ae = _mm512_set1_ps(row[kk * 2]);
@@ -87,9 +94,16 @@ void fma_rows(const float* expanded, size_t full, const uint16_t* packed_b,
 } // namespace
 
 void gemm_fma_impl(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed_b, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed_b,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride) {
     const size_t full = (d / kFP16TileK) * kFP16TileK;
     constexpr size_t max_rows = 8;
@@ -109,21 +123,37 @@ void gemm_fma_impl(
             for (size_t kk = 0; kk < full; kk += 16) {
                 const __m256i half = _mm256_loadu_si256(
                         reinterpret_cast<const __m256i*>(row + kk));
-                _mm512_storeu_ps(expanded.data() + r * full + kk,
-                                _mm512_cvtph_ps(half));
+                _mm512_storeu_ps(
+                        expanded.data() + r * full + kk, _mm512_cvtph_ps(half));
             }
         }
         const float* e = expanded.data();
         float* o = out + i * out_stride;
         switch (rows) {
-            case 8: fma_rows<8>(e, full, packed_b, n_padded, o, out_stride); break;
-            case 7: fma_rows<7>(e, full, packed_b, n_padded, o, out_stride); break;
-            case 6: fma_rows<6>(e, full, packed_b, n_padded, o, out_stride); break;
-            case 5: fma_rows<5>(e, full, packed_b, n_padded, o, out_stride); break;
-            case 4: fma_rows<4>(e, full, packed_b, n_padded, o, out_stride); break;
-            case 3: fma_rows<3>(e, full, packed_b, n_padded, o, out_stride); break;
-            case 2: fma_rows<2>(e, full, packed_b, n_padded, o, out_stride); break;
-            default: fma_rows<1>(e, full, packed_b, n_padded, o, out_stride); break;
+            case 8:
+                fma_rows<8>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            case 7:
+                fma_rows<7>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            case 6:
+                fma_rows<6>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            case 5:
+                fma_rows<5>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            case 4:
+                fma_rows<4>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            case 3:
+                fma_rows<3>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            case 2:
+                fma_rows<2>(e, full, packed_b, n_padded, o, out_stride);
+                break;
+            default:
+                fma_rows<1>(e, full, packed_b, n_padded, o, out_stride);
+                break;
         }
         i += rows;
     }

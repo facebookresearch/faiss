@@ -86,7 +86,10 @@ void round_values_range(const float* src, float* dst, size_t begin, size_t end);
 // to call with dst == src; on exception the contents of dst are undefined.
 constexpr size_t kRoundBlock = size_t{1} << 16;
 void round_values_parallel(
-        const float* src, float* dst, size_t n, size_t block = kRoundBlock);
+        const float* src,
+        float* dst,
+        size_t n,
+        size_t block = kRoundBlock);
 
 void validate_codes(const uint8_t* codes, size_t nvalues);
 
@@ -107,23 +110,53 @@ void pack_centroids(
 // elements; out_stride >= n_padded. Trailing dimensions that don't fill a
 // full 32-wide block are handled by a scalar tail pass in every kernel.
 using GemmFn = void (*)(
-        const uint16_t*, size_t, size_t, const uint16_t*, const uint16_t*,
-        size_t, size_t, size_t, size_t, float*, size_t);
+        const uint16_t*,
+        size_t,
+        size_t,
+        const uint16_t*,
+        const uint16_t*,
+        size_t,
+        size_t,
+        size_t,
+        size_t,
+        float*,
+        size_t);
 
 void gemm_scalar(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed_b, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed_b,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride);
 void gemm_fma(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed_b, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed_b,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride);
 void gemm_amx(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed_b, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed_b,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride);
 GemmFn get_gemm_fn(GemmKernel kernel);
 
@@ -134,8 +167,14 @@ size_t gemm_row_multiple(GemmKernel kernel);
 
 // Shared shape validation used by every gemm_* entry point.
 void validate_gemm_shape(
-        size_t m, size_t a_stride, size_t b_stride, size_t n_padded,
-        size_t n_real, size_t d, size_t out_stride, size_t row_multiple);
+        size_t m,
+        size_t a_stride,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        size_t out_stride,
+        size_t row_multiple);
 
 } // namespace fp16_gemm
 } // namespace faiss

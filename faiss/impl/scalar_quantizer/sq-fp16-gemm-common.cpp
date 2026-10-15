@@ -42,13 +42,31 @@ namespace fp16_gemm {
 
 void encode_array_fma(const float*, uint16_t*, size_t);
 void gemm_fma_impl(
-        const uint16_t*, size_t, size_t, const uint16_t*, const uint16_t*,
-        size_t, size_t, size_t, size_t, float*, size_t);
+        const uint16_t*,
+        size_t,
+        size_t,
+        const uint16_t*,
+        const uint16_t*,
+        size_t,
+        size_t,
+        size_t,
+        size_t,
+        float*,
+        size_t);
 #if FAISS_AMX_FP16_COMPILED
 AMXSubnormalBehavior amx_subnormal_behavior_impl();
 void gemm_amx_impl(
-        const uint16_t*, size_t, size_t, const uint16_t*, const uint16_t*,
-        size_t, size_t, size_t, size_t, float*, size_t);
+        const uint16_t*,
+        size_t,
+        size_t,
+        const uint16_t*,
+        const uint16_t*,
+        size_t,
+        size_t,
+        size_t,
+        size_t,
+        float*,
+        size_t);
 #endif
 
 namespace {
@@ -113,8 +131,8 @@ bool thread_tile_permission() {
 #if defined(__x86_64__) && defined(__linux__)
     static thread_local const bool permitted = [] {
         constexpr unsigned long request_perm = 0x1023; // ARCH_REQ_XCOMP_PERM
-        constexpr unsigned long get_perm = 0x1022; // ARCH_GET_XCOMP_PERM
-        constexpr unsigned long tiledata = 18; // XFEATURE_XTILEDATA
+        constexpr unsigned long get_perm = 0x1022;     // ARCH_GET_XCOMP_PERM
+        constexpr unsigned long tiledata = 18;         // XFEATURE_XTILEDATA
         if (syscall(SYS_arch_prctl, request_perm, tiledata) != 0) {
             return false;
         }
@@ -218,7 +236,11 @@ void round_values(const float* src, float* dst, size_t n) {
     round_values_range(src, dst, 0, n);
 }
 
-void round_values_range(const float* src, float* dst, size_t begin, size_t end) {
+void round_values_range(
+        const float* src,
+        float* dst,
+        size_t begin,
+        size_t end) {
     FAISS_THROW_IF_NOT_MSG(
             begin % 256 == 0 && begin <= end,
             "fp16 chunked conversion must start on a 256-element boundary "
@@ -245,7 +267,11 @@ void round_values_range(const float* src, float* dst, size_t begin, size_t end) 
     }
 }
 
-void round_values_parallel(const float* src, float* dst, size_t n, size_t block) {
+void round_values_parallel(
+        const float* src,
+        float* dst,
+        size_t n,
+        size_t block) {
     FAISS_THROW_IF_NOT_MSG(
             block != 0 && block % 256 == 0,
             "fp16 parallel conversion block size must be a positive "
@@ -266,12 +292,14 @@ void round_values_parallel(const float* src, float* dst, size_t n, size_t block)
             }
             const size_t begin = b * block;
             try {
-                round_values_range(src, dst, begin, begin + std::min(block, n - begin));
+                round_values_range(
+                        src, dst, begin, begin + std::min(block, n - begin));
             } catch (...) {
                 errors[b] = std::current_exception();
                 size_t seen = first_failed.load(std::memory_order_relaxed);
                 while (b < seen &&
-                       !first_failed.compare_exchange_weak(seen, b, std::memory_order_relaxed)) {
+                       !first_failed.compare_exchange_weak(
+                               seen, b, std::memory_order_relaxed)) {
                 }
             }
         }
@@ -297,8 +325,14 @@ void validate_codes(const uint8_t* codes, size_t nvalues) {
 }
 
 void validate_gemm_shape(
-        size_t m, size_t a_stride, size_t b_stride, size_t n_padded,
-        size_t n_real, size_t d, size_t out_stride, size_t row_multiple) {
+        size_t m,
+        size_t a_stride,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        size_t out_stride,
+        size_t row_multiple) {
     FAISS_THROW_IF_NOT_MSG(
             row_multiple != 0 && m % row_multiple == 0 &&
                     n_padded % kFP16BlockN == 0 && n_real <= n_padded &&
@@ -318,8 +352,12 @@ size_t packed_b_size(size_t n_padded, size_t d) {
 }
 
 void pack_centroids(
-        const uint16_t* centroids, size_t n_real, size_t c_stride,
-        size_t n_padded, size_t d, uint16_t* packed) {
+        const uint16_t* centroids,
+        size_t n_real,
+        size_t c_stride,
+        size_t n_padded,
+        size_t d,
+        uint16_t* packed) {
     FAISS_THROW_IF_NOT_MSG(
             n_real <= n_padded && c_stride >= d,
             "invalid fp16 centroid packing shape");
@@ -347,11 +385,19 @@ void pack_centroids(
 }
 
 void gemm_scalar(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t*, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t*,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride) {
-    validate_gemm_shape(m, a_stride, b_stride, n_padded, n_real, d, out_stride, 1);
+    validate_gemm_shape(
+            m, a_stride, b_stride, n_padded, n_real, d, out_stride, 1);
     for (size_t i = 0; i < m; ++i) {
         float* row = out + i * out_stride;
         for (size_t j = 0; j < n_padded; ++j) {
@@ -369,24 +415,62 @@ void gemm_scalar(
 }
 
 void gemm_fma(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride) {
     resolve_kernel(GemmKernel::FMA);
-    validate_gemm_shape(m, a_stride, b_stride, n_padded, n_real, d, out_stride, 1);
-    gemm_fma_impl(a, m, a_stride, packed, b_rows, b_stride, n_padded, n_real, d, out, out_stride);
+    validate_gemm_shape(
+            m, a_stride, b_stride, n_padded, n_real, d, out_stride, 1);
+    gemm_fma_impl(
+            a,
+            m,
+            a_stride,
+            packed,
+            b_rows,
+            b_stride,
+            n_padded,
+            n_real,
+            d,
+            out,
+            out_stride);
 }
 
 void gemm_amx(
-        const uint16_t* a, size_t m, size_t a_stride,
-        const uint16_t* packed, const uint16_t* b_rows, size_t b_stride,
-        size_t n_padded, size_t n_real, size_t d, float* out,
+        const uint16_t* a,
+        size_t m,
+        size_t a_stride,
+        const uint16_t* packed,
+        const uint16_t* b_rows,
+        size_t b_stride,
+        size_t n_padded,
+        size_t n_real,
+        size_t d,
+        float* out,
         size_t out_stride) {
     resolve_kernel(GemmKernel::AMX);
-    validate_gemm_shape(m, a_stride, b_stride, n_padded, n_real, d, out_stride, kFP16TileM);
+    validate_gemm_shape(
+            m, a_stride, b_stride, n_padded, n_real, d, out_stride, kFP16TileM);
 #if FAISS_AMX_FP16_COMPILED
-    gemm_amx_impl(a, m, a_stride, packed, b_rows, b_stride, n_padded, n_real, d, out, out_stride);
+    gemm_amx_impl(
+            a,
+            m,
+            a_stride,
+            packed,
+            b_rows,
+            b_stride,
+            n_padded,
+            n_real,
+            d,
+            out,
+            out_stride);
 #else
     // unreachable: resolve_kernel() already throws above when this build has
     // no AMX-FP16 kernel, but keep the pointers "used" so -Wunused-parameter

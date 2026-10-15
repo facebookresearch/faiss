@@ -53,7 +53,8 @@ struct IndexSQFP16Gemm : IndexScalarQuantizer {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
     void add(idx_t n, const float* x) override;
     void reset() override;
-    void add_sa_codes(idx_t n, const uint8_t* codes_in, const idx_t* xids) override;
+    void add_sa_codes(idx_t n, const uint8_t* codes_in, const idx_t* xids)
+            override;
     size_t remove_ids(const IDSelector& sel) override;
     void merge_from(Index& other, idx_t add_id = 0) override;
 
@@ -90,7 +91,12 @@ struct IndexSQFP16Gemm : IndexScalarQuantizer {
     void check_format() const;
     std::shared_ptr<const PackedCache> ensure_packed() const;
     std::shared_ptr<const PackedCache> build_pack() const;
-    void rescore(idx_t n, const float* x, idx_t k, float* distances, idx_t* labels) const;
+    void rescore(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const;
 
     template <class C>
     void knn_gemm(

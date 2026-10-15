@@ -36,7 +36,8 @@ size_t round_up(size_t value, size_t block) {
 }
 
 size_t input_size(idx_t n, int d) {
-    FAISS_THROW_IF_NOT_MSG(n >= 0 && d > 0, "invalid fp16 gemm input count or dimension");
+    FAISS_THROW_IF_NOT_MSG(
+            n >= 0 && d > 0, "invalid fp16 gemm input count or dimension");
     FAISS_THROW_IF_NOT_MSG(
             static_cast<uint64_t>(n) <=
                     std::numeric_limits<size_t>::max() / static_cast<size_t>(d),
@@ -79,7 +80,12 @@ struct L2Heap : CMax<float, idx_t> {
     }
 };
 
-void sort_selected(idx_t n, idx_t k, float* distances, idx_t* labels, bool is_l2) {
+void sort_selected(
+        idx_t n,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        bool is_l2) {
     const size_t kk = static_cast<size_t>(k);
     std::vector<std::pair<float, idx_t>> entries(kk);
     for (idx_t i = 0; i < n; ++i) {
@@ -91,18 +97,22 @@ void sort_selected(idx_t n, idx_t k, float* distances, idx_t* labels, bool is_l2
                 entries[valid++] = {ds[j], ids[j]};
             }
         }
-        std::sort(entries.begin(), entries.begin() + valid, [is_l2](const auto& a, const auto& b) {
-            if (a.first != b.first) {
-                return is_l2 ? a.first < b.first : a.first > b.first;
-            }
-            return a.second < b.second;
-        });
+        std::sort(
+                entries.begin(),
+                entries.begin() + valid,
+                [is_l2](const auto& a, const auto& b) {
+                    if (a.first != b.first) {
+                        return is_l2 ? a.first < b.first : a.first > b.first;
+                    }
+                    return a.second < b.second;
+                });
         for (size_t j = 0; j < valid; ++j) {
             ds[j] = entries[j].first;
             ids[j] = entries[j].second;
         }
         for (size_t j = valid; j < kk; ++j) {
-            ds[j] = is_l2 ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
+            ds[j] = is_l2 ? std::numeric_limits<float>::infinity()
+                          : -std::numeric_limits<float>::infinity();
             ids[j] = -1;
         }
     }
@@ -115,20 +125,24 @@ IndexSQFP16Gemm::IndexSQFP16Gemm(int dim, MetricType metric)
     check_format();
 }
 
-IndexSQFP16Gemm::IndexSQFP16Gemm() : IndexScalarQuantizer(0, ScalarQuantizer::QT_fp16) {}
+IndexSQFP16Gemm::IndexSQFP16Gemm()
+        : IndexScalarQuantizer(0, ScalarQuantizer::QT_fp16) {}
 
 void IndexSQFP16Gemm::check_format() const {
     FAISS_THROW_IF_NOT_MSG(
-            d > 0 && sq.d == static_cast<size_t>(d), "fp16 gemm index dimension mismatch");
+            d > 0 && sq.d == static_cast<size_t>(d),
+            "fp16 gemm index dimension mismatch");
     FAISS_THROW_IF_NOT_MSG(
-            sq.qtype == ScalarQuantizer::QT_fp16 && code_size == static_cast<size_t>(d) * 2 &&
+            sq.qtype == ScalarQuantizer::QT_fp16 &&
+                    code_size == static_cast<size_t>(d) * 2 &&
                     sq.code_size == code_size,
             "fp16 gemm index format or code size mismatch");
     FAISS_THROW_IF_NOT_MSG(
             metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT,
             "fp16 gemm index only supports inner product and L2");
     FAISS_THROW_IF_NOT_MSG(
-            ntotal >= 0 && codes.size() == static_cast<size_t>(ntotal) * code_size,
+            ntotal >= 0 &&
+                    codes.size() == static_cast<size_t>(ntotal) * code_size,
             "fp16 gemm index code count mismatch");
 }
 
@@ -144,7 +158,8 @@ void IndexSQFP16Gemm::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     const size_t count = input_size(n, d);
     std::vector<uint16_t> values(count);
     fp16_gemm::encode_array(x, values.data(), count);
-    fp16_gemm::validate_codes(reinterpret_cast<const uint8_t*>(values.data()), count);
+    fp16_gemm::validate_codes(
+            reinterpret_cast<const uint8_t*>(values.data()), count);
     if (count) {
         std::memcpy(bytes, values.data(), count * sizeof(uint16_t));
     }
@@ -157,8 +172,10 @@ void IndexSQFP16Gemm::add(idx_t n, const float* x) {
     // behind a half-finished add.
     std::vector<uint16_t> values(count);
     fp16_gemm::encode_array(x, values.data(), count);
-    fp16_gemm::validate_codes(reinterpret_cast<const uint8_t*>(values.data()), count);
-    IndexScalarQuantizer::add_sa_codes(n, reinterpret_cast<const uint8_t*>(values.data()), nullptr);
+    fp16_gemm::validate_codes(
+            reinterpret_cast<const uint8_t*>(values.data()), count);
+    IndexScalarQuantizer::add_sa_codes(
+            n, reinterpret_cast<const uint8_t*>(values.data()), nullptr);
     repack();
 }
 
@@ -167,7 +184,10 @@ void IndexSQFP16Gemm::reset() {
     invalidate_pack();
 }
 
-void IndexSQFP16Gemm::add_sa_codes(idx_t n, const uint8_t* values, const idx_t* xids) {
+void IndexSQFP16Gemm::add_sa_codes(
+        idx_t n,
+        const uint8_t* values,
+        const idx_t* xids) {
     check_format();
     fp16_gemm::validate_codes(values, input_size(n, d));
     IndexScalarQuantizer::add_sa_codes(n, values, xids);
@@ -188,7 +208,8 @@ void IndexSQFP16Gemm::merge_from(Index& other, idx_t add_id) {
             sq_other && sq_other->metric_type == metric_type,
             "fp16 gemm merge index type or metric mismatch");
     sq_other->check_format();
-    fp16_gemm::validate_codes(sq_other->codes.data(), static_cast<size_t>(sq_other->ntotal) * d);
+    fp16_gemm::validate_codes(
+            sq_other->codes.data(), static_cast<size_t>(sq_other->ntotal) * d);
     IndexScalarQuantizer::merge_from(other, add_id);
     repack();
 }
@@ -205,26 +226,32 @@ void IndexSQFP16Gemm::repack() {
 }
 
 fp16_gemm::GemmKernel IndexSQFP16Gemm::effective_kernel() const {
-    return use_gemm ? fp16_gemm::resolve_kernel(kernel) : fp16_gemm::GemmKernel::SCALAR;
+    return use_gemm ? fp16_gemm::resolve_kernel(kernel)
+                    : fp16_gemm::GemmKernel::SCALAR;
 }
 
 size_t IndexSQFP16Gemm::packed_bytes() const {
     std::lock_guard<std::mutex> lock(cache_mutex_);
-    return cache_ ? (cache_->rows.size() + cache_->packed.size()) * 2 + cache_->norms.size() * sizeof(float) : 0;
+    return cache_ ? (cache_->rows.size() + cache_->packed.size()) * 2 +
+                    cache_->norms.size() * sizeof(float)
+                  : 0;
 }
 
-std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::ensure_packed() const {
+std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::
+        ensure_packed() const {
     check_format();
     const size_t bsy = std::max(round_up(bs_y, 32), size_t{32});
     std::lock_guard<std::mutex> lock(cache_mutex_);
-    if (!cache_ || cache_->bs_y != bsy || cache_->d != d || cache_->ntotal != ntotal ||
-        cache_->metric != metric_type || cache_->source_codes != codes.data()) {
+    if (!cache_ || cache_->bs_y != bsy || cache_->d != d ||
+        cache_->ntotal != ntotal || cache_->metric != metric_type ||
+        cache_->source_codes != codes.data()) {
         cache_ = build_pack();
     }
     return cache_;
 }
 
-std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::build_pack() const {
+std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::
+        build_pack() const {
     fp16_gemm::validate_codes(codes.data(), static_cast<size_t>(ntotal) * d);
     auto cache = std::make_shared<PackedCache>();
     cache->d = d;
@@ -241,7 +268,8 @@ std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::build_pack(
     cache->offset.assign(nblocks + 1, 0);
     for (size_t block = 0; block < nblocks; ++block) {
         const size_t nj = std::min(cache->bs_y, ny - block * cache->bs_y);
-        cache->offset[block + 1] = cache->offset[block] + fp16_gemm::packed_b_size(round_up(nj, 32), d);
+        cache->offset[block + 1] = cache->offset[block] +
+                fp16_gemm::packed_b_size(round_up(nj, 32), d);
     }
     cache->packed.assign(cache->offset.back(), 0);
     for (size_t block = 0; block < nblocks; ++block) {
@@ -249,7 +277,11 @@ std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::build_pack(
         const size_t nj = std::min(cache->bs_y, ny - j0);
         if (d >= 32) {
             fp16_gemm::pack_centroids(
-                    cache->rows.data() + j0 * d, nj, d, round_up(nj, 32), d,
+                    cache->rows.data() + j0 * d,
+                    nj,
+                    d,
+                    round_up(nj, 32),
+                    d,
                     cache->packed.data() + cache->offset[block]);
         }
     }
@@ -269,8 +301,12 @@ std::shared_ptr<const IndexSQFP16Gemm::PackedCache> IndexSQFP16Gemm::build_pack(
 
 template <class C>
 void IndexSQFP16Gemm::knn_gemm(
-        idx_t n, const float* x, idx_t k, float* distances,
-        idx_t* labels, const PackedCache& cache) const {
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const PackedCache& cache) const {
     const size_t dd = static_cast<size_t>(d);
     const size_t ny = static_cast<size_t>(ntotal);
     const size_t bsx = std::max(round_up(bs_x, 32), size_t{32});
@@ -306,9 +342,14 @@ void IndexSQFP16Gemm::knn_gemm(
                 const idx_t i1 = std::min<idx_t>(i0 + bsx, n);
                 const size_t nm = static_cast<size_t>(i1 - i0);
                 const size_t mpad = round_up(nm, row_multiple);
-                fp16_gemm::encode_rows(x + static_cast<size_t>(i0) * dd, abuf.data(), nm, dd);
-                fp16_gemm::validate_codes(reinterpret_cast<const uint8_t*>(abuf.data()), nm * dd);
-                std::fill(abuf.begin() + nm * dd, abuf.begin() + mpad * dd, uint16_t{0});
+                fp16_gemm::encode_rows(
+                        x + static_cast<size_t>(i0) * dd, abuf.data(), nm, dd);
+                fp16_gemm::validate_codes(
+                        reinterpret_cast<const uint8_t*>(abuf.data()), nm * dd);
+                std::fill(
+                        abuf.begin() + nm * dd,
+                        abuf.begin() + mpad * dd,
+                        uint16_t{0});
                 if (is_l2) {
                     for (size_t i = 0; i < nm; ++i) {
                         float sum = 0;
@@ -319,7 +360,10 @@ void IndexSQFP16Gemm::knn_gemm(
                         xnorm[i] = sum;
                     }
                 }
-                using NativeTop1C = std::conditional_t<C::is_max, CMax<float, idx_t>, CMin<float, idx_t>>;
+                using NativeTop1C = std::conditional_t<
+                        C::is_max,
+                        CMax<float, idx_t>,
+                        CMin<float, idx_t>>;
                 Top1BlockResultHandler<NativeTop1C> top1(n, distances, labels);
                 HeapBlockResultHandler<C> topk(n, distances, labels, k);
                 if (k == 1) {
@@ -329,21 +373,36 @@ void IndexSQFP16Gemm::knn_gemm(
                 }
                 for (size_t j0 = 0; j0 < ny; j0 += bsy) {
                     const size_t nj = std::min(bsy, ny - j0);
-                    const uint16_t* packed = cache.packed.empty() ? nullptr
+                    const uint16_t* packed = cache.packed.empty()
+                            ? nullptr
                             : cache.packed.data() + cache.offset[j0 / bsy];
-                    gemm(abuf.data(), mpad, dd, packed, cache.rows.data() + j0 * dd,
-                         dd, round_up(nj, 32), nj, dd, ipblk.data(), bsy);
+                    gemm(abuf.data(),
+                         mpad,
+                         dd,
+                         packed,
+                         cache.rows.data() + j0 * dd,
+                         dd,
+                         round_up(nj, 32),
+                         nj,
+                         dd,
+                         ipblk.data(),
+                         bsy);
                     if (is_l2) {
                         for (size_t i = 0; i < nm; ++i) {
                             for (size_t j = 0; j < nj; ++j) {
                                 ipblk[i * bsy + j] = std::max(
-                                        0.f, xnorm[i] + cache.norms[j0 + j] - 2.f * ipblk[i * bsy + j]);
+                                        0.f,
+                                        xnorm[i] + cache.norms[j0 + j] -
+                                                2.f * ipblk[i * bsy + j]);
                             }
                         }
                     }
                     if (nj != bsy) {
                         for (size_t i = 1; i < nm; ++i) {
-                            std::memmove(ipblk.data() + i * nj, ipblk.data() + i * bsy, nj * sizeof(float));
+                            std::memmove(
+                                    ipblk.data() + i * nj,
+                                    ipblk.data() + i * bsy,
+                                    nj * sizeof(float));
                         }
                     }
                     if (k == 1) {
@@ -373,20 +432,29 @@ void IndexSQFP16Gemm::knn_gemm(
     }
 }
 
-void IndexSQFP16Gemm::rescore(idx_t n, const float* x, idx_t k, float* distances, idx_t* labels) const {
+void IndexSQFP16Gemm::rescore(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
     const ScopedSingleThread thread_guard(n <= 1);
 #pragma omp parallel
     {
-        std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(sq.get_distance_computer(metric_type));
+        std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
+                sq.get_distance_computer(metric_type));
         std::vector<float> rounded(static_cast<size_t>(d));
 #pragma omp for schedule(static)
         for (idx_t i = 0; i < n; ++i) {
-            fp16_gemm::round_values(x + static_cast<size_t>(i) * d, rounded.data(), d);
+            fp16_gemm::round_values(
+                    x + static_cast<size_t>(i) * d, rounded.data(), d);
             dc->set_query(rounded.data());
             for (idx_t j = 0; j < k; ++j) {
                 const size_t offset = static_cast<size_t>(i) * k + j;
                 if (labels[offset] >= 0) {
-                    distances[offset] = dc->query_to_code(codes.data() + static_cast<size_t>(labels[offset]) * code_size);
+                    distances[offset] = dc->query_to_code(
+                            codes.data() +
+                            static_cast<size_t>(labels[offset]) * code_size);
                 }
             }
         }
@@ -394,7 +462,11 @@ void IndexSQFP16Gemm::rescore(idx_t n, const float* x, idx_t k, float* distances
 }
 
 void IndexSQFP16Gemm::search(
-        idx_t n, const float* x, idx_t k, float* distances, idx_t* labels,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
         const SearchParameters* params) const {
     check_format();
     input_size(n, d);
@@ -415,7 +487,8 @@ void IndexSQFP16Gemm::search(
         const size_t count = input_size(n, d);
         std::unique_ptr<float[]> rounded(new float[count]);
         fp16_gemm::round_values_parallel(x, rounded.get(), count);
-        IndexScalarQuantizer::search(n, rounded.get(), k, distances, labels, params);
+        IndexScalarQuantizer::search(
+                n, rounded.get(), k, distances, labels, params);
     } else {
         const auto cache = ensure_packed();
         if (metric_type == METRIC_INNER_PRODUCT) {
@@ -423,7 +496,8 @@ void IndexSQFP16Gemm::search(
         } else {
             knn_gemm<L2Heap>(n, x, k, distances, labels, *cache);
         }
-        nb_gemm_queries.fetch_add(static_cast<size_t>(n), std::memory_order_relaxed);
+        nb_gemm_queries.fetch_add(
+                static_cast<size_t>(n), std::memory_order_relaxed);
         if (rescore_native) {
             rescore(n, x, k, distances, labels);
         }
