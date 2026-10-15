@@ -14,6 +14,9 @@
 #include <cstdio>
 #include <stdexcept>
 
+#include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexPreTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
@@ -29,6 +32,22 @@ void sync_d(Index* /* index */) {}
 void sync_d(IndexBinary* index) {
     FAISS_THROW_IF_NOT(index->d % 8 == 0);
     index->code_size = index->d / 8;
+}
+
+// IVF indexes store explicit ids. Positional indexes already concatenate their
+// ids implicitly and may reject a non-zero merge offset.
+idx_t merge_id_offset(const Index* index) {
+    if (dynamic_cast<const IndexIVFInterface*>(index)) {
+        return index->ntotal;
+    }
+    if (auto pre_transform = dynamic_cast<const IndexPreTransform*>(index)) {
+        return merge_id_offset(pre_transform->index);
+    }
+    return 0;
+}
+
+idx_t merge_id_offset(const IndexBinary* index) {
+    return dynamic_cast<const IndexBinaryIVF*>(index) ? index->ntotal : 0;
 }
 
 } // anonymous namespace
@@ -286,7 +305,7 @@ template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::merge_from(IndexT& otherIndex, idx_t add_id) {
     check_compatible_for_merge(otherIndex);
     auto other = static_cast<IndexIDMapTemplate<IndexT>*>(&otherIndex);
-    index->merge_from(*other->index);
+    index->merge_from(*other->index, merge_id_offset(index));
     for (size_t i = 0; i < other->id_map.size(); i++) {
         id_map.push_back(other->id_map[i] + add_id);
     }

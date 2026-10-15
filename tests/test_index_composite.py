@@ -19,6 +19,74 @@ from faiss.contrib.inspect_tools import make_LinearTransform_matrix
 from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
+class TestIDMap2Merge(unittest.TestCase):
+    def do_test_merge(self, factory_key, make_direct_map, pre_transform=False):
+        rs = np.random.RandomState(123)
+        d = 16
+        xt = rs.randn(1000, d).astype("float32")
+        xb = rs.randn(80, d).astype("float32")
+        ids = np.arange(1000, 1080, dtype="int64")
+
+        trained = faiss.index_factory(d, factory_key)
+        trained.train(xt)
+        index1 = faiss.clone_index(trained)
+        index2 = faiss.clone_index(trained)
+        index1.add_with_ids(xb[:31], ids[:31])
+        index2.add_with_ids(xb[31:], ids[31:])
+
+        index1.merge_from(index2)
+        inner = index1.index
+        if pre_transform:
+            inner = faiss.downcast_index(inner).index
+        if make_direct_map:
+            faiss.downcast_index(inner).make_direct_map()
+
+        for i, idx in enumerate(ids):
+            np.testing.assert_allclose(
+                index1.reconstruct(int(idx)), xb[i], rtol=1e-5, atol=1e-6
+            )
+
+    def test_ivf_inner_ids_are_offset(self):
+        self.do_test_merge("IDMap2,IVF16,Flat", make_direct_map=True)
+
+    def test_pretransform_ivf_inner_ids_are_offset(self):
+        self.do_test_merge(
+            "IDMap2,PCA16,IVF16,Flat",
+            make_direct_map=True,
+            pre_transform=True,
+        )
+
+    def test_flat_inner_positions_remain_implicit(self):
+        self.do_test_merge("IDMap2,Flat", make_direct_map=False)
+
+    def test_pretransform_flat_inner_positions_remain_implicit(self):
+        self.do_test_merge(
+            "IDMap2,PCA16,Flat",
+            make_direct_map=False,
+            pre_transform=True,
+        )
+
+    def test_binary_ivf_inner_ids_are_offset(self):
+        rs = np.random.RandomState(123)
+        d = 64
+        xt = rs.randint(0, 256, (1000, d // 8), dtype="uint8")
+        xb = rs.randint(0, 256, (80, d // 8), dtype="uint8")
+        ids = np.arange(1000, 1080, dtype="int64")
+
+        trained = faiss.index_binary_factory(d, "BIVF16")
+        trained.train(xt)
+        index1 = faiss.IndexBinaryIDMap2(faiss.clone_binary_index(trained))
+        index2 = faiss.IndexBinaryIDMap2(faiss.clone_binary_index(trained))
+        index1.add_with_ids(xb[:31], ids[:31])
+        index2.add_with_ids(xb[31:], ids[31:])
+
+        index1.merge_from(index2)
+        faiss.downcast_IndexBinary(index1.index).make_direct_map()
+
+        for i, idx in enumerate(ids):
+            np.testing.assert_array_equal(index1.reconstruct(int(idx)), xb[i])
+
+
 class TestRemoveFastScan(unittest.TestCase):
     def do_test(self, ntotal, removed):
         d = 20
