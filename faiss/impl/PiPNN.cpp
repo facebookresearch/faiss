@@ -26,12 +26,16 @@
 
 #include <faiss/Index.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/IDSelector.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/pipnn/HashPrune.h>
 #include <faiss/impl/pipnn/Partition.h>
 #include <faiss/impl/pipnn/kernels.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/ordered_key_value.h>
 #include <faiss/utils/utils.h>
@@ -448,6 +452,120 @@ void build_with_chunk(
 
 } // namespace detail
 
+namespace {
+
+/// Up to cap entries in (dis, id) order; all before cursor are expanded.
+struct SearchBeam {
+    struct Entry {
+        float dis;
+        int32_t id;
+        bool expanded;
+
+        bool operator<(const Entry& o) const {
+            return CMin<float, int32_t>::cmp2(dis, o.dis, id, o.id);
+        }
+    };
+
+    std::vector<Entry> entries;
+    size_t cap;
+    size_t cursor = 0;
+
+    explicit SearchBeam(size_t cap_in) : cap(cap_in) {
+        entries.reserve(cap_in + 1);
+    }
+
+    void insert(float dis, int32_t id) {
+        const Entry e{dis, id, false};
+        if (entries.size() == cap && !(e < entries.back())) {
+            return;
+        }
+        const auto it = std::lower_bound(entries.begin(), entries.end(), e);
+        cursor = std::min(cursor, size_t(it - entries.begin()));
+        entries.insert(it, e);
+        if (entries.size() > cap) {
+            entries.pop_back();
+        }
+    }
+
+    /// Marks the closest unexpanded entry expanded; returns its id, or -1.
+    int32_t expand_next() {
+        while (cursor < entries.size() && entries[cursor].expanded) {
+            cursor++;
+        }
+        if (cursor == entries.size()) {
+            return -1;
+        }
+        entries[cursor].expanded = true;
+        return entries[cursor].id;
+    }
+};
+
+template <class VT>
+void beam_search(
+        const PiPNN& pipnn,
+        DistanceComputer& qdis,
+        size_t cap,
+        size_t k,
+        idx_t* I,
+        float* D,
+        VT& vt,
+        const IDSelector* sel) {
+    const uint32_t n = uint32_t(pipnn.ntotal);
+    const size_t R = size_t(pipnn.R);
+    const int32_t* graph = pipnn.graph.data();
+    SearchBeam beam(cap);
+
+    // id breaks ties, so the result does not depend on visit order
+    auto visit = [&](int32_t id, float dis) {
+        if (CMax<float, idx_t>::cmp2(D[0], dis, I[0], idx_t(id)) &&
+            (sel == nullptr || sel->is_member(id))) {
+            maxheap_replace_top(k, D, I, dis, idx_t(id));
+        }
+        beam.insert(dis, id);
+    };
+
+    vt.set(size_t(pipnn.entry_point));
+    visit(pipnn.entry_point, qdis(pipnn.entry_point));
+
+    for (int32_t v0 = beam.expand_next(); v0 >= 0; v0 = beam.expand_next()) {
+        const int32_t* row = graph + size_t(v0) * R;
+        // One unsigned compare stops at the -1 padding and at any id that is
+        // out of range in a corrupt (e.g. mmapped) graph.
+        size_t jmax = 0;
+        while (jmax < R && uint32_t(row[jmax]) < n) {
+            vt.prefetch(size_t(row[jmax]));
+            jmax++;
+        }
+        int32_t batch[4];
+        int nbatch = 0;
+        for (size_t j = 0; j < jmax; j++) {
+            batch[nbatch] = row[j];
+            nbatch += vt.set(size_t(row[j])) ? 1 : 0;
+            if (nbatch == 4) {
+                float d4[4];
+                qdis.distances_batch_4(
+                        batch[0],
+                        batch[1],
+                        batch[2],
+                        batch[3],
+                        d4[0],
+                        d4[1],
+                        d4[2],
+                        d4[3]);
+                for (int i = 0; i < 4; i++) {
+                    visit(batch[i], d4[i]);
+                }
+                nbatch = 0;
+            }
+        }
+        for (int i = 0; i < nbatch; i++) {
+            visit(batch[i], qdis(batch[i]));
+        }
+    }
+}
+
+} // namespace
+
 } // namespace pipnn
 
 float PiPNN::effective_alpha(MetricType metric) const {
@@ -515,6 +633,33 @@ void PiPNN::check_params() const {
 void PiPNN::build(const Index& storage, bool verbose) {
     pipnn::detail::build_with_chunk(
             *this, storage, pipnn::kReservoirChunk, verbose);
+}
+
+void PiPNN::search(
+        DistanceComputer& qdis,
+        int L,
+        idx_t k,
+        idx_t* I,
+        float* D,
+        VisitedTable& vt,
+        const IDSelector* sel) const {
+    FAISS_THROW_IF_NOT_MSG(k > 0, "PiPNN::search: k must be positive");
+    maxheap_heapify(size_t(k), D, I);
+    if (ntotal == 0) {
+        return;
+    }
+    // At most ntotal distinct nodes enter the beam.
+    const size_t cap = size_t(std::min(std::max(idx_t(L), k), ntotal));
+    auto run = [&](auto& vtc) {
+        pipnn::beam_search(*this, qdis, cap, size_t(k), I, D, vtc, sel);
+    };
+    if (auto* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
+        run(*vtv);
+    } else {
+        run(dynamic_cast<VisitedTableSet&>(vt));
+    }
+    maxheap_reorder(size_t(k), D, I);
+    vt.advance();
 }
 
 void PiPNN::reset() {
