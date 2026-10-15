@@ -57,7 +57,9 @@ struct GpuIndexIVFRaBitQConfig : public GpuIndexConfig {
     /// Enable cuVS's fast quantization path during index construction.
     bool useFastQuantize = true;
 
-    /// Maximum number of vectors processed in a host-memory streaming build.
+    /// Maximum number of vectors processed in a host-memory streaming batch.
+    /// Must accommodate the largest coarse cluster; cuVS reports the required
+    /// minimum if the configured batch is too small.
     size_t streamingBatchSize = 100000;
 
     /// Force streaming construction when the input is resident on the host.
@@ -77,6 +79,9 @@ struct SearchParametersIVFRaBitQ : SearchParameters {
 };
 
 /// GPU-native IVF-RaBitQ index backed by cuVS.
+/// Set config.use_cuvs = true explicitly when constructing this index.
+/// Construction accepts Float32 vectors and METRIC_L2 only. Queries may also
+/// use the inherited Float16 conversion path.
 ///
 /// cuVS builds IVF-RaBitQ from a complete dataset. Consequently, train() and
 /// the first add() are equivalent: the input becomes the complete indexed
@@ -101,6 +106,23 @@ class GpuIndexIVFRaBitQ : public GpuIndex {
     /// Build the complete index from x. This is equivalent to train().
     void add(idx_t n, const float* x) override;
     void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
+
+    /// Custom IDs are unsupported; rejects without accessing x or ids.
+    void add_with_ids(idx_t n, const float* x, const idx_t* ids) override;
+    void add_with_ids_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
+
+    void search_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reset() override;
 

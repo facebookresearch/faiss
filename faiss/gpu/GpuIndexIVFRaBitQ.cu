@@ -66,10 +66,17 @@ GpuIndexIVFRaBitQ::GpuIndexIVFRaBitQ(
             should_use_cuvs(config),
             "GpuIndexIVFRaBitQ requires a supported GPU and "
             "GpuIndexIVFRaBitQConfig::use_cuvs = true");
+    validateNProbe(config.nprobe, true);
+    FAISS_THROW_IF_NOT_MSG(
+            config.searchMode >= IVFRaBitQSearchMode::LUT16 &&
+                    config.searchMode <= IVFRaBitQSearchMode::QUANT8,
+            "invalid IVF-RaBitQ search mode");
     this->is_trained = false;
 }
 
-GpuIndexIVFRaBitQ::~GpuIndexIVFRaBitQ() = default;
+GpuIndexIVFRaBitQ::~GpuIndexIVFRaBitQ() {
+    reset();
+}
 
 void GpuIndexIVFRaBitQ::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
@@ -83,7 +90,13 @@ void GpuIndexIVFRaBitQ::train(idx_t n, const float* x) {
         return;
     }
 
-    index_ = std::make_shared<CuvsIVFRaBitQ>(
+    FAISS_THROW_IF_NOT_MSG(
+            x, "GpuIndexIVFRaBitQ requires non-null training data");
+    FAISS_THROW_IF_NOT_MSG(
+            n >= nlist_, "GpuIndexIVFRaBitQ requires at least nlist vectors");
+
+    // Publish the index and its metadata only after a successful build.
+    auto index = std::make_shared<CuvsIVFRaBitQ>(
             resources_.get(), d, nlist_, metric_type, ivfRabitqConfig_);
 
     const int inputDevice = getDeviceForAddress(x);
@@ -95,11 +108,12 @@ void GpuIndexIVFRaBitQ::train(idx_t n, const float* x) {
                 const_cast<float*>(x),
                 stream,
                 {n, d});
-        index_->train(n, dataset.data());
+        index->train(n, dataset.data());
     } else {
         // Keep host input on the host so cuVS can use its streaming build.
-        index_->train(n, x);
+        index->train(n, x);
     }
+    index_ = std::move(index);
     ntotal = n;
     is_trained = true;
 }
@@ -120,6 +134,36 @@ void GpuIndexIVFRaBitQ::add_ex(
             numeric_type == NumericType::Float32,
             "GpuIndexIVFRaBitQ only supports Float32 input");
     add(n, static_cast<const float*>(x));
+}
+
+void GpuIndexIVFRaBitQ::add_with_ids(idx_t, const float*, const idx_t*) {
+    FAISS_THROW_MSG("GpuIndexIVFRaBitQ does not support custom IDs");
+}
+
+void GpuIndexIVFRaBitQ::add_with_ids_ex(
+        idx_t,
+        const void*,
+        NumericType,
+        const idx_t*) {
+    FAISS_THROW_MSG("GpuIndexIVFRaBitQ does not support custom IDs");
+}
+
+void GpuIndexIVFRaBitQ::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "GpuIndexIVFRaBitQ requires n >= 0");
+    FAISS_THROW_IF_NOT_MSG(
+            k > 0 && k <= getMaxKSelection(true),
+            "GpuIndexIVFRaBitQ requires k in [1, 16384]");
+    FAISS_THROW_IF_NOT_MSG(
+            n == 0 || (x && distances && labels),
+            "GpuIndexIVFRaBitQ requires non-null query and result pointers");
+    GpuIndex::search_ex(n, x, numeric_type, k, distances, labels, params);
 }
 
 bool GpuIndexIVFRaBitQ::addImplRequiresIDs_() const {
@@ -166,7 +210,13 @@ void GpuIndexIVFRaBitQ::searchImpl_(
 
 void GpuIndexIVFRaBitQ::reset() {
     DeviceScope scope(config_.device);
-    index_.reset();
+    if (index_) {
+        // cuVS buffers retain the build-time allocation stream. Searches may
+        // use a newer resources stream, so finish them before releasing
+        // storage.
+        resources_->syncDefaultStreamCurrentDevice();
+        index_.reset();
+    }
     ntotal = 0;
     is_trained = false;
 }

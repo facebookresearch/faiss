@@ -29,25 +29,9 @@
 
 #include <cuvs/distance/distance.hpp>
 
-#include <type_traits>
-
 #pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
-
-/// Convert the stream wrapper returned by the installed RAFT version to the
-/// raw CUDA stream expected by Faiss helpers and kernel launch syntax. RAFT
-/// 26.10 packages may return either rmm::cuda_stream_view (convertible to
-/// cudaStream_t) or cuda::stream_ref (which exposes get()), depending on the
-/// package/toolkit combination.
-template <typename Stream>
-inline cudaStream_t asCudaStream(Stream stream) {
-    if constexpr (std::is_convertible_v<Stream, cudaStream_t>) {
-        return static_cast<cudaStream_t>(stream);
-    } else {
-        return stream.get();
-    }
-}
 
 inline cuvs::distance::DistanceType metricFaissToCuvs(
         MetricType metric,
