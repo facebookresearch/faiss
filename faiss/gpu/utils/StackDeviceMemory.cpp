@@ -145,7 +145,7 @@ void StackDeviceMemory::Stack::returnAlloc(
     }
 
     head_ = p;
-    lastUsers_.push_back(Range(p, p + size, stream));
+    lastUsers_.emplace_back(p, p + size, stream);
 }
 
 std::string StackDeviceMemory::Stack::toString() const {
