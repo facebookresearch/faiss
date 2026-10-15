@@ -1033,10 +1033,14 @@ TEST(SQFP16GemmIndex, QueryCountsRowConsistency) {
 }
 
 #ifdef _OPENMP
-// With fewer query blocks than threads, search() splits the centroid blocks
-// across threads and merges per-thread top-k lists. The result must match
-// the single-threaded pass bit for bit, including which of several equal
-// distances in different centroid blocks is kept (the smaller id).
+// With fewer query blocks than threads, search() splits the batch into
+// tiles of (32+ query rows) x (range of centroid blocks) and, when there is
+// more than one range, merges the per-range top-k lists. With 8 threads and
+// 32 centroid blocks the batch sizes below cover: no split (2), one row
+// group x 8 ranges (17), 4 row groups x 2 ranges (100), and row groups
+// only (256, 300). The result must match the single-threaded pass bit for
+// bit, including which of several equal distances in different centroid
+// blocks is kept (the smaller id).
 TEST(SQFP16GemmIndex, CentroidSplitMatchesSingleThread) {
     constexpr idx_t nb = 4096;
     constexpr int d = 65;
@@ -1057,7 +1061,7 @@ TEST(SQFP16GemmIndex, CentroidSplitMatchesSingleThread) {
             index.add(nb, x.data());
             for (bool rescore : {false, true}) {
                 index.rescore_native = rescore;
-                for (idx_t nq : {2, 17, 256, 300}) {
+                for (idx_t nq : {2, 17, 100, 256, 300}) {
                     for (idx_t k : {1, 7, 100}) {
                         SCOPED_TRACE(
                                 "nq=" + std::to_string(nq) +
