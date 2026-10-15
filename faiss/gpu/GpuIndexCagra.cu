@@ -567,8 +567,10 @@ void GpuIndexCagra::trainAllNeighbors_(const Dataset& input) {
         constexpr int kThreads = 256;
         const int blocks = (int)std::min<size_t>(
                 (knn_count + kThreads - 1) / kThreads, 65535);
-        auto narrowStream = raft::resource::get_cuda_stream(single_gpu_res);
-        kern_narrow_indices<<<blocks, kThreads, 0, narrowStream.value()>>>(
+        auto narrowStream = cuda::stream_ref{raft::resource::get_cuda_stream(
+                                                     single_gpu_res)}
+                                    .get();
+        kern_narrow_indices<<<blocks, kThreads, 0, narrowStream>>>(
                 indices.data_handle(), d_knn.data_handle(), knn_count);
         CUDA_VERIFY(cudaGetLastError());
         // indices and the clique must remain alive until narrowing finishes.

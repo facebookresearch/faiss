@@ -163,15 +163,13 @@ std::unique_ptr<DatasetStorage> makeOwnedStorage(
         idx_t targetStride,
         int device) {
     auto& handle = resources->getRaftHandle(device);
-    const auto stream = raft::resource::get_cuda_stream(handle);
+    const auto stream =
+            cuda::stream_ref{raft::resource::get_cuda_stream(handle)}.get();
     auto matrix =
             raft::make_device_matrix<T, int64_t>(handle, numRows, targetStride);
     if (numRows != 0) {
         checkCuda(cudaMemsetAsync(
-                matrix.data_handle(),
-                0,
-                matrix.size() * sizeof(T),
-                stream.value()));
+                matrix.data_handle(), 0, matrix.size() * sizeof(T), stream));
         checkCuda(cudaMemcpy2DAsync(
                 matrix.data_handle(),
                 targetStride * sizeof(T),
@@ -180,8 +178,8 @@ std::unique_ptr<DatasetStorage> makeOwnedStorage(
                 dim * sizeof(T),
                 numRows,
                 cudaMemcpyDefault,
-                stream.value()));
-        checkCuda(cudaStreamSynchronize(stream.value()));
+                stream));
+        checkCuda(cudaStreamSynchronize(stream));
     }
     using Owner = cuvs::neighbors::device_padded_dataset<T, int64_t>;
     return std::make_unique<TypedDatasetStorage<Owner>>(
