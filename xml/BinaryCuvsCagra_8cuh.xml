@@ -37,12 +37,17 @@
 <codeline><highlight class="normal">#include<sp/>&lt;cstddef&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/impl/CuvsCagra.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;memory&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;optional&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/IDSelector.h&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuvs/neighbors/cagra.hpp&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;raft/core/device_mdarray.hpp&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>FAISS_CUVS_LEGACY_CAGRA_API<sp/>selects<sp/>the<sp/>cuVS<sp/>CAGRA<sp/>API<sp/>from<sp/>before<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>dataset<sp/>view<sp/>types<sp/>(cuVS<sp/>26.02<sp/>and<sp/>older).</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline></codeline>
@@ -117,7 +122,11 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>index.</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>NB:<sp/>This<sp/>is<sp/>also<sp/>required<sp/>to<sp/>be<sp/>set<sp/>to<sp/>true<sp/>for<sp/>deserializing</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>an<sp/>IndexHNSWCagra<sp/>object.</highlight></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>searchable_index_<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal">#else<sp/><sp/>//<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>store_dataset_<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameters<sp/>to<sp/>build<sp/>cuVS<sp/>CAGRA<sp/>index</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>faiss::cagra_build_algo<sp/>graph_build_algo_;</highlight></codeline>
@@ -126,8 +135,19 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameters<sp/>to<sp/>build<sp/>CAGRA<sp/>graph<sp/>using<sp/>NN<sp/>Descent</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size_t<sp/>nn_descent_niter_<sp/>=<sp/>20;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Device<sp/>padded<sp/>copy<sp/>when<sp/>`storage_`<sp/>is<sp/>host<sp/>memory<sp/>(KNN-graph<sp/>ctor<sp/>path).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;cuvs::neighbors::device_padded_dataset&lt;uint8_t,<sp/>int64_t&gt;&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>device_padded_dataset_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>!FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Instance<sp/>of<sp/>trained<sp/>cuVS<sp/>CAGRA<sp/>index</highlight></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cuvs::neighbors::cagra::device_padded_index&lt;uint8_t,<sp/>uint32_t&gt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">#else<sp/><sp/>//<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;cuvs::neighbors::cagra::index&lt;uint8_t,<sp/>uint32_t&gt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>FAISS_CUVS_LEGACY_CAGRA_API</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cuvs_index{nullptr};</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
