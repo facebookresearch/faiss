@@ -49,15 +49,68 @@ namespace scalar_quantizer {
  ************************************************************************/
 
 template <>
-struct Codec8bit<SIMDLevel::RISCV_RVV> : Codec8bit<SIMDLevel::NONE> {};
+struct Codec8bit<SIMDLevel::RISCV_RVV> : Codec8bit<SIMDLevel::NONE> {
+    // m8-wide codec decode for the QuantizerTemplate decode_vector kernels.
+    // Mirrors the scalar decode_component: widen, add the half-step, scale.
+    static FAISS_ALWAYS_INLINE vfloat32m8_t
+    decode_m8_components(const uint8_t* code, size_t i, size_t vl) {
+        vuint8m2_t vu8 = __riscv_vle8_v_u8m2(code + i, vl);
+        vuint32m8_t vu32 = __riscv_vzext_vf4_u32m8(vu8, vl);
+        vfloat32m8_t vf32 = __riscv_vfcvt_f_xu_v_f32m8(vu32, vl);
+        vf32 = __riscv_vfadd_vf_f32m8(vf32, 0.5f, vl);
+        vf32 = __riscv_vfdiv_vf_f32m8(vf32, 255.0f, vl);
+        return vf32;
+    }
+};
 
 template <>
-struct Codec4bit<SIMDLevel::RISCV_RVV> : Codec4bit<SIMDLevel::NONE> {};
+struct Codec4bit<SIMDLevel::RISCV_RVV> : Codec4bit<SIMDLevel::NONE> {
+    static FAISS_ALWAYS_INLINE vfloat32m8_t
+    decode_m8_components(const uint8_t* code, size_t i, size_t vl) {
+        // Packed positions derive from the absolute component index:
+        // implementations may hand out a non-maximal, non-pack-aligned vl
+        // when AVL is between VLMAX and 2*VLMAX, so a chunk can start on
+        // an odd component (mid-byte).
+        const size_t byte_base = i >> 1;
+        const size_t byte_vl = ((i + vl - 1) >> 1) - byte_base + 1;
+        vuint8m2_t packed = __riscv_vle8_v_u8m2(code + byte_base, byte_vl);
+        // Widen to 32-bit lanes before gathering: with more than 256 active
+        // lanes (VLEN > 1024 for e32m8) 8-bit lane indices would wrap around
+        // and decode the wrong bytes.
+        vuint32m8_t packed32 = __riscv_vzext_vf4_u32m8(packed, byte_vl);
+        vuint32m8_t comp =
+                __riscv_vadd_vx_u32m8(__riscv_vid_v_u32m8(vl), i, vl);
+        vuint32m8_t rel = __riscv_vsub_vx_u32m8(
+                __riscv_vsrl_vx_u32m8(comp, 1, vl), byte_base, vl);
+        vuint32m8_t bytes = __riscv_vrgather_vv_u32m8(packed32, rel, vl);
+        vuint32m8_t lo = __riscv_vand_vx_u32m8(bytes, 0xf, vl);
+        vuint32m8_t hi = __riscv_vsrl_vx_u32m8(bytes, 4, vl);
+        vuint32m8_t parity = __riscv_vand_vx_u32m8(comp, 1, vl);
+        vbool4_t odd = __riscv_vmsne_vx_u32m8_b4(parity, 0, vl);
+        vuint32m8_t q = __riscv_vmerge_vvm_u32m8(lo, hi, odd, vl);
+        vfloat32m8_t result = __riscv_vfcvt_f_xu_v_f32m8(q, vl);
+        result = __riscv_vfadd_vf_f32m8(result, 0.5f, vl);
+        result = __riscv_vfdiv_vf_f32m8(result, 15.0f, vl);
+        return result;
+    }
+};
 
+// The RVV 6-bit gather decode measured slower than scalar on the decode
+// path, so the 6-bit codec stays scalar in this direction: this marker
+// provides no decode_m8_components, which keeps QT_6bit's decode_vector on
+// the scalar QuantizerTemplate fallback inherited from the NONE base.
 template <>
 struct Codec6bit<SIMDLevel::RISCV_RVV> : Codec6bit<SIMDLevel::NONE> {};
 
+// Whether Codec exposes the m8-wide decode primitive above.
 template <class Codec>
+inline constexpr bool codec_has_decode_m8_v =
+        requires(const uint8_t* code, size_t i, size_t vl) {
+            Codec::decode_m8_components(code, i, vl);
+        };
+
+template <class Codec>
+    requires(codec_has_decode_m8_v<Codec>)
 struct QuantizerTemplate<
         Codec,
         QuantizerTemplateScaling::UNIFORM,
@@ -71,9 +124,25 @@ struct QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::UNIFORM,
                       SIMDLevel::NONE>(d, trained) {}
+
+    // Bit-exact with the scalar reference: vfmul and vfadd stay separate
+    // (no vfmadd fusion) so the rounding matches the scalar expression.
+    void decode_vector(const uint8_t* code, float* x) const final {
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e32m8(d - i);
+            vfloat32m8_t xi = Codec::decode_m8_components(code, i, vl);
+            xi = __riscv_vfmul_vf_f32m8(xi, this->vdiff, vl);
+            xi = __riscv_vfadd_vf_f32m8(xi, this->vmin, vl);
+            __riscv_vse32_v_f32m8(x + i, xi, vl);
+            i += vl;
+        }
+    }
 };
 
 template <class Codec>
+    requires(codec_has_decode_m8_v<Codec>)
 struct QuantizerTemplate<
         Codec,
         QuantizerTemplateScaling::NON_UNIFORM,
@@ -87,6 +156,34 @@ struct QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
                       SIMDLevel::NONE>(d, trained) {}
+
+    // Bit-exact with the scalar reference: vfmul and vfadd stay separate
+    // (no vfmadd fusion) so the rounding matches the scalar expression.
+    void decode_vector(const uint8_t* code, float* x) const final {
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e32m8(d - i);
+            vfloat32m8_t xi = Codec::decode_m8_components(code, i, vl);
+            vfloat32m8_t vminv = __riscv_vle32_v_f32m8(this->vmin + i, vl);
+            vfloat32m8_t vdiffv = __riscv_vle32_v_f32m8(this->vdiff + i, vl);
+            xi = __riscv_vfmul_vv_f32m8(xi, vdiffv, vl);
+            xi = __riscv_vfadd_vv_f32m8(xi, vminv, vl);
+            __riscv_vse32_v_f32m8(x + i, xi, vl);
+            i += vl;
+        }
+    }
+};
+
+// Codecs without an RVV decode kernel (currently the 6-bit codec above)
+// keep the scalar quantizer implementation for the decode direction,
+// mirroring the marker-specialization fallback used by the other RVV
+// translation units.
+template <class Codec, QuantizerTemplateScaling SCALING>
+    requires(!codec_has_decode_m8_v<Codec>)
+struct QuantizerTemplate<Codec, SCALING, SIMDLevel::RISCV_RVV>
+        : QuantizerTemplate<Codec, SCALING, SIMDLevel::NONE> {
+    using QuantizerTemplate<Codec, SCALING, SIMDLevel::NONE>::QuantizerTemplate;
 };
 
 template <>
