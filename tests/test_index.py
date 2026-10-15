@@ -482,6 +482,30 @@ class TestMultiIndexQuantizer(unittest.TestCase):
 @for_all_simd_levels
 class TestScalarQuantizer(unittest.TestCase):
 
+    def test_nested_ivf_quantizer_without_direct_map_raises(self):
+        d = 8
+        rng = np.random.default_rng(2464)
+        x = rng.normal(size=(64, d)).astype("float32")
+
+        quantizer = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, 4)
+        quantizer.cp.min_points_per_centroid = 1
+        quantizer.train(x)
+        quantizer.add(x[:8])
+        index = faiss.IndexIVFScalarQuantizer(
+            quantizer,
+            d,
+            quantizer.ntotal,
+            faiss.ScalarQuantizer.QT_8bit,
+            faiss.METRIC_L2,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "direct map not initialized"):
+            index.train(x)
+
+        quantizer.make_direct_map()
+        index.train(x)
+        self.assertTrue(index.is_trained)
+
     def test_4variants_ivf(self):
         d = 32
         nt = 2500
