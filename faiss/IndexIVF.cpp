@@ -29,6 +29,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/expanded_scanners.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -770,7 +771,7 @@ void IndexIVF::search_preassigned(
                     scanner->set_query(x + i * d);
                     init_result(local_dis.data(), local_idx.data());
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                     for (idx_t ik = 0; ik < cur_nprobe; ik++) {
                         try {
                             ndis += scan_one_list(
@@ -812,7 +813,7 @@ void IndexIVF::search_preassigned(
                     init_result(distances + i * k, labels + i * k);
                 }
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                 for (int64_t ij = 0; ij < n * cur_nprobe; ij++) {
                     try {
                         size_t i = ij / cur_nprobe;
@@ -1035,7 +1036,7 @@ void IndexIVF::range_search_preassigned(
 
                     RangeQueryResult& qres = pres.new_result(i);
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                     for (int64_t ik = 0; ik < cur_nprobe; ik++) {
                         try {
                             scan_list_func(i, ik, qres);
@@ -1047,7 +1048,7 @@ void IndexIVF::range_search_preassigned(
             } else if (parallel_mode == 2) {
                 RangeQueryResult* qres = nullptr;
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                 for (idx_t iik = 0; iik < nx * (idx_t)cur_nprobe; iik++) {
                     try {
                         idx_t i = iik / (idx_t)cur_nprobe;
