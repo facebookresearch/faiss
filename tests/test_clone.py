@@ -49,6 +49,24 @@ class TestClone(unittest.TestCase):
     def test_Refine(self):
         self.do_test_clone("SQ4,Refine(SQ8)")
 
+    def test_FlatIPPanorama(self):
+        x = np.array([[1, 2, 3, 4], [5, 6, 7, 8]], dtype="float32")
+        q = np.ones((1, 4), dtype="float32")
+        index = faiss.IndexFlatIPPanorama(4, 2)
+        index.add(x)
+        Dref, Iref = index.search(q, 1)
+
+        clone = faiss.clone_index(index)
+        self.assertEqual(type(index), type(clone))
+        self.assertEqual(index.n_levels, clone.n_levels)
+        self.assertEqual(index.batch_size, clone.batch_size)
+
+        index.reset()
+        np.testing.assert_array_equal(clone.reconstruct_n(), x)
+        D, I = clone.search(q, 1)
+        np.testing.assert_array_equal(Dref, D)
+        np.testing.assert_array_equal(Iref, I)
+
     def test_IVF(self):
         self.do_test_clone("IVF16,Flat")
 
