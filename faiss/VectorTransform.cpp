@@ -424,13 +424,85 @@ static int next_power_of_2(int n) {
     return p;
 }
 
-// Generate three sign-flip vectors from the given seed.
+// Smallest multiple of 64 >= n.
+static int next_multiple_of_64(int n) {
+    return (n + 63) / 64 * 64;
+}
+
+static bool is_power_of_2(size_t n) {
+    return n > 0 && (n & (n - 1)) == 0;
+}
+
+// Largest power of 2 <= n, for n > 0.
+static size_t prev_power_of_2(size_t n) {
+    size_t p = 1;
+    while (p * 2 <= n) {
+        p *= 2;
+    }
+    return p;
+}
+
+// Butterfly between the two halves of x (p even):
+// (x_j, x_{j + p/2}) -> (x_j + x_{j + p/2}, x_j - x_{j + p/2}).
+// Scales norms by sqrt(2).
+static void kac_butterfly(float* x, size_t p) {
+    const size_t half = p / 2;
+    for (size_t j = 0; j < half; j++) {
+        float a = x[j];
+        float b = x[j + half];
+        x[j] = a + b;
+        x[j + half] = a - b;
+    }
+}
+
+// One round of the FHT-Kac rotation of a vector of p components: sign flips,
+// normalized FWHT of the t components starting at offset, then the butterfly.
+static void fht_kac_round(
+        float* x,
+        size_t p,
+        size_t t,
+        size_t offset,
+        const float* signs,
+        float fwht_scale) {
+    for (size_t j = 0; j < p; j++) {
+        x[j] *= signs[j];
+    }
+    fwht_inplace(x + offset, t);
+    for (size_t j = offset; j < offset + t; j++) {
+        x[j] *= fwht_scale;
+    }
+    kac_butterfly(x, p);
+}
+
+// Inverse of fht_kac_round, up to the sqrt(2) scaling of the butterfly: the
+// butterfly, the normalized FWHT and the sign flips are each their own
+// inverse, so they are applied in reverse order.
+static void fht_kac_inverse_round(
+        float* x,
+        size_t p,
+        size_t t,
+        size_t offset,
+        const float* signs,
+        float fwht_scale) {
+    kac_butterfly(x, p);
+    fwht_inplace(x + offset, t);
+    for (size_t j = offset; j < offset + t; j++) {
+        x[j] *= fwht_scale;
+    }
+    for (size_t j = 0; j < p; j++) {
+        x[j] *= signs[j];
+    }
+}
+
+// Generate three sign-flip vectors from the given seed, and a fourth one
+// after them if s4 is not null.
 static void generate_signs(
         uint32_t seed,
         size_t p,
         std::vector<float>& s1,
         std::vector<float>& s2,
-        std::vector<float>& s3) {
+        std::vector<float>& s3,
+        std::vector<float>* s4) {
     FAISS_THROW_IF_NOT_MSG(
             p > 0, "number of Hadamard factors p must be positive");
     SplitMix64RandomGenerator rng(seed);
@@ -446,17 +518,36 @@ static void generate_signs(
     for (size_t j = 0; j < p; j++) {
         s3[j] = (rng.rand_int(2) == 0) ? -1.0f : 1.0f;
     }
+    if (s4) {
+        s4->resize(p);
+        for (size_t j = 0; j < p; j++) {
+            (*s4)[j] = (rng.rand_int(2) == 0) ? -1.0f : 1.0f;
+        }
+    }
 }
 
-HadamardRotation::HadamardRotation(int d, uint32_t seed_in)
-        : VectorTransform(d, next_power_of_2(d)), seed(seed_in) {
+HadamardRotation::HadamardRotation(
+        int d,
+        uint32_t seed_in,
+        bool pad_to_power_of_2_in)
+        : VectorTransform(
+                  d,
+                  pad_to_power_of_2_in ? next_power_of_2(d)
+                                       : next_multiple_of_64(d)),
+          seed(seed_in),
+          pad_to_power_of_2(pad_to_power_of_2_in) {
     init(seed_in);
 }
 
 void HadamardRotation::init(uint32_t seed_in) {
     seed = seed_in;
     is_trained = true;
-    generate_signs(seed, d_out, signs1, signs2, signs3);
+    if (is_power_of_2(d_out)) {
+        generate_signs(seed, d_out, signs1, signs2, signs3, nullptr);
+        signs4.clear();
+    } else {
+        generate_signs(seed, d_out, signs1, signs2, signs3, &signs4);
+    }
 }
 
 void HadamardRotation::train(idx_t, const float*) {
@@ -477,6 +568,35 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
     FAISS_THROW_IF_NOT_MSG(
             signs3.size() == p,
             "sign-flip vector 3 size must match output dimension");
+
+    if (!is_power_of_2(p)) {
+        // FHT-Kac rotation (pad_to_power_of_2 == false), see the header.
+        FAISS_THROW_IF_NOT_MSG(
+                signs4.size() == p,
+                "sign-flip vector 4 size must match output dimension");
+        const size_t t = prev_power_of_2(p);
+        const float fwht_scale = 1.0f / std::sqrt(static_cast<float>(t));
+
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
+        for (idx_t i = 0; i < n; i++) {
+            const float* xi = x + i * d;
+            float* xo = xt + i * p;
+
+            std::memcpy(xo, xi, d * sizeof(float));
+            for (size_t j = d; j < p; j++) {
+                xo[j] = 0.0f;
+            }
+            fht_kac_round(xo, p, t, 0, signs1.data(), fwht_scale);
+            fht_kac_round(xo, p, t, p - t, signs2.data(), fwht_scale);
+            fht_kac_round(xo, p, t, 0, signs3.data(), fwht_scale);
+            fht_kac_round(xo, p, t, p - t, signs4.data(), fwht_scale);
+            // The four butterflies scaled norms by sqrt(2)^4 = 4.
+            for (size_t j = 0; j < p; j++) {
+                xo[j] *= 0.25f;
+            }
+        }
+        return;
+    }
 
     // Each unnormalized FWHT scales norms by sqrt(p).
     // Three rounds scale by p^(3/2). Normalize once at the end.
@@ -522,6 +642,30 @@ void HadamardRotation::reverse_transform(idx_t n, const float* xt, float* x)
             "HadamardRotation inverse requires equal input/output dimensions");
 
     const size_t p = d_out;
+
+    if (!is_power_of_2(p)) {
+        // Reverse of the FHT-Kac rotation: the rounds in reverse order.
+        FAISS_THROW_IF_NOT_MSG(
+                signs4.size() == p,
+                "sign-flip vector 4 size must match output dimension");
+        const size_t t = prev_power_of_2(p);
+        const float fwht_scale = 1.0f / std::sqrt(static_cast<float>(t));
+
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
+        for (idx_t i = 0; i < n; i++) {
+            float* xo = x + i * p;
+            std::memcpy(xo, xt + i * p, p * sizeof(float));
+            fht_kac_inverse_round(xo, p, t, p - t, signs4.data(), fwht_scale);
+            fht_kac_inverse_round(xo, p, t, 0, signs3.data(), fwht_scale);
+            fht_kac_inverse_round(xo, p, t, p - t, signs2.data(), fwht_scale);
+            fht_kac_inverse_round(xo, p, t, 0, signs1.data(), fwht_scale);
+            for (size_t j = 0; j < p; j++) {
+                xo[j] *= 0.25f;
+            }
+        }
+        return;
+    }
+
     // Reverse of apply_noalloc: three unnormalized FWHT rounds scale norms
     // by (sqrt(p))^3 = p*sqrt(p); the forward pass cancels this with
     // total_scale = 1/(p*sqrt(p)), so the inverse applies the same factor.
@@ -562,6 +706,9 @@ void HadamardRotation::check_identical(const VectorTransform& other) const {
             "HadamardRotation output dimensions must match");
     FAISS_THROW_IF_NOT_MSG(
             seed == hr->seed, "HadamardRotation seeds must match");
+    FAISS_THROW_IF_NOT_MSG(
+            pad_to_power_of_2 == hr->pad_to_power_of_2,
+            "HadamardRotation padding modes must match");
 }
 
 /*********************************************
