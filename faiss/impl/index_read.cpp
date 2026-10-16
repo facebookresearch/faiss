@@ -69,6 +69,7 @@
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif
+#include <faiss/IndexSQFP16Gemm.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -2189,6 +2190,45 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                         (size_t)idxs->ntotal,
                         idxs->code_size,
                         "IndexScalarQuantizer codes"));
+        idx = std::move(idxs);
+    } else if (h == fourcc("IxSG")) {
+        auto idxs = std::make_unique<IndexSQFP16Gemm>();
+        read_index_header(*idxs, f);
+        read_ScalarQuantizer(&idxs->sq, f, *idxs);
+        read_vector(idxs->codes, f);
+        idxs->code_size = idxs->sq.code_size;
+        FAISS_THROW_IF_NOT_MSG(
+                idxs->sq.qtype == ScalarQuantizer::QT_fp16 && idxs->d > 0 &&
+                        idxs->sq.d == static_cast<size_t>(idxs->d) &&
+                        (idxs->metric_type == METRIC_INNER_PRODUCT ||
+                         idxs->metric_type == METRIC_L2),
+                "invalid IndexSQFP16Gemm format");
+        FAISS_THROW_IF_NOT(
+                idxs->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxs->ntotal,
+                        idxs->code_size,
+                        "IndexSQFP16Gemm codes"));
+        int32_t kernel;
+        READ1(kernel);
+        FAISS_THROW_IF_NOT_FMT(
+                kernel >= static_cast<int32_t>(fp16_gemm::GemmKernel::AUTO) &&
+                        kernel <= static_cast<int32_t>(
+                                          fp16_gemm::GemmKernel::SCALAR),
+                "invalid IndexSQFP16Gemm kernel %d",
+                kernel);
+        idxs->kernel = static_cast<fp16_gemm::GemmKernel>(kernel);
+        READ1_BOOL(idxs->use_gemm);
+        uint64_t bs_x, bs_y;
+        READ1(bs_x);
+        READ1(bs_y);
+        constexpr uint64_t max_block = uint64_t{1} << 24;
+        FAISS_THROW_IF_NOT_MSG(
+                bs_x > 0 && bs_x <= max_block && bs_y > 0 && bs_y <= max_block,
+                "invalid IndexSQFP16Gemm block size");
+        idxs->bs_x = static_cast<size_t>(bs_x);
+        idxs->bs_y = static_cast<size_t>(bs_y);
+        READ1_BOOL(idxs->rescore_native);
         idx = std::move(idxs);
     } else if (h == fourcc("IxLa")) {
         int d, nsq, scale_nbit, r2;

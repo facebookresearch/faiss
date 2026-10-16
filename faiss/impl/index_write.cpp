@@ -64,6 +64,7 @@
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif
+#include <faiss/IndexSQFP16Gemm.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -691,6 +692,23 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxp_2->code_size_2);
         WRITE1(idxp_2->code_size);
         WRITEVECTOR(idxp_2->codes);
+    } else if (
+            const IndexSQFP16Gemm* idxsg =
+                    dynamic_cast<const IndexSQFP16Gemm*>(idx)) {
+        // Same layout as "IxSQ" followed by the search settings.
+        uint32_t h = fourcc("IxSG");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_ScalarQuantizer(&idxsg->sq, f);
+        WRITEVECTOR(idxsg->codes);
+        int32_t kernel = static_cast<int32_t>(idxsg->kernel);
+        WRITE1(kernel);
+        WRITE1(idxsg->use_gemm);
+        uint64_t bs_x = idxsg->bs_x;
+        uint64_t bs_y = idxsg->bs_y;
+        WRITE1(bs_x);
+        WRITE1(bs_y);
+        WRITE1(idxsg->rescore_native);
     } else if (
             const IndexScalarQuantizer* idxs =
                     dynamic_cast<const IndexScalarQuantizer*>(idx)) {
