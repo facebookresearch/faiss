@@ -491,36 +491,71 @@ struct SimilarityL2<SIMDLevel::AVX2> {
     const float *y, *yi;
 
     explicit SimilarityL2(const float* y) : y(y), yi(nullptr) {}
-    simd8float32 accu8 = {};
+    static constexpr size_t kAccumulatorCount = 2;
+    simd8float32 accu8[kAccumulatorCount] = {};
 
     FAISS_ALWAYS_INLINE void begin_8() {
-        accu8.clear();
+        accu8[0].clear();
         yi = y;
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+    FAISS_ALWAYS_INLINE void begin_8x2() {
+        begin_8();
+        accu8[1].clear();
+    }
+
+    template <size_t accumulator_idx>
+    FAISS_ALWAYS_INLINE void add_8_components_impl(simd8float32 x) {
+        static_assert(accumulator_idx < kAccumulatorCount);
         __m256 yiv = _mm256_loadu_ps(yi);
         yi += 8;
         __m256 tmp = _mm256_sub_ps(yiv, x.f);
-        accu8 = simd8float32(_mm256_fmadd_ps(tmp, tmp, accu8.f));
+        accu8[accumulator_idx] = simd8float32(
+                _mm256_fmadd_ps(tmp, tmp, accu8[accumulator_idx].f));
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+        add_8_components_impl<0>(x);
+    }
+
+    FAISS_ALWAYS_INLINE void add_8x2_components(
+            simd8float32 x0,
+            simd8float32 x1) {
+        add_8_components_impl<0>(x0);
+        add_8_components_impl<1>(x1);
     }
 
     FAISS_ALWAYS_INLINE void add_8_components_2(
             simd8float32 x,
             simd8float32 y_2) {
         __m256 tmp = _mm256_sub_ps(y_2.f, x.f);
-        accu8 = simd8float32(_mm256_fmadd_ps(tmp, tmp, accu8.f));
+        accu8[0] = simd8float32(_mm256_fmadd_ps(tmp, tmp, accu8[0].f));
     }
 
-    FAISS_ALWAYS_INLINE float result_8() {
+    template <size_t active_accumulator_count>
+    FAISS_ALWAYS_INLINE float result_impl() {
+        static_assert(
+                active_accumulator_count > 0 &&
+                active_accumulator_count <= kAccumulatorCount);
+        __m256 accu = accu8[0].f;
+        if constexpr (active_accumulator_count == 2) {
+            accu = _mm256_add_ps(accu, accu8[1].f);
+        }
         const __m128 sum = _mm_add_ps(
-                _mm256_castps256_ps128(accu8.f),
-                _mm256_extractf128_ps(accu8.f, 1));
+                _mm256_castps256_ps128(accu), _mm256_extractf128_ps(accu, 1));
         const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
         const __m128 v1 = _mm_add_ps(sum, v0);
         __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
+    }
+
+    FAISS_ALWAYS_INLINE float result_8() {
+        return result_impl<1>();
+    }
+
+    FAISS_ALWAYS_INLINE float result_8x2() {
+        return result_impl<2>();
     }
 
     static void adjust_query_for_raw_decode(
@@ -552,34 +587,70 @@ struct SimilarityIP<SIMDLevel::AVX2> {
 
     explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
 
-    simd8float32 accu8 = {};
+    static constexpr size_t kAccumulatorCount = 2;
+    simd8float32 accu8[kAccumulatorCount] = {};
 
     FAISS_ALWAYS_INLINE void begin_8() {
-        accu8.clear();
+        accu8[0].clear();
         yi = y;
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+    FAISS_ALWAYS_INLINE void begin_8x2() {
+        begin_8();
+        accu8[1].clear();
+    }
+
+    template <size_t accumulator_idx>
+    FAISS_ALWAYS_INLINE void add_8_components_impl(simd8float32 x) {
+        static_assert(accumulator_idx < kAccumulatorCount);
         __m256 yiv = _mm256_loadu_ps(yi);
         yi += 8;
-        accu8.f = _mm256_fmadd_ps(yiv, x.f, accu8.f);
+        accu8[accumulator_idx].f =
+                _mm256_fmadd_ps(yiv, x.f, accu8[accumulator_idx].f);
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+        add_8_components_impl<0>(x);
+    }
+
+    FAISS_ALWAYS_INLINE void add_8x2_components(
+            simd8float32 x0,
+            simd8float32 x1) {
+        add_8_components_impl<0>(x0);
+        add_8_components_impl<1>(x1);
     }
 
     FAISS_ALWAYS_INLINE void add_8_components_2(
             simd8float32 x1,
             simd8float32 x2) {
-        accu8.f = _mm256_fmadd_ps(x1.f, x2.f, accu8.f);
+        accu8[0].f = _mm256_fmadd_ps(x1.f, x2.f, accu8[0].f);
     }
 
-    FAISS_ALWAYS_INLINE float result_8() {
+    template <size_t active_accumulator_count>
+    FAISS_ALWAYS_INLINE float result_impl() {
+        static_assert(
+                active_accumulator_count > 0 &&
+                active_accumulator_count <= kAccumulatorCount);
+        __m256 accu_all = accu8[0].f;
+        if constexpr (active_accumulator_count == 2) {
+            accu_all = _mm256_add_ps(accu_all, accu8[1].f);
+        }
         const __m128 sum = _mm_add_ps(
-                _mm256_castps256_ps128(accu8.f),
-                _mm256_extractf128_ps(accu8.f, 1));
+                _mm256_castps256_ps128(accu_all),
+                _mm256_extractf128_ps(accu_all, 1));
         const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
         const __m128 v1 = _mm_add_ps(sum, v0);
         __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
+    }
+
+    FAISS_ALWAYS_INLINE float result_8() {
+        return result_impl<1>();
+    }
+
+    FAISS_ALWAYS_INLINE float result_8x2() {
+        return result_impl<2>();
     }
 
     static void adjust_query_for_raw_decode(
@@ -630,13 +701,22 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
 
     float compute_distance(const float* x, const uint8_t* code) const {
         Similarity sim(x);
-        sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
+        sim.begin_8x2();
+        size_t i = 0;
+        const size_t d16 = quant.d & ~size_t(15);
+        for (; i < d16; i += 16) {
+            simd8float32 xi0 =
+                    quant.reconstruct_8_components(code, static_cast<int>(i));
+            simd8float32 xi1 = quant.reconstruct_8_components(
+                    code, static_cast<int>(i + 8));
+            sim.add_8x2_components(xi0, xi1);
+        }
+        for (; i < quant.d; i += 8) {
             simd8float32 xi =
                     quant.reconstruct_8_components(code, static_cast<int>(i));
             sim.add_8_components(xi);
         }
-        return sim.result_8();
+        return sim.result_8x2();
     }
 
     float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
@@ -669,12 +749,20 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
 
     float query_to_code_predecoded(const uint8_t* code) const {
         Similarity sim(q_adj.data());
-        sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
+        sim.begin_8x2();
+        size_t i = 0;
+        const size_t d16 = quant.d & ~size_t(15);
+        for (; i < d16; i += 16) {
+            simd8float32 xi0 = quant.decode_8_raw(code, static_cast<int>(i));
+            simd8float32 xi1 =
+                    quant.decode_8_raw(code, static_cast<int>(i + 8));
+            sim.add_8x2_components(xi0, xi1);
+        }
+        for (; i < quant.d; i += 8) {
             simd8float32 xi = quant.decode_8_raw(code, static_cast<int>(i));
             sim.add_8_components(xi);
         }
-        return bias + scale_factor * sim.result_8();
+        return bias + scale_factor * sim.result_8x2();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
