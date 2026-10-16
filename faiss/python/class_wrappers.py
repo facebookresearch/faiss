@@ -965,6 +965,21 @@ def handle_Index(the_class):
         perm = np.ascontiguousarray(perm, dtype="int64")
         self.permute_entries_c(faiss.swig_ptr(perm))
 
+    def replacement_add_level_0_links_from_sample(
+        self, x, *, params=None, numeric_type=faiss.Float32
+    ):
+        """Adds level-0 links so that the HNSW search no longer stops at
+        sinks. See IndexHNSW::add_level_0_links_from_sample.
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+        if params is None:
+            params = faiss.HNSWLevel0LinkParameters()
+        return self.add_level_0_links_from_sample_ex(
+            n, swig_ptr(x), numeric_type, params
+        )
+
     replace_method(the_class, "add", replacement_add)
     replace_method(the_class, "add_with_ids", replacement_add_with_ids)
     replace_method(the_class, "assign", replacement_assign)
@@ -1016,6 +1031,12 @@ def handle_Index(the_class):
         the_class,
         "permute_entries",
         replacement_permute_entries,
+        ignore_missing=True,
+    )
+    replace_method(
+        the_class,
+        "add_level_0_links_from_sample",
+        replacement_add_level_0_links_from_sample,
         ignore_missing=True,
     )
 
@@ -1082,6 +1103,17 @@ def handle_IndexBinary(the_class):
 
         self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
+
+    def replacement_add_level_0_links_from_sample(self, x, *, params=None):
+        """Adds level-0 links so that the HNSW search no longer stops at
+        sinks. See IndexBinaryHNSW::add_level_0_links_from_sample.
+        """
+        n, d = x.shape
+        x = _check_dtype_uint8(x)
+        assert d == self.code_size
+        if params is None:
+            params = faiss.HNSWLevel0LinkParameters()
+        return self.add_level_0_links_from_sample_c(n, swig_ptr(x), params)
 
     def replacement_search(self, x, k, *, params=None):
         x = _check_dtype_uint8(x)
@@ -1228,6 +1260,12 @@ def handle_IndexBinary(the_class):
         the_class,
         "range_search_preassigned",
         replacement_range_search_preassigned,
+        ignore_missing=True,
+    )
+    replace_method(
+        the_class,
+        "add_level_0_links_from_sample",
+        replacement_add_level_0_links_from_sample,
         ignore_missing=True,
     )
 
