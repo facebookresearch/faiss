@@ -157,7 +157,8 @@ __global__ void fillFloat(float* p, idx_t n, float v) {
 
 // in place, for one (query tile x bank tile) block of int32 dot products
 // c_q . c_b (row-major, nb columns):
-//   L2: |b|^2 - 2 s_q s_b (c_q . c_b)    (|q|^2 is added after selection)
+//   L2: |b|^2 - bias s_b^2 - 2 s_q s_b (c_q . c_b)
+//       (|q|^2 - bias s_q^2 is added after selection)
 //   IP: s_q s_b (c_q . c_b)
 // padding rows (norm +inf) become +inf (L2) / -inf (IP)
 __global__ void dotsToDistances(
@@ -166,7 +167,8 @@ __global__ void dotsToDistances(
         const float* qScales,
         const float* bScales,
         const float* bNorms,
-        bool l2) {
+        bool l2,
+        float bias) {
     idx_t j = idx_t(blockIdx.x) * blockDim.x + threadIdx.x;
     if (j >= nb) {
         return;
@@ -180,9 +182,26 @@ __global__ void dotsToDistances(
     } else {
         float ip = __fmul_rn(
                 __fmul_rn(qScales[blockIdx.y], bScales[j]), float(dot));
+        // all-zero vectors (s = 1 by convention) have no rounding error
+        if (bias != 0 && nbj > 0) { // single rounding, as std::fma on the CPU
+            nbj = __fmaf_rn(-bias, __fmul_rn(bScales[j], bScales[j]), nbj);
+        }
         out = l2 ? __fsub_rn(nbj, __fmul_rn(2.0f, ip)) : ip;
     }
     ((float*)buf)[e] = out;
+}
+
+// norms[i] -= bias s_i^2 (L2 rounding-bias correction of the queries), except
+// for all-zero vectors (norm 0), which have no rounding error
+__global__ void subtractBias(
+        float* norms,
+        const float* scales,
+        idx_t n,
+        float bias) {
+    idx_t i = idx_t(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (i < n && norms[i] > 0) {
+        norms[i] = __fmaf_rn(-bias, __fmul_rn(scales[i], scales[i]), norms[i]);
+    }
 }
 
 // add |q|^2 (L2), clamp at 0, and turn padding / missing results into -1
@@ -397,7 +416,15 @@ void GpuIndexRowwiseInt8::searchImpl_(
     FAISS_THROW_IF_NOT_MSG(
             !params || !params->sel,
             "GpuIndexRowwiseInt8: search with an IDSelector is not supported");
-    searchTiles_(n, x, nullptr, nullptr, k, distances, labels);
+    searchTiles_(
+            n,
+            x,
+            nullptr,
+            nullptr,
+            k,
+            distances,
+            labels,
+            rowwise_int8_bias_factor(params, d, metric_type));
 }
 
 void GpuIndexRowwiseInt8::search_int8(
@@ -406,9 +433,14 @@ void GpuIndexRowwiseInt8::search_int8(
         const float* scales,
         int k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(
+            !params || !params->sel,
+            "GpuIndexRowwiseInt8: search with an IDSelector is not supported");
+    const float bias = rowwise_int8_bias_factor(params, d, metric_type);
     if (n == 0) {
         return;
     }
@@ -422,7 +454,15 @@ void GpuIndexRowwiseInt8::search_int8(
             res, config_.device, distances, stream, {n, idx_t(k)});
     auto outI = toDeviceTemporary<idx_t, 2>(
             res, config_.device, labels, stream, {n, idx_t(k)});
-    searchTiles_(n, nullptr, qc.data(), qs.data(), k, outD.data(), outI.data());
+    searchTiles_(
+            n,
+            nullptr,
+            qc.data(),
+            qs.data(),
+            k,
+            outD.data(),
+            outI.data(),
+            bias);
     fromDevice<float, 2>(outD, distances, stream);
     fromDevice<idx_t, 2>(outI, labels, stream);
 }
@@ -434,7 +474,8 @@ void GpuIndexRowwiseInt8::searchTiles_(
         const float* qs,
         int k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        float bias) const {
     FAISS_THROW_IF_NOT_FMT(
             k <= GPU_MAX_SELECTION_K, "k must be <= %d", GPU_MAX_SELECTION_K);
     auto res = resources_.get();
@@ -494,6 +535,10 @@ void GpuIndexRowwiseInt8::searchTiles_(
             rowwiseNorms<<<(unsigned int)curQ, kThreads, 0, stream>>>(
                     tq, ts, d, qNorms.data());
         }
+        if (bias != 0) {
+            subtractBias<<<blocksFor(curQ), kThreads, 0, stream>>>(
+                    qNorms.data(), ts, curQ, bias);
+        }
         CUDA_TEST_ERROR();
 
         Tensor<float, 2, true> outD(distances + q0 * k, {curQ, idx_t(k)});
@@ -540,7 +585,8 @@ void GpuIndexRowwiseInt8::searchTiles_(
                     ts,
                     D.scales.data() + b0,
                     D.norms.data() + b0,
-                    l2);
+                    l2,
+                    bias);
             CUDA_TEST_ERROR();
 
             Tensor<float, 2, true> dist((float*)dots.data(), {curQ, curB});

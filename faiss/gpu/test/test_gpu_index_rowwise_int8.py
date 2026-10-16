@@ -20,7 +20,7 @@ def get_int8(index):
     return codes, scales
 
 
-def search_int8(index, codes, scales, k):
+def search_int8(index, codes, scales, k, params=None):
     codes = np.ascontiguousarray(codes, dtype="int8")
     scales = np.ascontiguousarray(scales, dtype="float32")
     n = codes.shape[0]
@@ -28,8 +28,14 @@ def search_int8(index, codes, scales, k):
     I = np.empty((n, k), dtype="int64")
     index.search_int8(
         n, i8ptr(codes), faiss.swig_ptr(scales), k,
-        faiss.swig_ptr(D), faiss.swig_ptr(I))
+        faiss.swig_ptr(D), faiss.swig_ptr(I), params)
     return D, I
+
+
+def bias_params(rounding_bias):
+    p = faiss.SearchParametersRowwiseInt8()
+    p.rounding_bias = rounding_bias
+    return p
 
 
 class TestGpuIndexRowwiseInt8(unittest.TestCase):
@@ -51,16 +57,16 @@ class TestGpuIndexRowwiseInt8(unittest.TestCase):
         np.testing.assert_allclose(
             Dg, Dc, rtol=1e-5, atol=1e-5 * np.abs(Dc).max())
 
-    def check_vs_cpu(self, metric):
+    def check_vs_cpu(self, metric, params=None):
         k = 10
         cpu = faiss.IndexRowwiseInt8(self.d, metric)
         cpu.add(self.xb)
-        Dc, Ic = cpu.search(self.xq, k)
+        Dc, Ic = cpu.search(self.xq, k, params=params)
 
         # GPU index built from the CPU one
         gpu = faiss.index_cpu_to_gpu(self.res, 0, cpu)
         self.assertIsInstance(gpu, faiss.GpuIndexRowwiseInt8)
-        Dg, Ig = gpu.search(self.xq, k)
+        Dg, Ig = gpu.search(self.xq, k, params=params)
         self.compare(Dg, Ig, Dc, Ic)
 
         # GPU index filled directly: encoding identical to the CPU one
@@ -75,7 +81,7 @@ class TestGpuIndexRowwiseInt8(unittest.TestCase):
         cq = faiss.IndexRowwiseInt8(self.d, metric)
         cq.add(self.xq)
         qc, qs = get_int8(cq)
-        D8, I8 = search_int8(gpu, qc, qs, k)
+        D8, I8 = search_int8(gpu, qc, qs, k, params)
         np.testing.assert_array_equal(D8, Dg)
         np.testing.assert_array_equal(I8, Ig)
 
@@ -84,6 +90,29 @@ class TestGpuIndexRowwiseInt8(unittest.TestCase):
 
     def test_vs_cpu_IP(self):
         self.check_vs_cpu(faiss.METRIC_INNER_PRODUCT)
+
+    def test_vs_cpu_rounding_bias_L2(self):
+        self.check_vs_cpu(faiss.METRIC_L2, bias_params(1.0))
+
+    def test_vs_cpu_rounding_bias_IP(self):
+        self.check_vs_cpu(faiss.METRIC_INNER_PRODUCT, bias_params(1.0))
+
+    def test_rounding_bias_tiled(self):
+        cpu = faiss.IndexRowwiseInt8(self.d)
+        cpu.add(self.xb)
+        p = bias_params(1.0)
+        Dc, Ic = cpu.search(self.xq, 7, params=p)
+        cfg = faiss.GpuIndexRowwiseInt8Config()
+        cfg.tileQueries = 64
+        cfg.tileBank = 1024
+        tiled = faiss.GpuIndexRowwiseInt8(self.res, cpu, cfg)
+        Dt, It = tiled.search(self.xq, 7, params=p)
+        self.compare(Dt, It, Dc, Ic)
+        # 0 is identical to no parameters
+        D0, I0 = tiled.search(self.xq, 7)
+        Dz, Iz = tiled.search(self.xq, 7, params=bias_params(0.0))
+        np.testing.assert_array_equal(Dz, D0)
+        np.testing.assert_array_equal(Iz, I0)
 
     def test_tiling(self):
         cpu = faiss.IndexRowwiseInt8(self.d)

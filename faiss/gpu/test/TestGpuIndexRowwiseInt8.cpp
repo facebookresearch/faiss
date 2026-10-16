@@ -33,7 +33,11 @@ std::vector<float> make_data(size_t n, size_t d, int seed) {
     return x;
 }
 
-void compare_with_cpu(faiss::MetricType metric, int tileQ, int tileB) {
+void compare_with_cpu(
+        faiss::MetricType metric,
+        int tileQ,
+        int tileB,
+        float roundingBias = 0) {
     size_t d = 128, nb = 5000, nq = 300; // nb % 64 != 0: padding rows
     int k = 10;
     auto xb = make_data(nb, d, 11);
@@ -52,8 +56,10 @@ void compare_with_cpu(faiss::MetricType metric, int tileQ, int tileB) {
 
     std::vector<float> Dc(nq * k), Dg(nq * k);
     std::vector<faiss::idx_t> Ic(nq * k), Ig(nq * k);
-    cpu.search(nq, xq.data(), k, Dc.data(), Ic.data());
-    gpu.search(nq, xq.data(), k, Dg.data(), Ig.data());
+    faiss::SearchParametersRowwiseInt8 params;
+    params.rounding_bias = roundingBias;
+    cpu.search(nq, xq.data(), k, Dc.data(), Ic.data(), &params);
+    gpu.search(nq, xq.data(), k, Dg.data(), Ig.data(), &params);
 
     // same neighbour sets (ties aside), distances equal up to rounding
     size_t same = 0;
@@ -94,6 +100,12 @@ TEST(TestGpuIndexRowwiseInt8, IP) {
 
 TEST(TestGpuIndexRowwiseInt8, Tiled) {
     compare_with_cpu(faiss::METRIC_L2, 64, 1024);
+}
+
+TEST(TestGpuIndexRowwiseInt8, RoundingBias) {
+    compare_with_cpu(faiss::METRIC_L2, 4096, 32768, 1.0f);
+    compare_with_cpu(faiss::METRIC_L2, 64, 1024, 1.0f); // tiled
+    compare_with_cpu(faiss::METRIC_INNER_PRODUCT, 4096, 32768, 1.0f);
 }
 
 TEST(TestGpuIndexRowwiseInt8, EmptyAndSmall) {

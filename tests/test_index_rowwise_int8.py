@@ -19,15 +19,20 @@ def rowwise_int8_encode(x):
     return c, s.astype("float32")
 
 
-def reference_search(cq, sq, cb, sb, k, metric):
-    """Exact search on the int8 codes (int64 dot products, float64)."""
+def reference_search(cq, sq, cb, sb, k, metric, rounding_bias=0.0):
+    """Exact search on the int8 codes (int64 dot products, float64).
+    rounding_bias: L2 distances get - rounding_bias * d / 12 (s_q^2 + s_b^2)"""
     dot = cq.astype("int64") @ cb.astype("int64").T
     ip = (sq.astype("float64")[:, None] * sb.astype("float64")[None, :]) * dot
     if metric == faiss.METRIC_L2:
         nq = sq.astype("float64") ** 2 * (cq.astype("int64") ** 2).sum(1)
         nb = sb.astype("float64") ** 2 * (cb.astype("int64") ** 2).sum(1)
+        f = rounding_bias * cq.shape[1] / 12.0
+        nq -= np.where(nq > 0, f * sq.astype("float64") ** 2, 0)   # zero rows:
+        nb -= np.where(nb > 0, f * sb.astype("float64") ** 2, 0)   # no error
         dis = nq[:, None] + nb[None, :] - 2 * ip
         idx = np.argsort(dis, axis=1, kind="stable")[:, :k]
+        return np.maximum(np.take_along_axis(dis, idx, 1), 0), idx
     else:
         dis = ip
         idx = np.argsort(-dis, axis=1, kind="stable")[:, :k]
@@ -45,7 +50,7 @@ def get_int8(index):
     return codes, scales
 
 
-def search_int8(index, codes, scales, k):
+def search_int8(index, codes, scales, k, params=None):
     codes = np.ascontiguousarray(codes, dtype="int8")
     scales = np.ascontiguousarray(scales, dtype="float32")
     n = codes.shape[0]
@@ -53,8 +58,14 @@ def search_int8(index, codes, scales, k):
     I = np.empty((n, k), dtype="int64")
     index.search_int8(
         n, i8ptr(codes), faiss.swig_ptr(scales), k,
-        faiss.swig_ptr(D), faiss.swig_ptr(I))
+        faiss.swig_ptr(D), faiss.swig_ptr(I), params)
     return D, I
+
+
+def bias_params(rounding_bias):
+    p = faiss.SearchParametersRowwiseInt8()
+    p.rounding_bias = rounding_bias
+    return p
 
 
 class TestIndexRowwiseInt8(unittest.TestCase):
@@ -152,6 +163,68 @@ class TestIndexRowwiseInt8(unittest.TestCase):
         D, I = index.search(self.xq[:4], 5)
         self.assertTrue(np.all(I[:, :3] >= 0))
         self.assertTrue(np.all(I[:, 3:] == -1))
+
+    def test_rounding_bias_L2(self):
+        k = 5
+        index = faiss.IndexRowwiseInt8(self.d)
+        index.add(self.xb)
+        cb, sb = rowwise_int8_encode(self.xb)
+        cq, sq = rowwise_int8_encode(self.xq)
+        p = bias_params(1.0)
+        D, I = index.search(self.xq, k, params=p)
+        Dref, Iref = reference_search(
+            cq, sq, cb, sb, k, faiss.METRIC_L2, rounding_bias=1.0)
+        np.testing.assert_array_equal(I, Iref)
+        np.testing.assert_allclose(
+            D, Dref, rtol=1e-5, atol=1e-5 * np.abs(Dref).max())
+        D8, I8 = search_int8(index, cq, sq, k, params=p)
+        np.testing.assert_array_equal(D8, D)
+        np.testing.assert_array_equal(I8, I)
+        # rounding_bias = 0 is the default: identical to no parameters
+        D0, I0 = index.search(self.xq, k)
+        Dz, Iz = index.search(self.xq, k, params=bias_params(0.0))
+        np.testing.assert_array_equal(Dz, D0)
+        np.testing.assert_array_equal(Iz, I0)
+
+    def test_rounding_bias_ignored_for_IP(self):
+        index = faiss.IndexRowwiseInt8(self.d, faiss.METRIC_INNER_PRODUCT)
+        index.add(self.xb)
+        D0, I0 = index.search(self.xq, 5)
+        D1, I1 = index.search(self.xq, 5, params=bias_params(1.0))
+        np.testing.assert_array_equal(D1, D0)
+        np.testing.assert_array_equal(I1, I0)
+
+    def test_rounding_error_model(self):
+        # the model behind rounding_bias: the squared rounding error of a
+        # vector is d / 12 * s^2 on average; all-zero vectors have none
+        index = faiss.IndexRowwiseInt8(self.d)
+        index.add(self.xb)
+        _, sb = rowwise_int8_encode(self.xb)
+        rec = index.reconstruct_n(0, index.ntotal).astype("float64")
+        err = ((rec - self.xb) ** 2).sum(1)
+        nz = np.abs(self.xb).max(1) > 0
+        self.assertEqual(err[~nz].max(), 0)
+        model = self.d / 12 * (sb[nz].astype("float64") ** 2).sum()
+        self.assertAlmostEqual(err[nz].sum() / model, 1, delta=0.05)
+
+    def test_rounding_bias_zero_query(self):
+        # an all-zero query has no rounding error: only the bank term
+        index = faiss.IndexRowwiseInt8(self.d)
+        index.add(self.xb)
+        _, sb = rowwise_int8_encode(self.xb)
+        xq = np.zeros((1, self.d), dtype="float32")
+        D0, I0 = index.search(xq, 5)
+        D1, I1 = index.search(xq, 5, params=bias_params(1.0))
+        f = self.d / 12
+        Dexp = np.maximum(D0 - f * sb[I0].astype("float64") ** 2, 0)
+        order = np.argsort(D1[0])
+        np.testing.assert_allclose(np.sort(Dexp[0]), D1[0][order], rtol=1e-5)
+
+    def test_rounding_bias_negative(self):
+        index = faiss.IndexRowwiseInt8(self.d)
+        index.add(self.xb[:10])
+        with self.assertRaises(RuntimeError):
+            index.search(self.xq[:2], 1, params=bias_params(-1.0))
 
     def test_dimension_not_multiple_of_64(self):
         # exercises the scalar (non-VNNI) dot product path

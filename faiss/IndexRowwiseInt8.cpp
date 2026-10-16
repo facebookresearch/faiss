@@ -116,7 +116,9 @@ void dots_vnni(const uint8_t*, size_t, const int8_t*, size_t, int32_t*) {
 #endif
 
 /* exhaustive search over the codes, one block of queries per task.
- * C = CMax (L2, keep smallest) or CMin (inner product, keep largest). */
+ * C = CMax (L2, keep smallest) or CMin (inner product, keep largest).
+ * bias: L2 rounding-bias factor f, |b|^2 and |q|^2 get - f s^2 (0: exact;
+ * not for all-zero vectors, which have no rounding error) */
 template <class C>
 void search_rowwise_int8(
         const IndexRowwiseInt8& index,
@@ -125,14 +127,15 @@ void search_rowwise_int8(
         const float* qs,
         idx_t k,
         float* distances,
-        idx_t* labels) {
+        idx_t* labels,
+        float bias) {
     const size_t d = index.d;
     const size_t cs = index.code_size;
     const idx_t nb = index.ntotal;
     const bool is_l2 = index.metric_type == METRIC_L2;
     const uint8_t* codes = index.codes.data();
 
-    // bank: scale, |b|^2 and sum of codes
+    // bank: scale, |b|^2 (minus the bias term) and sum of codes
     std::vector<float> bs(nb), bn(nb);
     std::vector<int32_t> bsum(nb);
 #pragma omp parallel for if (nb > 1000)
@@ -141,6 +144,10 @@ void search_rowwise_int8(
         float s = code_scale(codes + j * cs, d);
         bs[j] = s;
         bn[j] = float(dot_i8(c, c, d)) * (s * s);
+        // all-zero vectors (s = 1 by convention) have no rounding error
+        if (bias != 0 && bn[j] > 0) { // single rounding, as on the GPU
+            bn[j] = std::fma(-bias, s * s, bn[j]);
+        }
         bsum[j] = sum_i8(c, d);
     }
 
@@ -152,6 +159,9 @@ void search_rowwise_int8(
     for (idx_t i = 0; i < n; i++) {
         const int8_t* c = qc + i * d;
         qn[i] = float(dot_i8(c, c, d)) * (qs[i] * qs[i]);
+        if (bias != 0 && qn[i] > 0) {
+            qn[i] = std::fma(-bias, qs[i] * qs[i], qn[i]);
+        }
         if (vnni) {
             for (size_t j = 0; j < d; j++) {
                 qu[i * d + j] = uint8_t(int(c[j]) + 128);
@@ -248,6 +258,19 @@ struct RowwiseInt8DistanceComputer : FlatCodesDistanceComputer {
 
 } // namespace
 
+float rowwise_int8_bias_factor(
+        const SearchParameters* params,
+        size_t d,
+        MetricType metric) {
+    auto p = dynamic_cast<const SearchParametersRowwiseInt8*>(params);
+    if (!p || metric != METRIC_L2) {
+        return 0;
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            p->rounding_bias >= 0, "rounding_bias must be non-negative");
+    return p->rounding_bias * float(d) / 12.0f;
+}
+
 void rowwise_int8_encode(
         size_t d,
         size_t n,
@@ -338,13 +361,10 @@ void IndexRowwiseInt8::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params || !params->sel,
-            "IndexRowwiseInt8: search with an IDSelector is not supported");
     std::vector<int8_t> qc(n * d);
     std::vector<float> qs(n);
     rowwise_int8_encode(d, n, x, qc.data(), qs.data());
-    search_int8(n, qc.data(), qs.data(), k, distances, labels);
+    search_int8(n, qc.data(), qs.data(), k, distances, labels, params);
 }
 
 void IndexRowwiseInt8::search_int8(
@@ -353,14 +373,19 @@ void IndexRowwiseInt8::search_int8(
         const float* qs,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(
+            !params || !params->sel,
+            "IndexRowwiseInt8: search with an IDSelector is not supported");
+    const float bias = rowwise_int8_bias_factor(params, d, metric_type);
     if (metric_type == METRIC_L2) {
         search_rowwise_int8<CMax<float, idx_t>>(
-                *this, n, qc, qs, k, distances, labels);
+                *this, n, qc, qs, k, distances, labels, bias);
     } else {
         search_rowwise_int8<CMin<float, idx_t>>(
-                *this, n, qc, qs, k, distances, labels);
+                *this, n, qc, qs, k, distances, labels, bias);
     }
 }
 

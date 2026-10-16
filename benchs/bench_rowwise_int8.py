@@ -6,7 +6,9 @@
 """
 Exact search on row-wise int8 vectors (GpuIndexRowwiseInt8) vs GpuIndexFlat
 in float32 and float16 on the same data: search time, storage per vector,
-and recall@k against the float32 result.
+recall@k against the float32 result, and the mean error of the k neighbour
+distances against float32 (L2 rounding makes int8 distances larger on
+average; SearchParametersRowwiseInt8.rounding_bias = 1 removes that).
 
     python bench_rowwise_int8.py [--nb 300000] [--nq 100000] [--d 768]
 """
@@ -18,12 +20,12 @@ import faiss
 import numpy as np
 
 
-def timed_search(index, xq, k, repeats):
-    index.search(xq[:1000], k)  # warm-up
+def timed_search(index, xq, k, repeats, params=None):
+    index.search(xq[:1000], k, params=params)  # warm-up
     best = float("inf")
     for _ in range(repeats):
         t0 = time.time()
-        D, I = index.search(xq, k)
+        D, I = index.search(xq, k, params=params)
         best = min(best, time.time() - t0)
     return best, D, I
 
@@ -52,7 +54,7 @@ def main():
     res = faiss.StandardGpuResources()
 
     rows = []
-    ref = None
+    ref = Dref = None
     for name, fp16 in [("GpuIndexFlatL2 float32", False),
                        ("GpuIndexFlatL2 float16", True)]:
         cfg = faiss.GpuIndexFlatConfig()
@@ -61,22 +63,28 @@ def main():
         index.add(xb)
         t, D, I = timed_search(index, xq, a.k, a.repeats)
         if ref is None:
-            ref = I
-        rows.append((name, a.d * (2 if fp16 else 4), t, recall(I, ref)))
+            ref, Dref = I, D
+        rows.append((name, a.d * (2 if fp16 else 4), t, recall(I, ref),
+                     (D - Dref).mean()))
         del index
 
     cpu = faiss.IndexRowwiseInt8(a.d)
     cpu.add(xb)
     index = faiss.GpuIndexRowwiseInt8(res, cpu)
-    t, D, I = timed_search(index, xq, a.k, a.repeats)
-    rows.append(("GpuIndexRowwiseInt8", cpu.code_size, t, recall(I, ref)))
+    p = faiss.SearchParametersRowwiseInt8()
+    p.rounding_bias = 1.0
+    for name, params in [("GpuIndexRowwiseInt8", None),
+                         ("  rounding_bias = 1", p)]:
+        t, D, I = timed_search(index, xq, a.k, a.repeats, params)
+        rows.append((name, cpu.code_size, t, recall(I, ref),
+                     (D - Dref).mean()))
 
     print(f"nb={a.nb} nq={a.nq} d={a.d} k={a.k} "
           f"GPU={faiss.get_num_gpus()} (best of {a.repeats})")
     print(f"{'index':28s} {'bytes/vec':>10s} {'search s':>9s} "
-          f"{'recall@k vs fp32':>17s}")
-    for name, b, t, r in rows:
-        print(f"{name:28s} {b:10d} {t:9.2f} {r:17.4f}")
+          f"{'recall@k vs fp32':>17s} {'mean dist err':>14s}")
+    for name, b, t, r, e in rows:
+        print(f"{name:28s} {b:10d} {t:9.2f} {r:17.4f} {e:14.4f}")
 
 
 if __name__ == "__main__":

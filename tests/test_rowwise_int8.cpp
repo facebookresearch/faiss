@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 
 #include <faiss/IndexRowwiseInt8.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
 
@@ -34,14 +35,16 @@ std::vector<float> make_data(size_t n, size_t d, int seed) {
     return x;
 }
 
-// exact L2 search on the int8 codes, in double precision
+// exact L2 search on the int8 codes, in double precision; distances get
+// - rounding_bias * d / 12 (s_q^2 + s_b^2)
 void reference_l2(
         const faiss::IndexRowwiseInt8& index,
         const std::vector<int8_t>& qc,
         const std::vector<float>& qs,
         size_t nq,
         int k,
-        std::vector<faiss::idx_t>& labels) {
+        std::vector<faiss::idx_t>& labels,
+        double rounding_bias = 0) {
     size_t d = index.d;
     size_t nb = index.ntotal;
     std::vector<int8_t> bc(nb * d);
@@ -59,8 +62,12 @@ void reference_l2(
                 nbb += c * c;
             }
             double sq = qs[q], sb = bs[b];
+            double f = rounding_bias * d / 12.0; // zero rows: no error
             dis[b] = {
-                    sq * sq * nqq + sb * sb * nbb - 2 * sq * sb * dot,
+                    sq * sq * nqq + sb * sb * nbb - 2 * sq * sb * dot -
+                            f *
+                                    ((nqq > 0 ? sq * sq : 0) +
+                                     (nbb > 0 ? sb * sb : 0)),
                     faiss::idx_t(b)};
         }
         std::partial_sort(dis.begin(), dis.begin() + k, dis.end());
@@ -144,4 +151,83 @@ TEST(IndexRowwiseInt8, write_read_round_trip) {
     rw->search(nq, xq.data(), k, Db.data(), Ib.data());
     EXPECT_EQ(Ia, Ib);
     EXPECT_EQ(Da, Db);
+}
+
+TEST(IndexRowwiseInt8, rounding_bias) {
+    size_t d = 64, nb = 2000, nq = 20;
+    int k = 5;
+    auto xb = make_data(nb, d, 6);
+    auto xq = make_data(nq, d, 7);
+    faiss::IndexRowwiseInt8 index(d);
+    index.add(nb, xb.data());
+    std::vector<int8_t> qc(nq * d);
+    std::vector<float> qs(nq);
+    faiss::rowwise_int8_encode(d, nq, xq.data(), qc.data(), qs.data());
+
+    // neighbours chosen on the corrected distances
+    faiss::SearchParametersRowwiseInt8 params;
+    params.rounding_bias = 1;
+    std::vector<float> D(nq * k), D8(nq * k);
+    std::vector<faiss::idx_t> I(nq * k), I8(nq * k), Iref;
+    index.search(nq, xq.data(), k, D.data(), I.data(), &params);
+    reference_l2(index, qc, qs, nq, k, Iref, 1.0);
+    EXPECT_EQ(I, Iref);
+    index.search_int8(
+            nq, qc.data(), qs.data(), k, D8.data(), I8.data(), &params);
+    EXPECT_EQ(I8, I);
+    EXPECT_EQ(D8, D);
+
+    // rounding_bias = 0 (the default) is identical to no parameters
+    std::vector<float> D0(nq * k), Dz(nq * k);
+    std::vector<faiss::idx_t> I0(nq * k), Iz(nq * k);
+    index.search(nq, xq.data(), k, D0.data(), I0.data());
+    params.rounding_bias = 0;
+    index.search(nq, xq.data(), k, Dz.data(), Iz.data(), &params);
+    EXPECT_EQ(Dz, D0);
+    EXPECT_EQ(Iz, I0);
+
+    params.rounding_bias = -1;
+    EXPECT_THROW(
+            index.search(nq, xq.data(), k, Dz.data(), Iz.data(), &params),
+            faiss::FaissException);
+}
+
+TEST(IndexRowwiseInt8, rounding_error_model) {
+    // the model behind rounding_bias: the squared rounding error of a vector
+    // is d / 12 * s^2 on average
+    size_t d = 128, nb = 3000;
+    auto xb = make_data(nb, d, 8);
+    faiss::IndexRowwiseInt8 index(d);
+    index.add(nb, xb.data());
+    std::vector<float> rec(nb * d);
+    index.reconstruct_n(0, nb, rec.data());
+    std::vector<int8_t> c(nb * d);
+    std::vector<float> s(nb);
+    index.get_int8(0, nb, c.data(), s.data());
+    double err = 0, model = 0;
+    for (size_t i = 0; i < nb; i++) {
+        for (size_t j = 0; j < d; j++) {
+            double t = double(rec[i * d + j]) - xb[i * d + j];
+            err += t * t;
+        }
+        model += d / 12.0 * double(s[i]) * s[i];
+    }
+    EXPECT_NEAR(err / model, 1.0, 0.05);
+}
+
+TEST(IndexRowwiseInt8, rounding_bias_ignored_for_inner_product) {
+    // inner product has no rounding bias: the parameter changes nothing
+    size_t d = 128, nb = 3000, nq = 30;
+    auto xb = make_data(nb, d, 8);
+    auto xq = make_data(nq, d, 9);
+    faiss::SearchParametersRowwiseInt8 params;
+    params.rounding_bias = 1;
+    faiss::IndexRowwiseInt8 ip(d, faiss::METRIC_INNER_PRODUCT);
+    ip.add(nb, xb.data());
+    std::vector<float> Da(nq * 5), Db(nq * 5);
+    std::vector<faiss::idx_t> Ia(nq * 5), Ib(nq * 5);
+    ip.search(nq, xq.data(), 5, Da.data(), Ia.data());
+    ip.search(nq, xq.data(), 5, Db.data(), Ib.data(), &params);
+    EXPECT_EQ(Da, Db);
+    EXPECT_EQ(Ia, Ib);
 }

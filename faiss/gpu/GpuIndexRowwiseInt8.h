@@ -66,14 +66,16 @@ class GpuIndexRowwiseInt8 : public GpuIndex {
     void get_int8(idx_t i0, idx_t n, int8_t* codes, float* scales) const;
 
     /// search with queries that are already row-wise int8: codes (n, d),
-    /// scales (n); inputs and outputs on the host or on this GPU
+    /// scales (n); inputs and outputs on the host or on this GPU.
+    /// params: as for search() (SearchParametersRowwiseInt8::rounding_bias)
     void search_int8(
             idx_t n,
             const int8_t* codes,
             const float* scales,
             int k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const;
 
     void reconstruct_n(idx_t i0, idx_t n, float* out) const override;
 
@@ -98,7 +100,8 @@ class GpuIndexRowwiseInt8 : public GpuIndex {
     void addCodes_(idx_t n, const int8_t* codesDev, const float* scalesDev);
 
     /// search core, on device data: queries are either float (x) or
-    /// row-wise int8 (qc, qs)
+    /// row-wise int8 (qc, qs); bias: L2 rounding-bias factor
+    /// (rowwise_int8_bias_factor, 0 = exact)
     void searchTiles_(
             idx_t n,
             const float* x,
@@ -106,7 +109,8 @@ class GpuIndexRowwiseInt8 : public GpuIndex {
             const float* qs,
             int k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            float bias) const;
 
     const GpuIndexRowwiseInt8Config rwConfig_;
 
