@@ -87,6 +87,32 @@ struct QueryFactorsData {
  */
 FAISS_API extern const float Z_MAX_BY_QB[8];
 
+// out[code] = base + sum of v_i for each set bit in code.
+inline void write_subset_sum_lut(
+        float* out,
+        float base,
+        float v0,
+        float v1,
+        float v2,
+        float v3) {
+    out[0] = base;
+    out[1] = base + v0;
+    out[2] = base + v1;
+    out[3] = base + v0 + v1;
+    out[4] = base + v2;
+    out[5] = base + v0 + v2;
+    out[6] = base + v1 + v2;
+    out[7] = base + v0 + v1 + v2;
+    out[8] = base + v3;
+    out[9] = base + v0 + v3;
+    out[10] = base + v1 + v3;
+    out[11] = base + v0 + v1 + v3;
+    out[12] = base + v2 + v3;
+    out[13] = base + v0 + v2 + v3;
+    out[14] = base + v1 + v2 + v3;
+    out[15] = base + v0 + v1 + v2 + v3;
+}
+
 /** Fast half-away rounding for non-negative RaBitQ quantization values.
  *
  * Contract: x must be finite, non-NaN, and in [0, 255.5). This is not a

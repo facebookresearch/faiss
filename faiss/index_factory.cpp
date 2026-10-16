@@ -56,6 +56,10 @@
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
 
+#ifdef FAISS_ENABLE_DISK_IVF
+#include <faiss/IndexIVFRaBitQSSD.h>
+#endif
+
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSIVF.h>
@@ -246,8 +250,11 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     if (match("RR([0-9]+)?")) {
         return new RandomRotationMatrix(d, mres_to_int(sm[1], d));
     }
-    if (match("HR([0-9]+)?")) {
-        return new HadamardRotation(d, mres_to_int(sm[1], 12345));
+    // "HR" pads d to a power of 2, "HRk" to a multiple of 64 (the FHT-Kac
+    // rotation, see HadamardRotation). An optional seed follows: "HRk7".
+    if (match("HR(k?)([0-9]+)?")) {
+        return new HadamardRotation(
+                d, mres_to_int(sm[2], 12345), sm[1].length() == 0);
     }
     if (match("ITQ([0-9]+)?")) {
         return new ITQTransform(d, mres_to_int(sm[1], d), sm[1].length() > 0);
@@ -528,6 +535,18 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
+#ifdef FAISS_ENABLE_DISK_IVF
+    // Attach RaBitQSSDInvertedLists with replace_invlists() before add/search.
+    if (match("RaBitQSSD([2-9])_([0-9]+)")) {
+        uint8_t nb_bits = mres_to_int(sm[1]);
+        size_t mem_dim = mres_to_int(sm[2]);
+        auto* index_ivf = new IndexIVFRaBitQSSD(
+                quantizer.get(), d, nlist, mem_dim, nb_bits, nullptr, mt);
+        quantizer.release();
+        index_ivf->own_invlists = own_il;
+        return index_ivf;
+    }
+#endif
     // IndexIVFRaBitQ with optional nb_bits (1-9)
     // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
     if (match("RaBitQ([1-9])?")) {

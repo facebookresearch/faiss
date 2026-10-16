@@ -36,6 +36,9 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#ifdef FAISS_ENABLE_DISK_IVF
+#include <faiss/IndexIVFRaBitQSSD.h>
+#endif
 #include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
@@ -379,8 +382,9 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
             itqt->pca_then_itq = *pi;
         }
         vt = std::move(itqt);
-    } else if (h == fourcc("HRot")) {
+    } else if (h == fourcc("HRot") || h == fourcc("HR64")) {
         auto hr = std::make_unique<HadamardRotation>();
+        hr->pad_to_power_of_2 = h == fourcc("HRot");
         READ1(hr->seed);
         vt = std::move(hr);
     } else {
@@ -445,6 +449,27 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
         size_t byte_limit = get_deserialization_vector_byte_limit();
         FAISS_THROW_IF_NOT_MSG(
                 p <= byte_limit / (3 * sizeof(float)),
+                "HadamardRotation d_out exceeds deserialization byte limit");
+        hr->init(hr->seed);
+    }
+    if (h == fourcc("HR64")) {
+        auto* hr = dynamic_cast<HadamardRotation*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(hr, "dynamic_cast to HadamardRotation failed");
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_in > 0,
+                "invalid HadamardRotation d_in=%d (must be > 0)",
+                vt->d_in);
+        size_t p = (static_cast<size_t>(vt->d_in) + 63) / 64 * 64;
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(vt->d_out) == p,
+                "invalid HadamardRotation d_out %d for d_in %d"
+                " (d_out must be the smallest multiple of 64 >= d_in)",
+                vt->d_out,
+                vt->d_in);
+        // Up to four sign-flip vectors of d_out floats.
+        FAISS_THROW_IF_NOT_MSG(
+                p <= get_deserialization_vector_byte_limit() /
+                                (4 * sizeof(float)),
                 "HadamardRotation d_out exceeds deserialization byte limit");
         hr->init(hr->seed);
     }
@@ -3083,6 +3108,58 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_InvertedLists(*ivrq, f, io_flags);
         idx = std::move(ivrq);
     }
+#ifdef FAISS_ENABLE_DISK_IVF
+    else if (h == fourcc("IwDr")) {
+        auto ivdr = std::make_unique<IndexIVFRaBitQSSD>();
+        read_ivf_header(ivdr.get(), f);
+        read_RaBitQuantizer(ivdr->rabitq, f, ivdr->d, true);
+        FAISS_THROW_IF_NOT_MSG(
+                ivdr->rabitq.metric_type == ivdr->metric_type,
+                "IndexIVFRaBitQSSD: metric mismatch");
+        FAISS_THROW_IF_NOT_FMT(
+                ivdr->rabitq.nb_bits >= 2 && ivdr->rabitq.nb_bits <= 9,
+                "invalid IndexIVFRaBitQSSD nb_bits=%zu",
+                ivdr->rabitq.nb_bits);
+        ivdr->rabitq.code_size =
+                ivdr->rabitq.compute_code_size(ivdr->d, ivdr->rabitq.nb_bits);
+        ivdr->code_size = ivdr->rabitq.code_size;
+        READ1(ivdr->mem_dim);
+        FAISS_THROW_IF_NOT_MSG(
+                ivdr->d > 0 && ivdr->d % 64 == 0,
+                "IndexIVFRaBitQSSD: d must be a positive multiple of 64");
+        FAISS_THROW_IF_NOT_MSG(
+                ivdr->mem_dim >= 64 && ivdr->mem_dim <= size_t(ivdr->d) &&
+                        ivdr->mem_dim % 64 == 0,
+                "IndexIVFRaBitQSSD: mem_dim must be a multiple of 64 in [64, d]");
+        READ1_BOOL(ivdr->use_hacc);
+        READ1(ivdr->drain_alpha);
+        READ1(ivdr->qd_per_thread);
+        FAISS_THROW_IF_NOT_FMT(
+                ivdr->drain_alpha >= 0 && ivdr->drain_alpha <= 1,
+                "invalid IndexIVFRaBitQSSD drain_alpha=%g",
+                ivdr->drain_alpha);
+        FAISS_THROW_IF_NOT_FMT(
+                ivdr->qd_per_thread >= 1 &&
+                        ivdr->qd_per_thread <=
+                                IndexIVFRaBitQSSD::kMaxReadsInFlight,
+                "invalid IndexIVFRaBitQSSD qd_per_thread=%zu",
+                ivdr->qd_per_thread);
+        READVECTOR(ivdr->centroid_norms);
+        FAISS_THROW_IF_NOT(
+                ivdr->centroid_norms.empty() ||
+                ivdr->centroid_norms.size() == ivdr->nlist);
+        read_InvertedLists(*ivdr, f, io_flags);
+        if (ivdr->invlists) {
+            // checks the type and the layout of the inverted lists
+            ivdr->get_ssd_invlists();
+        } else {
+            FAISS_THROW_IF_NOT_MSG(
+                    ivdr->ntotal == 0,
+                    "IndexIVFRaBitQSSD: non-empty index needs inverted lists");
+        }
+        idx = std::move(ivdr);
+    }
+#endif // FAISS_ENABLE_DISK_IVF
 #ifdef FAISS_ENABLE_SVS
     else if (
             h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD") ||

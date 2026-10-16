@@ -151,6 +151,29 @@ void quantize_query_values(
         size_t& sum_qq,
         int64_t& sum2_signed_odd_int);
 
+/**
+ * Inner product between a float query and a 1-bit code read as 0/1 values:
+ * sum over i < d of rotated_q[i] * bit_i, with bit_i stored at
+ * (sign_bits[i / 8] >> (i % 8)) & 1, the sign-bit layout of
+ * multibit::compute_inner_product.
+ *
+ * Unlike bitwise_and_dot_product, the query is not quantized. The sum splits
+ * at any multiple of 8: the value over [0, d) is the value over [0, m) plus
+ * the value over [m, d) computed on (sign_bits + m / 8, rotated_q + m). A
+ * code stored in pieces, e.g. partly in memory and partly on disk, can thus
+ * be scored piece by piece.
+ *
+ * @param sign_bits  packed 1-bit code ((d + 7) / 8 bytes)
+ * @param rotated_q  rotated query vector (float[d])
+ * @param d          dimensionality
+ * @return           sum of rotated_q[i] over the set bits
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float sign_inner_product(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d);
+
 // NONE specializations — scalar fallbacks
 
 template <>
@@ -356,6 +379,48 @@ inline void quantize_query_values<SIMDLevel::NONE>(
     }
 }
 
+/// Scalar sign_inner_product over dimensions [start, d). Also serves as the
+/// tail handler of the SIMD kernels.
+inline float sign_ip_scalar(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t start,
+        size_t d) {
+    float result = 0.0f;
+    for (size_t i = start; i < d; i++) {
+        const int bit = (sign_bits[i / 8] >> (i % 8)) & 1;
+        result += rotated_q[i] * static_cast<float>(bit);
+    }
+    return result;
+}
+
+template <>
+inline float sign_inner_product<SIMDLevel::NONE>(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d) {
+    return sign_ip_scalar(sign_bits, rotated_q, 0, d);
+}
+
+// ARM_NEON and RISCV_RVV have no vector kernel for this yet. They use the
+// scalar one, so that sign_inner_product dispatches over the same levels as
+// multibit::compute_inner_product.
+template <>
+inline float sign_inner_product<SIMDLevel::ARM_NEON>(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d) {
+    return sign_ip_scalar(sign_bits, rotated_q, 0, d);
+}
+
+template <>
+inline float sign_inner_product<SIMDLevel::RISCV_RVV>(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d) {
+    return sign_ip_scalar(sign_bits, rotated_q, 0, d);
+}
+
 } // namespace faiss::rabitq
 
 /*********************************************************
@@ -438,6 +503,144 @@ inline float compute_inner_product<SIMDLevel::NONE>(
         size_t ex_bits,
         float cb) {
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
+/**
+ * compute_inner_product with the sign term supplied by the caller:
+ *
+ *   (1 << ex_bits) * sign_ip + sum_i rotated_q[i] * ex_i + cb * q_sum
+ *
+ * With sign_ip = rabitq::sign_inner_product(sign_bits, rotated_q, d) and
+ * q_sum = sum_i rotated_q[i], this equals
+ * compute_inner_product(sign_bits, ex_code, rotated_q, d, ex_bits, cb) up to
+ * float rounding. It serves codes whose sign bits are not stored next to
+ * ex_code, e.g. split between memory and disk: the caller accumulates the
+ * sign term piece by piece with sign_inner_product. q_sum depends on the
+ * query only, so it can be computed once per query.
+ *
+ * Unlike compute_inner_product, this reads only the (d * ex_bits + 7) / 8
+ * bytes of ex_code and never the bytes after them.
+ *
+ * @param ex_code    packed extra-bit codes (ex_bits bits/dim); may be null
+ *                   when ex_bits == 0
+ * @param rotated_q  rotated query vector (float[d])
+ * @param d          dimensionality
+ * @param ex_bits    number of extra bits per dimension, in [0, 8]
+ * @param cb         constant bias: -(2^ex_bits - 0.5)
+ * @param sign_ip    sum_i rotated_q[i] * sign_i
+ * @param q_sum      sum_i rotated_q[i]
+ * @return           inner product value
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float compute_inner_product_with_sign_ip(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum);
+
+/// Load the code bytes at ex_code + offset into the low bytes of a uint64,
+/// reading 8 bytes when they all lie within the first total_bytes bytes of
+/// ex_code and only the remaining ones otherwise.
+inline uint64_t load_ex_code_window(
+        const uint8_t* ex_code,
+        size_t offset,
+        size_t total_bytes) {
+    uint64_t window = 0;
+    if (offset + sizeof(window) <= total_bytes) {
+        memcpy(&window, ex_code + offset, sizeof(window));
+    } else {
+        memcpy(&window, ex_code + offset, total_bytes - offset);
+    }
+    return window;
+}
+
+/// Scalar sum over [start, d) of rotated_q[i] * ex_i, for ex_bits in [1, 8].
+/// Reads only the (d * ex_bits + 7) / 8 bytes of ex_code. Also serves as the
+/// tail handler of the SIMD kernels.
+inline float ex_ip_scalar(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t start,
+        size_t d,
+        size_t ex_bits) {
+    float result = 0.0f;
+    if (ex_bits == 8) {
+        for (size_t i = start; i < d; ++i) {
+            result += rotated_q[i] * static_cast<float>(ex_code[i]);
+        }
+        return result;
+    }
+    const unsigned code_mask = (1u << ex_bits) - 1;
+    for (size_t i = start; i < d; i++) {
+        const size_t bit_pos = i * ex_bits;
+        const size_t byte_idx = bit_pos / 8;
+        const size_t bit_offset = bit_pos % 8;
+        // With ex_bits <= 8 a code spans at most two bytes.
+        unsigned raw = ex_code[byte_idx];
+        if (bit_offset + ex_bits > 8) {
+            raw |= static_cast<unsigned>(ex_code[byte_idx + 1]) << 8;
+        }
+        const unsigned ex_val = (raw >> bit_offset) & code_mask;
+        result += rotated_q[i] * static_cast<float>(ex_val);
+    }
+    return result;
+}
+
+/// The terms compute_inner_product_with_sign_ip adds to the extra-bit inner
+/// product ex_ip.
+inline float add_sign_and_bias_terms(
+        float ex_ip,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    return static_cast<float>(1u << ex_bits) * sign_ip + ex_ip + cb * q_sum;
+}
+
+template <>
+inline float compute_inner_product_with_sign_ip<SIMDLevel::NONE>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    const float ex_ip = ex_bits == 0
+            ? 0.0f
+            : ex_ip_scalar(ex_code, rotated_q, 0, d, ex_bits);
+    return add_sign_and_bias_terms(ex_ip, ex_bits, cb, sign_ip, q_sum);
+}
+
+// ARM_NEON and RISCV_RVV use the scalar kernel, as for
+// rabitq::sign_inner_product.
+template <>
+inline float compute_inner_product_with_sign_ip<SIMDLevel::ARM_NEON>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    return compute_inner_product_with_sign_ip<SIMDLevel::NONE>(
+            ex_code, rotated_q, d, ex_bits, cb, sign_ip, q_sum);
+}
+
+template <>
+inline float compute_inner_product_with_sign_ip<SIMDLevel::RISCV_RVV>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    return compute_inner_product_with_sign_ip<SIMDLevel::NONE>(
+            ex_code, rotated_q, d, ex_bits, cb, sign_ip, q_sum);
 }
 
 } // namespace faiss::rabitq::multibit

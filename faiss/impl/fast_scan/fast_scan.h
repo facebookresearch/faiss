@@ -178,6 +178,41 @@ void accumulate_to_mem_impl(
         const uint8_t* LUT,
         uint16_t* accu);
 
+/// SIMD levels with high-accuracy FastScan accumulation implementations.
+constexpr int FAST_SCAN_HACC_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
+
+/** Same as accumulate_to_mem, but with 16-bit look-up table entries summed
+ * exactly into 32-bit accumulators, whatever nsq. Each 16-bit table is given
+ * as two 8-bit tables: the low bytes of its entries, then the high bytes.
+ *
+ * @param nq      number of queries
+ * @param ntotal2 number of database elements (multiple of 32)
+ * @param nsq     number of sub-quantizers (multiple of 2)
+ * @param codes   packed codes array, in blocks of 32 elements
+ * @param LUT     for each query, 16 * nsq bytes of low bytes, then 16 * nsq
+ *                bytes of high bytes, each laid out as by
+ *                pq4_pack_LUT(1, nsq, ...)
+ * @param accu    array to store the results, size nq * ntotal2
+ */
+void accumulate_hacc(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        int32_t* accu);
+
+/// Per-SIMD specialization of accumulate_hacc (defined in per-SIMD TUs)
+template <SIMDLevel SL>
+void accumulate_hacc_impl(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        int32_t* accu);
+
 /***************************************************************
  * FastScanCodeScanner: virtual base that bundles handler + kernel
  * behind the SIMD dispatch boundary. Per-SIMD TUs instantiate this
