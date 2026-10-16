@@ -379,6 +379,16 @@ class TestHNSW(unittest.TestCase):
 
         self.assertTrue((Dref == Dbin).all())
 
+    def test_add_level_0_links_from_sample(self):
+        d = self.xq.shape[1] * 8
+        index = faiss.IndexBinaryHNSW(d, 16)
+        index.add(self.xb)
+
+        stats = index.add_level_0_links_from_sample(self.xq)
+
+        self.assertIsInstance(stats, faiss.HNSWLevel0LinkStats)
+        self.assertEqual(stats.n_sinks_remaining, 0)
+
 
 @for_all_simd_levels
 class TestReplicasAndShards(unittest.TestCase):

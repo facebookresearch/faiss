@@ -250,6 +250,24 @@ class TestHNSW(unittest.TestCase):
         np.testing.assert_array_equal(Dnew, Dref)
         np.testing.assert_array_equal(Inew, Iref)
 
+    def test_add_level_0_links_from_sample(self):
+        d = self.xq.shape[1]
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        _, I_before = index.search(self.xq, 1)
+
+        stats = index.add_level_0_links_from_sample(self.xq)
+        index.add_level_0_links_from_sample(
+            self.xq.astype(np.float16), numeric_type=faiss.Float16
+        )
+
+        self.assertIsInstance(stats, faiss.HNSWLevel0LinkStats)
+        self.assertEqual(stats.n_sinks_remaining, 0)
+        _, I_after = index.search(self.xq, 1)
+        self.assertGreaterEqual(
+            (self.Iref == I_after).sum(), (self.Iref == I_before).sum()
+        )
+
     def test_hnsw_reset(self):
         d = self.xb.shape[1]
         index_flat = faiss.IndexFlat(d)
