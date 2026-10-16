@@ -55,6 +55,8 @@ struct IndexScalarQuantizer : IndexFlatCodes {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    void check_compatible_for_merge(const Index& otherIndex) const override;
 };
 
 /** An IVF implementation where the components of the residuals are

@@ -178,6 +178,43 @@ class TestMerge2(unittest.TestCase):
     def test_merge_IndexScalarQuantizer(self):
         self.do_flat_codes_test("SQ4")
 
+    def test_merge_IndexScalarQuantizer_incompatible_ranges(self):
+        destination = faiss.IndexScalarQuantizer(
+            2, faiss.ScalarQuantizer.QT_8bit
+        )
+        source = faiss.IndexScalarQuantizer(
+            2, faiss.ScalarQuantizer.QT_8bit
+        )
+        destination.train(
+            np.array([[0.0, 0.0], [1.0, 1.0]], dtype="float32")
+        )
+        source.train(
+            np.array([[100.0, 100.0], [101.0, 101.0]], dtype="float32")
+        )
+        destination.add(np.array([[0.5, 0.5]], dtype="float32"))
+        source.add(np.array([[100.5, 100.5]], dtype="float32"))
+
+        destination_before = destination.reconstruct(0)
+        source_before = source.reconstruct(0)
+        destination_codes = faiss.vector_to_array(destination.codes)
+        source_codes = faiss.vector_to_array(source.codes)
+
+        with self.assertRaisesRegex(RuntimeError, "different trained state"):
+            destination.merge_from(source, 0)
+
+        self.assertEqual(destination.ntotal, 1)
+        self.assertEqual(source.ntotal, 1)
+        np.testing.assert_array_equal(
+            destination.reconstruct(0), destination_before
+        )
+        np.testing.assert_array_equal(source.reconstruct(0), source_before)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(destination.codes), destination_codes
+        )
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(source.codes), source_codes
+        )
+
     def test_merge_PreTransform(self):
         self.do_flat_codes_test("PCA16,SQ4")
 
