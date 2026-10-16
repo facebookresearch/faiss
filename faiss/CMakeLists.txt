@@ -238,6 +238,14 @@ if(FAISS_ENABLE_SVS)
   )
 endif()
 
+if(FAISS_ENABLE_DISK_IVF)
+  list(APPEND FAISS_SRC
+    IndexIVFRaBitQSSD.cpp
+    invlists/DiskIOBackend.cpp
+    invlists/RaBitQSSDInvertedLists.cpp
+  )
+endif()
+
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
@@ -404,6 +412,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/popcount.h
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
@@ -456,6 +465,14 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSIVF.h
     svs/IndexSVSIVFLVQ.h
     svs/IndexSVSIVFLeanVec.h
+  )
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  list(APPEND FAISS_HEADERS
+    IndexIVFRaBitQSSD.h
+    invlists/DiskIOBackend.h
+    invlists/RaBitQSSDInvertedLists.h
   )
 endif()
 
@@ -693,6 +710,15 @@ if(FAISS_ENABLE_SVS)
   install(DIRECTORY ${svs_SOURCE_DIR}/lib/ DESTINATION ${CMAKE_INSTALL_LIBDIR} FILES_MATCHING PATTERN "libsvs_runtime.so*")
 endif()
 
+if(FAISS_ENABLE_DISK_IVF)
+  find_path(LIBAIO_INCLUDE_DIR NAMES libaio.h REQUIRED)
+  find_library(LIBAIO_LIBRARY NAMES aio REQUIRED)
+  foreach(t faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve)
+    target_include_directories(${t} PRIVATE ${LIBAIO_INCLUDE_DIR})
+    target_link_libraries(${t} PUBLIC ${LIBAIO_LIBRARY})
+  endforeach()
+endif()
+
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -728,6 +754,14 @@ if(FAISS_ENABLE_SVS)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_DISK_IVF)
 endif()
 
 if(WIN32)

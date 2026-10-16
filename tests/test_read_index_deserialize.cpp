@@ -2142,6 +2142,30 @@ TEST(ReadIndexDeserialize, HadamardRotationDoutZero) {
     expect_vt_read_throws_with(buf, "HadamardRotation d_out=");
 }
 
+TEST(ReadIndexDeserialize, HadamardRotationHR64InvalidDout) {
+    // HR64 format: as HRot, with d_out the smallest multiple of 64 >= d_in
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HR64");
+    push_val<int>(buf, 42);    // seed
+    push_val<int>(buf, 100);   // d_in
+    push_val<int>(buf, 256);   // d_out (should be 128)
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(
+            buf, "d_out must be the smallest multiple of 64 >= d_in");
+}
+
+TEST(ReadIndexDeserialize, HadamardRotationHR64DinZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HR64");
+    push_val<int>(buf, 42);    // seed
+    push_val<int>(buf, 0);     // d_in = 0 (invalid)
+    push_val<int>(buf, 64);    // d_out
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "HadamardRotation d_in=");
+}
+
 TEST(ReadIndexDeserialize, RemapDimensionsTransformMapTooSmall) {
     // RmDT format: fourcc("RmDT") + WRITEVECTOR(map) + d_in(int) +
     //              d_out(int) + is_trained(bool)

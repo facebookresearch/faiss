@@ -99,6 +99,14 @@ inline float reduce_max_256(__m256 v) {
     return _mm_cvtss_f32(x);
 }
 
+inline float reduce_sum_256(__m256 v) {
+    __m128 x =
+            _mm_add_ps(_mm256_castps256_ps128(v), _mm256_extractf128_ps(v, 1));
+    x = _mm_add_ps(x, _mm_movehl_ps(x, x));
+    x = _mm_add_ss(x, _mm_shuffle_ps(x, x, 1));
+    return _mm_cvtss_f32(x);
+}
+
 inline __m256i round_nonnegative_ps_to_i32(__m256 x) {
     return _mm256_cvttps_epi32(_mm256_add_ps(x, _mm256_set1_ps(0.5f)));
 }
@@ -472,6 +480,43 @@ void rearrange_bit_planes<SIMDLevel::AVX2>(
     }
 }
 
+template <>
+float sign_inner_product<SIMDLevel::AVX2>(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d) {
+    // One sign-word broadcast serves 32 dims, as in the ex_bits == 8
+    // multi-bit kernel. cmpeq, not cmpgt: bit 31 of the shifted positions is
+    // a sign bit.
+    __m256 acc0 = _mm256_setzero_ps();
+    __m256 acc1 = _mm256_setzero_ps();
+    const __m256i positions = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    auto step = [&](__m256& acc, size_t i, __m256i signs, __m256i pos) {
+        const __m256i mask =
+                _mm256_cmpeq_epi32(_mm256_and_si256(signs, pos), pos);
+        acc = _mm256_add_ps(
+                acc,
+                _mm256_and_ps(
+                        _mm256_castsi256_ps(mask),
+                        _mm256_loadu_ps(rotated_q + i)));
+    };
+    size_t i = 0;
+    for (; i + 32 <= d; i += 32) {
+        uint32_t word;
+        memcpy(&word, sign_bits + i / 8, sizeof(word));
+        const __m256i signs = _mm256_set1_epi32(static_cast<int>(word));
+        step(acc0, i, signs, positions);
+        step(acc1, i + 8, signs, _mm256_slli_epi32(positions, 8));
+        step(acc0, i + 16, signs, _mm256_slli_epi32(positions, 16));
+        step(acc1, i + 24, signs, _mm256_slli_epi32(positions, 24));
+    }
+    for (; i + 8 <= d; i += 8) {
+        step(acc0, i, _mm256_set1_epi32(sign_bits[i / 8]), positions);
+    }
+    return reduce_sum_256(_mm256_add_ps(acc0, acc1)) +
+            sign_ip_scalar(sign_bits, rotated_q, i, d);
+}
+
 } // namespace faiss::rabitq
 
 namespace faiss::rabitq::multibit {
@@ -578,6 +623,82 @@ inline float ip_bitplane_avx2(
     return result;
 }
 
+// sum_i rotated_q[i] * ex_code[i] for one-byte extra codes.
+inline float ex_ip_8bit_avx2(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d) {
+    __m256 acc0 = _mm256_setzero_ps();
+    __m256 acc1 = _mm256_setzero_ps();
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const __m128i bytes =
+                _mm_loadu_si128(reinterpret_cast<const __m128i*>(ex_code + i));
+        acc0 = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i),
+                _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes)),
+                acc0);
+        acc1 = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i + 8),
+                _mm256_cvtepi32_ps(
+                        _mm256_cvtepu8_epi32(_mm_srli_si128(bytes, 8))),
+                acc1);
+    }
+    for (; i + 8 <= d; i += 8) {
+        const __m128i bytes =
+                _mm_loadl_epi64(reinterpret_cast<const __m128i*>(ex_code + i));
+        acc0 = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i),
+                _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes)),
+                acc0);
+    }
+    return hsum_avx2(_mm256_add_ps(acc0, acc1)) +
+            ex_ip_scalar(ex_code, rotated_q, i, d, 8);
+}
+
+// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]. Same bit-plane extraction
+// as ip_bitplane_avx2, without the sign bits, and without reading past the
+// codes.
+inline float ex_ip_bitplane_avx2(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+
+    uint64_t pext_masks[7];
+    __m256 v_weights[7];
+    for (size_t b = 0; b < ex_bits; b++) {
+        uint64_t m = 0;
+        for (int j = 0; j < 8; j++) {
+            m |= (1ULL << (b + j * ex_bits));
+        }
+        pext_masks[b] = m;
+        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+    }
+
+    const size_t total_bytes = (d * ex_bits + 7) / 8;
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const uint64_t ex64 =
+                load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
+        __m256 recon = _mm256_setzero_ps();
+        for (size_t b = 0; b < ex_bits; b++) {
+            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
+            __m256i p_cmp = _mm256_cmpgt_epi32(
+                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
+            recon = _mm256_add_ps(
+                    recon,
+                    _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_weights[b]));
+        }
+        acc = _mm256_fmadd_ps(_mm256_loadu_ps(rotated_q + i), recon, acc);
+    }
+
+    return hsum_avx2(acc) + ex_ip_scalar(ex_code, rotated_q, i, d, ex_bits);
+}
+
 } // namespace
 
 template <>
@@ -636,6 +757,28 @@ float compute_inner_product<SIMDLevel::AVX2>(
         return ip_bitplane_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
     }
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
+template <>
+float compute_inner_product_with_sign_ip<SIMDLevel::AVX2>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    float ex_ip = 0.0f;
+    if (ex_bits == 8) {
+        ex_ip = ex_ip_8bit_avx2(ex_code, rotated_q, d);
+    } else if (ex_bits == 1) {
+        // One extra bit per dim has the sign-bit layout.
+        ex_ip = rabitq::sign_inner_product<SIMDLevel::AVX2>(
+                ex_code, rotated_q, d);
+    } else if (ex_bits >= 2 && ex_bits <= 7) {
+        ex_ip = ex_ip_bitplane_avx2(ex_code, rotated_q, d, ex_bits);
+    }
+    return add_sign_and_bias_terms(ex_ip, ex_bits, cb, sign_ip, q_sum);
 }
 
 } // namespace faiss::rabitq::multibit

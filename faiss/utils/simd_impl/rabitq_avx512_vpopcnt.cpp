@@ -440,6 +440,22 @@ uint64_t popcount<SIMDLevel::AVX512_VPOPCNT>(const uint8_t* data, size_t size) {
     return sum;
 }
 
+// The floating-point sign kernel does not use popcounts either; reuse the
+// AVX512 implementation.
+template <>
+float sign_inner_product<SIMDLevel::AVX512>(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d);
+
+template <>
+float sign_inner_product<SIMDLevel::AVX512_VPOPCNT>(
+        const uint8_t* __restrict sign_bits,
+        const float* __restrict rotated_q,
+        size_t d) {
+    return sign_inner_product<SIMDLevel::AVX512>(sign_bits, rotated_q, d);
+}
+
 } // namespace faiss::rabitq
 
 namespace faiss::rabitq::multibit {
@@ -466,6 +482,29 @@ float compute_inner_product<SIMDLevel::AVX512_VPOPCNT>(
         float cb) {
     return compute_inner_product<SIMDLevel::AVX512>(
             sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+}
+
+template <>
+float compute_inner_product_with_sign_ip<SIMDLevel::AVX512>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum);
+
+template <>
+float compute_inner_product_with_sign_ip<SIMDLevel::AVX512_VPOPCNT>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    return compute_inner_product_with_sign_ip<SIMDLevel::AVX512>(
+            ex_code, rotated_q, d, ex_bits, cb, sign_ip, q_sum);
 }
 
 } // namespace faiss::rabitq::multibit

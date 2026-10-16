@@ -375,6 +375,8 @@ add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
 add_ref_in_constructor(IndexIVFRaBitQ, 0)
 add_ref_in_constructor(IndexIVFRaBitQFastScan, 0)
+if "IndexIVFRaBitQSSD" in globals():  # built with FAISS_ENABLE_DISK_IVF
+    add_ref_in_constructor(IndexIVFRaBitQSSD, 0)
 add_ref_in_constructor(IndexIVFEDEN, 0)
 
 if "SVS" in get_compile_options():

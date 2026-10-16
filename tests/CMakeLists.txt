@@ -40,12 +40,15 @@ set(FAISS_TEST_SRC
   test_custom_result_handler.cpp
   test_fastscan_filter.cpp
   test_single_query_collect_handler.cpp
+  test_hadamard_rotation.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
+  test_fast_scan_hacc.cpp
   test_rabitq_fastscan.cpp
   test_rabitq_batch_estimates.cpp
+  test_rabitq_split_inner_product.cpp
   test_super_kmeans_foundations.cpp
   test_pipnn.cpp
 )
@@ -62,6 +65,10 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  list(APPEND FAISS_TEST_SRC test_ivf_rabitq_ssd.cpp)
 endif()
 
 # DD-only tests; x86-specific raw-intrinsic tests are added separately below.
