@@ -196,6 +196,10 @@ struct ParameterSpace {
             const std::string& name,
             double val) const;
 
+    /** update search parameters for combination cno on a SearchParameters
+     * object */
+    void update_search_parameters(SearchParameters* params, size_t cno) const;
+
     /** find an upper bound on the performance and a lower bound on t
      * for configuration cno given another operating point op */
     void update_bounds(
@@ -209,13 +213,15 @@ struct ParameterSpace {
      * @param xq      query vectors (size nq * index.d)
      * @param crit    selection criterion
      * @param ops     resulting operating points
+     * @param params  optional search parameters forwarded to index->search
      */
     void explore(
             Index* index,
             size_t nq,
             const float* xq,
             const AutoTuneCriterion& crit,
-            OperatingPoints* ops) const;
+            OperatingPoints* ops,
+            const SearchParameters* params = nullptr) const;
 
     virtual ~ParameterSpace() {}
 };
