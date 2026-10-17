@@ -284,6 +284,31 @@ class TestIndexFlatL2(unittest.TestCase):
         #  np.testing.assert_equal(Iref, I1)
         np.testing.assert_equal(D3, D1)
 
+    def test_indexflat_l2_sync_norms_stale_after_add(self):
+        # #5320: add() after sync_l2norms() leaves the norm cache short
+        d = 16
+        nb = 200
+        nq = 16
+        k = 10
+        first_batch = 10
+        rs = np.random.RandomState(123)
+        xb = rs.randint(-50, 51, size=(nb, d)).astype("float32")
+        xq = rs.randint(-50, 51, size=(nq, d)).astype("float32")
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.hnsw.efConstruction = 128
+        index.hnsw.efSearch = 256
+        index.add(xb[:first_batch])
+        faiss.downcast_index(index.storage).sync_l2norms()
+        index.add(xb[first_batch:])
+        D, I = index.search(xq, k)
+
+        self.assertGreaterEqual(D.min(), 0.0)
+        for row in range(nq):
+            for j in range(k):
+                true_d = ((xb[I[row, j]] - xq[row]) ** 2).sum()
+                np.testing.assert_almost_equal(D[row, j], true_d, decimal=4)
+
 
 @for_all_simd_levels
 class TestIndexFlatL2Panorama(unittest.TestCase):
