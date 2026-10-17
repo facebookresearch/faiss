@@ -80,7 +80,9 @@ def main():
         'cat /proc/cpuinfo | grep ^"model name" | tail -1'
     )
 
-    cache_dir = args.base_dir + "/" + args.db + "/"
+    cache_dir = os.path.realpath(os.path.join(args.base_dir, os.path.basename(args.db))) + "/"
+    if not cache_dir.startswith(os.path.realpath(args.base_dir) + "/"):
+        raise ValueError(f"Invalid db path: {args.db!r}")
     k = args.k
     nrun = args.nrun
 
