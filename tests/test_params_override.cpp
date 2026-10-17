@@ -412,6 +412,10 @@ TEST(TSELCtx, RaBitQMultibit) {
     EXPECT_EQ(test_selector_with_context_rabitq_multibit(), 0);
 }
 
+TEST(TSELCtx, RaBitQSingleBit) {
+    EXPECT_EQ(test_selector_with_context("IVF32,RaBitQ"), 0);
+}
+
 TEST(TSELCtx, Panorama) {
     EXPECT_EQ(test_selector_with_context("IVF32,FlatPanorama"), 0);
 }
