@@ -747,11 +747,16 @@ static void knn_db_parallel_impl(
         }
     }
 
+    int actual_nt = 1;
 #pragma omp parallel num_threads(nt)
     {
         int tid = omp_get_thread_num();
-        size_t j_begin = static_cast<size_t>(tid) * ny / nt;
-        size_t j_end = static_cast<size_t>(tid + 1) * ny / nt;
+        const int team_size = omp_get_num_threads();
+        if (tid == 0) {
+            actual_nt = team_size;
+        }
+        size_t j_begin = static_cast<size_t>(tid) * ny / team_size;
+        size_t j_end = static_cast<size_t>(tid + 1) * ny / team_size;
         size_t local_ny = j_end - j_begin;
 
         // Compute y_norms for this thread's segment (cache locality)
@@ -837,7 +842,7 @@ static void knn_db_parallel_impl(
     for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
         heap_heapify<C>(k, vals + i * k, ids + i * k);
 
-        for (int t = 0; t < nt; t++) {
+        for (int t = 0; t < actual_nt; t++) {
             T* t_dis = all_dis.data() + (t * nx + i) * k;
             TI* t_ids = all_ids.data() + (t * nx + i) * k;
             T* out_dis = vals + i * k;
