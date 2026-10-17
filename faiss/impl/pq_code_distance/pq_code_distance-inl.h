@@ -80,18 +80,37 @@ struct PQCodeDistanceScalar {
             // precomputed distances, layout (M, ksub)
             const float* sim_table,
             const uint8_t* code) {
-        PQDecoderT decoder(code, nbits);
+        PQDecoderT decoder(code, static_cast<int>(nbits));
         const size_t ksub = 1 << nbits;
-
         const float* tab = sim_table;
-        float result = 0;
+        return accumulate(decoder, ksub, M, tab);
+    }
 
-        for (size_t m = 0; m < M; m++) {
-            result += tab[decoder.decode()];
+    /// Sum of the M table entries a code selects. Four independent partial
+    /// sums: one running sum serializes on add latency, which made the
+    /// scalar path up to 2x slower than it needs to be.
+    static float accumulate(
+            PQDecoderT& decoder,
+            size_t ksub,
+            size_t M,
+            const float* tab) {
+        float a0 = 0, a1 = 0, a2 = 0, a3 = 0;
+        size_t m = 0;
+        for (; m + 4 <= M; m += 4) {
+            a0 += tab[decoder.decode()];
+            tab += ksub;
+            a1 += tab[decoder.decode()];
+            tab += ksub;
+            a2 += tab[decoder.decode()];
+            tab += ksub;
+            a3 += tab[decoder.decode()];
             tab += ksub;
         }
-
-        return result;
+        for (; m < M; m++) {
+            a0 += tab[decoder.decode()];
+            tab += ksub;
+        }
+        return (a0 + a1) + (a2 + a3);
     }
 
     static void distance_four_codes(
@@ -106,24 +125,33 @@ struct PQCodeDistanceScalar {
             float& result1,
             float& result2,
             float& result3) {
-        PQDecoderT decoder0(code0, nbits);
-        PQDecoderT decoder1(code1, nbits);
-        PQDecoderT decoder2(code2, nbits);
-        PQDecoderT decoder3(code3, nbits);
+        // The four codes are interleaved for ILP, but each keeps the same
+        // summation order as distance_single_code (partial sum m % 4, tail
+        // into the first), so single and batched scans are bit-identical.
         const size_t ksub = 1 << nbits;
-
+        PQDecoderT decoder[4] = {
+                PQDecoderT(code0, static_cast<int>(nbits)),
+                PQDecoderT(code1, static_cast<int>(nbits)),
+                PQDecoderT(code2, static_cast<int>(nbits)),
+                PQDecoderT(code3, static_cast<int>(nbits))};
+        float acc[4][4] = {};
         const float* tab = sim_table;
-        result0 = 0;
-        result1 = 0;
-        result2 = 0;
-        result3 = 0;
-
-        for (size_t m = 0; m < M; m++) {
-            result0 += tab[decoder0.decode()];
-            result1 += tab[decoder1.decode()];
-            result2 += tab[decoder2.decode()];
-            result3 += tab[decoder3.decode()];
-            tab += ksub;
+        size_t m = 0;
+        for (; m + 4 <= M; m += 4) {
+            for (int j = 0; j < 4; j++, tab += ksub) {
+                for (int c = 0; c < 4; c++) {
+                    acc[c][j] += tab[decoder[c].decode()];
+                }
+            }
+        }
+        for (; m < M; m++, tab += ksub) {
+            for (int c = 0; c < 4; c++) {
+                acc[c][0] += tab[decoder[c].decode()];
+            }
+        }
+        float* out[4] = {&result0, &result1, &result2, &result3};
+        for (int c = 0; c < 4; c++) {
+            *out[c] = (acc[c][0] + acc[c][1]) + (acc[c][2] + acc[c][3]);
         }
     }
 };
