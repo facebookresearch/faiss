@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,8 +37,11 @@ namespace faiss {
 
 constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 
-constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
+constexpr int AVAILABLE_SIMD_LEVELS_NEON =
+        AVAILABLE_SIMD_LEVELS_NONE | (1 << int(SIMDLevel::ARM_NEON));
+
+constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON =
+        AVAILABLE_SIMD_LEVELS_NEON | (1 << int(SIMDLevel::AVX2));
 
 // BASE: AVX2_NEON + AVX512 + RISCV_RVV
 constexpr int AVAILABLE_SIMD_LEVELS_BASE = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
