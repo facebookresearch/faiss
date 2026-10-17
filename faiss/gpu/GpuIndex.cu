@@ -8,6 +8,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexRowwiseInt8.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuResources.h>
@@ -853,6 +854,7 @@ bool isGpuIndexImplemented(faiss::Index* index) {
     } while (false)
 
     CHECK_INDEX(faiss::IndexFlat);
+    CHECK_INDEX(faiss::IndexRowwiseInt8);
     // FIXME: do we want recursive checking of the IVF quantizer?
     CHECK_INDEX(faiss::IndexIVFFlat);
     CHECK_INDEX(faiss::IndexIVFPQ);
