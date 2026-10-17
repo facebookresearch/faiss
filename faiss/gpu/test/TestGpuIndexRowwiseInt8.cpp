@@ -37,8 +37,9 @@ void compare_with_cpu(
         faiss::MetricType metric,
         int tileQ,
         int tileB,
-        float roundingBias = 0) {
-    size_t d = 128, nb = 5000, nq = 300; // nb % 64 != 0: padding rows
+        float roundingBias = 0,
+        size_t d = 128) {
+    size_t nb = 5000, nq = 300; // nb % 64 != 0: padding rows
     int k = 10;
     auto xb = make_data(nb, d, 11);
     auto xq = make_data(nq, d, 12);
@@ -106,6 +107,16 @@ TEST(TestGpuIndexRowwiseInt8, RoundingBias) {
     compare_with_cpu(faiss::METRIC_L2, 4096, 32768, 1.0f);
     compare_with_cpu(faiss::METRIC_L2, 64, 1024, 1.0f); // tiled
     compare_with_cpu(faiss::METRIC_INNER_PRODUCT, 4096, 32768, 1.0f);
+}
+
+TEST(TestGpuIndexRowwiseInt8, AnyDimension) {
+    // codes are padded to a multiple of 16 for the int8 GEMM, which rejects
+    // e.g. d = 8, 100 or 120 otherwise; d need not be a multiple of 4
+    for (size_t d : {8, 50, 100, 120}) {
+        compare_with_cpu(faiss::METRIC_L2, 4096, 32768, 0, d);
+        compare_with_cpu(faiss::METRIC_INNER_PRODUCT, 64, 1024, 0, d);
+        compare_with_cpu(faiss::METRIC_L2, 64, 1024, 1.0f, d);
+    }
 }
 
 TEST(TestGpuIndexRowwiseInt8, EmptyAndSmall) {

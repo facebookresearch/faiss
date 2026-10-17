@@ -29,6 +29,10 @@ namespace gpu {
 /// bank rows are padded to a multiple of this (int8 GEMM alignment); padding
 /// rows have code 0, scale 0 and norm +inf, and are never returned
 constexpr idx_t kRowPad = 64;
+/// codes are stored and multiplied in rows of ld = d rounded up to a multiple
+/// of this, zero beyond d (zeros do not change the dot products): the cuBLAS
+/// int8 GEMM rejects some dimensions otherwise (e.g. d = 8, 100 or 120)
+constexpr idx_t kDimPad = 16;
 constexpr int kThreads = 256;
 
 struct RowwiseInt8Data {
@@ -43,10 +47,11 @@ struct RowwiseInt8Data {
               norms(res,
                     AllocInfo(AllocType::FlatData, device, space, stream)) {}
 
-    DeviceVector<int8_t> codes; // (rows, d), rows = num rounded up to kRowPad
+    DeviceVector<int8_t> codes; // (rows, ld), rows = num rounded up to kRowPad
     DeviceVector<float> scales; // (rows)
     DeviceVector<float> norms;  // (rows): s^2 |c|^2, +inf on padding rows
     idx_t num = 0;              // real vectors
+    idx_t ld = 0;               // row length of codes: d rounded up to kDimPad
 };
 
 namespace {
@@ -89,10 +94,12 @@ struct SumOp {
 };
 
 // one block per row: s = max|x| / 127, c = round(x / s) in [-127, 127],
-// norm = s^2 |c|^2 (same arithmetic as rowwise_int8_encode on the CPU)
+// norm = s^2 |c|^2 (same arithmetic as rowwise_int8_encode on the CPU);
+// rows of codes have ld >= d entries, zero beyond d
 __global__ void rowwiseEncode(
         const float* x,
         int d,
+        int ld,
         int8_t* codes,
         float* scales,
         float* norms) {
@@ -116,8 +123,11 @@ __global__ void rowwiseEncode(
         float v = rintf(__fdiv_rn(xi[j], s)); // round half to even
         v = fminf(127.0f, fmaxf(-127.0f, v));
         int c = int(v);
-        codes[i * d + j] = int8_t(c);
+        codes[i * ld + j] = int8_t(c);
         acc += c * c;
+    }
+    for (int j = d + threadIdx.x; j < ld; j += blockDim.x) {
+        codes[i * ld + j] = 0;
     }
     acc = blockReduce(acc, SumOp(), ssumBuf);
     if (threadIdx.x == 0) {
@@ -128,17 +138,18 @@ __global__ void rowwiseEncode(
     }
 }
 
-// one block per row: norm = s^2 |c|^2
+// one block per row (rows of ld entries): norm = s^2 |c|^2
 __global__ void rowwiseNorms(
         const int8_t* codes,
         const float* scales,
         int d,
+        int ld,
         float* norms) {
     __shared__ int ssumBuf[32];
     idx_t i = blockIdx.x;
     int acc = 0;
     for (int j = threadIdx.x; j < d; j += blockDim.x) {
-        int c = codes[i * d + j];
+        int c = codes[i * ld + j];
         acc += c * c;
     }
     acc = blockReduce(acc, SumOp(), ssumBuf);
@@ -238,6 +249,22 @@ inline unsigned int blocksFor(idx_t n) {
     return (unsigned int)utils::divUp(n, (idx_t)kThreads);
 }
 
+// n rows of d int8 values (row length srcLd) -> rows of dstLd, zero beyond d
+void copyRows(
+        int8_t* dst,
+        idx_t dstLd,
+        const int8_t* src,
+        idx_t srcLd,
+        idx_t n,
+        idx_t d,
+        cudaStream_t stream) {
+    if (dstLd > d) {
+        CUDA_VERIFY(cudaMemsetAsync(dst, 0, n * dstLd, stream));
+    }
+    CUDA_VERIFY(cudaMemcpy2DAsync(
+            dst, dstLd, src, srcLd, d, n, cudaMemcpyDefault, stream));
+}
+
 } // namespace
 
 GpuIndexRowwiseInt8::GpuIndexRowwiseInt8(
@@ -250,8 +277,6 @@ GpuIndexRowwiseInt8::GpuIndexRowwiseInt8(
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "GpuIndexRowwiseInt8: only L2 and inner product");
-    FAISS_THROW_IF_NOT_MSG(
-            dims % 4 == 0, "GpuIndexRowwiseInt8: dims must be a multiple of 4");
     FAISS_THROW_IF_NOT(config.tileQueries > 0 && config.tileQueries <= 65535);
     FAISS_THROW_IF_NOT(config.tileBank >= kRowPad);
     DeviceScope scope(config_.device);
@@ -261,6 +286,7 @@ GpuIndexRowwiseInt8::GpuIndexRowwiseInt8(
             config_.device,
             config_.memorySpace,
             resources_->getDefaultStream(config_.device)));
+    data_->ld = utils::roundUp(idx_t(dims), kDimPad);
 }
 
 GpuIndexRowwiseInt8::GpuIndexRowwiseInt8(
@@ -324,12 +350,13 @@ void GpuIndexRowwiseInt8::addImpl_(idx_t n, const float* x, const idx_t* ids) {
         return;
     }
     auto stream = resources_->getDefaultStreamCurrentDevice();
+    const idx_t ld = data_->ld;
     DeviceTensor<int8_t, 2, true> c(
-            resources_.get(), makeTempAlloc(AllocType::Other, stream), {n, d});
+            resources_.get(), makeTempAlloc(AllocType::Other, stream), {n, ld});
     DeviceTensor<float, 1, true> s(
             resources_.get(), makeTempAlloc(AllocType::Other, stream), {n});
     rowwiseEncode<<<(unsigned int)n, kThreads, 0, stream>>>(
-            x, d, c.data(), s.data(), nullptr);
+            x, d, int(ld), c.data(), s.data(), nullptr);
     CUDA_TEST_ERROR();
     addCodes_(n, c.data(), s.data());
 }
@@ -355,44 +382,55 @@ void GpuIndexRowwiseInt8::add_int8(
             const_cast<float*>(scales),
             stream,
             {n});
-    addCodes_(n, c.data(), s.data());
+    const idx_t ld = data_->ld;
+    if (ld == d) {
+        addCodes_(n, c.data(), s.data());
+        return;
+    }
+    DeviceTensor<int8_t, 2, true> cp(
+            resources_.get(), makeTempAlloc(AllocType::Other, stream), {n, ld});
+    copyRows(cp.data(), ld, c.data(), d, n, d, stream);
+    addCodes_(n, cp.data(), s.data());
 }
 
 void GpuIndexRowwiseInt8::addCodes_(
         idx_t n,
         const int8_t* codesDev,
         const float* scalesDev) {
+    // codesDev: n rows of ld = data_->ld entries
     auto stream = resources_->getDefaultStreamCurrentDevice();
     auto& D = *data_;
+    const idx_t ld = D.ld;
     idx_t num = D.num;
     idx_t newNum = num + n;
     idx_t rows = utils::roundUp(newNum, kRowPad);
 
     // drop the old padding, reserve the exact new size, append
-    D.codes.resize(num * d, stream);
+    D.codes.resize(num * ld, stream);
     D.scales.resize(num, stream);
     D.norms.resize(num, stream);
-    D.codes.reserve(rows * d, stream);
+    D.codes.reserve(rows * ld, stream);
     D.scales.reserve(rows, stream);
     D.norms.reserve(rows, stream);
-    D.codes.append(codesDev, n * d, stream, true);
+    D.codes.append(codesDev, n * ld, stream, true);
     D.scales.append(scalesDev, n, stream, true);
     D.norms.resize(newNum, stream);
     rowwiseNorms<<<(unsigned int)n, kThreads, 0, stream>>>(
-            D.codes.data() + num * d,
+            D.codes.data() + num * ld,
             D.scales.data() + num,
             d,
+            int(ld),
             D.norms.data() + num);
     CUDA_TEST_ERROR();
 
     // padding rows
     idx_t pad = rows - newNum;
-    D.codes.resize(rows * d, stream);
+    D.codes.resize(rows * ld, stream);
     D.scales.resize(rows, stream);
     D.norms.resize(rows, stream);
     if (pad > 0) {
         CUDA_VERIFY(cudaMemsetAsync(
-                D.codes.data() + newNum * d, 0, pad * d, stream));
+                D.codes.data() + newNum * ld, 0, pad * ld, stream));
         CUDA_VERIFY(cudaMemsetAsync(
                 D.scales.data() + newNum, 0, pad * sizeof(float), stream));
         fillFloat<<<blocksFor(pad), kThreads, 0, stream>>>(
@@ -490,14 +528,15 @@ void GpuIndexRowwiseInt8::searchTiles_(
         return;
     }
 
-    const idx_t rows = D.codes.size() / d;
+    const idx_t ld = D.ld;
+    const idx_t rows = D.codes.size() / ld;
     const idx_t tileQ = std::min(idx_t(rwConfig_.tileQueries), n);
     const idx_t tileB =
             std::min((idx_t(rwConfig_.tileBank) / kRowPad) * kRowPad, rows);
     const idx_t numBankTiles = utils::divUp(rows, tileB);
 
     DeviceTensor<int8_t, 2, true> qCodes(
-            res, makeTempAlloc(AllocType::Other, stream), {tileQ, idx_t(d)});
+            res, makeTempAlloc(AllocType::Other, stream), {tileQ, ld});
     DeviceTensor<float, 1, true> qScales(
             res, makeTempAlloc(AllocType::Other, stream), {tileQ});
     DeviceTensor<float, 1, true> qNorms(
@@ -524,16 +563,23 @@ void GpuIndexRowwiseInt8::searchTiles_(
             rowwiseEncode<<<(unsigned int)curQ, kThreads, 0, stream>>>(
                     x + q0 * d,
                     d,
+                    int(ld),
                     qCodes.data(),
                     qScales.data(),
                     qNorms.data());
             tq = qCodes.data();
             ts = qScales.data();
         } else {
-            tq = qc + q0 * d;
+            // int8 queries come in rows of d: re-pack to rows of ld if needed
+            if (ld == d) {
+                tq = qc + q0 * d;
+            } else {
+                copyRows(qCodes.data(), ld, qc + q0 * d, d, curQ, d, stream);
+                tq = qCodes.data();
+            }
             ts = qs + q0;
             rowwiseNorms<<<(unsigned int)curQ, kThreads, 0, stream>>>(
-                    tq, ts, d, qNorms.data());
+                    tq, ts, d, int(ld), qNorms.data());
         }
         if (bias != 0) {
             subtractBias<<<blocksFor(curQ), kThreads, 0, stream>>>(
@@ -551,22 +597,23 @@ void GpuIndexRowwiseInt8::searchTiles_(
             idx_t curB = std::min(tileB, rows - b0); // multiple of kRowPad
 
             // C (column-major curB x curQ, ldc = curB) = A^T B with
-            // A = bank codes (column-major d x curB), B = query codes
-            // (column-major d x curQ): row-major (curQ, curB) dot products
+            // A = bank codes (column-major ld x curB), B = query codes
+            // (column-major ld x curQ): row-major (curQ, curB) dot products;
+            // the zeros beyond d add nothing
             cublasStatus_t st = cublasGemmEx(
                     handle,
                     CUBLAS_OP_T,
                     CUBLAS_OP_N,
                     int(curB),
                     int(curQ),
-                    d,
+                    int(ld),
                     &alpha,
-                    D.codes.data() + b0 * d,
+                    D.codes.data() + b0 * ld,
                     CUDA_R_8I,
-                    d,
+                    int(ld),
                     tq,
                     CUDA_R_8I,
-                    d,
+                    int(ld),
                     &beta,
                     dots.data(),
                     CUDA_R_32I,
@@ -628,10 +675,14 @@ void GpuIndexRowwiseInt8::get_int8(
         return;
     }
     auto stream = resources_->getDefaultStream(config_.device);
-    CUDA_VERIFY(cudaMemcpyAsync(
+    const idx_t ld = data_->ld;
+    CUDA_VERIFY(cudaMemcpy2DAsync(
             codes,
-            data_->codes.data() + i0 * d,
-            n * d,
+            d,
+            data_->codes.data() + i0 * ld,
+            ld,
+            d,
+            n,
             cudaMemcpyDefault,
             stream));
     CUDA_VERIFY(cudaMemcpyAsync(

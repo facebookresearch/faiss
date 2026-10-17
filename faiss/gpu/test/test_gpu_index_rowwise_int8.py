@@ -114,6 +114,37 @@ class TestGpuIndexRowwiseInt8(unittest.TestCase):
         np.testing.assert_array_equal(Dz, D0)
         np.testing.assert_array_equal(Iz, I0)
 
+    def test_any_dimension(self):
+        # codes are padded to a multiple of 16 for the int8 GEMM (which
+        # rejects e.g. d = 8, 100 or 120 otherwise); any d works
+        rs = np.random.RandomState(5)
+        for d in [8, 50, 100, 120]:
+            xb = rs.randn(2000, d).astype("float32")
+            xq = rs.randn(100, d).astype("float32")
+            cpu = faiss.IndexRowwiseInt8(d)
+            cpu.add(xb)
+            Dc, Ic = cpu.search(xq, 5)
+            gpu = faiss.index_cpu_to_gpu(self.res, 0, cpu)
+            Dg, Ig = gpu.search(xq, 5)
+            self.compare(Dg, Ig, Dc, Ic)
+            # direct add, codes read back, int8 queries, copy back to CPU
+            g2 = faiss.GpuIndexRowwiseInt8(self.res, d)
+            g2.add(xb)
+            c1, s1 = get_int8(cpu)
+            c2, s2 = get_int8(g2)
+            np.testing.assert_array_equal(c1, c2)
+            np.testing.assert_array_equal(s1, s2)
+            cq = faiss.IndexRowwiseInt8(d)
+            cq.add(xq)
+            qc, qs = get_int8(cq)
+            D8, I8 = search_int8(gpu, qc, qs, 5)
+            np.testing.assert_array_equal(D8, Dg)
+            np.testing.assert_array_equal(I8, Ig)
+            back = faiss.index_gpu_to_cpu(gpu)
+            np.testing.assert_array_equal(
+                faiss.vector_to_array(back.codes),
+                faiss.vector_to_array(cpu.codes))
+
     def test_tiling(self):
         cpu = faiss.IndexRowwiseInt8(self.d)
         cpu.add(self.xb)
