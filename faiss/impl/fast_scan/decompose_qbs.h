@@ -31,7 +31,7 @@ using namespace simd_result_handlers;
 
 /*
  * Unified kernel: selects 256-bit vs 512-bit path based on
- * compile-time __AVX512F__ guard.
+ * compile-time COMPILE_SIMD_AVX512 && __AVX512F__ guard.
  *
  * KernelSL selects the SIMD type width used for the inner accumulation
  * loop.  In DD mode the caller passes the dispatch level so the kernel
@@ -48,7 +48,7 @@ void kernel_accumulate_block(
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
-#ifdef __AVX512F__
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
     if constexpr (
             KernelSL == SIMDLevel::AVX512 ||
             KernelSL == SIMDLevel::AVX512_VPOPCNT ||
