@@ -294,6 +294,36 @@ class TestInspect(unittest.TestCase):
 
 class TestRangeEval(unittest.TestCase):
 
+    def test_counts_to_PR_preserves_inputs(self):
+        counts = np.array(
+            [[0, 0, 0], [0, 2, 0], [4, 0, 0], [4, 2, 1], [2, 2, 2]],
+            dtype="int64",
+        )
+        original = counts.copy()
+        ngt, nres, ninter = counts.T
+
+        for _ in range(2):
+            for mode, expected in (
+                ("average", (0.7, 0.45)),
+                ("overall", (0.5, 0.3)),
+            ):
+                with self.subTest(mode=mode):
+                    result = evaluation.counts_to_PR(
+                        ngt, nres, ninter, mode=mode
+                    )
+                    np.testing.assert_allclose(result, expected)
+                    np.testing.assert_array_equal(counts, original)
+
+    def test_counts_to_PR_readonly_inputs(self):
+        ngt = np.array([0, 2], dtype="int64")
+        nres = np.array([0, 1], dtype="int64")
+        ninter = np.array([0, 1], dtype="int64")
+        for counts in ngt, nres, ninter:
+            counts.flags.writeable = False
+
+        result = evaluation.counts_to_PR(ngt, nres, ninter, mode="average")
+        np.testing.assert_allclose(result, (1.0, 0.75))
+
     def test_precision_recall(self):
         Iref = [[1, 2, 3], [5, 6], [], []]
         Inew = [[1, 2], [6, 7], [1], []]
