@@ -718,6 +718,93 @@ class TestIndexFlatPanorama(unittest.TestCase):
                 np.testing.assert_array_equal(I_before, I_after)
                 np.testing.assert_array_equal(D_before, D_after)
 
+    def test_query_blocking_bit_identical(self):
+        """Query blocking is a pure loop-order transform: searching with
+        panorama_query_block_size disabled (0) vs enabled must produce
+        bit-identical distances and labels across a broad config sweep.
+
+        The sweep is metrics(2) x pca(2) x n_levels(3) x batch_size(3) x
+        block_size(4) x nq(3) = 432 configs; nq is chosen so the final query
+        block is partial (nq % block_size != 0), and an IDSelector is exercised
+        on alternating non-PCA configs.
+        """
+        d, nb, nt = 64, 2000, 3000
+        k = 10
+        Ls = [4, 8, 16]
+        bss = [32, 128, 512]
+        qbss = [2, 8, 16, 100]
+        nqs = [1, 7, 50]
+
+        _, xb, xq_all = self.generate_data(d, nt, nb, max(nqs), seed=1234)
+
+        saved = faiss.cvar.panorama_query_block_size
+        n_configs = 0
+        try:
+            it = 0
+            for metric in self.METRICS:
+                for use_pca in [False, True]:
+                    for nlevels in Ls:
+                        for bs in bss:
+                            for qbs in qbss:
+                                for nq in nqs:
+                                    it += 1
+                                    xq = np.ascontiguousarray(xq_all[:nq])
+
+                                    base = faiss.IndexFlatPanorama(
+                                        d, metric, nlevels, bs
+                                    )
+                                    if use_pca:
+                                        pca = faiss.PCAMatrix(d, d)
+                                        index = faiss.IndexPreTransform(
+                                            pca, base
+                                        )
+                                        index.own_fields = False
+                                        index.train(xb)
+                                    else:
+                                        index = base
+                                    index.add(xb)
+
+                                    # Exercise an IDSelector on alternating
+                                    # non-PCA configs (mirrors the C++ sweep).
+                                    params = None
+                                    if not use_pca and it % 2 == 0:
+                                        keep = np.arange(
+                                            0, nb, 2, dtype=np.int64
+                                        )
+                                        params = faiss.SearchParameters()
+                                        params.sel = faiss.IDSelectorBatch(keep)
+
+                                    with self.subTest(
+                                        metric=metric,
+                                        pca=use_pca,
+                                        nlevels=nlevels,
+                                        batch_size=bs,
+                                        block_size=qbs,
+                                        nq=nq,
+                                    ):
+                                        faiss.cvar.panorama_query_block_size = 0
+                                        D0, I0 = index.search(
+                                            xq, k, params=params
+                                        )
+                                        faiss.cvar.panorama_query_block_size = (
+                                            qbs
+                                        )
+                                        D1, I1 = index.search(
+                                            xq, k, params=params
+                                        )
+
+                                        np.testing.assert_array_equal(
+                                            D0, D1, err_msg="distances differ"
+                                        )
+                                        np.testing.assert_array_equal(
+                                            I0, I1, err_msg="labels differ"
+                                        )
+                                    n_configs += 1
+        finally:
+            faiss.cvar.panorama_query_block_size = saved
+
+        self.assertEqual(n_configs, 432)
+
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
         d, nb, nq, k = 128, 500000, 10, 1
