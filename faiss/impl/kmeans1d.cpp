@@ -150,7 +150,8 @@ class CostCalculator {
         cumsum.push_back(0.0);
         cumsum2.push_back(0.0);
         for (idx_t i = 0; i < n; ++i) {
-            float x = vec[i];
+            // Promote before squaring, not after the product has been rounded.
+            double x = vec[i];
             cumsum.push_back(x + cumsum[i]);
             cumsum2.push_back(x * x + cumsum2[i]);
         }
@@ -282,8 +283,9 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
     idx_t end = n;
     for (idx_t k = nclusters - 1; k >= 0; k--) {
         const idx_t start = T.at(k, end - 1);
-        const float sum =
-                std::accumulate(arr.data() + start, arr.data() + end, 0.0f);
+        // Round the mean only once when storing the float centroid.
+        const double sum =
+                std::accumulate(arr.data() + start, arr.data() + end, 0.0);
         const idx_t size = end - start;
         FAISS_THROW_IF_NOT_FMT(
                 size > 0, "Cluster %d: size %d", int(k), int(size));

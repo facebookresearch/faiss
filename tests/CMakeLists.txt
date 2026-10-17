@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 set(FAISS_TEST_SRC
+  test_clustering.cpp
   test_binary_flat.cpp
   test_dealloc_invlists.cpp
   test_ivfpq_codec.cpp
