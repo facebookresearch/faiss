@@ -14,6 +14,7 @@ set(FAISS_METAL_SRC
   MetalKernels.mm
   MetalDistance.mm
   MetalIVFSQScan.mm
+  MetalIndexIVFScalarQuantizer.mm
   MetalFlatKernels.mm
   MetalIndexFlat.mm
   MetalIndexBinaryFlat.mm
@@ -27,7 +28,7 @@ set(FAISS_METAL_SRC
 )
 
 # BinaryFlat owns its persistent and temporary Metal buffers through ARC.
-set_source_files_properties(MetalIndexBinaryFlat.mm MetalIVFSQScan.mm PROPERTIES
+set_source_files_properties(MetalIndexBinaryFlat.mm MetalIVFSQScan.mm MetalIndexIVFScalarQuantizer.mm PROPERTIES
   COMPILE_OPTIONS "-fobjc-arc"
 )
 
@@ -102,6 +103,8 @@ set(FAISS_METAL_HEADERS
   MetalIndex.h
   MetalIndexFlat.h
   MetalIndexBinaryFlat.h
+  MetalIndexIVFScalarQuantizer.h
+  MetalIVFSQScan.h
   MetalIndexIVFFlat.h
   MetalKernels.h
   MetalPythonBridge.h
