@@ -373,5 +373,88 @@ class TestMetalAllGpusHelpers(unittest.TestCase):
         )
 
 
+class TestMetalIVFSQ(unittest.TestCase):
+
+    def setUp(self):
+        if faiss.get_num_gpus() == 0:
+            self.skipTest("No Metal device")
+
+    def test_clone_lifetimes_and_mutation(self):
+        import gc
+        rng = np.random.default_rng(234)
+        xb = rng.normal(size=(1025, 17)).astype('float32')
+        xq = rng.normal(size=(3, 17)).astype('float32')
+        for qt in (faiss.ScalarQuantizer.QT_8bit,
+                   faiss.ScalarQuantizer.QT_fp16):
+            for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+                for residual in (False, True):
+                    quantizer = faiss.IndexFlat(17, metric)
+                    cpu = faiss.IndexIVFScalarQuantizer(
+                        quantizer, 17, 4, qt, metric, residual)
+                    cpu.train(xb)
+                    cpu.add(xb)
+                    cpu.nprobe = 4
+                    expected_d, expected_i = cpu.search(xq, 13)
+                    res = faiss.StandardGpuResources()
+                    gpu = faiss.index_cpu_to_gpu(res, 0, cpu)
+                    self.assertIsInstance(gpu, faiss.Index)
+                    self.assertTrue(gpu.thisown)
+                    del cpu, quantizer, res
+                    gc.collect()
+                    before = faiss.get_metal_ivfsq_search_count(gpu)
+                    actual_d, actual_i = gpu.search(xq, 13)
+                    self.assertEqual(faiss.get_metal_ivfsq_search_count(gpu), before + 1)
+                    np.testing.assert_array_equal(actual_i, expected_i)
+                    np.testing.assert_allclose(actual_d, expected_d,
+                                               rtol=1e-4, atol=1e-4)
+                    back = faiss.index_gpu_to_cpu(gpu)
+                    self.assertTrue(back.thisown)
+                    # The existing Metal bridge returns an owning Index. Its
+                    # explicit downcast is a borrowed view; keep back alive.
+                    typed_back = faiss.downcast_index(back)
+                    self.assertIsInstance(typed_back, faiss.IndexIVFScalarQuantizer)
+                    self.assertFalse(typed_back.thisown)
+                    self.assertEqual(typed_back.nprobe, 4)
+                    self.assertEqual(typed_back.by_residual, residual)
+                    del typed_back
+                    del gpu
+                    gc.collect()
+                    bd, bi = back.search(xq, 13)
+                    np.testing.assert_array_equal(bi, expected_i)
+                    np.testing.assert_array_equal(bd, expected_d)
+                    # Repeat clone/GC, reset and append with 64-bit labels.
+                    for _ in range(2):
+                        res = faiss.StandardGpuResources()
+                        gpu = faiss.index_cpu_to_gpu(res, 0, back)
+                        del res
+                        gc.collect()
+                        gpu.reset()
+                        ids = np.arange(32, dtype='int64') + (1 << 42)
+                        gpu.add_with_ids(xb[:32], ids)
+                        _, result = gpu.search(xb[:1], 1)
+                        self.assertGreaterEqual(result[0, 0], 1 << 42)
+                        back = faiss.index_gpu_to_cpu(gpu)
+                        del gpu
+                        gc.collect()
+
+    def test_fallback_preserves_search_parameters(self):
+        rng = np.random.default_rng(51)
+        xb = rng.normal(size=(256, 7)).astype('float32')
+        cpu = faiss.IndexIVFScalarQuantizer(
+            faiss.IndexFlatL2(7), 7, 2, faiss.ScalarQuantizer.QT_8bit)
+        cpu.train(xb)
+        cpu.add(xb)
+        res = faiss.StandardGpuResources()
+        gpu = faiss.index_cpu_to_gpu(res, 0, cpu)
+        p = faiss.SearchParametersIVF()
+        p.nprobe = 2
+        p.max_codes = 17
+        expected = cpu.search(xb[:3], 5, params=p)
+        actual = gpu.search(xb[:3], 5, params=p)
+        self.assertEqual(faiss.get_metal_ivfsq_search_count(gpu), 0)
+        np.testing.assert_array_equal(actual[0], expected[0])
+        np.testing.assert_array_equal(actual[1], expected[1])
+
+
 if __name__ == "__main__":
     unittest.main()

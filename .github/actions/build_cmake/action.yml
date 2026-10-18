@@ -291,7 +291,7 @@ runs:
         cmake --build build --target \
               faiss faiss_metal swigfaiss \
               TestMetalIndexFlat TestMetalIndexIVFFlat TestMetalIndexIVFPQ \
-              TestMetalIndexBinaryFlat TestMetalBinaryFlatFailures \
+              TestMetalIndexBinaryFlat TestMetalBinaryFlatFailures TestMetalIndexIVFSQ TestMetalIVFSQFailures \
               -j$(sysctl -n hw.logicalcpu)
     - name: C++ tests
       if: inputs.metal != 'ON'

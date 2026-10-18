@@ -91,3 +91,27 @@ foreach(fault function pipeline growth scratch)
         SKIP_RETURN_CODE 77
     )
 endforeach()
+
+add_executable(TestMetalIndexIVFSQ TestMetalIndexIVFSQ.mm)
+target_link_libraries(TestMetalIndexIVFSQ PRIVATE faiss_metal faiss GTest::gtest_main)
+target_include_directories(TestMetalIndexIVFSQ PRIVATE ${PROJECT_SOURCE_DIR})
+set_target_properties(TestMetalIndexIVFSQ PROPERTIES
+    OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED ON)
+target_compile_options(TestMetalIndexIVFSQ PRIVATE -fobjc-arc)
+gtest_discover_tests(TestMetalIndexIVFSQ)
+
+add_executable(TestMetalIVFSQFailures TestMetalIVFSQFailures.mm)
+target_link_libraries(TestMetalIVFSQFailures PRIVATE faiss_metal faiss)
+target_include_directories(TestMetalIVFSQFailures PRIVATE ${PROJECT_SOURCE_DIR})
+set_target_properties(TestMetalIVFSQFailures PROPERTIES
+    OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED ON)
+target_compile_options(TestMetalIVFSQFailures PRIVATE -fobjc-arc)
+target_compile_definitions(TestMetalIVFSQFailures PRIVATE
+    FAISS_TEST_METALLIB_PATH="${PROJECT_BINARY_DIR}/faiss/gpu_metal/MetalDistance.metallib")
+foreach(fault pipeline scratch upload copy growth)
+    add_test(NAME TestMetalIndexIVFSQ.Reject_${fault}
+        COMMAND TestMetalIVFSQFailures ${fault})
+    set_tests_properties(TestMetalIndexIVFSQ.Reject_${fault} PROPERTIES
+        ENVIRONMENT "MTL_DEBUG_LAYER=1;MTL_SHADER_VALIDATION=1"
+        SKIP_RETURN_CODE 77)
+endforeach()
