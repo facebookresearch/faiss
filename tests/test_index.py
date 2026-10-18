@@ -878,6 +878,29 @@ class TestReconsException(unittest.TestCase):
         # Reconstruct >= ntotal (10), assert exception raise
         self.assertRaises(RuntimeError, index.reconstruct, 10)
 
+    def test_reconstruct_negative_key(self):
+        index = faiss.IndexFlatL2(4)
+        index.add(np.ones((10, 4), dtype="float32"))
+        self.assertRaises(RuntimeError, index.reconstruct, -1)
+
+
+class TestInvertedListsOutOfRange(unittest.TestCase):
+
+    def test_array_inverted_lists(self):
+        d, nlist = 4, 4
+        xb = faiss.randn((200, d), 123)
+        index = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, nlist)
+        index.train(xb)
+        index.add(xb)
+        invlists = index.invlists
+
+        invlists.list_size(nlist - 1)
+        for list_no in nlist, nlist + 1000:
+            self.assertRaises(RuntimeError, invlists.list_size, list_no)
+            self.assertRaises(RuntimeError, invlists.get_ids, list_no)
+            self.assertRaises(RuntimeError, invlists.get_codes, list_no)
+            self.assertRaises(RuntimeError, invlists.is_empty, list_no)
+
 
 class TestReconsHash(unittest.TestCase):
 
