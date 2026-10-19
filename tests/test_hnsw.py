@@ -261,3 +261,180 @@ class TestVisitedTableReuse(unittest.TestCase):
         self.assertFalse(t4.get(900))
         self.assertTrue(t4.set(900))
         self.assertTrue(t4.get(900))
+
+
+def plant_sink_at_entry_point(hnsw):
+    """Removes all links of the entry point, so that every search stops
+    there."""
+    neighbors = get_neighbors(hnsw)
+    for level in range(hnsw.max_level + 1):
+        begin, end = get_neighbor_range(hnsw, hnsw.entry_point, level)
+        neighbors[begin:end] = -1
+
+
+def near_nodes(nodes, n, seed):
+    """Vectors near the nodes, cycling through all of them."""
+    noise = np.random.default_rng(seed).standard_normal((n, nodes.shape[1]))
+    x = nodes[np.arange(n) % len(nodes)] + 0.01 * noise
+    return x.astype(np.float32)
+
+
+def recall_at_1(index, xq):
+    """Fraction of the queries for which the index returns the exact nearest
+    node."""
+    _, labels = index.search(xq, 1)
+    _, exact = index.storage.search(xq, 1)
+    return (labels == exact).mean()
+
+
+def near_codes(nodes, n, seed):
+    """Binary codes near the nodes, cycling through all of them: 4 random
+    bits differ."""
+    rng = np.random.default_rng(seed)
+    codes = nodes[np.arange(n) % len(nodes)].copy()
+    bits = rng.integers(0, nodes.shape[1] * 8, size=(n, 4))
+    for f in range(4):
+        np.bitwise_xor.at(
+            codes,
+            (np.arange(n), bits[:, f] // 8),
+            (1 << (bits[:, f] % 8)).astype(np.uint8),
+        )
+    return codes
+
+
+class TestHNSWLevel0LinksFromSample(unittest.TestCase):
+    d = 8
+    nnodes = 4096
+
+    def nodes(self):
+        rng = np.random.default_rng(1)
+        return rng.standard_normal((self.nnodes, self.d)).astype(np.float32)
+
+    def check_planted_sink_removed(self, index, add_links):
+        """Plants a sink in `index`, calls `add_links` with vectors near the
+        nodes, and compares the recall@1 on other vectors with the recall of
+        the intact graph. The intact recall is below 1 when the HNSW search
+        and the storage search use different distance estimates, for example
+        with RaBitQ."""
+        nodes = self.nodes()
+        index.train(nodes)
+        index.add(nodes)
+        queries = near_nodes(nodes, 8192, 3)
+        intact_recall = recall_at_1(index, queries)
+        hnsw = index.hnsw
+        plant_sink_at_entry_point(hnsw)
+        self.assertLess(recall_at_1(index, queries), 0.01)
+
+        stats = add_links(index, near_nodes(nodes, 40000, 2))
+
+        self.assertIsInstance(stats, faiss.HNSWLevel0LinkStats)
+        self.assertEqual(stats.n_sinks_found, 1)
+        self.assertEqual(stats.n_sinks_remaining, 0)
+        self.assertGreater(recall_at_1(index, queries), 0.95 * intact_recall)
+
+    def test_removes_planted_sink_l2(self):
+        self.check_planted_sink_removed(
+            faiss.IndexHNSWFlat(self.d, 32),
+            lambda index, x: index.add_level_0_links_from_sample(x),
+        )
+
+    def test_removes_planted_sink_inner_product(self):
+        self.check_planted_sink_removed(
+            faiss.IndexHNSWFlat(self.d, 32, faiss.METRIC_INNER_PRODUCT),
+            lambda index, x: index.add_level_0_links_from_sample(x),
+        )
+
+    def test_removes_planted_sink_rabitq_storage(self):
+        self.check_planted_sink_removed(
+            faiss.IndexHNSWRaBitQ(self.d, 32),
+            lambda index, x: index.add_level_0_links_from_sample(x),
+        )
+
+    def test_removes_planted_sink_panorama(self):
+        self.check_planted_sink_removed(
+            faiss.IndexHNSWFlatPanorama(self.d, 32, 2),
+            lambda index, x: index.add_level_0_links_from_sample(x),
+        )
+
+    def test_removes_planted_sink_float16_samples(self):
+        self.check_planted_sink_removed(
+            faiss.IndexHNSWFlat(self.d, 32),
+            lambda index, x: index.add_level_0_links_from_sample(
+                x.astype(np.float16), numeric_type=faiss.Float16
+            ),
+        )
+
+    def test_removes_planted_sink_encoded_samples(self):
+        def add_links(index, x):
+            codec = faiss.IndexScalarQuantizer(
+                self.d, faiss.ScalarQuantizer.QT_8bit
+            )
+            codec.train(x)
+            codes = codec.sa_encode(x)
+            return index.add_level_0_links_from_sample_encoded(
+                len(x), faiss.swig_ptr(codes), codec
+            )
+
+        self.check_planted_sink_removed(
+            faiss.IndexHNSWFlat(self.d, 32), add_links
+        )
+
+    def test_removes_planted_sink_binary(self):
+        nbits = 128
+        rng = np.random.default_rng(1)
+        nodes = rng.integers(
+            0, 256, size=(self.nnodes, nbits // 8), dtype=np.uint8
+        )
+        index = faiss.IndexBinaryHNSW(nbits, 32)
+        index.add(nodes)
+        queries = near_codes(nodes, 8192, 3)
+
+        # Hamming distances have ties, so compare distances, not IDs.
+        def recall():
+            distances, _ = index.search(queries, 1)
+            exact, _ = index.storage.search(queries, 1)
+            return (distances == exact).mean()
+
+        intact_recall = recall()
+        hnsw = index.hnsw
+        plant_sink_at_entry_point(hnsw)
+        self.assertLess(recall(), 0.01)
+
+        stats = index.add_level_0_links_from_sample(
+            near_codes(nodes, 40000, 2)
+        )
+
+        self.assertEqual(stats.n_sinks_found, 1)
+        self.assertEqual(stats.n_sinks_remaining, 0)
+        self.assertGreater(recall(), 0.95 * intact_recall)
+
+    def test_does_not_change_intact_graph(self):
+        nodes = self.nodes()
+        index = faiss.IndexHNSWFlat(self.d, 32)
+        index.add(nodes)
+        hnsw = index.hnsw
+        before = get_neighbors(hnsw).copy()
+
+        stats = index.add_level_0_links_from_sample(
+            near_nodes(nodes, 40000, 2)
+        )
+
+        self.assertEqual(stats.n_sinks_found, 0)
+        np.testing.assert_array_equal(get_neighbors(hnsw), before)
+
+    def test_same_links_for_any_thread_count(self):
+        nodes = self.nodes()
+        samples = near_nodes(nodes, 40000, 2)
+        previous = faiss.omp_get_max_threads()
+        self.addCleanup(faiss.omp_set_num_threads, previous)
+
+        def linked(threads):
+            faiss.omp_set_num_threads(threads)
+            index = faiss.IndexHNSWFlat(self.d, 32)
+            index.add(nodes)
+            hnsw = index.hnsw
+            plant_sink_at_entry_point(hnsw)
+            index.add_level_0_links_from_sample(samples)
+            return get_neighbors(hnsw).copy()
+
+        np.testing.assert_array_equal(linked(1), linked(8))
