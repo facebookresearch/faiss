@@ -1415,6 +1415,101 @@ TEST(TestGpuIndexCagra, MultiGpuDatasetBuildAndCpuExport) {
 }
 
 template <typename T>
+void checkStridedDeviceGraphOnly(NumericType type) {
+    constexpr int dim = 19;
+    constexpr int stride = 23;
+    faiss::gpu::DeviceScope scope(0);
+    StandardGpuResources resources;
+    std::vector<T> values(kRows * dim);
+    if constexpr (std::is_same_v<T, float>) {
+        values = floatData(dim);
+    } else {
+        std::mt19937 random(9012);
+        for (auto& x : values) {
+            x = static_cast<T>(static_cast<int>(random() % 201) - 100);
+        }
+    }
+    // Device row gaps must be zero, even when the physical stride is not
+    // compatible with CAGRA search storage.
+    std::vector<T> strided(kRows * stride, static_cast<T>(0));
+    for (idx_t i = 0; i < kRows; ++i) {
+        std::copy_n(values.data() + i * dim, dim, strided.data() + i * stride);
+    }
+    auto gpuResources = resources.getResources();
+    auto stream = gpuResources->getDefaultStream(0);
+    auto deviceStorage =
+            faiss::gpu::toDeviceTemporary(gpuResources.get(), strided, stream);
+    auto source = Dataset::viewDevice(
+            deviceStorage.data(), kRows, dim, type, stride, 0);
+    EXPECT_EQ(source.getLayout(), Dataset::Layout::Standard);
+    EXPECT_FALSE(source.ownsData());
+    EXPECT_FALSE(source.isCagraCompatible());
+    std::optional<Dataset> searchStorage;
+    GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, config());
+    index.train(source);
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_FALSE(index.isSearchReady());
+    float distance;
+    idx_t label;
+    EXPECT_THROW(
+            index.search_ex(1, values.data(), type, 1, &distance, &label),
+            faiss::FaissException);
+
+    faiss::IndexHNSWCagra cpu;
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    EXPECT_EQ(cpu.get_numeric_type(), type);
+    std::vector<float> exported(values.size());
+    cpu.reconstruct_n(0, kRows, exported.data());
+    std::vector<float> expected(values.size());
+    std::transform(values.begin(), values.end(), expected.begin(), [](T x) {
+        return static_cast<float>(x);
+    });
+    EXPECT_EQ(exported, expected);
+    EXPECT_FALSE(index.isSearchReady());
+    EXPECT_THROW(index.updateDataset(source), faiss::FaissException);
+    const auto graph = index.get_knngraph();
+
+    searchStorage.emplace(Dataset::makeDevicePadded(&resources, source, 0));
+    index.updateDataset(*searchStorage);
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    std::vector<float> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search_ex(8, values.data(), type, 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    int selfHits = 0;
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_GE(labels[i], 0);
+        EXPECT_LT(labels[i], kRows);
+        if (labels[i] == i) {
+            ++selfHits;
+            EXPECT_NEAR(distances[i], 0.0f, 1.0f);
+        }
+    }
+    EXPECT_GE(selfHits, 6);
+    std::vector<T> after(strided.size());
+    faiss::gpu::fromDevice(deviceStorage, after.data(), stream);
+    EXPECT_EQ(
+            std::memcmp(
+                    after.data(), strided.data(), strided.size() * sizeof(T)),
+            0);
+}
+
+TEST(TestGpuIndexCagra, StridedDeviceFloat32GraphOnly) {
+    checkStridedDeviceGraphOnly<float>(NumericType::Float32);
+}
+
+TEST(TestGpuIndexCagra, StridedDeviceFloat16GraphOnly) {
+    checkStridedDeviceGraphOnly<half>(NumericType::Float16);
+}
+
+TEST(TestGpuIndexCagra, StridedDeviceInt8GraphOnly) {
+    checkStridedDeviceGraphOnly<int8_t>(NumericType::Int8);
+}
+
+template <typename T>
 void checkTypedExport(NumericType type) {
     constexpr int dim = 19;
     StandardGpuResources resources;

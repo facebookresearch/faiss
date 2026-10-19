@@ -106,8 +106,10 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
     const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
 
     // IVF-PQ is not supported as the graph building algorithm.
-    if (graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT ||
-        graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
+    const bool useNNDescent =
+            graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT ||
+            graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ;
+    if (useNNDescent) {
         cuvs::neighbors::cagra::graph_build_params::nn_descent_params
                 graph_build_params(index_params_.intermediate_graph_degree);
         graph_build_params.max_iterations = nn_descent_niter_;
@@ -143,10 +145,12 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
                 cuvs::neighbors::device_padded_dataset_view<uint8_t, int64_t>(
                         physical, dataset.getDim());
         cuvs_index = buildGraph(view);
-    } else if (dataset.getRowStride() != dataset.getDim()) {
-        // NN-descent consumes physical matrix columns. Pack arbitrary standard
-        // strides for graph construction so padding cannot affect distances.
-        // This temporary does not become persistent indexed-vector storage.
+    } else if (
+            dataset.getRowStride() != dataset.getDim() &&
+            !(dataset.isDevice() && useNNDescent)) {
+        // Host row gaps may be nonzero; pack them for graph construction.
+        // Device NN-descent consumes the original rows with their required
+        // zero-filled gaps, independently of CAGRA search compatibility.
         std::vector<uint8_t> packed(n * dataset.getDim());
         dataset.copyToHost(packed.data());
         auto physical = raft::make_host_matrix_view<const uint8_t, int64_t>(
@@ -156,9 +160,10 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
         raft_handle.sync_stream();
     } else if (dataset.isDevice()) {
         auto physical = raft::make_device_matrix_view<const uint8_t, int64_t>(
-                data, n, dataset.getDim());
+                data, n, dataset.getRowStride());
         cuvs_index = buildGraph(
-                cuvs::neighbors::make_device_standard_dataset_view(physical));
+                cuvs::neighbors::device_standard_dataset_view<uint8_t, int64_t>(
+                        physical, dataset.getDim()));
     } else {
         auto physical = raft::make_host_matrix_view<const uint8_t, int64_t>(
                 data, n, dataset.getDim());

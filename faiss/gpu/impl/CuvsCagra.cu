@@ -187,11 +187,15 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
     const auto* data = static_cast<const data_t*>(dataset.getData());
     auto rowStride = dataset.getRowStride();
     bool deviceInput = dataset.isDevice();
+    const bool nnDescentDeviceInput = deviceInput &&
+            graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT;
     std::vector<data_t> packed;
-    if (!dataset.isCagraCompatible() && rowStride != dim_) {
-        // cuVS standard graph builders consume the physical matrix width.
-        // Pack logical columns in temporary scratch so row gaps cannot alter
-        // distances. Retain the original borrowed dataset after graph build.
+    if (!nnDescentDeviceInput && !dataset.isCagraCompatible() &&
+        rowStride != dim_) {
+        // NN-descent reads device rows directly: the Dataset contract requires
+        // zero row gaps, which do not change distances. Its graph build does
+        // not require CAGRA's search alignment or exact padded row width.
+        // Pack logical columns for host input and other graph builders.
         packed.resize(static_cast<size_t>(n) * dim_);
         dataset.copyToHost(packed.data());
         data = packed.data();

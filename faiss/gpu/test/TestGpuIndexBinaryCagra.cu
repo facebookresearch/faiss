@@ -34,6 +34,7 @@
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
 #include <faiss/utils/distances.h>
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <faiss/gpu/utils/CopyUtils.cuh>
@@ -819,6 +820,72 @@ TEST(TestGpuIndexBinaryCagra, DatasetGraphOnlyAttachmentAndCpuRoundTrip) {
     index.train(storage);
     checkBinarySearch(index, values.data());
     checkBinarySearch(*imported, values.data());
+}
+
+void checkStridedDeviceGraphOnly(faiss::gpu::graph_build_algo buildAlgo) {
+    constexpr int bytes = 19;
+    constexpr int stride = 23;
+    faiss::gpu::DeviceScope scope(0);
+    StandardGpuResources resources;
+    auto values = binaryData(bytes);
+    // Device row gaps must be zero, even when the physical stride is not
+    // compatible with CAGRA search storage.
+    std::vector<uint8_t> strided(kRows * stride, 0);
+    for (idx_t i = 0; i < kRows; ++i) {
+        std::copy_n(
+                values.data() + i * bytes, bytes, strided.data() + i * stride);
+    }
+    auto gpuResources = resources.getResources();
+    auto stream = gpuResources->getDefaultStream(0);
+    auto deviceStorage =
+            faiss::gpu::toDeviceTemporary(gpuResources.get(), strided, stream);
+    auto source = Dataset::viewDevice(
+            deviceStorage.data(), kRows, bytes, NumericType::UInt8, stride, 0);
+    EXPECT_EQ(source.getLayout(), Dataset::Layout::Standard);
+    EXPECT_FALSE(source.ownsData());
+    EXPECT_FALSE(source.isCagraCompatible());
+    std::optional<Dataset> searchStorage;
+    auto options = config();
+    options.build_algo = buildAlgo;
+    GpuIndexBinaryCagra index(&resources, bytes * 8, options);
+    index.train(source);
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_FALSE(index.isSearchReady());
+    int distance;
+    idx_t label;
+    EXPECT_THROW(
+            index.search(1, values.data(), 1, &distance, &label),
+            faiss::FaissException);
+
+    faiss::IndexBinaryHNSWCagra cpu;
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    std::vector<uint8_t> exported(values.size());
+    for (idx_t i = 0; i < kRows; ++i) {
+        cpu.reconstruct(i, exported.data() + i * bytes);
+    }
+    EXPECT_EQ(exported, values);
+    EXPECT_FALSE(index.isSearchReady());
+    EXPECT_THROW(index.updateDataset(source), faiss::FaissException);
+    const auto graph = index.get_knngraph();
+
+    searchStorage.emplace(Dataset::makeDevicePadded(&resources, source, 0));
+    index.updateDataset(*searchStorage);
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    checkBinarySearch(index, values.data());
+    std::vector<uint8_t> after(strided.size());
+    faiss::gpu::fromDevice(deviceStorage, after.data(), stream);
+    EXPECT_EQ(after, strided);
+}
+
+TEST(TestGpuIndexBinaryCagra, StridedDeviceGraphOnly) {
+    checkStridedDeviceGraphOnly(faiss::gpu::graph_build_algo::NN_DESCENT);
+}
+
+TEST(TestGpuIndexBinaryCagra, StridedDeviceIvfPqFallbackGraphOnly) {
+    checkStridedDeviceGraphOnly(faiss::gpu::graph_build_algo::IVF_PQ);
 }
 
 TEST(TestGpuIndexBinaryCagra, DatasetAlignedStandardDeviceSearch) {
