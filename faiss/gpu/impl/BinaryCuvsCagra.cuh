@@ -87,6 +87,8 @@ class BinaryCuvsCagra {
             idx_t rand_xor_mask,
             const IDSelector* sel = nullptr);
 
+    void reset();
+
     idx_t get_knngraph_degree() const;
 
     std::vector<idx_t> get_knngraph() const;

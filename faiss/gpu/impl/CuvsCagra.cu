@@ -84,6 +84,8 @@ CuvsCagra<data_t>::CuvsCagra(
                 std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
     }
     index_params_.metric = metricFaissToCuvs(metric_, false);
+
+    reset();
 }
 
 template <typename data_t>
@@ -358,6 +360,13 @@ void CuvsCagra<data_t>::search(
             indices_view.data_handle(),
             indices_copy.size(),
             n_);
+}
+
+template <typename data_t>
+void CuvsCagra<data_t>::reset() {
+    cuvs_index.reset();
+    dataset_.reset();
+    n_ = 0;
 }
 
 template <typename data_t>

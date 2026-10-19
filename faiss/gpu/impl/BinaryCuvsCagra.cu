@@ -68,6 +68,8 @@ BinaryCuvsCagra::BinaryCuvsCagra(
                 "WARNING: IVF_PQ is not supported for binary CAGRA. "
                 "Defaulting to NN_DESCENT\n");
     }
+
+    reset();
 }
 
 BinaryCuvsCagra::BinaryCuvsCagra(
@@ -308,6 +310,12 @@ void BinaryCuvsCagra::search(
                 int col_idx = i % k_;
                 return static_cast<int>(distances_float_view(row_idx, col_idx));
             });
+}
+
+void BinaryCuvsCagra::reset() {
+    cuvs_index.reset();
+    dataset_.reset();
+    n_ = 0;
 }
 
 idx_t BinaryCuvsCagra::get_knngraph_degree() const {
