@@ -505,7 +505,7 @@ bool Dataset::isCagraCompatible() const {
                     impl.dim, elementSize(impl.numericType));
 }
 
-Dataset Dataset::borrow() const& {
+Dataset Dataset::view() const& {
     const auto& src = getImpl();
     auto impl = std::make_unique<Impl>(
             src.numRows,

@@ -209,14 +209,14 @@ TEST(TestGpuDataset, PreparingAlignedDeviceInputAlwaysMakesIndependentStorage) {
     EXPECT_EQ(actual, expected);
 }
 
-TEST(TestGpuDataset, MovingOwnerPreservesBorrowAndBorrowDoesNotOwnStorage) {
+TEST(TestGpuDataset, MovingOwnerPreservesViewAndViewDoesNotOwnStorage) {
     StandardGpuResources resources;
     resources.noTempMemory();
     std::vector<float> expected(10, 2.0f);
     auto host =
             Dataset::viewHost(expected.data(), 2, 5, NumericType::Float32, 5);
     auto owner = Dataset::makeDevicePadded(&resources, host, 0);
-    auto borrowed = owner.borrow();
+    auto borrowed = owner.view();
     const void* allocation = owner.getData();
     auto movedOwner = std::move(owner);
     EXPECT_TRUE(movedOwner.ownsData());
@@ -228,7 +228,7 @@ TEST(TestGpuDataset, MovingOwnerPreservesBorrowAndBorrowDoesNotOwnStorage) {
     EXPECT_EQ(actual, expected);
     EXPECT_THROW(owner.getData(), faiss::FaissException);
     {
-        auto anotherBorrow = movedOwner.borrow();
+        auto anotherBorrow = movedOwner.view();
         EXPECT_FALSE(anotherBorrow.ownsData());
     }
     movedOwner.copyToHost(actual.data());

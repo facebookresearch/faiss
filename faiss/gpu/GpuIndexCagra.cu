@@ -639,7 +639,7 @@ void GpuIndexCagra::trainAllNeighbors_(const Dataset& input) {
         merged_knngraph_[i] = static_cast<idx_t>(h_cagra[i]);
     }
 
-    multiGpuDataset_.emplace(input.borrow());
+    multiGpuDataset_.emplace(input.view());
     this->is_trained = true;
     this->ntotal = n;
 

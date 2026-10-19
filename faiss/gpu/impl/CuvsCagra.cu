@@ -144,7 +144,7 @@ CuvsCagra<data_t>::CuvsCagra(
     }
     // The host graph is temporary; finish its upload before releasing it.
     raft_handle.sync_stream();
-    dataset_.emplace(dataset.borrow());
+    dataset_.emplace(dataset.view());
     n_ = n;
     searchable_index_ = dataset.isCagraCompatible();
 }
@@ -233,7 +233,7 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
     if (!packed.empty()) {
         raft_handle.sync_stream();
     }
-    dataset_.emplace(dataset.borrow());
+    dataset_.emplace(dataset.view());
     n_ = n;
     searchable_index_ = dataset.isCagraCompatible();
 }
@@ -245,7 +245,7 @@ void CuvsCagra<data_t>::updateDataset(const Dataset& dataset) {
     FAISS_THROW_IF_NOT_MSG(
             dataset.isCagraCompatible(),
             "CAGRA search requires compatible device storage; use Dataset::makeDevicePadded");
-    auto borrowed = dataset.borrow();
+    auto borrowed = dataset.view();
     const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
     auto view = cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>(
             raft::make_device_matrix_view<const data_t, int64_t>(

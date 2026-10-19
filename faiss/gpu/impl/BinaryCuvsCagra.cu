@@ -95,7 +95,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
             raft_handle, cuvs::distance::DistanceType::BitwiseHamming);
     cuvs_index->update_graph(raft_handle, graphView);
     raft_handle.sync_stream();
-    dataset_.emplace(dataset.borrow());
+    dataset_.emplace(dataset.view());
     n_ = n;
     if (dataset.isCagraCompatible()) {
         updateDataset(dataset);
@@ -165,7 +165,7 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
         cuvs_index = buildGraph(
                 cuvs::neighbors::make_host_standard_dataset_view(physical));
     }
-    dataset_.emplace(dataset.borrow());
+    dataset_.emplace(dataset.view());
     n_ = n;
     if (dataset.isCagraCompatible()) {
         updateDataset(dataset);
@@ -182,7 +182,7 @@ void BinaryCuvsCagra::updateDataset(const Dataset& dataset) {
     FAISS_THROW_IF_NOT_MSG(
             dataset.isCagraCompatible(),
             "Search requires a compatible device Dataset; use Dataset::makeDevicePadded");
-    auto borrowed = dataset.borrow();
+    auto borrowed = dataset.view();
     auto physical = raft::make_device_matrix_view<const uint8_t, int64_t>(
             static_cast<const uint8_t*>(dataset.getData()),
             dataset.getNumRows(),

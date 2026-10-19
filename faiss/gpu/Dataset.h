@@ -104,10 +104,11 @@ class Dataset {
     /// Does not inspect padding values; zero padding is a caller contract.
     bool isCagraCompatible() const;
 
-    /// Copy metadata without retaining ownership of the backing allocation.
-    Dataset borrow() const&;
-    Dataset borrow() && = delete;
-    Dataset borrow() const&& = delete;
+    /// Create a non-owning view of the same storage by copying its metadata.
+    /// Does not retain ownership of the backing allocation.
+    Dataset view() const&;
+    Dataset view() && = delete;
+    Dataset view() const&& = delete;
 
     /// Copy logical columns into packed host storage. destination must have
     /// numRows * dim * sizeof(element) bytes. Completes all device work using

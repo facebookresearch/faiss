@@ -275,8 +275,10 @@ With `FAISS_ENABLE_CUVS=ON`, CAGRA builds require a caller-owned
 `faiss::gpu::Dataset`. The index owns its graph and borrows vector storage.
 `viewHost`, `viewDevice`, and `viewDevicePadded` borrow an existing allocation;
 `makeDevicePadded` explicitly allocates an independent device copy whose lifetime
-is controlled by the returned Dataset. Public signatures take pointers, extents,
-strides, and Faiss types, without requiring RAFT or cuVS types.
+is controlled by the returned Dataset. Calling `dataset.view()` creates another
+non-owning descriptor of the same storage without extending its lifetime.
+Public signatures take pointers, extents, strides, and Faiss types, without
+requiring RAFT or cuVS types.
 
 For a packed host Float32 array `xb` with `n` rows and dimension `d`, build a graph
 and export independent CPU HNSW storage as follows:
