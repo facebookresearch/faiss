@@ -407,7 +407,7 @@
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
 <codeline lineno="33"><highlight class="comment"><sp/>*<sp/>Unified<sp/>kernel:<sp/>selects<sp/>256-bit<sp/>vs<sp/>512-bit<sp/>path<sp/>based<sp/>on</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>compile-time<sp/>__AVX512F__<sp/>guard.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>compile-time<sp/>COMPILE_SIMD_AVX512<sp/>&amp;&amp;<sp/>__AVX512F__<sp/>guard.</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*<sp/>KernelSL<sp/>selects<sp/>the<sp/>SIMD<sp/>type<sp/>width<sp/>used<sp/>for<sp/>the<sp/>inner<sp/>accumulation</highlight></codeline>
 <codeline lineno="37"><highlight class="comment"><sp/>*<sp/>loop.<sp/><sp/>In<sp/>DD<sp/>mode<sp/>the<sp/>caller<sp/>passes<sp/>the<sp/>dispatch<sp/>level<sp/>so<sp/>the<sp/>kernel</highlight></codeline>
@@ -424,7 +424,7 @@
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ResultHandler&amp;<sp/>res,</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scaler&amp;<sp/>scaler)<sp/>{</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX512F__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(COMPILE_SIMD_AVX512)<sp/>&amp;&amp;<sp/>defined(__AVX512F__)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KernelSL<sp/>==<sp/>SIMDLevel::AVX512<sp/>||</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KernelSL<sp/>==<sp/>SIMDLevel::AVX512_VPOPCNT<sp/>||</highlight></codeline>
