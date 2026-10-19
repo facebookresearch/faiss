@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HNSWLevel0LinkStats" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HNSWLevel0LinkStats</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkStats_1aaf539749eb3ef4ad7cde57fb71eaf14e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::HNSWLevel0LinkStats::n_sinks_found</definition>
+        <argsstring></argsstring>
+        <name>n_sinks_found</name>
+        <qualifiedname>faiss::HNSWLevel0LinkStats::n_sinks_found</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Sinks found in the first round. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="319" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="319" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkStats_1af1146cb30a4aa6e12d5c97556911a40b" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::HNSWLevel0LinkStats::n_sinks_remaining</definition>
+        <argsstring></argsstring>
+        <name>n_sinks_remaining</name>
+        <qualifiedname>faiss::HNSWLevel0LinkStats::n_sinks_remaining</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Sinks found after the last round. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="321" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="321" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkStats_1a1af7c734ded73caab67d3220c299006a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::HNSWLevel0LinkStats::n_links_added</definition>
+        <argsstring></argsstring>
+        <name>n_links_added</name>
+        <qualifiedname>faiss::HNSWLevel0LinkStats::n_links_added</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Level-0 links written into free slots. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="323" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="323" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkStats_1ada9f35ff180fcd42842a636a01ab99dc" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::HNSWLevel0LinkStats::n_links_replaced</definition>
+        <argsstring></argsstring>
+        <name>n_links_replaced</name>
+        <qualifiedname>faiss::HNSWLevel0LinkStats::n_links_replaced</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Level-0 links that replaced a link. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="325" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="325" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkStats_1a0e9082199d0dfde66556b23e60b99a98" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSWLevel0LinkStats::n_rounds</definition>
+        <argsstring></argsstring>
+        <name>n_rounds</name>
+        <qualifiedname>faiss::HNSWLevel0LinkStats::n_rounds</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Rounds that changed links. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="327" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="327" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkStats_1ad1d6af52435cfe9796632b87fd5b23ed" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::HNSWLevel0LinkStats::n_exact_searches</definition>
+        <argsstring></argsstring>
+        <name>n_exact_searches</name>
+        <qualifiedname>faiss::HNSWLevel0LinkStats::n_exact_searches</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Exact searches with the storage, in all rounds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="329" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="329" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/HNSW.h" line="317" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="317" bodyend="330"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HNSWLevel0LinkStats_1ad1d6af52435cfe9796632b87fd5b23ed" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkStats</scope><name>n_exact_searches</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkStats_1a1af7c734ded73caab67d3220c299006a" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkStats</scope><name>n_links_added</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkStats_1ada9f35ff180fcd42842a636a01ab99dc" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkStats</scope><name>n_links_replaced</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkStats_1a0e9082199d0dfde66556b23e60b99a98" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkStats</scope><name>n_rounds</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkStats_1aaf539749eb3ef4ad7cde57fb71eaf14e" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkStats</scope><name>n_sinks_found</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkStats_1af1146cb30a4aa6e12d5c97556911a40b" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkStats</scope><name>n_sinks_remaining</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

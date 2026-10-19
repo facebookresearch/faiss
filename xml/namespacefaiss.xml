@@ -104,6 +104,9 @@
     <innerclass refid="structfaiss_1_1HeapWithBucketsGeneric_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" prot="public">faiss::HeapWithBucketsGeneric&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat" prot="public">faiss::HeapWithBucketsGenericCMaxFloat</innerclass>
     <innerclass refid="structfaiss_1_1HNSW" prot="public">faiss::HNSW</innerclass>
+    <innerclass refid="structfaiss_1_1HNSWLevel0LinkParameters" prot="public">faiss::HNSWLevel0LinkParameters</innerclass>
+    <innerclass refid="structfaiss_1_1HNSWLevel0LinkStats" prot="public">faiss::HNSWLevel0LinkStats</innerclass>
+    <innerclass refid="structfaiss_1_1HNSWLinkSampleSearch" prot="public">faiss::HNSWLinkSampleSearch</innerclass>
     <innerclass refid="structfaiss_1_1HNSWStats" prot="public">faiss::HNSWStats</innerclass>
     <innerclass refid="structfaiss_1_1HStackInvertedLists" prot="public">faiss::HStackInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1IDScanContext" prot="public">faiss::IDScanContext</innerclass>
@@ -1585,7 +1588,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="323" column="28" declfile="faiss/impl/HNSW.h" declline="323" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="390" column="28" declfile="faiss/impl/HNSW.h" declline="390" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -5700,6 +5703,45 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="286" column="6" declfile="faiss/impl/HNSW.h" declline="286" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4999625a1fd3206ad89c236b10cb3a98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1HNSWLevel0LinkStats" kindref="compound">HNSWLevel0LinkStats</ref></type>
+        <definition>HNSWLevel0LinkStats faiss::hnsw_add_level_0_links_from_sample</definition>
+        <argsstring>(HNSW &amp;hnsw, size_t ntotal, DistanceComputer &amp;dis, bool similarity, const HNSWLinkSampleSearch &amp;sample, const HNSWLevel0LinkParameters &amp;params)</argsstring>
+        <name>hnsw_add_level_0_links_from_sample</name>
+        <qualifiedname>faiss::hnsw_add_level_0_links_from_sample</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>similarity</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSWLinkSampleSearch" kindref="compound">HNSWLinkSampleSearch</ref> &amp;</type>
+          <declname>sample</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref> &amp;</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>add_level_0_links_from_sample() of <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> and <ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref>. <computeroutput>dis</computeroutput> computes distances between nodes. <computeroutput>similarity</computeroutput> is true when a larger distance is nearer. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="358" column="21" declfile="faiss/impl/HNSW.h" declline="358" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

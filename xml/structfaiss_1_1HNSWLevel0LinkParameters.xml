@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HNSWLevel0LinkParameters" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HNSWLevel0LinkParameters</compoundname>
+    <includes refid="HNSW_8h" local="no">HNSW.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkParameters_1a1c63fa2512ed1b144af8982f43765532" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref> *</type>
+        <definition>const SearchParametersHNSW* faiss::HNSWLevel0LinkParameters::search_params</definition>
+        <argsstring></argsstring>
+        <name>search_params</name>
+        <qualifiedname>faiss::HNSWLevel0LinkParameters::search_params</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The search that the new links are for. nullptr: the search settings of the index, which the IVF assignment with a coarse quantizer uses. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="304" column="32" bodyfile="faiss/impl/HNSW.h" bodystart="304" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkParameters_1a4c72e0d20c0c638825ab7f2df0f2e26f" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::HNSWLevel0LinkParameters::min_mean_factor</definition>
+        <argsstring></argsstring>
+        <name>min_mean_factor</name>
+        <qualifiedname>faiss::HNSWLevel0LinkParameters::min_mean_factor</qualifiedname>
+        <initializer>= 3.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A sink receives at least this factor times the mean number of vectors per node. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="307" column="11" bodyfile="faiss/impl/HNSW.h" bodystart="307" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkParameters_1a1fce14fc46b522da213a4f9ce12695bc" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::HNSWLevel0LinkParameters::min_closer_fraction</definition>
+        <argsstring></argsstring>
+        <name>min_closer_fraction</name>
+        <qualifiedname>faiss::HNSWLevel0LinkParameters::min_closer_fraction</qualifiedname>
+        <initializer>= 0.5f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>For at least this fraction of the vectors that the search sends to a sink, an exact search finds a nearer node. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="310" column="11" bodyfile="faiss/impl/HNSW.h" bodystart="310" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkParameters_1ae023c558088a5ccb62867e6146865898" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSWLevel0LinkParameters::max_links_per_sink</definition>
+        <argsstring></argsstring>
+        <name>max_links_per_sink</name>
+        <qualifiedname>faiss::HNSWLevel0LinkParameters::max_links_per_sink</qualifiedname>
+        <initializer>= 32</initializer>
+        <briefdescription>
+<para>Maximum number of level-0 links added to one sink in one round. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="312" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="312" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLevel0LinkParameters_1a415962aedf7f9bf1f457e202cbb919c8" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSWLevel0LinkParameters::max_rounds</definition>
+        <argsstring></argsstring>
+        <name>max_rounds</name>
+        <qualifiedname>faiss::HNSWLevel0LinkParameters::max_rounds</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+<para>Maximum number of rounds that find sinks and add links. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="314" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="314" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Parameters of add_level_0_links_from_sample() of <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> and <ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref>. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::HNSWLevel0LinkParameters</label>
+        <link refid="structfaiss_1_1HNSWLevel0LinkParameters"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>search_params</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="3">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParametersHNSW</label>
+        <link refid="structfaiss_1_1SearchParametersHNSW"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/HNSW.h" line="301" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="301" bodyend="315"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1ae023c558088a5ccb62867e6146865898" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkParameters</scope><name>max_links_per_sink</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a415962aedf7f9bf1f457e202cbb919c8" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkParameters</scope><name>max_rounds</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a1fce14fc46b522da213a4f9ce12695bc" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkParameters</scope><name>min_closer_fraction</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a4c72e0d20c0c638825ab7f2df0f2e26f" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkParameters</scope><name>min_mean_factor</name></member>
+      <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a1c63fa2512ed1b144af8982f43765532" prot="public" virt="non-virtual"><scope>faiss::HNSWLevel0LinkParameters</scope><name>search_params</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

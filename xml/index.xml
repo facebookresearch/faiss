@@ -2741,6 +2741,27 @@
     <member refid="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1HNSW_1a7352de34016a15677b1cfd103e0fc546" kind="function"><name>shrink_neighbor_list</name></member>
   </compound>
+  <compound refid="structfaiss_1_1HNSWLevel0LinkParameters" kind="struct"><name>faiss::HNSWLevel0LinkParameters</name>
+    <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a1c63fa2512ed1b144af8982f43765532" kind="variable"><name>search_params</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a4c72e0d20c0c638825ab7f2df0f2e26f" kind="variable"><name>min_mean_factor</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a1fce14fc46b522da213a4f9ce12695bc" kind="variable"><name>min_closer_fraction</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1ae023c558088a5ccb62867e6146865898" kind="variable"><name>max_links_per_sink</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkParameters_1a415962aedf7f9bf1f457e202cbb919c8" kind="variable"><name>max_rounds</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HNSWLevel0LinkStats" kind="struct"><name>faiss::HNSWLevel0LinkStats</name>
+    <member refid="structfaiss_1_1HNSWLevel0LinkStats_1aaf539749eb3ef4ad7cde57fb71eaf14e" kind="variable"><name>n_sinks_found</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkStats_1af1146cb30a4aa6e12d5c97556911a40b" kind="variable"><name>n_sinks_remaining</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkStats_1a1af7c734ded73caab67d3220c299006a" kind="variable"><name>n_links_added</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkStats_1ada9f35ff180fcd42842a636a01ab99dc" kind="variable"><name>n_links_replaced</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkStats_1a0e9082199d0dfde66556b23e60b99a98" kind="variable"><name>n_rounds</name></member>
+    <member refid="structfaiss_1_1HNSWLevel0LinkStats_1ad1d6af52435cfe9796632b87fd5b23ed" kind="variable"><name>n_exact_searches</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HNSWLinkSampleSearch" kind="struct"><name>faiss::HNSWLinkSampleSearch</name>
+    <member refid="structfaiss_1_1HNSWLinkSampleSearch_1aaaff638fda859e0c8448b983d3fe908d" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1HNSWLinkSampleSearch_1ab7a622ebcb699cd5a9b80f4d4bfde0bf" kind="function"><name>~HNSWLinkSampleSearch</name></member>
+    <member refid="structfaiss_1_1HNSWLinkSampleSearch_1aee9c01ca1b657dff77c849947f65671c" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1HNSWLinkSampleSearch_1a13f061b9c96d444f445f982d999759b5" kind="function"><name>search_exact</name></member>
+  </compound>
   <compound refid="structfaiss_1_1HNSWStats" kind="struct"><name>faiss::HNSWStats</name>
     <member refid="structfaiss_1_1HNSWStats_1a28e67551d5cf31ab374fc8df2bab7cee" kind="variable"><name>n1</name></member>
     <member refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kind="variable"><name>n2</name></member>
@@ -3291,6 +3312,7 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1abc34cb137919b01c3be6ceddc7887e8e" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
@@ -3307,6 +3329,7 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1ae8d7ab52b6ff6b3b43e6b2122f94424e" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a3d570cf74c4e9f623ddfa302925127a9" kind="function"><name>add_level_0_links_from_sample</name></member>
     <member refid="structfaiss_1_1IndexBinary_1ae9f0fc632373aec59f5c836caa33ed10" kind="function"><name>train_ex</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82123e0426b5ca631c644ddd35d159e7" kind="function"><name>add_ex</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" kind="function"><name>add_with_ids</name></member>
@@ -3331,6 +3354,7 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1abc34cb137919b01c3be6ceddc7887e8e" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
@@ -3345,6 +3369,7 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a3d570cf74c4e9f623ddfa302925127a9" kind="function"><name>add_level_0_links_from_sample</name></member>
     <member refid="structfaiss_1_1IndexBinary_1ae9f0fc632373aec59f5c836caa33ed10" kind="function"><name>train_ex</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82123e0426b5ca631c644ddd35d159e7" kind="function"><name>add_ex</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" kind="function"><name>add_with_ids</name></member>
@@ -3977,6 +4002,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4000,6 +4026,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4040,6 +4069,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4070,6 +4102,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4087,6 +4120,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4111,6 +4145,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4153,6 +4190,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4183,6 +4223,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4200,6 +4241,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4224,6 +4266,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
     <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" kind="function"><name>train_ex</name></member>
@@ -4265,6 +4310,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4295,6 +4343,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4320,6 +4369,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4352,6 +4404,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -4376,6 +4429,9 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kind="function"><name>add_level_0_links_from_sample</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" kind="function"><name>add_level_0_links_from_sample_ex</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" kind="function"><name>add_level_0_links_from_sample_encoded</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" kind="function"><name>train_with_queries</name></member>
@@ -4406,6 +4462,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" kind="variable"><name>level_0_link_samples_per_node</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
@@ -14428,6 +14485,7 @@
     <member refid="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" kind="function"><name>rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="namespacefaiss_1a2296c34f3219451c88e96e7a951e64c0" kind="function"><name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="namespacefaiss_1a9e34dffaf9441c2de2ee6ae929de3043" kind="function"><name>hnsw_add_vertices_deterministic</name></member>
+    <member refid="namespacefaiss_1a4999625a1fd3206ad89c236b10cb3a98" kind="function"><name>hnsw_add_level_0_links_from_sample</name></member>
     <member refid="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" kind="function"><name>pop_min_tpl</name></member>
     <member refid="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" kind="function"><name>read_direct_map</name></member>
     <member refid="namespacefaiss_1ae748c5ec07a45d0f8d861e231ef67986" kind="function"><name>read_ivf_header</name></member>

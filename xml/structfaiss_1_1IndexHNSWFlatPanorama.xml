@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="182" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="182" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="220" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="220" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexHNSWFlatPanorama_1abeae9fd50f2bf8dd0bc02dcf77f6fac5" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref></type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="183" column="14" bodyfile="faiss/IndexHNSW.h" bodystart="183" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="221" column="14" bodyfile="faiss/IndexHNSW.h" bodystart="221" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexHNSWFlatPanorama_1a99114da3f3a2b8a9aa87ab0537c63c56" prot="public" static="no" mutable="no">
         <type>const size_t</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="184" column="18" bodyfile="faiss/IndexHNSW.h" bodystart="184" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="222" column="18" bodyfile="faiss/IndexHNSW.h" bodystart="222" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref></type>
@@ -121,6 +121,21 @@
         </inbodydescription>
         <location file="faiss/IndexHNSW.h" line="50" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="50" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::IndexHNSW::level_0_link_samples_per_node</definition>
+        <argsstring></argsstring>
+        <name>level_0_link_samples_per_node</name>
+        <qualifiedname>faiss::IndexHNSW::level_0_link_samples_per_node</qualifiedname>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="59" column="9" bodyfile="faiss/IndexHNSW.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" prot="public" static="no" mutable="no">
         <type>std::optional&lt; bool &gt;</type>
         <definition>std::optional&lt;bool&gt; faiss::IndexHNSW::use_visited_hashset</definition>
@@ -133,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="53" column="19" bodyfile="faiss/IndexHNSW.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="62" column="19" bodyfile="faiss/IndexHNSW.h" bodystart="62" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -239,7 +254,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="166" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="204" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWFlatPanorama_1ac742d274820f4241aa2fd370639245d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -270,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="167" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="205" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWFlatPanorama_1ab6169154be3d429b2970dc2e6cc4c9aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -294,7 +309,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="173" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="211" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWFlatPanorama_1a94e4e78428d53f59dba8bc6c467d5593" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -310,7 +325,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="174" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="212" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWFlatPanorama_1abb67576d78b95b6d3cc5498eef916777" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -329,7 +344,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="175" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="213" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWFlatPanorama_1a7d4bfb5ba1f418da277942b5394a9305" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const float *</type>
@@ -348,7 +363,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="178" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="178" bodyend="180"/>
+        <location file="faiss/IndexHNSW.h" line="216" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="216" bodyend="218"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -373,7 +388,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="64" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="73" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -416,7 +431,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="67" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="76" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -489,7 +504,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="75" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="84" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a3c44c91bfe78cb7ef100d92b6512040b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -518,7 +533,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="83" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="92" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -560,7 +575,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="88" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="97" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a37f79ff64b8aa13977c1b4dbccf3eec6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -578,7 +593,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="92" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="101" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a0c4947283a65855653f077531be85f05" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -646,7 +661,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="100" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="109" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a9a86c58212f3f9cf88394f5297cba525" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -673,7 +688,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="113" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="122" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -700,7 +715,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="116" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="125" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -714,7 +729,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="122" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="131" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -728,7 +743,99 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="124" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="133" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1HNSWLevel0LinkStats" kindref="compound">HNSWLevel0LinkStats</ref></type>
+        <definition>HNSWLevel0LinkStats faiss::IndexHNSW::add_level_0_links_from_sample</definition>
+        <argsstring>(idx_t n, const float *x, const HNSWLevel0LinkParameters &amp;params=HNSWLevel0LinkParameters())</argsstring>
+        <name>add_level_0_links_from_sample</name>
+        <qualifiedname>faiss::IndexHNSW::add_level_0_links_from_sample</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref> &amp;</type>
+          <declname>params</declname>
+          <defval><ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref>()</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Adds level-0 links so that the search no longer stops at &quot;sinks&quot;: nodes where it stops for many vectors whose nearest node is elsewhere. With a small efSearch, <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> as a coarse quantizer will overfill the IVF lists. Call this function after adding all centroids to this quantizer. Called automatically through <ref refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kindref="member">IndexIVF::train</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="141" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1HNSWLevel0LinkStats" kindref="compound">HNSWLevel0LinkStats</ref></type>
+        <definition>HNSWLevel0LinkStats faiss::IndexHNSW::add_level_0_links_from_sample_ex</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type, const HNSWLevel0LinkParameters &amp;params=HNSWLevel0LinkParameters())</argsstring>
+        <name>add_level_0_links_from_sample_ex</name>
+        <qualifiedname>faiss::IndexHNSW::add_level_0_links_from_sample_ex</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref> &amp;</type>
+          <declname>params</declname>
+          <defval><ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref>()</defval>
+        </param>
+        <briefdescription>
+<para><ref refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kindref="member">add_level_0_links_from_sample()</ref> for Float32 or packed Float16 vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="148" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1HNSWLevel0LinkStats" kindref="compound">HNSWLevel0LinkStats</ref></type>
+        <definition>HNSWLevel0LinkStats faiss::IndexHNSW::add_level_0_links_from_sample_encoded</definition>
+        <argsstring>(idx_t n, const uint8_t *x, const Index *codec, const HNSWLevel0LinkParameters &amp;params=HNSWLevel0LinkParameters())</argsstring>
+        <name>add_level_0_links_from_sample_encoded</name>
+        <qualifiedname>faiss::IndexHNSW::add_level_0_links_from_sample_encoded</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>codec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref> &amp;</type>
+          <declname>params</declname>
+          <defval><ref refid="structfaiss_1_1HNSWLevel0LinkParameters" kindref="compound">HNSWLevel0LinkParameters</ref>()</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" kindref="member">add_level_0_links_from_sample()</ref> for n vectors that <computeroutput>codec</computeroutput> encoded with <ref refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kindref="member">sa_encode()</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="157" column="25"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
@@ -745,7 +852,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="128" column="22"/>
+        <location file="faiss/IndexHNSW.h" line="166" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1964,10 +2071,13 @@
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="165" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="165" bodyend="185"/>
+    <location file="faiss/IndexHNSW.h" line="203" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="203" bodyend="223"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexHNSWFlatPanorama_1ab6169154be3d429b2970dc2e6cc4c9aa" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_ex</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a538e4035a1e4d0f72375b265c9db225c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_level_0_links_from_sample</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1aac86a6f1235089ad41ca2fcbad699c1e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_level_0_links_from_sample_encoded</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a804a8e93fdb2b20693e0b0c98cacf569" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_level_0_links_from_sample_ex</name></member>
       <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_sa_codes</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_with_ids</name></member>
       <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>add_with_ids_ex</name></member>
@@ -1994,6 +2104,7 @@
       <member refid="structfaiss_1_1IndexHNSW_1a9a86c58212f3f9cf88394f5297cba525" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>init_level_0_from_knngraph</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>keep_max_size_level0</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1acc06de5ee79dc2740bbc426c03448ab5" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>level_0_link_samples_per_node</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>link_singletons</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlatPanorama</scope><name>metric_arg</name></member>

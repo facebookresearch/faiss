@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HNSWLinkSampleSearch" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::HNSWLinkSampleSearch</compoundname>
+    <includes refid="HNSW_8h" local="no">HNSW.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HNSWLinkSampleSearch_1aaaff638fda859e0c8448b983d3fe908d" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::HNSWLinkSampleSearch::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <qualifiedname>faiss::HNSWLinkSampleSearch::n</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>number of sample vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="337" column="11" bodyfile="faiss/impl/HNSW.h" bodystart="337" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HNSWLinkSampleSearch_1ab7a622ebcb699cd5a9b80f4d4bfde0bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::HNSWLinkSampleSearch::~HNSWLinkSampleSearch</definition>
+        <argsstring>()=default</argsstring>
+        <name>~HNSWLinkSampleSearch</name>
+        <qualifiedname>faiss::HNSWLinkSampleSearch::~HNSWLinkSampleSearch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="339" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSWLinkSampleSearch_1aee9c01ca1b657dff77c849947f65671c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::HNSWLinkSampleSearch::search</definition>
+        <argsstring>(const SearchParametersHNSW *params, idx_t *labels) const =0</argsstring>
+        <name>search</name>
+        <qualifiedname>faiss::HNSWLinkSampleSearch::search</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <briefdescription>
+<para><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> search (k = 1) of all sample vectors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="342" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSWLinkSampleSearch_1a13f061b9c96d444f445f982d999759b5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::HNSWLinkSampleSearch::search_exact</definition>
+        <argsstring>(size_t m, const idx_t *ids, const idx_t *found, idx_t *exact, uint8_t *nearer) const =0</argsstring>
+        <name>search_exact</name>
+        <qualifiedname>faiss::HNSWLinkSampleSearch::search_exact</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>found</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>exact</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>nearer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Exact search (k = 1) of the m sample vectors <computeroutput>ids</computeroutput>. nearer[j] is 1 when exact[j] is nearer than found[j] by more than rounding differences. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="347" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>The two searches of the sample vectors that <ref refid="namespacefaiss_1a4999625a1fd3206ad89c236b10cb3a98" kindref="member">hnsw_add_level_0_links_from_sample()</ref> compares. <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> and <ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref> implement them for their vector types. </para>
+    </detaileddescription>
+    <location file="faiss/impl/HNSW.h" line="335" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="335" bodyend="353"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HNSWLinkSampleSearch_1aaaff638fda859e0c8448b983d3fe908d" prot="public" virt="non-virtual"><scope>faiss::HNSWLinkSampleSearch</scope><name>n</name></member>
+      <member refid="structfaiss_1_1HNSWLinkSampleSearch_1aee9c01ca1b657dff77c849947f65671c" prot="public" virt="pure-virtual"><scope>faiss::HNSWLinkSampleSearch</scope><name>search</name></member>
+      <member refid="structfaiss_1_1HNSWLinkSampleSearch_1a13f061b9c96d444f445f982d999759b5" prot="public" virt="pure-virtual"><scope>faiss::HNSWLinkSampleSearch</scope><name>search_exact</name></member>
+      <member refid="structfaiss_1_1HNSWLinkSampleSearch_1ab7a622ebcb699cd5a9b80f4d4bfde0bf" prot="public" virt="virtual"><scope>faiss::HNSWLinkSampleSearch</scope><name>~HNSWLinkSampleSearch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
