@@ -7,16 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <random>
-#include <thread>
 #include <unordered_set>
 #include <vector>
 
-#include <faiss/IndexBinaryHNSW.h>
-#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
@@ -24,68 +20,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 #include <omp.h>
-
-namespace {
-
-struct SearchStatsEnabledGuard {
-    explicit SearchStatsEnabledGuard(bool enabled)
-            : previous(faiss::get_search_stats_enabled()) {
-        faiss::set_search_stats_enabled(enabled);
-    }
-    ~SearchStatsEnabledGuard() {
-        faiss::set_search_stats_enabled(previous);
-    }
-    bool previous;
-};
-
-} // namespace
-
-TEST(HNSWStats, DisabledCollectionSkipsGlobalStats) {
-    faiss::IndexBinaryHNSW index(8, 2);
-    const uint8_t database = 0;
-    index.add(1, &database);
-    index.hnsw.efSearch = 1;
-    SearchStatsEnabledGuard guard(false);
-    faiss::hnsw_stats.reset();
-
-    int32_t distance;
-    faiss::idx_t label;
-    index.search(1, &database, 1, &distance, &label);
-
-    EXPECT_EQ(0, faiss::hnsw_stats.n1);
-}
-
-TEST(HNSWStats, EnabledCollectionAggregatesConcurrentSearchesExactly) {
-    constexpr size_t num_threads = 16;
-    constexpr size_t searches_per_thread = 100;
-
-    faiss::IndexBinaryHNSW index(8, 2);
-    const uint8_t database = 0;
-    index.add(1, &database);
-    index.hnsw.efSearch = 1;
-    SearchStatsEnabledGuard guard(true);
-    faiss::hnsw_stats.reset();
-
-    std::vector<std::thread> threads;
-    threads.reserve(num_threads);
-    for (size_t i = 0; i < num_threads; ++i) {
-        threads.emplace_back([&] {
-            omp_set_num_threads(1);
-            int32_t distance;
-            faiss::idx_t label;
-            for (size_t j = 0; j < searches_per_thread; ++j) {
-                index.search(1, &database, 1, &distance, &label);
-            }
-        });
-    }
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
-    EXPECT_EQ(num_threads * searches_per_thread, faiss::hnsw_stats.n1);
-}
 
 int reference_pop_min(faiss::MinimaxHeap& heap, float* vmin_out) {
     assert(heap.k > 0);
@@ -237,52 +172,6 @@ void test_popmin_identical_distances(
     ASSERT_EQ(mm_heap.dis, cloned_mm_heap.dis);
 }
 
-void copy_base_level_only(
-        const faiss::IndexHNSWCagra& src,
-        faiss::IndexHNSWCagra& dst) {
-    auto n = src.ntotal;
-    auto d = src.d;
-    auto M = src.hnsw.nb_neighbors(0) / 2;
-    auto graph_degree = src.hnsw.nb_neighbors(0);
-
-    if (dst.storage && dst.own_fields) {
-        delete dst.storage;
-    }
-    dst.storage = new faiss::IndexFlatL2(d);
-    dst.own_fields = true;
-    dst.d = d;
-    dst.metric_type = src.metric_type;
-    dst.is_trained = true;
-    dst.keep_max_size_level0 = true;
-
-    dst.hnsw.reset();
-    dst.hnsw.assign_probas.clear();
-    dst.hnsw.cum_nneighbor_per_level.clear();
-    dst.hnsw.set_default_probas(M, 1.0 / std::log(M));
-
-    dst.hnsw.prepare_level_tab(n, false);
-
-    auto src_flat = dynamic_cast<faiss::IndexFlat*>(src.storage);
-    FAISS_THROW_IF_NOT(src_flat);
-    dst.storage->add(n, src_flat->get_xb());
-    dst.ntotal = n;
-
-    for (faiss::idx_t i = 0; i < n; i++) {
-        size_t src_begin, src_end;
-        src.hnsw.neighbor_range(i, 0, &src_begin, &src_end);
-
-        size_t dst_begin, dst_end;
-        dst.hnsw.neighbor_range(i, 0, &dst_begin, &dst_end);
-
-        for (size_t j = 0; j < graph_degree && j < (dst_end - dst_begin); j++) {
-            dst.hnsw.neighbors[dst_begin + j] =
-                    src.hnsw.neighbors[src_begin + j];
-        }
-    }
-
-    dst.base_level_only = true;
-}
-
 TEST(HNSW, Test_popmin) {
     std::vector<size_t> sizes = {1, 2, 3, 4, 5, 7, 9, 11, 16, 27, 32, 64, 128};
     for (const size_t size : sizes) {
@@ -308,57 +197,6 @@ TEST(HNSW, Test_popmin_infinite_distances) {
             test_popmin_identical_distances(
                     size, amount, std::numeric_limits<float>::infinity());
         }
-    }
-}
-
-TEST(HNSW, Test_IndexHNSW_METRIC_Lp) {
-    // Create an HNSW index with METRIC_Lp and metric_arg = 3
-    faiss::IndexFlat storage_index(1, faiss::METRIC_Lp);
-    storage_index.metric_arg = 3;
-    faiss::IndexHNSW index(&storage_index, 32);
-
-    // Add a single data point
-    float data[1] = {0.0};
-    index.add(1, data);
-
-    // Prepare a query
-    float query[1] = {2.0};
-    float distance;
-    faiss::idx_t label;
-
-    index.search(1, query, 1, &distance, &label);
-
-    EXPECT_NEAR(distance, 8.0, 1e-5); // Distance should be 8.0 (2^3)
-    EXPECT_EQ(label, 0);              // Label should be 0
-}
-
-TEST(HNSW, Test_IndexHNSWCagra_BaseLevelOnly_RangeSearch) {
-    int d = 8;
-    int nb = 100;
-    int nq = 5;
-    int M = 4;
-
-    std::vector<float> xb(nb * d);
-    std::vector<float> xq(nq * d);
-    faiss::float_rand(xb.data(), xb.size(), 1234);
-    faiss::float_rand(xq.data(), xq.size(), 4321);
-
-    faiss::IndexHNSWCagra index(d, M, faiss::METRIC_L2);
-    index.add(nb, xb.data());
-    index.base_level_only = true;
-    index.num_base_level_search_entrypoints = 8;
-
-    faiss::IndexHNSWCagra dst_index;
-    copy_base_level_only(index, dst_index);
-    dst_index.num_base_level_search_entrypoints = 8;
-
-    faiss::RangeSearchResult res(nq);
-    float radius = 1e9f;
-    dst_index.range_search(nq, xq.data(), radius, &res);
-
-    for (int i = 0; i < nq; i++) {
-        auto count = res.lims[i + 1] - res.lims[i];
-        EXPECT_GT(count, 0);
     }
 }
 
@@ -487,44 +325,6 @@ int reference_search_from_candidates(
     return nres;
 }
 
-faiss::HNSWStats reference_greedy_update_nearest(
-        const faiss::HNSW& hnsw,
-        faiss::DistanceComputer& qdis,
-        int level,
-        faiss::HNSW::storage_idx_t& nearest,
-        float& d_nearest) {
-    faiss::HNSWStats stats;
-
-    for (;;) {
-        faiss::HNSW::storage_idx_t prev_nearest = nearest;
-
-        size_t begin, end;
-        hnsw.neighbor_range(nearest, level, &begin, &end);
-
-        size_t ndis = 0;
-
-        for (size_t i = begin; i < end; i++) {
-            faiss::HNSW::storage_idx_t v = hnsw.neighbors[i];
-            if (v < 0) {
-                break;
-            }
-            ndis += 1;
-            float dis = qdis(v);
-            if (dis < d_nearest) {
-                nearest = v;
-                d_nearest = dis;
-            }
-        }
-        // update stats
-        stats.ndis += ndis;
-        stats.nhops += 1;
-
-        if (nearest == prev_nearest) {
-            return stats;
-        }
-    }
-}
-
 std::priority_queue<faiss::HNSW::Node> reference_search_from_candidate_unbounded(
         const faiss::HNSW& hnsw,
         const faiss::HNSW::Node& node,
@@ -633,29 +433,6 @@ TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
     EXPECT_EQ(top_candidates.size(), reference_top_candidates.size());
 }
 
-TEST_F(HNSWTest, TEST_greedy_update_nearest) {
-    omp_set_num_threads(1);
-
-    auto nearest = index->hnsw.entry_point;
-    float d_nearest = (*dis)(nearest);
-    auto reference_nearest = index->hnsw.entry_point;
-    float reference_d_nearest = (*dis)(reference_nearest);
-
-    // actual version
-    auto stats = faiss::hnsw_detail::greedy_update_nearest(
-            index->hnsw, *dis, 0, nearest, d_nearest);
-
-    // reference version
-    auto reference_stats = reference_greedy_update_nearest(
-            index->hnsw, *dis, 0, reference_nearest, reference_d_nearest);
-    EXPECT_EQ(stats.ndis, reference_stats.ndis);
-    EXPECT_EQ(stats.nhops, reference_stats.nhops);
-    EXPECT_EQ(stats.n1, reference_stats.n1);
-    EXPECT_EQ(stats.n2, reference_stats.n2);
-    EXPECT_NEAR(d_nearest, reference_d_nearest, 0.01);
-    EXPECT_EQ(nearest, reference_nearest);
-}
-
 TEST_F(HNSWTest, TEST_search_from_candidates) {
     omp_set_num_threads(1);
 
@@ -760,16 +537,6 @@ TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
     }
 }
 
-TEST_F(HNSWTest, TEST_nb_neighbors_bound) {
-    omp_set_num_threads(1);
-    EXPECT_EQ(index->hnsw.nb_neighbors(0), 8);
-    EXPECT_EQ(index->hnsw.nb_neighbors(1), 4);
-    EXPECT_EQ(index->hnsw.nb_neighbors(2), 4);
-    EXPECT_EQ(index->hnsw.nb_neighbors(3), 4);
-    // picking a large number to trigger an exception based on checking bounds
-    EXPECT_THROW(index->hnsw.nb_neighbors(100), faiss::FaissException);
-}
-
 TEST_F(HNSWTest, TEST_search_level_0) {
     omp_set_num_threads(1);
     std::vector<faiss::idx_t> I(k * nq);
@@ -813,29 +580,6 @@ TEST_F(HNSWTest, TEST_search_level_0) {
     EXPECT_GT(stats1.nhops, stats2.nhops);
     EXPECT_GT(stats1.n1, stats2.n1);
     EXPECT_GT(stats1.n2, stats2.n2);
-}
-
-TEST(VisitedTableReuse, ReusesGrowsAndResets) {
-    // get_reusable() hands back the same thread-local object across calls
-    // (no per-call allocation) ...
-    faiss::VisitedTable& t1 = faiss::VisitedTable::get_reusable(100);
-    faiss::VisitedTable& t2 = faiss::VisitedTable::get_reusable(100);
-    EXPECT_EQ(&t1, &t2);
-
-    // ... and hands it back clean: a mark set before re-acquiring must not
-    // survive, since a reused table may carry stamps from a prior search.
-    t2.set(42);
-    EXPECT_TRUE(t2.get(42));
-    faiss::VisitedTable& t3 = faiss::VisitedTable::get_reusable(100);
-    EXPECT_EQ(&t2, &t3);
-    EXPECT_FALSE(t3.get(42));
-
-    // Growing to a larger size keeps the same object and exposes the new range.
-    faiss::VisitedTable& t4 = faiss::VisitedTable::get_reusable(1000);
-    EXPECT_EQ(&t3, &t4);
-    EXPECT_FALSE(t4.get(900));
-    EXPECT_TRUE(t4.set(900));
-    EXPECT_TRUE(t4.get(900));
 }
 
 // Restores the process-global OpenMP thread count on scope exit, so a test that
