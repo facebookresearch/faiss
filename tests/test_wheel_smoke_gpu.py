@@ -245,7 +245,7 @@ class TestCuvsCagra(unittest.TestCase):
         res = faiss.StandardGpuResources()
         index = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2)
         # Dataset is deliberately C++ only. The graph/search smoke test is
-        # TestGpuCagraDataset; Python must report the ownership migration.
+        # TestGpuIndexCagra; Python must report the ownership migration.
         with self.assertRaisesRegex(RuntimeError, "Dataset"):
             index.train(xb)
         self.assertEqual(index.ntotal, 0)
