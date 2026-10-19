@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include <cuda_fp16.h>
+#include <raft/core/error.hpp>
 #include <cstring>
 #include <memory>
 #include <type_traits>
@@ -137,7 +138,7 @@ void testPaddedCopy(NumericType type) {
         }
     }
 
-    // Resource providers and host inputs can go away after preparation.
+    // After the copy completes, resource providers and host inputs can go away.
     resources.reset();
     storage.clear();
     output.copyToHost(actual.data());
@@ -191,22 +192,72 @@ TEST(TestGpuDataset, AlignedStandardInputCanBeBorrowedForSearch) {
             faiss::FaissException);
 }
 
-TEST(TestGpuDataset, PreparingAlignedDeviceInputAlwaysMakesIndependentStorage) {
+template <typename T>
+void testCompatibleDevicePreparationRejected(NumericType type) {
+    faiss::gpu::DeviceScope scope(0);
     StandardGpuResources resources;
     resources.noTempMemory();
-    std::vector<float> expected(24, 3.0f);
-    auto second = [&]() {
-        auto host = Dataset::viewHost(
-                expected.data(), 2, 12, NumericType::Float32, 12);
-        auto first = Dataset::makeDevicePadded(&resources, host, 0);
-        auto copy = Dataset::makeDevicePadded(&resources, first, 0);
-        EXPECT_NE(copy.getData(), first.getData());
-        EXPECT_TRUE(copy.ownsData());
-        return copy;
-    }();
-    std::vector<float> actual(expected.size());
-    second.copyToHost(actual.data());
-    EXPECT_EQ(actual, expected);
+    // Exercise both actual row padding and tightly packed aligned rows.
+    for (int dim : {5, static_cast<int>(16 / sizeof(T))}) {
+        SCOPED_TRACE(dim);
+        std::vector<T> expected(2 * dim);
+        for (int i = 0; i < 2 * dim; ++i) {
+            expected[i] = static_cast<T>(i + 1);
+        }
+        auto host = Dataset::viewHost(expected.data(), 2, dim, type, dim);
+        auto owner = Dataset::makeDevicePadded(&resources, host, 0);
+        auto borrowed = owner.view();
+        EXPECT_FALSE(borrowed.ownsData());
+        EXPECT_EQ(borrowed.getData(), owner.getData());
+        std::vector<T> actual(expected.size());
+        borrowed.copyToHost(actual.data());
+        EXPECT_EQ(
+                std::memcmp(
+                        actual.data(),
+                        expected.data(),
+                        expected.size() * sizeof(T)),
+                0);
+        std::vector<T> before(2 * owner.getRowStride());
+        ASSERT_EQ(
+                cudaMemcpy(
+                        before.data(),
+                        owner.getData(),
+                        before.size() * sizeof(T),
+                        cudaMemcpyDeviceToHost),
+                cudaSuccess);
+
+        EXPECT_THROW(
+                Dataset::makeDevicePadded(&resources, owner, 0),
+                raft::logic_error);
+        auto standard = Dataset::viewDevice(
+                owner.getData(), 2, dim, type, owner.getRowStride(), 0);
+        EXPECT_EQ(standard.getLayout(), Dataset::Layout::Standard);
+        EXPECT_TRUE(standard.isCagraCompatible());
+        EXPECT_FALSE(standard.ownsData());
+        EXPECT_THROW(
+                Dataset::makeDevicePadded(&resources, standard, 0),
+                raft::logic_error);
+
+        std::vector<T> after(before.size());
+        ASSERT_EQ(
+                cudaMemcpy(
+                        after.data(),
+                        borrowed.getData(),
+                        after.size() * sizeof(T),
+                        cudaMemcpyDeviceToHost),
+                cudaSuccess);
+        EXPECT_EQ(
+                std::memcmp(
+                        after.data(), before.data(), before.size() * sizeof(T)),
+                0);
+    }
+}
+
+TEST(TestGpuDataset, PreparingCompatibleDeviceInputIsRejected) {
+    testCompatibleDevicePreparationRejected<float>(NumericType::Float32);
+    testCompatibleDevicePreparationRejected<half>(NumericType::Float16);
+    testCompatibleDevicePreparationRejected<int8_t>(NumericType::Int8);
+    testCompatibleDevicePreparationRejected<uint8_t>(NumericType::UInt8);
 }
 
 TEST(TestGpuDataset, MovingOwnerPreservesViewAndViewDoesNotOwnStorage) {
@@ -282,7 +333,7 @@ TEST(TestGpuDataset, BinaryHnswPreparationIsIndependentOfCpuIndex) {
     EXPECT_EQ(actual, expected);
 }
 
-TEST(TestGpuDataset, DevicePreparationSupportsDifferentDevices) {
+TEST(TestGpuDataset, PreparingCompatibleInputOnDifferentDeviceIsRejected) {
     if (faiss::gpu::getNumDevices() < 2) {
         GTEST_SKIP() << "Requires two CUDA devices";
     }
@@ -296,10 +347,12 @@ TEST(TestGpuDataset, DevicePreparationSupportsDifferentDevices) {
             Dataset::viewDevice(
                     first.getData(), 2, 3, NumericType::Float32, 4, 1),
             faiss::FaissException);
-    auto second = Dataset::makeDevicePadded(&resources, first, 1);
-    EXPECT_EQ(second.getDevice(), 1);
+    // The cuVS owning factory rejects an already-correct device stride,
+    // including when the destination resource is on another GPU.
+    EXPECT_THROW(
+            Dataset::makeDevicePadded(&resources, first, 1), raft::logic_error);
     std::vector<float> actual(expected.size());
-    second.copyToHost(actual.data());
+    first.copyToHost(actual.data());
     EXPECT_EQ(actual, expected);
 }
 

@@ -274,9 +274,13 @@ shows how to translate indexes from/to a GPU.
 With `FAISS_ENABLE_CUVS=ON`, CAGRA builds require a caller-owned
 `faiss::gpu::Dataset`. The index owns its graph and borrows vector storage.
 `viewHost`, `viewDevice`, and `viewDevicePadded` borrow an existing allocation;
-`makeDevicePadded` explicitly allocates an independent device copy whose lifetime
-is controlled by the returned Dataset. Calling `dataset.view()` creates another
-non-owning descriptor of the same storage without extending its lifetime.
+`makeDevicePadded` delegates allocation and padding to cuVS. Like cuVS, it rejects
+device/managed input whose row stride already matches the required padding;
+use a view for that storage. Preparation runs asynchronously on the resource's
+stream, so keep the source allocation alive and unchanged until copying finishes.
+The returned Dataset controls the new allocation's lifetime. Calling
+`dataset.view()` creates another non-owning descriptor of the same storage
+without extending its lifetime.
 Public signatures take pointers, extents, strides, and Faiss types, without
 requiring RAFT or cuVS types.
 

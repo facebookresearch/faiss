@@ -16,7 +16,6 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <cuvs/neighbors/common.hpp>
-#include <raft/core/device_mdarray.hpp>
 #include <raft/core/resource/cuda_stream.hpp>
 
 #include <cstring>
@@ -156,34 +155,24 @@ std::unique_ptr<DatasetStorage> makeViewStorage(
 template <typename T>
 std::unique_ptr<DatasetStorage> makeOwnedStorage(
         GpuResources* resources,
-        const void* sourceData,
-        idx_t numRows,
-        int dim,
-        idx_t sourceStride,
-        idx_t targetStride,
+        const Dataset& source,
         int device) {
     auto& handle = resources->getRaftHandle(device);
-    const auto stream =
-            cuda::stream_ref{raft::resource::get_cuda_stream(handle)}.get();
-    auto matrix =
-            raft::make_device_matrix<T, int64_t>(handle, numRows, targetStride);
-    if (numRows != 0) {
-        checkCuda(cudaMemsetAsync(
-                matrix.data_handle(), 0, matrix.size() * sizeof(T), stream));
-        checkCuda(cudaMemcpy2DAsync(
-                matrix.data_handle(),
-                targetStride * sizeof(T),
-                sourceData,
-                sourceStride * sizeof(T),
-                dim * sizeof(T),
-                numRows,
-                cudaMemcpyDefault,
-                stream));
-        checkCuda(cudaStreamSynchronize(stream));
-    }
+    const auto* data = static_cast<const T*>(source.getData());
+    const auto rows = source.getNumRows();
+    const auto dim = static_cast<int64_t>(source.getDim());
+    const auto stride = source.getRowStride();
+    auto owner = source.isDevice()
+            ? cuvs::neighbors::make_device_padded_dataset(
+                      handle,
+                      raft::make_device_strided_matrix_view(
+                              data, rows, dim, stride))
+            : cuvs::neighbors::make_device_padded_dataset(
+                      handle,
+                      raft::make_host_strided_matrix_view(
+                              data, rows, dim, stride));
     using Owner = cuvs::neighbors::device_padded_dataset<T, int64_t>;
-    return std::make_unique<TypedDatasetStorage<Owner>>(
-            Owner(std::move(matrix), static_cast<uint32_t>(dim)));
+    return std::make_unique<TypedDatasetStorage<Owner>>(std::move(*owner));
 }
 
 } // namespace
@@ -324,57 +313,23 @@ Dataset Dataset::makeDevicePadded(
     impl->resources = resources->getResources();
     FAISS_THROW_IF_NOT_MSG(impl->resources, "Dataset requires GPU resources");
 
-    // Explicit cross-device preparation also works without peer access.
-    std::vector<uint8_t> staging;
-    const void* sourceData = source.getData();
-    idx_t sourceStride = src.rowStride;
-    if (source.isDevice() && src.device != device) {
-        staging.resize(src.numRows * src.dim * elementSize(src.numericType));
-        source.copyToHost(staging.data());
-        sourceData = staging.data();
-        sourceStride = src.dim;
-    }
     DeviceScope scope(device);
     switch (src.numericType) {
         case NumericType::Float32:
             impl->storage = makeOwnedStorage<float>(
-                    impl->resources.get(),
-                    sourceData,
-                    src.numRows,
-                    src.dim,
-                    sourceStride,
-                    stride,
-                    device);
+                    impl->resources.get(), source, device);
             break;
         case NumericType::Float16:
             impl->storage = makeOwnedStorage<half>(
-                    impl->resources.get(),
-                    sourceData,
-                    src.numRows,
-                    src.dim,
-                    sourceStride,
-                    stride,
-                    device);
+                    impl->resources.get(), source, device);
             break;
         case NumericType::Int8:
             impl->storage = makeOwnedStorage<int8_t>(
-                    impl->resources.get(),
-                    sourceData,
-                    src.numRows,
-                    src.dim,
-                    sourceStride,
-                    stride,
-                    device);
+                    impl->resources.get(), source, device);
             break;
         case NumericType::UInt8:
             impl->storage = makeOwnedStorage<uint8_t>(
-                    impl->resources.get(),
-                    sourceData,
-                    src.numRows,
-                    src.dim,
-                    sourceStride,
-                    stride,
-                    device);
+                    impl->resources.get(), source, device);
             break;
         default:
             FAISS_THROW_MSG("Unsupported Dataset numeric type");
@@ -438,7 +393,13 @@ Dataset Dataset::makeDevicePaddedFromIndex(
         }
     }
     auto view = viewHost(data, source.ntotal, source.d, type, source.d);
-    return makeDevicePadded(resources, view, device);
+    auto dataset = makeDevicePadded(resources, view, device);
+    // The returned Dataset must not depend on CPU storage or decoded
+    // temporaries.
+    DeviceScope scope(device);
+    raft::resource::sync_stream(
+            dataset.impl_->resources->getRaftHandle(device));
+    return dataset;
 }
 
 Dataset Dataset::makeDevicePaddedFromIndex(
@@ -467,7 +428,12 @@ Dataset Dataset::makeDevicePaddedFromIndex(
             source.d / 8,
             NumericType::UInt8,
             source.d / 8);
-    return makeDevicePadded(resources, view, device);
+    auto dataset = makeDevicePadded(resources, view, device);
+    // The returned Dataset must not depend on CPU storage.
+    DeviceScope scope(device);
+    raft::resource::sync_stream(
+            dataset.impl_->resources->getRaftHandle(device));
+    return dataset;
 }
 
 const void* Dataset::getData() const {

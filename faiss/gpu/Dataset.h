@@ -69,10 +69,13 @@ class Dataset {
             idx_t rowStride,
             int device);
 
-    /// Allocate an independent padded device copy, even for an already padded
-    /// source. Copies logical columns and zeroes padding. Source data must be
-    /// ready on the resource's stream before calling; copying completes before
-    /// return. Retains the resources needed to release the owned allocation.
+    /// Create padded device storage using cuVS make_device_padded_dataset.
+    /// Device/managed input whose stride already matches the required padding
+    /// is rejected; use a view for that storage. Copies logical columns and
+    /// zeroes padding asynchronously on the resource's stream. Source data must
+    /// be ready on that stream and stay alive and unchanged until copying
+    /// finishes. Order subsequent use on that stream. Retains the resources
+    /// needed to release the allocation.
     static Dataset makeDevicePadded(
             GpuResourcesProvider* resources,
             const Dataset& source,
@@ -80,7 +83,8 @@ class Dataset {
 
     /// Explicitly prepare independent GPU storage from CPU HNSW vectors. The
     /// floating-point overload preserves dtype and decodes signed Int8 codes.
-    /// The returned Dataset does not depend on the CPU index's lifetime.
+    /// Copying completes before return; the Dataset does not depend on the
+    /// CPU index's lifetime.
     static Dataset makeDevicePaddedFromIndex(
             GpuResourcesProvider* resources,
             const IndexHNSWCagra& source,
