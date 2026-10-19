@@ -12,9 +12,6 @@
 #include <memory>
 
 namespace faiss {
-struct IndexHNSWCagra;
-struct IndexBinaryHNSWCagra;
-
 namespace gpu {
 class GpuResourcesProvider;
 
@@ -81,19 +78,6 @@ class Dataset {
             const Dataset& source,
             int device);
 
-    /// Explicitly prepare independent GPU storage from CPU HNSW vectors. The
-    /// floating-point overload preserves dtype and decodes signed Int8 codes.
-    /// Copying completes before return; the Dataset does not depend on the
-    /// CPU index's lifetime.
-    static Dataset makeDevicePaddedFromIndex(
-            GpuResourcesProvider* resources,
-            const IndexHNSWCagra& source,
-            int device);
-    static Dataset makeDevicePaddedFromIndex(
-            GpuResourcesProvider* resources,
-            const IndexBinaryHNSWCagra& source,
-            int device);
-
     const void* getData() const;
     idx_t getNumRows() const;
     int getDim() const;
@@ -110,9 +94,7 @@ class Dataset {
 
     /// Create a non-owning view of the same storage by copying its metadata.
     /// Does not retain ownership of the backing allocation.
-    Dataset view() const&;
-    Dataset view() && = delete;
-    Dataset view() const&& = delete;
+    Dataset view() const;
 
     /// Copy logical columns into packed host storage. destination must have
     /// numRows * dim * sizeof(element) bytes. Completes all device work using

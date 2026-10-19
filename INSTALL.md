@@ -288,6 +288,7 @@ For a packed host Float32 array `xb` with `n` rows and dimension `d`, build a gr
 and export independent CPU HNSW storage as follows:
 
 ```cpp
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexCagra.h>
@@ -303,20 +304,21 @@ faiss::IndexHNSWCagra cpu(d, 32);
 cpu.base_level_only = true;
 graphOnly.copyTo(&cpu); // CPU index now owns its graph and packed vectors.
 
-// Explicitly prepare independent device storage and import the CPU graph.
-auto deviceDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
-        &resources, cpu, 0);
+// Wrap the Float32 HNSW storage and prepare it with the regular Dataset APIs.
+auto* flat = static_cast<const faiss::IndexFlat*>(cpu.storage);
+auto cpuVectors = faiss::gpu::Dataset::viewHost(
+        flat->get_xb(), cpu.ntotal, cpu.d, faiss::NumericType::Float32, cpu.d);
+auto deviceDataset = faiss::gpu::Dataset::makeDevicePadded(
+        &resources, cpuVectors, 0);
 faiss::gpu::GpuIndexCagra searchable(&resources, d);
 searchable.copyFrom(&cpu, deviceDataset); // isSearchReady() is true.
 ```
 
 The CPU index remains independent of the original Dataset after `copyTo`.
-`makeDevicePaddedFromIndex` preserves the floating-point dtype, including decoding
-signed Int8 CPU storage, and also accepts `IndexBinaryHNSWCagra`. After import,
-the GPU index depends on `deviceDataset`, not on the CPU index. For generic C++
-cloning, `faiss/gpu/GpuCloner.h` provides `indexCpuToGpu(resources, device,
-cpuIndex, dataset)` and `indexBinaryCpuToGpu(...)`; the caller owns the returned
-index and must retain the supplied dataset allocation.
+Keep CPU vector storage alive until the upload completes. Float16 storage can
+be viewed through the scalar quantizer's FP16 codes; signed Int8 codes must be
+decoded before creating a raw Int8 view. Binary storage uses `IndexBinaryFlat::xb`
+with dimensions measured in bytes. The GPU index borrows `deviceDataset`.
 
 A standard device view is searchable without a vector copy when its base address
 is 16-byte aligned and its row stride equals the dimension rounded up to a
@@ -340,12 +342,13 @@ allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
 
-CAGRA's pointer-based `train`/`add` methods, their numeric-type variants, and CPU
-imports without a Dataset now throw migration guidance. The deprecated
-`store_dataset` setting has no effect. Pointer APIs for other index families are
-unchanged. Dataset construction, build, attachment, and import APIs are C++ only;
-Python and C have no Dataset bindings yet. Existing CPU HNSW search and
-serialization remain available.
+CAGRA construction and CPU graph import require an explicit Dataset. The
+inherited pointer-based construction methods reject calls; use the Dataset
+overloads on `GpuIndexCagra` or `GpuIndexBinaryCagra`. Dataset ownership replaces
+`store_dataset`. Pointer APIs for other index families are unchanged. Dataset
+construction, build, attachment, and import APIs are C++ only; Python and C have
+no Dataset bindings yet. Existing CPU HNSW search and serialization remain
+available.
 
 ### A real-life benchmark
 

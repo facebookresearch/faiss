@@ -68,8 +68,6 @@ BinaryCuvsCagra::BinaryCuvsCagra(
                 "WARNING: IVF_PQ is not supported for binary CAGRA. "
                 "Defaulting to NN_DESCENT\n");
     }
-
-    reset();
 }
 
 BinaryCuvsCagra::BinaryCuvsCagra(
@@ -129,9 +127,10 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
 
     const auto n = dataset.getNumRows();
     const auto* data = static_cast<const uint8_t*>(dataset.getData());
+    using CuvsIndex =
+            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>;
     auto buildGraph = [&](auto datasetView) {
-        return std::make_shared<
-                cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>(
+        return std::make_shared<CuvsIndex>(
                 raft_handle,
                 cuvs::neighbors::cagra::build(
                         raft_handle, index_params_, datasetView),
@@ -144,7 +143,8 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
         auto view =
                 cuvs::neighbors::device_padded_dataset_view<uint8_t, int64_t>(
                         physical, dataset.getDim());
-        cuvs_index = buildGraph(view);
+        cuvs_index = std::make_shared<CuvsIndex>(cuvs::neighbors::cagra::build(
+                raft_handle, index_params_, view));
     } else if (
             dataset.getRowStride() != dataset.getDim() &&
             !(dataset.isDevice() && useNNDescent)) {
@@ -172,9 +172,6 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
     }
     dataset_.emplace(dataset.view());
     n_ = n;
-    if (dataset.isCagraCompatible()) {
-        updateDataset(dataset);
-    }
 }
 
 void BinaryCuvsCagra::updateDataset(const Dataset& dataset) {
@@ -199,11 +196,10 @@ void BinaryCuvsCagra::updateDataset(const Dataset& dataset) {
     *cuvs_index = cuvs::neighbors::cagra::update_dataset(
             raft_handle, std::move(*cuvs_index), view);
     dataset_.emplace(std::move(borrowed));
-    searchReady_ = true;
 }
 
 bool BinaryCuvsCagra::isSearchReady() const {
-    return cuvs_index && searchReady_;
+    return cuvs_index && dataset_ && dataset_->isCagraCompatible();
 }
 
 void BinaryCuvsCagra::search(
@@ -312,13 +308,6 @@ void BinaryCuvsCagra::search(
                 int col_idx = i % k_;
                 return static_cast<int>(distances_float_view(row_idx, col_idx));
             });
-}
-
-void BinaryCuvsCagra::reset() {
-    cuvs_index.reset();
-    dataset_.reset();
-    n_ = 0;
-    searchReady_ = false;
 }
 
 idx_t BinaryCuvsCagra::get_knngraph_degree() const {

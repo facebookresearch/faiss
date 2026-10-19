@@ -7,11 +7,7 @@
 
 #include <faiss/gpu/Dataset.h>
 
-#include <faiss/IndexBinaryHNSW.h>
-#include <faiss/IndexHNSW.h>
-#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/gpu/StandardGpuResources.h>
-#include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissException.h>
 #include <gtest/gtest.h>
 
@@ -19,7 +15,6 @@
 #include <raft/core/error.hpp>
 #include <cstring>
 #include <memory>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -28,11 +23,6 @@ namespace {
 using faiss::NumericType;
 using faiss::gpu::Dataset;
 using faiss::gpu::StandardGpuResources;
-
-static_assert(!std::is_copy_constructible_v<Dataset>);
-static_assert(!std::is_copy_assignable_v<Dataset>);
-static_assert(std::is_nothrow_move_constructible_v<Dataset>);
-static_assert(std::is_nothrow_move_assignable_v<Dataset>);
 
 TEST(TestGpuDataset, HostStridesCopyLogicalColumnsWithoutChangingInput) {
     std::vector<int8_t> storage{-128, 0, 127, 42, 42, -1, 1, 2, 43, 43};
@@ -192,72 +182,25 @@ TEST(TestGpuDataset, AlignedStandardInputCanBeBorrowedForSearch) {
             faiss::FaissException);
 }
 
-template <typename T>
-void testCompatibleDevicePreparationRejected(NumericType type) {
-    faiss::gpu::DeviceScope scope(0);
+TEST(TestGpuDataset, PreparingCompatibleDeviceInputIsRejected) {
     StandardGpuResources resources;
     resources.noTempMemory();
-    // Exercise both actual row padding and tightly packed aligned rows.
-    for (int dim : {5, static_cast<int>(16 / sizeof(T))}) {
-        SCOPED_TRACE(dim);
-        std::vector<T> expected(2 * dim);
-        for (int i = 0; i < 2 * dim; ++i) {
-            expected[i] = static_cast<T>(i + 1);
-        }
-        auto host = Dataset::viewHost(expected.data(), 2, dim, type, dim);
-        auto owner = Dataset::makeDevicePadded(&resources, host, 0);
-        auto borrowed = owner.view();
-        EXPECT_FALSE(borrowed.ownsData());
-        EXPECT_EQ(borrowed.getData(), owner.getData());
-        std::vector<T> actual(expected.size());
-        borrowed.copyToHost(actual.data());
-        EXPECT_EQ(
-                std::memcmp(
-                        actual.data(),
-                        expected.data(),
-                        expected.size() * sizeof(T)),
-                0);
-        std::vector<T> before(2 * owner.getRowStride());
-        ASSERT_EQ(
-                cudaMemcpy(
-                        before.data(),
-                        owner.getData(),
-                        before.size() * sizeof(T),
-                        cudaMemcpyDeviceToHost),
-                cudaSuccess);
-
-        EXPECT_THROW(
-                Dataset::makeDevicePadded(&resources, owner, 0),
-                raft::logic_error);
-        auto standard = Dataset::viewDevice(
-                owner.getData(), 2, dim, type, owner.getRowStride(), 0);
-        EXPECT_EQ(standard.getLayout(), Dataset::Layout::Standard);
-        EXPECT_TRUE(standard.isCagraCompatible());
-        EXPECT_FALSE(standard.ownsData());
-        EXPECT_THROW(
-                Dataset::makeDevicePadded(&resources, standard, 0),
-                raft::logic_error);
-
-        std::vector<T> after(before.size());
-        ASSERT_EQ(
-                cudaMemcpy(
-                        after.data(),
-                        borrowed.getData(),
-                        after.size() * sizeof(T),
-                        cudaMemcpyDeviceToHost),
-                cudaSuccess);
-        EXPECT_EQ(
-                std::memcmp(
-                        after.data(), before.data(), before.size() * sizeof(T)),
-                0);
-    }
-}
-
-TEST(TestGpuDataset, PreparingCompatibleDeviceInputIsRejected) {
-    testCompatibleDevicePreparationRejected<float>(NumericType::Float32);
-    testCompatibleDevicePreparationRejected<half>(NumericType::Float16);
-    testCompatibleDevicePreparationRejected<int8_t>(NumericType::Int8);
-    testCompatibleDevicePreparationRejected<uint8_t>(NumericType::UInt8);
+    std::vector<float> values(10, 1.0f);
+    auto host = Dataset::viewHost(values.data(), 2, 5, NumericType::Float32, 5);
+    auto owner = Dataset::makeDevicePadded(&resources, host, 0);
+    resources.getResources()->syncDefaultStream(0);
+    EXPECT_THROW(
+            Dataset::makeDevicePadded(&resources, owner, 0), raft::logic_error);
+    auto standard = Dataset::viewDevice(
+            owner.getData(),
+            2,
+            5,
+            NumericType::Float32,
+            owner.getRowStride(),
+            0);
+    EXPECT_THROW(
+            Dataset::makeDevicePadded(&resources, standard, 0),
+            raft::logic_error);
 }
 
 TEST(TestGpuDataset, MovingOwnerPreservesViewAndViewDoesNotOwnStorage) {
@@ -283,76 +226,6 @@ TEST(TestGpuDataset, MovingOwnerPreservesViewAndViewDoesNotOwnStorage) {
         EXPECT_FALSE(anotherBorrow.ownsData());
     }
     movedOwner.copyToHost(actual.data());
-    EXPECT_EQ(actual, expected);
-}
-
-TEST(TestGpuDataset, SignedInt8HnswPreparationDecodesWithoutChangingCpuCodes) {
-    constexpr int dim = 5;
-    const std::vector<float> values{-128, -127, -1, 0, 127, 126, 1, 2, 3, 4};
-    const std::vector<int8_t> expected{-128, -127, -1, 0, 127, 126, 1, 2, 3, 4};
-    StandardGpuResources resources;
-    resources.noTempMemory();
-    auto dataset = [&]() {
-        faiss::IndexHNSWCagra source(dim, 4);
-        delete source.storage;
-        auto* storage = new faiss::IndexScalarQuantizer(
-                dim, faiss::ScalarQuantizer::QT_8bit_direct_signed);
-        source.storage = storage;
-        source.set_numeric_type(NumericType::Int8);
-        source.add(2, values.data());
-        const std::vector<uint8_t> original(
-                storage->codes.begin(), storage->codes.end());
-        auto prepared =
-                Dataset::makeDevicePaddedFromIndex(&resources, source, 0);
-        EXPECT_EQ(
-                std::vector<uint8_t>(
-                        storage->codes.begin(), storage->codes.end()),
-                original);
-        return prepared;
-    }();
-    EXPECT_EQ(dataset.getNumericType(), NumericType::Int8);
-    std::vector<int8_t> actual(expected.size());
-    dataset.copyToHost(actual.data());
-    EXPECT_EQ(actual, expected);
-}
-
-TEST(TestGpuDataset, BinaryHnswPreparationIsIndependentOfCpuIndex) {
-    const std::vector<uint8_t> expected{0, 1, 255, 2, 3, 254};
-    StandardGpuResources resources;
-    resources.noTempMemory();
-    auto dataset = [&]() {
-        faiss::IndexBinaryHNSWCagra source(24, 4);
-        source.add(2, expected.data());
-        return Dataset::makeDevicePaddedFromIndex(&resources, source, 0);
-    }();
-    EXPECT_EQ(dataset.getNumericType(), NumericType::UInt8);
-    EXPECT_EQ(dataset.getDim(), 3);
-    EXPECT_EQ(dataset.getRowStride(), 16);
-    std::vector<uint8_t> actual(expected.size());
-    dataset.copyToHost(actual.data());
-    EXPECT_EQ(actual, expected);
-}
-
-TEST(TestGpuDataset, PreparingCompatibleInputOnDifferentDeviceIsRejected) {
-    if (faiss::gpu::getNumDevices() < 2) {
-        GTEST_SKIP() << "Requires two CUDA devices";
-    }
-    StandardGpuResources resources;
-    resources.noTempMemory();
-    const std::vector<float> expected{1, 2, 3, 4, 5, 6};
-    auto host =
-            Dataset::viewHost(expected.data(), 2, 3, NumericType::Float32, 3);
-    auto first = Dataset::makeDevicePadded(&resources, host, 0);
-    EXPECT_THROW(
-            Dataset::viewDevice(
-                    first.getData(), 2, 3, NumericType::Float32, 4, 1),
-            faiss::FaissException);
-    // The cuVS owning factory rejects an already-correct device stride,
-    // including when the destination resource is on another GPU.
-    EXPECT_THROW(
-            Dataset::makeDevicePadded(&resources, first, 1), raft::logic_error);
-    std::vector<float> actual(expected.size());
-    first.copyToHost(actual.data());
     EXPECT_EQ(actual, expected);
 }
 

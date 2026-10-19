@@ -41,45 +41,6 @@
 namespace faiss {
 namespace gpu {
 
-faiss::Index* indexCpuToGpu(
-        GpuResourcesProvider* provider,
-        int device,
-        const faiss::Index* index,
-        const Dataset& dataset) {
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
-    auto* source = dynamic_cast<const faiss::IndexHNSWCagra*>(index);
-    FAISS_THROW_IF_NOT_MSG(source, "Dataset import requires IndexHNSWCagra");
-    GpuIndexCagraConfig config;
-    config.device = device;
-    auto result = std::make_unique<GpuIndexCagra>(
-            provider, source->d, source->metric_type, config);
-    result->copyFrom(source, dataset);
-    return result.release();
-#else
-    FAISS_THROW_MSG("Dataset import requires a cuVS-enabled CAGRA build");
-#endif
-}
-
-faiss::IndexBinary* indexBinaryCpuToGpu(
-        GpuResourcesProvider* provider,
-        int device,
-        const faiss::IndexBinary* index,
-        const Dataset& dataset) {
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
-    auto* source = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index);
-    FAISS_THROW_IF_NOT_MSG(
-            source, "Dataset import requires IndexBinaryHNSWCagra");
-    GpuIndexCagraConfig config;
-    config.device = device;
-    auto result =
-            std::make_unique<GpuIndexBinaryCagra>(provider, source->d, config);
-    result->copyFrom(source, dataset);
-    return result.release();
-#else
-    FAISS_THROW_MSG("Dataset import requires a cuVS-enabled CAGRA build");
-#endif
-}
-
 /**********************************************************
  * Cloning to CPU
  **********************************************************/
@@ -279,7 +240,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
                 "CAGRA requires a caller-owned Dataset; use "
-                "indexCpuToGpu(provider, device, index, dataset)");
+                "GpuIndexCagra::copyFrom(cpuIndex, dataset)");
     }
 #endif
     else {
@@ -599,7 +560,7 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
             auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
                 "CAGRA requires a caller-owned Dataset; use "
-                "indexBinaryCpuToGpu(provider, device, index, dataset)");
+                "GpuIndexBinaryCagra::copyFrom(cpuIndex, dataset)");
     }
 #endif
     else {

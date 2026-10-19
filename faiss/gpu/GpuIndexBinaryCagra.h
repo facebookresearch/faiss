@@ -55,27 +55,19 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// Pointer-based construction is unsupported. Use a caller-owned Dataset.
     void add(idx_t n, const uint8_t* x) override;
     void train(idx_t n, const uint8_t* x) override;
-    void add_ex(idx_t n, const void* x, NumericType numericType) override;
-    void train_ex(idx_t n, const void* x, NumericType numericType) override;
 
 #ifndef SWIG
     /// Build the full graph, borrowing UInt8 vectors with dim == d / 8.
     /// The backing storage must remain alive and unchanged until all index
     /// operations have completed. Reset before building a second graph.
-    void train(const Dataset& dataset) override;
-    void add(const Dataset& dataset) override;
-    void train(Dataset&&) = delete;
-    void train(const Dataset&&) = delete;
-    void add(Dataset&&) = delete;
-    void add(const Dataset&&) = delete;
+    void train(const Dataset& dataset);
+    void add(const Dataset& dataset);
 
     /// Rebind search storage without changing the graph. The vectors and their
     /// ordering must match the training data. Requires compatible device data;
     /// any padding must be zero and the caller retains ownership. Previous
     /// work on the index stream completes before rebinding.
     void updateDataset(const Dataset& dataset);
-    void updateDataset(Dataset&&) = delete;
-    void updateDataset(const Dataset&&) = delete;
     bool isSearchReady() const;
 
     /// Copy the CPU graph while borrowing caller-supplied vectors in the same
@@ -84,12 +76,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     void copyFrom(
             const faiss::IndexBinaryHNSWCagra* index,
             const Dataset& dataset);
-    void copyFrom(const faiss::IndexBinaryHNSWCagra*, Dataset&&) = delete;
-    void copyFrom(const faiss::IndexBinaryHNSWCagra*, const Dataset&&) = delete;
 #endif
-
-    /// Unsupported without an explicit caller-owned Dataset.
-    void copyFrom(const faiss::IndexBinaryHNSWCagra* index);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance

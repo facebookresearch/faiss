@@ -23,14 +23,6 @@ namespace faiss {
 
 Index::~Index() = default;
 
-void Index::train(const gpu::Dataset&) {
-    FAISS_THROW_MSG("Dataset input is not supported by this index");
-}
-
-void Index::add(const gpu::Dataset&) {
-    FAISS_THROW_MSG("Dataset input is not supported by this index");
-}
-
 void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }

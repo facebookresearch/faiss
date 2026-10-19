@@ -75,10 +75,6 @@ class GpuIndex : public faiss::Index {
     /// `x` can be resident on the CPU or any GPU; copies are performed
     /// as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
-#ifndef SWIG
-    using Index::add;
-#endif
-
     void add(idx_t, const float* x) override;
     void add_ex(idx_t, const void* x, NumericType numeric_type) override;
 

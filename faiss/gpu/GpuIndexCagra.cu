@@ -652,16 +652,6 @@ void GpuIndexCagra::trainAllNeighbors_(const Dataset& input) {
             std::chrono::duration<double>(t_now - t_start).count());
 }
 
-void GpuIndexCagra::copyFrom_ex(const faiss::IndexHNSWCagra*, NumericType) {
-    FAISS_THROW_MSG(
-            "CAGRA CPU import requires caller-owned Dataset input; use copyFrom(cpuIndex, dataset) in C++");
-}
-
-void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra*) {
-    FAISS_THROW_MSG(
-            "CAGRA CPU import requires caller-owned Dataset input; use copyFrom(cpuIndex, dataset) in C++");
-}
-
 void GpuIndexCagra::copyFrom(
         const faiss::IndexHNSWCagra* index,
         const Dataset& dataset) {

@@ -7,22 +7,16 @@
 
 #include <faiss/gpu/Dataset.h>
 
-#include <faiss/IndexBinaryHNSW.h>
-#include <faiss/IndexFlat.h>
-#include <faiss/IndexHNSW.h>
-#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissAssert.h>
 
 #include <cuvs/neighbors/common.hpp>
-#include <raft/core/resource/cuda_stream.hpp>
 
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <utility>
-#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -126,33 +120,6 @@ struct TypedDatasetStorage : DatasetStorage {
 };
 
 template <typename T>
-std::unique_ptr<DatasetStorage> makeViewStorage(
-        const void* data,
-        idx_t numRows,
-        int dim,
-        idx_t rowStride,
-        int device,
-        Dataset::Layout layout) {
-    if (device < 0) {
-        using View = cuvs::neighbors::host_standard_dataset_view<T, int64_t>;
-        return std::make_unique<TypedDatasetStorage<View>>(
-                View(raft::make_host_matrix_view<const T, int64_t>(
-                             static_cast<const T*>(data), numRows, rowStride),
-                     static_cast<uint32_t>(dim)));
-    }
-    const auto matrix = raft::make_device_matrix_view<const T, int64_t>(
-            static_cast<const T*>(data), numRows, rowStride);
-    if (layout == Dataset::Layout::Padded) {
-        using View = cuvs::neighbors::device_padded_dataset_view<T, int64_t>;
-        return std::make_unique<TypedDatasetStorage<View>>(
-                View(matrix, static_cast<uint32_t>(dim)));
-    }
-    using View = cuvs::neighbors::device_standard_dataset_view<T, int64_t>;
-    return std::make_unique<TypedDatasetStorage<View>>(
-            View(matrix, static_cast<uint32_t>(dim)));
-}
-
-template <typename T>
 std::unique_ptr<DatasetStorage> makeOwnedStorage(
         GpuResources* resources,
         const Dataset& source,
@@ -178,24 +145,26 @@ std::unique_ptr<DatasetStorage> makeOwnedStorage(
 } // namespace
 
 struct Dataset::Impl {
+    const void* data;
     idx_t numRows;
     int dim;
     idx_t rowStride;
     NumericType numericType;
     int device;
     Layout layout;
-    bool ownsData = false;
     // Declared before storage so resources outlive the allocation.
     std::shared_ptr<GpuResources> resources;
     std::unique_ptr<DatasetStorage> storage;
 
-    Impl(idx_t rows,
+    Impl(const void* ptr,
+         idx_t rows,
          int columns,
          idx_t stride,
          NumericType type,
          int gpu,
          Layout l)
-            : numRows(rows),
+            : data(ptr),
+              numRows(rows),
               dim(columns),
               rowStride(stride),
               numericType(type),
@@ -203,32 +172,9 @@ struct Dataset::Impl {
               layout(l) {}
 
     ~Impl() {
-        if (ownsData) {
+        if (storage) {
             DeviceScope scope(device);
             storage.reset();
-        }
-    }
-
-    void createView(const void* data) {
-        switch (numericType) {
-            case NumericType::Float32:
-                storage = makeViewStorage<float>(
-                        data, numRows, dim, rowStride, device, layout);
-                break;
-            case NumericType::Float16:
-                storage = makeViewStorage<half>(
-                        data, numRows, dim, rowStride, device, layout);
-                break;
-            case NumericType::Int8:
-                storage = makeViewStorage<int8_t>(
-                        data, numRows, dim, rowStride, device, layout);
-                break;
-            case NumericType::UInt8:
-                storage = makeViewStorage<uint8_t>(
-                        data, numRows, dim, rowStride, device, layout);
-                break;
-            default:
-                FAISS_THROW_MSG("Unsupported Dataset numeric type");
         }
     }
 };
@@ -252,8 +198,7 @@ Dataset Dataset::viewHost(
     validateMetadata(data, numRows, dim, numericType, rowStride);
     validateHostPointer(data, numRows);
     auto impl = std::make_unique<Impl>(
-            numRows, dim, rowStride, numericType, -1, Layout::Standard);
-    impl->createView(data);
+            data, numRows, dim, rowStride, numericType, -1, Layout::Standard);
     return Dataset(std::move(impl));
 }
 
@@ -267,8 +212,13 @@ Dataset Dataset::viewDevice(
     validateMetadata(data, numRows, dim, numericType, rowStride);
     validateDevicePointer(data, numRows, device);
     auto impl = std::make_unique<Impl>(
-            numRows, dim, rowStride, numericType, device, Layout::Standard);
-    impl->createView(data);
+            data,
+            numRows,
+            dim,
+            rowStride,
+            numericType,
+            device,
+            Layout::Standard);
     return Dataset(std::move(impl));
 }
 
@@ -286,7 +236,6 @@ Dataset Dataset::viewDevicePadded(
             "A padded Dataset requires 16-byte base alignment and the exact "
             "CAGRA row stride");
     result.impl_->layout = Layout::Padded;
-    result.impl_->createView(data);
     return result;
 }
 
@@ -304,6 +253,7 @@ Dataset Dataset::makeDevicePadded(
     validateMetadata(
             source.getData(), src.numRows, src.dim, src.numericType, stride);
     auto impl = std::make_unique<Impl>(
+            nullptr,
             src.numRows,
             src.dim,
             stride,
@@ -334,110 +284,12 @@ Dataset Dataset::makeDevicePadded(
         default:
             FAISS_THROW_MSG("Unsupported Dataset numeric type");
     }
-    impl->ownsData = true;
     return Dataset(std::move(impl));
 }
 
-Dataset Dataset::makeDevicePaddedFromIndex(
-        GpuResourcesProvider* resources,
-        const IndexHNSWCagra& source,
-        int device) {
-    FAISS_THROW_IF_NOT_MSG(
-            source.storage, "CPU HNSW index has no vector storage");
-    FAISS_THROW_IF_NOT_MSG(
-            source.storage->ntotal == source.ntotal &&
-                    source.storage->d == source.d,
-            "CPU HNSW vector storage does not match index metadata");
-    const NumericType type = source.get_numeric_type();
-    const size_t size = elementSize(type);
-    const void* data = nullptr;
-    std::vector<int8_t> decoded;
-    if (type == NumericType::Float32) {
-        const auto* flat = dynamic_cast<const IndexFlat*>(source.storage);
-        FAISS_THROW_IF_NOT_MSG(
-                flat, "Float32 HNSW import requires flat storage");
-        data = flat->get_xb();
-        validateMetadata(data, source.ntotal, source.d, type, source.d);
-        FAISS_THROW_IF_NOT_MSG(
-                flat->codes.size() >=
-                        static_cast<size_t>(source.ntotal) * source.d * size,
-                "CPU HNSW flat storage is truncated");
-    } else {
-        const auto* sq =
-                dynamic_cast<const IndexScalarQuantizer*>(source.storage);
-        FAISS_THROW_IF_NOT_MSG(
-                sq, "HNSW import requires scalar quantizer storage");
-        const auto expectedType = type == NumericType::Float16
-                ? ScalarQuantizer::QT_fp16
-                : type == NumericType::Int8
-                ? ScalarQuantizer::QT_8bit_direct_signed
-                : ScalarQuantizer::QT_8bit_direct;
-        FAISS_THROW_IF_NOT_MSG(
-                sq->sq.qtype == expectedType,
-                "CPU HNSW scalar encoding does not match its numeric type");
-        validateMetadata(
-                sq->codes.data(), source.ntotal, source.d, type, source.d);
-        FAISS_THROW_IF_NOT_MSG(
-                sq->codes.size() >=
-                        static_cast<size_t>(source.ntotal) * source.d * size,
-                "CPU HNSW scalar storage is truncated");
-        if (type == NumericType::Int8) {
-            decoded.resize(source.ntotal * source.d);
-            for (size_t i = 0; i < decoded.size(); ++i) {
-                decoded[i] = static_cast<int8_t>(
-                        static_cast<int>(sq->codes[i]) - 128);
-            }
-            data = decoded.data();
-        } else {
-            data = sq->codes.data();
-        }
-    }
-    auto view = viewHost(data, source.ntotal, source.d, type, source.d);
-    auto dataset = makeDevicePadded(resources, view, device);
-    // The returned Dataset must not depend on CPU storage or decoded
-    // temporaries.
-    DeviceScope scope(device);
-    raft::resource::sync_stream(
-            dataset.impl_->resources->getRaftHandle(device));
-    return dataset;
-}
-
-Dataset Dataset::makeDevicePaddedFromIndex(
-        GpuResourcesProvider* resources,
-        const IndexBinaryHNSWCagra& source,
-        int device) {
-    const auto* flat = dynamic_cast<const IndexBinaryFlat*>(source.storage);
-    FAISS_THROW_IF_NOT_MSG(flat, "Binary HNSW import requires flat storage");
-    FAISS_THROW_IF_NOT_MSG(
-            source.d > 0 && source.d % 8 == 0 &&
-                    flat->ntotal == source.ntotal && flat->d == source.d,
-            "CPU binary HNSW vector storage does not match index metadata");
-    validateMetadata(
-            flat->xb.data(),
-            source.ntotal,
-            source.d / 8,
-            NumericType::UInt8,
-            source.d / 8);
-    FAISS_THROW_IF_NOT_MSG(
-            flat->xb.size() >=
-                    static_cast<size_t>(source.ntotal) * (source.d / 8),
-            "CPU binary HNSW storage is truncated");
-    auto view = viewHost(
-            flat->xb.data(),
-            source.ntotal,
-            source.d / 8,
-            NumericType::UInt8,
-            source.d / 8);
-    auto dataset = makeDevicePadded(resources, view, device);
-    // The returned Dataset must not depend on CPU storage.
-    DeviceScope scope(device);
-    raft::resource::sync_stream(
-            dataset.impl_->resources->getRaftHandle(device));
-    return dataset;
-}
-
 const void* Dataset::getData() const {
-    return getImpl().storage->getData();
+    const auto& impl = getImpl();
+    return impl.storage ? impl.storage->getData() : impl.data;
 }
 idx_t Dataset::getNumRows() const {
     return getImpl().numRows;
@@ -461,7 +313,7 @@ bool Dataset::isDevice() const {
     return getImpl().device >= 0;
 }
 bool Dataset::ownsData() const {
-    return getImpl().ownsData;
+    return bool(getImpl().storage);
 }
 bool Dataset::isCagraCompatible() const {
     const auto& impl = getImpl();
@@ -471,16 +323,16 @@ bool Dataset::isCagraCompatible() const {
                     impl.dim, elementSize(impl.numericType));
 }
 
-Dataset Dataset::view() const& {
+Dataset Dataset::view() const {
     const auto& src = getImpl();
     auto impl = std::make_unique<Impl>(
+            getData(),
             src.numRows,
             src.dim,
             src.rowStride,
             src.numericType,
             src.device,
             src.layout);
-    impl->createView(getData());
     return Dataset(std::move(impl));
 }
 

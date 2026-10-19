@@ -380,8 +380,18 @@ void copyFromTest(
         res.noTempMemory();
 
         // convert to gpu index
-        auto importedDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
-                &res, cpuIndex, 0);
+        const auto* cpuStorage =
+                dynamic_cast<const faiss::IndexBinaryFlat*>(cpuIndex.storage);
+        ASSERT_NE(cpuStorage, nullptr);
+        auto cpuDataset = faiss::gpu::Dataset::viewHost(
+                cpuStorage->xb.data(),
+                cpuIndex.ntotal,
+                cpuIndex.d / 8,
+                faiss::NumericType::UInt8,
+                cpuIndex.d / 8);
+        auto importedDataset =
+                faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
+        res.getResources()->syncDefaultStream(0);
         faiss::gpu::GpuIndexBinaryCagra copiedGpuIndex(&res, cpuIndex.d);
         copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
 
@@ -570,56 +580,6 @@ using faiss::gpu::Dataset;
 using faiss::gpu::GpuIndexBinaryCagra;
 using faiss::gpu::StandardGpuResources;
 
-struct TrainDataset {
-    template <typename Index, typename Data>
-    auto operator()(Index& index, Data&& data) const
-            -> decltype(index.train(std::forward<Data>(data)));
-};
-
-struct AddDataset {
-    template <typename Index, typename Data>
-    auto operator()(Index& index, Data&& data) const
-            -> decltype(index.add(std::forward<Data>(data)));
-};
-
-struct UpdateDataset {
-    template <typename Index, typename Data>
-    auto operator()(Index& index, Data&& data) const
-            -> decltype(index.updateDataset(std::forward<Data>(data)));
-};
-
-struct CopyDataset {
-    template <typename Index, typename CpuIndex, typename Data>
-    auto operator()(Index& index, const CpuIndex* source, Data&& data) const
-            -> decltype(index.copyFrom(source, std::forward<Data>(data)));
-};
-
-struct CloneBinaryDataset {
-    template <typename Data>
-    auto operator()(Data&& data) const
-            -> decltype(faiss::gpu::indexBinaryCpuToGpu(
-                    nullptr,
-                    0,
-                    nullptr,
-                    std::forward<Data>(data)));
-};
-
-template <typename Operation, typename... Args>
-constexpr bool acceptsDatasetLvaluesOnly =
-        std::is_invocable_v<Operation, Args..., Dataset&> &&
-        std::is_invocable_v<Operation, Args..., const Dataset&> &&
-        !std::is_invocable_v<Operation, Args..., Dataset&&> &&
-        !std::is_invocable_v<Operation, Args..., const Dataset&&>;
-
-static_assert(acceptsDatasetLvaluesOnly<TrainDataset, GpuIndexBinaryCagra&>);
-static_assert(acceptsDatasetLvaluesOnly<AddDataset, GpuIndexBinaryCagra&>);
-static_assert(acceptsDatasetLvaluesOnly<UpdateDataset, GpuIndexBinaryCagra&>);
-static_assert(acceptsDatasetLvaluesOnly<
-              CopyDataset,
-              GpuIndexBinaryCagra&,
-              const faiss::IndexBinaryHNSWCagra*>);
-static_assert(acceptsDatasetLvaluesOnly<CloneBinaryDataset>);
-
 constexpr idx_t kRows = 512;
 
 faiss::gpu::GpuIndexCagraConfig config() {
@@ -658,8 +618,6 @@ TEST(TestGpuIndexBinaryCagra,
      PointerConstructionRejectedThroughBaseInterfaces) {
     StandardGpuResources resources;
     auto bytes = binaryData(16);
-    auto byteView =
-            Dataset::viewHost(bytes.data(), kRows, 16, NumericType::UInt8, 16);
     GpuIndexBinaryCagra binary(&resources, 128, config());
     faiss::IndexBinary* binaryBase = &binary;
     EXPECT_THROW(binaryBase->train(kRows, bytes.data()), faiss::FaissException);
@@ -674,8 +632,6 @@ TEST(TestGpuIndexBinaryCagra,
 
     faiss::IndexBinaryFlat binaryFlat(128);
     binaryBase = &binaryFlat;
-    EXPECT_THROW(binaryBase->train(byteView), faiss::FaissException);
-    EXPECT_THROW(binaryBase->add(byteView), faiss::FaissException);
     EXPECT_NO_THROW(binaryBase->add(kRows, bytes.data()));
     EXPECT_EQ(binaryFlat.ntotal, kRows);
 }
@@ -768,8 +724,7 @@ TEST(TestGpuIndexBinaryCagra, DatasetGraphOnlyAttachmentAndCpuRoundTrip) {
             values.data(), kRows, bytes, NumericType::UInt8, bytes);
     auto storage = Dataset::makeDevicePadded(&resources, source, 0);
     GpuIndexBinaryCagra index(&resources, bytes * 8, config());
-    faiss::IndexBinary* base = &index;
-    base->add(source);
+    index.add(source);
     EXPECT_FALSE(index.isSearchReady());
     int distance;
     idx_t label;
@@ -806,20 +761,29 @@ TEST(TestGpuIndexBinaryCagra, DatasetGraphOnlyAttachmentAndCpuRoundTrip) {
     auto* restoredCagra =
             dynamic_cast<faiss::IndexBinaryHNSWCagra*>(restored.get());
     ASSERT_NE(restoredCagra, nullptr);
+    const auto* restoredStorage =
+            dynamic_cast<const faiss::IndexBinaryFlat*>(restoredCagra->storage);
+    ASSERT_NE(restoredStorage, nullptr);
+    auto restoredDataset = Dataset::viewHost(
+            restoredStorage->xb.data(),
+            restoredCagra->ntotal,
+            restoredCagra->d / 8,
+            NumericType::UInt8,
+            restoredCagra->d / 8);
     auto importedStorage =
-            Dataset::makeDevicePaddedFromIndex(&resources, *restoredCagra, 0);
-    std::unique_ptr<faiss::IndexBinary> imported(
-            faiss::gpu::indexBinaryCpuToGpu(
-                    &resources, 0, restored.get(), importedStorage));
+            Dataset::makeDevicePadded(&resources, restoredDataset, 0);
+    GpuIndexBinaryCagra imported(&resources, bytes * 8, config());
+    imported.copyFrom(restoredCagra, importedStorage);
     EXPECT_THROW(
             faiss::gpu::index_binary_cpu_to_gpu(&resources, 0, restored.get()),
             faiss::FaissException);
+    resources.getResources()->syncDefaultStream(0);
     restored.reset();
     index.reset();
     EXPECT_FALSE(index.isSearchReady());
     index.train(storage);
     checkBinarySearch(index, values.data());
-    checkBinarySearch(*imported, values.data());
+    checkBinarySearch(imported, values.data());
 }
 
 void checkStridedDeviceGraphOnly(faiss::gpu::graph_build_algo buildAlgo) {

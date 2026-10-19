@@ -22,7 +22,9 @@
  */
 
 #include <cuda_fp16.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuCloner.h>
@@ -719,8 +721,17 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
-        auto importedDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
-                &res, cpuIndex, 0);
+        const auto* cpuStorage =
+                dynamic_cast<const faiss::IndexFlat*>(cpuIndex.storage);
+        ASSERT_NE(cpuStorage, nullptr);
+        auto cpuDataset = faiss::gpu::Dataset::viewHost(
+                cpuStorage->get_xb(),
+                cpuIndex.ntotal,
+                cpuIndex.d,
+                faiss::NumericType::Float32,
+                cpuIndex.d);
+        auto importedDataset =
+                faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
         copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
 
@@ -848,8 +859,19 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
-        auto importedDataset = faiss::gpu::Dataset::makeDevicePaddedFromIndex(
-                &res, cpuIndex, 0);
+        const auto* cpuStorage =
+                dynamic_cast<const faiss::IndexScalarQuantizer*>(
+                        cpuIndex.storage);
+        ASSERT_NE(cpuStorage, nullptr);
+        ASSERT_EQ(cpuStorage->sq.qtype, faiss::ScalarQuantizer::QT_fp16);
+        auto cpuDataset = faiss::gpu::Dataset::viewHost(
+                cpuStorage->codes.data(),
+                cpuIndex.ntotal,
+                cpuIndex.d,
+                faiss::NumericType::Float16,
+                cpuIndex.d);
+        auto importedDataset =
+                faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
         copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
 
@@ -1033,55 +1055,6 @@ using faiss::gpu::Dataset;
 using faiss::gpu::GpuIndexCagra;
 using faiss::gpu::StandardGpuResources;
 
-struct TrainDataset {
-    template <typename Index, typename Data>
-    auto operator()(Index& index, Data&& data) const
-            -> decltype(index.train(std::forward<Data>(data)));
-};
-
-struct AddDataset {
-    template <typename Index, typename Data>
-    auto operator()(Index& index, Data&& data) const
-            -> decltype(index.add(std::forward<Data>(data)));
-};
-
-struct UpdateDataset {
-    template <typename Index, typename Data>
-    auto operator()(Index& index, Data&& data) const
-            -> decltype(index.updateDataset(std::forward<Data>(data)));
-};
-
-struct CopyDataset {
-    template <typename Index, typename CpuIndex, typename Data>
-    auto operator()(Index& index, const CpuIndex* source, Data&& data) const
-            -> decltype(index.copyFrom(source, std::forward<Data>(data)));
-};
-
-struct CloneDataset {
-    template <typename Data>
-    auto operator()(Data&& data) const -> decltype(faiss::gpu::indexCpuToGpu(
-            nullptr,
-            0,
-            nullptr,
-            std::forward<Data>(data)));
-};
-
-template <typename Operation, typename... Args>
-constexpr bool acceptsDatasetLvaluesOnly =
-        std::is_invocable_v<Operation, Args..., Dataset&> &&
-        std::is_invocable_v<Operation, Args..., const Dataset&> &&
-        !std::is_invocable_v<Operation, Args..., Dataset&&> &&
-        !std::is_invocable_v<Operation, Args..., const Dataset&&>;
-
-static_assert(acceptsDatasetLvaluesOnly<TrainDataset, GpuIndexCagra&>);
-static_assert(acceptsDatasetLvaluesOnly<AddDataset, GpuIndexCagra&>);
-static_assert(acceptsDatasetLvaluesOnly<UpdateDataset, GpuIndexCagra&>);
-static_assert(acceptsDatasetLvaluesOnly<
-              CopyDataset,
-              GpuIndexCagra&,
-              const faiss::IndexHNSWCagra*>);
-static_assert(acceptsDatasetLvaluesOnly<CloneDataset>);
-
 constexpr idx_t kRows = 512;
 
 faiss::gpu::GpuIndexCagraConfig config() {
@@ -1120,8 +1093,6 @@ void checkFloatSearch(faiss::Index& index, const float* queries) {
 TEST(TestGpuIndexCagra, PointerConstructionRejectedThroughBaseInterfaces) {
     StandardGpuResources resources;
     auto floats = floatData(16);
-    auto floatView = Dataset::viewHost(
-            floats.data(), kRows, 16, NumericType::Float32, 16);
     GpuIndexCagra cagra(&resources, 16, faiss::METRIC_L2, config());
     faiss::Index* base = &cagra;
     EXPECT_THROW(base->train(kRows, floats.data()), faiss::FaissException);
@@ -1136,8 +1107,6 @@ TEST(TestGpuIndexCagra, PointerConstructionRejectedThroughBaseInterfaces) {
 
     faiss::gpu::GpuIndexFlatL2 flat(&resources, 16);
     base = &flat;
-    EXPECT_THROW(base->train(floatView), faiss::FaissException);
-    EXPECT_THROW(base->add(floatView), faiss::FaissException);
     EXPECT_NO_THROW(base->add(kRows, floats.data()));
     EXPECT_EQ(flat.ntotal, kRows);
 }
@@ -1177,8 +1146,7 @@ TEST(TestGpuIndexCagra, CompatibleStandardDeviceBorrowsWithoutOwning) {
         EXPECT_EQ(standard.getData(), storage.getData());
         EXPECT_FALSE(standard.ownsData());
         EXPECT_TRUE(standard.isCagraCompatible());
-        faiss::Index* base = &index;
-        base->train(standard);
+        index.train(standard);
     }
     EXPECT_TRUE(index.isSearchReady());
     auto movedStorage = std::move(storage);
@@ -1205,8 +1173,7 @@ TEST(TestGpuIndexCagra, GraphOnlyHostExportAndExplicitAttachment) {
             strided.data(), kRows, dim, NumericType::Float32, stride);
     auto storage = Dataset::makeDevicePadded(&resources, source, 0);
     GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, config());
-    faiss::Index* base = &index;
-    base->train(source);
+    index.train(source);
     EXPECT_TRUE(index.is_trained);
     EXPECT_FALSE(index.isSearchReady());
     float distance;
@@ -1272,17 +1239,25 @@ TEST(TestGpuIndexCagra, GraphOnlyHostExportAndExplicitAttachment) {
     std::unique_ptr<faiss::Index> restored(faiss::read_index(&reader));
     auto* restoredCagra = dynamic_cast<faiss::IndexHNSWCagra*>(restored.get());
     ASSERT_NE(restoredCagra, nullptr);
+    const auto* restoredStorage =
+            dynamic_cast<const faiss::IndexFlat*>(restoredCagra->storage);
+    ASSERT_NE(restoredStorage, nullptr);
+    auto restoredDataset = Dataset::viewHost(
+            restoredStorage->get_xb(),
+            restoredCagra->ntotal,
+            restoredCagra->d,
+            NumericType::Float32,
+            restoredCagra->d);
     auto importedStorage =
-            Dataset::makeDevicePaddedFromIndex(&resources, *restoredCagra, 0);
-    std::unique_ptr<faiss::Index> imported(
-            faiss::gpu::indexCpuToGpu(
-                    &resources, 0, restored.get(), importedStorage));
+            Dataset::makeDevicePadded(&resources, restoredDataset, 0);
+    GpuIndexCagra imported(&resources, dim, faiss::METRIC_L2, config());
+    imported.copyFrom(restoredCagra, importedStorage);
     EXPECT_THROW(
             faiss::gpu::index_cpu_to_gpu(&resources, 0, restored.get()),
             faiss::FaissException);
     restored.reset();
     index.reset();
-    checkFloatSearch(*imported, values.data());
+    checkFloatSearch(imported, values.data());
     checkFloatSearch(cpu, values.data());
 }
 
@@ -1542,11 +1517,40 @@ void checkTypedExport(NumericType type) {
                     original.size() * sizeof(T)),
             0);
 
-    auto importedStorage =
-            Dataset::makeDevicePaddedFromIndex(&resources, cpu, 0);
+    const auto* cpuStorage =
+            dynamic_cast<const faiss::IndexScalarQuantizer*>(cpu.storage);
+    ASSERT_NE(cpuStorage, nullptr);
+    const std::vector<uint8_t> cpuCodes(
+            cpuStorage->codes.begin(), cpuStorage->codes.end());
+    const void* cpuData = cpuStorage->codes.data();
+    std::vector<int8_t> signedValues;
+    if constexpr (std::is_same_v<T, int8_t>) {
+        ASSERT_EQ(
+                cpuStorage->sq.qtype,
+                faiss::ScalarQuantizer::QT_8bit_direct_signed);
+        // CPU scalar codes store signed Int8 values with a 128 offset.
+        signedValues.resize(cpuCodes.size());
+        std::transform(
+                cpuCodes.begin(),
+                cpuCodes.end(),
+                signedValues.begin(),
+                [](uint8_t code) {
+                    return static_cast<int8_t>(static_cast<int>(code) - 128);
+                });
+        cpuData = signedValues.data();
+    } else {
+        ASSERT_EQ(cpuStorage->sq.qtype, faiss::ScalarQuantizer::QT_fp16);
+    }
+    auto cpuDataset =
+            Dataset::viewHost(cpuData, cpu.ntotal, cpu.d, type, cpu.d);
+    auto importedStorage = Dataset::makeDevicePadded(&resources, cpuDataset, 0);
     EXPECT_EQ(importedStorage.getNumericType(), type);
     std::vector<T> decoded(values.size());
     importedStorage.copyToHost(decoded.data());
+    EXPECT_EQ(
+            std::vector<uint8_t>(
+                    cpuStorage->codes.begin(), cpuStorage->codes.end()),
+            cpuCodes);
     EXPECT_EQ(
             std::memcmp(
                     decoded.data(),

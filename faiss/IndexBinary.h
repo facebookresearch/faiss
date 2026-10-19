@@ -46,18 +46,6 @@ struct IndexBinary {
 
     virtual ~IndexBinary();
 
-#ifndef SWIG
-    /** Build using caller-owned dataset storage. Unsupported by default.
-     * Implementations that borrow storage document its required lifetime.
-     */
-    virtual void train(const gpu::Dataset& dataset);
-    virtual void add(const gpu::Dataset& dataset);
-    void train(gpu::Dataset&&) = delete;
-    void train(const gpu::Dataset&&) = delete;
-    void add(gpu::Dataset&&) = delete;
-    void add(const gpu::Dataset&&) = delete;
-#endif
-
     /** Perform training on a representative set of vectors.
      *
      * @param n      nb of training vectors

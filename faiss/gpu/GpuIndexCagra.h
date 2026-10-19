@@ -221,9 +221,6 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
     std::shared_ptr<IVFPQBuildCagraConfig> ivf_pq_params{nullptr};
     std::shared_ptr<IVFPQSearchCagraConfig> ivf_pq_search_params{nullptr};
     float refine_rate = 2.0f;
-    /// Deprecated: Dataset input controls storage and search readiness.
-    /// This field has no effect; CAGRA never owns indexed vector storage.
-    bool store_dataset = true;
 
     /// Whether to use MST optimization to guarantee graph connectivity.
     bool guarantee_connectivity = false;
@@ -322,30 +319,22 @@ struct GpuIndexCagra : public GpuIndex {
     /// Build the full graph while borrowing dataset storage. The backing
     /// allocation must remain alive and unchanged through index use and all
     /// outstanding GPU work. Call reset() before building again.
-    void train(const Dataset& dataset) override;
-    void train(Dataset&&) = delete;
-    void train(const Dataset&&) = delete;
+    void train(const Dataset& dataset);
 
     /// Equivalent to train(dataset); incremental insertion is unsupported.
-    void add(const Dataset& dataset) override;
-    void add(Dataset&&) = delete;
-    void add(const Dataset&&) = delete;
+    void add(const Dataset& dataset);
 
     /// Attach search-compatible device storage without changing the graph.
     /// Shape, dtype and vector ordering must match the trained dataset. The
     /// values must be the same; this method does not rebuild for changed data.
     /// Previous work on this index's stream completes before rebinding.
     void updateDataset(const Dataset& dataset);
-    void updateDataset(Dataset&&) = delete;
-    void updateDataset(const Dataset&&) = delete;
     bool isSearchReady() const;
 
     /// Import the CPU graph and borrow the supplied dataset. The dataset must
     /// contain the CPU index's vectors in the same order. The CPU index may be
     /// released after this call only when dataset does not borrow its storage.
     void copyFrom(const faiss::IndexHNSWCagra* index, const Dataset& dataset);
-    void copyFrom(const faiss::IndexHNSWCagra*, Dataset&&) = delete;
-    void copyFrom(const faiss::IndexHNSWCagra*, const Dataset&&) = delete;
 #endif
 
     /// Legacy pointer entry points throw: use the C++ Dataset overloads.
@@ -353,12 +342,6 @@ struct GpuIndexCagra : public GpuIndex {
     void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
     void train(idx_t n, const float* x) override;
     void train_ex(idx_t n, const void* x, NumericType numeric_type) override;
-
-    /// Legacy CPU import entry points throw: supply an explicit Dataset.
-    void copyFrom(const faiss::IndexHNSWCagra* index);
-    void copyFrom_ex(
-            const faiss::IndexHNSWCagra* index,
-            NumericType numeric_type);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance

@@ -84,8 +84,6 @@ CuvsCagra<data_t>::CuvsCagra(
                 std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
     }
     index_params_.metric = metricFaissToCuvs(metric_, false);
-
-    reset();
 }
 
 template <typename data_t>
@@ -146,7 +144,6 @@ CuvsCagra<data_t>::CuvsCagra(
     raft_handle.sync_stream();
     dataset_.emplace(dataset.view());
     n_ = n;
-    searchable_index_ = dataset.isCagraCompatible();
 }
 
 template <typename data_t>
@@ -239,7 +236,6 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
     }
     dataset_.emplace(dataset.view());
     n_ = n;
-    searchable_index_ = dataset.isCagraCompatible();
 }
 
 template <typename data_t>
@@ -263,12 +259,11 @@ void CuvsCagra<data_t>::updateDataset(const Dataset& dataset) {
     *cuvs_index = cuvs::neighbors::cagra::update_dataset(
             raft_handle, std::move(*cuvs_index), view);
     dataset_.emplace(std::move(borrowed));
-    searchable_index_ = true;
 }
 
 template <typename data_t>
 bool CuvsCagra<data_t>::isSearchReady() const {
-    return cuvs_index && searchable_index_;
+    return cuvs_index && dataset_ && dataset_->isCagraCompatible();
 }
 
 template <typename data_t>
@@ -302,7 +297,7 @@ void CuvsCagra<data_t>::search(
     FAISS_ASSERT(cols == dim_);
 
     FAISS_THROW_IF_NOT_MSG(
-            searchable_index_,
+            isSearchReady(),
             "CAGRA has no search-compatible Dataset; attach one with updateDataset");
 
     auto queries_view = raft::make_device_matrix_view<const data_t, int64_t>(
@@ -363,14 +358,6 @@ void CuvsCagra<data_t>::search(
             indices_view.data_handle(),
             indices_copy.size(),
             n_);
-}
-
-template <typename data_t>
-void CuvsCagra<data_t>::reset() {
-    cuvs_index.reset();
-    dataset_.reset();
-    n_ = 0;
-    searchable_index_ = false;
 }
 
 template <typename data_t>

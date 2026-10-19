@@ -4,7 +4,7 @@
 """Python migration contract; CAGRA search/interop is exercised in C++ tests.
 
 Dataset has no Python binding yet. CPU HNSW storage and serialization remain
-available, but GPU CAGRA construction requires an explicitly owned C++ Dataset.
+available, but GPU CAGRA construction requires a C++ Dataset.
 """
 
 import unittest
@@ -17,7 +17,6 @@ class TestCagraDatasetBoundary(unittest.TestCase):
     def test_dataset_is_cpp_only(self):
         self.assertFalse(hasattr(faiss, "Dataset"))
         self.assertFalse(hasattr(faiss.GpuIndexCagra, "updateDataset"))
-        self.assertFalse(hasattr(faiss, "indexCpuToGpu"))
 
     def test_pointer_build_requires_dataset(self):
         res = faiss.StandardGpuResources()

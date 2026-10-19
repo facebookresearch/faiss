@@ -93,18 +93,6 @@ void GpuIndexBinaryCagra::add(idx_t, const uint8_t*) {
             "construct a caller-owned Dataset first");
 }
 
-void GpuIndexBinaryCagra::train_ex(idx_t, const void*, NumericType) {
-    FAISS_THROW_MSG(
-            "GpuIndexBinaryCagra requires train(const Dataset&); "
-            "construct a caller-owned Dataset first");
-}
-
-void GpuIndexBinaryCagra::add_ex(idx_t, const void*, NumericType) {
-    FAISS_THROW_MSG(
-            "GpuIndexBinaryCagra requires add(const Dataset&); "
-            "construct a caller-owned Dataset first");
-}
-
 void GpuIndexBinaryCagra::train(const Dataset& dataset) {
     FAISS_THROW_IF_MSG(
             cagraConfig_.devices.size() > 1,
@@ -321,12 +309,6 @@ void GpuIndexBinaryCagra::searchImpl_(
     if (not search_params) {
         delete params;
     }
-}
-
-void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra*) {
-    FAISS_THROW_MSG(
-            "GpuIndexBinaryCagra::copyFrom requires a caller-owned Dataset; "
-            "use copyFrom(cpuIndex, dataset)");
 }
 
 void GpuIndexBinaryCagra::copyFrom(

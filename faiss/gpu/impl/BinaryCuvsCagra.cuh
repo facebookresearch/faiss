@@ -87,8 +87,6 @@ class BinaryCuvsCagra {
             idx_t rand_xor_mask,
             const IDSelector* sel = nullptr);
 
-    void reset();
-
     idx_t get_knngraph_degree() const;
 
     std::vector<idx_t> get_knngraph() const;
@@ -105,8 +103,6 @@ class BinaryCuvsCagra {
 
     /// Expected dimensionality of the vectors
     const int dim_;
-
-    bool searchReady_ = false;
 
     /// Parameters to build cuVS CAGRA index
     faiss::cagra_build_algo graph_build_algo_ =

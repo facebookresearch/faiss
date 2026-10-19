@@ -49,10 +49,6 @@
 
 namespace faiss {
 
-namespace gpu {
-class Dataset;
-}
-
 /// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h
 /// and impl/DistanceComputer.h
 struct IDSelector;
@@ -127,18 +123,6 @@ struct Index {
               metric_arg(0) {}
 
     virtual ~Index();
-
-#ifndef SWIG
-    /** Build using caller-owned dataset storage. Unsupported by default.
-     * Implementations that borrow storage document its required lifetime.
-     */
-    virtual void train(const gpu::Dataset& dataset);
-    virtual void add(const gpu::Dataset& dataset);
-    void train(gpu::Dataset&&) = delete;
-    void train(const gpu::Dataset&&) = delete;
-    void add(gpu::Dataset&&) = delete;
-    void add(const gpu::Dataset&&) = delete;
-#endif
 
     /** Perform training on a representative set of vectors
      *
