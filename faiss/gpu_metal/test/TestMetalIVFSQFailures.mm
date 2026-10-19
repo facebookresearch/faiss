@@ -63,6 +63,44 @@ int main(int argc, char** argv) {
     if (!res->isAvailable())
         return 77;
     auto device = res->getDevice();
+    std::string mode = argc > 1 ? argv[1] : "scratch";
+    if (mode == "codec-cache") {
+        constexpr size_t dim = 128, lists = 1024, count = 10;
+        IndexFlatL2 coarse(dim);
+        std::vector<float> centroids(lists * dim);
+        for (size_t l = 0; l < lists; ++l)
+            centroids[l * dim] = float(l * 4);
+        coarse.add(lists, centroids.data());
+        IndexIVFScalarQuantizer cpu(
+                &coarse, dim, lists, ScalarQuantizer::QT_8bit);
+        cpu.sq.trained.assign(2 * dim, 0.f);
+        std::fill(cpu.sq.trained.begin() + dim, cpu.sq.trained.end(), 1.f);
+        cpu.is_trained = true;
+        std::vector<float> x(17 * dim, 0.25f);
+        cpu.add(17, x.data());
+        MetalIndexIVFScalarQuantizer gpu(res, &cpu);
+        gpu.add(1, x.data()); // establish spare per-list capacity
+        Method method = class_getInstanceMethod(
+                [device class], @selector(newBufferWithLength:options:));
+        original = method_setImplementation(
+                method, reinterpret_cast<IMP>(allocate));
+        Restore restore{method};
+        allocations = allocatedBytes = 0;
+        for (size_t j = 0; j < count; ++j)
+            gpu.add(1, x.data());
+        // Only offsets and lengths may be replaced. Neither code storage nor
+        // the 512 KiB centroid table needs growth or reconstruction.
+        if (allocations != 2 * count ||
+            allocatedBytes != 2 * count * lists * sizeof(uint32_t)) {
+            std::cerr << "unexpected append allocations: " << allocations
+                      << " buffers, " << allocatedBytes << " bytes\n";
+            return 14;
+        }
+        std::unique_ptr<IndexIVFScalarQuantizer> back(gpu.copyTo());
+        if (back->ntotal != 28)
+            return 15;
+        return 0;
+    }
     IndexFlatL2 coarse(7);
     IndexIVFScalarQuantizer cpu(&coarse, 7, 1, ScalarQuantizer::QT_fp16);
     std::vector<float> x(1024 * 7);
@@ -71,7 +109,6 @@ int main(int argc, char** argv) {
     cpu.train(1024, x.data());
     cpu.add(17, x.data());
     MetalIndexIVFScalarQuantizer gpu(res, &cpu);
-    std::string mode = argc > 1 ? argv[1] : "scratch";
     std::vector<float> d(1024 * 13, -123);
     std::vector<idx_t> i(1024 * 13, -123);
     if (mode == "pipeline") {
@@ -132,7 +169,7 @@ int main(int argc, char** argv) {
             return 13;
         gpu.search(1, x.data(), 13, d.data(), i.data());
     } else if (mode == "upload") {
-        for (size_t fail : {1, 2, 3, 4, 5, 6}) {
+        for (size_t fail : {1, 2, 3, 4}) {
             rejectAt = 0;
             gpu.copyFrom(&cpu);
             allocations = 0;

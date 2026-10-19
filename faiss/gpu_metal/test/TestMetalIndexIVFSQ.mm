@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
+#include <faiss/IndexPreTransform.h>
 #include <faiss/gpu_metal/MetalCloner.h>
 #include <faiss/gpu_metal/MetalIVFSQScan.h>
 #include <faiss/gpu_metal/MetalIndexIVFScalarQuantizer.h>
@@ -439,5 +442,191 @@ TEST_F(TestMetalIndexIVFSQ, ReserveCompactAndCoarseScoreSemantics) {
     for (int j = 0; j < 5; ++j) {
         ASSERT_EQ(ci[j], gi[j]);
         ASSERT_NEAR(cd[j], gd[j], 1e-4);
+    }
+}
+
+TEST_F(TestMetalIndexIVFSQ, NonFiniteScoresFollowCpuAdmission) {
+    // Finite fp32 values outside the fp16 range encode to +/- infinity.
+    // Exercise NaN (0 * infinity), both infinities, and finite overflow.
+    std::vector<float> x = {
+            100000, 1, 2, 3, -100000, std::numeric_limits<float>::quiet_NaN()};
+    std::vector<float> queries = {0, 1, -1, std::numeric_limits<float>::max()};
+    ScalarQuantizer sq(1, ScalarQuantizer::QT_fp16);
+    std::vector<uint8_t> codes(x.size() * sq.code_size);
+    sq.compute_codes(x.data(), codes.data(), x.size());
+    std::vector<float> decoded(x.size());
+    sq.decode(codes.data(), decoded.data(), x.size());
+    auto dev = res->getDevice();
+    std::vector<idx_t> ids(x.size());
+    for (size_t j = 0; j < ids.size(); ++j)
+        ids[j] = (idx_t(1) << 42) + j;
+    uint32_t offset = 0, length = x.size();
+    std::vector<int32_t> assignment(queries.size(), 0);
+    auto qb = buffer(dev, queries.size() * 4, queries.data());
+    auto cb = buffer(dev, codes.size(), codes.data());
+    auto ib = buffer(dev, ids.size() * 8, ids.data());
+    auto ob = buffer(dev, 4, &offset), lb = buffer(dev, 4, &length);
+    auto ab = buffer(dev, assignment.size() * 4, assignment.data());
+    auto dummy = buffer(dev, queries.size() * 4);
+    for (bool l2 : {false, true}) {
+        uint32_t k = x.size() + 1;
+        auto distances = buffer(dev, queries.size() * k * 4),
+             labels = buffer(dev, queries.size() * k * 8);
+        uint32_t p[] = {uint32_t(queries.size()), 1, k, 1, 1, 1, 0, l2, 2};
+        runMetalIVFSQScan(
+                dev,
+                res->getCommandQueue(),
+                qb,
+                cb,
+                ib,
+                ob,
+                lb,
+                ab,
+                dummy,
+                dummy,
+                distances,
+                labels,
+                dummy,
+                p);
+        for (size_t qi = 0; qi < queries.size(); ++qi) {
+            std::vector<std::pair<float, idx_t>> expected;
+            float worst = l2 ? std::numeric_limits<float>::max()
+                             : -std::numeric_limits<float>::max();
+            for (size_t j = 0; j < x.size(); ++j) {
+                float delta = queries[qi] - decoded[j];
+                float score = l2 ? delta * delta : queries[qi] * decoded[j];
+                if (l2 ? score < worst : score > worst)
+                    expected.emplace_back(score, ids[j]);
+            }
+            std::sort(expected.begin(), expected.end(), [=](auto a, auto b) {
+                return a.first == b.first
+                        ? a.second < b.second
+                        : (l2 ? a.first < b.first : a.first > b.first);
+            });
+            for (size_t j = 0; j < k; ++j) {
+                ASSERT_EQ(
+                        ((idx_t*)labels.contents)[qi * k + j],
+                        j < expected.size() ? expected[j].second : -1);
+                ASSERT_EQ(
+                        ((float*)distances.contents)[qi * k + j],
+                        j < expected.size() ? expected[j].first : worst);
+            }
+        }
+    }
+    // The public index must take the GPU path for the original reproduction.
+    for (auto metric : {METRIC_L2, METRIC_INNER_PRODUCT}) {
+        IndexFlat coarse(1, metric);
+        IndexIVFScalarQuantizer cpu(
+                &coarse, 1, 1, ScalarQuantizer::QT_fp16, metric, false);
+        float train[] = {1, 2, 3, 4};
+        cpu.train(4, train);
+        cpu.add(4, x.data());
+        MetalIndexIVFScalarQuantizer gpu(res, &cpu);
+        for (float query : {0.f, 1.f}) {
+            float cd[4], gd[4];
+            idx_t ci[4], gi[4];
+            cpu.search(1, &query, 4, cd, ci);
+            gpu.search(1, &query, 4, gd, gi);
+            for (int j = 0; j < 4; ++j)
+                ASSERT_EQ(cd[j], gd[j]);
+            std::sort(ci, ci + 4);
+            std::sort(gi, gi + 4);
+            for (int j = 0; j < 4; ++j)
+                ASSERT_EQ(ci[j], gi[j]);
+        }
+        ASSERT_EQ(gpu.gpuSearchCount(), 2);
+    }
+}
+
+TEST_F(TestMetalIndexIVFSQ, NoHeapInitPreservesCallerHeap) {
+    for (auto metric : {METRIC_L2, METRIC_INNER_PRODUCT}) {
+        IndexFlat coarse(1, metric);
+        IndexIVFScalarQuantizer cpu(
+                &coarse, 1, 1, ScalarQuantizer::QT_fp16, metric, false);
+        float x[] = {1, 2, 3, 4}, query = 0;
+        cpu.train(4, x);
+        cpu.add(4, x);
+        cpu.parallel_mode = cpu.PARALLEL_MODE_NO_HEAP_INIT;
+        MetalIndexIVFScalarQuantizer gpu(res, &cpu);
+        SearchParametersIVF p;
+        p.nprobe = 1;
+        for (const SearchParameters* params :
+             {static_cast<const SearchParameters*>(nullptr),
+              static_cast<const SearchParameters*>(&p)}) {
+            float cd = metric == METRIC_L2 ? 0 : 100, gd = cd;
+            idx_t ci = 999, gi = ci;
+            cpu.search(1, &query, 1, &cd, &ci, params);
+            gpu.search(1, &query, 1, &gd, &gi, params);
+            ASSERT_EQ(cd, gd);
+            ASSERT_EQ(ci, gi);
+            ASSERT_EQ(gi, 999);
+            ASSERT_EQ(gpu.gpuSearchCount(), 0);
+            ASSERT_EQ(gpu.nprobe(), cpu.nprobe);
+        }
+    }
+}
+
+TEST_F(TestMetalIndexIVFSQ, WrappedQuantizersOwnBorrowedLeavesAndGraphs) {
+    for (int kind : {0, 1, 2}) {
+        std::unique_ptr<MetalIndexIVFScalarQuantizer> gpu;
+        std::unique_ptr<IndexIVFScalarQuantizer> back;
+        {
+            auto leaf = std::make_unique<IndexFlatL2>(1);
+            std::unique_ptr<Index> graph;
+            float centroids[] = {0, 10};
+            if (kind == 1) {
+                auto mapped = std::make_unique<IndexIDMap2>(leaf.get());
+                idx_t ids[] = {0, 1};
+                mapped->add_with_ids(2, centroids, ids);
+                graph = std::move(mapped);
+            } else if (kind == 2) {
+                graph = std::make_unique<IndexHNSW>(leaf.get(), 2);
+                graph->add(2, centroids);
+            } else
+                leaf->add(2, centroids);
+            std::vector<uint8_t> borrowed(
+                    leaf->codes.data(),
+                    leaf->codes.data() + leaf->codes.size());
+            leaf->codes = MaybeOwnedVector<uint8_t>::create_view(
+                    borrowed.data(), borrowed.size(), nullptr);
+            std::vector<IndexHNSW::storage_idx_t> borrowedNeighbors;
+            if (kind == 2) {
+                auto* hnsw = static_cast<IndexHNSW*>(graph.get());
+                auto& neighbors = hnsw->hnsw.neighbors;
+                borrowedNeighbors.assign(
+                        neighbors.data(), neighbors.data() + neighbors.size());
+                neighbors =
+                        MaybeOwnedVector<IndexHNSW::storage_idx_t>::create_view(
+                                borrowedNeighbors.data(),
+                                borrowedNeighbors.size(),
+                                nullptr);
+            }
+            IndexPreTransform inner(graph ? graph.get() : leaf.get()),
+                    outer(&inner);
+            IndexIVFScalarQuantizer cpu(
+                    &outer, 1, 2, ScalarQuantizer::QT_fp16, METRIC_L2, false);
+            float x[] = {0, 1, 9, 10};
+            cpu.train(4, x);
+            cpu.add(4, x);
+            gpu = std::make_unique<MetalIndexIVFScalarQuantizer>(res, &cpu);
+            back.reset(gpu->copyTo());
+            // Corrupt borrowed memory before destroying both it and the source
+            // graph. This catches aliases even when freed pages stay readable.
+            std::fill(borrowed.begin(), borrowed.end(), 0xff);
+            std::fill(borrowedNeighbors.begin(), borrowedNeighbors.end(), -1);
+        }
+        float query = 0, gd, cd;
+        idx_t gi, ci;
+        gpu->search(1, &query, 1, &gd, &gi);
+        back->search(1, &query, 1, &cd, &ci);
+        ASSERT_EQ(gi, 0);
+        ASSERT_EQ(ci, 0);
+        ASSERT_EQ(gd, 0);
+        ASSERT_EQ(cd, 0);
+        back.reset(gpu->copyTo());
+        gpu.reset();
+        back->search(1, &query, 1, &cd, &ci);
+        ASSERT_EQ(ci, 0);
+        ASSERT_EQ(cd, 0);
     }
 }

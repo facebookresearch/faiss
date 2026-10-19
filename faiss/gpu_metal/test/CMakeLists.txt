@@ -8,6 +8,7 @@
 # Metal backend tests. Only included when BUILD_TESTING and FAISS_ENABLE_METAL.
 
 find_package(GTest CONFIG REQUIRED)
+find_package(OpenMP REQUIRED COMPONENTS CXX)
 include(GoogleTest)
 
 add_executable(TestMetalIndexFlat TestMetalIndexFlat.mm)
@@ -94,7 +95,7 @@ endforeach()
 
 add_executable(TestMetalIndexIVFSQ TestMetalIndexIVFSQ.mm)
 target_link_libraries(TestMetalIndexIVFSQ PRIVATE faiss_metal faiss GTest::gtest_main)
-target_include_directories(TestMetalIndexIVFSQ PRIVATE ${PROJECT_SOURCE_DIR})
+target_include_directories(TestMetalIndexIVFSQ PRIVATE ${PROJECT_SOURCE_DIR} ${OpenMP_CXX_INCLUDE_DIRS})
 set_target_properties(TestMetalIndexIVFSQ PROPERTIES
     OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED ON)
 target_compile_options(TestMetalIndexIVFSQ PRIVATE -fobjc-arc)
@@ -108,7 +109,7 @@ set_target_properties(TestMetalIVFSQFailures PROPERTIES
 target_compile_options(TestMetalIVFSQFailures PRIVATE -fobjc-arc)
 target_compile_definitions(TestMetalIVFSQFailures PRIVATE
     FAISS_TEST_METALLIB_PATH="${PROJECT_BINARY_DIR}/faiss/gpu_metal/MetalDistance.metallib")
-foreach(fault pipeline scratch upload copy growth)
+foreach(fault pipeline scratch upload copy growth codec-cache)
     add_test(NAME TestMetalIndexIVFSQ.Reject_${fault}
         COMMAND TestMetalIVFSQFailures ${fault})
     set_tests_properties(TestMetalIndexIVFSQ.Reject_${fault} PROPERTIES

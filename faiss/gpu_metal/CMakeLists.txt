@@ -32,6 +32,9 @@ set_source_files_properties(MetalIndexBinaryFlat.mm MetalIVFSQScan.mm MetalIndex
   COMPILE_OPTIONS "-fobjc-arc"
 )
 
+# HNSW coarse-quantizer declarations include omp.h even though this layer
+# delegates their work to the CPU. Find the include path for Objective-C++ too.
+find_package(OpenMP REQUIRED COMPONENTS CXX)
 add_library(faiss_metal STATIC ${FAISS_METAL_SRC})
 
 target_link_libraries(faiss_metal
@@ -52,6 +55,7 @@ target_include_directories(faiss_metal
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   PRIVATE
     ${PROJECT_SOURCE_DIR}
+    ${OpenMP_CXX_INCLUDE_DIRS}
 )
 
 target_compile_definitions(faiss_metal PRIVATE FAISS_METAL_ENABLED=1)
@@ -93,6 +97,12 @@ target_compile_definitions(faiss_metal PRIVATE
 install(TARGETS faiss_metal
   EXPORT faiss-targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# Public Metal headers use this CUDA-independent enum even in Metal-only
+# installations, where faiss/gpu's CMake install rules are not visited.
+install(FILES ${PROJECT_SOURCE_DIR}/faiss/gpu/GpuIndicesOptions.h
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/gpu
 )
 
 set(FAISS_METAL_HEADERS

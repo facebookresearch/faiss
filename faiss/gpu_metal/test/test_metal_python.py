@@ -456,5 +456,57 @@ class TestMetalIVFSQ(unittest.TestCase):
         np.testing.assert_array_equal(actual[1], expected[1])
 
 
+    def test_wrapped_quantizer_clone_lifetime(self):
+        import gc
+        leaf = faiss.IndexFlatL2(1)
+        leaf.add(np.array([[0], [10]], dtype='float32'))
+        quantizer = faiss.IndexPreTransform(faiss.IndexPreTransform(leaf))
+        cpu = faiss.IndexIVFScalarQuantizer(
+            quantizer, 1, 2, faiss.ScalarQuantizer.QT_fp16,
+            faiss.METRIC_L2, False)
+        xb = np.array([[0], [1], [9], [10]], dtype='float32')
+        cpu.train(xb)
+        cpu.add(xb)
+        res = faiss.StandardGpuResources()
+        gpu = faiss.index_cpu_to_gpu(res, 0, cpu)
+        back = faiss.index_gpu_to_cpu(gpu)
+        del cpu, quantizer, leaf, res
+        gc.collect()
+        gd, gi = gpu.search(xb[:1], 1)
+        self.assertEqual(faiss.get_metal_ivfsq_search_count(gpu), 1)
+        del gpu
+        gc.collect()
+        cd, ci = back.search(xb[:1], 1)
+        np.testing.assert_array_equal(ci, gi)
+        np.testing.assert_array_equal(cd, gd)
+        self.assertEqual(ci[0, 0], 0)
+
+    def test_fp16_overflow_and_preinitialized_heap(self):
+        xb = np.array([[100000], [1], [2], [3]], dtype='float32')
+        query = np.zeros((1, 1), dtype='float32')
+        res = faiss.StandardGpuResources()
+        for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+            cpu = faiss.IndexIVFScalarQuantizer(
+                faiss.IndexFlat(1, metric), 1, 1,
+                faiss.ScalarQuantizer.QT_fp16, metric, False)
+            cpu.train(np.array([[1], [2], [3], [4]], dtype='float32'))
+            cpu.add(xb)
+            gpu = faiss.index_cpu_to_gpu(res, 0, cpu)
+            cd, ci = cpu.search(query, 4)
+            gd, gi = gpu.search(query, 4)
+            np.testing.assert_array_equal(cd, gd)
+            np.testing.assert_array_equal(np.sort(ci), np.sort(gi))
+            self.assertEqual(faiss.get_metal_ivfsq_search_count(gpu), 1)
+            cpu.parallel_mode = cpu.PARALLEL_MODE_NO_HEAP_INIT
+            gpu = faiss.index_cpu_to_gpu(res, 0, cpu)
+            distance = np.array([0 if metric == faiss.METRIC_L2 else 100],
+                                dtype='float32')
+            label = np.array([999], dtype='int64')
+            gpu.search_c(1, faiss.swig_ptr(query), 1,
+                         faiss.swig_ptr(distance), faiss.swig_ptr(label))
+            self.assertEqual(label[0], 999)
+            self.assertEqual(faiss.get_metal_ivfsq_search_count(gpu), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

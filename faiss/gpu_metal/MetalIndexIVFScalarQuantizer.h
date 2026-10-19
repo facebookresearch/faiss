@@ -19,7 +19,10 @@ namespace faiss::gpu_metal {
  * INT32_MAX). Buffer sizes must fit device.maxBufferLength. Labels must be
  * nonnegative. Other valid requests use CPU search with the original
  * parameters, including selectors, max_codes, quantizer_params, and derived
- * parameter types. Selected GPU execution failures throw; a failed mutation
+ * parameter types, and PARALLEL_MODE_NO_HEAP_INIT. Coarse quantizers must use
+ * FlatCodes or HNSW storage, optionally wrapped in PreTransform/IDMap; cloning
+ * rejects other structures rather than retaining borrowed storage.
+ * Selected GPU execution failures throw; a failed mutation
  * invalidates GPU state until reset/copyFrom. Search and mutation must be
  * serialized by the caller.
  */

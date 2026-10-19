@@ -1737,12 +1737,8 @@ constant constexpr uint PQPRE_MAX_K = 512;
 constant constexpr uint PQPRE_CAND = PQPRE_MAX_K + PQPRE_SEG; // 1024
 constant constexpr uint PQPRE_LUT_MAX = 16 * 256; // M <= 16
 
-// Invalid candidates always sort after valid labels, including infinite scores.
-inline bool ivfsq_before(float a, long ai, float b, long bi, uint want_min) {
-    if (ai < 0) return false;
-    if (bi < 0) return true;
-    return a == b ? ai < bi : (want_min ? a < b : a > b);
-}
+// Defined with safe floating-point semantics beside the SQ kernel below.
+inline bool ivfsq_before(float a, long ai, float b, long bi, uint want_min);
 
 // Bitonic sort over tgDist/tgIdx[0..n), n a power of two. Sorted best-first.
 template <typename IndexT, uint ThreadgroupSize = PQPRE_TG, bool Exact = false>
@@ -2605,6 +2601,17 @@ kernel void hamming_distance_topk(
 // Exact SQ scan: one threadgroup per query, retaining top-k across segments
 // and probes. No dimension-sized threadgroup arrays or candidate truncation.
 // params: nq, d, k, nprobe, nlist, fp16, residual, L2, code_size.
+// SQ fp16 can overflow finite input to infinity. Preserve IEEE NaN/Inf
+// arithmetic locally so the CPU heap's ordered admission comparisons below
+// cannot be removed by the Metal compiler's default fast-math assumptions.
+#pragma METAL fp math_mode(safe)
+// Invalid candidates always sort after valid labels, including infinite scores.
+inline bool ivfsq_before(float a, long ai, float b, long bi, uint want_min) {
+    if (ai < 0) return false;
+    if (bi < 0) return true;
+    return a == b ? ai < bi : (want_min ? a < b : a > b);
+}
+
 kernel void ivfsq_scan(
     device const float* queries [[buffer(0)]],
     device const uchar* codes [[buffer(1)]],
@@ -2649,8 +2656,12 @@ kernel void ivfsq_scan(
                 }
                 if (p[6] && !l2)
                     score += coarseScores[ulong(qi)*nprobe+probe];
-                ds[kept+j] = score;
-                ix[kept+j] = ids[v];
+                // Match the CPU heap's neutral-value comparisons: NaN and
+                // metric-worst overflow never enter selection. IP +Inf is a
+                // valid best score; L2 +Inf and IP -Inf remain padding.
+                bool admitted = l2 ? score < MAXFLOAT : score > -MAXFLOAT;
+                ds[kept+j] = admitted ? score : sentinel;
+                ix[kept+j] = admitted ? ids[v] : -1;
             }
             uint total = kept + count;
             uint padded = ivf_next_pow2(total);

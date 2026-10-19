@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
+#include <faiss/IndexPreTransform.h>
 #include <faiss/clone_index.h>
 #include <faiss/gpu_metal/MetalIVFSQScan.h>
 #include <faiss/gpu_metal/MetalIndexIVFScalarQuantizer.h>
@@ -37,6 +40,33 @@ id<MTLBuffer> allocate(id<MTLDevice> device, size_t size) {
     FAISS_THROW_IF_NOT_MSG(buffer, "Metal IVFSQ buffer allocation failed");
     return buffer;
 }
+// The generic CPU cloner can preserve borrowed MaybeOwnedVector views. Walk
+// every supported coarse-quantizer node, including HNSW's graph and leaf.
+// Reject unknown graph structures rather than silently retaining dependencies.
+void makeQuantizerOwning(Index* index) {
+    if (auto* flat = dynamic_cast<IndexFlatCodes*>(index)) {
+        MaybeOwnedVector<uint8_t> owned(flat->codes.size());
+        if (flat->codes.size())
+            memcpy(owned.data(), flat->codes.data(), flat->codes.size());
+        flat->codes = std::move(owned);
+    } else if (auto* transform = dynamic_cast<IndexPreTransform*>(index)) {
+        makeQuantizerOwning(transform->index);
+    } else if (auto* mapped = dynamic_cast<IndexIDMap*>(index)) {
+        makeQuantizerOwning(mapped->index);
+    } else if (auto* hnsw = dynamic_cast<IndexHNSW*>(index)) {
+        auto& neighbors = hnsw->hnsw.neighbors;
+        MaybeOwnedVector<IndexHNSW::storage_idx_t> owned(neighbors.size());
+        if (neighbors.size())
+            memcpy(owned.data(),
+                   neighbors.data(),
+                   bytes(neighbors.size(), sizeof(IndexHNSW::storage_idx_t)));
+        neighbors = std::move(owned);
+        makeQuantizerOwning(hnsw->storage);
+    } else {
+        FAISS_THROW_MSG(
+                "Metal IVFSQ coarse quantizers require FlatCodes or HNSW storage, optionally wrapped in IndexPreTransform/IndexIDMap");
+    }
+}
 std::unique_ptr<IndexIVFScalarQuantizer> clone(
         const IndexIVFScalarQuantizer* index) {
     FAISS_THROW_IF_NOT(index);
@@ -57,6 +87,7 @@ std::unique_ptr<IndexIVFScalarQuantizer> clone(
     result->by_residual = index->by_residual;
     result->sq = index->sq;
     std::unique_ptr<Index> quantizer(clone_index(index->quantizer));
+    makeQuantizerOwning(quantizer.get());
     auto lists = std::make_unique<ArrayInvertedLists>(
             index->nlist, index->code_size);
     if (index->invlists) {
@@ -73,13 +104,6 @@ std::unique_ptr<IndexIVFScalarQuantizer> clone(
     result->own_fields = true;
     result->invlists = lists.release();
     result->own_invlists = true;
-    // IndexFlatCodes copies may retain borrowed MaybeOwnedVector storage.
-    if (auto* flat = dynamic_cast<IndexFlatCodes*>(result->quantizer)) {
-        MaybeOwnedVector<uint8_t> owned(flat->codes.size());
-        if (flat->codes.size() != 0)
-            memcpy(owned.data(), flat->codes.data(), flat->codes.size());
-        flat->codes = std::move(owned);
-    }
     return result;
 }
 } // namespace
@@ -185,20 +209,27 @@ struct MetalIndexIVFScalarQuantizer::Impl {
         }
         auto newOffsets = allocate(device, bytes(cpu->nlist, sizeof(uint32_t)));
         auto newLengths = allocate(device, bytes(cpu->nlist, sizeof(uint32_t)));
-        auto newRanges =
-                allocate(device, bytes(cpu->sq.trained.size(), sizeof(float)));
-        size_t centroidCount = cpu->is_trained && cpu->by_residual
-                ? bytes(cpu->nlist, size_t(cpu->d))
-                : 0;
-        auto newCentroids =
-                allocate(device, bytes(centroidCount, sizeof(float)));
-        if (centroidCount)
-            cpu->quantizer->reconstruct_n(
-                    0, cpu->nlist, (float*)newCentroids.contents);
-        if (!cpu->sq.trained.empty())
-            memcpy(newRanges.contents,
-                   cpu->sq.trained.data(),
-                   bytes(cpu->sq.trained.size(), sizeof(float)));
+        // Codec parameters and reconstructed coarse centroids are immutable
+        // between training/replacement operations. Appends only change lists.
+        id<MTLBuffer> newRanges = ranges, newCentroids = centroids;
+        if (!newRanges) {
+            newRanges = allocate(
+                    device, bytes(cpu->sq.trained.size(), sizeof(float)));
+            if (!cpu->sq.trained.empty())
+                memcpy(newRanges.contents,
+                       cpu->sq.trained.data(),
+                       bytes(cpu->sq.trained.size(), sizeof(float)));
+        }
+        if (!newCentroids) {
+            size_t centroidCount = cpu->is_trained && cpu->by_residual
+                    ? bytes(cpu->nlist, size_t(cpu->d))
+                    : 0;
+            newCentroids =
+                    allocate(device, bytes(centroidCount, sizeof(float)));
+            if (centroidCount)
+                cpu->quantizer->reconstruct_n(
+                        0, cpu->nlist, (float*)newCentroids.contents);
+        }
         memcpy(newOffsets.contents, newOffset.data(), bytes(cpu->nlist, 4));
         memcpy(newLengths.contents, newLength.data(), bytes(cpu->nlist, 4));
         for (const auto& part : pending) {
@@ -301,6 +332,8 @@ void MetalIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     impl_->valid = false;
     try {
         impl_->cpu->train(n, x);
+        impl_->ranges = nil;
+        impl_->centroids = nil;
         impl_->upload();
         impl_->valid = true;
     } catch (...) {
@@ -360,7 +393,8 @@ void MetalIndexIVFScalarQuantizer::search(
             impl_->nonnegative &&
             (metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT) &&
             is_trained && n > 0 && uint64_t(n) <= UINT32_MAX && k > 0 &&
-            k <= 512 && probes && probes <= UINT32_MAX && !cpu.max_codes;
+            k <= 512 && probes && probes <= UINT32_MAX && !cpu.max_codes &&
+            !(cpu.parallel_mode & cpu.PARALLEL_MODE_NO_HEAP_INIT);
     // These checked products also define the allocation envelope before any
     // dispatch.
     auto fits = [&](size_t a, size_t b, size_t width) {
