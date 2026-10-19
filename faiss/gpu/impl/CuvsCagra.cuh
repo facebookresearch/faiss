@@ -77,8 +77,9 @@ class CuvsCagra {
     CuvsCagra(
             GpuResources* resources,
             int dim,
+            idx_t n,
             int graph_degree,
-            const Dataset& dataset,
+            const Dataset* dataset,
             const idx_t* knn_graph,
             faiss::MetricType metric,
             float metricArg,

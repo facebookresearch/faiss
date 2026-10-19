@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <cstdio>
 
+#include <raft/util/cudart_utils.hpp>
 #include <limits>
 #include <optional>
 #include "GpuResources.h"
@@ -313,7 +314,7 @@ void GpuIndexBinaryCagra::searchImpl_(
 
 void GpuIndexBinaryCagra::copyFrom(
         const faiss::IndexBinaryHNSWCagra* index,
-        const Dataset& dataset) {
+        Dataset* dataset) {
     FAISS_THROW_IF_NOT(index);
     FAISS_THROW_IF_MSG(
             cagraConfig_.devices.size() > 1,
@@ -323,13 +324,28 @@ void GpuIndexBinaryCagra::copyFrom(
                     index->ntotal <= std::numeric_limits<uint32_t>::max(),
             "CPU HNSW must contain a trained, nonempty CAGRA graph");
     FAISS_THROW_IF_NOT_MSG(
-            index->d % 8 == 0 && dataset.getDim() == index->d / 8 &&
-                    dataset.getNumRows() == index->ntotal &&
-                    dataset.getNumericType() == NumericType::UInt8,
-            "Dataset shape and type must match the CPU binary HNSW index");
-    FAISS_THROW_IF_NOT_MSG(
-            !dataset.isDevice() || dataset.getDevice() == getDevice(),
-            "Dataset device must match the CAGRA index device");
+            index->d > 0 && index->d % 8 == 0,
+            "CPU binary HNSW dimension must be a positive multiple of 8");
+    const IndexBinaryFlat* cpuStorage = nullptr;
+    if (dataset) {
+        FAISS_THROW_IF_NOT_MSG(
+                dataset->getDim() == index->d / 8 &&
+                        dataset->getNumRows() == index->ntotal &&
+                        dataset->getNumericType() == NumericType::UInt8,
+                "Dataset shape and type must match the CPU binary HNSW index");
+        FAISS_THROW_IF_NOT_MSG(
+                dataset->isCagraCompatible() &&
+                        dataset->getDevice() == getDevice(),
+                "Destination Dataset must be compatible storage on the CAGRA device");
+        cpuStorage = dynamic_cast<const IndexBinaryFlat*>(index->storage);
+        FAISS_THROW_IF_NOT_MSG(
+                cpuStorage && cpuStorage->d == index->d &&
+                        cpuStorage->ntotal == index->ntotal &&
+                        cpuStorage->xb.size() >=
+                                static_cast<size_t>(index->ntotal) *
+                                        (index->d / 8),
+                "CPU binary HNSW vector storage does not match its metadata");
+    }
 
     DeviceScope scope(cagraConfig_.device);
     const auto& hnsw = index->hnsw;
@@ -353,13 +369,41 @@ void GpuIndexBinaryCagra::copyFrom(
         }
     }
 
+    // Allocate replacement graph state before modifying caller storage.
     auto imported = std::make_shared<BinaryCuvsCagra>(
             resources_.get(),
             index->d,
+            index->ntotal,
             graphDegree,
             dataset,
             knnGraph.data(),
             INDICES_64_BIT);
+    // Finish previous uses before overwriting caller storage or replacing
+    // the old graph. Other users of the destination must also be quiescent.
+    resources_->syncDefaultStream(getDevice());
+    if (dataset) {
+        // Dataset* is an explicit writable-destination contract; views do not
+        // track the constness of their underlying allocation.
+        auto* destination =
+                static_cast<uint8_t*>(const_cast<void*>(dataset->getData()));
+        const size_t width = index->d / 8;
+        const size_t pitch = dataset->getRowStride();
+        const auto stream = resources_->getDefaultStream(getDevice());
+        CUDA_VERIFY(cudaMemsetAsync(
+                destination,
+                0,
+                static_cast<size_t>(index->ntotal) * pitch,
+                stream));
+        raft::copy_matrix(
+                destination,
+                pitch,
+                cpuStorage->xb.data(),
+                width,
+                width,
+                index->ntotal,
+                stream);
+    }
+    resources_->syncDefaultStream(getDevice());
     index_ = std::move(imported);
     this->d = index->d;
     this->code_size = index->d / 8;
@@ -369,6 +413,7 @@ void GpuIndexBinaryCagra::copyFrom(
 
 void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     FAISS_ASSERT(index_ && this->is_trained && index);
+    const auto& dataset = index_->getDataset();
 
     DeviceScope scope(cagraConfig_.device);
 
@@ -396,7 +441,7 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
 
     auto n_train = this->ntotal;
     std::vector<uint8_t> train_dataset(n_train * (this->d / 8));
-    index_->getDataset().copyToHost(train_dataset.data());
+    dataset.copyToHost(train_dataset.data());
 
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;

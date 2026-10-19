@@ -288,7 +288,6 @@ For a packed host Float32 array `xb` with `n` rows and dimension `d`, build a gr
 and export independent CPU HNSW storage as follows:
 
 ```cpp
-#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexCagra.h>
@@ -304,21 +303,40 @@ faiss::IndexHNSWCagra cpu(d, 32);
 cpu.base_level_only = true;
 graphOnly.copyTo(&cpu); // CPU index now owns its graph and packed vectors.
 
-// Wrap the Float32 HNSW storage and prepare it with the regular Dataset APIs.
-auto* flat = static_cast<const faiss::IndexFlat*>(cpu.storage);
-auto cpuVectors = faiss::gpu::Dataset::viewHost(
-        flat->get_xb(), cpu.ntotal, cpu.d, faiss::NumericType::Float32, cpu.d);
-auto deviceDataset = faiss::gpu::Dataset::makeDevicePadded(
-        &resources, cpuVectors, 0);
-faiss::gpu::GpuIndexCagra searchable(&resources, d);
-searchable.copyFrom(&cpu, deviceDataset); // isSearchReady() is true.
+faiss::gpu::GpuIndexCagra imported(&resources, d);
+imported.copyFrom(&cpu); // Imports graph and metadata; isSearchReady() is false.
 ```
 
 The CPU index remains independent of the original Dataset after `copyTo`.
-Keep CPU vector storage alive until the upload completes. Float16 storage can
-be viewed through the scalar quantizer's FP16 codes; signed Int8 codes must be
-decoded before creating a raw Int8 view. Binary storage uses `IndexBinaryFlat::xb`
-with dimensions measured in bytes. The GPU index borrows `deviceDataset`.
+`copyFrom(cpuIndex, Dataset* dataset = nullptr)` imports only the graph and
+metadata when the optional Dataset is omitted. It retains no CPU vector storage,
+and the CPU index can be destroyed after the call. Graph retrieval remains
+available; search and full CPU HNSW export with `copyTo` require attached vectors.
+
+To import a searchable index, wrap a preallocated writable device buffer with
+the regular Dataset API and pass its address. For this Float32 example,
+`deviceBuffer` must point to at least `n * stride` floats on device 0, with a
+16-byte-aligned base address:
+
+```cpp
+const faiss::idx_t stride = ((static_cast<faiss::idx_t>(d) + 3) / 4) * 4;
+auto destination = faiss::gpu::Dataset::viewDevicePadded(
+        deviceBuffer, n, d, faiss::NumericType::Float32, stride, 0);
+faiss::gpu::GpuIndexCagra searchable(&resources, d);
+searchable.copyFrom(&cpu, &destination); // Fills the buffer; isSearchReady() is true.
+```
+
+The supplied Dataset must have the CPU index's row count, dimension, and dtype,
+and be CAGRA-compatible on the GPU index's device. A compatible standard-layout
+device view is also accepted. `copyFrom` copies the CPU vectors into that
+allocation and zeroes its padding; previous contents need not be initialized.
+The upload completes before return, so the CPU index can then be destroyed.
+Ownership stays with the caller, and the GPU index borrows the allocation for
+search. `isSearchReady()` derives readiness from the graph and attached Dataset;
+there is no separate readiness setting. Keep the allocation alive and unchanged
+through index use and queued GPU work.
+`GpuIndexBinaryCagra::copyFrom` follows the same optional-output contract with
+`UInt8` and dimensions measured in bytes.
 
 A standard device view is searchable without a vector copy when its base address
 is 16-byte aligned and its row stride equals the dimension rounded up to a
@@ -331,9 +349,11 @@ auto padded = faiss::gpu::Dataset::makeDevicePadded(&resources, source, 0);
 graphOnly.updateDataset(padded);
 ```
 
-`updateDataset` preserves the graph: the new storage must contain the same
-vectors in the same order, shape, and dtype. It checks metadata but cannot verify
-vector identity. Keep all borrowed allocations alive and unchanged through
+`updateDataset` preserves the graph and borrows already-populated storage;
+it does not fill the allocation. The new storage must contain the same vectors
+in the same order, shape, and dtype. It checks metadata but cannot verify
+vector identity. It can also attach vectors after a graph-only `copyFrom`.
+Keep all borrowed allocations alive and unchanged through
 index use and queued GPU work; make data ready on the index resource's stream
 before use. Caller-supplied CUDA streams must also outlive GPU resources that
 cache cuVS allocations, even after reverting the default stream. `reset()` clears
@@ -342,8 +362,8 @@ allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
 
-CAGRA construction and CPU graph import require an explicit Dataset. The
-inherited pointer-based construction methods reject calls; use the Dataset
+Building a graph with `train` or `add` requires an explicit Dataset. Their
+inherited pointer overloads reject calls; use the Dataset
 overloads on `GpuIndexCagra` or `GpuIndexBinaryCagra`. Dataset ownership replaces
 `store_dataset`. Pointer APIs for other index families are unchanged. Dataset
 construction, build, attachment, and import APIs are C++ only; Python and C have

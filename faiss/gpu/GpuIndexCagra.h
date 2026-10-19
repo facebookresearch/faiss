@@ -331,10 +331,18 @@ struct GpuIndexCagra : public GpuIndex {
     void updateDataset(const Dataset& dataset);
     bool isSearchReady() const;
 
-    /// Import the CPU graph and borrow the supplied dataset. The dataset must
-    /// contain the CPU index's vectors in the same order. The CPU index may be
-    /// released after this call only when dataset does not borrow its storage.
-    void copyFrom(const faiss::IndexHNSWCagra* index, const Dataset& dataset);
+    /// Copy the CPU graph and metadata. With no dataset, import only the
+    /// graph: no vector storage is retained and GPU search is unavailable.
+    /// When supplied, dataset must describe writable CAGRA-compatible device
+    /// storage with matching shape and dtype on this index's device. Its
+    /// contents are overwritten with CPU vectors and its padding is zeroed.
+    /// The index borrows that allocation and becomes search-ready. The caller
+    /// retains ownership and must keep the allocation alive through index use
+    /// and queued GPU work. Copies finish before return, so the CPU index may
+    /// then be released in either mode.
+    void copyFrom(
+            const faiss::IndexHNSWCagra* index,
+            Dataset* dataset = nullptr);
 #endif
 
     /// Legacy pointer entry points throw: use the C++ Dataset overloads.

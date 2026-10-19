@@ -393,7 +393,7 @@ void copyFromTest(
                 faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         res.getResources()->syncDefaultStream(0);
         faiss::gpu::GpuIndexBinaryCagra copiedGpuIndex(&res, cpuIndex.d);
-        copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
+        copiedGpuIndex.copyFrom(&cpuIndex, &importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -764,26 +764,104 @@ TEST(TestGpuIndexBinaryCagra, DatasetGraphOnlyAttachmentAndCpuRoundTrip) {
     const auto* restoredStorage =
             dynamic_cast<const faiss::IndexBinaryFlat*>(restoredCagra->storage);
     ASSERT_NE(restoredStorage, nullptr);
-    auto restoredDataset = Dataset::viewHost(
-            restoredStorage->xb.data(),
-            restoredCagra->ntotal,
-            restoredCagra->d / 8,
-            NumericType::UInt8,
-            restoredCagra->d / 8);
-    auto importedStorage =
-            Dataset::makeDevicePadded(&resources, restoredDataset, 0);
+    const auto cpuBytes = restoredStorage->xb;
+    auto importedStorage = Dataset::makeDevicePadded(&resources, source, 0);
+    const auto stride = importedStorage.getRowStride();
+    ASSERT_EQ(
+            cudaMemsetAsync(
+                    const_cast<void*>(importedStorage.getData()),
+                    0xa5,
+                    kRows * stride,
+                    resources.getResources()->getDefaultStream(0)),
+            cudaSuccess);
+    auto destination = importedStorage.view();
+    EXPECT_FALSE(destination.ownsData());
     GpuIndexBinaryCagra imported(&resources, bytes * 8, config());
-    imported.copyFrom(restoredCagra, importedStorage);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &source), faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongRows),
+            faiss::FaissException);
+    auto wrongDim = Dataset::viewDevice(
+            storage.getData(),
+            kRows,
+            bytes - 1,
+            NumericType::UInt8,
+            storage.getRowStride(),
+            0);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongDim), faiss::FaissException);
+    auto wrongType = Dataset::viewDevice(
+            storage.getData(),
+            kRows,
+            bytes,
+            NumericType::Int8,
+            storage.getRowStride(),
+            0);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongType),
+            faiss::FaissException);
+    if (faiss::gpu::getNumDevices() > 1) {
+        auto wrongDevice = Dataset::makeDevicePadded(&resources, source, 1);
+        EXPECT_THROW(
+                imported.copyFrom(restoredCagra, &wrongDevice),
+                faiss::FaissException);
+    }
+    const void* allocation = importedStorage.getData();
+    imported.copyFrom(restoredCagra, &destination);
+    EXPECT_EQ(importedStorage.getData(), allocation);
+    EXPECT_TRUE(importedStorage.ownsData());
+    EXPECT_TRUE(imported.isSearchReady());
+    EXPECT_EQ(restoredStorage->xb, cpuBytes);
+    std::vector<uint8_t> physical(kRows * stride);
+    std::vector<uint8_t> expectedPhysical(kRows * stride, 0);
+    for (idx_t row = 0; row < kRows; ++row) {
+        std::copy_n(
+                values.data() + row * bytes,
+                bytes,
+                expectedPhysical.data() + row * stride);
+    }
+    ASSERT_EQ(
+            cudaMemcpy(
+                    physical.data(),
+                    importedStorage.getData(),
+                    physical.size(),
+                    cudaMemcpyDeviceToHost),
+            cudaSuccess);
+    EXPECT_EQ(physical, expectedPhysical);
+    const auto graph = imported.get_knngraph();
+    ASSERT_TRUE(restoredCagra->own_fields);
+    delete restoredCagra->storage;
+    restoredCagra->storage = nullptr;
+    GpuIndexBinaryCagra graphOnly(&resources, bytes * 8, config());
+    graphOnly.copyFrom(restoredCagra);
     EXPECT_THROW(
             faiss::gpu::index_binary_cpu_to_gpu(&resources, 0, restored.get()),
             faiss::FaissException);
-    resources.getResources()->syncDefaultStream(0);
     restored.reset();
     index.reset();
+    EXPECT_TRUE(graphOnly.is_trained);
+    EXPECT_EQ(graphOnly.ntotal, kRows);
+    EXPECT_FALSE(graphOnly.isSearchReady());
+    EXPECT_EQ(graphOnly.get_knngraph(), graph);
+    EXPECT_THROW(
+            graphOnly.search(1, values.data(), 1, &distance, &label),
+            faiss::FaissException);
+    faiss::IndexBinaryHNSWCagra missingVectors;
+    EXPECT_THROW(graphOnly.copyTo(&missingVectors), faiss::FaissException);
+    graphOnly.updateDataset(importedStorage);
+    EXPECT_TRUE(graphOnly.isSearchReady());
+    checkBinarySearch(imported, values.data());
+    imported.reset();
+    checkBinarySearch(graphOnly, values.data());
+    graphOnly.copyTo(&missingVectors);
+    for (idx_t row = 0; row < kRows; ++row) {
+        missingVectors.reconstruct(row, exported.data() + row * bytes);
+    }
+    EXPECT_EQ(exported, values);
     EXPECT_FALSE(index.isSearchReady());
     index.train(storage);
     checkBinarySearch(index, values.data());
-    checkBinarySearch(imported, values.data());
 }
 
 void checkStridedDeviceGraphOnly(faiss::gpu::graph_build_algo buildAlgo) {

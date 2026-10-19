@@ -92,8 +92,9 @@ template <typename data_t>
 CuvsCagra<data_t>::CuvsCagra(
         GpuResources* resources,
         int dim,
+        idx_t n,
         int graph_degree,
-        const Dataset& dataset,
+        const Dataset* dataset,
         const idx_t* knn_graph,
         faiss::MetricType metric,
         float metricArg,
@@ -110,7 +111,6 @@ CuvsCagra<data_t>::CuvsCagra(
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
     const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
-    const auto n = dataset.getNumRows();
     auto graph = raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
     if (getDeviceForAddress(knn_graph) >= 0) {
         raft_handle.sync_stream();
@@ -123,28 +123,25 @@ CuvsCagra<data_t>::CuvsCagra(
     }
 
     // A host graph makes cuVS allocate graph storage owned by the index.
-    // The vectors are always borrowed, independently of graph residency.
-    cuvs::neighbors::device_padded_dataset_view<data_t, int64_t> view;
-    if (dataset.isCagraCompatible()) {
-        view = cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>(
-                raft::make_device_matrix_view<const data_t, int64_t>(
-                        static_cast<const data_t*>(dataset.getData()),
-                        n,
-                        dataset.getRowStride()),
-                dataset.getDim());
-    }
     cuvs_index = std::make_shared<
             cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>(
             raft_handle, metricFaissToCuvs(metric_, false));
     cuvs_index->update_graph(
             raft_handle, raft::make_const_mdspan(graph.view()));
-    if (dataset.isCagraCompatible()) {
+    if (dataset) {
+        auto view =
+                cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>(
+                        raft::make_device_matrix_view<const data_t, int64_t>(
+                                static_cast<const data_t*>(dataset->getData()),
+                                n,
+                                dataset->getRowStride()),
+                        dataset->getDim());
         *cuvs_index = cuvs::neighbors::cagra::update_dataset(
                 raft_handle, std::move(*cuvs_index), view);
+        dataset_.emplace(dataset->view());
     }
     // The host graph is temporary; finish its upload before releasing it.
     raft_handle.sync_stream();
-    dataset_.emplace(dataset.view());
     n_ = n;
 }
 
@@ -400,7 +397,9 @@ std::vector<idx_t> CuvsCagra<data_t>::get_knngraph() const {
 
 template <typename data_t>
 const Dataset& CuvsCagra<data_t>::getDataset() const {
-    FAISS_ASSERT(dataset_);
+    FAISS_THROW_IF_NOT_MSG(
+            dataset_,
+            "CAGRA has no Dataset; attach vectors with updateDataset before CPU export");
     return *dataset_;
 }
 

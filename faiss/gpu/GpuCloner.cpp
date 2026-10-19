@@ -239,8 +239,8 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 #if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
-                "CAGRA requires a caller-owned Dataset; use "
-                "GpuIndexCagra::copyFrom(cpuIndex, dataset)");
+                "Use C++ GpuIndexCagra::copyFrom(cpuIndex) for graph-only import "
+                "or copyFrom(cpuIndex, &dataset) to fill and attach a device Dataset");
     }
 #endif
     else {
@@ -559,8 +559,8 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
     else if (
             auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
-                "CAGRA requires a caller-owned Dataset; use "
-                "GpuIndexBinaryCagra::copyFrom(cpuIndex, dataset)");
+                "Use C++ GpuIndexBinaryCagra::copyFrom(cpuIndex) for graph-only import "
+                "or copyFrom(cpuIndex, &dataset) to fill and attach a device Dataset");
     }
 #endif
     else {

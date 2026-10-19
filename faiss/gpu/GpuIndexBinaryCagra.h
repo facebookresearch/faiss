@@ -70,12 +70,16 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     void updateDataset(const Dataset& dataset);
     bool isSearchReady() const;
 
-    /// Copy the CPU graph while borrowing caller-supplied vectors in the same
-    /// order as the CPU index. The CPU index can be released after this call
-    /// when the supplied Dataset does not borrow its vector storage.
+    /// Copy the CPU graph. Without a Dataset, import only the graph and
+    /// metadata; attach vectors with updateDataset before search or copyTo.
+    /// If provided, dataset must describe writable, compatible storage on this
+    /// device with the CPU index's shape and UInt8 type. Copy CPU vectors into
+    /// that allocation, zero padding, and borrow it for search. The caller owns
+    /// the allocation and must keep it alive through index use. Copies complete
+    /// before return, so the CPU index can be released in either case.
     void copyFrom(
             const faiss::IndexBinaryHNSWCagra* index,
-            const Dataset& dataset);
+            Dataset* dataset = nullptr);
 #endif
 
     /// Copy ourselves to the given CPU index; will overwrite all data

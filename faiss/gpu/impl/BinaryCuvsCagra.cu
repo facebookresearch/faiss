@@ -75,8 +75,9 @@ BinaryCuvsCagra::BinaryCuvsCagra(
 BinaryCuvsCagra::BinaryCuvsCagra(
         GpuResources* resources,
         int dim,
+        idx_t n,
         int graph_degree,
-        const Dataset& dataset,
+        const Dataset* dataset,
         const idx_t* knn_graph,
         IndicesOptions indicesOptions)
         : resources_(resources), dim_(dim) {
@@ -85,7 +86,6 @@ BinaryCuvsCagra::BinaryCuvsCagra(
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
     const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
-    const auto n = dataset.getNumRows();
     auto graph = raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
     std::copy(knn_graph, knn_graph + n * graph_degree, graph.data_handle());
     auto graphView = raft::make_const_mdspan(graph.view());
@@ -95,10 +95,9 @@ BinaryCuvsCagra::BinaryCuvsCagra(
             raft_handle, cuvs::distance::DistanceType::BitwiseHamming);
     cuvs_index->update_graph(raft_handle, graphView);
     raft_handle.sync_stream();
-    dataset_.emplace(dataset.view());
     n_ = n;
-    if (dataset.isCagraCompatible()) {
-        updateDataset(dataset);
+    if (dataset) {
+        updateDataset(*dataset);
     }
 }
 
@@ -346,7 +345,9 @@ std::vector<idx_t> BinaryCuvsCagra::get_knngraph() const {
 }
 
 const Dataset& BinaryCuvsCagra::getDataset() const {
-    FAISS_THROW_IF_NOT(dataset_.has_value());
+    FAISS_THROW_IF_NOT_MSG(
+            dataset_.has_value(),
+            "CAGRA has no Dataset to export; attach one with updateDataset before copyTo");
     return *dataset_;
 }
 } // namespace gpu

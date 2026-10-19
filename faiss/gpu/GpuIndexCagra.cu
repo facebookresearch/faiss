@@ -38,6 +38,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <raft/core/device_resources_snmg.hpp>
 #include <raft/core/resource/multi_gpu.hpp>
+#include <raft/util/cudart_utils.hpp>
 // clang-format off
 #if __has_include(<cuvs/neighbors/cagra_optimize.hpp>)
 // Some cuVS versions put helpers::optimize in its own header.
@@ -654,29 +655,69 @@ void GpuIndexCagra::trainAllNeighbors_(const Dataset& input) {
 
 void GpuIndexCagra::copyFrom(
         const faiss::IndexHNSWCagra* index,
-        const Dataset& dataset) {
+        Dataset* dataset) {
     FAISS_THROW_IF_NOT_MSG(
-            index && index->is_trained, "CPU HNSW index must be trained");
+            index && index->is_trained && index->d > 0 && index->ntotal > 0 &&
+                    index->ntotal <= std::numeric_limits<uint32_t>::max(),
+            "CPU HNSW must contain a trained, nonempty CAGRA graph");
     FAISS_THROW_IF_NOT_MSG(
             cagraConfig_.devices.size() <= 1,
             "CPU graph import requires single-device CAGRA");
+    const auto numericType = index->get_numeric_type();
     FAISS_THROW_IF_NOT_MSG(
-            dataset.getNumRows() == index->ntotal &&
-                    dataset.getDim() == index->d,
-            "Dataset shape does not match the CPU HNSW index");
-    FAISS_THROW_IF_NOT_MSG(
-            dataset.getNumRows() > 0 &&
-                    dataset.getNumRows() <=
-                            std::numeric_limits<uint32_t>::max(),
-            "CAGRA requires a nonempty Dataset with at most UINT32_MAX rows");
-    FAISS_THROW_IF_NOT_MSG(
-            dataset.getNumericType() == index->get_numeric_type(),
-            "Dataset numeric type does not match the CPU HNSW index");
-    FAISS_THROW_IF_NOT_MSG(
-            !dataset.isDevice() || dataset.getDevice() == config_.device,
-            "Dataset device does not match CAGRA device");
+            numericType == NumericType::Float32 ||
+                    numericType == NumericType::Float16 ||
+                    numericType == NumericType::Int8,
+            "GpuIndexCagra::copyFrom unsupported data type");
+    const size_t elementBytes = numericType == NumericType::Float32
+            ? sizeof(float)
+            : numericType == NumericType::Float16 ? sizeof(half)
+                                                  : 1;
+    const void* sourceData = nullptr;
+    std::vector<int8_t> decoded;
+    if (dataset) {
+        FAISS_THROW_IF_NOT_MSG(
+                dataset->getNumRows() == index->ntotal &&
+                        dataset->getDim() == index->d &&
+                        dataset->getNumericType() == numericType,
+                "Dataset shape and type must match the CPU HNSW index");
+        FAISS_THROW_IF_NOT_MSG(
+                dataset->isCagraCompatible() &&
+                        dataset->getDevice() == config_.device,
+                "copyFrom requires writable CAGRA-compatible device Dataset storage on the index device");
+        FAISS_THROW_IF_NOT_MSG(
+                index->storage && index->storage->ntotal == index->ntotal &&
+                        index->storage->d == index->d,
+                "CPU HNSW vector storage does not match index metadata");
+        const size_t count = static_cast<size_t>(index->ntotal) * index->d;
+        if (numericType == NumericType::Float32) {
+            const auto* flat = dynamic_cast<const IndexFlat*>(index->storage);
+            FAISS_THROW_IF_NOT_MSG(
+                    flat && flat->codes.size() >= count * elementBytes,
+                    "Float32 HNSW import requires complete flat vector storage");
+            sourceData = flat->get_xb();
+        } else {
+            const auto* sq =
+                    dynamic_cast<const IndexScalarQuantizer*>(index->storage);
+            const auto encoding = numericType == NumericType::Float16
+                    ? ScalarQuantizer::QT_fp16
+                    : ScalarQuantizer::QT_8bit_direct_signed;
+            FAISS_THROW_IF_NOT_MSG(
+                    sq && sq->sq.qtype == encoding &&
+                            sq->codes.size() >= count * elementBytes,
+                    "CPU HNSW scalar storage does not match its numeric type");
+            sourceData = sq->codes.data();
+            if (numericType == NumericType::Int8) {
+                decoded.resize(count);
+                for (size_t i = 0; i < count; ++i) {
+                    decoded[i] = static_cast<int8_t>(
+                            static_cast<int>(sq->codes[i]) - 128);
+                }
+                sourceData = decoded.data();
+            }
+        }
+    }
     DeviceScope scope(config_.device);
-    const auto numericType = dataset.getNumericType();
     const auto& hnsw = index->hnsw;
     const int graphDegree = hnsw.nb_neighbors(0);
     FAISS_THROW_IF_NOT_MSG(
@@ -700,12 +741,13 @@ void GpuIndexCagra::copyFrom(
     }
 
     // Build replacement state first so invalid input does not destroy the
-    // existing index. Only the graph is copied; dataset storage is borrowed.
+    // existing index. Supplied vector storage remains owned by the caller.
     decltype(index_) replacement;
     if (numericType == NumericType::Float32) {
         replacement = std::make_shared<CuvsCagra<float>>(
                 resources_.get(),
                 index->d,
+                index->ntotal,
                 graphDegree,
                 dataset,
                 graph.data(),
@@ -716,6 +758,7 @@ void GpuIndexCagra::copyFrom(
         replacement = std::make_shared<CuvsCagra<half>>(
                 resources_.get(),
                 index->d,
+                index->ntotal,
                 graphDegree,
                 dataset,
                 graph.data(),
@@ -726,6 +769,7 @@ void GpuIndexCagra::copyFrom(
         replacement = std::make_shared<CuvsCagra<int8_t>>(
                 resources_.get(),
                 index->d,
+                index->ntotal,
                 graphDegree,
                 dataset,
                 graph.data(),
@@ -735,7 +779,28 @@ void GpuIndexCagra::copyFrom(
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::copyFrom unsupported data type");
     }
-    resources_->getRaftHandleCurrentDevice().sync_stream();
+    if (dataset) {
+        auto& handle = resources_->getRaftHandleCurrentDevice();
+        const auto stream = handle.get_stream();
+        // Finish previous uses before overwriting a possibly reused buffer.
+        handle.sync_stream();
+        auto* destination =
+                static_cast<uint8_t*>(const_cast<void*>(dataset->getData()));
+        const size_t width = static_cast<size_t>(index->d) * elementBytes;
+        const size_t pitch = dataset->getRowStride() * elementBytes;
+        CUDA_VERIFY(cudaMemsetAsync(
+                destination, 0, index->ntotal * pitch, stream.get()));
+        raft::copy_matrix(
+                destination,
+                pitch,
+                static_cast<const uint8_t*>(sourceData),
+                width,
+                width,
+                index->ntotal,
+                stream);
+        // The CPU source and any decoded Int8 temporary may now be released.
+        handle.sync_stream();
+    }
     index_ = std::move(replacement);
     merged_knngraph_.clear();
     merged_knngraph_degree_ = 0;
@@ -753,6 +818,17 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
             !std::holds_alternative<std::monostate>(index_) &&
             this->is_trained && index);
     DeviceScope scope(config_.device);
+
+    const auto& dataset = std::visit(
+            [](const auto& impl) -> const Dataset& {
+                using T = std::decay_t<decltype(impl)>;
+                if constexpr (std::is_same_v<T, std::monostate>) {
+                    FAISS_THROW_MSG("CAGRA has no Dataset to export");
+                } else {
+                    return impl->getDataset();
+                }
+            },
+            index_);
 
     //
     // Index information
@@ -809,16 +885,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     const auto n_train = this->ntotal;
-    const auto& dataset = std::visit(
-            [](const auto& impl) -> const Dataset& {
-                using T = std::decay_t<decltype(impl)>;
-                if constexpr (std::is_same_v<T, std::monostate>) {
-                    FAISS_THROW_MSG("CAGRA has no Dataset to export");
-                } else {
-                    return impl->getDataset();
-                }
-            },
-            index_);
     // Always materialize logical columns in independent CPU storage. This
     // honors device row pitch and never changes the caller's signed data.
     index->init_level0 = false;

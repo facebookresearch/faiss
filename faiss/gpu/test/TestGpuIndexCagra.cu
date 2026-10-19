@@ -733,7 +733,7 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         auto importedDataset =
                 faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
+        copiedGpuIndex.copyFrom(&cpuIndex, &importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -873,7 +873,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         auto importedDataset =
                 faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom(&cpuIndex, importedDataset);
+        copiedGpuIndex.copyFrom(&cpuIndex, &importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -1239,25 +1239,53 @@ TEST(TestGpuIndexCagra, GraphOnlyHostExportAndExplicitAttachment) {
     std::unique_ptr<faiss::Index> restored(faiss::read_index(&reader));
     auto* restoredCagra = dynamic_cast<faiss::IndexHNSWCagra*>(restored.get());
     ASSERT_NE(restoredCagra, nullptr);
-    const auto* restoredStorage =
-            dynamic_cast<const faiss::IndexFlat*>(restoredCagra->storage);
-    ASSERT_NE(restoredStorage, nullptr);
-    auto restoredDataset = Dataset::viewHost(
-            restoredStorage->get_xb(),
-            restoredCagra->ntotal,
-            restoredCagra->d,
-            NumericType::Float32,
-            restoredCagra->d);
-    auto importedStorage =
-            Dataset::makeDevicePadded(&resources, restoredDataset, 0);
+    auto importedStorage = Dataset::makeDevicePadded(&resources, source, 0);
     GpuIndexCagra imported(&resources, dim, faiss::METRIC_L2, config());
-    imported.copyFrom(restoredCagra, importedStorage);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &source), faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongRows),
+            faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongType),
+            faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongDim), faiss::FaissException);
+    if (faiss::gpu::getNumDevices() > 1) {
+        auto wrongDevice = Dataset::makeDevicePadded(&resources, source, 1);
+        EXPECT_THROW(
+                imported.copyFrom(restoredCagra, &wrongDevice),
+                faiss::FaissException);
+    }
+    imported.copyFrom(restoredCagra, &importedStorage);
+    EXPECT_TRUE(imported.isSearchReady());
+    ASSERT_TRUE(restoredCagra->own_fields);
+    delete restoredCagra->storage;
+    restoredCagra->storage = nullptr;
+    GpuIndexCagra graphOnly(&resources, dim, faiss::METRIC_L2, config());
+    graphOnly.copyFrom(restoredCagra);
     EXPECT_THROW(
             faiss::gpu::index_cpu_to_gpu(&resources, 0, restored.get()),
             faiss::FaissException);
     restored.reset();
     index.reset();
+    EXPECT_TRUE(graphOnly.is_trained);
+    EXPECT_EQ(graphOnly.ntotal, kRows);
+    EXPECT_FALSE(graphOnly.isSearchReady());
+    EXPECT_EQ(graphOnly.get_knngraph(), graph);
+    EXPECT_THROW(
+            graphOnly.search(1, values.data(), 1, &distance, &label),
+            faiss::FaissException);
+    faiss::IndexHNSWCagra missingVectors;
+    EXPECT_THROW(graphOnly.copyTo(&missingVectors), faiss::FaissException);
+    graphOnly.updateDataset(importedStorage);
+    EXPECT_TRUE(graphOnly.isSearchReady());
     checkFloatSearch(imported, values.data());
+    imported.reset();
+    checkFloatSearch(graphOnly, values.data());
+    graphOnly.copyTo(&missingVectors);
+    missingVectors.reconstruct_n(0, kRows, exported.data());
+    EXPECT_EQ(exported, values);
     checkFloatSearch(cpu, values.data());
 }
 
@@ -1518,49 +1546,55 @@ void checkTypedExport(NumericType type) {
             0);
 
     const auto* cpuStorage =
-            dynamic_cast<const faiss::IndexScalarQuantizer*>(cpu.storage);
+            dynamic_cast<const faiss::IndexFlatCodes*>(cpu.storage);
     ASSERT_NE(cpuStorage, nullptr);
     const std::vector<uint8_t> cpuCodes(
             cpuStorage->codes.begin(), cpuStorage->codes.end());
-    const void* cpuData = cpuStorage->codes.data();
-    std::vector<int8_t> signedValues;
-    if constexpr (std::is_same_v<T, int8_t>) {
-        ASSERT_EQ(
-                cpuStorage->sq.qtype,
-                faiss::ScalarQuantizer::QT_8bit_direct_signed);
-        // CPU scalar codes store signed Int8 values with a 128 offset.
-        signedValues.resize(cpuCodes.size());
-        std::transform(
-                cpuCodes.begin(),
-                cpuCodes.end(),
-                signedValues.begin(),
-                [](uint8_t code) {
-                    return static_cast<int8_t>(static_cast<int>(code) - 128);
-                });
-        cpuData = signedValues.data();
-    } else {
-        ASSERT_EQ(cpuStorage->sq.qtype, faiss::ScalarQuantizer::QT_fp16);
-    }
-    auto cpuDataset =
-            Dataset::viewHost(cpuData, cpu.ntotal, cpu.d, type, cpu.d);
-    auto importedStorage = Dataset::makeDevicePadded(&resources, cpuDataset, 0);
-    EXPECT_EQ(importedStorage.getNumericType(), type);
-    std::vector<T> decoded(values.size());
-    importedStorage.copyToHost(decoded.data());
+    auto importedStorage = Dataset::makeDevicePadded(&resources, source, 0);
+    const auto stride = importedStorage.getRowStride();
+    // Poison logical values and padding: copyFrom must fill this allocation.
+    ASSERT_EQ(
+            cudaMemsetAsync(
+                    const_cast<void*>(importedStorage.getData()),
+                    0xa5,
+                    kRows * stride * sizeof(T),
+                    resources.getResources()->getDefaultStream(0)),
+            cudaSuccess);
+    const void* allocation = importedStorage.getData();
+    auto destination = importedStorage.view();
+    EXPECT_FALSE(destination.ownsData());
+    GpuIndexCagra imported(&resources, dim, faiss::METRIC_L2, config());
+    imported.copyFrom(&cpu, &destination);
+    EXPECT_EQ(importedStorage.getData(), allocation);
+    EXPECT_TRUE(importedStorage.ownsData());
+    EXPECT_TRUE(imported.isSearchReady());
+    EXPECT_EQ(imported.get_numeric_type(), type);
+    EXPECT_EQ(imported.get_knngraph(), index.get_knngraph());
     EXPECT_EQ(
             std::vector<uint8_t>(
                     cpuStorage->codes.begin(), cpuStorage->codes.end()),
             cpuCodes);
+    std::vector<T> physical(kRows * stride);
+    std::vector<T> expectedPhysical(kRows * stride, T(0));
+    for (idx_t row = 0; row < kRows; ++row) {
+        std::copy_n(
+                original.data() + row * dim,
+                dim,
+                expectedPhysical.data() + row * stride);
+    }
+    ASSERT_EQ(
+            cudaMemcpy(
+                    physical.data(),
+                    importedStorage.getData(),
+                    physical.size() * sizeof(T),
+                    cudaMemcpyDeviceToHost),
+            cudaSuccess);
     EXPECT_EQ(
             std::memcmp(
-                    decoded.data(),
-                    original.data(),
-                    original.size() * sizeof(T)),
+                    physical.data(),
+                    expectedPhysical.data(),
+                    physical.size() * sizeof(T)),
             0);
-    GpuIndexCagra imported(&resources, dim, faiss::METRIC_L2, config());
-    imported.copyFrom(&cpu, importedStorage);
-    EXPECT_TRUE(imported.isSearchReady());
-    EXPECT_EQ(imported.get_knngraph(), index.get_knngraph());
     // Exercise the unchanged typed query interface for both the original and
     // re-imported graph, including Int8 whose Python build path is unavailable.
     for (auto* searched : {&index, &imported}) {
@@ -1582,7 +1616,8 @@ void checkTypedExport(NumericType type) {
     }
 }
 
-TEST(TestGpuIndexCagra, HalfAndInt8ExportPreserveCallerData) {
+TEST(TestGpuIndexCagra, TypedCopyFromFillsDestinationAndPreservesCpuStorage) {
+    checkTypedExport<float>(NumericType::Float32);
     checkTypedExport<half>(NumericType::Float16);
     checkTypedExport<int8_t>(NumericType::Int8);
 }
