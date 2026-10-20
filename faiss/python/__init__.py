@@ -121,8 +121,8 @@ def _preload_gpu_libs():
         raise RuntimeError(
             "faiss-gpu-cuvs installed but the cuVS runtime wheels are "
             "missing — "
-            "pip install 'libcuvs-cu13==26.06.*' 'libraft-cu13==26.06.*' "
-            "'librmm-cu13==26.06.*' "
+            "pip install 'libcuvs-cu13==26.10.*' "
+            "'libraft-cu13==26.10.*' 'librmm-cu13==26.10.*' "
             "--extra-index-url https://pypi.nvidia.com"
         ) from e
 
@@ -346,6 +346,7 @@ add_ref_in_constructor(IndexRowwiseMinMaxFP16, 0)
 add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)
+add_ref_in_constructor(IndexPiPNN, {2: [0], 1: [0], 0: []})
 add_ref_in_method(IndexShards, "add_shard", 0)
 add_ref_in_method(IndexBinaryShards, "add_shard", 0)
 add_ref_in_constructor(IndexRefineFlat, {2: [0], 1: [0]})
@@ -428,6 +429,23 @@ def search_with_parameters(index, x, k, params=None, output_stats=False):
             "invlist_scan_ms": ms_per_stage[2],
         }
         return distances, labels, stats
+
+
+search_with_distance_to_code_c = search_with_distance_to_code
+
+
+def search_with_distance_to_code(index, x, k, nprobe=None):
+    x = np.ascontiguousarray(x, dtype="float32")
+    n, d = x.shape
+    assert d == index.d
+    if nprobe is None:
+        nprobe = extract_index_ivf(index).nprobe
+    distances = np.empty((n, k), dtype=np.float32)
+    labels = np.empty((n, k), dtype=np.int64)
+    search_with_distance_to_code_c(
+        index, n, swig_ptr(x), k, swig_ptr(distances), swig_ptr(labels), nprobe
+    )
+    return distances, labels
 
 
 range_search_with_parameters_c = range_search_with_parameters
