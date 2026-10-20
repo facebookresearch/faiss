@@ -2518,6 +2518,12 @@ def search_with_parameters(
     tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]
     | tuple[npt.NDArray[np.float32], npt.NDArray[np.int64], dict[str, Any]]
 ): ...
+def search_with_distance_to_code(
+    index: Index,
+    x: npt.NDArray[np.float32],
+    k: int,
+    nprobe: int | None = None,
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
 @overload
 def range_search_with_parameters(
     index: Index,

@@ -14,7 +14,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#if defined USE_NVIDIA_CUVS
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexHNSW.h>
 #endif
@@ -28,7 +28,7 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#if defined USE_NVIDIA_CUVS
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #endif
@@ -92,7 +92,7 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
         // (inverse op of ToGpuClonerMultiple)
 
     }
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
         if (icg->get_numeric_type() != faiss::NumericType::Float32) {
@@ -236,7 +236,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 
         return res;
     }
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
                 "Use C++ GpuIndexCagra::copyFrom(cpuIndex) for graph-only import "
@@ -533,7 +533,7 @@ faiss::IndexBinary* index_binary_gpu_to_cpu(
         ii->copyTo(ret);
         return ret;
     }
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#if defined USE_NVIDIA_CUVS
     else if (auto ii = dynamic_cast<const GpuIndexBinaryCagra*>(gpu_index)) {
         IndexBinaryHNSWCagra* ret = new IndexBinaryHNSWCagra();
         ii->copyTo(ret);
@@ -555,7 +555,7 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
         config.device = device;
         return new GpuIndexBinaryFlat(provider, ii, config);
     }
-#if defined(USE_NVIDIA_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#if defined USE_NVIDIA_CUVS
     else if (
             auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         FAISS_THROW_MSG(

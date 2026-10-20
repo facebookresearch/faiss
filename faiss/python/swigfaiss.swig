@@ -442,10 +442,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
-// CAGRA is absent from the aarch64 cuVS build (cuvs-ivfpq subset), so gate the
-// CAGRA bindings on FAISS_CUVS_NO_CAGRA too, else the wrapper references
-// undefined GpuIndexCagra symbols when linked against the aarch64 faiss_cuvs.
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
@@ -455,7 +452,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 
 %}
-#endif // FAISS_ENABLE_CUVS && !FAISS_CUVS_NO_CAGRA
+#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -785,7 +782,7 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
 // IVFPQSearchCagraConfig.lut_dtype and .internal_distance_dtype are typed as
 // cudaDataType_t (a C enum from <library_types.h>). Without an int typemap
 // SWIG generates accessors that read/write a cudaDataType_t* SwigPyObject,
@@ -949,7 +946,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
     DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif
