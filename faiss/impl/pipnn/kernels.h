@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/MetricType.h>
+#include <faiss/utils/AlignedTable.h>
 #include <cstddef>
 #include <cstdint>
 
@@ -78,6 +79,14 @@ void gather_rows(
         const int32_t* ids,
         size_t k,
         float* out);
+
+/// Grows a per-thread scratch table and never shrinks it: AlignedTable::resize
+/// reallocates whenever the rounded capacity changes, shrinking included.
+inline void ensure_size(AlignedTable<float, 64>& table, size_t n) {
+    if (table.size() < n) {
+        table.resize(n);
+    }
+}
 
 } // namespace pipnn
 } // namespace faiss
