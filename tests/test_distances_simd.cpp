@@ -55,7 +55,7 @@ TEST(TestFvecL2sqrNy, D2) {
             x[i] = u(rng);
         }
 
-        for (const auto nrows : {1, 2, 5, 10, 15, 20, 25}) {
+        for (const auto nrows : {1, 2, 5, 10, 15, 20, 25, 33, 256, 259}) {
             std::vector<float> y(nrows * dim);
             for (size_t i = 0; i < y.size(); i++) {
                 y[i] = u(rng);
@@ -83,13 +83,14 @@ TEST(TestFvecInnerProductsNy, D2) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> u(0, 32);
 
-    for (const auto dim : {2, 4, 8, 12}) {
+    // Same dimensions as the L2 test: 1/2/4/8 hit the dedicated kernels.
+    for (const auto dim : {1, 2, 3, 4, 5, 8, 12, 16, 24, 32, 48, 64}) {
         std::vector<float> x(dim, 0);
         for (size_t i = 0; i < x.size(); i++) {
             x[i] = u(rng);
         }
 
-        for (const auto nrows : {1, 2, 5, 10, 15, 20, 25}) {
+        for (const auto nrows : {1, 2, 5, 10, 15, 20, 25, 33, 256, 259}) {
             std::vector<float> y(nrows * dim);
             for (size_t i = 0; i < y.size(); i++) {
                 y[i] = u(rng);
