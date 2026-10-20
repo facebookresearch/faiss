@@ -290,7 +290,7 @@ class TestNativeRHTBenchmark(unittest.TestCase):
                     "--k",
                     "3",
                     "--bits",
-                    "2",
+                    "1",
                     "--seeds",
                     "7",
                     "--batch-sizes",
@@ -363,24 +363,25 @@ class TestNativeRHTBenchmark(unittest.TestCase):
             reconstructed, index.sa_decode(index.sa_encode(xb))
         )
 
-    def test_multibit_rabitq_reconstruction_matches_full_native_scores(self):
+    def test_rabitq_reconstruction_matches_full_native_scores(self):
         bench = load_benchmark()
         rng = np.random.default_rng(9)
         xb = rng.standard_normal((20, 32), dtype=np.float32)
         queries = rng.standard_normal((3, 32), dtype=np.float32)
-        for bits in (2, 3, 4):
+        for bits in (1, 2, 3, 4):
             with self.subTest(bits=bits):
                 index = self.faiss.index_factory(32, f"RaBitQ{bits}")
                 index.qb = 0
                 index.train(xb + 0.1)
                 index.add(xb)
                 reconstructed = bench.reconstruct_leaf(self.faiss, index, 0, len(xb))
-                self.assertGreater(
-                    np.linalg.norm(
-                        reconstructed - index.sa_decode(index.sa_encode(xb))
-                    ),
-                    0.01,
-                )
+                sign_only = index.sa_decode(index.sa_encode(xb))
+                if bits == 1:
+                    np.testing.assert_array_equal(reconstructed, sign_only)
+                else:
+                    self.assertGreater(
+                        np.linalg.norm(reconstructed - sign_only), 0.01
+                    )
                 center = self.faiss.vector_to_array(index.center)
                 residuals, qr = xb - center, queries - center
                 expected = (qr * qr).sum(axis=1)[:, None] + (residuals * residuals).sum(

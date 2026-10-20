@@ -6,6 +6,9 @@ The fixed RHT modes use native `HadamardRotation(d, seed, rounds)` inside a
 native `IndexPreTransform`. The default `HadamardRotation(d, seed)` still
 means three rounds. This benchmark does not implement per-vector routing.
 
+The default budgets are 2/3/4 bits. Use `--bits 1 2 3 4` to include the
+one-bit operating point supported by both native quantizers.
+
 `urr` is a Haar draw from the orthogonal group: Gaussian QR in float64 with
 the diagonal signs of R corrected, then rounded to float32 and installed in
 a native `LinearTransform`. It is distinct from the operational Faiss `RR`

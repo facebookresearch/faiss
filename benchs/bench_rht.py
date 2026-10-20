@@ -76,7 +76,7 @@ def make_parser():
         "--indexes", nargs="+", choices=("RaBitQ", "EDEN"), default=["RaBitQ", "EDEN"]
     )
     parser.add_argument(
-        "--bits", type=int, nargs="+", choices=(2, 3, 4), default=[2, 3, 4]
+        "--bits", type=int, nargs="+", choices=(1, 2, 3, 4), default=[2, 3, 4]
     )
     parser.add_argument("--modes", nargs="+", choices=MODES, default=list(MODES))
     parser.add_argument(
