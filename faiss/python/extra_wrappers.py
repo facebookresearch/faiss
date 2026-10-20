@@ -644,6 +644,12 @@ class Kmeans:
     def assign(self, x):
         x = np.ascontiguousarray(x, dtype="float32")
         assert self.centroids is not None, "should train before assigning"
+        if not hasattr(self, "index"):
+            self.index = IndexFlatL2(self.d)
+            if self.gpu:
+                self.index = faiss.index_cpu_to_all_gpus(
+                    self.index, ngpu=self.gpu
+                )
         self.index.reset()
         self.index.add(self.centroids)
         D, I = self.index.search(x, 1)
