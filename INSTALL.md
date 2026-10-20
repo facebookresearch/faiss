@@ -404,31 +404,20 @@ imported.copyFrom(cpu)  # Graph and metadata only; not search ready.
 imported.updateDataset(storage)  # Borrows these already-populated vectors.
 ```
 
-Python does not add ownership retention: `viewHost` does not keep its NumPy
-array alive, and `view()` does not keep the source Dataset owner alive. CAGRA
-also borrows its allocation. Keep `xb` alive for every use of its host view,
-and keep owning `storage` alive for every borrowing view, index, and queued
-operation. `makeDevicePadded` returns an owning Dataset but copies asynchronously;
-keep its source allocation alive and unchanged until the resource stream is
-synchronized. `copyToHost()` waits for device work and returns a packed NumPy
-copy with the original dtype. These rules also apply to floating-point CAGRA.
-For Float16 or Int8 indexes, pass the matching type to the existing search
-wrapper, for example `index.search(xq, k, numeric_type=storage.getNumericType())`.
+Python follows the ownership and stream rules above: `viewHost` does not keep
+its NumPy array alive, and `view()` does not keep the source Dataset owner alive.
+Retain those owners explicitly. `copyToHost()` waits for device work and returns
+an independent, packed NumPy array with the original dtype. For Float16 or Int8
+indexes, pass the matching search type:
+`index.search(xq, k, numeric_type=storage.getNumericType())`.
 
-Python `copyFrom(cpu)` (or `copyFrom(cpu, None)`) retains no CPU vector storage;
-the CPU index can be released after return. `copyFrom(cpu, destination)` instead
-fills a caller-preallocated, writable compatible device Dataset, zeroes padding,
-and returns search ready. It also finishes copying before return, so the CPU
-source can be released while the destination allocation stays alive. For raw
-device buffers, `Dataset.viewDevice` and `Dataset.viewDevicePadded` expose the
-C++ argument order `(data, numRows, dim, numericType, rowStride, device)`; they
-neither allocate nor retain a device-buffer owner. Convert an integer device
-address with `faiss.cast_integer_to_void_ptr(address)` when passing `data`.
-Raw host-pointer and output
-operations remain available as `viewHost_c` and `copyToHost_c`. Training from a
-host Dataset builds a graph that needs compatible device storage attached with
-`updateDataset` before searching. Readiness is derived from the graph and that
-attachment, with no separate flag to set.
+Use `copyFrom(cpu)` or `copyFrom(cpu, None)` for graph-only import, and
+`copyFrom(cpu, destination)` to fill and attach existing device storage under
+the contract above. The raw `Dataset.viewDevice` and `Dataset.viewDevicePadded`
+argument order is `(data, numRows, dim, numericType, rowStride, device)`.
+Convert an integer device address with `faiss.cast_integer_to_void_ptr(address)`
+when passing `data`. Raw host-pointer and output operations remain available as
+`viewHost_c` and `copyToHost_c`.
 
 ### A real-life benchmark
 

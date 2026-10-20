@@ -41,8 +41,11 @@ class TestDataset(unittest.TestCase):
                     faiss.cast_integer_to_void_ptr(values.ctypes.data),
                     3, 5, numeric_type, 9)
                 np.testing.assert_array_equal(raw.copyToHost(), values)
+                source_ref = weakref.ref(source)
                 descriptor = source.view()
                 del source
+                gc.collect()
+                self.assertIsNone(source_ref())
                 np.testing.assert_array_equal(descriptor.copyToHost(), values)
                 # allocation and values stay alive until their views are gone.
                 del raw, descriptor

@@ -44,38 +44,6 @@ class TestBinaryCagraDataset(unittest.TestCase):
         ).sum(axis=1)
         np.testing.assert_array_equal(distances[:, 0], expected)
 
-    def test_views_and_device_preparation(self):
-        self.assertEqual(self.host.getDim(), 19)  # Bytes, not bits.
-        self.assertEqual(self.host.getNumRows(), 512)
-        self.assertEqual(self.host.getNumericType(), faiss.UInt8)
-        self.assertEqual(int(self.host.getData()), self.xb.ctypes.data)
-        self.assertFalse(self.host.ownsData())
-        self.assertFalse(self.host.isDevice())
-        self.assertFalse(self.host.isCagraCompatible())
-
-        host_ref = weakref.ref(self.host)
-        borrowed = self.host.view()
-        del self.host
-        gc.collect()
-        self.assertIsNone(host_ref())  # view() does not retain its descriptor.
-        np.testing.assert_array_equal(borrowed.copyToHost(), self.xb)
-        storage = faiss.Dataset.makeDevicePadded(self.res, borrowed, 0)
-        self.res.syncDefaultStreamCurrentDevice()
-        self.assertTrue(storage.ownsData())
-        self.assertTrue(storage.isCagraCompatible())
-        self.assertEqual(storage.getRowStride(), 32)
-        np.testing.assert_array_equal(storage.copyToHost(), self.xb)
-
-        for factory in (faiss.Dataset.viewDevice, faiss.Dataset.viewDevicePadded):
-            with self.subTest(factory=factory.__name__):
-                view = factory(
-                    storage.getData(), 512, 19, faiss.UInt8,
-                    storage.getRowStride(), 0,
-                )
-                self.assertFalse(view.ownsData())
-                self.assertTrue(view.isCagraCompatible())
-                np.testing.assert_array_equal(view.copyToHost(), self.xb)
-
     def test_device_build_and_search(self):
         storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
         for algorithm in (
