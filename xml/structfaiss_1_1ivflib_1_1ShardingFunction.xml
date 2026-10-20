@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="172" column="21"/>
+        <location file="faiss/IVFlib.h" line="187" column="21"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1ShardingFunction_1a90d4d7516557fc19b14923596ef69d2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="173" column="13"/>
+        <location file="faiss/IVFlib.h" line="188" column="13"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1ShardingFunction_1a72c513808b83e41d7a7e36168a17cacb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="174" column="5" bodyfile="faiss/IVFlib.h" bodystart="174" bodyend="174"/>
+        <location file="faiss/IVFlib.h" line="189" column="5" bodyfile="faiss/IVFlib.h" bodystart="189" bodyend="189"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1ShardingFunction_1ae68d94d9775e1b97bfbf50b0a2b6691e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="175" column="5"/>
+        <location file="faiss/IVFlib.h" line="190" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1ShardingFunction_1ac09daac4341167a8db9b4bacd40686ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -89,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="176" column="5"/>
+        <location file="faiss/IVFlib.h" line="191" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref> &amp;</type>
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="177" column="22"/>
+        <location file="faiss/IVFlib.h" line="192" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1ShardingFunction_1a7b7240ba0a89dde1a872fd38190da8dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref> &amp;</type>
@@ -123,7 +123,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="178" column="22"/>
+        <location file="faiss/IVFlib.h" line="193" column="22"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -148,7 +148,7 @@
         <link refid="structfaiss_1_1ivflib_1_1ShardingFunction"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/IVFlib.h" line="171" column="1" bodyfile="faiss/IVFlib.h" bodystart="171" bodyend="179"/>
+    <location file="faiss/IVFlib.h" line="186" column="1" bodyfile="faiss/IVFlib.h" bodystart="186" bodyend="194"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a007d9b16d3206e1f5064165756a73c17" prot="public" virt="pure-virtual"><scope>faiss::ivflib::ShardingFunction</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" prot="public" virt="non-virtual"><scope>faiss::ivflib::ShardingFunction</scope><name>operator=</name></member>

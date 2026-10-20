@@ -25,7 +25,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="181" column="13"/>
+        <location file="faiss/IVFlib.h" line="196" column="13"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -56,7 +56,7 @@
         <link refid="structfaiss_1_1ivflib_1_1ShardingFunction"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IVFlib.h" line="180" column="1" bodyfile="faiss/IVFlib.h" bodystart="180" bodyend="182"/>
+    <location file="faiss/IVFlib.h" line="195" column="1" bodyfile="faiss/IVFlib.h" bodystart="195" bodyend="197"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction_1afe6a5d5ec404438da92e1360f33bf7d4" prot="public" virt="virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" prot="public" virt="non-virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>operator=</name></member>

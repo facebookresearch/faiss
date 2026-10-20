@@ -333,6 +333,49 @@
         </inbodydescription>
         <location file="faiss/IVFlib.h" line="128" column="6" declfile="faiss/IVFlib.h" declline="128" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="IVFlib_8h_1a1ae3c67e5e793834e68e004b0a6958a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ivflib::search_with_distance_to_code</definition>
+        <argsstring>(const Index *index, idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, size_t nprobe)</argsstring>
+        <name>search_with_distance_to_code</name>
+        <qualifiedname>faiss::ivflib::search_with_distance_to_code</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nprobe</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>search an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>, possibly embedded in an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>, scoring every code with <ref refid="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" kindref="member">InvertedListScanner::distance_to_code</ref>, one call per code, as callers that run their own scan loop do (search() uses scan_codes, which batches codes). Meant for benchmarking that path. Each query is scanned by one thread; queries run in parallel. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IVFlib.h" line="145" column="6" declfile="faiss/IVFlib.h" declline="145" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::ivflib::range_search_with_parameters</definition>
@@ -380,7 +423,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="140" column="6" declfile="faiss/IVFlib.h" declline="140" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="155" column="6" declfile="faiss/IVFlib.h" declline="155" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ad4e104b5a77c21bda47ea76cb1896ecd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref> *</type>
@@ -402,7 +445,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="153" column="27" declfile="faiss/IVFlib.h" declline="153" declcolumn="27"/>
+        <location file="faiss/IVFlib.h" line="168" column="27" declfile="faiss/IVFlib.h" declline="168" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -460,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="165" column="6" declfile="faiss/IVFlib.h" declline="165" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="180" column="6" declfile="faiss/IVFlib.h" declline="180" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a75fc271debbf354dbf739b8cffc8a725" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -543,7 +586,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="198" column="6" declfile="faiss/IVFlib.h" declline="198" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="213" column="6" declfile="faiss/IVFlib.h" declline="213" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a7386ca19b896152c0af3d9ae4edf45c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -581,7 +624,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="205" column="6" declfile="faiss/IVFlib.h" declline="205" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="220" column="6" declfile="faiss/IVFlib.h" declline="220" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
