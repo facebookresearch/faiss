@@ -35,6 +35,11 @@ struct PartitionParams {
     int fanout_at(int depth) const;
 };
 
+/// Each partition thread holds a c_max x c_max float matrix.
+inline constexpr int kMaxCMax = 4096;
+/// Leader indices are stored as uint16_t.
+inline constexpr int kMaxLeaderCap = 65535;
+
 struct PartitionStats {
     size_t n_leaves = 0;
     size_t n_point_instances = 0; // sum of leaf sizes
