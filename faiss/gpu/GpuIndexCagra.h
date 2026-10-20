@@ -315,7 +315,6 @@ struct GpuIndexCagra : public GpuIndex {
 
     ~GpuIndexCagra() override;
 
-#ifndef SWIG
     /// Build the full graph while borrowing dataset storage. The backing
     /// allocation must remain alive and unchanged through index use and all
     /// outstanding GPU work. Call reset() before building again.
@@ -343,9 +342,8 @@ struct GpuIndexCagra : public GpuIndex {
     void copyFrom(
             const faiss::IndexHNSWCagra* index,
             Dataset* dataset = nullptr);
-#endif
 
-    /// Legacy pointer entry points throw: use the C++ Dataset overloads.
+    /// Legacy pointer entry points throw: use the Dataset overloads.
     void add(idx_t n, const float* x) override;
     void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
     void train(idx_t n, const float* x) override;

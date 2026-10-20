@@ -33,9 +33,7 @@ namespace faiss {
 namespace gpu {
 
 class BinaryCuvsCagra;
-#ifndef SWIG
 class Dataset;
-#endif
 
 struct GpuIndexBinaryCagra : public IndexBinary {
    public:
@@ -56,7 +54,6 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     void add(idx_t n, const uint8_t* x) override;
     void train(idx_t n, const uint8_t* x) override;
 
-#ifndef SWIG
     /// Build the full graph, borrowing UInt8 vectors with dim == d / 8.
     /// The backing storage must remain alive and unchanged until all index
     /// operations have completed. Reset before building a second graph.
@@ -80,7 +77,6 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     void copyFrom(
             const faiss::IndexBinaryHNSWCagra* index,
             Dataset* dataset = nullptr);
-#endif
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance

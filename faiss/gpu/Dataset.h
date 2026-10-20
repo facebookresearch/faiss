@@ -15,7 +15,7 @@ namespace faiss {
 namespace gpu {
 class GpuResourcesProvider;
 
-/** Caller-controlled dense vector storage for cuVS CAGRA (C++ only).
+/** Caller-controlled dense vector storage for cuVS CAGRA.
  *
  * Dimensions and row strides are in elements, with contiguous columns. Binary
  * vectors use UInt8, and their dimension is the number of bytes, not bits.

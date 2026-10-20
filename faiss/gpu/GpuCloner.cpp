@@ -239,7 +239,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 #if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
-                "Use C++ GpuIndexCagra::copyFrom(cpuIndex) for graph-only import "
+                "Use GpuIndexCagra::copyFrom(cpuIndex) for graph-only import "
                 "or copyFrom(cpuIndex, &dataset) to fill and attach a device Dataset");
     }
 #endif
@@ -559,7 +559,7 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
     else if (
             auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         FAISS_THROW_MSG(
-                "Use C++ GpuIndexBinaryCagra::copyFrom(cpuIndex) for graph-only import "
+                "Use GpuIndexBinaryCagra::copyFrom(cpuIndex) for graph-only import "
                 "or copyFrom(cpuIndex, &dataset) to fill and attach a device Dataset");
     }
 #endif

@@ -227,22 +227,22 @@ void GpuIndexCagra::add(const Dataset& dataset) {
 
 void GpuIndexCagra::train(idx_t, const float*) {
     FAISS_THROW_MSG(
-            "CAGRA requires caller-owned Dataset input; use train(const Dataset&) in C++");
+            "CAGRA requires caller-owned Dataset input; use train(const Dataset&)");
 }
 
 void GpuIndexCagra::train_ex(idx_t, const void*, NumericType) {
     FAISS_THROW_MSG(
-            "CAGRA requires caller-owned Dataset input; use train(const Dataset&) in C++");
+            "CAGRA requires caller-owned Dataset input; use train(const Dataset&)");
 }
 
 void GpuIndexCagra::add_ex(idx_t, const void*, NumericType) {
     FAISS_THROW_MSG(
-            "CAGRA requires caller-owned Dataset input; use add(const Dataset&) in C++");
+            "CAGRA requires caller-owned Dataset input; use add(const Dataset&)");
 }
 
 void GpuIndexCagra::add(idx_t, const float*) {
     FAISS_THROW_MSG(
-            "CAGRA requires caller-owned Dataset input; use add(const Dataset&) in C++");
+            "CAGRA requires caller-owned Dataset input; use add(const Dataset&)");
 }
 
 void GpuIndexCagra::updateDataset(const Dataset& dataset) {

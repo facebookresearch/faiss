@@ -269,7 +269,7 @@ $ ./build/demos/demo_ivfpq_indexing_gpu
 This produces the GPU code equivalent to the CPU `demo_ivfpq_indexing`. It also
 shows how to translate indexes from/to a GPU.
 
-### C++ CAGRA datasets and HNSW interop
+### CAGRA datasets and HNSW interop
 
 With `FAISS_ENABLE_CUVS=ON`, CAGRA builds require a caller-owned
 `faiss::gpu::Dataset`. The index owns its graph and borrows vector storage.
@@ -366,9 +366,69 @@ Building a graph with `train` or `add` requires an explicit Dataset. Their
 inherited pointer overloads reject calls; use the Dataset
 overloads on `GpuIndexCagra` or `GpuIndexBinaryCagra`. Dataset ownership replaces
 `store_dataset`. Pointer APIs for other index families are unchanged. Dataset
-construction, build, attachment, and import APIs are C++ only; Python and C have
-no Dataset bindings yet. Existing CPU HNSW search and serialization remain
-available.
+construction, build, attachment, and import are available in C++ and Python;
+there is no C Dataset binding. Existing CPU HNSW search and serialization remain
+available. Generic CPU-to-GPU cloners do not accept CAGRA: use its explicit
+`copyFrom` method instead.
+
+In Python, `Dataset.viewHost(array)` borrows a two-dimensional NumPy array and
+infers its shape, dtype, and row stride. It accepts `float32`, `float16`, `int8`,
+and `uint8`, with contiguous columns, without copying or converting the array.
+For example, binary CAGRA uses a `uint8` array with a dimension in bytes:
+
+```python
+import faiss
+import numpy as np
+
+xb = np.random.RandomState(7).randint(0, 256, (512, 19)).astype("uint8")
+resources = faiss.StandardGpuResources()
+source = faiss.Dataset.viewHost(xb)
+storage = faiss.Dataset.makeDevicePadded(resources, source, 0)
+resources.syncDefaultStreamCurrentDevice()  # xb must survive the async copy.
+
+config = faiss.GpuIndexCagraConfig()
+config.build_algo = faiss.graph_build_algo_NN_DESCENT
+config.graph_degree = 16
+config.intermediate_graph_degree = 32
+index = faiss.GpuIndexBinaryCagra(resources, xb.shape[1] * 8, config)
+index.train(storage)  # add(storage) also builds the entire graph.
+assert index.isSearchReady()
+distances, labels = index.search(xb[:8], 1)
+packed_copy = storage.copyToHost()  # An independent, ready NumPy array.
+
+cpu = faiss.IndexBinaryHNSWCagra()
+cpu.base_level_only = True
+index.copyTo(cpu)
+imported = faiss.GpuIndexBinaryCagra(resources, index.d, config)
+imported.copyFrom(cpu)  # Graph and metadata only; not search ready.
+imported.updateDataset(storage)  # Borrows these already-populated vectors.
+```
+
+Python does not add ownership retention: `viewHost` does not keep its NumPy
+array alive, and `view()` does not keep the source Dataset owner alive. CAGRA
+also borrows its allocation. Keep `xb` alive for every use of its host view,
+and keep owning `storage` alive for every borrowing view, index, and queued
+operation. `makeDevicePadded` returns an owning Dataset but copies asynchronously;
+keep its source allocation alive and unchanged until the resource stream is
+synchronized. `copyToHost()` waits for device work and returns a packed NumPy
+copy with the original dtype. These rules also apply to floating-point CAGRA.
+For Float16 or Int8 indexes, pass the matching type to the existing search
+wrapper, for example `index.search(xq, k, numeric_type=storage.getNumericType())`.
+
+Python `copyFrom(cpu)` (or `copyFrom(cpu, None)`) retains no CPU vector storage;
+the CPU index can be released after return. `copyFrom(cpu, destination)` instead
+fills a caller-preallocated, writable compatible device Dataset, zeroes padding,
+and returns search ready. It also finishes copying before return, so the CPU
+source can be released while the destination allocation stays alive. For raw
+device buffers, `Dataset.viewDevice` and `Dataset.viewDevicePadded` expose the
+C++ argument order `(data, numRows, dim, numericType, rowStride, device)`; they
+neither allocate nor retain a device-buffer owner. Convert an integer device
+address with `faiss.cast_integer_to_void_ptr(address)` when passing `data`.
+Raw host-pointer and output
+operations remain available as `viewHost_c` and `copyToHost_c`. Training from a
+host Dataset builds a graph that needs compatible device storage attached with
+`updateDataset` before searching. Readiness is derived from the graph and that
+attachment, with no separate flag to set.
 
 ### A real-life benchmark
 

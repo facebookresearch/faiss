@@ -74,6 +74,101 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
     setattr(the_class, name, replacement)
 
 
+def handle_Dataset(the_class):
+    """NumPy adapters for the existing Dataset storage operations."""
+    numeric_types = {
+        np.dtype("float32"): faiss.Float32,
+        np.dtype("float16"): faiss.Float16,
+        np.dtype("int8"): faiss.Int8,
+        np.dtype("uint8"): faiss.UInt8,
+    }
+    dtypes = {value: key for key, value in numeric_types.items()}
+
+    def replacement_viewHost(x):
+        """Borrow a two-dimensional NumPy array without copying or retaining it.
+
+        Supports float32, float16, int8 and uint8, with contiguous columns
+        and a positive row stride. Dimensions and strides are in elements;
+        binary vectors use uint8 with a dimension in bytes, not bits.
+        Keep the array alive and unchanged while any Dataset, CAGRA index,
+        or queued GPU work uses its storage. For raw pointers use viewHost_c.
+        """
+        if not isinstance(x, np.ndarray) or x.ndim != 2:
+            raise TypeError(
+                "Dataset.viewHost requires a two-dimensional NumPy array"
+            )
+        if x.dtype not in numeric_types:
+            raise TypeError("Dataset supports float32, float16, int8 and uint8")
+        n, d = x.shape
+        if x.size and (
+            x.strides[1] != x.itemsize
+            or x.strides[0] < d * x.itemsize
+            or x.strides[0] % x.itemsize
+        ):
+            raise ValueError(
+                "Dataset requires contiguous columns and nonoverlapping rows"
+            )
+        stride = x.strides[0] // x.itemsize if x.size else d
+        return the_class.viewHost_c(
+            faiss.cast_integer_to_void_ptr(x.ctypes.data),
+            n,
+            d,
+            numeric_types[x.dtype],
+            stride,
+        )
+
+    def replacement_copyToHost(self):
+        """Return a packed NumPy copy, waiting for device work to finish.
+
+        The result owns its storage and has the Dataset's logical shape
+        and dtype. For a caller-supplied raw destination use copyToHost_c.
+        """
+        result = np.empty(
+            (self.getNumRows(), self.getDim()),
+            dtype=dtypes[self.getNumericType()],
+        )
+        self.copyToHost_c(swig_ptr(result))
+        return result
+
+    the_class.viewHost_c = staticmethod(the_class.viewHost)
+    the_class.viewHost = staticmethod(replacement_viewHost)
+    replace_method(the_class, "copyToHost", replacement_copyToHost)
+
+
+def handle_GpuIndexCagra(the_class):
+    """Use Dataset build overloads instead of the generic NumPy adapters."""
+
+    def replacement_train(self, dataset):
+        """Build the entire graph from a Dataset, borrowing its vector storage.
+
+        Compatible device storage makes the index search ready. Otherwise,
+        attach populated padded device storage with updateDataset before
+        searching. Keep the backing allocation alive while the index uses it.
+        """
+        if not isinstance(dataset, faiss.Dataset):
+            raise TypeError(
+                "CAGRA train requires a Dataset; "
+                "use Dataset.viewHost or makeDevicePadded"
+            )
+        self.train_c(dataset)
+
+    def replacement_add(self, dataset):
+        """Build from a Dataset, with the same semantics as train(dataset).
+
+        Incremental additions are unsupported; reset before rebuilding.
+        """
+        if not isinstance(dataset, faiss.Dataset):
+            raise TypeError(
+                "CAGRA add requires a Dataset; "
+                "use Dataset.viewHost or makeDevicePadded"
+            )
+        self.add_c(dataset)
+
+    # handle_Index / handle_IndexBinary already preserved the SWIG methods.
+    the_class.train = replacement_train
+    the_class.add = replacement_add
+
+
 def handle_Clustering(the_class):
 
     def replacement_train(self, x, index, weights=None):
