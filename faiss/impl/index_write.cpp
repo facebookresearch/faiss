@@ -115,9 +115,17 @@ static void write_index_header(const Index* idx, IOWriter* f) {
 void write_VectorTransform(const VectorTransform* vt, IOWriter* f) {
     if (const HadamardRotation* hr =
                 dynamic_cast<const HadamardRotation*>(vt)) {
-        uint32_t h = fourcc("HRot");
+        FAISS_THROW_IF_NOT_FMT(
+                hr->rounds >= 1 && hr->rounds <= 3,
+                "HadamardRotation rounds must be in [1, 3], got %d",
+                hr->rounds);
+        // Keep the existing payload for the default three-round transform.
+        uint32_t h = fourcc(hr->rounds == 3 ? "HRot" : "HRnd");
         WRITE1(h);
         WRITE1(hr->seed);
+        if (hr->rounds != 3) {
+            WRITE1(hr->rounds);
+        }
     } else if (
             const LinearTransform* lt =
                     dynamic_cast<const LinearTransform*>(vt)) {

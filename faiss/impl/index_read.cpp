@@ -379,9 +379,16 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
             itqt->pca_then_itq = *pi;
         }
         vt = std::move(itqt);
-    } else if (h == fourcc("HRot")) {
+    } else if (h == fourcc("HRot") || h == fourcc("HRnd")) {
         auto hr = std::make_unique<HadamardRotation>();
         READ1(hr->seed);
+        if (h == fourcc("HRnd")) {
+            READ1(hr->rounds);
+            FAISS_THROW_IF_NOT_FMT(
+                    hr->rounds >= 1 && hr->rounds <= 3,
+                    "HadamardRotation rounds must be in [1, 3], got %d",
+                    hr->rounds);
+        }
         vt = std::move(hr);
     } else {
         FAISS_THROW_FMT(
@@ -410,7 +417,7 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 "VectorTransform d_in * d_out would exceed "
                 "deserialization vector byte limit");
     }
-    if (h == fourcc("HRot")) {
+    if (h == fourcc("HRot") || h == fourcc("HRnd")) {
         FAISS_THROW_IF_NOT_FMT(
                 vt->d_out > 0 && (vt->d_out & (vt->d_out - 1)) == 0,
                 "invalid HadamardRotation d_out=%d (must be a power of 2 > 0)",

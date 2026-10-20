@@ -126,17 +126,20 @@ struct RandomRotationMatrix : LinearTransform {
     RandomRotationMatrix() {}
 };
 
-/** Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
+/** One to three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
  * Produces a pseudo-random rotation in O(d log d) time.
  * d_out is the smallest power of 2 >= d_in (zero-padded as needed).
  */
 struct HadamardRotation : VectorTransform {
     uint32_t seed{};
 
+    /// Number of sign-flip/FWHT rounds, in [1, 3]. Defaults to three.
+    int rounds = 3;
+
     /// Sign-flip vectors, each of size d_out, generated from seed.
     std::vector<float> signs1, signs2, signs3;
 
-    explicit HadamardRotation(int d, uint32_t seed = 12345);
+    explicit HadamardRotation(int d, uint32_t seed = 12345, int rounds = 3);
 
     void init(uint32_t seed_in);
 

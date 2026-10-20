@@ -577,14 +577,16 @@ class RandomRotationMatrix(LinearTransform):
     def init(self, seed: int) -> None: ...
 
 class HadamardRotation(VectorTransform):
-    """Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
+    """One to three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
     Produces a pseudo-random rotation in O(d log d) time.
     d_out is the smallest power of 2 >= d_in (zero-padded as needed).
+    The default is three rounds.
     """
 
     seed: int
+    rounds: int
 
-    def __init__(self, d: int, seed: int = 12345) -> None: ...
+    def __init__(self, d: int, seed: int = 12345, rounds: int = 3) -> None: ...
     def init(self, seed: int) -> None: ...
 
 class PCAMatrix(LinearTransform):

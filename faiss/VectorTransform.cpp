@@ -448,12 +448,22 @@ static void generate_signs(
     }
 }
 
-HadamardRotation::HadamardRotation(int d, uint32_t seed_in)
-        : VectorTransform(d, next_power_of_2(d)), seed(seed_in) {
+static void validate_hadamard_rounds(int rounds) {
+    FAISS_THROW_IF_NOT_FMT(
+            rounds >= 1 && rounds <= 3,
+            "HadamardRotation rounds must be in [1, 3], got %d",
+            rounds);
+}
+
+HadamardRotation::HadamardRotation(int d, uint32_t seed_in, int rounds_in)
+        : VectorTransform(d, next_power_of_2(d)),
+          seed(seed_in),
+          rounds(rounds_in) {
     init(seed_in);
 }
 
 void HadamardRotation::init(uint32_t seed_in) {
+    validate_hadamard_rounds(rounds);
     seed = seed_in;
     is_trained = true;
     generate_signs(seed, d_out, signs1, signs2, signs3);
@@ -464,6 +474,7 @@ void HadamardRotation::train(idx_t, const float*) {
 }
 
 void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
+    validate_hadamard_rounds(rounds);
     FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
 
     size_t d = d_in;
@@ -479,8 +490,11 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
             "sign-flip vector 3 size must match output dimension");
 
     // Each unnormalized FWHT scales norms by sqrt(p).
-    // Three rounds scale by p^(3/2). Normalize once at the end.
-    float total_scale = 1.0f / (p * std::sqrt(static_cast<float>(p)));
+    // Normalize once at the end, preserving the three-round arithmetic.
+    const float total_scale = rounds == 1
+            ? 1.0f / std::sqrt(static_cast<float>(p))
+            : rounds == 2 ? 1.0f / p
+                          : 1.0f / (p * std::sqrt(static_cast<float>(p)));
 
 #pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (idx_t i = 0; i < n; i++) {
@@ -496,17 +510,21 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
         }
         fwht_inplace(xo, p);
 
-        // Round 2: sign-flip + FWHT
-        for (size_t j = 0; j < p; j++) {
-            xo[j] *= signs2[j];
+        if (rounds >= 2) {
+            // Round 2: sign-flip + FWHT
+            for (size_t j = 0; j < p; j++) {
+                xo[j] *= signs2[j];
+            }
+            fwht_inplace(xo, p);
         }
-        fwht_inplace(xo, p);
 
-        // Round 3: sign-flip + FWHT + normalize
-        for (size_t j = 0; j < p; j++) {
-            xo[j] *= signs3[j];
+        if (rounds >= 3) {
+            // Round 3: sign-flip + FWHT
+            for (size_t j = 0; j < p; j++) {
+                xo[j] *= signs3[j];
+            }
+            fwht_inplace(xo, p);
         }
-        fwht_inplace(xo, p);
 
         for (size_t j = 0; j < p; j++) {
             xo[j] *= total_scale;
@@ -516,33 +534,38 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
 void HadamardRotation::reverse_transform(idx_t n, const float* xt, float* x)
         const {
+    validate_hadamard_rounds(rounds);
     FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
     FAISS_THROW_IF_NOT_MSG(
             d_in == d_out,
             "HadamardRotation inverse requires equal input/output dimensions");
 
     const size_t p = d_out;
-    // Reverse of apply_noalloc: three unnormalized FWHT rounds scale norms
-    // by (sqrt(p))^3 = p*sqrt(p); the forward pass cancels this with
-    // total_scale = 1/(p*sqrt(p)), so the inverse applies the same factor.
-    const float inverse_scale = 1.0f / (p * std::sqrt(static_cast<float>(p)));
+    // The inverse reverses the selected factors with the same normalization.
+    const float inverse_scale = rounds == 1
+            ? 1.0f / std::sqrt(static_cast<float>(p))
+            : rounds == 2 ? 1.0f / p
+                          : 1.0f / (p * std::sqrt(static_cast<float>(p)));
 
 #pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (idx_t i = 0; i < n; i++) {
         const float* xi = xt + i * p;
         float* xo = x + i * p;
 
-        // The inverse reverses the three sign-flip/Hadamard factors.
         std::memcpy(xo, xi, p * sizeof(float));
-        fwht_inplace(xo, p);
 
-        for (size_t j = 0; j < p; j++) {
-            xo[j] *= signs3[j];
+        if (rounds >= 3) {
+            fwht_inplace(xo, p);
+            for (size_t j = 0; j < p; j++) {
+                xo[j] *= signs3[j];
+            }
         }
-        fwht_inplace(xo, p);
 
-        for (size_t j = 0; j < p; j++) {
-            xo[j] *= signs2[j];
+        if (rounds >= 2) {
+            fwht_inplace(xo, p);
+            for (size_t j = 0; j < p; j++) {
+                xo[j] *= signs2[j];
+            }
         }
         fwht_inplace(xo, p);
 
@@ -553,8 +576,12 @@ void HadamardRotation::reverse_transform(idx_t n, const float* xt, float* x)
 }
 
 void HadamardRotation::check_identical(const VectorTransform& other) const {
+    validate_hadamard_rounds(rounds);
     auto* hr = dynamic_cast<const HadamardRotation*>(&other);
     FAISS_THROW_IF_NOT_MSG(hr, "failed to cast to HadamardRotation");
+    validate_hadamard_rounds(hr->rounds);
+    FAISS_THROW_IF_NOT_MSG(
+            rounds == hr->rounds, "HadamardRotation rounds must match");
     FAISS_THROW_IF_NOT_MSG(
             d_in == hr->d_in, "HadamardRotation input dimensions must match");
     FAISS_THROW_IF_NOT_MSG(
