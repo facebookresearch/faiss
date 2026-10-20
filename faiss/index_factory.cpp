@@ -42,6 +42,7 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
@@ -316,6 +317,11 @@ Index* parse_coarse_quantizer(
         nlist = parse_nlist(sm[1].str());
         int R = std::stoi(sm[2]);
         return new IndexNSGFlat(d, R, mt);
+    }
+    if (match("IVF([0-9]+[kM]?)_PiPNN([0-9]*)")) {
+        nlist = parse_nlist(sm[1].str());
+        int R = mres_to_int(sm[2], 64);
+        return new IndexPiPNNFlat(d, R, mt);
     }
 #ifdef FAISS_ENABLE_SVS
     if (match("IVF([0-9]+[kM]?)_SVSVamana([0-9]*)(_.+)?")) {
@@ -650,6 +656,30 @@ IndexNSG* parse_IndexNSG(
     }
     if (match(sq_pattern)) {
         return new IndexNSGSQ(d, sq_types[sm[1].str()], nsg_R, mt);
+    }
+
+    return nullptr;
+}
+
+/***************************************************************
+ * Parse IndexPiPNN
+ */
+
+IndexPiPNN* parse_IndexPiPNN(
+        const std::string& code_string,
+        int d,
+        MetricType mt,
+        int pipnn_R) {
+    std::smatch sm;
+    auto match = [&sm, &code_string](const std::string& pattern) {
+        return re_match(code_string, pattern, sm);
+    };
+
+    if (match("Flat|")) {
+        return new IndexPiPNNFlat(d, pipnn_R, mt);
+    }
+    if (match(sq_pattern)) {
+        return new IndexPiPNNSQ(d, sq_types[sm[1].str()], pipnn_R, mt);
     }
 
     return nullptr;
@@ -1175,6 +1205,28 @@ std::unique_ptr<Index> index_factory_sub(
         FAISS_THROW_IF_NOT_FMT(
                 index,
                 "could not parse NSG code description %s in %s",
+                code_string.c_str(),
+                description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+
+    // PiPNN variants (separator "," or "_", as for HNSW and NSG)
+    if (re_match(description, "PiPNN([0-9]*)([,_].*)?", sm)) {
+        int pipnn_R = mres_to_int(sm[1], 64);
+        // We also accept empty code string (synonym of Flat)
+        std::string code_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "";
+        if (verbose) {
+            printf("parsing PiPNN string %s code_string=%s pipnn_R=%d\n",
+                   description.c_str(),
+                   code_string.c_str(),
+                   pipnn_R);
+        }
+
+        IndexPiPNN* index = parse_IndexPiPNN(code_string, d, metric, pipnn_R);
+        FAISS_THROW_IF_NOT_FMT(
+                index,
+                "could not parse PiPNN code description %s in %s",
                 code_string.c_str(),
                 description.c_str());
         return std::unique_ptr<Index>(index);
