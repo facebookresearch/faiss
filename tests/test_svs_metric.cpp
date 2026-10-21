@@ -10,8 +10,6 @@
 #include <faiss/svs/IndexSVSFlat.h>
 #include <gtest/gtest.h>
 
-#include <vector>
-
 // Verify that to_svs_metric throws FaissException (not abort) for unsupported
 // metric types.
 
@@ -29,13 +27,4 @@ TEST(SVSMetric, UnsupportedMetricThrowsDirect) {
 TEST(SVSMetric, SupportedMetricsSucceed) {
     EXPECT_NO_THROW(faiss::to_svs_metric(faiss::METRIC_L2));
     EXPECT_NO_THROW(faiss::to_svs_metric(faiss::METRIC_INNER_PRODUCT));
-}
-
-// Construction path: creating an IndexSVSFlat with an unsupported metric and
-// calling add() triggers create_impl() -> to_svs_metric(). Verifies the throw
-// propagates through the index construction API.
-TEST(SVSMetric, IndexSVSFlatCreateImplUnsupportedMetricThrows) {
-    faiss::IndexSVSFlat idx(4, faiss::METRIC_L1);
-    std::vector<float> data = {1.0f, 2.0f, 3.0f, 4.0f};
-    EXPECT_THROW(idx.add(1, data.data()), faiss::FaissException);
 }

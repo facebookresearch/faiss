@@ -459,7 +459,7 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 cuvs_index->centers().data_handle(),
                 cuvs_index->dim(),
                 (uint32_t)nlist,
-                cuda::stream_ref{raft_handle.get_stream()}.get());
+                raft_handle.get_stream().get());
     }
 }
 

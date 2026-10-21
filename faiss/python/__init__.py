@@ -431,6 +431,23 @@ def search_with_parameters(index, x, k, params=None, output_stats=False):
         return distances, labels, stats
 
 
+search_with_distance_to_code_c = search_with_distance_to_code
+
+
+def search_with_distance_to_code(index, x, k, nprobe=None):
+    x = np.ascontiguousarray(x, dtype="float32")
+    n, d = x.shape
+    assert d == index.d
+    if nprobe is None:
+        nprobe = extract_index_ivf(index).nprobe
+    distances = np.empty((n, k), dtype=np.float32)
+    labels = np.empty((n, k), dtype=np.int64)
+    search_with_distance_to_code_c(
+        index, n, swig_ptr(x), k, swig_ptr(distances), swig_ptr(labels), nprobe
+    )
+    return distances, labels
+
+
 range_search_with_parameters_c = range_search_with_parameters
 
 

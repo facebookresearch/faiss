@@ -406,6 +406,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/popcount.h
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h

@@ -291,6 +291,12 @@ class SearchParametersPreTransform(SearchParameters):
     index_params: SearchParameters | None
     def __init__(self) -> None: ...
 
+class SearchParametersHNSW(SearchParameters):
+    efSearch: int
+    check_relative_distance: bool
+    bounded_queue: bool
+    def __init__(self) -> None: ...
+
 class SearchParametersSVSVamana(SearchParameters):
     search_window_size: int
     search_buffer_capacity: int
@@ -764,8 +770,15 @@ class IndexFlatIPPanorama(IndexFlatPanorama):
         self, d: int, n_levels: int, batch_size: int = 512
     ) -> None: ...
 
+class VectorTransformVector:
+    def __init__(self) -> None: ...
+    def push_back(self, x: VectorTransform) -> None: ...
+    def clear(self) -> None: ...
+    def size(self) -> int: ...
+    def at(self, n: int) -> VectorTransform: ...
+
 class IndexPreTransform(Index):
-    chain: list[VectorTransform]  # std::vector<VectorTransform*> chain
+    chain: VectorTransformVector  # std::vector<VectorTransform*> chain
     index: Index
     own_fields: bool
 
@@ -1945,6 +1958,23 @@ class HNSWStats:
     n3: int
     ndis: int
     nreorder: int
+
+class HNSWLevel0LinkParameters:
+    search_params: SearchParametersHNSW | None
+    min_mean_factor: float
+    min_closer_fraction: float
+    max_links_per_sink: int
+    max_rounds: int
+    def __init__(self) -> None: ...
+
+class HNSWLevel0LinkStats:
+    n_sinks_found: int
+    n_sinks_remaining: int
+    n_links_added: int
+    n_links_replaced: int
+    n_rounds: int
+    n_exact_searches: int
+
 class RaBitQStats:
     n_1bit: int
     n_refine: int
@@ -1975,6 +2005,7 @@ class IndexHNSW(Index):
     hnsw: HNSW
     storage: Index
     own_fields: bool
+    level_0_link_samples_per_node: int
     reconstruct_from_neighbors: Callable[
         [int, npt.NDArray[np.float32], npt.NDArray[np.float32]], None
     ]
@@ -1982,6 +2013,14 @@ class IndexHNSW(Index):
     def __init__(
         self, d: int, M: int, metric: MetricType = METRIC_L2
     ) -> None: ...
+    def add_level_0_links_from_sample(
+        self,
+        x: npt.NDArray[np.float32] | npt.NDArray[np.float16],
+        *,
+        params: HNSWLevel0LinkParameters | None = None,
+        numeric_type: int = ...,
+    ) -> HNSWLevel0LinkStats: ...
+
 
 class IndexHNSWFlat(IndexHNSW):
     def __init__(
@@ -2257,8 +2296,16 @@ class IndexBinaryHNSW(IndexBinary):
     hnsw: Any
     storage: IndexBinary
     own_fields: bool
+    level_0_link_samples_per_node: int
 
     def __init__(self, d: int, M: int) -> None: ...
+    def add_level_0_links_from_sample(
+        self,
+        x: npt.NDArray[np.uint8],
+        *,
+        params: HNSWLevel0LinkParameters | None = None,
+    ) -> HNSWLevel0LinkStats: ...
+
 
 class IndexBinaryHash(IndexBinary):
     nflip: int
@@ -2471,6 +2518,12 @@ def search_with_parameters(
     tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]
     | tuple[npt.NDArray[np.float32], npt.NDArray[np.int64], dict[str, Any]]
 ): ...
+def search_with_distance_to_code(
+    index: Index,
+    x: npt.NDArray[np.float32],
+    k: int,
+    nprobe: int | None = None,
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
 @overload
 def range_search_with_parameters(
     index: Index,
