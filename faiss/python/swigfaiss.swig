@@ -806,6 +806,24 @@ typedef int cudaDataType_t;
 %constant int CUDA_R_8U  = 8;
 // Dataset factories return move-only descriptors by value. Python owns the
 // returned descriptor; the Dataset itself determines ownership of its storage.
+%{
+// SWIG < 4.1 has a copy-only SwigValueWrapper. Dataset is move-only.
+#if SWIG_VERSION < 0x040100
+template <>
+class SwigValueWrapper<faiss::gpu::Dataset> {
+    std::unique_ptr<faiss::gpu::Dataset> value_;
+
+public:
+    SwigValueWrapper& operator=(faiss::gpu::Dataset&& value) {
+        value_.reset(new faiss::gpu::Dataset(std::move(value)));
+        return *this;
+    }
+    operator faiss::gpu::Dataset&&() const {
+        return std::move(*value_);
+    }
+};
+#endif
+%}
 %ignore faiss::gpu::Dataset::Dataset;
 %ignore faiss::gpu::Dataset::operator=;
 %feature("valuewrapper") faiss::gpu::Dataset;
