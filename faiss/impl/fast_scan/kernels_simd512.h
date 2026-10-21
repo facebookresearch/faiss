@@ -10,7 +10,7 @@
 #include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 
-#ifdef __AVX512F__
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 
 namespace faiss {
 
@@ -476,4 +476,4 @@ void pq4_kernel_qbs_512(
 
 } // namespace faiss
 
-#endif // __AVX512F__
+#endif // COMPILE_SIMD_AVX512 && __AVX512F__

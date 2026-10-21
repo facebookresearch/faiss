@@ -210,8 +210,12 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::AVX512>(
     switch (d) {
         DISPATCH(1)
         DISPATCH(2)
+        DISPATCH(3)
         DISPATCH(4)
+        DISPATCH(6)
         DISPATCH(8)
+        DISPATCH(12)
+        DISPATCH(16)
         default:
             return fvec_L2sqr_ny_transposed<SIMDLevel::NONE>(
                     dis, x, y, y_sqlen, d, d_offset, ny);

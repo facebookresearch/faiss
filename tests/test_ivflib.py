@@ -24,6 +24,7 @@ class TestIVFlib(unittest.TestCase):
             "get_invlist_range",
             "set_invlist_range",
             "search_with_parameters",
+            "search_with_distance_to_code",
         ]
 
         for method in methods:
@@ -152,6 +153,35 @@ class TestSearchWithParameters(unittest.TestCase):
         np.testing.assert_array_equal(Dnew, Dref)
 
         self.assertEqual(stats2["ndis"], ref_ndis)
+
+
+class TestSearchWithDistanceToCode(unittest.TestCase):
+
+    def do_test(self, factory, metric=faiss.METRIC_L2):
+        d = 32
+        index = faiss.index_factory(d, factory, metric)
+        rs = np.random.RandomState(123)
+        index.train(rs.rand(5000, d).astype("float32"))
+        index.add(rs.rand(10000, d).astype("float32"))
+        xq = rs.rand(100, d).astype("float32")
+        faiss.extract_index_ivf(index).nprobe = 4
+
+        Dref, Iref = index.search(xq, 10)
+        D, I = faiss.search_with_distance_to_code(index, xq, 10)
+
+        np.testing.assert_allclose(D, Dref, rtol=1e-5)
+        # distance_to_code and the batched scan may round differently, which
+        # can swap ties
+        self.assertGreater((I == Iref).mean(), 0.99)
+
+    def test_ivfpq(self):
+        self.do_test("IVF32,PQ8")
+
+    def test_ivfpq_ip(self):
+        self.do_test("IVF32,PQ8", faiss.METRIC_INNER_PRODUCT)
+
+    def test_ivfsq_pretransform(self):
+        self.do_test("PCA16,IVF32,SQ8")
 
 
 class TestSmallData(unittest.TestCase):
