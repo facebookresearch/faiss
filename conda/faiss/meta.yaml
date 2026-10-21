@@ -84,13 +84,11 @@ outputs:
         - mkl >=2024.2.2,<2026  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        # aarch64 uses lower version to link pthreads too.
-        - libopenblas >=0.3.28  # [linux and not x86_64]
+        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
         - libopenblas =0.3.34  # [osx]
     test:
       requires:
         - conda-build =25.3.1
-        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
@@ -132,6 +130,7 @@ outputs:
         - numpy >=2.0,<3.0
         - setuptools
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        - openblas =0.3.34 openmp_*  # [linux and not x86_64]
         - libcxx =20.1.1  # [osx and arm64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
