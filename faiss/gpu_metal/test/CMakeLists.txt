@@ -109,7 +109,7 @@ set_target_properties(TestMetalIVFSQFailures PROPERTIES
 target_compile_options(TestMetalIVFSQFailures PRIVATE -fobjc-arc)
 target_compile_definitions(TestMetalIVFSQFailures PRIVATE
     FAISS_TEST_METALLIB_PATH="${PROJECT_BINARY_DIR}/faiss/gpu_metal/MetalDistance.metallib")
-foreach(fault pipeline scratch upload copy growth codec-cache)
+foreach(fault pipeline merge-pipeline scratch scan-scratch upload copy growth codec-cache)
     add_test(NAME TestMetalIndexIVFSQ.Reject_${fault}
         COMMAND TestMetalIVFSQFailures ${fault})
     set_tests_properties(TestMetalIndexIVFSQ.Reject_${fault} PROPERTIES

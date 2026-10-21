@@ -28,8 +28,19 @@ class MetalKernels {
 
     bool isValid() const;
 
-    void encodeIVFSQScan(id<MTLComputeCommandEncoder> encoder,
-                        id<MTLBuffer> __unsafe_unretained const* buffers, const uint32_t* params);
+    void encodeIVFSQScan(
+            id<MTLComputeCommandEncoder> encoder,
+            id<MTLBuffer> __unsafe_unretained const* buffers,
+            const uint32_t* params,
+            uint32_t chunks,
+            uint32_t chunkSize);
+    void encodeIVFSQMerge(
+            id<MTLComputeCommandEncoder> encoder,
+            id<MTLBuffer> inputDistances,
+            id<MTLBuffer> inputIds,
+            id<MTLBuffer> outputDistances,
+            id<MTLBuffer> outputIds,
+            const uint32_t* params);
     static constexpr int kMaxK = 2048;
 
     void encodeDistanceMatrix(

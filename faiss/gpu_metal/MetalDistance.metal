@@ -2598,9 +2598,8 @@ kernel void hamming_distance_topk(
     }
 }
 
-// Exact SQ scan: one threadgroup per query, retaining top-k across segments
-// and probes. No dimension-sized threadgroup arrays or candidate truncation.
-// params: nq, d, k, nprobe, nlist, fp16, residual, L2, code_size.
+// Exact SQ scan: one threadgroup per (query, probe, list chunk).
+// params: nq, d, k, nprobe, nlist, fp16, residual, L2, code_size, chunks, chunk_size.
 // SQ fp16 can overflow finite input to infinity. Preserve IEEE NaN/Inf
 // arithmetic locally so the CPU heap's ordered admission comparisons below
 // cannot be removed by the Metal compiler's default fast-math assumptions.
@@ -2610,6 +2609,59 @@ inline bool ivfsq_before(float a, long ai, float b, long bi, uint want_min) {
     if (ai < 0) return false;
     if (bi < 0) return true;
     return a == b ? ai < bi : (want_min ? a < b : a > b);
+}
+
+// Sort only candidates above the running cutoff, then assign each member
+// of the two sorted runs its exact merged rank. Equal keys from the retained
+// run precede equal keys from the new run, preserving duplicate-label entries.
+inline void ivfsq_merge_new(
+    threadgroup float* bestDist, threadgroup long* bestIds,
+    threadgroup float* newDist, threadgroup long* newIds,
+    uint k, uint added, uint tid, uint want_min) {
+    if (added == 0) return;
+    uint padded = ivf_next_pow2(added);
+    float sentinel = want_min ? MAXFLOAT : -MAXFLOAT;
+    for (uint i = added + tid; i < padded; i += 256) {
+        newDist[i] = sentinel;
+        newIds[i] = -1;
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    ivf_tg_bitonic<long, 256, true>(newDist, newIds, padded, tid, want_min);
+    // Compute every destination while both runs are immutable, then write
+    // directly into best. Four private slots cover two old and two new
+    // candidates per thread. This avoids a third shared array, leaving room
+    // for Metal shader validation on devices with 32 KiB threadgroup memory.
+    float values[4]; long labels[4]; uint ranks[4];
+    #pragma unroll
+    for (uint part = 0; part < 4; ++part) {
+        bool old = part < 2;
+        uint i = tid + (part & 1u) * 256;
+        ranks[part] = k;
+        if (i >= (old ? k : added)) continue;
+        float value = old ? bestDist[i] : newDist[i];
+        long id = old ? bestIds[i] : newIds[i];
+        values[part] = value; labels[part] = id;
+        uint lo = 0, hi = old ? added : k;
+        while (lo < hi) {
+            uint mid = (lo + hi) / 2;
+            // Lower bound in the new run; upper bound in the old run.
+            // Equal old keys precede new ones, including duplicate labels.
+            bool before = old
+                ? ivfsq_before(newDist[mid], newIds[mid], value, id, want_min)
+                : !ivfsq_before(value, id, bestDist[mid], bestIds[mid], want_min);
+            if (before) lo = mid + 1;
+            else hi = mid;
+        }
+        ranks[part] = i + lo;
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    #pragma unroll
+    for (uint part = 0; part < 4; ++part) {
+        if (ranks[part] < k) {
+            bestDist[ranks[part]] = values[part]; bestIds[ranks[part]] = labels[part];
+        }
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
 }
 
 kernel void ivfsq_scan(
@@ -2625,20 +2677,27 @@ kernel void ivfsq_scan(
     device long* labels [[buffer(9)]],
     device const float* coarseScores [[buffer(10)]],
     constant uint* p [[buffer(11)]],
-    uint qi [[threadgroup_position_in_grid]],
-    uint tid [[thread_position_in_threadgroup]]) {
+    uint3 group [[threadgroup_position_in_grid]],
+    uint tid [[thread_index_in_threadgroup]]) {
+    uint qi = group.z, probe = group.y;
     uint d = p[1], k = p[2], nprobe = p[3];
     bool l2 = p[7];
     float sentinel = l2 ? MAXFLOAT : -MAXFLOAT;
-    threadgroup float ds[1024];
-    threadgroup long ix[1024];
-    uint kept = 0;
-    for (uint probe = 0; probe < nprobe; ++probe) {
+    threadgroup float bestDist[512], newDist[512];
+    threadgroup long bestIds[512], newIds[512];
+    threadgroup atomic_uint accepted;
+    for (uint i = tid; i < k; i += 256) {
+        bestDist[i] = sentinel; bestIds[i] = -1;
+    }
+    if (tid == 0) atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    {
         int list = assignments[ulong(qi) * nprobe + probe];
-        if (list < 0 || uint(list) >= p[4]) continue;
-        uint len = lengths[list];
-        for (uint start = 0; start < len;) {
-            uint count = min(512u, len - start);
+        uint len = list >= 0 && uint(list) < p[4] ? lengths[list] : 0;
+        uint begin = uint(min(ulong(group.x) * p[10], ulong(len)));
+        uint end = uint(min(ulong(begin) + p[10], ulong(len)));
+        for (uint start = begin; start < end;) {
+            uint count = min(512u, end - start);
             for (uint j = tid; j < count; j += 256) {
                 ulong v = ulong(offsets[list]) + start + j;
                 device const uchar* code = codes + v * p[8];
@@ -2660,24 +2719,65 @@ kernel void ivfsq_scan(
                 // metric-worst overflow never enter selection. IP +Inf is a
                 // valid best score; L2 +Inf and IP -Inf remain padding.
                 bool admitted = l2 ? score < MAXFLOAT : score > -MAXFLOAT;
-                ds[kept+j] = admitted ? score : sentinel;
-                ix[kept+j] = admitted ? ids[v] : -1;
-            }
-            uint total = kept + count;
-            uint padded = ivf_next_pow2(total);
-            for (uint j = total + tid; j < padded; j += 256) {
-                ds[j] = sentinel;
-                ix[j] = -1;
+                long id = ids[v];
+                if (admitted && ivfsq_before(score, id, bestDist[k-1], bestIds[k-1], l2)) {
+                    uint slot = atomic_fetch_add_explicit(&accepted, 1u, memory_order_relaxed);
+                    newDist[slot] = score; newIds[slot] = id;
+                }
             }
             threadgroup_barrier(mem_flags::mem_threadgroup);
-            ivf_tg_bitonic<long, 256, true>(ds, ix, padded, tid, l2);
-            kept = min(k, total);
+            uint added = atomic_load_explicit(&accepted, memory_order_relaxed);
+            ivfsq_merge_new(bestDist, bestIds, newDist, newIds, k, added, tid, l2);
+            if (tid == 0) atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
             threadgroup_barrier(mem_flags::mem_threadgroup);
             start += count;
         }
     }
+    ulong outBase = ((ulong(qi) * nprobe + probe) * p[9] + group.x) * k;
     for (uint j = tid; j < k; j += 256) {
-        distances[ulong(qi)*k+j] = j < kept ? ds[j] : sentinel;
-        labels[ulong(qi)*k+j] = j < kept ? ix[j] : -1;
+        distances[outBase+j] = bestDist[j];
+        labels[outBase+j] = bestIds[j];
+    }
+}
+
+// Compact valid local results before exact grouped merging. The 1024-entry
+// bound fits 32 KiB devices even with Metal shader validation instrumentation.
+kernel void ivfsq_merge_parts(
+    device const float* inDist [[buffer(0)]],
+    device const long* inIds [[buffer(1)]],
+    device float* outDist [[buffer(2)]],
+    device long* outIds [[buffer(3)]],
+    constant uint* p [[buffer(4)]],
+    uint2 group [[threadgroup_position_in_grid]],
+    uint tid [[thread_index_in_threadgroup]]) {
+    uint parts = p[1], fanIn = p[2], k = p[3], want_min = p[4];
+    uint groups = (parts - 1) / fanIn + 1;
+    uint start = group.x * fanIn;
+    uint total = min(fanIn, parts - start) * k;
+    ulong inBase = (ulong(group.y) * parts + start) * k;
+    threadgroup float ds[1024]; threadgroup long ids[1024];
+    threadgroup atomic_uint valid;
+    if (tid == 0) atomic_store_explicit(&valid, 0u, memory_order_relaxed);
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    for (uint i = tid; i < total; i += 256) {
+        long id = inIds[inBase+i];
+        if (id >= 0) {
+            uint slot = atomic_fetch_add_explicit(&valid, 1u, memory_order_relaxed);
+            ds[slot] = inDist[inBase+i]; ids[slot] = id;
+        }
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    uint count = atomic_load_explicit(&valid, memory_order_relaxed);
+    uint padded = ivf_next_pow2(count);
+    float sentinel = want_min ? MAXFLOAT : -MAXFLOAT;
+    for (uint i = count + tid; i < padded; i += 256) {
+        ds[i] = sentinel; ids[i] = -1;
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    ivf_tg_bitonic<long, 256, true>(ds, ids, padded, tid, want_min);
+    ulong outBase = (ulong(group.y) * groups + group.x) * k;
+    for (uint i = tid; i < k; i += 256) {
+        outDist[outBase+i] = i < count ? ds[i] : sentinel;
+        outIds[outBase+i] = i < count ? ids[i] : -1;
     }
 }

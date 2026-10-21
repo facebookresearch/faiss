@@ -117,12 +117,30 @@ struct MetalIndexIVFScalarQuantizer::Impl {
     bool valid = true, nonnegative = true;
     mutable id<MTLBuffer> queries, assignments, distances, labels, coarseScores;
     mutable size_t dispatches = 0;
+    mutable MetalIVFSQScanScratch scanScratch;
+    mutable std::vector<idx_t> coarseAssignments;
+    mutable std::vector<float> coarseDistances;
+    uint32_t maxListLength = 0;
+    bool listsFit = true;
+
+    void refreshListBounds() {
+        listsFit = true;
+        maxListLength = 0;
+        for (size_t l = 0; l < cpu->nlist; ++l) {
+            size_t n = cpu->invlists->list_size(l);
+            if (n > UINT32_MAX)
+                listsFit = false;
+            else
+                maxListLength = std::max(maxListLength, uint32_t(n));
+        }
+    }
 
     Impl(id<MTLDevice> dev, std::unique_ptr<IndexIVFScalarQuantizer> index)
             : cpu(std::move(index)), device(dev) {
         offset.resize(cpu->nlist);
         length.resize(cpu->nlist);
         capacity.resize(cpu->nlist);
+        refreshListBounds();
     }
 
     bool codecSupported() const {
@@ -141,9 +159,8 @@ struct MetalIndexIVFScalarQuantizer::Impl {
             (cpu->by_residual &&
              cpu->nlist > limit / sizeof(float) / size_t(cpu->d)))
             return false;
-        for (size_t l = 0; l < cpu->nlist; ++l)
-            if (cpu->invlists->list_size(l) > UINT32_MAX)
-                return false;
+        if (!listsFit)
+            return false;
         return true;
     }
 
@@ -151,6 +168,7 @@ struct MetalIndexIVFScalarQuantizer::Impl {
     // capacity; replaced buffers and metadata are published together. Existing
     // bytes are untouched until all allocations/access guards have succeeded.
     void upload() {
+        refreshListBounds();
         if (!codecSupported() || !representable())
             return;
         auto newOffset = offset, newLength = length, newCapacity = capacity;
@@ -254,7 +272,11 @@ struct MetalIndexIVFScalarQuantizer::Impl {
         allocated = newAllocated;
         nonnegative = positive;
     }
-    void scratch(size_t nq, size_t probes, size_t k) const {
+    void scratch(
+            size_t nq,
+            size_t probes,
+            size_t k,
+            const MetalIVFSQScanPlan& plan) const {
         // Allocate all replacements before changing any scratch field.
         auto grow = [&](id<MTLBuffer> old, size_t needed) {
             if (old && old.length >= needed)
@@ -270,6 +292,13 @@ struct MetalIndexIVFScalarQuantizer::Impl {
         auto d = grow(distances, bytes(bytes(nq, k), 4));
         auto i = grow(labels, bytes(bytes(nq, k), 8));
         auto scores = grow(coarseScores, bytes(bytes(nq, probes), 4));
+        MetalIVFSQScanScratch nextScan = scanScratch;
+        nextScan.reserve(device, plan);
+        // Reserve reusable CPU coarse arrays before publishing GPU
+        // replacements.
+        coarseAssignments.resize(bytes(nq, probes));
+        coarseDistances.resize(bytes(nq, probes));
+        scanScratch = nextScan;
         coarseScores = scores;
         queries = q;
         assignments = a;
@@ -377,86 +406,102 @@ void MetalIndexIVFScalarQuantizer::search(
         float* outD,
         idx_t* outI,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            impl_->valid,
-            "Metal IVFSQ invalid after failed mutation; reset or copyFrom required");
-    auto& cpu = *impl_->cpu;
-    const auto* ivf = dynamic_cast<const SearchParametersIVF*>(params);
-    size_t probes = ivf ? ivf->nprobe : cpu.nprobe;
-    bool control = params &&
-            (!ivf || typeid(*params) != typeid(SearchParametersIVF) ||
-             ivf->sel || ivf->max_codes || ivf->max_lists_num ||
-             ivf->ensure_topk_full || ivf->max_empty_result_buckets ||
-             ivf->quantizer_params || ivf->inverted_list_context);
-    probes = std::min(probes, cpu.nlist);
-    bool gpu = !control && impl_->codecSupported() && impl_->representable() &&
-            impl_->nonnegative &&
-            (metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT) &&
-            is_trained && n > 0 && uint64_t(n) <= UINT32_MAX && k > 0 &&
-            k <= 512 && probes && probes <= UINT32_MAX && !cpu.max_codes &&
-            !(cpu.parallel_mode & cpu.PARALLEL_MODE_NO_HEAP_INIT);
-    // These checked products also define the allocation envelope before any
-    // dispatch.
-    auto fits = [&](size_t a, size_t b, size_t width) {
-        return !a ||
-                (b <= SIZE_MAX / a &&
-                 a * b <= size_t(resources_->getDevice().maxBufferLength) /
-                                 width);
-    };
-    if (gpu)
-        gpu = fits(n, d, 4) && fits(n, probes, 4) && fits(n, k, 8);
-    if (!gpu) {
-        cpu.search(n, x, k, outD, outI, params);
-        return;
+    @autoreleasepool {
+        FAISS_THROW_IF_NOT_MSG(
+                impl_->valid,
+                "Metal IVFSQ invalid after failed mutation; reset or copyFrom required");
+        auto& cpu = *impl_->cpu;
+        const auto* ivf = dynamic_cast<const SearchParametersIVF*>(params);
+        size_t probes = ivf ? ivf->nprobe : cpu.nprobe;
+        bool control = params &&
+                (!ivf || typeid(*params) != typeid(SearchParametersIVF) ||
+                 ivf->sel || ivf->max_codes || ivf->max_lists_num ||
+                 ivf->ensure_topk_full || ivf->max_empty_result_buckets ||
+                 ivf->quantizer_params || ivf->inverted_list_context);
+        probes = std::min(probes, cpu.nlist);
+        bool gpu = !control && impl_->codecSupported() &&
+                impl_->representable() && impl_->nonnegative &&
+                (metric_type == METRIC_L2 ||
+                 metric_type == METRIC_INNER_PRODUCT) &&
+                is_trained && n > 0 && uint64_t(n) <= UINT32_MAX && k > 0 &&
+                k <= 512 && probes && probes <= UINT32_MAX && !cpu.max_codes &&
+                !(cpu.parallel_mode & cpu.PARALLEL_MODE_NO_HEAP_INIT);
+        // These checked products also define the allocation envelope before any
+        // dispatch.
+        auto fits = [&](size_t a, size_t b, size_t width) {
+            return !a ||
+                    (b <= SIZE_MAX / a &&
+                     a * b <= size_t(resources_->getDevice().maxBufferLength) /
+                                     width);
+        };
+        MetalIVFSQScanPlan plan;
+        if (gpu)
+            gpu = fits(n, d, 4) && fits(n, probes, 4) && fits(n, k, 8) &&
+                    makeMetalIVFSQScanPlan(
+                            n,
+                            probes,
+                            k,
+                            impl_->maxListLength,
+                            resources_->getDevice().maxBufferLength,
+                            plan);
+        if (!gpu) {
+            cpu.search(n, x, k, outD, outI, params);
+            return;
+        }
+        FAISS_THROW_IF_NOT(x && outD && outI);
+        if (!impl_->offsets)
+            impl_->upload();
+        impl_->scratch(n, probes, k, plan);
+        auto& coarse = impl_->coarseAssignments;
+        auto& coarseD = impl_->coarseDistances;
+        cpu.quantizer->search(n, x, probes, coarseD.data(), coarse.data());
+        memcpy(impl_->coarseScores.contents,
+               coarseD.data(),
+               bytes(coarseD.size(), 4));
+        auto* assignment = (int32_t*)impl_->assignments.contents;
+        for (size_t i = 0; i < coarse.size(); ++i) {
+            FAISS_THROW_IF_NOT(
+                    coarse[i] >= -1 &&
+                    (coarse[i] < 0 || uint64_t(coarse[i]) < cpu.nlist));
+            assignment[i] = int32_t(coarse[i]);
+        }
+        memcpy(impl_->queries.contents,
+               x,
+               bytes(bytes(size_t(n), size_t(d)), 4));
+        uint32_t p[] = {
+                uint32_t(n),
+                uint32_t(d),
+                uint32_t(k),
+                uint32_t(probes),
+                uint32_t(cpu.nlist),
+                cpu.sq.qtype == ScalarQuantizer::QT_fp16,
+                cpu.by_residual,
+                metric_type == METRIC_L2,
+                uint32_t(cpu.code_size)};
+        runMetalIVFSQScan(
+                resources_->getDevice(),
+                resources_->getCommandQueue(),
+                impl_->queries,
+                impl_->codes,
+                impl_->ids,
+                impl_->offsets,
+                impl_->lengths,
+                impl_->assignments,
+                impl_->centroids,
+                impl_->ranges,
+                impl_->distances,
+                impl_->labels,
+                impl_->coarseScores,
+                p,
+                &impl_->scanScratch);
+        ++impl_->dispatches;
+        memcpy(outD,
+               impl_->distances.contents,
+               bytes(bytes(size_t(n), size_t(k)), 4));
+        memcpy(outI,
+               impl_->labels.contents,
+               bytes(bytes(size_t(n), size_t(k)), 8));
     }
-    FAISS_THROW_IF_NOT(x && outD && outI);
-    if (!impl_->offsets)
-        impl_->upload();
-    impl_->scratch(n, probes, k);
-    std::vector<idx_t> coarse(bytes(size_t(n), probes));
-    std::vector<float> coarseD(coarse.size());
-    cpu.quantizer->search(n, x, probes, coarseD.data(), coarse.data());
-    memcpy(impl_->coarseScores.contents,
-           coarseD.data(),
-           bytes(coarseD.size(), 4));
-    auto* assignment = (int32_t*)impl_->assignments.contents;
-    for (size_t i = 0; i < coarse.size(); ++i) {
-        FAISS_THROW_IF_NOT(
-                coarse[i] >= -1 &&
-                (coarse[i] < 0 || uint64_t(coarse[i]) < cpu.nlist));
-        assignment[i] = int32_t(coarse[i]);
-    }
-    memcpy(impl_->queries.contents, x, bytes(bytes(size_t(n), size_t(d)), 4));
-    uint32_t p[] = {
-            uint32_t(n),
-            uint32_t(d),
-            uint32_t(k),
-            uint32_t(probes),
-            uint32_t(cpu.nlist),
-            cpu.sq.qtype == ScalarQuantizer::QT_fp16,
-            cpu.by_residual,
-            metric_type == METRIC_L2,
-            uint32_t(cpu.code_size)};
-    runMetalIVFSQScan(
-            resources_->getDevice(),
-            resources_->getCommandQueue(),
-            impl_->queries,
-            impl_->codes,
-            impl_->ids,
-            impl_->offsets,
-            impl_->lengths,
-            impl_->assignments,
-            impl_->centroids,
-            impl_->ranges,
-            impl_->distances,
-            impl_->labels,
-            impl_->coarseScores,
-            p);
-    ++impl_->dispatches;
-    memcpy(outD,
-           impl_->distances.contents,
-           bytes(bytes(size_t(n), size_t(k)), 4));
-    memcpy(outI, impl_->labels.contents, bytes(bytes(size_t(n), size_t(k)), 8));
 }
 void MetalIndexIVFScalarQuantizer::reconstruct(idx_t key, float* out) const {
     impl_->cpu->reconstruct(key, out);

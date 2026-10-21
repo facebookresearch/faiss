@@ -16,7 +16,8 @@ namespace faiss::gpu_metal {
  *
  * GPU search supports QT_8bit and QT_fp16, L2/IP, either residual mode,
  * 1 <= k <= 512, positive dimensions and counts fitting uint32_t (nlist <=
- * INT32_MAX). Buffer sizes must fit device.maxBufferLength. Labels must be
+ * INT32_MAX). Partition counts must fit uint32_t, and persistent and search
+ * scratch buffers must fit device.maxBufferLength. Labels must be
  * nonnegative. Other valid requests use CPU search with the original
  * parameters, including selectors, max_codes, quantizer_params, and derived
  * parameter types, and PARALLEL_MODE_NO_HEAP_INIT. Coarse quantizers must use

@@ -17,6 +17,7 @@ using namespace faiss::gpu_metal;
 namespace {
 IMP original;
 size_t allocations = 0, rejectAt = 0, allocatedBytes = 0;
+NSString* rejectedFunction = @"ivfsq_scan";
 typedef id<MTLBuffer> Allocate(id, SEL, NSUInteger, MTLResourceOptions)
         __attribute__((ns_returns_retained));
 id<MTLBuffer> allocate(
@@ -38,7 +39,7 @@ typedef id Lookup(id, SEL, NSString*) __attribute__((ns_returns_retained));
 id lookup(id self, SEL sel, NSString* name)
         __attribute__((ns_returns_retained));
 id lookup(id self, SEL sel, NSString* name) {
-    if ([name isEqualToString:@"ivfsq_scan"])
+    if ([name isEqualToString:rejectedFunction])
         return nil;
     return reinterpret_cast<Lookup*>(original)(self, sel, name);
 }
@@ -102,16 +103,25 @@ int main(int argc, char** argv) {
         return 0;
     }
     IndexFlatL2 coarse(7);
-    IndexIVFScalarQuantizer cpu(&coarse, 7, 1, ScalarQuantizer::QT_fp16);
+    IndexIVFScalarQuantizer cpu(
+            &coarse,
+            7,
+            mode == "scan-scratch" ? 8 : (mode == "merge-pipeline" ? 2 : 1),
+            ScalarQuantizer::QT_fp16);
     std::vector<float> x(1024 * 7);
     for (size_t j = 0; j < x.size(); ++j)
         x[j] = float(j % 61) / 8;
     cpu.train(1024, x.data());
     cpu.add(17, x.data());
+    if (mode == "scan-scratch" || mode == "merge-pipeline")
+        cpu.nprobe = cpu.nlist;
     MetalIndexIVFScalarQuantizer gpu(res, &cpu);
-    std::vector<float> d(1024 * 13, -123);
-    std::vector<idx_t> i(1024 * 13, -123);
-    if (mode == "pipeline") {
+    const int k = mode == "scan-scratch" ? 512 : 13;
+    std::vector<float> d(1024 * k, -123);
+    std::vector<idx_t> i(1024 * k, -123);
+    if (mode == "pipeline" || mode == "merge-pipeline") {
+        if (mode == "merge-pipeline")
+            rejectedFunction = @"ivfsq_merge_parts";
         NSError* error = nil;
         auto library = [device newLibraryWithFile:@FAISS_TEST_METALLIB_PATH
                                             error:&error];
@@ -124,27 +134,31 @@ int main(int argc, char** argv) {
         {
             Restore restore{method};
             if (!throws([&] {
-                    gpu.search(1, x.data(), 13, d.data(), i.data());
+                    gpu.search(1, x.data(), k, d.data(), i.data());
                 }))
                 return 3;
         }
-        gpu.search(1, x.data(), 13, d.data(), i.data());
+        gpu.search(1, x.data(), k, d.data(), i.data());
         return gpu.gpuSearchCount() == 1 ? 0 : 4;
     }
-    gpu.search(1, x.data(), 13, d.data(), i.data());
+    gpu.search(1, x.data(), k, d.data(), i.data());
     Method method = class_getInstanceMethod(
             [device class], @selector(newBufferWithLength:options:));
     original =
             method_setImplementation(method, reinterpret_cast<IMP>(allocate));
     Restore restore{method};
-    if (mode == "scratch") {
-        for (size_t fail : {1, 2, 3, 4, 5}) {
+    if (mode == "scratch" || mode == "scan-scratch") {
+        size_t failures = mode == "scan-scratch" ? 9 : 5;
+        for (size_t fail = 1; fail <= failures; ++fail) {
+            rejectAt = 0;
+            gpu.copyFrom(&cpu);
+            gpu.search(1, x.data(), k, d.data(), i.data());
             allocations = 0;
             rejectAt = fail;
             std::fill(d.begin(), d.end(), -123);
             std::fill(i.begin(), i.end(), -123);
             if (!throws([&] {
-                    gpu.search(1024, x.data(), 13, d.data(), i.data());
+                    gpu.search(1024, x.data(), k, d.data(), i.data());
                 }))
                 return 5;
             if (!std::all_of(
@@ -155,9 +169,9 @@ int main(int argc, char** argv) {
                         i.begin(), i.end(), [](idx_t v) { return v == -123; }))
                 return 6;
             rejectAt = 0;
-            gpu.search(1, x.data(), 13, d.data(), i.data());
+            gpu.search(1, x.data(), k, d.data(), i.data());
         }
-        gpu.search(1024, x.data(), 13, d.data(), i.data());
+        gpu.search(1024, x.data(), k, d.data(), i.data());
     } else if (mode == "growth") {
         allocatedBytes = 0;
         for (int j = 0; j < 257; ++j)
@@ -167,7 +181,7 @@ int main(int argc, char** argv) {
         // magnitude.
         if (allocatedBytes > 16 * 274 * (cpu.code_size + sizeof(idx_t)))
             return 13;
-        gpu.search(1, x.data(), 13, d.data(), i.data());
+        gpu.search(1, x.data(), k, d.data(), i.data());
     } else if (mode == "upload") {
         for (size_t fail : {1, 2, 3, 4}) {
             rejectAt = 0;
@@ -195,7 +209,7 @@ int main(int argc, char** argv) {
             if (!throws([&] { gpu.copyFrom(&cpu); }))
                 return 10;
             rejectAt = 0;
-            gpu.search(1, x.data(), 13, d.data(), i.data());
+            gpu.search(1, x.data(), k, d.data(), i.data());
             if (gpu.ntotal != 17)
                 return 11;
         }

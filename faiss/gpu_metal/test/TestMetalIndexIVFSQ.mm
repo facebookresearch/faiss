@@ -630,3 +630,151 @@ TEST_F(TestMetalIndexIVFSQ, WrappedQuantizersOwnBorrowedLeavesAndGraphs) {
         ASSERT_EQ(cd, 0);
     }
 }
+
+TEST_F(TestMetalIndexIVFSQ, CutoffKeepsLateLabelTiesAndDuplicateKeys) {
+    constexpr uint32_t nb = 2051;
+    auto dev = res->getDevice();
+    for (bool l2 : {false, true}) {
+        float query = l2 ? 0.f : 1.f;
+        std::vector<float> x(nb, 1.f);
+        x.back() = l2 ? 0.f : 2.f;
+        ScalarQuantizer sq(1, ScalarQuantizer::QT_fp16);
+        std::vector<uint8_t> codes(nb * sq.code_size);
+        sq.compute_codes(x.data(), codes.data(), nb);
+        std::vector<idx_t> ids(nb);
+        for (uint32_t i = 0; i < nb; ++i)
+            ids[i] = (idx_t(1) << 42) + nb - i + 100;
+        // The same (score, label) can legitimately occur more than once.
+        // Put duplicates in separate segments and lists to exercise merging.
+        for (uint32_t i : {10, 600, 1200, 1800})
+            ids[i] = (idx_t(1) << 42) + 1;
+        uint32_t offsets[] = {0, 1025}, lengths[] = {1025, nb - 1025};
+        int32_t assignments[] = {0, 1};
+        auto qb = buffer(dev, 4, &query);
+        auto cb = buffer(dev, codes.size(), codes.data());
+        auto ib = buffer(dev, ids.size() * 8, ids.data());
+        auto ob = buffer(dev, sizeof(offsets), offsets);
+        auto lb = buffer(dev, sizeof(lengths), lengths);
+        auto ab = buffer(dev, sizeof(assignments), assignments);
+        auto dummy = buffer(dev, 8);
+        std::vector<std::pair<float, idx_t>> expected;
+        for (uint32_t i = 0; i < nb; ++i)
+            expected.emplace_back(l2 ? x[i] * x[i] : x[i], ids[i]);
+        std::sort(expected.begin(), expected.end(), [=](auto a, auto b) {
+            return a.first == b.first
+                    ? a.second < b.second
+                    : (l2 ? a.first < b.first : a.first > b.first);
+        });
+        for (uint32_t k : {1, 10, 512}) {
+            auto db = buffer(dev, k * 4), labels = buffer(dev, k * 8);
+            uint32_t p[] = {1, 1, k, 2, 2, 1, 0, l2, 2};
+            runMetalIVFSQScan(
+                    dev,
+                    res->getCommandQueue(),
+                    qb,
+                    cb,
+                    ib,
+                    ob,
+                    lb,
+                    ab,
+                    dummy,
+                    dummy,
+                    db,
+                    labels,
+                    dummy,
+                    p);
+            for (uint32_t i = 0; i < k; ++i) {
+                ASSERT_EQ(((float*)db.contents)[i], expected[i].first);
+                ASSERT_EQ(((idx_t*)labels.contents)[i], expected[i].second);
+            }
+        }
+    }
+}
+
+TEST_F(TestMetalIndexIVFSQ, ParallelChunksAndManyProbeMergeRounds) {
+    constexpr uint32_t nb = 2051;
+    std::vector<float> x(nb);
+    std::vector<idx_t> ids(nb);
+    for (uint32_t i = 0; i < nb; ++i) {
+        x[i] = float(i % 32);
+        ids[i] = (idx_t(1) << 42) + nb - i;
+    }
+    ScalarQuantizer sq(1, ScalarQuantizer::QT_fp16);
+    std::vector<uint8_t> code(nb * 2);
+    sq.compute_codes(x.data(), code.data(), nb);
+    auto dev = res->getDevice();
+    float queries[] = {0, 1};
+    uint32_t offsets[] = {0, nb}, lengths[] = {nb, 0};
+    auto qb = buffer(dev, sizeof(queries), queries),
+         cb = buffer(dev, code.size(), code.data());
+    auto ib = buffer(dev, ids.size() * 8, ids.data()),
+         ob = buffer(dev, sizeof(offsets), offsets);
+    auto lb = buffer(dev, sizeof(lengths), lengths), dummy = buffer(dev, 8);
+    MetalIVFSQScanScratch scratch;
+    for (bool l2 : {false, true})
+        for (uint32_t probes : {1, 1025}) {
+            std::vector<int32_t> assignments(2 * probes, 0);
+            uint32_t valid = 0;
+            for (uint32_t pi = 0; pi < probes; ++pi) {
+                int32_t list = pi && pi % 17 == 0
+                        ? -1
+                        : (pi && pi % 19 == 0 ? 99
+                                              : (pi && pi % 23 == 0 ? 1 : 0));
+                assignments[pi] = assignments[probes + pi] = list;
+                valid += list == 0;
+            }
+            auto ab = buffer(dev, assignments.size() * 4, assignments.data());
+            auto coarse = buffer(dev, assignments.size() * 4);
+            for (uint32_t k : {1, 512}) {
+                auto db = buffer(dev, 2 * k * 4),
+                     labels = buffer(dev, 2 * k * 8);
+                uint32_t p[] = {2, 1, k, probes, 2, 1, 0, l2, 2};
+                runMetalIVFSQScan(
+                        dev,
+                        res->getCommandQueue(),
+                        qb,
+                        cb,
+                        ib,
+                        ob,
+                        lb,
+                        ab,
+                        dummy,
+                        dummy,
+                        db,
+                        labels,
+                        coarse,
+                        p,
+                        &scratch);
+                for (uint32_t qi = 0; qi < 2; ++qi) {
+                    std::vector<std::pair<float, idx_t>> expected;
+                    for (uint32_t i = 0; i < nb; ++i) {
+                        float delta = queries[qi] - x[i];
+                        expected.emplace_back(
+                                l2 ? delta * delta : queries[qi] * x[i],
+                                ids[i]);
+                    }
+                    std::sort(
+                            expected.begin(),
+                            expected.end(),
+                            [=](auto a, auto b) {
+                                return a.first == b.first
+                                        ? a.second < b.second
+                                        : (l2 ? a.first < b.first
+                                              : a.first > b.first);
+                            });
+                    for (uint32_t j = 0; j < k; ++j) {
+                        ASSERT_EQ(
+                                ((float*)db.contents)[qi * k + j],
+                                expected[j / valid].first);
+                        ASSERT_EQ(
+                                ((idx_t*)labels.contents)[qi * k + j],
+                                expected[j / valid].second);
+                    }
+                }
+            }
+        }
+    MetalIVFSQScanPlan plan;
+    ASSERT_FALSE(makeMetalIVFSQScanPlan(
+            UINT32_MAX, UINT32_MAX, 512, UINT32_MAX, SIZE_MAX, plan));
+    ASSERT_FALSE(makeMetalIVFSQScanPlan(1, 2, 512, 4096, 64, plan));
+}
