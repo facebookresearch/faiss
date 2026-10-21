@@ -404,11 +404,19 @@ imported.copyFrom(cpu)  # Graph and metadata only; not search ready.
 imported.updateDataset(storage)  # Borrows these already-populated vectors.
 ```
 
-Python follows the ownership and stream rules above: `viewHost` does not keep
-its NumPy array alive, and `view()` does not keep the source Dataset owner alive.
-Retain those owners explicitly. `copyToHost()` waits for device work and returns
-an independent, packed NumPy array with the original dtype. For Float16 or Int8
-indexes, pass the matching search type:
+Python retains references to keep borrowed storage alive: `viewHost(array)`
+retains the NumPy array, `view()` retains its source Dataset, and CAGRA retains
+the Dataset passed to `train`, `add`, `updateDataset`, or `copyFrom`.
+Deleting the user's Dataset variable therefore does not invalidate a search-ready
+index. Successful replacement, graph-only import, or `reset()` releases the index's
+previous Dataset reference; destroying the index also releases it. An owning
+Dataset frees its allocation when its last reference is released, including
+references from other indexes or views. C++ ownership and stream rules remain
+unchanged: preparation is asynchronous, so retain the source until its copy
+finishes. Raw-pointer views cannot retain an allocation owner; retain that owner
+explicitly. `copyToHost()` waits for device work and returns an independent,
+packed NumPy array with the original dtype. For Float16 or Int8 indexes, pass
+the matching search type:
 `index.search(xq, k, numeric_type=storage.getNumericType())`.
 
 Use `copyFrom(cpu)` or `copyFrom(cpu, None)` for graph-only import, and

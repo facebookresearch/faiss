@@ -45,23 +45,31 @@ class TestBinaryCagraDataset(unittest.TestCase):
         np.testing.assert_array_equal(distances[:, 0], expected)
 
     def test_device_build_and_search(self):
-        storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
         for algorithm in (
             faiss.graph_build_algo_NN_DESCENT,
             faiss.graph_build_algo_ITERATIVE_SEARCH,
         ):
             with self.subTest(algorithm=algorithm):
+                storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
+                storage_ref = weakref.ref(storage)
                 index = self.make_index(algorithm)
                 index.train(storage)
+                del storage
+                self.assertIsNotNone(storage_ref())
                 self.assertTrue(index.is_trained)
                 self.assertEqual(index.ntotal, len(self.xb))
                 self.assertTrue(index.isSearchReady())
                 self.check_search(index)
                 index.reset()
+                self.assertIsNone(storage_ref())
 
     def test_host_graph_attachment_and_reset(self):
         index = self.make_index()
-        index.train(self.host)
+        source = self.host.view()
+        source_ref = weakref.ref(source)
+        index.train(source)
+        del source
+        self.assertIsNotNone(source_ref())
         self.assertTrue(index.is_trained)
         self.assertFalse(index.isSearchReady())
         with self.assertRaisesRegex(RuntimeError, "updateDataset"):
@@ -72,18 +80,31 @@ class TestBinaryCagraDataset(unittest.TestCase):
         np.testing.assert_array_equal(cpu.reconstruct_n(), self.xb)
 
         storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
+        storage_ref = weakref.ref(storage)
         index.updateDataset(storage.view())
+        del storage
+        self.assertIsNone(source_ref())
+        self.assertIsNotNone(storage_ref())
         self.assertTrue(index.isSearchReady())
-        self.check_search(index)
+        with self.assertRaises(RuntimeError):
+            index.updateDataset(self.host)
         with self.assertRaisesRegex(RuntimeError, "reset"):
-            index.add(storage)
+            index.add(self.host)
+        self.assertIsNotNone(storage_ref())
+        self.check_search(index)
         index.reset()
+        self.assertIsNone(storage_ref())
         self.assertFalse(index.is_trained)
         self.assertFalse(index.isSearchReady())
         self.assertEqual(index.ntotal, 0)
+        storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
+        storage_ref = weakref.ref(storage)
         index.add(storage)
+        del storage
+        self.assertIsNotNone(storage_ref())
         self.check_search(index)
         index.reset()
+        self.assertIsNone(storage_ref())
 
     def test_cpu_serialization_and_optional_destination_import(self):
         index = self.make_index()
@@ -126,14 +147,27 @@ class TestBinaryCagraDataset(unittest.TestCase):
         expected_physical[:, :19] = self.xb
         np.testing.assert_array_equal(allocation.copyToHost(), expected_physical)
 
+        owner = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
+        owner_ref = weakref.ref(owner)
+        graph_only.copyFrom(loaded, owner)
+        del owner
+        self.assertIsNotNone(owner_ref())
+        with self.assertRaises(RuntimeError):
+            graph_only.copyFrom(loaded, self.host)
+        self.assertIsNotNone(owner_ref())
+        self.check_search(graph_only)
+        graph_only.copyFrom(loaded)
+        self.assertIsNone(owner_ref())
+        self.assertFalse(graph_only.isSearchReady())
+
         source_ref = weakref.ref(loaded)
         descriptor_ref = weakref.ref(destination)
         index.reset()
         del loaded, cpu, destination
         gc.collect()
         self.assertIsNone(source_ref())
-        self.assertIsNone(descriptor_ref())
-        self.check_search(imported)  # The allocation, not CPU storage, survives.
+        self.assertIsNotNone(descriptor_ref())
+        self.check_search(imported)  # Raw pointer storage remains explicitly retained.
         with self.assertRaisesRegex(RuntimeError, "updateDataset"):
             graph_only.search(self.xb[:8], 1)
         exported = faiss.IndexBinaryHNSWCagra()
@@ -149,6 +183,7 @@ class TestBinaryCagraDataset(unittest.TestCase):
         np.testing.assert_array_equal(exported.reconstruct_n(), self.xb)
         graph_only.reset()
         imported.reset()
+        self.assertIsNone(descriptor_ref())
 
     def test_pointer_and_base_build_require_dataset(self):
         index = self.make_index()

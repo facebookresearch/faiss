@@ -85,13 +85,13 @@ def handle_Dataset(the_class):
     dtypes = {value: key for key, value in numeric_types.items()}
 
     def replacement_viewHost(x):
-        """Borrow a two-dimensional NumPy array without copying or retaining it.
+        """View a two-dimensional NumPy array without copying it.
 
         Supports float32, float16, int8 and uint8, with contiguous columns
         and a positive row stride. Dimensions and strides are in elements;
         binary vectors use uint8 with a dimension in bytes, not bits.
-        Keep the array alive and unchanged while any Dataset, CAGRA index,
-        or queued GPU work uses its storage. For raw pointers use viewHost_c.
+        The Dataset retains the array. Keep its contents unchanged while
+        in use. For caller-managed raw pointers use viewHost_c.
         """
         if not isinstance(x, np.ndarray) or x.ndim != 2:
             raise TypeError(
@@ -109,13 +109,21 @@ def handle_Dataset(the_class):
                 "Dataset requires contiguous columns and nonoverlapping rows"
             )
         stride = x.strides[0] // x.itemsize if x.size else d
-        return the_class.viewHost_c(
+        result = the_class.viewHost_c(
             faiss.cast_integer_to_void_ptr(x.ctypes.data),
             n,
             d,
             numeric_types[x.dtype],
             stride,
         )
+        result.referenced_objects = [x]
+        return result
+
+    def replacement_view(self):
+        """Return a non-owning Dataset view that retains its source Dataset."""
+        result = self.view_c()
+        result.referenced_objects = [self]
+        return result
 
     def replacement_copyToHost(self):
         """Return a packed NumPy copy, waiting for device work to finish.
@@ -132,18 +140,21 @@ def handle_Dataset(the_class):
 
     the_class.viewHost_c = staticmethod(the_class.viewHost)
     the_class.viewHost = staticmethod(replacement_viewHost)
+    replace_method(the_class, "view", replacement_view)
     replace_method(the_class, "copyToHost", replacement_copyToHost)
 
 
 def handle_GpuIndexCagra(the_class):
-    """Use Dataset build overloads instead of the generic NumPy adapters."""
+    """Use Dataset build overloads and retain the current Dataset in Python."""
+    # Declare this attribute for handle_Index's checked __setattr__.
+    the_class._dataset = None
 
     def replacement_train(self, dataset):
         """Build the entire graph from a Dataset, borrowing its vector storage.
 
         Compatible device storage makes the index search ready. Otherwise,
         attach populated padded device storage with updateDataset before
-        searching. Keep the backing allocation alive while the index uses it.
+        searching. The index retains the Dataset until replacement or reset.
         """
         if not isinstance(dataset, faiss.Dataset):
             raise TypeError(
@@ -151,6 +162,7 @@ def handle_GpuIndexCagra(the_class):
                 "use Dataset.viewHost or makeDevicePadded"
             )
         self.train_c(dataset)
+        self._dataset = dataset
 
     def replacement_add(self, dataset):
         """Build from a Dataset, with the same semantics as train(dataset).
@@ -163,10 +175,32 @@ def handle_GpuIndexCagra(the_class):
                 "use Dataset.viewHost or makeDevicePadded"
             )
         self.add_c(dataset)
+        self._dataset = dataset
+
+    def replacement_updateDataset(self, dataset):
+        """Attach populated device storage and retain its Dataset."""
+        self.updateDataset_c(dataset)
+        self._dataset = dataset
+
+    def replacement_copyFrom(self, index, dataset=None):
+        """Import a CPU graph, optionally filling and retaining a Dataset.
+
+        Without a Dataset, the import is graph-only and not search ready.
+        """
+        self.copyFrom_c(index, dataset)
+        self._dataset = dataset
+
+    def replacement_reset(self):
+        """Clear the index and release its reference to the Dataset."""
+        self.reset_c()
+        self._dataset = None
 
     # handle_Index / handle_IndexBinary already preserved the SWIG methods.
     the_class.train = replacement_train
     the_class.add = replacement_add
+    replace_method(the_class, "updateDataset", replacement_updateDataset)
+    replace_method(the_class, "copyFrom", replacement_copyFrom)
+    replace_method(the_class, "reset", replacement_reset)
 
 
 def handle_Clustering(the_class):

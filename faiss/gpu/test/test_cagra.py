@@ -1,10 +1,9 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # This source code is licensed under the MIT license in the LICENSE file.
 
-"""CAGRA Dataset workflows with explicitly retained backing allocations."""
+"""CAGRA Dataset workflows and Python ownership lifetimes."""
 
 import gc
-import sys
 import unittest
 import weakref
 
@@ -22,9 +21,8 @@ class TestDataset(unittest.TestCase):
             with self.subTest(dtype=dtype):
                 allocation = np.arange(27, dtype=dtype).reshape(3, 9)
                 values = allocation[:, :5]
-                references = sys.getrefcount(values)
+                values_ref = weakref.ref(values)
                 source = faiss.Dataset.viewHost(values)
-                self.assertEqual(sys.getrefcount(values), references)
                 self.assertEqual(int(source.getData()), values.ctypes.data)
                 self.assertEqual(source.getNumRows(), 3)
                 self.assertEqual(source.getDim(), 5)
@@ -41,14 +39,18 @@ class TestDataset(unittest.TestCase):
                     faiss.cast_integer_to_void_ptr(values.ctypes.data),
                     3, 5, numeric_type, 9)
                 np.testing.assert_array_equal(raw.copyToHost(), values)
+                del raw  # Raw pointer views require an explicitly retained allocation.
                 source_ref = weakref.ref(source)
                 descriptor = source.view()
-                del source
+                del source, values
+                gc.collect()
+                self.assertIsNotNone(source_ref())
+                self.assertIsNotNone(values_ref())
+                np.testing.assert_array_equal(descriptor.copyToHost(), packed)
+                del descriptor
                 gc.collect()
                 self.assertIsNone(source_ref())
-                np.testing.assert_array_equal(descriptor.copyToHost(), values)
-                # allocation and values stay alive until their views are gone.
-                del raw, descriptor
+                self.assertIsNone(values_ref())
 
     def test_host_view_rejects_implicit_conversion_or_column_strides(self):
         for values in (np.zeros((3, 5), dtype="float64"),
@@ -92,8 +94,16 @@ class TestDataset(unittest.TestCase):
                     owner.getData(), 3, stride, numeric_type, stride, 0)
                 np.testing.assert_array_equal(physical.copyToHost()[:, 5:], 0)
                 del standard, padded, descriptor, physical
-                np.testing.assert_array_equal(owner.copyToHost(), values)
+                descriptor = owner.view()
+                owner_ref = weakref.ref(owner)
                 del owner
+                gc.collect()
+                self.assertIsNotNone(owner_ref())
+                self.assertFalse(descriptor.ownsData())
+                np.testing.assert_array_equal(descriptor.copyToHost(), values)
+                del descriptor
+                gc.collect()
+                self.assertIsNone(owner_ref())
 
 
 @unittest.skipIf("CUVS" not in faiss.get_compile_options(), "requires cuVS")
@@ -145,7 +155,7 @@ class TestCagraDataset(unittest.TestCase):
         index.train(source)
         del source
         gc.collect()
-        self.assertIsNone(descriptor_ref())
+        self.assertIsNotNone(descriptor_ref())
         self.assertTrue(index.is_trained)
         self.assertEqual(index.ntotal, rows)
         self.assertFalse(index.isSearchReady())
@@ -154,7 +164,10 @@ class TestCagraDataset(unittest.TestCase):
         graph = faiss.vector_to_array(index.get_knngraph())
         descriptor = storage.view()
         index.updateDataset(descriptor)
+        self.assertIsNone(descriptor_ref())
+        descriptor_ref = weakref.ref(descriptor)
         del descriptor
+        self.assertIsNotNone(descriptor_ref())
         self.assertTrue(index.isSearchReady())
         np.testing.assert_array_equal(faiss.vector_to_array(index.get_knngraph()), graph)
         self.check_search(index, values, queries, numeric_type)
@@ -162,7 +175,9 @@ class TestCagraDataset(unittest.TestCase):
         np.testing.assert_array_equal(allocation[:, dim:], 37)
         with self.assertRaises(RuntimeError):
             index.train(storage)
+        self.assertIsNotNone(descriptor_ref())
         index.reset()
+        self.assertIsNone(descriptor_ref())
         self.assertFalse(index.isSearchReady())
         self.assertFalse(index.is_trained)
         self.assertEqual(index.ntotal, 0)
@@ -189,13 +204,23 @@ class TestCagraDataset(unittest.TestCase):
         self.assertFalse(output.ownsData())
         imported = faiss.GpuIndexCagra(res, dim, faiss.METRIC_L2, self.config())
         imported.copyFrom(loaded, output)
+        output_ref = weakref.ref(output)
         del output
+        self.assertIsNotNone(output_ref())
         self.assertTrue(imported.isSearchReady())
         filled = output_owner.copyToHost()
         self.assertEqual(filled.dtype, values.dtype)
         np.testing.assert_array_equal(filled[:, :dim], values)
         np.testing.assert_array_equal(filled[:, dim:], 0)
         np.testing.assert_array_equal(faiss.vector_to_array(cpu_storage.codes), cpu_codes)
+        with self.assertRaises(RuntimeError):
+            imported.copyFrom(loaded, faiss.Dataset.viewHost(values))
+        self.assertIsNotNone(output_ref())
+        self.check_search(imported, values, queries, numeric_type)
+        imported.copyFrom(loaded)
+        self.assertIsNone(output_ref())
+        self.assertFalse(imported.isSearchReady())
+        imported.updateDataset(storage)
 
         graph_only = faiss.GpuIndexCagra(res, dim, faiss.METRIC_L2, self.config())
         graph_only.copyFrom(loaded)
@@ -213,10 +238,19 @@ class TestCagraDataset(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Dataset"):
             graph_only.copyTo(empty_cpu)
         graph_only.updateDataset(storage)
-        self.check_search(graph_only, values, queries, numeric_type)
+        storage_ref = weakref.ref(storage)
+        del storage
+        gc.collect()
+        self.assertIsNotNone(storage_ref())
+        self.check_search(index, values, queries, numeric_type)
         self.check_search(imported, values, queries, numeric_type)
-        # Release all borrowers before their explicitly retained allocations.
-        del index, imported, graph_only
+        del index
+        imported.reset()
+        self.assertIsNotNone(storage_ref())
+        self.check_search(graph_only, values, queries, numeric_type)
+        del graph_only
+        gc.collect()
+        self.assertIsNone(storage_ref())
 
     def test_float32_workflow(self):
         self.check_workflow(np.float32, faiss.Float32)
