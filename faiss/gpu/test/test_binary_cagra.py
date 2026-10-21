@@ -112,7 +112,10 @@ class TestBinaryCagraDataset(unittest.TestCase):
         cpu = faiss.IndexBinaryHNSWCagra()
         cpu.base_level_only = True
         index.copyTo(cpu)
+        self.addCleanup(faiss.omp_set_num_threads, faiss.omp_get_max_threads())
+        faiss.omp_set_num_threads(2)
         expected_d, expected_i = cpu.search(self.xb[:8], 4)
+        self.assertTrue(np.all(expected_i >= 0))
         loaded = faiss.deserialize_index_binary(faiss.serialize_index_binary(cpu))
         actual_d, actual_i = loaded.search(self.xb[:8], 4)
         evaluation.check_ref_knn_with_draws(
