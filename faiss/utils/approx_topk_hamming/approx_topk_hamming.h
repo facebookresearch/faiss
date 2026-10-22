@@ -61,8 +61,9 @@ struct hamming_state_reader {
 
 template <>
 struct hamming_state_reader<SIMDLevel::NONE> {
-    static uint32_t lane(const simd8uint32_tpl<SIMDLevel::NONE>& v,
-                         size_t lane) {
+    static uint32_t lane(
+            const simd8uint32_tpl<SIMDLevel::NONE>& v,
+            size_t lane) {
         return v.u32[lane];
     }
 };
@@ -165,8 +166,7 @@ struct HeapWithBucketsForHamming32<
                     uint8_t valid_counter = 0;
                     for (size_t j8 = 0; j8 < 8; j8++) {
                         const uint32_t idx =
-                                j8 + j * 8 + ip +
-                                n_per_beam * beam_index;
+                                j8 + j * 8 + ip + n_per_beam * beam_index;
                         if (!sel || sel->is_member(idx)) {
                             hamming_distances[j8] = hc.hamming(
                                     binary_vectors + idx * code_size);

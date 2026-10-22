@@ -169,8 +169,7 @@ size_t rvv_compress_array(
         uint16_t thresh,
         int64_t n_eq) {
     static_assert(
-            sizeof(IDT) == 4 || sizeof(IDT) == 8,
-            "ids must be 32 or 64 bit");
+            sizeof(IDT) == 4 || sizeof(IDT) == 8, "ids must be 32 or 64 bit");
 
     size_t wp = 0;
     size_t i = 0;
@@ -244,8 +243,8 @@ size_t rvv_compress_array(
             } else {
                 // keep the first n_eq equal lanes of this block
                 vuint16m2_t rank = __riscv_viota_m_u16m2(eqmask, vl);
-                vbool8_t take = __riscv_vmsltu_vx_u16m2_b8(
-                        rank, (uint16_t)n_eq, vl);
+                vbool8_t take =
+                        __riscv_vmsltu_vx_u16m2_b8(rank, (uint16_t)n_eq, vl);
                 vbool8_t eqkeep = __riscv_vmand_mm_b8(eqmask, take, vl);
                 keep = __riscv_vmor_mm_b8(ltmask, eqkeep, vl);
                 n_eq = 0;
@@ -380,8 +379,7 @@ uint16_t rvv_partition_fuzzy_with_bounds(
         assert((size_t)n_eq_1 <= n_eq);
     }
 
-    size_t wp = rvv_compress_array<C>(
-            vals, ids, n, (uint16_t)thresh, n_eq_1);
+    size_t wp = rvv_compress_array<C>(vals, ids, n, (uint16_t)thresh, n_eq_1);
 
     assert(wp == q);
     if (q_out) {
@@ -434,15 +432,13 @@ void rvv_histogram_bounded(
     auto process = [&](size_t i, size_t vl) {
         vuint16m8_t v = __riscv_vle16_v_u16m8(data + i, vl);
         vuint16m8_t diff = __riscv_vsub_vx_u16m8(v, min, vl);
-        vbool2_t valid =
-                __riscv_vmsleu_vx_u16m8_b2(diff, vmax, vl);
+        vbool2_t valid = __riscv_vmsleu_vx_u16m8_b2(diff, vmax, vl);
         vuint16m8_t bin = __riscv_vsrl_vx_u16m8(diff, (size_t)shift, vl);
         vuint16m8_t obin = __riscv_vmv_v_x_u16m8(out_of_range, vl);
         bin = __riscv_vmerge_vvm_u16m8(obin, bin, valid, vl);
 
         for (int b = 0; b < NBINS; b++) {
-            vbool2_t mb = __riscv_vmseq_vx_u16m8_b2(
-                    bin, (uint16_t)b, vl);
+            vbool2_t mb = __riscv_vmseq_vx_u16m8_b2(bin, (uint16_t)b, vl);
             hist[b] += (int)__riscv_vcpop_m_b2(mb, vl);
         }
     };
@@ -459,10 +455,7 @@ void rvv_histogram_bounded(
 
 // shift < 0: raw value histogram, values outside [0, NBINS) are ignored
 template <int NBINS>
-void rvv_histogram_unbounded(
-        const uint16_t* data,
-        int n,
-        int* hist) {
+void rvv_histogram_unbounded(const uint16_t* data, int n, int* hist) {
     memset(hist, 0, sizeof(*hist) * NBINS);
     if (n <= 0) {
         return;
@@ -472,8 +465,7 @@ void rvv_histogram_unbounded(
     auto process = [&](size_t i, size_t vl) {
         vuint16m8_t v = __riscv_vle16_v_u16m8(data + i, vl);
         for (int b = 0; b < NBINS; b++) {
-            vbool2_t mb = __riscv_vmseq_vx_u16m8_b2(
-                    v, (uint16_t)b, vl);
+            vbool2_t mb = __riscv_vmseq_vx_u16m8_b2(v, (uint16_t)b, vl);
             hist[b] += (int)__riscv_vcpop_m_b2(mb, vl);
         }
     };

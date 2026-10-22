@@ -32,8 +32,8 @@
 
 #include <riscv_vector.h>
 
-#include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
 
 namespace faiss {
 
@@ -42,36 +42,36 @@ namespace approx_topk_hamming_rvv {
 // Per-LMUL uint32 operations. RVV vector types cannot be struct members or
 // array elements, so these traits only carry aliases and static functions;
 // all state lives in named locals in scan_chunk.
-#define FAISS_RVV_HAMMING_OPS(NAME, LM, VU, VB, MB)                           \
-    struct NAME {                                                             \
-        using vu = VU;                                                        \
-        using vb = VB;                                                        \
-                                                                              \
-        static inline size_t setvl(size_t avl) {                              \
-            return __riscv_vsetvl_e32##LM(avl);                               \
-        }                                                                     \
-        static inline vu splat_u(uint32_t x, size_t vl) {                     \
-            return __riscv_vmv_v_x_u32##LM(x, vl);                            \
-        }                                                                     \
-        static inline vu vid(size_t vl) {                                     \
-            return __riscv_vid_v_u32##LM(vl);                                 \
-        }                                                                     \
-        static inline vu add_x(vu a, uint32_t x, size_t vl) {                 \
-            return __riscv_vadd_vx_u32##LM(a, x, vl);                         \
-        }                                                                     \
-        static inline vu load_u(const uint32_t* p, size_t vl) {               \
-            return __riscv_vle32_v_u32##LM(p, vl);                            \
-        }                                                                     \
-        static inline void store_u(uint32_t* p, vu v, size_t vl) {            \
-            __riscv_vse32_v_u32##LM(p, v, vl);                                \
-        }                                                                     \
-        static inline vb lt(vu a, vu b, size_t vl) {                          \
-            return __riscv_vmsltu_vv_u32##LM##_b##MB(a, b, vl);               \
-        }                                                                     \
-        /* mask ? t : f */                                                    \
-        static inline vu select_u(vb m, vu t, vu f, size_t vl) {              \
-            return __riscv_vmerge_vvm_u32##LM(f, t, m, vl);                   \
-        }                                                                     \
+#define FAISS_RVV_HAMMING_OPS(NAME, LM, VU, VB, MB)                \
+    struct NAME {                                                  \
+        using vu = VU;                                             \
+        using vb = VB;                                             \
+                                                                   \
+        static inline size_t setvl(size_t avl) {                   \
+            return __riscv_vsetvl_e32##LM(avl);                    \
+        }                                                          \
+        static inline vu splat_u(uint32_t x, size_t vl) {          \
+            return __riscv_vmv_v_x_u32##LM(x, vl);                 \
+        }                                                          \
+        static inline vu vid(size_t vl) {                          \
+            return __riscv_vid_v_u32##LM(vl);                      \
+        }                                                          \
+        static inline vu add_x(vu a, uint32_t x, size_t vl) {      \
+            return __riscv_vadd_vx_u32##LM(a, x, vl);              \
+        }                                                          \
+        static inline vu load_u(const uint32_t* p, size_t vl) {    \
+            return __riscv_vle32_v_u32##LM(p, vl);                 \
+        }                                                          \
+        static inline void store_u(uint32_t* p, vu v, size_t vl) { \
+            __riscv_vse32_v_u32##LM(p, v, vl);                     \
+        }                                                          \
+        static inline vb lt(vu a, vu b, size_t vl) {               \
+            return __riscv_vmsltu_vv_u32##LM##_b##MB(a, b, vl);    \
+        }                                                          \
+        /* mask ? t : f */                                         \
+        static inline vu select_u(vb m, vu t, vu f, size_t vl) {   \
+            return __riscv_vmerge_vvm_u32##LM(f, t, m, vl);        \
+        }                                                          \
     };
 
 // Mask ratio is SEW/LMUL: m1 -> 32, m2 -> 16, m4 -> 8.
@@ -299,8 +299,7 @@ inline void bs_addn_impl(
                 }
                 const int64_t index = int64_t(min_indices[p][b]);
                 if (C::cmp2(bh_val[0], int(value), bh_ids[0], index)) {
-                    heap_replace_top<C>(
-                            k, bh_val, bh_ids, int(value), index);
+                    heap_replace_top<C>(k, bh_val, bh_ids, int(value), index);
                 }
             }
         }
@@ -308,8 +307,8 @@ inline void bs_addn_impl(
         for (uint32_t ip = nb; ip < n_per_beam; ip++) {
             const int64_t index = ip + beam_off;
             if (!sel || sel->is_member(index)) {
-                const int value = hc.hamming(
-                        binary_vectors + size_t(index) * code_size);
+                const int value =
+                        hc.hamming(binary_vectors + size_t(index) * code_size);
                 if (C::cmp(bh_val[0], value)) {
                     heap_replace_top<C>(k, bh_val, bh_ids, value, index);
                 }
@@ -355,7 +354,11 @@ struct HeapWithBucketsForHamming32<
             const IDSelector* sel = nullptr) {
         using namespace approx_topk_hamming_rvv;
         if (__riscv_vlenb() >= 32) {
-            bs_addn_impl<NBUCKETS, N, HammingComputerT, rvv_plan<NBUCKETS, true>>(
+            bs_addn_impl<
+                    NBUCKETS,
+                    N,
+                    HammingComputerT,
+                    rvv_plan<NBUCKETS, true>>(
                     beam_size,
                     n_per_beam,
                     hc,
