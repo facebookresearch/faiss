@@ -11697,7 +11697,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4_1a7e495ec4f206d44b1f1668f275d8a26f" kind="function"><name>Quantizer8bitDirect</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4_1aee7991adcfa3da7f050d4e645ed5a423" kind="function"><name>reconstruct_16_components</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1acd0b8465211553015c88a12f93665c6d" kind="function"><name>encode_vector</name></member>
-    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885" kind="function"><name>decode_vector</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1af59a8ba64161f5858e60c268d2e23132" kind="function"><name>decode_vector</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1ae4a27d92cb82b88aa756dbafb2834384" kind="function"><name>reconstruct_component</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1abcf0fe405618d5078f3608e75dfc9154" kind="variable"><name>d</name></member>
   </compound>
@@ -11705,7 +11705,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1abcf0fe405618d5078f3608e75dfc9154" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a38df25a768406c4e09b5c71d196cc0aa" kind="function"><name>Quantizer8bitDirect</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1acd0b8465211553015c88a12f93665c6d" kind="function"><name>encode_vector</name></member>
-    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885" kind="function"><name>decode_vector</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1af59a8ba64161f5858e60c268d2e23132" kind="function"><name>decode_vector</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1ae4a27d92cb82b88aa756dbafb2834384" kind="function"><name>reconstruct_component</name></member>
   </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" kind="struct"><name>faiss::scalar_quantizer::Quantizer8bitDirectSigned</name>
@@ -11714,7 +11714,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1AVX512_01_4_1af51490bc8f2b1e6a7a1a8cd287db77ba" kind="function"><name>Quantizer8bitDirectSigned</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1AVX512_01_4_1a6790466daca3afbe98d7bcc0750afa49" kind="function"><name>reconstruct_16_components</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a6024bdd73074592db4de26a4ea972621" kind="function"><name>encode_vector</name></member>
-    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a734637d9ead0164e557fe9dfa707235d" kind="function"><name>decode_vector</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd" kind="function"><name>decode_vector</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a5863eb2731c2a92dfa8aa116e05d8890" kind="function"><name>reconstruct_component</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a3a3aec1298c72300c1a39bd06c061044" kind="variable"><name>d</name></member>
   </compound>
@@ -11722,7 +11722,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a3a3aec1298c72300c1a39bd06c061044" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1af6992ea52d7124f470104c9040d89566" kind="function"><name>Quantizer8bitDirectSigned</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a6024bdd73074592db4de26a4ea972621" kind="function"><name>encode_vector</name></member>
-    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a734637d9ead0164e557fe9dfa707235d" kind="function"><name>decode_vector</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd" kind="function"><name>decode_vector</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a5863eb2731c2a92dfa8aa116e05d8890" kind="function"><name>reconstruct_component</name></member>
   </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" kind="struct"><name>faiss::scalar_quantizer::QuantizerBF16</name>
@@ -11748,7 +11748,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4_1a5ffddafdc96f6a754b608931133149c2" kind="function"><name>QuantizerFP16</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4_1a2dde4ad519a71dbd7efd37d5dafce084" kind="function"><name>reconstruct_16_components</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1afaff0fae2456b4b81831c1a45443670a" kind="function"><name>encode_vector</name></member>
-    <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1aa04612cd542de32495725036478649cc" kind="function"><name>decode_vector</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1a1be9f6d74dd597a3dc36e9c84e866431" kind="function"><name>decode_vector</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1aeaca51d4885e469fe3729295e45c515d" kind="function"><name>reconstruct_component</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1a7b40ea6bdf9209234ab2a5696c254468" kind="variable"><name>d</name></member>
   </compound>
@@ -11756,7 +11756,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1a7b40ea6bdf9209234ab2a5696c254468" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1ad1fd7cd0014ef3c43f8ea0422dc7e7f1" kind="function"><name>QuantizerFP16</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1afaff0fae2456b4b81831c1a45443670a" kind="function"><name>encode_vector</name></member>
-    <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1aa04612cd542de32495725036478649cc" kind="function"><name>decode_vector</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1a1be9f6d74dd597a3dc36e9c84e866431" kind="function"><name>decode_vector</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1aeaca51d4885e469fe3729295e45c515d" kind="function"><name>reconstruct_component</name></member>
   </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" kind="struct"><name>faiss::scalar_quantizer::QuantizerLloydMax</name>
@@ -15523,10 +15523,6 @@
   </compound>
   <compound refid="GpuIndexCagra_8h" kind="file"><name>GpuIndexCagra.h</name>
   </compound>
-  <compound refid="gpu_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
-  </compound>
-  <compound refid="gpu__metal_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
-  </compound>
   <compound refid="GpuIndexIVF_8h" kind="file"><name>GpuIndexIVF.h</name>
   </compound>
   <compound refid="GpuIndexIVFFlat_8h" kind="file"><name>GpuIndexIVFFlat.h</name>
@@ -15700,6 +15696,10 @@
   <compound refid="WarpSelectKernel_8cuh" kind="file"><name>WarpSelectKernel.cuh</name>
   </compound>
   <compound refid="WarpShuffles_8cuh" kind="file"><name>WarpShuffles.cuh</name>
+  </compound>
+  <compound refid="gpu_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
+  </compound>
+  <compound refid="gpu__metal_2GpuIndexFlat_8h" kind="file"><name>GpuIndexFlat.h</name>
   </compound>
   <compound refid="MetalIVFFlat_8h" kind="file"><name>MetalIVFFlat.h</name>
   </compound>
@@ -16221,6 +16221,14 @@
   </compound>
   <compound refid="hamming__computer_8h" kind="file"><name>hamming_computer.h</name>
   </compound>
+  <compound refid="hamming__distance_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
+    <member refid="hamming__distance_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
+    <member refid="hamming__distance_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
+  </compound>
+  <compound refid="simd__impl_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
+    <member refid="simd__impl_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
+    <member refid="simd__impl_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
+  </compound>
   <compound refid="Heap_8h" kind="file"><name>Heap.h</name>
   </compound>
   <compound refid="NeuralNet_8h" kind="file"><name>NeuralNet.h</name>
@@ -16259,14 +16267,6 @@
   <compound refid="exhaustive__L2sqr__blas__cmax_8h" kind="file"><name>exhaustive_L2sqr_blas_cmax.h</name>
   </compound>
   <compound refid="fp16__kernels_8h" kind="file"><name>fp16_kernels.h</name>
-  </compound>
-  <compound refid="hamming__distance_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
-    <member refid="hamming__distance_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
-    <member refid="hamming__distance_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
-  </compound>
-  <compound refid="simd__impl_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
-    <member refid="simd__impl_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
-    <member refid="simd__impl_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
   </compound>
   <compound refid="IVFFlatScanner-inl_8h" kind="file"><name>IVFFlatScanner-inl.h</name>
     <member refid="IVFFlatScanner-inl_8h_1aa4e05f9f08dc770d3a5a2972334f9b19" kind="define"><name>DEFINE_IVFFLAT_SCANNER_METHODS</name></member>

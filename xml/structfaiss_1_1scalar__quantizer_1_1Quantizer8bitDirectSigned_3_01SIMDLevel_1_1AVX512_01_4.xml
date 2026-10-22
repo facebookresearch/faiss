@@ -73,10 +73,10 @@
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/quantizers.h" line="362" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="362" bodyend="366"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a734637d9ead0164e557fe9dfa707235d" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
         <definition>void faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::decode_vector</definition>
-        <argsstring>(const uint8_t *code, float *x) const final</argsstring>
+        <argsstring>(const uint8_t *code, float *x) const override</argsstring>
         <name>decode_vector</name>
         <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::decode_vector</qualifiedname>
         <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
@@ -178,7 +178,7 @@
     <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="356" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="357" bodyend="371"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a3a3aec1298c72300c1a39bd06c061044" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</scope><name>d</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a734637d9ead0164e557fe9dfa707235d" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</scope><name>decode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a6024bdd73074592db4de26a4ea972621" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</scope><name>encode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1AVX512_01_4_1af51490bc8f2b1e6a7a1a8cd287db77ba" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</scope><name>Quantizer8bitDirectSigned</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1AVX512_01_4_1a6790466daca3afbe98d7bcc0750afa49" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</scope><name>reconstruct_16_components</name></member>

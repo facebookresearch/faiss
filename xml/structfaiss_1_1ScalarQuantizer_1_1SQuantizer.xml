@@ -49,12 +49,12 @@
         <qualifiedname>faiss::ScalarQuantizer::SQuantizer::decode_vector</qualifiedname>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3_1a7fe0ed6e064d13c88dca09b4967485a3">decode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a51150cd9c80e503441912c7381f91a23">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1aa04612cd542de32495725036478649cc">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a734637d9ead0164e557fe9dfa707235d">decode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1ab66456718680593a2afcec4a5ef9b884">decode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a6b7b2aef20a7ce4bd94a3a3983f6904d">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1a1be9f6d74dd597a3dc36e9c84e866431">decode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab669f4006a87989fc6ca8b68b435e4b3">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1af59a8ba64161f5858e60c268d2e23132">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd">decode_vector</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>

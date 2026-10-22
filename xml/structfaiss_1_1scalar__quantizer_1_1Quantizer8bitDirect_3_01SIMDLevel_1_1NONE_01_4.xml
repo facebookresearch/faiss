@@ -67,10 +67,10 @@
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/quantizers.h" line="321" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="321" bodyend="325"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1af59a8ba64161f5858e60c268d2e23132" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
         <definition>void faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::decode_vector</definition>
-        <argsstring>(const uint8_t *code, float *x) const final</argsstring>
+        <argsstring>(const uint8_t *code, float *x) const override</argsstring>
         <name>decode_vector</name>
         <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;::decode_vector</qualifiedname>
         <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
@@ -150,7 +150,7 @@
     <location file="faiss/impl/scalar_quantizer/quantizers.h" line="315" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="315" bodyend="338"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1abcf0fe405618d5078f3608e75dfc9154" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</scope><name>d</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1af59a8ba64161f5858e60c268d2e23132" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</scope><name>decode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1acd0b8465211553015c88a12f93665c6d" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</scope><name>encode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a38df25a768406c4e09b5c71d196cc0aa" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</scope><name>Quantizer8bitDirect</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1ae4a27d92cb82b88aa756dbafb2834384" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</scope><name>reconstruct_component</name></member>
