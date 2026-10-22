@@ -1819,10 +1819,10 @@
         </inbodydescription>
         <location file="faiss/IndexIVFFastScan.h" line="284" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a0833ea0636fdb89a7c598676d5fc7c60" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a1662052b03024c2ab332dc986d0e3a29" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexIVFFastScan::search_implem_10</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, SIMDResultHandlerToFloat &amp;handler, const CoarseQuantized &amp;cq, size_t *ndis_out, size_t *nlist_out, const FastScanDistancePostProcessing &amp;context, const IVFSearchParameters *params, FastScanCodeScanner &amp;scanner) const</argsstring>
+        <argsstring>(idx_t n, const float *x, idx_t k, SIMDResultHandlerToFloat &amp;handler, const CoarseQuantized &amp;cq, size_t *ndis_out, size_t *nlist_out, const FastScanDistancePostProcessing &amp;context, const IVFSearchParameters *params, FastScanCodeScanner &amp;scanner, AlignedTable&lt; uint8_t &gt; *dis_tables_buf=nullptr) const</argsstring>
         <name>search_implem_10</name>
         <qualifiedname>faiss::IndexIVFFastScan::search_implem_10</qualifiedname>
         <param>
@@ -1865,6 +1865,11 @@
           <type><ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &amp;</type>
           <declname>scanner</declname>
         </param>
+        <param>
+          <type><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable</ref>&lt; uint8_t &gt; *</type>
+          <declname>dis_tables_buf</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1873,10 +1878,10 @@
         </inbodydescription>
         <location file="faiss/IndexIVFFastScan.h" line="296" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a7f42809d0c87c9ae0d6d9d148e5d05bc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1adf64e4cd1d6cd35ec09e1fb4c52e77ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexIVFFastScan::search_implem_12</definition>
-        <argsstring>(idx_t n, const float *x, SIMDResultHandlerToFloat &amp;handler, const CoarseQuantized &amp;cq, size_t *ndis_out, size_t *nlist_out, const FastScanDistancePostProcessing &amp;context, const IVFSearchParameters *params, FastScanCodeScanner &amp;scanner) const</argsstring>
+        <argsstring>(idx_t n, const float *x, SIMDResultHandlerToFloat &amp;handler, const CoarseQuantized &amp;cq, size_t *ndis_out, size_t *nlist_out, const FastScanDistancePostProcessing &amp;context, const IVFSearchParameters *params, FastScanCodeScanner &amp;scanner, AlignedTable&lt; uint8_t &gt; *dis_tables_buf=nullptr) const</argsstring>
         <name>search_implem_12</name>
         <qualifiedname>faiss::IndexIVFFastScan::search_implem_12</qualifiedname>
         <param>
@@ -1915,13 +1920,18 @@
           <type><ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &amp;</type>
           <declname>scanner</declname>
         </param>
+        <param>
+          <type><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable</ref>&lt; uint8_t &gt; *</type>
+          <declname>dis_tables_buf</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="308" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="309" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a478421842b68a1d8e7f08eaf0bced854" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1972,7 +1982,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="320" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="322" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1986,7 +1996,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="338" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="340" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -2005,7 +2015,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="390" column="12"/>
+        <location file="faiss/IndexIVFFastScan.h" line="392" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -3994,8 +4004,8 @@
       <member refid="structfaiss_1_1IndexIVFFastScan_1a8728886aaf8f241ba7410eecf20efcbb" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_dispatch_implem</name></member>
       <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_ex</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1ab20ca592b2eebf1e792c9a132388c5a9" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_1</name></member>
-      <member refid="structfaiss_1_1IndexIVFFastScan_1a0833ea0636fdb89a7c598676d5fc7c60" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_10</name></member>
-      <member refid="structfaiss_1_1IndexIVFFastScan_1a7f42809d0c87c9ae0d6d9d148e5d05bc" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_12</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1a1662052b03024c2ab332dc986d0e3a29" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_10</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1adf64e4cd1d6cd35ec09e1fb4c52e77ca" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_12</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a478421842b68a1d8e7f08eaf0bced854" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_14</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1afcb5f2af0e16d9dfd0fb9584bed9d5b6" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_2</name></member>
       <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a478a27e31f57e091cbab939970ad0ff7" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_preassigned</name></member>
