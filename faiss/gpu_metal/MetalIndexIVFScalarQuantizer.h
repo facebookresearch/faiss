@@ -12,8 +12,11 @@
 
 namespace faiss::gpu_metal {
 
-/** GPU-resident IVF scalar codes with CPU training, encoding and assignment.
+/** GPU-resident IVF scalar codes with CPU training, encoding and add-time assignment.
  *
+ * Root IndexFlat/L2/IP coarse quantizers use GPU search for nlist >= 128
+ * and nprobe <= 512; other coarse searches remain on CPU. Coarse ties use
+ * increasing list IDs, which can select different probes from CPU flat search.
  * GPU search supports QT_8bit and QT_fp16, L2/IP, either residual mode,
  * 1 <= k <= 512, positive dimensions and counts fitting uint32_t (nlist <=
  * INT32_MAX). Partition counts must fit uint32_t, and persistent and search
@@ -68,6 +71,8 @@ class MetalIndexIVFScalarQuantizer : public MetalIndex {
     void setNumProbes(size_t nprobe);
     /// Successful GPU dispatch count, for tests and benchmark visibility.
     size_t gpuSearchCount() const;
+    /// Successful GPU flat-coarse searches; other quantizers stay on CPU.
+    size_t gpuCoarseSearchCount() const;
 
    private:
     struct Impl;

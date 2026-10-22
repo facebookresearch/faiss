@@ -41,6 +41,17 @@ class MetalKernels {
             id<MTLBuffer> outputDistances,
             id<MTLBuffer> outputIds,
             const uint32_t* params);
+    void encodeIVFSQCoarse(
+            id<MTLComputeCommandEncoder> encoder,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> centroids,
+            id<MTLBuffer> scores,
+            id<MTLBuffer> assignments,
+            uint32_t nq,
+            uint32_t d,
+            uint32_t nlist,
+            uint32_t probes,
+            bool isL2);
     static constexpr int kMaxK = 2048;
 
     void encodeDistanceMatrix(
@@ -215,6 +226,9 @@ class MetalKernels {
 
    private:
     id<MTLComputePipelineState> pipeline(const char* name);
+    id<MTLComputePipelineState> ivfsqPipeline(
+            const uint32_t* params,
+            const char* name = "ivfsq_scan");
 
     id<MTLDevice> device_;
     id<MTLLibrary> library_;

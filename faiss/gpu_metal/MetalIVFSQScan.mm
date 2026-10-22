@@ -131,7 +131,9 @@ void runMetalIVFSQScan(
         id<MTLBuffer> labels,
         id<MTLBuffer> coarseScores,
         const uint32_t* p,
-        MetalIVFSQScanScratch* scratch) {
+        MetalIVFSQScanScratch* scratch,
+        bool flatCoarse,
+        bool coarseL2) {
     @autoreleasepool {
         FAISS_THROW_IF_NOT(device && queue && p);
         FAISS_THROW_IF_NOT(p[0] && p[1] && p[2] && p[2] <= 512 && p[3] && p[4]);
@@ -141,7 +143,10 @@ void runMetalIVFSQScan(
         requireBytes(coarseScores, p[0], p[3], 4);
         requireBytes(offsets, p[4], 1, 4);
         requireBytes(lengths, p[4], 1, 4);
-        requireBytes(centroids, p[4], p[6] ? p[1] : 0, 4);
+        requireBytes(centroids, p[4], (p[6] || flatCoarse) ? p[1] : 0, 4);
+        FAISS_THROW_IF_NOT(
+                !flatCoarse ||
+                (p[3] <= 512 && p[3] <= p[4] && p[4] <= INT32_MAX));
         requireBytes(ranges, p[5] ? 0 : 2, p[1], 4);
         requireBytes(distances, p[0], p[2], 4);
         requireBytes(labels, p[0], p[2], 8);
@@ -168,6 +173,23 @@ void runMetalIVFSQScan(
         FAISS_THROW_IF_NOT(command);
         EncoderGuard guard{[command computeCommandEncoder]};
         FAISS_THROW_IF_NOT(guard.encoder);
+        if (flatCoarse) {
+            kernels.encodeIVFSQCoarse(
+                    guard.encoder,
+                    queries,
+                    centroids,
+                    coarseScores,
+                    assignments,
+                    p[0],
+                    p[1],
+                    p[4],
+                    p[3],
+                    coarseL2);
+            [guard.encoder endEncoding];
+            guard.encoder = nil;
+            guard.encoder = [command computeCommandEncoder];
+            FAISS_THROW_IF_NOT(guard.encoder);
+        }
         id<MTLBuffer> __unsafe_unretained buffers[] = {
                 queries,
                 codes,

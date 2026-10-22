@@ -38,7 +38,8 @@ struct MetalIVFSQScanScratch {
 /// Synchronous direct scan entry point. Buffers are shared, sized by params:
 /// nq,d,k,nprobe,nlist,fp16,residual,L2,code_size. IDs must be nonnegative;
 /// offsets/lengths describe disjoint ranges inside codes/ids. Throws on
-/// failure.
+/// failure. flatCoarse computes assignments/scores on GPU from centroids;
+/// otherwise assignments/scores are caller inputs.
 void runMetalIVFSQScan(
         id<MTLDevice> device,
         id<MTLCommandQueue> queue,
@@ -54,5 +55,7 @@ void runMetalIVFSQScan(
         id<MTLBuffer> labels,
         id<MTLBuffer> coarseScores,
         const uint32_t* params,
-        MetalIVFSQScanScratch* scratch = nullptr);
+        MetalIVFSQScanScratch* scratch = nullptr,
+        bool flatCoarse = false,
+        bool coarseL2 = true);
 } // namespace faiss::gpu_metal

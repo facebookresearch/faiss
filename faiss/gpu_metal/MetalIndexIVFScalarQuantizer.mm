@@ -116,14 +116,25 @@ struct MetalIndexIVFScalarQuantizer::Impl {
     size_t tail = 0, allocated = 0;
     bool valid = true, nonnegative = true;
     mutable id<MTLBuffer> queries, assignments, distances, labels, coarseScores;
-    mutable size_t dispatches = 0;
+    mutable size_t dispatches = 0, coarseDispatches = 0;
     mutable MetalIVFSQScanScratch scanScratch;
     mutable std::vector<idx_t> coarseAssignments;
     mutable std::vector<float> coarseDistances;
     uint32_t maxListLength = 0;
     bool listsFit = true;
+    bool flatCoarse = false, coarseL2 = true;
 
     void refreshListBounds() {
+        auto* q = cpu->quantizer;
+        // Avoid an extra GPU pass for tiny codebooks with cheap CPU assignment.
+        flatCoarse = q && cpu->nlist >= 128 && q->ntotal == idx_t(cpu->nlist) &&
+                q->d == cpu->d &&
+                (q->metric_type == METRIC_L2 ||
+                 q->metric_type == METRIC_INNER_PRODUCT) &&
+                (typeid(*q) == typeid(IndexFlat) ||
+                 typeid(*q) == typeid(IndexFlatL2) ||
+                 typeid(*q) == typeid(IndexFlatIP));
+        coarseL2 = q && q->metric_type == METRIC_L2;
         listsFit = true;
         maxListLength = 0;
         for (size_t l = 0; l < cpu->nlist; ++l) {
@@ -156,7 +167,7 @@ struct MetalIndexIVFScalarQuantizer::Impl {
             uint64_t(cpu->ntotal) >
                     limit / std::max(cpu->code_size, sizeof(idx_t)) ||
             cpu->sq.trained.size() > limit / sizeof(float) ||
-            (cpu->by_residual &&
+            ((cpu->by_residual || flatCoarse) &&
              cpu->nlist > limit / sizeof(float) / size_t(cpu->d)))
             return false;
         if (!listsFit)
@@ -239,7 +250,8 @@ struct MetalIndexIVFScalarQuantizer::Impl {
                        bytes(cpu->sq.trained.size(), sizeof(float)));
         }
         if (!newCentroids) {
-            size_t centroidCount = cpu->is_trained && cpu->by_residual
+            size_t centroidCount =
+                    cpu->is_trained && (cpu->by_residual || flatCoarse)
                     ? bytes(cpu->nlist, size_t(cpu->d))
                     : 0;
             newCentroids =
@@ -452,18 +464,21 @@ void MetalIndexIVFScalarQuantizer::search(
         if (!impl_->offsets)
             impl_->upload();
         impl_->scratch(n, probes, k, plan);
-        auto& coarse = impl_->coarseAssignments;
-        auto& coarseD = impl_->coarseDistances;
-        cpu.quantizer->search(n, x, probes, coarseD.data(), coarse.data());
-        memcpy(impl_->coarseScores.contents,
-               coarseD.data(),
-               bytes(coarseD.size(), 4));
-        auto* assignment = (int32_t*)impl_->assignments.contents;
-        for (size_t i = 0; i < coarse.size(); ++i) {
-            FAISS_THROW_IF_NOT(
-                    coarse[i] >= -1 &&
-                    (coarse[i] < 0 || uint64_t(coarse[i]) < cpu.nlist));
-            assignment[i] = int32_t(coarse[i]);
+        bool gpuCoarse = impl_->flatCoarse && probes <= 512;
+        if (!gpuCoarse) {
+            auto& coarse = impl_->coarseAssignments;
+            auto& coarseD = impl_->coarseDistances;
+            cpu.quantizer->search(n, x, probes, coarseD.data(), coarse.data());
+            memcpy(impl_->coarseScores.contents,
+                   coarseD.data(),
+                   bytes(coarseD.size(), 4));
+            auto* assignment = (int32_t*)impl_->assignments.contents;
+            for (size_t i = 0; i < coarse.size(); ++i) {
+                FAISS_THROW_IF_NOT(
+                        coarse[i] >= -1 &&
+                        (coarse[i] < 0 || uint64_t(coarse[i]) < cpu.nlist));
+                assignment[i] = int32_t(coarse[i]);
+            }
         }
         memcpy(impl_->queries.contents,
                x,
@@ -493,8 +508,11 @@ void MetalIndexIVFScalarQuantizer::search(
                 impl_->labels,
                 impl_->coarseScores,
                 p,
-                &impl_->scanScratch);
+                &impl_->scanScratch,
+                gpuCoarse,
+                impl_->coarseL2);
         ++impl_->dispatches;
+        impl_->coarseDispatches += gpuCoarse;
         memcpy(outD,
                impl_->distances.contents,
                bytes(bytes(size_t(n), size_t(k)), 4));
@@ -543,6 +561,9 @@ size_t MetalIndexIVFScalarQuantizer::nprobe() const {
 }
 void MetalIndexIVFScalarQuantizer::setNumProbes(size_t probes) {
     impl_->cpu->nprobe = probes;
+}
+size_t MetalIndexIVFScalarQuantizer::gpuCoarseSearchCount() const {
+    return impl_->coarseDispatches;
 }
 size_t MetalIndexIVFScalarQuantizer::gpuSearchCount() const {
     return impl_->dispatches;

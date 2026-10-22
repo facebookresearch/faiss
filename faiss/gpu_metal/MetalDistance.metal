@@ -2664,6 +2664,31 @@ inline void ivfsq_merge_new(
     threadgroup_barrier(mem_flags::mem_threadgroup);
 }
 
+// Specialize only aligned common dimensions. Other dimensions retain the
+// scalar codec layout, while codec/metric/residual flags are still constants.
+constant uint ivfsq_dimension [[function_constant(0)]];
+constant bool ivfsq_fp16 [[function_constant(1)]];
+constant bool ivfsq_l2 [[function_constant(2)]];
+constant bool ivfsq_residual [[function_constant(3)]];
+// Compile-time, correctly rounded code centers. A small constant table avoids
+// four precise divisions per vector load without replacing division with an
+// approximate reciprocal or changing the scalar codec's decode formula.
+#define IVFSQ_LEVEL4(n) \
+    ((float((n) + 0) + 0.5f) / 255.0f), ((float((n) + 1) + 0.5f) / 255.0f), \
+    ((float((n) + 2) + 0.5f) / 255.0f), ((float((n) + 3) + 0.5f) / 255.0f)
+#define IVFSQ_LEVEL16(n) IVFSQ_LEVEL4(n), IVFSQ_LEVEL4((n)+4), IVFSQ_LEVEL4((n)+8), IVFSQ_LEVEL4((n)+12)
+constant float ivfsq_code_centers[256] = {
+    IVFSQ_LEVEL16(0), IVFSQ_LEVEL16(16), IVFSQ_LEVEL16(32), IVFSQ_LEVEL16(48),
+    IVFSQ_LEVEL16(64), IVFSQ_LEVEL16(80), IVFSQ_LEVEL16(96), IVFSQ_LEVEL16(112),
+    IVFSQ_LEVEL16(128), IVFSQ_LEVEL16(144), IVFSQ_LEVEL16(160), IVFSQ_LEVEL16(176),
+    IVFSQ_LEVEL16(192), IVFSQ_LEVEL16(208), IVFSQ_LEVEL16(224), IVFSQ_LEVEL16(240)
+};
+#undef IVFSQ_LEVEL16
+#undef IVFSQ_LEVEL4
+
+// Retained storage follows k for latency-oriented small batches. Keep the
+// full incoming queue: shrinking it increases long-list merge frequency.
+template <uint Capacity>
 kernel void ivfsq_scan(
     device const float* queries [[buffer(0)]],
     device const uchar* codes [[buffer(1)]],
@@ -2679,12 +2704,25 @@ kernel void ivfsq_scan(
     constant uint* p [[buffer(11)]],
     uint3 group [[threadgroup_position_in_grid]],
     uint tid [[thread_index_in_threadgroup]]) {
+    constexpr uint ivfsq_capacity = Capacity;
+    constexpr uint ivfsq_batch = 512;
     uint qi = group.z, probe = group.y;
-    uint d = p[1], k = p[2], nprobe = p[3];
-    bool l2 = p[7];
+    uint d = ivfsq_dimension ? ivfsq_dimension : p[1], k = p[2], nprobe = p[3];
+    bool l2 = ivfsq_l2;
+    int list = assignments[ulong(qi) * nprobe + probe];
+    bool validList = list >= 0 && uint(list) < p[4];
+    uint len = validList ? lengths[list] : 0;
+    threadgroup float4 residualQuery[128];
+    // Prepare each residual query once per list chunk, rather than once per
+    // candidate. The array exists only for the aligned 128/512 variants.
+    if (ivfsq_dimension && ivfsq_l2 && ivfsq_residual && validList) {
+        for (uint i = tid; i < ivfsq_dimension/4; i += 256)
+            residualQuery[i] = reinterpret_cast<device const float4*>(queries + ulong(qi)*d)[i]
+                - reinterpret_cast<device const float4*>(centroids + ulong(list)*d)[i];
+    }
     float sentinel = l2 ? MAXFLOAT : -MAXFLOAT;
-    threadgroup float bestDist[512], newDist[512];
-    threadgroup long bestIds[512], newIds[512];
+    threadgroup float bestDist[ivfsq_capacity], newDist[ivfsq_batch];
+    threadgroup long bestIds[ivfsq_capacity], newIds[ivfsq_batch];
     threadgroup atomic_uint accepted;
     for (uint i = tid; i < k; i += 256) {
         bestDist[i] = sentinel; bestIds[i] = -1;
@@ -2692,28 +2730,49 @@ kernel void ivfsq_scan(
     if (tid == 0) atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
     threadgroup_barrier(mem_flags::mem_threadgroup);
     {
-        int list = assignments[ulong(qi) * nprobe + probe];
-        uint len = list >= 0 && uint(list) < p[4] ? lengths[list] : 0;
         uint begin = uint(min(ulong(group.x) * p[10], ulong(len)));
         uint end = uint(min(ulong(begin) + p[10], ulong(len)));
         for (uint start = begin; start < end;) {
-            uint count = min(512u, end - start);
+            uint count = min(ivfsq_batch, end - start);
             for (uint j = tid; j < count; j += 256) {
                 ulong v = ulong(offsets[list]) + start + j;
                 device const uchar* code = codes + v * p[8];
                 float score = 0;
+                if (ivfsq_dimension) {
+                    float4 sums = 0;
+                    #pragma clang loop unroll(disable)
+                    for (uint dim = 0; dim < ivfsq_dimension; dim += 4) {
+                        uint i = dim / 4;
+                        float4 decoded;
+                        if (ivfsq_fp16) {
+                            decoded = float4(reinterpret_cast<device const half4*>(code)[i]);
+                        } else {
+                            uchar4 packed = reinterpret_cast<device const uchar4*>(code)[i];
+                            float4 normalized(ivfsq_code_centers[packed.x], ivfsq_code_centers[packed.y],
+                                              ivfsq_code_centers[packed.z], ivfsq_code_centers[packed.w]);
+                            decoded = reinterpret_cast<device const float4*>(ranges)[i]
+                                + normalized * reinterpret_cast<device const float4*>(ranges + d)[i];
+                        }
+                        float4 q = ivfsq_l2 && ivfsq_residual ? residualQuery[i]
+                            : reinterpret_cast<device const float4*>(queries + ulong(qi)*d)[i];
+                        float4 delta = q - decoded;
+                        sums += ivfsq_l2 ? delta * delta : q * decoded;
+                    }
+                    score = (sums.x + sums.y) + (sums.z + sums.w);
+                } else {
                 for (uint dim = 0; dim < d; ++dim) {
-                    float decoded = p[5]
+                    float decoded = ivfsq_fp16
                         ? float(as_type<half>(ushort(ushort(code[2*dim]) | (ushort(code[2*dim+1]) << 8))))
                         : ranges[dim] + ((float(code[dim]) + 0.5f) / 255.0f) * ranges[d + dim];
                     float q = queries[ulong(qi) * d + dim];
                     // L2 follows the CPU residual-query formula; IP adds the
                     // coarse dot product after accumulating decoded residuals.
-                    if (p[6] && l2) q -= centroids[ulong(list) * d + dim];
+                    if (ivfsq_residual && l2) q -= centroids[ulong(list) * d + dim];
                     float delta = q - decoded;
                     score += l2 ? delta * delta : q * decoded;
                 }
-                if (p[6] && !l2)
+                }
+                if (ivfsq_residual && !l2)
                     score += coarseScores[ulong(qi)*nprobe+probe];
                 // Match the CPU heap's neutral-value comparisons: NaN and
                 // metric-worst overflow never enter selection. IP +Inf is a
@@ -2781,3 +2840,105 @@ kernel void ivfsq_merge_parts(
         outIds[outBase+i] = i < count ? ids[i] : -1;
     }
 }
+
+// Exact coarse selection for a supported float32 flat quantizer. Reuse the
+// same admission, tie ordering and incremental merge as SQ scanning, without
+// a distance matrix or a second command submission.
+template <uint Capacity>
+kernel void ivfsq_flat_coarse(
+    device const float* queries [[buffer(0)]],
+    device const float* centroids [[buffer(1)]],
+    device float* scores [[buffer(2)]],
+    device int* assignments [[buffer(3)]],
+    constant uint* p [[buffer(4)]],
+    uint qi [[threadgroup_position_in_grid]],
+    uint tid [[thread_position_in_threadgroup]]) {
+    constexpr uint ivfsq_capacity = Capacity;
+    constexpr uint ivfsq_batch = 512;
+    uint d=ivfsq_dimension ? ivfsq_dimension : p[1], nlist=p[2], k=p[3];
+    float sentinel=ivfsq_l2 ? MAXFLOAT : -MAXFLOAT;
+    threadgroup float bestDist[ivfsq_capacity], newDist[ivfsq_batch];
+    threadgroup long bestIds[ivfsq_capacity], newIds[ivfsq_batch];
+    threadgroup atomic_uint accepted;
+    for(uint i=tid;i<k;i+=256) { bestDist[i]=sentinel;bestIds[i]=-1; }
+    if(tid==0) atomic_store_explicit(&accepted,0u,memory_order_relaxed);
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    for(ulong base=0;base<nlist;base+=ivfsq_batch) {
+        uint count=uint(min(ulong(ivfsq_batch),ulong(nlist)-base));
+        for(uint i=tid;i<count;i+=256) {
+            ulong list=base+i;
+            float score=0;
+            if(d%4==0) {
+                float4 sums=0;
+                for(uint dim=0;dim<d;dim+=4) {
+                    float4 q=reinterpret_cast<device const float4*>(queries+ulong(qi)*d)[dim/4];
+                    float4 c=reinterpret_cast<device const float4*>(centroids+list*d)[dim/4];
+                    float4 delta=q-c;
+                    sums+=ivfsq_l2 ? delta*delta : q*c;
+                }
+                score=(sums.x+sums.y)+(sums.z+sums.w);
+            } else {
+                for(uint dim=0;dim<d;++dim) {
+                    float q=queries[ulong(qi)*d+dim],c=centroids[list*d+dim];
+                    float delta=q-c;
+                    score+=ivfsq_l2 ? delta*delta : q*c;
+                }
+            }
+            bool admitted=ivfsq_l2 ? score<MAXFLOAT : score>-MAXFLOAT;
+            if(admitted && ivfsq_before(score,long(list),bestDist[k-1],bestIds[k-1],ivfsq_l2)) {
+                uint slot=atomic_fetch_add_explicit(&accepted,1u,memory_order_relaxed);
+                newDist[slot]=score;newIds[slot]=long(list);
+            }
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+        uint added=atomic_load_explicit(&accepted,memory_order_relaxed);
+        ivfsq_merge_new(bestDist,bestIds,newDist,newIds,k,added,tid,ivfsq_l2);
+        if(tid==0) atomic_store_explicit(&accepted,0u,memory_order_relaxed);
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+    }
+    for(uint i=tid;i<k;i+=256) {
+        scores[ulong(qi)*k+i]=bestDist[i];
+        assignments[ulong(qi)*k+i]=int(bestIds[i]);
+    }
+}
+
+// Explicit entry points keep array bounds compile-time constants.
+#define IVFSQ_INSTANTIATE_SCAN(C) \
+    template [[host_name("ivfsq_scan_" #C)]] kernel void ivfsq_scan<C>( \
+    device const float* queries [[buffer(0)]], \
+    device const uchar* codes [[buffer(1)]], \
+    device const long* ids [[buffer(2)]], \
+    device const uint* offsets [[buffer(3)]], \
+    device const uint* lengths [[buffer(4)]], \
+    device const int* assignments [[buffer(5)]], \
+    device const float* centroids [[buffer(6)]], \
+    device const float* ranges [[buffer(7)]], \
+    device float* distances [[buffer(8)]], \
+    device long* labels [[buffer(9)]], \
+    device const float* coarseScores [[buffer(10)]], \
+    constant uint* p [[buffer(11)]], \
+    uint3 group [[threadgroup_position_in_grid]], \
+    uint tid [[thread_index_in_threadgroup]]);
+IVFSQ_INSTANTIATE_SCAN(16)
+IVFSQ_INSTANTIATE_SCAN(32)
+IVFSQ_INSTANTIATE_SCAN(64)
+IVFSQ_INSTANTIATE_SCAN(128)
+IVFSQ_INSTANTIATE_SCAN(256)
+IVFSQ_INSTANTIATE_SCAN(512)
+#undef IVFSQ_INSTANTIATE_SCAN
+#define IVFSQ_INSTANTIATE_COARSE(C) \
+    template [[host_name("ivfsq_flat_coarse_" #C)]] kernel void ivfsq_flat_coarse<C>( \
+    device const float* queries [[buffer(0)]], \
+    device const float* centroids [[buffer(1)]], \
+    device float* scores [[buffer(2)]], \
+    device int* assignments [[buffer(3)]], \
+    constant uint* p [[buffer(4)]], \
+    uint qi [[threadgroup_position_in_grid]], \
+    uint tid [[thread_position_in_threadgroup]]);
+IVFSQ_INSTANTIATE_COARSE(16)
+IVFSQ_INSTANTIATE_COARSE(32)
+IVFSQ_INSTANTIATE_COARSE(64)
+IVFSQ_INSTANTIATE_COARSE(128)
+IVFSQ_INSTANTIATE_COARSE(256)
+IVFSQ_INSTANTIATE_COARSE(512)
+#undef IVFSQ_INSTANTIATE_COARSE

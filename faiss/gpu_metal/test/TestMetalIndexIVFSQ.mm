@@ -56,7 +56,7 @@ class TestMetalIndexIVFSQ : public ::testing::Test {
 // and sorts all candidates by score and final 64-bit label.
 TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
     for (auto type : {ScalarQuantizer::QT_8bit, ScalarQuantizer::QT_fp16})
-        for (int d : {1, 7, 33, 513})
+        for (int d : {1, 7, 33, 128, 512, 513})
             for (bool l2 : {false, true})
                 for (bool residual : {false, true}) {
                     const int nq = 2, probes = 4, lists = 3;
@@ -128,7 +128,7 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                         auto ids = buffer(dev, id.size() * 8, id.data());
                         auto off = buffer(dev, sizeof(offsets), offsets);
                         auto len = buffer(dev, sizeof(lengths), lengths);
-                        for (uint32_t k : {1, 4, 33, 512}) {
+                        for (uint32_t k : {1, 16, 17, 32, 33, 64, 65, 128, 129, 256, 257, 512}) {
                             auto outD = buffer(dev, nq * k * 4),
                                  outI = buffer(dev, nq * k * 8);
                             uint32_t p[] = {
@@ -451,67 +451,93 @@ TEST_F(TestMetalIndexIVFSQ, NonFiniteScoresFollowCpuAdmission) {
     std::vector<float> x = {
             100000, 1, 2, 3, -100000, std::numeric_limits<float>::quiet_NaN()};
     std::vector<float> queries = {0, 1, -1, std::numeric_limits<float>::max()};
-    ScalarQuantizer sq(1, ScalarQuantizer::QT_fp16);
-    std::vector<uint8_t> codes(x.size() * sq.code_size);
-    sq.compute_codes(x.data(), codes.data(), x.size());
-    std::vector<float> decoded(x.size());
-    sq.decode(codes.data(), decoded.data(), x.size());
-    auto dev = res->getDevice();
-    std::vector<idx_t> ids(x.size());
-    for (size_t j = 0; j < ids.size(); ++j)
-        ids[j] = (idx_t(1) << 42) + j;
-    uint32_t offset = 0, length = x.size();
-    std::vector<int32_t> assignment(queries.size(), 0);
-    auto qb = buffer(dev, queries.size() * 4, queries.data());
-    auto cb = buffer(dev, codes.size(), codes.data());
-    auto ib = buffer(dev, ids.size() * 8, ids.data());
-    auto ob = buffer(dev, 4, &offset), lb = buffer(dev, 4, &length);
-    auto ab = buffer(dev, assignment.size() * 4, assignment.data());
-    auto dummy = buffer(dev, queries.size() * 4);
-    for (bool l2 : {false, true}) {
-        uint32_t k = x.size() + 1;
-        auto distances = buffer(dev, queries.size() * k * 4),
-             labels = buffer(dev, queries.size() * k * 8);
-        uint32_t p[] = {uint32_t(queries.size()), 1, k, 1, 1, 1, 0, l2, 2};
-        runMetalIVFSQScan(
-                dev,
-                res->getCommandQueue(),
-                qb,
-                cb,
-                ib,
-                ob,
-                lb,
-                ab,
-                dummy,
-                dummy,
-                distances,
-                labels,
-                dummy,
-                p);
-        for (size_t qi = 0; qi < queries.size(); ++qi) {
-            std::vector<std::pair<float, idx_t>> expected;
-            float worst = l2 ? std::numeric_limits<float>::max()
-                             : -std::numeric_limits<float>::max();
-            for (size_t j = 0; j < x.size(); ++j) {
-                float delta = queries[qi] - decoded[j];
-                float score = l2 ? delta * delta : queries[qi] * decoded[j];
-                if (l2 ? score < worst : score > worst)
-                    expected.emplace_back(score, ids[j]);
+    for (uint32_t dim : {1, 128, 512}) {
+        std::vector<float> expanded(x.size() * dim, 0),
+                expandedQueries(queries.size() * dim, 0);
+        for (size_t i = 0; i < x.size(); ++i)
+            expanded[i * dim] = x[i];
+        for (size_t i = 0; i < queries.size(); ++i)
+            expandedQueries[i * dim] = queries[i];
+        ScalarQuantizer sq(dim, ScalarQuantizer::QT_fp16);
+        std::vector<uint8_t> codes(x.size() * sq.code_size);
+        sq.compute_codes(expanded.data(), codes.data(), x.size());
+        std::vector<float> decoded(x.size() * dim);
+        sq.decode(codes.data(), decoded.data(), x.size());
+        auto dev = res->getDevice();
+        std::vector<idx_t> ids(x.size());
+        for (size_t j = 0; j < ids.size(); ++j)
+            ids[j] = (idx_t(1) << 42) + j;
+        uint32_t offset = 0, length = x.size();
+        std::vector<int32_t> assignment(queries.size(), 0);
+        auto qb =
+                buffer(dev, expandedQueries.size() * 4, expandedQueries.data());
+        auto cb = buffer(dev, codes.size(), codes.data());
+        auto ib = buffer(dev, ids.size() * 8, ids.data());
+        auto ob = buffer(dev, 4, &offset), lb = buffer(dev, 4, &length);
+        auto ab = buffer(dev, assignment.size() * 4, assignment.data());
+        std::vector<float> zeros(std::max(size_t(dim), queries.size()), 0);
+        auto dummy = buffer(dev, zeros.size() * 4, zeros.data());
+        for (bool l2 : {false, true})
+            for (bool residual : {false, true}) {
+                uint32_t k = x.size() + 1;
+                auto distances = buffer(dev, queries.size() * k * 4),
+                     labels = buffer(dev, queries.size() * k * 8);
+                uint32_t p[] = {
+                        uint32_t(queries.size()),
+                        dim,
+                        k,
+                        1,
+                        1,
+                        1,
+                        residual,
+                        l2,
+                        uint32_t(sq.code_size)};
+                runMetalIVFSQScan(
+                        dev,
+                        res->getCommandQueue(),
+                        qb,
+                        cb,
+                        ib,
+                        ob,
+                        lb,
+                        ab,
+                        dummy,
+                        dummy,
+                        distances,
+                        labels,
+                        dummy,
+                        p);
+                for (size_t qi = 0; qi < queries.size(); ++qi) {
+                    std::vector<std::pair<float, idx_t>> expected;
+                    float worst = l2 ? std::numeric_limits<float>::max()
+                                     : -std::numeric_limits<float>::max();
+                    for (size_t j = 0; j < x.size(); ++j) {
+                        float delta = queries[qi] - decoded[j * dim];
+                        float score = l2 ? delta * delta
+                                         : queries[qi] * decoded[j * dim];
+                        if (l2 ? score < worst : score > worst)
+                            expected.emplace_back(score, ids[j]);
+                    }
+                    std::sort(
+                            expected.begin(),
+                            expected.end(),
+                            [=](auto a, auto b) {
+                                return a.first == b.first
+                                        ? a.second < b.second
+                                        : (l2 ? a.first < b.first
+                                              : a.first > b.first);
+                            });
+                    for (size_t j = 0; j < k; ++j) {
+                        ASSERT_EQ(
+                                ((idx_t*)labels.contents)[qi * k + j],
+                                j < expected.size() ? expected[j].second : -1);
+                        ASSERT_EQ(
+                                ((float*)distances.contents)[qi * k + j],
+                                j < expected.size() ? expected[j].first
+                                                    : worst);
+                    }
+                }
             }
-            std::sort(expected.begin(), expected.end(), [=](auto a, auto b) {
-                return a.first == b.first
-                        ? a.second < b.second
-                        : (l2 ? a.first < b.first : a.first > b.first);
-            });
-            for (size_t j = 0; j < k; ++j) {
-                ASSERT_EQ(
-                        ((idx_t*)labels.contents)[qi * k + j],
-                        j < expected.size() ? expected[j].second : -1);
-                ASSERT_EQ(
-                        ((float*)distances.contents)[qi * k + j],
-                        j < expected.size() ? expected[j].first : worst);
-            }
-        }
     }
     // The public index must take the GPU path for the original reproduction.
     for (auto metric : {METRIC_L2, METRIC_INNER_PRODUCT}) {
@@ -777,4 +803,142 @@ TEST_F(TestMetalIndexIVFSQ, ParallelChunksAndManyProbeMergeRounds) {
     ASSERT_FALSE(makeMetalIVFSQScanPlan(
             UINT32_MAX, UINT32_MAX, 512, UINT32_MAX, SIZE_MAX, plan));
     ASSERT_FALSE(makeMetalIVFSQScanPlan(1, 2, 512, 4096, 64, plan));
+}
+
+TEST_F(TestMetalIndexIVFSQ, FlatCoarseRunsInScanCommand) {
+    for (int dim : {7, 128, 512})
+        for (bool coarseL2 : {false, true})
+            for (bool residual : {false, true}) {
+                constexpr int lists = 128, nq = 3, k = 10;
+                std::vector<float> centroids(lists * dim, 0.f),
+                        q(nq * dim, 0.f);
+                for (int i = 0; i < lists; ++i)
+                    centroids[i * dim] = float(i + 1);
+                q[0] = -1.25f;
+                q[dim] = 17.25f;
+                q[2 * dim] = 126.75f;
+                IndexFlat coarse(
+                        dim, coarseL2 ? METRIC_L2 : METRIC_INNER_PRODUCT);
+                coarse.add(lists, centroids.data());
+                // Exercise a coarse metric different from the IVF metric too.
+                IndexIVFScalarQuantizer cpu(
+                        &coarse,
+                        dim,
+                        lists,
+                        ScalarQuantizer::QT_fp16,
+                        METRIC_INNER_PRODUCT,
+                        residual);
+                cpu.is_trained = true;
+                cpu.add(lists, centroids.data());
+                MetalIndexIVFScalarQuantizer gpu(res, &cpu);
+                for (int probes : {1, 8, 128}) {
+                    cpu.nprobe = probes;
+                    gpu.setNumProbes(probes);
+                    std::vector<float> expected(nq * k), actual(nq * k);
+                    std::vector<idx_t> ei(nq * k), ai(nq * k);
+                    cpu.search(nq, q.data(), k, expected.data(), ei.data());
+                    size_t before = gpu.gpuCoarseSearchCount();
+                    gpu.search(nq, q.data(), k, actual.data(), ai.data());
+                    ASSERT_EQ(gpu.gpuCoarseSearchCount(), before + 1);
+                    for (int i = 0; i < nq * k; ++i) {
+                        ASSERT_EQ(ai[i], ei[i]);
+                        ASSERT_FLOAT_EQ(actual[i], expected[i]);
+                    }
+                }
+                // Wrapped quantizers retain their own CPU search semantics.
+                IndexPreTransform wrapped(&coarse);
+                cpu.quantizer = &wrapped;
+                MetalIndexIVFScalarQuantizer wrappedGpu(res, &cpu);
+                std::vector<float> scores(nq * k);
+                std::vector<idx_t> labels(nq * k);
+                wrappedGpu.search(
+                        nq, q.data(), k, scores.data(), labels.data());
+                ASSERT_EQ(wrappedGpu.gpuSearchCount(), 1);
+                ASSERT_EQ(wrappedGpu.gpuCoarseSearchCount(), 0);
+                cpu.quantizer = &coarse;
+            }
+}
+
+TEST_F(TestMetalIndexIVFSQ, DirectFlatCoarseTiesAndNonFiniteAdmission) {
+    constexpr uint32_t lists = 1025, nq = 3, k = 10;
+    std::vector<float> c(lists);
+    std::vector<uint32_t> offsets(lists), lengths(lists, 1);
+    std::vector<idx_t> ids(lists);
+    for (uint32_t i = 0; i < lists; ++i) {
+        c[i] = float(i % 31);
+        offsets[i] = i;
+        ids[i] = i;
+    }
+    c[0] = std::numeric_limits<float>::quiet_NaN();
+    c[1] = std::numeric_limits<float>::infinity();
+    c[2] = -std::numeric_limits<float>::infinity();
+    c[3] = 1e30f;
+    float q[] = {0, 1e20f, -1e20f};
+    std::vector<uint8_t> code(lists * 2, 0);
+    auto dev = res->getDevice();
+    auto qb = buffer(dev, sizeof(q), q),
+         cb = buffer(dev, code.size(), code.data());
+    auto ib = buffer(dev, ids.size() * 8, ids.data());
+    auto ob = buffer(dev, lists * 4, offsets.data()),
+         lb = buffer(dev, lists * 4, lengths.data());
+    auto centroids = buffer(dev, lists * 4, c.data()), dummy = buffer(dev, 8);
+    auto db = buffer(dev, nq * k * 4), labels = buffer(dev, nq * k * 8);
+    for (bool l2 : {false, true}) {
+        IndexFlat coarse(1, l2 ? METRIC_L2 : METRIC_INNER_PRODUCT);
+        coarse.add(lists, c.data());
+        for (uint32_t probes : {1, 16, 17, 32, 33, 64, 65, 128, 129, 256, 257, 512}) {
+            SCOPED_TRACE(
+                    ::testing::Message()
+                    << "l2=" << l2 << " probes=" << probes);
+            std::vector<float> expected(nq * probes);
+            std::vector<idx_t> expectedIds(nq * probes);
+            coarse.search(nq, q, probes, expected.data(), expectedIds.data());
+            auto ab = buffer(dev, nq * probes * 4),
+                 scores = buffer(dev, nq * probes * 4);
+            uint32_t p[] = {nq, 1, k, probes, lists, 1, 0, 1, 2};
+            runMetalIVFSQScan(
+                    dev,
+                    res->getCommandQueue(),
+                    qb,
+                    cb,
+                    ib,
+                    ob,
+                    lb,
+                    ab,
+                    centroids,
+                    dummy,
+                    db,
+                    labels,
+                    scores,
+                    p,
+                    nullptr,
+                    true,
+                    l2);
+            // CPU flat selection does not promise a list-ID order for ties.
+            // Compare scores with CPU and IDs with an independent ordered
+            // oracle.
+            for (uint32_t qi = 0; qi < nq; ++qi) {
+                std::vector<std::pair<float, idx_t>> ordered;
+                for (uint32_t li = 0; li < lists; ++li) {
+                    float delta = q[qi] - c[li];
+                    float score = l2 ? delta * delta : q[qi] * c[li];
+                    if (l2 ? score < std::numeric_limits<float>::max()
+                           : score > -std::numeric_limits<float>::max())
+                        ordered.emplace_back(score, li);
+                }
+                std::sort(ordered.begin(), ordered.end(), [=](auto a, auto b) {
+                    return a.first == b.first
+                            ? a.second < b.second
+                            : (l2 ? a.first < b.first : a.first > b.first);
+                });
+                for (uint32_t j = 0; j < probes; ++j) {
+                    size_t i = qi * probes + j;
+                    ASSERT_EQ(((float*)scores.contents)[i], expected[i]);
+                    ASSERT_EQ(
+                            ((int32_t*)ab.contents)[i],
+                            j < ordered.size() ? ordered[j].second : -1);
+                }
+            }
+        }
+    }
 }

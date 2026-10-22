@@ -39,9 +39,34 @@ typedef id Lookup(id, SEL, NSString*) __attribute__((ns_returns_retained));
 id lookup(id self, SEL sel, NSString* name)
         __attribute__((ns_returns_retained));
 id lookup(id self, SEL sel, NSString* name) {
-    if ([name isEqualToString:rejectedFunction])
+    if (([name isEqualToString:rejectedFunction] ||
+        [name hasPrefix:[rejectedFunction stringByAppendingString:@"_"]]))
         return nil;
     return reinterpret_cast<Lookup*>(original)(self, sel, name);
+}
+typedef id LookupSpecialized(
+        id,
+        SEL,
+        NSString*,
+        MTLFunctionConstantValues*,
+        NSError**) __attribute__((ns_returns_retained));
+id lookupSpecialized(
+        id self,
+        SEL sel,
+        NSString* name,
+        MTLFunctionConstantValues* values,
+        NSError** error) __attribute__((ns_returns_retained));
+id lookupSpecialized(
+        id self,
+        SEL sel,
+        NSString* name,
+        MTLFunctionConstantValues* values,
+        NSError** error) {
+    if (([name isEqualToString:rejectedFunction] ||
+        [name hasPrefix:[rejectedFunction stringByAppendingString:@"_"]]))
+        return nil;
+    return reinterpret_cast<LookupSpecialized*>(original)(
+            self, sel, name, values, error);
 }
 struct Restore {
     Method method;
@@ -106,7 +131,11 @@ int main(int argc, char** argv) {
     IndexIVFScalarQuantizer cpu(
             &coarse,
             7,
-            mode == "scan-scratch" ? 8 : (mode == "merge-pipeline" ? 2 : 1),
+            mode == "coarse-pipeline"
+                    ? 128
+                    : (mode == "scan-scratch"
+                               ? 8
+                               : (mode == "merge-pipeline" ? 2 : 1)),
             ScalarQuantizer::QT_fp16);
     std::vector<float> x(1024 * 7);
     for (size_t j = 0; j < x.size(); ++j)
@@ -119,7 +148,10 @@ int main(int argc, char** argv) {
     const int k = mode == "scan-scratch" ? 512 : 13;
     std::vector<float> d(1024 * k, -123);
     std::vector<idx_t> i(1024 * k, -123);
-    if (mode == "pipeline" || mode == "merge-pipeline") {
+    if (mode == "pipeline" || mode == "merge-pipeline" ||
+        mode == "coarse-pipeline") {
+        if (mode == "coarse-pipeline")
+            rejectedFunction = @"ivfsq_flat_coarse";
         if (mode == "merge-pipeline")
             rejectedFunction = @"ivfsq_merge_parts";
         NSError* error = nil;
@@ -128,9 +160,15 @@ int main(int argc, char** argv) {
         if (!library)
             return 2;
         Method method = class_getInstanceMethod(
-                [library class], @selector(newFunctionWithName:));
-        original =
-                method_setImplementation(method, reinterpret_cast<IMP>(lookup));
+                [library class],
+                mode == "merge-pipeline"
+                        ? @selector(newFunctionWithName:)
+                        : @selector(newFunctionWithName:constantValues:error:));
+        original = method_setImplementation(
+                method,
+                mode == "merge-pipeline"
+                        ? reinterpret_cast<IMP>(lookup)
+                        : reinterpret_cast<IMP>(lookupSpecialized));
         {
             Restore restore{method};
             if (!throws([&] {
@@ -139,7 +177,11 @@ int main(int argc, char** argv) {
                 return 3;
         }
         gpu.search(1, x.data(), k, d.data(), i.data());
-        return gpu.gpuSearchCount() == 1 ? 0 : 4;
+        return gpu.gpuSearchCount() == 1 &&
+                        (mode != "coarse-pipeline" ||
+                         gpu.gpuCoarseSearchCount() == 1)
+                ? 0
+                : 4;
     }
     gpu.search(1, x.data(), k, d.data(), i.data());
     Method method = class_getInstanceMethod(

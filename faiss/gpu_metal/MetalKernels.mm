@@ -28,7 +28,7 @@ void MetalKernels::encodeIVFSQScan(
         const uint32_t* params,
         uint32_t chunks,
         uint32_t chunkSize) {
-    auto state = pipeline("ivfsq_scan");
+    auto state = ivfsqPipeline(params);
     FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= 256);
     FAISS_THROW_IF_NOT(
             state.staticThreadgroupMemoryLength <=
@@ -159,6 +159,73 @@ id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
         return nil;
     cache_[key] = ps;
     return ps;
+}
+
+// Retain cached specialized states with the same lifetime as other pipelines.
+id<MTLComputePipelineState> MetalKernels::ivfsqPipeline(
+        const uint32_t* params, const char* name) {
+    uint32_t dim = params[1] == 128 || params[1] == 512 ? params[1] : 0;
+    bool fp16 = params[5] != 0, l2 = params[7] != 0, residual = params[6] != 0;
+    uint32_t capacity = 16;
+    while (capacity < params[2])
+        capacity *= 2;
+    // Preserve the throughput-oriented scan for larger batches. Smaller
+    // retained buffers benefit latency, but can change compiler occupancy.
+    if (params[0] >= 32 && std::string(name) == "ivfsq_scan")
+        capacity = 512;
+    std::string key = std::string(name) + ":" + std::to_string(dim) + ":" +
+            std::to_string(fp16) + std::to_string(l2) +
+            std::to_string(residual) + ":" + std::to_string(capacity);
+    auto found = cache_.find(key);
+    if (found != cache_.end())
+        return found->second;
+    auto constants = [[MTLFunctionConstantValues alloc] init];
+    FAISS_THROW_IF_NOT(constants);
+    [constants setConstantValue:&dim type:MTLDataTypeUInt atIndex:0];
+    [constants setConstantValue:&fp16 type:MTLDataTypeBool atIndex:1];
+    [constants setConstantValue:&l2 type:MTLDataTypeBool atIndex:2];
+    [constants setConstantValue:&residual type:MTLDataTypeBool atIndex:3];
+    NSError* error = nil;
+    auto entry = std::string(name) + "_" + std::to_string(capacity);
+    auto function = [library_ newFunctionWithName:@(entry.c_str())
+                                   constantValues:constants
+                                            error:&error];
+    [constants release];
+    if(!function) return nil;
+    auto state=[device_ newComputePipelineStateWithFunction:function error:&error];
+    [function release];
+    if(!state) return nil;
+    try { cache_.emplace(key,state); }
+    catch(...) { [state release]; throw; }
+    return state;
+}
+
+void MetalKernels::encodeIVFSQCoarse(
+        id<MTLComputeCommandEncoder> encoder,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> centroids,
+        id<MTLBuffer> scores,
+        id<MTLBuffer> assignments,
+        uint32_t nq,
+        uint32_t d,
+        uint32_t nlist,
+        uint32_t probes,
+        bool isL2) {
+    uint32_t specialization[] = {nq, d, probes, 0, 0, 0, 0, uint32_t(isL2), 0};
+    auto state = ivfsqPipeline(specialization, "ivfsq_flat_coarse");
+    FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= 256);
+    FAISS_THROW_IF_NOT(
+            state.staticThreadgroupMemoryLength <=
+            device_.maxThreadgroupMemoryLength);
+    [encoder setComputePipelineState:state];
+    [encoder setBuffer:queries offset:0 atIndex:0];
+    [encoder setBuffer:centroids offset:0 atIndex:1];
+    [encoder setBuffer:scores offset:0 atIndex:2];
+    [encoder setBuffer:assignments offset:0 atIndex:3];
+    uint32_t args[] = {nq, d, nlist, probes};
+    [encoder setBytes:args length:sizeof(args) atIndex:4];
+    [encoder dispatchThreadgroups:MTLSizeMake(nq, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
 }
 
 void MetalKernels::encodeHammingDistanceTopK(
