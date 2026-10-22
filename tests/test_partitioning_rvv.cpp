@@ -47,13 +47,14 @@ constexpr SIMDLevel kRVV = SIMDLevel::RISCV_RVV;
 // histogram.
 // ---------------------------------------------------------------------------
 
-template <class C, typename IdT>
+template <class C>
 void expect_partition_property(
         size_t n,
         size_t q_min,
         size_t q_max,
         uint32_t seed,
         uint16_t max_value = 1023) {
+    using IdT = typename C::TI;
     faiss::AlignedTable<uint16_t> vals(n);
     std::vector<IdT> ids(n);
     std::mt19937 rng(seed);

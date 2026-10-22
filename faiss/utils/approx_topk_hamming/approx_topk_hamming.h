@@ -33,13 +33,15 @@ namespace faiss {
 // themselves.
 
 // Map a dispatch level to one with a Hamming top-k implementation.
-// AVX512/SVE fold down because there are no 512-bit bucket kernels; RVV is
-// kept because its kernel is native (approx_topk_hamming-rvv.h) and does not
-// depend on the 256-bit simdlib layer.
+// AVX512/AVX512_VPOPCNT/AVX512_SPR and SVE fold down because there are no
+// 512-bit bucket kernels (simd8uint32_tpl only exists for AVX2/NEON/NONE);
+// RVV is kept because its kernel is native (approx_topk_hamming-rvv.h) and
+// does not depend on the 256-bit simdlib layer.
 template <SIMDLevel SL>
 struct approx_topk_hamming_level_selector {
     static constexpr SIMDLevel value =
-            (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
+            (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_VPOPCNT ||
+             SL == SIMDLevel::AVX512_SPR)
             ? SIMDLevel::AVX2
             : (SL == SIMDLevel::ARM_SVE ? SIMDLevel::ARM_NEON : SL);
 };
