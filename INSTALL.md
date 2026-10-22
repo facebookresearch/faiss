@@ -269,6 +269,175 @@ $ ./build/demos/demo_ivfpq_indexing_gpu
 This produces the GPU code equivalent to the CPU `demo_ivfpq_indexing`. It also
 shows how to translate indexes from/to a GPU.
 
+### CAGRA datasets and HNSW interop
+
+With `FAISS_ENABLE_CUVS=ON`, CAGRA builds require a caller-owned
+`faiss::gpu::Dataset`. The index owns its graph and borrows vector storage.
+`viewHost`, `viewDevice`, and `viewDevicePadded` borrow an existing allocation;
+`makeDevicePadded` delegates allocation and padding to cuVS. Like cuVS, it rejects
+device/managed input whose row stride already matches the required padding;
+use a view for that storage. Preparation runs asynchronously on the resource's
+stream, so keep the source allocation alive and unchanged until copying finishes.
+The returned Dataset controls the new allocation's lifetime. Calling
+`dataset.view()` creates another non-owning descriptor of the same storage
+without extending its lifetime.
+Public signatures take pointers, extents, strides, and Faiss types, without
+requiring RAFT or cuVS types.
+
+For a packed host Float32 array `xb` with `n` rows and dimension `d`, build a graph
+and export independent CPU HNSW storage as follows:
+
+```cpp
+#include <faiss/IndexHNSW.h>
+#include <faiss/gpu/Dataset.h>
+#include <faiss/gpu/GpuIndexCagra.h>
+#include <faiss/gpu/StandardGpuResources.h>
+
+faiss::gpu::StandardGpuResources resources;
+auto source = faiss::gpu::Dataset::viewHost(
+        xb, n, d, faiss::NumericType::Float32, d);
+faiss::gpu::GpuIndexCagra graphOnly(&resources, d);
+graphOnly.train(source); // Host data builds a graph; isSearchReady() is false.
+
+faiss::IndexHNSWCagra cpu(d, 32);
+cpu.base_level_only = true;
+graphOnly.copyTo(&cpu); // CPU index now owns its graph and packed vectors.
+
+faiss::gpu::GpuIndexCagra imported(&resources, d);
+imported.copyFrom(&cpu); // Imports graph and metadata; isSearchReady() is false.
+```
+
+The CPU index remains independent of the original Dataset after `copyTo`.
+`copyFrom(cpuIndex, Dataset* dataset = nullptr)` imports only the graph and
+metadata when the optional Dataset is omitted. It retains no CPU vector storage,
+and the CPU index can be destroyed after the call. Graph retrieval remains
+available; search and full CPU HNSW export with `copyTo` require attached vectors.
+
+To import a searchable index, wrap a preallocated writable device buffer with
+the regular Dataset API and pass its address. For this Float32 example,
+`deviceBuffer` must point to at least `n * stride` floats on device 0, with a
+16-byte-aligned base address:
+
+```cpp
+const faiss::idx_t stride = ((static_cast<faiss::idx_t>(d) + 3) / 4) * 4;
+auto destination = faiss::gpu::Dataset::viewDevicePadded(
+        deviceBuffer, n, d, faiss::NumericType::Float32, stride, 0);
+faiss::gpu::GpuIndexCagra searchable(&resources, d);
+searchable.copyFrom(&cpu, &destination); // Fills the buffer; isSearchReady() is true.
+```
+
+The supplied Dataset must have the CPU index's row count, dimension, and dtype,
+and be CAGRA-compatible on the GPU index's device. A compatible standard-layout
+device view is also accepted. `copyFrom` copies the CPU vectors into that
+allocation and zeroes its padding; previous contents need not be initialized.
+The upload completes before return, so the CPU index can then be destroyed.
+Ownership stays with the caller, and the GPU index borrows the allocation for
+search. `isSearchReady()` derives readiness from the graph and attached Dataset;
+there is no separate readiness setting. Keep the allocation alive and unchanged
+through index use and queued GPU work.
+`GpuIndexBinaryCagra::copyFrom` follows the same optional-output contract with
+`UInt8` and dimensions measured in bytes.
+
+A standard device view is searchable without a vector copy when its base address
+is 16-byte aligned and its row stride equals the dimension rounded up to a
+16-byte row width. For example, packed Float32 vectors of dimension 12 need no
+extra padding. Any padding elements must already be zero. Otherwise, build the
+graph from a standard Dataset and explicitly attach prepared storage:
+
+```cpp
+auto padded = faiss::gpu::Dataset::makeDevicePadded(&resources, source, 0);
+graphOnly.updateDataset(padded);
+```
+
+`updateDataset` preserves the graph and borrows already-populated storage;
+it does not fill the allocation. The new storage must contain the same vectors
+in the same order, shape, and dtype. It checks metadata but cannot verify
+vector identity. It can also attach vectors after a graph-only `copyFrom`.
+Keep all borrowed allocations alive and unchanged through
+index use and queued GPU work; make data ready on the index resource's stream
+before use. Caller-supplied CUDA streams must also outlive GPU resources that
+cache cuVS allocations, even after reverting the default stream. `reset()` clears
+the borrowed binding and allows rebuilding. A moved owning Dataset retains the
+allocation and existing bindings. Dimensions and row
+strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
+to the index's bit dimension divided by eight.
+
+For preencoded BBQ vectors, populate `faiss::gpu::BBQQuantizer` with device
+pointers to the codes, centroid, and correction arrays, then call
+`Dataset::viewDeviceBBQ(quantizer, n, d, numericType, device)`; an optional final
+quantizer supplies the second layout for asymmetric distances. There is no public
+BBQ encoder in this API. Keep every buffer owner alive explicitly, including in
+Python: these raw pointers do not retain their allocations. Use
+`GpuIndexCagra` with NN-descent and dimensions divisible by 32. Training builds
+the graph and leaves `isSearchReady()` false. Call `updateDataset` with the
+corresponding dense device-padded vectors before search or CPU HNSW export;
+`makeDevicePadded` and `copyToHost` do not decode BBQ storage.
+
+Building a graph with `train` or `add` requires an explicit Dataset. Their
+inherited pointer overloads reject calls; use the Dataset
+overloads on `GpuIndexCagra` or `GpuIndexBinaryCagra`. Dataset ownership replaces
+`store_dataset`. Pointer APIs for other index families are unchanged. Dataset
+construction, build, attachment, and import are available in C++ and Python;
+there is no C Dataset binding. Existing CPU HNSW search and serialization remain
+available. Generic CPU-to-GPU cloners do not accept CAGRA: use its explicit
+`copyFrom` method instead.
+
+In Python, `Dataset.viewHost(array)` borrows a two-dimensional NumPy array and
+infers its shape, dtype, and row stride. It accepts `float32`, `float16`, `int8`,
+and `uint8`, with contiguous columns, without copying or converting the array.
+For example, binary CAGRA uses a `uint8` array with a dimension in bytes:
+
+```python
+import faiss
+import numpy as np
+
+xb = np.random.RandomState(7).randint(0, 256, (512, 19)).astype("uint8")
+resources = faiss.StandardGpuResources()
+source = faiss.Dataset.viewHost(xb)
+storage = faiss.Dataset.makeDevicePadded(resources, source, 0)
+resources.syncDefaultStreamCurrentDevice()  # xb must survive the async copy.
+
+config = faiss.GpuIndexCagraConfig()
+config.build_algo = faiss.graph_build_algo_NN_DESCENT
+config.graph_degree = 16
+config.intermediate_graph_degree = 32
+index = faiss.GpuIndexBinaryCagra(resources, xb.shape[1] * 8, config)
+index.train(storage)  # add(storage) also builds the entire graph.
+assert index.isSearchReady()
+distances, labels = index.search(xb[:8], 1)
+packed_copy = storage.copyToHost()  # An independent, ready NumPy array.
+
+cpu = faiss.IndexBinaryHNSWCagra()
+cpu.base_level_only = True
+index.copyTo(cpu)
+imported = faiss.GpuIndexBinaryCagra(resources, index.d, config)
+imported.copyFrom(cpu)  # Graph and metadata only; not search ready.
+imported.updateDataset(storage)  # Borrows these already-populated vectors.
+```
+
+Python retains references to keep borrowed storage alive: `viewHost(array)`
+retains the NumPy array, `view()` retains its source Dataset, and CAGRA retains
+the Dataset passed to `train`, `add`, `updateDataset`, or `copyFrom`.
+Deleting the user's Dataset variable therefore does not invalidate a search-ready
+index. Successful replacement, graph-only import, or `reset()` releases the index's
+previous Dataset reference; destroying the index also releases it. An owning
+Dataset frees its allocation when its last reference is released, including
+references from other indexes or views. C++ ownership and stream rules remain
+unchanged: preparation is asynchronous, so retain the source until its copy
+finishes. Raw-pointer views cannot retain an allocation owner; retain that owner
+explicitly. `copyToHost()` waits for device work and returns an independent,
+packed NumPy array with the original dtype. For Float16 or Int8 indexes, pass
+the matching search type:
+`index.search(xq, k, numeric_type=storage.getNumericType())`.
+
+Use `copyFrom(cpu)` or `copyFrom(cpu, None)` for graph-only import, and
+`copyFrom(cpu, destination)` to fill and attach existing device storage under
+the contract above. The raw `Dataset.viewDevice` and `Dataset.viewDevicePadded`
+argument order is `(data, numRows, dim, numericType, rowStride, device)`.
+Convert an integer device address with `faiss.cast_integer_to_void_ptr(address)`
+when passing `data`. Raw host-pointer and output operations remain available as
+`viewHost_c` and `copyToHost_c`.
+
 ### A real-life benchmark
 
 A longer example runs and evaluates Faiss on the SIFT1M dataset. To run it,

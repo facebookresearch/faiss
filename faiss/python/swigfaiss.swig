@@ -448,8 +448,10 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 %{
 
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
+#include <utility>
 
 %}
 #endif // FAISS_ENABLE_CUVS
@@ -802,6 +804,35 @@ typedef int cudaDataType_t;
 %constant int CUDA_R_16F = 2;
 %constant int CUDA_R_8I  = 3;
 %constant int CUDA_R_8U  = 8;
+// Dataset factories return move-only descriptors by value. Python owns the
+// returned descriptor; the Dataset itself determines ownership of its storage.
+%{
+// SWIG < 4.1 has a copy-only SwigValueWrapper. Dataset is move-only.
+#if SWIG_VERSION < 0x040100
+template <>
+class SwigValueWrapper<faiss::gpu::Dataset> {
+    std::unique_ptr<faiss::gpu::Dataset> value_;
+
+public:
+    SwigValueWrapper& operator=(faiss::gpu::Dataset&& value) {
+        value_.reset(new faiss::gpu::Dataset(std::move(value)));
+        return *this;
+    }
+    operator faiss::gpu::Dataset&&() const {
+        return std::move(*value_);
+    }
+};
+#endif
+%}
+%ignore faiss::gpu::Dataset::Dataset;
+%ignore faiss::gpu::Dataset::operator=;
+%feature("valuewrapper") faiss::gpu::Dataset;
+%typemap(out) faiss::gpu::Dataset {
+    $result = SWIG_NewPointerObj(
+        new faiss::gpu::Dataset(std::move($1)),
+        $descriptor(faiss::gpu::Dataset *), SWIG_POINTER_OWN);
+}
+%include  <faiss/gpu/Dataset.h>
 %include  <faiss/gpu/GpuIndexCagra.h>
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
