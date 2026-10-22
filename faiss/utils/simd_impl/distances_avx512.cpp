@@ -210,8 +210,12 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::AVX512>(
     switch (d) {
         DISPATCH(1)
         DISPATCH(2)
+        DISPATCH(3)
         DISPATCH(4)
+        DISPATCH(6)
         DISPATCH(8)
+        DISPATCH(12)
+        DISPATCH(16)
         default:
             return fvec_L2sqr_ny_transposed<SIMDLevel::NONE>(
                     dis, x, y, y_sqlen, d, d_offset, ny);
@@ -1024,6 +1028,11 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::AVX512>(
             &fvec_L2sqr_ny_nearest_D8<SIMDLevel::AVX512>);
 }
 
+// Internal linkage: the same template is compiled with other -m flags in
+// the other per-SIMD distances TU, and a shared symbol would let the linker
+// hand one level the other's code.
+namespace {
+
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
         float* /* distances_tmp_buffer */,
@@ -1136,6 +1145,8 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
 
     return current_min_index;
 }
+
+} // namespace
 
 template <>
 size_t fvec_L2sqr_ny_nearest_y_transposed<SIMDLevel::AVX512>(
