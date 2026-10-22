@@ -159,7 +159,8 @@ struct HammingComputer32_tpl<SIMDLevel::RISCV_RVV> {
 
     HammingComputer32_tpl() : qpat_valid(false) {}
 
-    HammingComputer32_tpl(const uint8_t* a8, int code_size) : qpat_valid(false) {
+    HammingComputer32_tpl(const uint8_t* a8, int code_size)
+            : qpat_valid(false) {
         set(a8, code_size);
     }
 
@@ -176,9 +177,8 @@ struct HammingComputer32_tpl<SIMDLevel::RISCV_RVV> {
 #if defined(__riscv_zvbb)
         // v = b ^ a; d = sum_i popcount(v_i)
         vuint64m2_t va = __riscv_vle64_v_u64m2(a, kWords);
-        vuint64m2_t vb =
-                __riscv_vle64_v_u64m2(reinterpret_cast<const uint64_t*>(b8),
-                                      kWords);
+        vuint64m2_t vb = __riscv_vle64_v_u64m2(
+                reinterpret_cast<const uint64_t*>(b8), kWords);
         vuint64m2_t vx = __riscv_vxor_vv_u64m2(vb, va, kWords);
         vuint64m1_t vs = __riscv_vredsum_vs_u64m2_u64m1(
                 __riscv_vcpop_v_v_u64m2(vx, kWords),
@@ -258,7 +258,9 @@ struct HammingComputer32_tpl<SIMDLevel::RISCV_RVV> {
                     vl);
             t = __riscv_vsrl_vx_u64m8(vx, 4, vl);
             vx = __riscv_vand_vx_u64m8(
-                    __riscv_vadd_vv_u64m8(vx, t, vl), 0x0F0F0F0F0F0F0F0FULL, vl);
+                    __riscv_vadd_vv_u64m8(vx, t, vl),
+                    0x0F0F0F0F0F0F0F0FULL,
+                    vl);
             vx = __riscv_vmul_vx_u64m8(vx, 0x0101010101010101ULL, vl);
             vx = __riscv_vsrl_vx_u64m8(vx, 56, vl);
 
