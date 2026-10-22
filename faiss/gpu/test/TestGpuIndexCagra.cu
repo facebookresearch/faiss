@@ -1658,8 +1658,7 @@ auto makeBBQQuantizer(
                 encoded[col] = maximum;
             } else {
                 for (int plane = 0; plane < bits; ++plane) {
-                    encoded[plane * (dim / 8) + col / 8] |=
-                            1 << (7 - col % 8);
+                    encoded[plane * (dim / 8) + col / 8] |= 1 << (7 - col % 8);
                 }
             }
         }
@@ -1676,7 +1675,8 @@ auto makeBBQQuantizer(
     upload(owner.codes, codes);
     upload(owner.lower_intervals, zeros);
     upload(owner.upper_intervals, ones);
-    upload(owner.additional_corrections, metric == faiss::METRIC_L2 ? norms : zeros);
+    upload(owner.additional_corrections,
+           metric == faiss::METRIC_L2 ? norms : zeros);
     upload(owner.quantized_component_sums, sums);
     upload(owner.centroid, centroid);
     upload(owner.dequant_delta, deltas);
@@ -1694,7 +1694,8 @@ faiss::gpu::BBQQuantizer describeBBQ(
     result.lowerIntervals = owner.lower_intervals.data_handle();
     result.upperIntervals = owner.upper_intervals.data_handle();
     result.additionalCorrections = owner.additional_corrections.data_handle();
-    result.quantizedComponentSums = owner.quantized_component_sums.data_handle();
+    result.quantizedComponentSums =
+            owner.quantized_component_sums.data_handle();
     result.centroid = owner.centroid.data_handle();
     result.dequantDelta = owner.dequant_delta.data_handle();
     result.dequantSumDelta = owner.dequant_sum_delta.data_handle();
@@ -1710,9 +1711,9 @@ void checkBBQDataset(
         faiss::gpu::BBQCodeLayout layout,
         faiss::MetricType metric,
         std::optional<faiss::gpu::BBQCodeLayout> second = std::nullopt) {
-    SCOPED_TRACE(::testing::Message()
-                 << "type=" << int(type) << " layout=" << int(layout)
-                 << " metric=" << int(metric));
+    SCOPED_TRACE(
+            ::testing::Message() << "type=" << int(type) << " layout="
+                                 << int(layout) << " metric=" << int(metric));
     constexpr int dim = 64, queries = 32, k = 10;
     faiss::gpu::DeviceScope scope(0);
     StandardGpuResources resources;
@@ -1774,8 +1775,13 @@ void checkBBQDataset(
     std::vector<float> distances(queries * k);
     std::vector<idx_t> labels(queries * k);
     EXPECT_THROW(
-            index.search_ex(queries, values.data(), type, k,
-                            distances.data(), labels.data()),
+            index.search_ex(
+                    queries,
+                    values.data(),
+                    type,
+                    k,
+                    distances.data(),
+                    labels.data()),
             faiss::FaissException);
     faiss::IndexHNSWCagra cpu;
     const auto originalDim = cpu.d;
@@ -1798,8 +1804,14 @@ void checkBBQDataset(
     faiss::gpu::SearchParametersCagra params;
     params.itopk_size = 128;
     for (auto* searched : {&index, &imported}) {
-        searched->search_ex(queries, values.data(), type, k,
-                            distances.data(), labels.data(), &params);
+        searched->search_ex(
+                queries,
+                values.data(),
+                type,
+                k,
+                distances.data(),
+                labels.data(),
+                &params);
         ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
         int matches = 0;
         for (int q = 0; q < queries; ++q) {
@@ -1809,24 +1821,29 @@ void checkBBQDataset(
                 for (int col = 0; col < dim; ++col) {
                     const float a = static_cast<float>(values[q * dim + col]);
                     const float b = static_cast<float>(values[row * dim + col]);
-                    score += metric == faiss::METRIC_L2 ? (a - b) * (a - b) : a * b;
+                    score += metric == faiss::METRIC_L2 ? (a - b) * (a - b)
+                                                        : a * b;
                 }
                 exact[row] = score;
             }
             auto ranked = exact;
             std::sort(ranked.begin(), ranked.end());
             const float threshold = metric == faiss::METRIC_L2
-                    ? ranked[k - 1] : ranked[kRows - k];
+                    ? ranked[k - 1]
+                    : ranked[kRows - k];
             for (int j = 0; j < k; ++j) {
                 const auto label = labels[q * k + j];
                 ASSERT_GE(label, 0);
                 ASSERT_LT(label, kRows);
                 EXPECT_NEAR(distances[q * k + j], exact[label], 1e-4);
                 matches += metric == faiss::METRIC_L2
-                        ? exact[label] <= threshold : exact[label] >= threshold;
+                        ? exact[label] <= threshold
+                        : exact[label] >= threshold;
                 EXPECT_EQ(
-                        std::count(labels.begin() + q * k,
-                                   labels.begin() + (q + 1) * k, label),
+                        std::count(
+                                labels.begin() + q * k,
+                                labels.begin() + (q + 1) * k,
+                                label),
                         1);
             }
         }
@@ -1837,8 +1854,10 @@ void checkBBQDataset(
     GpuIndexCagra unsupported(&resources, dim, metric, cfg);
     EXPECT_THROW(unsupported.train(moved), faiss::FaissException);
     GpuIndexCagra mismatched(
-            &resources, dim,
-            metric == faiss::METRIC_L2 ? faiss::METRIC_INNER_PRODUCT : faiss::METRIC_L2,
+            &resources,
+            dim,
+            metric == faiss::METRIC_L2 ? faiss::METRIC_INNER_PRODUCT
+                                       : faiss::METRIC_L2,
             config());
     EXPECT_THROW(mismatched.train(moved), faiss::FaissException);
 }
@@ -1846,16 +1865,29 @@ void checkBBQDataset(
 TEST(TestGpuIndexCagra, BBQLayoutsBuildGraphAndAttachDenseDataset) {
     using Layout = faiss::gpu::BBQCodeLayout;
     for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
-        for (auto layout : {Layout::Packed1Bit, Layout::Transposed2Bit,
-                            Layout::Packed4Bit, Layout::Packed7Bit, Layout::Packed8Bit}) {
+        for (auto layout :
+             {Layout::Packed1Bit,
+              Layout::Transposed2Bit,
+              Layout::Packed4Bit,
+              Layout::Packed7Bit,
+              Layout::Packed8Bit}) {
             checkBBQDataset<float>(NumericType::Float32, layout, metric);
         }
-        checkBBQDataset<float>(NumericType::Float32, Layout::Transposed4Bit,
-                               metric, Layout::Packed1Bit);
-        checkBBQDataset<half>(NumericType::Float16, Layout::Transposed4Bit,
-                              metric, Layout::Transposed2Bit);
-        checkBBQDataset<int8_t>(NumericType::Int8, Layout::Packed4Bit,
-                                metric, Layout::Packed1Bit);
+        checkBBQDataset<float>(
+                NumericType::Float32,
+                Layout::Transposed4Bit,
+                metric,
+                Layout::Packed1Bit);
+        checkBBQDataset<half>(
+                NumericType::Float16,
+                Layout::Transposed4Bit,
+                metric,
+                Layout::Transposed2Bit);
+        checkBBQDataset<int8_t>(
+                NumericType::Int8,
+                Layout::Packed4Bit,
+                metric,
+                Layout::Packed1Bit);
     }
 }
 

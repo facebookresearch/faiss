@@ -121,21 +121,19 @@ void validateBBQQuantizer(
     const auto rowLength = bbq::get_encoded_row_length(
             dim, static_cast<bbq::bbq_code_layout>(quantizer.codeLayout));
     validateMetadata(
-            quantizer.codes,
-            numRows,
-            rowLength,
-            NumericType::UInt8,
-            rowLength);
+            quantizer.codes, numRows, rowLength, NumericType::UInt8, rowLength);
     FAISS_THROW_IF_NOT_MSG(
-            reinterpret_cast<uintptr_t>(quantizer.codes) % alignof(uint32_t) == 0,
+            reinterpret_cast<uintptr_t>(quantizer.codes) % alignof(uint32_t) ==
+                    0,
             "BBQ codes require a 4-byte aligned device pointer");
     validateDevicePointer(quantizer.codes, numRows, device);
-    for (const float* values : {quantizer.lowerIntervals,
-                               quantizer.upperIntervals,
-                               quantizer.additionalCorrections,
-                               quantizer.dequantDelta,
-                               quantizer.dequantSumDelta,
-                               quantizer.rowNorm}) {
+    for (const float* values :
+         {quantizer.lowerIntervals,
+          quantizer.upperIntervals,
+          quantizer.additionalCorrections,
+          quantizer.dequantDelta,
+          quantizer.dequantSumDelta,
+          quantizer.rowNorm}) {
         validateMetadata(values, numRows, 1, NumericType::Float32, 1);
         validateDevicePointer(values, numRows, device);
     }

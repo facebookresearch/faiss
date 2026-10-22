@@ -189,7 +189,8 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
             FAISS_THROW_IF_NOT_MSG(
                     quantizer.metric == metric_,
                     "BBQ corrections must match the CAGRA metric");
-            auto layout = static_cast<bbq::bbq_code_layout>(quantizer.codeLayout);
+            auto layout =
+                    static_cast<bbq::bbq_code_layout>(quantizer.codeLayout);
             auto floats = [n](const float* data) {
                 return raft::make_device_vector_view<const float, int64_t>(
                         data, n);
@@ -205,7 +206,8 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
                     raft::make_device_vector_view<const int32_t, int64_t>(
                             quantizer.quantizedComponentSums, n),
                     raft::make_device_vector_view<const data_t, int64_t>(
-                            static_cast<const data_t*>(quantizer.centroid), dim_),
+                            static_cast<const data_t*>(quantizer.centroid),
+                            dim_),
                     floats(quantizer.dequantDelta),
                     floats(quantizer.dequantSumDelta),
                     floats(quantizer.rowNorm),
