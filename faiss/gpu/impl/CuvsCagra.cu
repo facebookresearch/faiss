@@ -180,6 +180,54 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
 
     using CuvsIndex =
             cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>;
+    if (dataset.getLayout() == Dataset::Layout::BBQ) {
+        FAISS_THROW_IF_NOT_MSG(
+                graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT,
+                "BBQ datasets require NN-descent graph construction");
+        namespace bbq = cuvs::preprocessing::quantize::bbq;
+        auto quantizerView = [&](const BBQQuantizer& quantizer) {
+            FAISS_THROW_IF_NOT_MSG(
+                    quantizer.metric == metric_,
+                    "BBQ corrections must match the CAGRA metric");
+            auto layout = static_cast<bbq::bbq_code_layout>(quantizer.codeLayout);
+            auto floats = [n](const float* data) {
+                return raft::make_device_vector_view<const float, int64_t>(
+                        data, n);
+            };
+            return bbq::quantizer_view<data_t, int64_t>(
+                    raft::make_device_matrix_view<const uint8_t, int64_t>(
+                            quantizer.codes,
+                            n,
+                            bbq::get_encoded_row_length(dim_, layout)),
+                    floats(quantizer.lowerIntervals),
+                    floats(quantizer.upperIntervals),
+                    floats(quantizer.additionalCorrections),
+                    raft::make_device_vector_view<const int32_t, int64_t>(
+                            quantizer.quantizedComponentSums, n),
+                    raft::make_device_vector_view<const data_t, int64_t>(
+                            static_cast<const data_t*>(quantizer.centroid), dim_),
+                    floats(quantizer.dequantDelta),
+                    floats(quantizer.dequantSumDelta),
+                    floats(quantizer.rowNorm),
+                    layout,
+                    metricFaissToCuvs(quantizer.metric, false),
+                    quantizer.centroidNormSquared);
+        };
+        cuvs::neighbors::device_bbq_dataset_view<data_t, int64_t> view;
+        view.add_quantizer(quantizerView(*dataset.getBBQQuantizer(false)));
+        if (const auto* secondary = dataset.getBBQQuantizer(true)) {
+            view.add_quantizer(quantizerView(*secondary));
+        }
+        // BBQ builds a graph but has no CAGRA search kernels. Keep the graph
+        // in the same empty padded index used for other graph-only builds.
+        cuvs_index = std::make_shared<CuvsIndex>(
+                raft_handle,
+                cuvs::neighbors::cagra::build(raft_handle, index_params_, view),
+                cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>{});
+        dataset_.emplace(dataset.view());
+        n_ = n;
+        return;
+    }
     const auto* data = static_cast<const data_t*>(dataset.getData());
     auto rowStride = dataset.getRowStride();
     bool deviceInput = dataset.isDevice();

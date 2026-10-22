@@ -12,10 +12,12 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <cuvs/neighbors/common.hpp>
+#include <cuvs/preprocessing/quantize/bbq.hpp>
 
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 namespace faiss {
@@ -103,6 +105,49 @@ void validateDevicePointer(const void* data, idx_t numRows, int device) {
             "Dataset pointer belongs to a different CUDA device");
 }
 
+void validateBBQQuantizer(
+        const BBQQuantizer& quantizer,
+        idx_t numRows,
+        int dim,
+        NumericType numericType,
+        int device) {
+    namespace bbq = cuvs::preprocessing::quantize::bbq;
+    validateMetadata(quantizer.centroid, 1, dim, numericType, dim);
+    validateDevicePointer(quantizer.centroid, 1, device);
+    FAISS_THROW_IF_NOT_MSG(
+            quantizer.codeLayout >= BBQCodeLayout::Packed1Bit &&
+                    quantizer.codeLayout <= BBQCodeLayout::Packed8Bit,
+            "Invalid BBQ code layout");
+    const auto rowLength = bbq::get_encoded_row_length(
+            dim, static_cast<bbq::bbq_code_layout>(quantizer.codeLayout));
+    validateMetadata(
+            quantizer.codes,
+            numRows,
+            rowLength,
+            NumericType::UInt8,
+            rowLength);
+    FAISS_THROW_IF_NOT_MSG(
+            reinterpret_cast<uintptr_t>(quantizer.codes) % alignof(uint32_t) == 0,
+            "BBQ codes require a 4-byte aligned device pointer");
+    validateDevicePointer(quantizer.codes, numRows, device);
+    for (const float* values : {quantizer.lowerIntervals,
+                               quantizer.upperIntervals,
+                               quantizer.additionalCorrections,
+                               quantizer.dequantDelta,
+                               quantizer.dequantSumDelta,
+                               quantizer.rowNorm}) {
+        validateMetadata(values, numRows, 1, NumericType::Float32, 1);
+        validateDevicePointer(values, numRows, device);
+    }
+    const auto sumsAddress =
+            reinterpret_cast<uintptr_t>(quantizer.quantizedComponentSums);
+    FAISS_THROW_IF_NOT_MSG(
+            (numRows == 0 || quantizer.quantizedComponentSums != nullptr) &&
+                    sumsAddress % alignof(int32_t) == 0,
+            "BBQ component sums require an aligned int32 device pointer");
+    validateDevicePointer(quantizer.quantizedComponentSums, numRows, device);
+}
+
 struct DatasetStorage {
     virtual ~DatasetStorage() = default;
     virtual const void* getData() const = 0;
@@ -152,6 +197,8 @@ struct Dataset::Impl {
     NumericType numericType;
     int device;
     Layout layout;
+    std::optional<BBQQuantizer> bbq;
+    std::optional<BBQQuantizer> secondaryBbq;
     // Declared before storage so resources outlive the allocation.
     std::shared_ptr<GpuResources> resources;
     std::unique_ptr<DatasetStorage> storage;
@@ -239,6 +286,26 @@ Dataset Dataset::viewDevicePadded(
     return result;
 }
 
+Dataset Dataset::viewDeviceBBQ(
+        const BBQQuantizer& source,
+        idx_t numRows,
+        int dim,
+        NumericType numericType,
+        int device,
+        const BBQQuantizer* secondary) {
+    validateBBQQuantizer(source, numRows, dim, numericType, device);
+    if (secondary) {
+        validateBBQQuantizer(*secondary, numRows, dim, numericType, device);
+    }
+    auto impl = std::make_unique<Impl>(
+            nullptr, numRows, dim, 0, numericType, device, Layout::BBQ);
+    impl->bbq = source;
+    if (secondary) {
+        impl->secondaryBbq = *secondary;
+    }
+    return Dataset(std::move(impl));
+}
+
 Dataset Dataset::makeDevicePadded(
         GpuResourcesProvider* resources,
         const Dataset& source,
@@ -248,6 +315,9 @@ Dataset Dataset::makeDevicePadded(
             device >= 0 && device < getNumDevices(),
             "Dataset requires a valid CUDA device");
     const auto& src = source.getImpl();
+    FAISS_THROW_IF_NOT_MSG(
+            src.layout != Layout::BBQ,
+            "Dataset::makeDevicePadded requires a dense Dataset");
     const auto stride = cuvs::neighbors::cagra_required_row_width(
             src.dim, elementSize(src.numericType));
     validateMetadata(
@@ -289,6 +359,9 @@ Dataset Dataset::makeDevicePadded(
 
 const void* Dataset::getData() const {
     const auto& impl = getImpl();
+    FAISS_THROW_IF_NOT_MSG(
+            impl.layout != Layout::BBQ,
+            "A BBQ Dataset has no dense data pointer");
     return impl.storage ? impl.storage->getData() : impl.data;
 }
 idx_t Dataset::getNumRows() const {
@@ -298,7 +371,11 @@ int Dataset::getDim() const {
     return getImpl().dim;
 }
 idx_t Dataset::getRowStride() const {
-    return getImpl().rowStride;
+    const auto& impl = getImpl();
+    FAISS_THROW_IF_NOT_MSG(
+            impl.layout != Layout::BBQ,
+            "A BBQ Dataset has no dense row stride");
+    return impl.rowStride;
 }
 NumericType Dataset::getNumericType() const {
     return getImpl().numericType;
@@ -317,7 +394,8 @@ bool Dataset::ownsData() const {
 }
 bool Dataset::isCagraCompatible() const {
     const auto& impl = getImpl();
-    return isDevice() && reinterpret_cast<uintptr_t>(getData()) % 16 == 0 &&
+    return impl.layout != Layout::BBQ && isDevice() &&
+            reinterpret_cast<uintptr_t>(getData()) % 16 == 0 &&
             impl.rowStride ==
             cuvs::neighbors::cagra_required_row_width(
                     impl.dim, elementSize(impl.numericType));
@@ -326,18 +404,29 @@ bool Dataset::isCagraCompatible() const {
 Dataset Dataset::view() const {
     const auto& src = getImpl();
     auto impl = std::make_unique<Impl>(
-            getData(),
+            src.layout == Layout::BBQ ? nullptr : getData(),
             src.numRows,
             src.dim,
             src.rowStride,
             src.numericType,
             src.device,
             src.layout);
+    impl->bbq = src.bbq;
+    impl->secondaryBbq = src.secondaryBbq;
     return Dataset(std::move(impl));
+}
+
+const BBQQuantizer* Dataset::getBBQQuantizer(bool secondary) const {
+    const auto& impl = getImpl();
+    const auto& quantizer = secondary ? impl.secondaryBbq : impl.bbq;
+    return quantizer ? &*quantizer : nullptr;
 }
 
 void Dataset::copyToHost(void* destination) const {
     const auto& impl = getImpl();
+    FAISS_THROW_IF_NOT_MSG(
+            impl.layout != Layout::BBQ,
+            "Dataset::copyToHost requires a dense Dataset");
     if (impl.numRows == 0) {
         return;
     }

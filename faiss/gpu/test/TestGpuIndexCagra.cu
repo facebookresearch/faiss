@@ -22,6 +22,7 @@
  */
 
 #include <cuda_fp16.h>
+#include <cuvs/preprocessing/quantize/bbq.hpp>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -1613,6 +1614,248 @@ void checkTypedExport(NumericType type) {
             }
         }
         EXPECT_GE(selfHits, 6);
+    }
+}
+
+// Exact 0/1 vectors need no quantizer training: the endpoints of [0, 1]
+// have codes 0 and 2^bits - 1. Keep every allocation outside the Faiss Dataset.
+template <typename T>
+auto makeBBQQuantizer(
+        raft::resources const& handle,
+        const std::vector<T>& values,
+        faiss::gpu::BBQCodeLayout layout,
+        faiss::MetricType metric) {
+    namespace bbq = cuvs::preprocessing::quantize::bbq;
+    constexpr int dim = 64;
+    const auto nativeLayout = static_cast<bbq::bbq_code_layout>(layout);
+    bbq::quantizer<T, int64_t> owner(
+            handle,
+            kRows,
+            dim,
+            nativeLayout,
+            metric == faiss::METRIC_L2
+                    ? cuvs::distance::DistanceType::L2Expanded
+                    : cuvs::distance::DistanceType::InnerProduct);
+    const int bits = bbq::get_bit_width(nativeLayout);
+    const int maximum = (1 << bits) - 1;
+    const int bytes = owner.encoded_row_length();
+    std::vector<uint8_t> codes(kRows * bytes, 0);
+    std::vector<float> zeros(kRows, 0), ones(kRows, 1), norms(kRows, 0);
+    std::vector<float> deltas(kRows, 1.0f / maximum);
+    std::vector<int32_t> sums(kRows, 0);
+    std::vector<T> centroid(dim, T(0));
+    for (idx_t row = 0; row < kRows; ++row) {
+        for (int col = 0; col < dim; ++col) {
+            if (static_cast<float>(values[row * dim + col]) == 0) {
+                continue;
+            }
+            ++norms[row];
+            sums[row] += maximum;
+            auto* encoded = codes.data() + row * bytes;
+            if (layout == faiss::gpu::BBQCodeLayout::Packed4Bit) {
+                encoded[col / 2] |= maximum << (4 * (1 - col % 2));
+            } else if (bits >= 7) {
+                encoded[col] = maximum;
+            } else {
+                for (int plane = 0; plane < bits; ++plane) {
+                    encoded[plane * (dim / 8) + col / 8] |=
+                            1 << (7 - col % 8);
+                }
+            }
+        }
+    }
+    auto upload = [](auto& destination, const auto& source) {
+        EXPECT_EQ(
+                cudaMemcpy(
+                        destination.data_handle(),
+                        source.data(),
+                        source.size() * sizeof(source[0]),
+                        cudaMemcpyHostToDevice),
+                cudaSuccess);
+    };
+    upload(owner.codes, codes);
+    upload(owner.lower_intervals, zeros);
+    upload(owner.upper_intervals, ones);
+    upload(owner.additional_corrections, metric == faiss::METRIC_L2 ? norms : zeros);
+    upload(owner.quantized_component_sums, sums);
+    upload(owner.centroid, centroid);
+    upload(owner.dequant_delta, deltas);
+    upload(owner.dequant_sum_delta, norms);
+    upload(owner.row_norm, norms);
+    return owner;
+}
+
+template <typename T>
+faiss::gpu::BBQQuantizer describeBBQ(
+        const cuvs::preprocessing::quantize::bbq::quantizer<T, int64_t>& owner,
+        faiss::MetricType metric) {
+    faiss::gpu::BBQQuantizer result;
+    result.codes = owner.codes.data_handle();
+    result.lowerIntervals = owner.lower_intervals.data_handle();
+    result.upperIntervals = owner.upper_intervals.data_handle();
+    result.additionalCorrections = owner.additional_corrections.data_handle();
+    result.quantizedComponentSums = owner.quantized_component_sums.data_handle();
+    result.centroid = owner.centroid.data_handle();
+    result.dequantDelta = owner.dequant_delta.data_handle();
+    result.dequantSumDelta = owner.dequant_sum_delta.data_handle();
+    result.rowNorm = owner.row_norm.data_handle();
+    result.codeLayout = static_cast<faiss::gpu::BBQCodeLayout>(owner.layout);
+    result.metric = metric;
+    return result;
+}
+
+template <typename T>
+void checkBBQDataset(
+        NumericType type,
+        faiss::gpu::BBQCodeLayout layout,
+        faiss::MetricType metric,
+        std::optional<faiss::gpu::BBQCodeLayout> second = std::nullopt) {
+    SCOPED_TRACE(::testing::Message()
+                 << "type=" << int(type) << " layout=" << int(layout)
+                 << " metric=" << int(metric));
+    constexpr int dim = 64, queries = 32, k = 10;
+    faiss::gpu::DeviceScope scope(0);
+    StandardGpuResources resources;
+    auto& handle = resources.getResources()->getRaftHandle(0);
+    std::mt19937 random(42);
+    std::vector<T> values(kRows * dim);
+    for (auto& value : values) {
+        value = T(random() % 2);
+    }
+    auto owner = makeBBQQuantizer(handle, values, layout, metric);
+    auto primary = describeBBQ(owner, metric);
+    std::optional<decltype(owner)> secondOwner;
+    faiss::gpu::BBQQuantizer secondary;
+    if (second) {
+        secondOwner.emplace(makeBBQQuantizer(handle, values, *second, metric));
+        secondary = describeBBQ(*secondOwner, metric);
+    }
+    auto unaligned = primary;
+    ++unaligned.codes;
+    EXPECT_THROW(
+            Dataset::viewDeviceBBQ(unaligned, kRows, dim, type, 0),
+            faiss::FaissException);
+    auto source = Dataset::viewDeviceBBQ(
+            primary, kRows, dim, type, 0, second ? &secondary : nullptr);
+    auto borrowed = source.view();
+    auto moved = std::move(borrowed);
+    EXPECT_EQ(moved.getLayout(), Dataset::Layout::BBQ);
+    EXPECT_EQ(moved.getNumRows(), kRows);
+    EXPECT_EQ(moved.getDim(), dim);
+    EXPECT_EQ(moved.getNumericType(), type);
+    EXPECT_EQ(moved.getDevice(), 0);
+    EXPECT_TRUE(moved.isDevice());
+    EXPECT_FALSE(moved.ownsData());
+    EXPECT_FALSE(moved.isCagraCompatible());
+    EXPECT_THROW(moved.getData(), faiss::FaissException);
+    EXPECT_THROW(moved.getRowStride(), faiss::FaissException);
+    EXPECT_THROW(moved.copyToHost(values.data()), faiss::FaissException);
+    EXPECT_THROW(
+            Dataset::makeDevicePadded(&resources, moved, 0),
+            faiss::FaissException);
+
+    auto cfg = config();
+    cfg.graph_degree = 32;
+    cfg.intermediate_graph_degree = 64;
+    // The original dense allocation must outlive both indexes that borrow it.
+    auto dense = Dataset::viewHost(values.data(), kRows, dim, type, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, dense, 0);
+    GpuIndexCagra index(&resources, dim, metric, cfg);
+    index.train(moved);
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_FALSE(index.isSearchReady());
+    const auto graph = index.get_knngraph();
+    ASSERT_EQ(graph.size(), kRows * cfg.graph_degree);
+    for (auto label : graph) {
+        ASSERT_GE(label, 0);
+        ASSERT_LT(label, kRows);
+    }
+    std::vector<float> distances(queries * k);
+    std::vector<idx_t> labels(queries * k);
+    EXPECT_THROW(
+            index.search_ex(queries, values.data(), type, k,
+                            distances.data(), labels.data()),
+            faiss::FaissException);
+    faiss::IndexHNSWCagra cpu;
+    const auto originalDim = cpu.d;
+    const auto* originalStorage = cpu.storage;
+    EXPECT_THROW(index.copyTo(&cpu), faiss::FaissException);
+    EXPECT_EQ(cpu.d, originalDim);
+    EXPECT_EQ(cpu.ntotal, 0);
+    EXPECT_EQ(cpu.storage, originalStorage);
+    EXPECT_THROW(index.updateDataset(moved), faiss::FaissException);
+
+    index.updateDataset(storage);
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    GpuIndexCagra imported(&resources, dim, metric, cfg);
+    imported.copyFrom(&cpu);
+    EXPECT_FALSE(imported.isSearchReady());
+    imported.updateDataset(storage);
+    faiss::gpu::SearchParametersCagra params;
+    params.itopk_size = 128;
+    for (auto* searched : {&index, &imported}) {
+        searched->search_ex(queries, values.data(), type, k,
+                            distances.data(), labels.data(), &params);
+        ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+        int matches = 0;
+        for (int q = 0; q < queries; ++q) {
+            std::vector<float> exact(kRows);
+            for (idx_t row = 0; row < kRows; ++row) {
+                float score = 0;
+                for (int col = 0; col < dim; ++col) {
+                    const float a = static_cast<float>(values[q * dim + col]);
+                    const float b = static_cast<float>(values[row * dim + col]);
+                    score += metric == faiss::METRIC_L2 ? (a - b) * (a - b) : a * b;
+                }
+                exact[row] = score;
+            }
+            auto ranked = exact;
+            std::sort(ranked.begin(), ranked.end());
+            const float threshold = metric == faiss::METRIC_L2
+                    ? ranked[k - 1] : ranked[kRows - k];
+            for (int j = 0; j < k; ++j) {
+                const auto label = labels[q * k + j];
+                ASSERT_GE(label, 0);
+                ASSERT_LT(label, kRows);
+                EXPECT_NEAR(distances[q * k + j], exact[label], 1e-4);
+                matches += metric == faiss::METRIC_L2
+                        ? exact[label] <= threshold : exact[label] >= threshold;
+                EXPECT_EQ(
+                        std::count(labels.begin() + q * k,
+                                   labels.begin() + (q + 1) * k, label),
+                        1);
+            }
+        }
+        // Equal distances are common for exact 0/1 data; accept any top-k tie.
+        EXPECT_GE(double(matches) / (queries * k), 0.98);
+    }
+    cfg.build_algo = faiss::gpu::graph_build_algo::IVF_PQ;
+    GpuIndexCagra unsupported(&resources, dim, metric, cfg);
+    EXPECT_THROW(unsupported.train(moved), faiss::FaissException);
+    GpuIndexCagra mismatched(
+            &resources, dim,
+            metric == faiss::METRIC_L2 ? faiss::METRIC_INNER_PRODUCT : faiss::METRIC_L2,
+            config());
+    EXPECT_THROW(mismatched.train(moved), faiss::FaissException);
+}
+
+TEST(TestGpuIndexCagra, BBQLayoutsBuildGraphAndAttachDenseDataset) {
+    using Layout = faiss::gpu::BBQCodeLayout;
+    for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+        for (auto layout : {Layout::Packed1Bit, Layout::Transposed2Bit,
+                            Layout::Packed4Bit, Layout::Packed7Bit, Layout::Packed8Bit}) {
+            checkBBQDataset<float>(NumericType::Float32, layout, metric);
+        }
+        checkBBQDataset<float>(NumericType::Float32, Layout::Transposed4Bit,
+                               metric, Layout::Packed1Bit);
+        checkBBQDataset<half>(NumericType::Float16, Layout::Transposed4Bit,
+                              metric, Layout::Transposed2Bit);
+        checkBBQDataset<int8_t>(NumericType::Int8, Layout::Packed4Bit,
+                                metric, Layout::Packed1Bit);
     }
 }
 

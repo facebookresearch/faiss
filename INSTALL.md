@@ -362,6 +362,17 @@ allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
 
+For preencoded BBQ vectors, populate `faiss::gpu::BBQQuantizer` with device
+pointers to the codes, centroid, and correction arrays, then call
+`Dataset::viewDeviceBBQ(quantizer, n, d, numericType, device)`; an optional final
+quantizer supplies the second layout for asymmetric distances. There is no public
+BBQ encoder in this API. Keep every buffer owner alive explicitly, including in
+Python: these raw pointers do not retain their allocations. Use
+`GpuIndexCagra` with NN-descent and dimensions divisible by 32. Training builds
+the graph and leaves `isSearchReady()` false. Call `updateDataset` with the
+corresponding dense device-padded vectors before search or CPU HNSW export;
+`makeDevicePadded` and `copyToHost` do not decode BBQ storage.
+
 Building a graph with `train` or `add` requires an explicit Dataset. Their
 inherited pointer overloads reject calls; use the Dataset
 overloads on `GpuIndexCagra` or `GpuIndexBinaryCagra`. Dataset ownership replaces

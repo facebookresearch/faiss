@@ -261,6 +261,74 @@ class TestCagraDataset(unittest.TestCase):
     def test_int8_workflow(self):
         self.check_workflow(np.int8, faiss.Int8)
 
+    def test_bbq_graph_then_dense_search(self):
+        rows, dim = 1024, 64
+        values = np.random.RandomState(1732).randint(
+            0, 2, (rows, dim)).astype("float32")
+        sums = values.sum(axis=1)
+        # These 0/1 vectors have exact one-bit codes and zero-centroid corrections.
+        arrays = [np.packbits(values.astype("uint8"), axis=1, bitorder="big"),
+                  np.zeros(rows, dtype="float32"),
+                  np.ones(rows, dtype="float32"), sums,
+                  sums.astype("int32").view("uint8")]
+        res = faiss.StandardGpuResources()
+        # Keep every raw allocation owner and async-copy source alive explicitly.
+        owners = [faiss.Dataset.makeDevicePadded(
+            res, faiss.Dataset.viewHost(array.reshape(1, -1)), 0)
+            for array in arrays]
+        quantizer = faiss.BBQQuantizer()
+        quantizer.codeLayout = faiss.BBQCodeLayout_Packed1Bit
+        quantizer.codes = faiss.cast_integer_to_uint8_ptr(int(owners[0].getData()))
+        quantizer.centroid = owners[1].getData()
+        for field, owner in (("lowerIntervals", 1), ("upperIntervals", 2),
+                             ("additionalCorrections", 3), ("dequantDelta", 2),
+                             ("dequantSumDelta", 3), ("rowNorm", 3)):
+            setattr(quantizer, field,
+                    faiss.cast_integer_to_float_ptr(int(owners[owner].getData())))
+        quantizer.quantizedComponentSums = faiss.cast_integer_to_int_ptr(
+            int(owners[4].getData()))
+        source = faiss.Dataset.viewDeviceBBQ(
+            quantizer, rows, dim, faiss.Float32, 0)
+        self.assertEqual(source.getLayout(), faiss.Dataset.Layout_BBQ)
+        self.assertEqual((source.getNumRows(), source.getDim()), (rows, dim))
+        self.assertTrue(source.isDevice())
+        self.assertFalse(source.ownsData())
+        self.assertFalse(source.isCagraCompatible())
+        descriptor = source.view()
+        source_ref, descriptor_ref = weakref.ref(source), weakref.ref(descriptor)
+        res.syncDefaultStreamCurrentDevice()
+        index = faiss.GpuIndexCagra(res, dim, faiss.METRIC_L2, self.config())
+        index.train(descriptor)
+        del source, descriptor, quantizer
+        gc.collect()
+        self.assertIsNotNone(source_ref())
+        self.assertIsNotNone(descriptor_ref())
+        self.assertTrue(index.is_trained)
+        self.assertEqual(index.ntotal, rows)
+        self.assertFalse(index.isSearchReady())
+        graph = faiss.vector_to_array(index.get_knngraph())
+        with self.assertRaisesRegex(RuntimeError, "Dataset"):
+            index.search(values[:64], 1)
+        with self.assertRaisesRegex(RuntimeError, "BBQ"):
+            index.copyTo(faiss.IndexHNSWCagra())
+
+        dense = faiss.Dataset.makeDevicePadded(
+            res, faiss.Dataset.viewHost(values), 0)
+        index.updateDataset(dense)
+        gc.collect()
+        self.assertIsNone(source_ref())
+        self.assertIsNone(descriptor_ref())
+        self.assertTrue(index.isSearchReady())
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index.get_knngraph()), graph)
+        params = faiss.SearchParametersCagra()
+        params.itopk_size = 128
+        distances, labels = index.search(values[:64], 1, params=params)
+        self.assertTrue(np.all((labels >= 0) & (labels < rows)))
+        self.assertGreaterEqual(np.mean(labels[:, 0] == np.arange(64)), 0.98)
+        expected = np.sum((values[:64, None, :] - values[labels]) ** 2, axis=2)
+        np.testing.assert_allclose(distances, expected, rtol=6e-5, atol=1e-5)
+
     def test_arrays_and_idmap_do_not_bypass_dataset_requirement(self):
         res = faiss.StandardGpuResources()
         cagra = faiss.GpuIndexCagra(res, 20, faiss.METRIC_L2, self.config())

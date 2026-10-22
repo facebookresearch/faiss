@@ -829,6 +829,10 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
                 }
             },
             index_);
+    FAISS_THROW_IF_MSG(
+            dataset.getLayout() == Dataset::Layout::BBQ,
+            "BBQ codes cannot be exported as CPU vectors; "
+            "attach dense storage with updateDataset before copyTo");
 
     //
     // Index information
