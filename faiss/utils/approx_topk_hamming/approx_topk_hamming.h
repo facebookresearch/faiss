@@ -11,33 +11,91 @@
 #include <limits>
 #include <utility>
 
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
 
-// Explicit SIMD-level aliases for this file (no global bare aliases).
-using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
-using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+// The bucket structs are templatized on SIMDLevel SL so callers can compile a
+// NONE (scalar) baseline and the compiled-in SIMD path side by side (same
+// pattern as HeapWithBucketsCMaxFloat in approx_topk.h). The level is
+// selected via approx_topk_hamming_level_selector (AVX512/SVE fold down;
+// RISCV_RVV uses the native kernel in approx_topk_hamming-rvv.h instead of
+// the 256-bit simdlib layer).
+//
+// SL carries a default (SINGLE_SIMD_LEVEL_256) so call sites written
+// against the historical 4-argument form
+// HeapWithBucketsForHamming32<C, NBUCKETS, N, HC> still compile and get
+// exactly the level the pre-template header used (its bare simd8uint32
+// alias was SINGLE_SIMD_LEVEL_256 as well). Explicit 5-argument callers
+// (bench dispatch, 5-argument hamming_impl.h trees) select the level
+// themselves.
 
-// HeapWithBucketsForHamming32 uses simd8uint32 under the
-// hood.
+// Map a dispatch level to one with a Hamming top-k implementation.
+// AVX512/SVE fold down because there are no 512-bit bucket kernels; RVV is
+// kept because its kernel is native (approx_topk_hamming-rvv.h) and does not
+// depend on the 256-bit simdlib layer.
+template <SIMDLevel SL>
+struct approx_topk_hamming_level_selector {
+    static constexpr SIMDLevel value =
+            (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
+            ? SIMDLevel::AVX2
+            : (SL == SIMDLevel::ARM_SVE ? SIMDLevel::ARM_NEON : SL);
+};
 
-template <typename C, uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
+namespace detail {
+
+// Lane-wise read of the raw 32-byte storage of a 256-bit simdlib value.
+// Levels with opaque SIMD register storage (AVX2/NEON) use a storeu-based
+// read helper (the copy is optimized into a register read by SRA where
+// possible); the NONE specialization reads the u32[8] union directly.
+template <SIMDLevel SL>
+struct hamming_state_reader {
+    static uint32_t lane(const simd8uint32_tpl<SL>& v, size_t lane) {
+        uint32_t buf[8];
+        v.storeu(buf);
+        return buf[lane];
+    }
+};
+
+template <>
+struct hamming_state_reader<SIMDLevel::NONE> {
+    static uint32_t lane(const simd8uint32_tpl<SIMDLevel::NONE>& v,
+                         size_t lane) {
+        return v.u32[lane];
+    }
+};
+
+} // namespace detail
+
+template <
+        typename C,
+        uint32_t NBUCKETS,
+        uint32_t N,
+        typename HammingComputerT,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct HeapWithBucketsForHamming32 {
     // this case was not implemented yet.
 };
 
-template <uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
+template <
+        uint32_t NBUCKETS,
+        uint32_t N,
+        typename HammingComputerT,
+        SIMDLevel SL>
 struct HeapWithBucketsForHamming32<
         CMax<int, int64_t>,
         NBUCKETS,
         N,
-        HammingComputerT> {
+        HammingComputerT,
+        SL> {
     static constexpr uint32_t NBUCKETS_8 = NBUCKETS / 8;
     static_assert(
             (NBUCKETS) > 0 && ((NBUCKETS % 8) == 0),
             "Number of buckets needs to be 8, 16, 24, ...");
+
+    using simd8uint32 = simd8uint32_tpl<SL>;
 
     static void addn(
             // number of elements
@@ -107,7 +165,8 @@ struct HeapWithBucketsForHamming32<
                     uint8_t valid_counter = 0;
                     for (size_t j8 = 0; j8 < 8; j8++) {
                         const uint32_t idx =
-                                j8 + j * 8 + ip + n_per_beam * beam_index;
+                                j8 + j * 8 + ip +
+                                n_per_beam * beam_index;
                         if (!sel || sel->is_member(idx)) {
                             hamming_distances[j8] = hc.hamming(
                                     binary_vectors + idx * code_size);
@@ -154,7 +213,7 @@ struct HeapWithBucketsForHamming32<
                 current_indices += indices_delta;
             }
 
-            // fix the indices
+            // fix the indices: bucket-local block ids -> global ids
             for (uint32_t j = 0; j < NBUCKETS_8; j++) {
                 const simd8uint32 offset(n_per_beam * beam_index + j * 8);
                 for (uint32_t p = 0; p < N; p++) {
@@ -163,19 +222,27 @@ struct HeapWithBucketsForHamming32<
             }
 
             // merge every bucket into the regular heap
+            // The probe reads go straight to the 32-byte storage union of
+            // the bucket state (byte/plain member reads) instead of
+            // copying each state out through storeu into a scratch array
+            // first — one less 32B round-trip per probed state.
+            // (A k == 1 fast path holding the top value/index in locals
+            // was measured at +12.7% on the k=32 bench shape — the extra
+            // per-beam branch and code size outweighed it — and reverted.)
             for (uint32_t p = 0; p < N; p++) {
                 for (uint32_t j = 0; j < NBUCKETS_8; j++) {
-                    uint32_t min_indices_scalar[8];
-                    uint32_t min_distances_scalar[8];
-
-                    min_indices_i[j][p].storeu(min_indices_scalar);
-                    min_distances_i[j][p].storeu(min_distances_scalar);
+                    const simd8uint32& min_d = min_distances_i[j][p];
+                    const simd8uint32& min_i = min_indices_i[j][p];
 
                     // this exact way is needed to maintain the order as if the
                     // input elements were pushed to the heap sequentially
                     for (size_t j8 = 0; j8 < 8; j8++) {
-                        const auto value = min_distances_scalar[j8];
-                        const auto index = min_indices_scalar[j8];
+                        const auto value =
+                                detail::hamming_state_reader<SL>::lane(
+                                        min_d, j8);
+                        const auto index =
+                                detail::hamming_state_reader<SL>::lane(
+                                        min_i, j8);
 
                         if (value < std::numeric_limits<int32_t>::max() &&
                             C::cmp2(bh_val[0], value, bh_ids[0], index)) {
@@ -209,21 +276,33 @@ struct HeapWithBucketsForHamming32<
 // No more than 32K elements currently, but it can be reorganized a bit
 //   to be limited to 32K elements per beam.
 
-template <typename C, uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
+template <
+        typename C,
+        uint32_t NBUCKETS,
+        uint32_t N,
+        typename HammingComputerT,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct HeapWithBucketsForHamming16 {
     // this case was not implemented yet.
 };
 
-template <uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
+template <
+        uint32_t NBUCKETS,
+        uint32_t N,
+        typename HammingComputerT,
+        SIMDLevel SL>
 struct HeapWithBucketsForHamming16<
         CMax<int, int64_t>,
         NBUCKETS,
         N,
-        HammingComputerT> {
+        HammingComputerT,
+        SL> {
     static constexpr uint32_t NBUCKETS_16 = NBUCKETS / 16;
     static_assert(
             (NBUCKETS) > 0 && ((NBUCKETS % 16) == 0),
             "Number of buckets needs to be 16, 32, 48...");
+
+    using simd16uint16 = simd16uint16_tpl<SL>;
 
     static void addn(
             // number of elements

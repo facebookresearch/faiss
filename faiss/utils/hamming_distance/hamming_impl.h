@@ -7,21 +7,22 @@
 
 // Shared implementation header for Hamming distance dynamic dispatch.
 // Included by per-ISA TUs (hamming_avx2.cpp, hamming_avx512.cpp,
-// hamming_neon.cpp) and by hamming.cpp (for the NONE fallback TU).
+// hamming_avx512_vpopcnt.cpp, hamming_neon.cpp, hamming_rvv.cpp) and by
+// hamming.cpp (for the NONE fallback TU).
 //
 // THE_SIMD_LEVEL must be defined before including this header.
 // Callers must also include the appropriate hamming_computer-*.h
-// (generic, avx2, avx512, or neon) before this header so that the
-// HammingComputer struct specializations are available.
+// (generic, avx2, avx512, avx512_vpopcnt, neon, or rvv) before this
+// header so that the HammingComputer struct specializations are available.
 //
 // ODR CONTRACT: each TU that includes this header MUST define a UNIQUE
 // THE_SIMD_LEVEL value across the linked binary. The template
 // specializations at the bottom of this file (hammings_knn_hc_fixSL<SL>,
 // etc.) have external linkage with SL-keyed mangled names; two TUs sharing
 // THE_SIMD_LEVEL would emit conflicting definitions of the same symbol.
-// In DD mode, the per-ISA TUs use distinct values (NONE/AVX2/AVX512/NEON);
-// in static mode, only hamming.cpp includes this header so uniqueness is
-// trivially satisfied.
+// In DD mode, the per-ISA TUs use distinct values
+// (NONE/AVX2/AVX512/AVX512_VPOPCNT/NEON/RISCV_RVV); in static mode, only
+// hamming.cpp includes this header so uniqueness is trivially satisfied.
 
 #pragma once
 
@@ -46,6 +47,9 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
+#if defined(COMPILE_SIMD_RISCV_RVV)
+#include <faiss/utils/approx_topk_hamming/approx_topk_hamming-rvv.h>
+#endif
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -102,7 +106,8 @@ void hammings_knn_hc_impl(
                 CMax<hamdis_t, int64_t>,                                     \
                 NB,                                                          \
                 BD,                                                          \
-                HammingComputer>::                                           \
+                HammingComputer,                                             \
+                approx_topk_hamming_level_selector<THE_SIMD_LEVEL>::value>:: \
                 addn(j1 - j0, hc, bs2_, k, bh_val_, bh_ids_, sel);           \
         break;
 

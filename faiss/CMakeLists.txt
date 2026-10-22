@@ -79,7 +79,9 @@ set(FAISS_SIMD_RVV_SRC
   impl/pq_code_distance/rvv.cpp
   impl/scalar_quantizer/sq-rvv.cpp
   impl/binary_hamming/rvv.cpp
+  impl/approx_topk/rvv.cpp
   utils/simd_impl/distances_rvv.cpp
+  utils/simd_impl/partitioning_rvv.cpp
   utils/hamming_distance/hamming_rvv.cpp
   utils/simd_impl/rabitq_rvv.cpp
 )
@@ -427,6 +429,7 @@ set(FAISS_HEADERS
   impl/approx_topk/rq_beam_search_tab-inl.h
   impl/approx_topk/simdlib256-inl.h
   utils/approx_topk_hamming/approx_topk_hamming.h
+  utils/approx_topk_hamming/approx_topk_hamming-rvv.h
   utils/transpose/transpose-avx2-inl.h
   utils/transpose/transpose-avx512-inl.h
   utils/hamming_distance/common.h

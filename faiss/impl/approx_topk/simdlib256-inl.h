@@ -33,6 +33,11 @@ inline simd8float32_tpl<SL> simd8float32_max(
     return max_val;
 }
 
+// The RISCV_RVV instantiation lives in impl/approx_topk/rvv.cpp as a full
+// class specialization (native RVV intrinsics with a runtime vsetvl over
+// the whole NBUCKETS block; no simd8float32 involved). AVX2 and ARM_NEON
+// use this simdlib-based definition; SIMDLevel::NONE has its own scalar
+// specialization in approx_topk.h.
 template <uint32_t NBUCKETS, uint32_t N, SIMDLevel SL>
 void HeapWithBucketsCMaxFloat<NBUCKETS, N, SL>::bs_addn(
         const uint32_t beam_size,
