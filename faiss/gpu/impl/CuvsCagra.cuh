@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
@@ -63,7 +64,6 @@ class CuvsCagra {
             idx_t graph_degree,
             faiss::cagra_build_algo graph_build_algo,
             size_t nn_descent_niter,
-            bool store_dataset,
             faiss::MetricType metric,
             float metricArg,
             IndicesOptions indicesOptions,
@@ -79,7 +79,7 @@ class CuvsCagra {
             int dim,
             idx_t n,
             int graph_degree,
-            const data_t* dataset,
+            const Dataset* dataset,
             const idx_t* knn_graph,
             faiss::MetricType metric,
             float metricArg,
@@ -87,7 +87,11 @@ class CuvsCagra {
 
     ~CuvsCagra() = default;
 
-    void train(idx_t n, const data_t* x);
+    void train(const Dataset& dataset);
+
+    void updateDataset(const Dataset& dataset);
+
+    bool isSearchReady() const;
 
     void search(
             Tensor<data_t, 2, true>& queries,
@@ -115,22 +119,18 @@ class CuvsCagra {
 
     std::vector<idx_t> get_knngraph() const;
 
-    const data_t* get_training_dataset() const;
+    const Dataset& getDataset() const;
 
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
-    /// Training dataset
-    const data_t* storage_;
-    int n_;
+    /// Borrowed metadata only; the caller owns the backing allocation.
+    std::optional<Dataset> dataset_;
+    idx_t n_ = 0;
 
     /// Expected dimensionality of the vectors
     const int dim_;
-
-    /// Controls the underlying cuVS index if it should support search
-    /// capabilities on the index.
-    bool searchable_index_ = true;
 
     /// Metric type of the index
     faiss::MetricType metric_;
@@ -152,10 +152,6 @@ class CuvsCagra {
 
     /// Parameter to use MST optimization to guarantee graph connectivity
     bool guarantee_connectivity_ = false;
-
-    /// Device padded copy when `storage_` is host memory (KNN-graph ctor path).
-    std::unique_ptr<cuvs::neighbors::device_padded_dataset<data_t, int64_t>>
-            device_padded_dataset_;
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<

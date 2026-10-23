@@ -49,6 +49,10 @@
 
 namespace faiss {
 
+namespace gpu {
+class Dataset;
+}
+
 /// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h
 /// and impl/DistanceComputer.h
 struct IDSelector;
@@ -131,6 +135,9 @@ struct Index {
      */
     virtual void train(idx_t n, const float* x);
 
+    /// Train from caller-controlled storage. Unsupported by default.
+    virtual void train(const gpu::Dataset& dataset);
+
     /** Perform training on a representative set of vectors and a representative
      * set of queries
      *
@@ -162,6 +169,9 @@ struct Index {
      * @param x      input matrix, size n * d
      */
     virtual void add(idx_t n, const float* x) = 0;
+
+    /// Add caller-controlled storage. Unsupported by default.
+    virtual void add(const gpu::Dataset& dataset);
 
     virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
