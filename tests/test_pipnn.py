@@ -125,6 +125,15 @@ class TestPiPNNRecall(unittest.TestCase):
         index.pipnn.search_L = 16
         self.assertGreaterEqual(recall(index, xb, xq), 0.95)
 
+    def test_recall_duplicates(self):
+        # the K nearest neighbours are all copies of the nearest one
+        _, xb, xq = get_dataset_2(DIM, 0, 2000, NQ)
+        xb = np.tile(xb, (K, 1))
+        index = faiss.IndexPiPNNFlat(DIM, 32)
+        index.add(xb)
+        index = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertGreaterEqual(recall(index, xb, xq), 0.95)
+
 
 class TestPiPNNSearch(unittest.TestCase):
 

@@ -86,7 +86,10 @@ struct PiPNN {
 
     // result
     MaybeOwnedVector<int32_t> graph; ///< ntotal x R, -1 padded
-    int32_t entry_point = -1;        ///< L2 medoid
+    /// next higher row with the same code, or -1; empty if all codes differ.
+    /// Such copies have empty graph rows; search returns them with the first.
+    MaybeOwnedVector<int32_t> next_copy;
+    int32_t entry_point = -1; ///< L2 medoid
     idx_t ntotal = 0;
 
     PiPNN() = default;
@@ -97,8 +100,8 @@ struct PiPNN {
     void check_params() const;
 
 #ifndef SWIG
-    /// Builds over the vectors and metric of storage. Strong guarantee: graph,
-    /// entry_point and ntotal are unchanged if it throws.
+    /// Builds over the vectors and metric of storage. Strong guarantee: the
+    /// results are unchanged if it throws.
     void build(const Index& storage, bool verbose = false);
 
     /// Beam max(L, k); qdis smaller-is-better; vt: ntotal slots, clean in/out.
