@@ -488,10 +488,10 @@
         </inbodydescription>
         <location file="faiss/impl/pipnn/kernels.h" line="85" column="13" bodyfile="faiss/impl/pipnn/kernels.h" bodystart="85" bodyend="89"/>
       </memberdef>
-      <memberdef kind="function" id="Partition_8h_1a10e402ed1a6a4d801ac295a5c0ff9ee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="Partition_8h_1ad7807aa43f3c6c9e2fe1c197cc7870b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pipnn::partition_and_visit</definition>
-        <argsstring>(const Index &amp;storage, const PartitionParams &amp;p, uint64_t root_seed, const LeafVisitor &amp;on_leaf, PartitionStats *stats)</argsstring>
+        <argsstring>(const Index &amp;storage, const PartitionParams &amp;p, uint64_t root_seed, const LeafVisitor &amp;on_leaf, PartitionStats *stats, const std::vector&lt; int32_t &gt; &amp;ids={})</argsstring>
         <name>partition_and_visit</name>
         <qualifiedname>faiss::pipnn::partition_and_visit</qualifiedname>
         <param>
@@ -514,14 +514,19 @@
           <type><ref refid="structfaiss_1_1pipnn_1_1PartitionStats" kindref="compound">PartitionStats</ref> *</type>
           <declname>stats</declname>
         </param>
+        <param>
+          <type>const std::vector&lt; int32_t &gt; &amp;</type>
+          <declname>ids</declname>
+          <defval>{}</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Randomized Ball Carving with multi-level fanout. Calls <computeroutput>on_leaf</computeroutput> exactly once per leaf and fills <computeroutput>*stats</computeroutput> (if not null). On an exception or an interrupt it rethrows with some leaves unvisited and <computeroutput>*stats</computeroutput> unchanged. </para>
+<para>Randomized Ball Carving with multi-level fanout over the sorted <computeroutput>ids</computeroutput> (all of storage if empty). Calls <computeroutput>on_leaf</computeroutput> exactly once per leaf and fills <computeroutput>*stats</computeroutput> (if not null). On an exception or an interrupt it rethrows with some leaves unvisited and <computeroutput>*stats</computeroutput> unchanged. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="62" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="62" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="63" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="63" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="Partition_8h_1a937d784191c66bd80de02e0a24d9aea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
@@ -544,7 +549,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="71" column="10" declfile="faiss/impl/pipnn/Partition.h" declline="71" declcolumn="10"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="73" column="10" declfile="faiss/impl/pipnn/Partition.h" declline="73" declcolumn="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

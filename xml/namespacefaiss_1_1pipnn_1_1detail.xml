@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="77" column="8" declfile="faiss/impl/pipnn/Partition.h" declline="77" declcolumn="8"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="79" column="8" declfile="faiss/impl/pipnn/Partition.h" declline="79" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1aef28b1824f8c5cc4285401e6b00f4b78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="80" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="80" declcolumn="6"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="82" column="6" declfile="faiss/impl/pipnn/Partition.h" declline="82" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1pipnn_1_1detail_1ae1f5935ad80fd5413f8f207c709aec8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>Ranking</type>
@@ -112,7 +112,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pipnn/Partition.h" line="86" column="9" declfile="faiss/impl/pipnn/Partition.h" declline="86" declcolumn="9"/>
+        <location file="faiss/impl/pipnn/Partition.h" line="88" column="9" declfile="faiss/impl/pipnn/Partition.h" declline="88" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

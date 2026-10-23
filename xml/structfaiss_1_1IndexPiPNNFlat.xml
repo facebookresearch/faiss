@@ -1801,6 +1801,7 @@
         <link refid="structfaiss_1_1PiPNN"/>
         <childnode refid="5" relation="usage">
           <edgelabel>graph</edgelabel>
+          <edgelabel>next_copy</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

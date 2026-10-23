@@ -11227,6 +11227,7 @@
     <member refid="structfaiss_1_1PiPNN_1ae47bb3062a5cb2b811c000a2c81b3f2c" kind="variable"><name>partition_wave_budget</name></member>
     <member refid="structfaiss_1_1PiPNN_1a1139045c734f925c23c44fcdaeff1265" kind="variable"><name>search_L</name></member>
     <member refid="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" kind="variable"><name>graph</name></member>
+    <member refid="structfaiss_1_1PiPNN_1ab7e7a0ee3cd66394aefe4442bbb5dc5f" kind="variable"><name>next_copy</name></member>
     <member refid="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" kind="variable"><name>entry_point</name></member>
     <member refid="structfaiss_1_1PiPNN_1aeb442fb111a5d291207cf9c6372582ba" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1PiPNN_1a9617a630e2fca305fcd6abe209ce3fb6" kind="function"><name>PiPNN</name></member>
@@ -14910,6 +14911,7 @@
     <member refid="namespacefaiss_1a9961a06bc9beb19366bb0437e11ac962" kind="function"><name>ivec_checksum</name></member>
     <member refid="namespacefaiss_1ade786759a9b5dbd0b2329966756c0b77" kind="function"><name>bvec_checksum</name></member>
     <member refid="namespacefaiss_1a2de355ba1527a128fdd6895a4a9cdd7a" kind="function"><name>bvecs_checksum</name></member>
+    <member refid="namespacefaiss_1acc0cd4595eac223a970c13360c3d84ae" kind="function"><name>find_duplicate_codes</name></member>
     <member refid="namespacefaiss_1a184bb08545d1f469662b75b2f33a899f" kind="function"><name>fvecs_maybe_subsample</name></member>
     <member refid="namespacefaiss_1ac8260e10cfeed08a4344b85845773e16" kind="function"><name>binary_to_real</name></member>
     <member refid="namespacefaiss_1ab491c9e2f77a750c9f0324bfe00e3e57" kind="function"><name>real_to_binary</name></member>
@@ -15254,7 +15256,7 @@
     <member refid="kernels_8h_1a72b9b36917b4ba2c310153852b3de166" kind="function"><name>pairwise_distances</name></member>
     <member refid="kernels_8h_1a2d94d6212454123c173bead0ce03ba45" kind="function"><name>gather_rows</name></member>
     <member refid="kernels_8h_1a7c7b37eba7bf3d3a133b7d84c15e5a2c" kind="function"><name>ensure_size</name></member>
-    <member refid="Partition_8h_1a10e402ed1a6a4d801ac295a5c0ff9ee9" kind="function"><name>partition_and_visit</name></member>
+    <member refid="Partition_8h_1ad7807aa43f3c6c9e2fe1c197cc7870b2" kind="function"><name>partition_and_visit</name></member>
     <member refid="Partition_8h_1a937d784191c66bd80de02e0a24d9aea0" kind="function"><name>mix_seed</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1pipnn_1_1detail" kind="namespace"><name>faiss::pipnn::detail</name>
