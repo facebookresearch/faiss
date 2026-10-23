@@ -55,6 +55,38 @@ class TestPCA(unittest.TestCase):
         # Eigenvectors are unique up to per-component sign; compare abs.
         np.testing.assert_allclose(np.abs(y_first), np.abs(y_second), atol=1e-4)
 
+    def test_pca_large_offset(self):
+        x = np.array([[100001, 100000], [100000, 100001]], dtype="float32")
+
+        pca = faiss.PCAMatrix(2, 2)
+        pca.train(x)
+        basis = faiss.vector_to_array(pca.A).reshape(2, 2)
+
+        np.testing.assert_allclose(
+            np.abs(basis[0]), np.full(2, 1 / np.sqrt(2)), atol=1e-6
+        )
+        self.assertLess(basis[0, 0] * basis[0, 1], 0)
+        np.testing.assert_allclose(
+            faiss.vector_to_array(pca.eigenvalues), [1, 0], atol=1e-6
+        )
+        np.testing.assert_allclose(
+            faiss.vector_to_array(pca.b), -basis @ x.mean(axis=0)
+        )
+        np.testing.assert_allclose(
+            pca.apply_py(x), (x - x.mean(axis=0)) @ basis.T, atol=5e-3
+        )
+
+    def test_pca_without_bias(self):
+        x = np.array([[2, 0], [0, 1], [1, 2]], dtype="float32")
+
+        pca = faiss.PCAMatrix(2, 2)
+        pca.have_bias = False
+        pca.train(x)
+
+        expected = np.linalg.eigvalsh(x.T @ x)[::-1]
+        np.testing.assert_allclose(faiss.vector_to_array(pca.eigenvalues), expected)
+        np.testing.assert_array_equal(faiss.vector_to_array(pca.b), [0, 0])
+
     def test_pca_epsilon(self):
         d = 64
         n = 1000
