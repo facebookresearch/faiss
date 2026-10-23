@@ -88,8 +88,8 @@ class TestBinaryCagraDataset(unittest.TestCase):
         self.assertTrue(index.isSearchReady())
         with self.assertRaises(RuntimeError):
             index.updateDataset(self.host)
-        with self.assertRaisesRegex(RuntimeError, "reset"):
-            index.add(self.host)
+        index.train(self.host)
+        index.add(self.host)
         self.assertIsNotNone(storage_ref())
         self.check_search(index)
         index.reset()
@@ -106,6 +106,30 @@ class TestBinaryCagraDataset(unittest.TestCase):
         index.reset()
         self.assertIsNone(storage_ref())
 
+    def test_idmap_dataset(self):
+        ids = np.arange(len(self.xb), dtype="int64") * 7 + 100
+        for map_class in (faiss.IndexBinaryIDMap, faiss.IndexBinaryIDMap2):
+            with self.subTest(map_class=map_class.__name__):
+                storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
+                owner_ref = weakref.ref(storage)
+                cagra = self.make_index()
+                index = map_class(cagra)
+                index.add_with_ids(storage, ids)
+                index.train(self.host)  # Preserve the device Dataset owner.
+                if isinstance(index, faiss.IndexBinaryIDMap2):
+                    index.check_consistency()
+                expected_d, positions = cagra.search(self.xb[:8], 4)
+                actual_d, labels = index.search(self.xb[:8], 4)
+                np.testing.assert_array_equal(labels, ids[positions])
+                np.testing.assert_array_equal(actual_d, expected_d)
+                del storage
+                self.assertIsNotNone(owner_ref())
+                index.reset()
+                self.assertIsNone(owner_ref())
+                self.assertFalse(index.is_trained)
+                self.assertFalse(cagra.is_trained)
+                self.assertEqual(index.ntotal, 0)
+
     def test_cpu_serialization_and_optional_destination_import(self):
         index = self.make_index()
         index.train(self.host)
@@ -121,11 +145,8 @@ class TestBinaryCagraDataset(unittest.TestCase):
         evaluation.check_ref_knn_with_draws(
             expected_d, expected_i, actual_d, actual_i
         )
-        with self.assertRaisesRegex(RuntimeError, "Dataset"):
-            faiss.index_binary_cpu_to_gpu(self.res, 0, loaded)
-
-        graph_only = self.make_index()
-        graph_only.copyFrom(loaded)
+        graph_only = faiss.index_binary_cpu_to_gpu(self.res, 0, loaded)
+        self.assertTrue(graph_only.thisown)
         self.assertTrue(graph_only.is_trained)
         self.assertEqual(graph_only.ntotal, len(self.xb))
         self.assertFalse(graph_only.isSearchReady())

@@ -979,7 +979,6 @@ public:
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
-    DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
@@ -1011,6 +1010,9 @@ public:
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )
 #ifdef GPU_WRAPPER
+#ifdef FAISS_ENABLE_CUVS
+    DOWNCAST_GPU ( GpuIndexBinaryCagra )
+#endif
     DOWNCAST_GPU ( GpuIndexBinaryFlat )
 #endif
     // default for non-recognized classes
@@ -1127,6 +1129,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %newobject index_gpu_to_cpu;
 %newobject index_cpu_to_gpu;
+%newobject index_binary_cpu_to_gpu;
 %newobject index_cpu_to_gpu_multiple;
 
 %include  <faiss/gpu/GpuCloner.h>

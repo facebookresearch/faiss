@@ -357,7 +357,8 @@ Keep all borrowed allocations alive and unchanged through
 index use and queued GPU work; make data ready on the index resource's stream
 before use. Caller-supplied CUDA streams must also outlive GPU resources that
 cache cuVS allocations, even after reverting the default stream. `reset()` clears
-the borrowed binding and allows rebuilding. A moved owning Dataset retains the
+the borrowed binding and allows rebuilding. Repeated `train` or `add` calls on
+an already trained CAGRA leave its graph and Dataset unchanged. A moved owning Dataset retains the
 allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
@@ -368,8 +369,8 @@ overloads on `GpuIndexCagra` or `GpuIndexBinaryCagra`. Dataset ownership replace
 `store_dataset`. Pointer APIs for other index families are unchanged. Dataset
 construction, build, attachment, and import are available in C++ and Python;
 there is no C Dataset binding. Existing CPU HNSW search and serialization remain
-available. Generic CPU-to-GPU cloners do not accept CAGRA: use its explicit
-`copyFrom` method instead.
+available. Generic CPU-to-GPU CAGRA cloning imports the graph only, like
+`copyFrom(cpu)`; call `updateDataset` with populated device storage before search.
 
 In Python, `Dataset.viewHost(array)` borrows a two-dimensional NumPy array and
 infers its shape, dtype, and row stride. It accepts `float32`, `float16`, `int8`,
@@ -403,6 +404,12 @@ imported = faiss.GpuIndexBinaryCagra(resources, index.d, config)
 imported.copyFrom(cpu)  # Graph and metadata only; not search ready.
 imported.updateDataset(storage)  # Borrows these already-populated vectors.
 ```
+
+For custom IDs, wrap an empty CAGRA in `IndexIDMap` (or `IndexBinaryIDMap`),
+then call `mapped.train(storage)` and `mapped.add_with_ids(storage, ids)`.
+The IDs must cover every vector in the graph. `IndexIDMap2` variants are also
+supported. The wrapper keeps Dataset ownership on the wrapped CAGRA, so deleting
+the IDMap does not invalidate a CAGRA that the caller still retains.
 
 Python retains references to keep borrowed storage alive: `viewHost(array)`
 retains the NumPy array, `view()` retains its source Dataset, and CAGRA retains

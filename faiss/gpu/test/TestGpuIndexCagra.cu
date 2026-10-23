@@ -24,6 +24,7 @@
 #include <cuda_fp16.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/Dataset.h>
@@ -1111,6 +1112,46 @@ TEST(TestGpuIndexCagra, PointerConstructionRejectedThroughBaseInterfaces) {
     EXPECT_EQ(flat.ntotal, kRows);
 }
 
+TEST(TestGpuIndexCagra, DatasetIDMap) {
+    constexpr int dim = 20;
+    StandardGpuResources resources;
+    auto values = floatData(dim);
+    auto source = Dataset::viewHost(
+            values.data(), kRows, dim, NumericType::Float32, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexCagra cagra(&resources, dim, faiss::METRIC_L2, config());
+    faiss::IndexIDMap2 index(&cagra);
+    index.train(storage);
+    EXPECT_TRUE(index.is_trained);
+    const auto graph = cagra.get_knngraph();
+    faiss::Index* base = &index;
+    base->train(source);
+    EXPECT_TRUE(cagra.isSearchReady());
+    EXPECT_EQ(cagra.get_knngraph(), graph);
+
+    std::vector<idx_t> ids(kRows);
+    for (idx_t i = 0; i < kRows; ++i) {
+        ids[i] = 1000 + 2 * i;
+    }
+    index.add_with_ids(storage, ids.data());
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_EQ(index.id_map, ids);
+    EXPECT_NO_THROW(index.check_consistency());
+
+    std::vector<float> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search(8, values.data(), 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    for (auto label : labels) {
+        EXPECT_GE(label, 1000);
+        EXPECT_LT(label, 1000 + 2 * kRows);
+        EXPECT_EQ((label - 1000) % 2, 0);
+    }
+    index.reset();
+    EXPECT_FALSE(index.is_trained);
+    EXPECT_EQ(index.ntotal, 0);
+}
+
 TEST(TestGpuIndexCagra, BruteForceRequiresMultipleDevices) {
     StandardGpuResources resources;
     auto values = floatData(20);
@@ -1151,7 +1192,12 @@ TEST(TestGpuIndexCagra, CompatibleStandardDeviceBorrowsWithoutOwning) {
     EXPECT_TRUE(index.isSearchReady());
     auto movedStorage = std::move(storage);
     checkFloatSearch(index, values.data());
-    EXPECT_THROW(index.train(movedStorage), faiss::FaissException);
+    const auto graph = index.get_knngraph();
+    index.train(source);
+    index.add(source);
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    checkFloatSearch(index, values.data());
     index.reset();
     EXPECT_FALSE(index.isSearchReady());
     EXPECT_FALSE(index.is_trained);
@@ -1262,11 +1308,11 @@ TEST(TestGpuIndexCagra, GraphOnlyHostExportAndExplicitAttachment) {
     ASSERT_TRUE(restoredCagra->own_fields);
     delete restoredCagra->storage;
     restoredCagra->storage = nullptr;
-    GpuIndexCagra graphOnly(&resources, dim, faiss::METRIC_L2, config());
-    graphOnly.copyFrom(restoredCagra);
-    EXPECT_THROW(
-            faiss::gpu::index_cpu_to_gpu(&resources, 0, restored.get()),
-            faiss::FaissException);
+    std::unique_ptr<faiss::Index> cloned(
+            faiss::gpu::index_cpu_to_gpu(&resources, 0, restored.get()));
+    auto* clonedCagra = dynamic_cast<GpuIndexCagra*>(cloned.get());
+    ASSERT_NE(clonedCagra, nullptr);
+    auto& graphOnly = *clonedCagra;
     restored.reset();
     index.reset();
     EXPECT_TRUE(graphOnly.is_trained);

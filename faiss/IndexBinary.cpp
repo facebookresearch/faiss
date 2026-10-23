@@ -29,6 +29,14 @@ void IndexBinary::train(idx_t, const uint8_t*) {
     // Does nothing by default.
 }
 
+void IndexBinary::train(const gpu::Dataset&) {
+    FAISS_THROW_MSG("Dataset training not implemented for this type of index");
+}
+
+void IndexBinary::add(const gpu::Dataset&) {
+    FAISS_THROW_MSG("Dataset addition not implemented for this type of index");
+}
+
 void IndexBinary::range_search(
         idx_t,
         const uint8_t*,
