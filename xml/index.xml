@@ -11285,6 +11285,17 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a71039b0dc8cbcbdaec464897f1f7c419" kind="function"><name>distance_single_code</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad3222fd1bdaaa427093f421db9e21d7a" kind="function"><name>distance_four_codes</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8" kind="struct"><name>faiss::pq_code_distance::PQCodeDistanceScalar8</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8_1af960933c6d78c23b7cc4d19aa6468a39" kind="variable"><name>ksub</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8_1a29f7729dd5d1817e099e02c837a65151" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8_1a0746f75ac314692b6fc3264b85922282" kind="function"><name>distance_four_codes</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8Dist" kind="struct"><name>faiss::pq_code_distance::PQCodeDistanceScalar8Dist</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8Dist_1a597e759685d6a04538d113bb0c14bd18" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8Dist_1af20be51d0d02e5eae5a69e3c304a0903" kind="variable"><name>simd_level</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8Dist_1a3a1e6a3d6a5dfdc9a72e076c47754bde" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8Dist_1a62a051f1a497b933348ce968e153b126" kind="function"><name>distance_four_codes</name></member>
+  </compound>
   <compound refid="structfaiss_1_1PQDecoder16" kind="struct"><name>faiss::PQDecoder16</name>
     <member refid="structfaiss_1_1PQDecoder16_1a69eda3d6560cfbde9ddf9a2e55684582" kind="variable"><name>nbits</name></member>
     <member refid="structfaiss_1_1PQDecoder16_1ac8ad233a42295c64c326eda127628d69" kind="variable"><name>code</name></member>
@@ -13302,6 +13313,7 @@
     <member refid="structfaiss_1_1SIMDConfig_1a6e8453c8b55b793d1c00ae6ec5f3a753" kind="variable"><name>level</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kind="variable"><name>supported_simd_levels</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1afe75eb1264aea8745fe15c9d211d4bfb" kind="variable"><name>avx512_split</name></member>
+    <member refid="structfaiss_1_1SIMDConfig_1afa3c432ca843e2fa759d77b9ae0a6788" kind="variable"><name>scalar_gather</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1a37dc9382bb32ae1da760d67807a930a5" kind="function"><name>auto_detect_simd_level</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1af7f78b3cb0f5b34c3d36e7421936725b" kind="function"><name>has_dynamic_dispatch</name></member>
     <member refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kind="function"><name>set_level</name></member>
@@ -15290,6 +15302,8 @@
     <member refid="pq__code__distance-avx512_8h_1a3d859e591db60b14dc411921810b3a80" kind="function"><name>pq_code_distance_8bit_four_impl&lt; SIMDLevel::AVX512 &gt;</name></member>
     <member refid="pq__code__distance-generic_8h_1a77ef1c47f045d5de1c42d82b0b3f5baa" kind="function"><name>pq_code_distance_8bit_single_impl&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="pq__code__distance-generic_8h_1a5a1dd905dac5db29649f9f85deb33a1c" kind="function"><name>pq_code_distance_8bit_four_impl&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="pq__code__distance-inl_8h_1a51855246c50cce3138b06e7b5124d8c3" kind="function"><name>use_scalar_8bit_kernel</name></member>
+    <member refid="pq__code__distance-inl_8h_1a493d8a9b6a80f66e7e067b89c8ed4c5d" kind="function"><name>has_scalar_8bit_kernel</name></member>
     <member refid="pq__code__distance-inl_8h_1ae074d865d432950d5d1196c379125ea3" kind="function"><name>pq_code_distance_8bit_single_impl</name></member>
     <member refid="pq__code__distance-inl_8h_1a3ad1ef996be0787ff9aa55d21e2c2cba" kind="function"><name>pq_code_distance_8bit_four_impl</name></member>
     <member refid="pq__code__distance-inl_8h_1abe61927878ed9cacf7871fa8f557b08a" kind="function"><name>pq_code_distance_8bit_single</name></member>

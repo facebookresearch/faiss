@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="74" column="5" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="74" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="75" column="5" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a0b5ed02d5bceb53a6b55ac5bea335051" prot="public" static="no">
         <type>PQDecoderT</type>
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="76" column="18" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="76" bodyend="95"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="77" column="18" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="77" bodyend="96"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad3222fd1bdaaa427093f421db9e21d7a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -131,7 +131,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="97" column="17" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="97" bodyend="128"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="98" column="17" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="98" bodyend="129"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a71039b0dc8cbcbdaec464897f1f7c419" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -227,7 +227,7 @@
     <detaileddescription>
 <para>Scalar PQ code distance implementation. Used directly by non-PQDecoder8 decoders (<ref refid="structfaiss_1_1PQDecoder16" kindref="compound">PQDecoder16</ref>, <ref refid="structfaiss_1_1PQDecoderGeneric" kindref="compound">PQDecoderGeneric</ref>) and as fallback for <ref refid="structfaiss_1_1PQDecoder8" kindref="compound">PQDecoder8</ref> at NONE/NEON. </para>
     </detaileddescription>
-    <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="73" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="73" bodyend="129"/>
+    <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="74" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="74" bodyend="130"/>
     <listofallmembers>
       <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad3222fd1bdaaa427093f421db9e21d7a" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistanceScalar</scope><name>distance_four_codes</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad3222fd1bdaaa427093f421db9e21d7a" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistanceScalar</scope><name>distance_four_codes</name></member>

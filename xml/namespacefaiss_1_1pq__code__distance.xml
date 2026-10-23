@@ -6,6 +6,8 @@
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT" prot="public">faiss::pq_code_distance::IVFPQScannerT</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" prot="public">faiss::pq_code_distance::PQCodeDistance</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" prot="public">faiss::pq_code_distance::PQCodeDistanceScalar</innerclass>
+    <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8" prot="public">faiss::pq_code_distance::PQCodeDistanceScalar8</innerclass>
+    <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8Dist" prot="public">faiss::pq_code_distance::PQCodeDistanceScalar8Dist</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer" prot="public">faiss::pq_code_distance::PQDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1QueryTables" prot="public">faiss::pq_code_distance::QueryTables</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult" prot="public">faiss::pq_code_distance::WrappedSearchResult</innerclass>
@@ -110,7 +112,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="535" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="535" bodyend="579"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="535" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="535" bodyend="586"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -138,7 +140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" line="165" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" bodystart="165" bodyend="233"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" line="169" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" bodystart="169" bodyend="237"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx2_8h_1a10a1e541baf4537ece501bda4cb42f05" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -194,7 +196,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" line="238" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" bodystart="238" bodyend="354"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" line="242" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx2.h" bodystart="242" bodyend="358"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx512_8h_1a1eaddce4085fab8aa65f9cdea89485a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -222,7 +224,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" line="25" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" bodystart="25" bodyend="79"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" line="28" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" bodystart="28" bodyend="82"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx512_8h_1a3d859e591db60b14dc411921810b3a80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -278,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" line="84" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" bodystart="84" bodyend="158"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" line="87" column="1" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-avx512.h" bodystart="87" bodyend="161"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-generic_8h_1a77ef1c47f045d5de1c42d82b0b3f5baa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -364,6 +366,53 @@
         </inbodydescription>
         <location file="faiss/impl/pq_code_distance/pq_code_distance-generic.h" line="29" column="8" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-generic.h" bodystart="29" bodyend="52"/>
       </memberdef>
+      <memberdef kind="function" id="pq__code__distance-inl_8h_1a51855246c50cce3138b06e7b5124d8c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool faiss::pq_code_distance::use_scalar_8bit_kernel</definition>
+        <argsstring>(size_t M)</argsstring>
+        <name>use_scalar_8bit_kernel</name>
+        <qualifiedname>faiss::pq_code_distance::use_scalar_8bit_kernel</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="structfaiss_1_1SIMDConfig_1afa3c432ca843e2fa759d77b9ae0a6788" kindref="member">SIMDConfig::scalar_gather</ref> is set and the gather kernel of level SL is slower than <ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar8" kindref="compound">PQCodeDistanceScalar8</ref>: the AVX2 kernel at any M, the AVX-512 kernel at M &gt;= 16. The callers check this once per scan, not per code. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="195" column="13" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="195" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__code__distance-inl_8h_1a493d8a9b6a80f66e7e067b89c8ed4c5d" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::pq_code_distance::has_scalar_8bit_kernel</definition>
+        <argsstring>()</argsstring>
+        <name>has_scalar_8bit_kernel</name>
+        <qualifiedname>faiss::pq_code_distance::has_scalar_8bit_kernel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="206" column="16" bodyfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" bodystart="206" bodyend="208"/>
+      </memberdef>
       <memberdef kind="function" id="pq__code__distance-inl_8h_1ae074d865d432950d5d1196c379125ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -395,7 +444,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="140" column="7" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="140" declcolumn="7"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="260" column="7" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="260" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-inl_8h_1a3ad1ef996be0787ff9aa55d21e2c2cba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -456,7 +505,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="146" column="6" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="146" declcolumn="6"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="266" column="6" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="266" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-inl_8h_1abe61927878ed9cacf7871fa8f557b08a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>FAISS_API float</type>
@@ -483,7 +532,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="233" column="17" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="233" declcolumn="17"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="353" column="17" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="353" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-inl_8h_1adcab48d9e39ee72a7c180f72ed4d048e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>FAISS_API void</type>
@@ -538,7 +587,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="240" column="16" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="240" declcolumn="16"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="360" column="16" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="360" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-inl_8h_1a7f7dcedc5acc4f68dc6649f62a5b9fd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -591,7 +640,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="265" column="6" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="265" declcolumn="6"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="386" column="6" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="386" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-inl_8h_1ac76218c21c10273e4f6bec79d7192151" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>FAISS_API void</type>
@@ -638,7 +687,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="277" column="16" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="277" declcolumn="16"/>
+        <location file="faiss/impl/pq_code_distance/pq_code_distance-inl.h" line="398" column="16" declfile="faiss/impl/pq_code_distance/pq_code_distance-inl.h" declline="398" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="pq__scan__impl_8h_1a7a4f9155a8bdf90b740912cf77c80aac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -686,7 +735,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/pq_scan_impl.h" line="86" column="1" bodyfile="faiss/impl/pq_code_distance/pq_scan_impl.h" bodystart="86" bodyend="102"/>
+        <location file="faiss/impl/pq_code_distance/pq_scan_impl.h" line="87" column="1" bodyfile="faiss/impl/pq_code_distance/pq_scan_impl.h" bodystart="87" bodyend="113"/>
       </memberdef>
       <memberdef kind="function" id="PQDistanceComputer__impl_8h_1ac0f61604a0d9a19dec87e128fe7216d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -731,7 +780,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="102" column="1" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="102" bodyend="114"/>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="102" column="1" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="102" bodyend="120"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance_8h_1ae54f510e7f28d07e83966797daee014e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
