@@ -6,11 +6,35 @@
  */
 
 #include <cinttypes>
+#include <vector>
 
 #include <faiss/IndexReplicas.h>
 #include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
+
+namespace {
+
+/// Runs `fn`, then sets `ntotal` from the replicas. This also happens when
+/// `fn` throws, because some replicas may have changed before the error.
+/// If the replicas now differ, `ntotal` is the count of the first replica,
+/// and the caller gets the error of `fn`.
+template <typename Replicas, typename F>
+void runThenSync(Replicas& replicas, const F& fn) {
+    try {
+        fn();
+    } catch (...) {
+        try {
+            replicas.syncWithSubIndexes();
+        } catch (...) {
+            // Keep the exception of `fn`.
+        }
+        throw;
+    }
+    replicas.syncWithSubIndexes();
+}
+
+} // namespace
 
 namespace {
 
@@ -109,6 +133,33 @@ void IndexReplicasTemplate<IndexT>::add(idx_t n, const component_t* x) {
 
     this->runOnIndex(fn);
     syncWithSubIndexes();
+}
+
+template <typename IndexT>
+void IndexReplicasTemplate<IndexT>::add_with_ids(
+        idx_t n,
+        const component_t* x,
+        const idx_t* xids) {
+    runThenSync(*this, [&] {
+        this->runOnIndex([n, x, xids](int, IndexT* index) {
+            index->add_with_ids(n, x, xids);
+        });
+    });
+}
+
+template <typename IndexT>
+size_t IndexReplicasTemplate<IndexT>::remove_ids(const IDSelector& sel) {
+    std::vector<size_t> removed(this->count(), 0);
+    runThenSync(*this, [&] {
+        this->runOnIndex([&sel, &removed](int i, IndexT* index) {
+            removed[i] = index->remove_ids(sel);
+        });
+        for (size_t r : removed) {
+            FAISS_THROW_IF_MSG(
+                    r != removed[0], "the replicas removed different counts");
+        }
+    });
+    return removed.empty() ? 0 : removed[0];
 }
 
 template <typename IndexT>

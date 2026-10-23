@@ -10,6 +10,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <functional>
+#include <vector>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
@@ -191,6 +192,28 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
 
     this->runOnIndex(fn);
     syncWithSubIndexes();
+}
+
+template <typename IndexT>
+size_t IndexShardsTemplate<IndexT>::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_MSG(
+            successive_ids, "remove_ids needs successive_ids = false");
+    std::vector<size_t> removed(this->count(), 0);
+    try {
+        this->runOnIndex([&sel, &removed](int no, IndexT* index) {
+            removed[no] = index->remove_ids(sel);
+        });
+    } catch (...) {
+        // The other shards removed their ids before the exception.
+        syncWithSubIndexes();
+        throw;
+    }
+    syncWithSubIndexes();
+    size_t total = 0;
+    for (size_t r : removed) {
+        total += r;
+    }
+    return total;
 }
 
 template <typename IndexT>
