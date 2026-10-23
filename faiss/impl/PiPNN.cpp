@@ -10,6 +10,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cfloat>
 #include <cmath>
@@ -170,7 +171,7 @@ struct Duplicates {
 
 } // namespace
 
-int32_t medoid_and_validate(const Index& storage) {
+int32_t medoid_and_validate(const Index& storage, float* norm_cv) {
     const size_t d = size_t(storage.d);
     const size_t n = size_t(storage.ntotal);
     FAISS_THROW_IF_MSG(n == 0, "PiPNN: the medoid of 0 vectors is undefined");
@@ -182,6 +183,7 @@ int32_t medoid_and_validate(const Index& storage) {
     std::vector<float> mean(d);
     // (distance to the mean, id): pairs order ties by the lower id
     std::vector<std::pair<float, int32_t>> block_best(nblocks);
+    std::vector<std::array<double, 3>> norm_sums(norm_cv ? nblocks : 0);
 
     // pass 0: validate and sum per block; pass 1: per-block argmin
     for (int pass = 0; pass < 2; pass++) {
@@ -218,6 +220,11 @@ int32_t medoid_and_validate(const Index& storage) {
                                         "%g; need finite and <= FLT_MAX / 8",
                                         j0 + r,
                                         double(nrm));
+                                if (norm_cv && nrm > 0) {
+                                    norm_sums[b][0] += 1;
+                                    norm_sums[b][1] += std::sqrt(double(nrm));
+                                    norm_sums[b][2] += nrm;
+                                }
                                 for (size_t j = 0; j < d; j++) {
                                     acc[j] += double(x[j]);
                                 }
@@ -251,6 +258,20 @@ int32_t medoid_and_validate(const Index& storage) {
                 }
                 mean[j] = float(s / double(n));
             }
+        }
+    }
+    if (norm_cv) {
+        double c = 0, s1 = 0, s2 = 0;
+        for (const auto& [bc, b1, b2] : norm_sums) {
+            c += bc;
+            s1 += b1;
+            s2 += b2;
+        }
+        if (c == 0) {
+            *norm_cv = 0;
+        } else {
+            const double mean = s1 / c;
+            *norm_cv = std::sqrt(std::max(s2 / c - mean * mean, 0.0)) / mean;
         }
     }
     return std::min_element(block_best.begin(), block_best.end())->second;
@@ -371,7 +392,8 @@ void final_prune(
         const Index& storage,
         const Duplicates& dup,
         float alpha,
-        int R) {
+        int R,
+        bool cosine) {
     const size_t d = size_t(storage.d);
     const MetricType metric = storage.metric_type;
     int32_t* graph = st.graph.get();
@@ -406,6 +428,9 @@ void final_prune(
                         ids[1 + t] = r.slots[t].id;
                     }
                     gather_rows(storage, ids.data(), m, X.get());
+                    if (cosine) {
+                        fvec_renorm_L2(d, m, X.get());
+                    }
                     for (size_t t = 0; t < m; t++) {
                         norms[t] = fvec_norm_L2sqr(X.get() + t * d, d);
                     }
@@ -477,17 +502,21 @@ void build_with_chunk(
         size_t reservoir_chunk,
         bool verbose) {
     p.check_params();
-    const float alpha =
-            p.effective_alpha(storage.metric_type); // rejects other metrics
     const size_t n = size_t(storage.ntotal);
     if (n == 0) {
+        p.effective_alpha(storage.metric_type);
         p.reset();
         return;
     }
 
     const double t0 = getmillisecs();
     InterruptCallback::check();
-    const int32_t ep = medoid_and_validate(storage);
+    float norm_cv = 0;
+    const int32_t ep = medoid_and_validate(
+            storage,
+            storage.metric_type == METRIC_INNER_PRODUCT ? &norm_cv : nullptr);
+    const bool cosine = norm_cv > 0.05f;
+    const float alpha = p.effective_alpha(storage.metric_type, cosine);
     if (verbose) {
         printf("PiPNN: medoid and validation of %zu vectors (d=%d): %.3f s\n",
                n,
@@ -500,7 +529,7 @@ void build_with_chunk(
     fill_reservoirs(st, storage, dup, p, verbose);
 
     const double t1 = getmillisecs();
-    final_prune(st, storage, dup, alpha, p.R);
+    final_prune(st, storage, dup, alpha, p.R, cosine);
     std::vector<int32_t> next_copy =
             dup.link_copies(st.graph.get(), size_t(p.R));
     InterruptCallback::check();
@@ -648,14 +677,14 @@ void beam_search(
 
 } // namespace pipnn
 
-float PiPNN::effective_alpha(MetricType metric) const {
+float PiPNN::effective_alpha(MetricType metric, bool cosine) const {
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "PiPNN supports only METRIC_L2 and METRIC_INNER_PRODUCT");
     if (alpha != 0) {
         return alpha;
     }
-    return metric == METRIC_INNER_PRODUCT ? 1.0f : 1.2f;
+    return metric == METRIC_INNER_PRODUCT && !cosine ? 1.0f : 1.2f;
 }
 
 void PiPNN::check_params() const {
