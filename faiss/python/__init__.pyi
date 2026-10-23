@@ -3490,6 +3490,7 @@ class PiPNN:
     partition_wave_budget: int
     search_L: int
     graph: MaybeOwnedVectorInt32
+    next_copy: MaybeOwnedVectorInt32
     entry_point: int
     ntotal: int
 

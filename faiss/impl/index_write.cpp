@@ -442,6 +442,7 @@ static void write_PiPNN(const PiPNN& pipnn, IOWriter* f) {
     WRITE1(pipnn.ntotal);
     WRITE1(pipnn.entry_point);
     WRITEANDCHECK(pipnn.graph.data(), pipnn.graph.size());
+    WRITEVECTOR(pipnn.next_copy);
 }
 
 // Write RaBitQuantizer for 1-bit format (backward compatible)

@@ -1407,6 +1407,10 @@ static void read_PiPNN(PiPNN& pipnn, idx_t index_ntotal, IOReader* f) {
             FAISS_CHECK_RANGE(id, -1, pipnn.ntotal);
         }
     }
+    read_vector(pipnn.next_copy, f);
+    FAISS_THROW_IF_NOT(
+            pipnn.next_copy.size() == 0 ||
+            pipnn.next_copy.size() == size_t(pipnn.ntotal));
 }
 
 static void read_NNDescent(NNDescent& nnd, IOReader* f) {

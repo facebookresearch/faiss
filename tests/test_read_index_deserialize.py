@@ -3022,6 +3022,7 @@ def pipnn_payload(
     ntotal=2,
     entry_point=0,
     graph=(1, -1, 0, -1),
+    next_copy=(),
     storage_ntotal=2,
     storage_d=PIPNN_DIM,
     panorama_storage=False,
@@ -3044,6 +3045,7 @@ def pipnn_payload(
     push_val(buf, INT, entry_point)
     for neighbor in graph:
         push_val(buf, INT, neighbor)
+    push_vector(buf, INT, next_copy)
     if panorama_storage:
         push_flat_panorama(buf, PIPNN_DIM, 1, 1024, storage_ntotal, 0, 0)
     else:
@@ -3065,6 +3067,7 @@ class TestPiPNNDeserialize(FaissTestCase):
             ({"graph": (1, 2, 0, -1)}, "out of range"),
             ({"entry_point": 2}, "entry_point"),
             ({"entry_point": -1}, "entry_point"),
+            ({"next_copy": (1,)}, "next_copy.size()"),
             ({**EMPTY_PIPNN, "panorama_storage": True}, "unsupported storage"),
             ({"storage_ntotal": 3}, "PiPNN storage ntotal"),
             ({"storage_d": 2 * PIPNN_DIM}, "PiPNN storage d"),
@@ -3076,8 +3079,11 @@ class TestPiPNNDeserialize(FaissTestCase):
 
     def test_corrupt_graph_view_search_stays_in_bounds(self):
         # views skip the neighbour scan on read; search must still stay in
-        # bounds on corrupt neighbour ids, above ntotal and negative
-        data = np.array(pipnn_payload(graph=(1, 99, -5, -1)), dtype="uint8")
+        # bounds on corrupt neighbour and copy ids, above ntotal and negative
+        data = np.array(
+            pipnn_payload(graph=(1, 99, -5, -1), next_copy=(99, -1)),
+            dtype="uint8",
+        )
         index = faiss.read_index(
             faiss.ZeroCopyIOReader(faiss.swig_ptr(data), data.size)
         )
