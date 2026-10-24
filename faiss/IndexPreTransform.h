@@ -15,9 +15,18 @@
 namespace faiss {
 
 struct SearchParametersPreTransform : SearchParameters {
-    // nothing to add here.
-    // as such, encapsulating the search params is considered optional
+    // Sub-index parameters. Encapsulating them remains optional when the
+    // transform uses its default serial execution.
     SearchParameters* index_params = nullptr;
+
+    /** Number of OpenMP threads used for independent query-transform blocks.
+     * 0 preserves the existing serial transform. 1 explicitly requests
+     * serial execution. Values greater than 1 enable block parallelism.
+     */
+    int transform_threads = 0;
+
+    /// Number of queries transformed by each parallel task.
+    idx_t transform_block_size = 64;
 };
 
 /** Index that applies a LinearTransform transform on vectors before
@@ -90,6 +99,16 @@ struct IndexPreTransform : Index {
     /// apply the transforms in the chain. The returned float * may be
     /// equal to x, otherwise it should be deallocated.
     const float* apply_chain(idx_t n, const float* x) const;
+
+    /** Apply each transform in independent query blocks. A barrier between
+     * chain elements preserves the original transform order. The returned
+     * pointer follows the same ownership contract as apply_chain().
+     */
+    const float* apply_chain_parallel(
+            idx_t n,
+            const float* x,
+            int transform_threads,
+            idx_t block_size) const;
 
     /// Reverse the transforms in the chain. May not be implemented for
     /// all transforms in the chain or may return approximate results.

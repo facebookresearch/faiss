@@ -9,9 +9,11 @@
 
 #include <faiss/IndexPreTransform.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <exception>
 #include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -135,6 +137,56 @@ const float* IndexPreTransform::apply_chain(idx_t n, const float* x) const {
     return prev_x;
 }
 
+const float* IndexPreTransform::apply_chain_parallel(
+        idx_t n,
+        const float* x,
+        int transform_threads,
+        idx_t block_size) const {
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "negative vector count");
+    FAISS_THROW_IF_NOT_MSG(
+            transform_threads >= 1, "transform_threads must be positive");
+    FAISS_THROW_IF_NOT_MSG(block_size >= 1, "block_size must be positive");
+    if (transform_threads == 1 || n <= block_size || chain.empty()) {
+        return apply_chain(n, x);
+    }
+
+    const idx_t block_count = n / block_size + (n % block_size != 0);
+    const int active_threads =
+            static_cast<int>(std::min<idx_t>(transform_threads, block_count));
+    const float* prev_x = x;
+    std::unique_ptr<const float[]> previous_owner;
+
+    for (const VectorTransform* transform : chain) {
+        auto transformed =
+                std::make_unique<float[]>(size_t(n) * transform->d_out);
+        std::exception_ptr error;
+#pragma omp parallel for num_threads(active_threads) schedule(static)
+        for (idx_t begin = 0; begin < n; begin += block_size) {
+            try {
+                const idx_t count = std::min(block_size, n - begin);
+                transform->apply_noalloc(
+                        count,
+                        prev_x + size_t(begin) * transform->d_in,
+                        transformed.get() + size_t(begin) * transform->d_out);
+            } catch (...) {
+#pragma omp critical
+                {
+                    if (!error) {
+                        error = std::current_exception();
+                    }
+                }
+            }
+        }
+        if (error) {
+            std::rethrow_exception(error);
+        }
+        previous_owner.reset();
+        prev_x = transformed.get();
+        previous_owner = std::move(transformed);
+    }
+    return previous_owner.release();
+}
+
 void IndexPreTransform::reverse_chain(idx_t n, const float* xt, float* x)
         const {
     const float* next_x = xt;
@@ -174,6 +226,19 @@ const SearchParameters* extract_index_search_params(
     return params ? params->index_params : params_in;
 }
 
+const float* apply_chain_for_search(
+        const IndexPreTransform& index,
+        idx_t n,
+        const float* x,
+        const SearchParameters* params_in) {
+    auto params = dynamic_cast<const SearchParametersPreTransform*>(params_in);
+    if (!params || params->transform_threads == 0) {
+        return index.apply_chain(n, x);
+    }
+    return index.apply_chain_parallel(
+            n, x, params->transform_threads, params->transform_block_size);
+}
+
 } // namespace
 
 void IndexPreTransform::search(
@@ -185,7 +250,7 @@ void IndexPreTransform::search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
-    const float* xt = apply_chain(n, x);
+    const float* xt = apply_chain_for_search(*this, n, x, params);
     std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
     index->search(
             n, xt, k, distances, labels, extract_index_search_params(params));
@@ -198,7 +263,7 @@ void IndexPreTransform::range_search(
         RangeSearchResult* result,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(is_trained);
-    TransformedVectors tv(x, apply_chain(n, x));
+    TransformedVectors tv(x, apply_chain_for_search(*this, n, x, params));
     index->range_search(
             n, tv.x, radius, result, extract_index_search_params(params));
 }
@@ -261,7 +326,7 @@ void IndexPreTransform::search_and_reconstruct(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
-    TransformedVectors trans(x, apply_chain(n, x));
+    TransformedVectors trans(x, apply_chain_for_search(*this, n, x, params));
 
     float* recons_temp = chain.empty() ? recons : new float[n * k * index->d];
     std::unique_ptr<float[]> del2(
