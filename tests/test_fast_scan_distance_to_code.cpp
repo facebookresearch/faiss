@@ -153,7 +153,7 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
         std::unordered_set<idx_t> S1(I1q, I1q + k);
         int ndiff = 0;
         for (idx_t id : S0) {
-            if (S1.find(id) == S1.end()) {
+            if (!S1.contains(id)) {
                 ndiff++;
             }
         }
