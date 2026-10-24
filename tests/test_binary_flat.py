@@ -39,3 +39,12 @@ class TestBinaryFlat(unittest.TestCase):
                 .min()
             )
             self.assertEqual(int(dist_min), int(dis[i, 0]))
+
+    def test_reconstruct_out_of_range(self):
+        d = 64
+        index = faiss.IndexBinaryFlat(d)
+        index.add(np.zeros((16, d // 8), dtype=np.uint8))
+
+        index.reconstruct(15)
+        for key in -1, 16, 10**9:
+            self.assertRaises(RuntimeError, index.reconstruct, key)

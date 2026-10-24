@@ -100,6 +100,7 @@ size_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {
 }
 
 void IndexBinaryFlat::reconstruct(idx_t key, uint8_t* recons) const {
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     memcpy(recons, &(xb[code_size * key]), sizeof(*recons) * code_size);
 }
 
