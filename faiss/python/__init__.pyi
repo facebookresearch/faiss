@@ -584,7 +584,8 @@ class HadamardRotation(VectorTransform):
     Inputs are zero-padded to d_out, the next power of two, before the first
     round; the final normalization preserves norms and inner products.
 
-    Two rounds suffice for asymptotically Gaussian scalar marginals; three
+    Two rounds suffice for the scalar marginal guarantees relevant to the
+    scalar quantization steps of RaBitQ, EDEN, and TurboQuant. Three rounds
     also provide the fixed-block VQ guarantee. See Ben-Basat et al.,
     "Quantizing With Randomized Hadamard Transforms: Efficient Heuristic Now
     Proven", Sections 3-6, https://arxiv.org/abs/2605.06014.

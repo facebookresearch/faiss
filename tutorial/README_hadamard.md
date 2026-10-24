@@ -45,6 +45,16 @@ RHTs suffice for the scalar marginal guarantee** used by scalar quantizers.
 Sections 4-5 derive asymptotically URR-matching guarantees for DRIVE and
 QUIC-FL. One RHT can have non-Gaussian marginals on sparse inputs.
 
+**RaBitQ, EDEN, and TurboQuant use scalar quantization:** their quantization
+steps assign scalar codes to individual transformed coordinates, rather
+than selecting a joint codeword for a block of coordinates. They may also
+use a shared per-vector scale or an additional correction stage. For their
+scalar quantization steps, **two RHTs are enough for the scalar marginal
+guarantees established by the NeurIPS 2026 paper** [Ben-Basat et al.][paper].
+The third RHT is not needed to obtain those guarantees; its stronger
+fixed-block guarantee addresses vector quantization. Algorithm-specific
+scaling and correction analyses still apply.
+
 Scalar quantizers encode coordinates separately. Vector quantizers encode
 blocks jointly, so their behavior also depends on the joint distribution.
 Section 6 of [the same paper][paper] shows that two RHTs can retain block

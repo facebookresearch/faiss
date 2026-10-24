@@ -139,9 +139,11 @@ struct RandomRotationMatrix : LinearTransform {
  * products (up to floating-point error). Cost is O(rounds * d_out * log d_out).
  *
  * Two RHTs suffice for the asymptotically Gaussian scalar marginals used in
- * scalar quantization. Three RHTs additionally give the fixed-block guarantee
- * for vector quantization. See Ben-Basat et al., "Quantizing With Randomized
- * Hadamard Transforms: Efficient Heuristic Now Proven", Sections 3-6:
+ * scalar quantization, including the scalar quantization steps of RaBitQ,
+ * EDEN, and TurboQuant. Three RHTs additionally give the fixed-block guarantee
+ * for vector quantization. See Ben-Basat et al. (NeurIPS 2026),
+ * "Quantizing With Randomized Hadamard Transforms: Efficient Heuristic Now
+ * Proven", Sections 3-6:
  * https://arxiv.org/abs/2605.06014. These are asymptotic distribution/error
  * guarantees, not a guarantee of identical finite-dimensional ANN recall.
  */
