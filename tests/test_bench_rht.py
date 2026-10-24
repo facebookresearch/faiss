@@ -273,6 +273,69 @@ class TestNativeRHTBenchmark(unittest.TestCase):
         cls.faiss = faiss
         cls.faiss.omp_set_num_threads(1)
 
+    def test_faiss_synthetic_matches_standard_dataset(self):
+        from faiss.contrib.datasets import SyntheticDataset
+
+        bench = load_benchmark()
+        args = bench.make_parser().parse_args([
+            "--synthetic", "faiss", "--d", "32", "--nt", "20",
+            "--nb", "30", "--nq", "4", "--data-seed", "11",
+        ])
+        xt, xb, xq, provenance = bench.load_data(args)
+        expected = SyntheticDataset(32, 20, 30, 4, metric="L2", seed=11)
+        for actual, reference in zip(
+            (xt, xb, xq),
+            (expected.get_train(), expected.get_database(), expected.get_queries()),
+        ):
+            np.testing.assert_array_equal(actual, reference)
+        self.assertEqual(provenance["source"], "faiss.contrib.datasets.SyntheticDataset")
+        self.assertEqual(provenance["data_seed"], 11)
+
+    def test_turboquant_report_and_serialize(self):
+        bench = load_benchmark()
+        rng = np.random.default_rng(10)
+        xb = rng.standard_normal((30, 32), dtype=np.float32)
+        for family, prefix, qtype in (
+            ("TurboQuant", "SQtq", self.faiss.ScalarQuantizer.QT_2bit_tq),
+        ):
+            with self.subTest(family=family):
+                index, leaf, _ = bench.make_index(
+                    self.faiss, 32, family, 2, "rht2", 7, 0, False
+                )
+                self.assertEqual(leaf.sq.qtype, qtype)
+                index.train(xb)
+                index.add(xb)
+                transformed = bench.apply_transform(self.faiss, index, xb)
+                np.testing.assert_allclose(
+                    bench.reconstruct_leaf(self.faiss, leaf, 0, len(xb)),
+                    leaf.sa_decode(leaf.sa_encode(transformed)), atol=1e-6,
+                )
+                restored = self.faiss.deserialize_index(
+                    self.faiss.serialize_index(index)
+                )
+                actual, expected = restored.search(xb[:3], 3), index.search(xb[:3], 3)
+                np.testing.assert_array_equal(actual[0], expected[0])
+                np.testing.assert_array_equal(actual[1], expected[1])
+                with tempfile.TemporaryDirectory() as temp:
+                    output = Path(temp) / "tq.json"
+                    args = bench.make_parser().parse_args([
+                        "--synthetic", "faiss", "--d", "32", "--nt", "20",
+                        "--nb", "30", "--nq", "4", "--indexes", family,
+                        "--bits", "2", "3", "4", "--modes", "rht2", "rht3",
+                        "--seeds", "7", "--batch-sizes", "4", "--k", "3",
+                        "--repeats", "1", "--warmups", "0", "--bootstrap", "5",
+                        "--output", str(output),
+                    ])
+                    with redirect_stdout(io.StringIO()):
+                        bench.run(args)
+                    report = json.loads(output.read_text())
+                    self.assertEqual(report["status"], "complete")
+                    self.assertEqual(len(report["rows"]), 6)
+                    for row in report["rows"]:
+                        self.assertEqual(row["factory"], prefix + str(row["bits"]))
+                        self.assertEqual(row["reconstruction"]["center"], "zero")
+                        self.assertTrue(np.isfinite(row["nmse"]))
+
     def test_tiny_end_to_end_checkpoint_contains_complete_metrics(self):
         bench = load_benchmark()
         with tempfile.TemporaryDirectory() as temp:

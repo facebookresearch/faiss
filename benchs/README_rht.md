@@ -13,6 +13,42 @@ means three rounds. This benchmark does not implement per-vector routing.
 The default budgets are 2/3/4 bits. Use `--bits 1 2 3 4` to include the
 one-bit operating point supported by both native quantizers.
 
+For Faiss's standard synthetic workload, use `--synthetic faiss`. This calls
+`faiss.contrib.datasets.SyntheticDataset` with the selected dimension, split
+sizes, and data seed. It is distinct from the independent Gaussian generator.
+The same dataset is reused across every transform seed and round count.
+
+`--indexes RaBitQ EDEN TurboQuant` includes full TurboQuant, using
+`SQtq<bits>` with its residual correction. It accepts 2/3/4 bits in this
+runner; its one-bit setting is rejected. RaBitQ and EDEN also accept one bit.
+Defaults are unchanged. The MSE-only `SQtqmse` variant is not included: its
+fixed codebook requires unit-norm inputs, unlike these unnormalised workloads.
+
+The benchmark preserves each native quantizer's centering: RaBitQ and EDEN
+learn a center, whereas TurboQuant uses zero. Each result records
+the actual factory string and reconstruction center. NMSE denominators
+therefore differ across those families; use paired comparisons of round counts
+within each family to evaluate 2RHT versus 3RHT. Reconstruction diagnostics
+use native decoding for TurboQuant (including its correction for `SQtq`),
+and full multibit reconstruction for RaBitQ. These are decoder errors, not
+an assertion that every search score equals distance to its decoded vector.
+
+For example, the following runs all three families at 2/3/4 bits, with five
+paired seeds and all five rotation modes (225 configurations):
+
+```sh
+python benchs/bench_rht.py --synthetic faiss --d 64 \
+  --nt 4000 --nb 4000 --nq 2500 --data-seed 1338 \
+  --indexes RaBitQ EDEN TurboQuant --bits 2 3 4 \
+  --modes none urr rht1 rht2 rht3 --seeds 12345 12346 12347 12348 12349 \
+  --qb 0 --k 10 --batch-sizes 256 --threads 1 --warmups 1 --repeats 3 \
+  --check-disjoint --output results/faiss_synthetic.json
+```
+
+Summaries retain the existing 1RHT baseline. For a direct 2RHT/3RHT recall
+comparison, pair their raw `recall_by_query` arrays by family, bit width,
+batch size, seed, and query, then apply `paired_bootstrap` to the two matrices.
+
 `urr` is a Haar draw from the orthogonal group: Gaussian QR in float64 with
 the diagonal signs of R corrected, then rounded to float32 and installed in
 a native `LinearTransform`. It is distinct from the operational Faiss `RR`

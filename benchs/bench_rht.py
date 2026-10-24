@@ -52,7 +52,9 @@ def make_parser():
         "--data-dir", type=Path, help="Directory containing fvecs files"
     )
     source.add_argument(
-        "--synthetic", choices=("gaussian", "student_t", "sparse32"), default="gaussian"
+        "--synthetic",
+        choices=("faiss", "gaussian", "student_t", "sparse32"),
+        default="gaussian",
     )
     parser.add_argument("--base", default="base.fvecs")
     parser.add_argument("--queries", default="query.fvecs")
@@ -73,7 +75,9 @@ def make_parser():
         "--hash-files", action="store_true", help="SHA-256 all input files"
     )
     parser.add_argument(
-        "--indexes", nargs="+", choices=("RaBitQ", "EDEN"), default=["RaBitQ", "EDEN"]
+        "--indexes", nargs="+",
+        choices=("RaBitQ", "EDEN", "TurboQuant"),
+        default=["RaBitQ", "EDEN"],
     )
     parser.add_argument(
         "--bits", type=int, nargs="+", choices=(1, 2, 3, 4), default=[2, 3, 4]
@@ -156,6 +160,25 @@ def load_data(args):
             paths.append(args.data_dir / args.train)
             xt = read_fvecs(paths[-1])
         provenance["files"] = [file_record(path, args.hash_files) for path in paths]
+    elif args.synthetic == "faiss":
+        from faiss.contrib.datasets import SyntheticDataset
+
+        if args.d <= 0:
+            raise ValueError("d must be positive")
+        dataset = SyntheticDataset(
+            args.d, args.nt, args.nb, args.nq, metric="L2", seed=args.data_seed
+        )
+        xt, xb, xq = (
+            dataset.get_train(), dataset.get_database(), dataset.get_queries()
+        )
+        provenance.update(
+            source="faiss.contrib.datasets.SyntheticDataset",
+            distribution="faiss", data_seed=args.data_seed,
+            training_base_disjointness=(
+                "disjoint SyntheticDataset source rows; "
+                "exact vector duplicates not checked"
+            ),
+        )
     else:
         if args.d <= 0:
             raise ValueError("d must be positive")
@@ -286,6 +309,14 @@ def haar_matrix(d, seed):
     return np.ascontiguousarray(q * signs, dtype="float32")
 
 
+def factory_string(family, bits):
+    if family == "TurboQuant":
+        if bits not in (2, 3, 4):
+            raise ValueError("TurboQuant requires 2, 3, or 4 bits in this runner")
+        return f"SQtq{bits}"
+    return f"{family}{bits}"
+
+
 def make_index(faiss, d, family, bits, mode, seed, qb, pad_baselines):
     """Build a native IndexPreTransform and return its leaf and dimensions."""
     padded_d = 1 << (d - 1).bit_length()
@@ -303,7 +334,7 @@ def make_index(faiss, d, family, bits, mode, seed, qb, pad_baselines):
         transform = faiss.RemapDimensionsTransform(d, d_out, False)
     elif mode != "none":
         raise ValueError(f"unsupported mode: {mode}")
-    leaf = faiss.index_factory(d_out, f"{family}{bits}", faiss.METRIC_L2)
+    leaf = faiss.index_factory(d_out, factory_string(family, bits), faiss.METRIC_L2)
     if family == "RaBitQ":
         leaf.qb = qb
     index = leaf if transform is None else faiss.IndexPreTransform(transform, leaf)
@@ -328,7 +359,7 @@ def apply_transform(faiss, index, values):
 
 
 def reconstruct_leaf(faiss, leaf, start, count):
-    """Decode full stored multibit RaBitQ values, or use EDEN's native decoder.
+    """Decode full multibit RaBitQ values, or use the leaf's native decoder.
 
     RaBitQ's native sa_decode/reconstruct_n exposes only its sign-bit baseline.
     The extended code's IP factor gives the full reconstruction vector used
@@ -578,6 +609,9 @@ def run_native(args, faiss):
             raise ValueError(f"duplicate {name} would invalidate pairing")
     if any(seed < 0 or seed >= 2 ** 32 for seed in args.seeds):
         raise ValueError("transform seeds must be uint32 values")
+    for family in args.indexes:
+        for bits in args.bits:
+            factory_string(family, bits)
     faiss.omp_set_num_threads(args.threads)
     xt, xb, xq, provenance = load_data(args)
     if args.k > len(xb):
@@ -600,8 +634,8 @@ def run_native(args, faiss):
         "config": config,
         "data": provenance,
         "metric": "set Recall@k against exact original-space IndexFlatL2",
-        "score_semantics": "native approximate squared-L2 scores, including native zero clamp",
-        "training_semantics": "native leaf training mean from the same transformed training rows in every mode",
+        "score_semantics": "native approximate squared-L2 scores; native clamping where applicable (full TurboQuant does not clamp)",
+        "training_semantics": "same transformed training rows; native trained center for RaBitQ/EDEN, zero center for TurboQuant",
         "dimension_control": "padded-baselines"
         if args.pad_baselines
         else "native-size-baselines",
@@ -645,9 +679,14 @@ def run_native(args, faiss):
         nmse_count = min(len(xb), args.nmse_max_vectors or len(xb))
         diagnostic_values = apply_transform(faiss, index, xb[:nmse_count])
         reconstructed = reconstruct_leaf(faiss, leaf, 0, nmse_count)
-        center = faiss.vector_to_array(leaf.center)
+        has_center = hasattr(leaf, "center")
+        center = faiss.vector_to_array(leaf.center) if has_center else np.zeros(d_out)
         reconstruction = reconstruction_metrics(
             diagnostic_values, reconstructed, center
+        )
+        reconstruction["center"] = "native trained center" if has_center else "zero"
+        reconstruction["domain"] = (
+            "transformed coordinates relative to " + reconstruction["center"]
         )
         rounds = int(mode[-1]) if mode.startswith("rht") else 0
         label = f"{family}{bits}/{MODE_LABELS[mode]}/qb{args.qb if family == 'RaBitQ' else 'NA'}/{report['dimension_control']}"
@@ -675,7 +714,7 @@ def run_native(args, faiss):
             row = {
                 "case_label": label,
                 "index": family,
-                "factory": f"{family}{bits}",
+                "factory": factory_string(family, bits),
                 "bits": bits,
                 "mode": mode,
                 "seed": seed,
