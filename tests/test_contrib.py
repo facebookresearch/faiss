@@ -526,10 +526,9 @@ class TestPreassigned(unittest.TestCase):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
-    def test_range_search_preassigned_coarse_dis_none_matches_zeros(self):
-        """coarse_dis=None must match coarse_dis=zeros. Before the fix,
-        np.empty left uninitialized values that IVFPQ by_residual=True
-        reads for distance correction, producing nondeterministic results."""
+    def test_range_search_preassigned_coarse_dis_none(self):
+        """coarse_dis=None must match the coarse quantizer's distances,
+        which IVFPQ with by_residual=True reads for distance correction."""
         ds = datasets.SyntheticDataset(32, 1000, 500, 50)
         index = faiss.index_factory(ds.d, "IVF10,PQ4x4")
         index.train(ds.get_train())
@@ -537,17 +536,39 @@ class TestPreassigned(unittest.TestCase):
         index.nprobe = 5
         self.assertTrue(index.by_residual)
         xq = ds.get_queries()
-        _, list_nos = index.quantizer.search(xq, index.nprobe)
-        zero_dis = np.zeros(list_nos.shape, dtype=np.float32)
-        lz, Dz, Iz = ivf_tools.range_search_preassigned(
-            index, xq, 10.0, list_nos, zero_dis
+        Dq, list_nos = index.quantizer.search(xq, index.nprobe)
+        lq, Dr, Ir = ivf_tools.range_search_preassigned(
+            index, xq, 10.0, list_nos, Dq
         )
         ln, Dn, In = ivf_tools.range_search_preassigned(
             index, xq, 10.0, list_nos
         )
-        np.testing.assert_array_equal(lz, ln)
-        np.testing.assert_array_equal(Iz, In)
-        np.testing.assert_array_equal(Dz, Dn)
+        np.testing.assert_array_equal(lq, ln)
+        np.testing.assert_array_equal(Ir, In)
+        np.testing.assert_allclose(Dr, Dn, rtol=1e-5, atol=1e-5)
+
+    def do_test_search_preassigned_coarse_dis_none(self, key, metric):
+        ds = datasets.SyntheticDataset(32, 2000, 2000, 100)
+        index = faiss.index_factory(ds.d, key, metric)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 8
+        xq = ds.get_queries()
+        D_ref, I_ref = index.search(xq, 10)
+        _, list_nos = index.quantizer.search(xq, index.nprobe)
+        D, I = ivf_tools.search_preassigned(index, xq, 10, list_nos)
+        np.testing.assert_array_equal(I_ref, I)
+        np.testing.assert_allclose(D_ref, D, rtol=1e-5, atol=1e-4)
+
+    def test_search_preassigned_coarse_dis_none_ivfpq(self):
+        self.do_test_search_preassigned_coarse_dis_none(
+            "IVF32,PQ8", faiss.METRIC_L2
+        )
+
+    def test_search_preassigned_coarse_dis_none_ip(self):
+        self.do_test_search_preassigned_coarse_dis_none(
+            "IVF32,SQ8", faiss.METRIC_INNER_PRODUCT
+        )
 
 
 class TestRangeSearchMaxResults(unittest.TestCase):
