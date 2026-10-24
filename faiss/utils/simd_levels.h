@@ -187,6 +187,11 @@ struct FAISS_API SIMDConfig {
     /// 256-bit kernel.
     static bool avx512_split;
 
+    /// Scalar table lookups beat gathers (AMD Zen 3, Zen 4 and Zen 5,
+    /// families 0x19 and 0x1A), so the 8-bit PQ code-distance kernels use
+    /// the scalar path instead of gathers.
+    static bool scalar_gather;
+
     static SIMDLevel auto_detect_simd_level();
 
     /// Whether this faiss build dispatches SIMD at runtime.

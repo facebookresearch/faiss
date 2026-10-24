@@ -184,6 +184,39 @@ print(f"OK: SIMD level {level_name} dispatched correctly")
                     f"Failed for {level_name}: {result.stdout} {result.stderr}",
                 )
 
+    def test_env_var_keeps_uarch_flags(self):
+        """FAISS_SIMD_LEVEL forces the level, but the microarchitecture
+        flags (avx512_split, scalar_gather) still describe the CPU."""
+        import faiss
+
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest("Not a DD build")
+        if os.environ.get("FAISS_SIMD_LEVEL"):
+            self.skipTest("FAISS_SIMD_LEVEL is already set")
+
+        env = os.environ.copy()
+        env["FAISS_SIMD_LEVEL"] = faiss.SIMDConfig.get_level_name()
+        env["PYTHONPATH"] = os.pathsep.join(sys.path)
+        script = (
+            "import faiss; "
+            "print(faiss.cvar.SIMDConfig_avx512_split, "
+            "faiss.cvar.SIMDConfig_scalar_gather)"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout.split(),
+            [
+                str(faiss.cvar.SIMDConfig_avx512_split),
+                str(faiss.cvar.SIMDConfig_scalar_gather),
+            ],
+        )
+
     def test_detected_level_does_not_crash_fp16(self):
         """The auto-detected SIMD level must always be safe to execute on the
         running CPU. AVX512_SPR is compiled with -mavx512fp16, so it must

@@ -56,15 +56,17 @@ struct PartitionStats {
 /// the calling thread. `ids` is valid only during the call.
 using LeafVisitor = std::function<void(const int32_t* ids, size_t s)>;
 
-/// Randomized Ball Carving with multi-level fanout. Calls `on_leaf` exactly
-/// once per leaf and fills `*stats` (if not null). On an exception or an
-/// interrupt it rethrows with some leaves unvisited and `*stats` unchanged.
+/// Randomized Ball Carving with multi-level fanout over the sorted `ids` (all
+/// of storage if empty). Calls `on_leaf` exactly once per leaf and fills
+/// `*stats` (if not null). On an exception or an interrupt it rethrows with
+/// some leaves unvisited and `*stats` unchanged.
 void partition_and_visit(
         const Index& storage,
         const PartitionParams& p,
         uint64_t root_seed,
         const LeafVisitor& on_leaf,
-        PartitionStats* stats);
+        PartitionStats* stats,
+        const std::vector<int32_t>& ids = {});
 
 /// Deterministic hash of (a, b) for derived seeds. For a fixed a, distinct b
 /// give distinct results.
