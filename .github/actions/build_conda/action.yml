@@ -28,6 +28,7 @@ runs:
         fi
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
+      continue-on-error: true
       with:
         python-version: '3.12'
         miniforge-version: latest
