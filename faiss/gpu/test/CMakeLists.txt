@@ -53,6 +53,7 @@ if(FAISS_ENABLE_CUVS)
   faiss_gpu_test(TestGpuFilterConvert.cu)
   faiss_gpu_test(TestGpuIndexBinaryCagra.cu)
   faiss_gpu_test(TestGpuIndexCagra.cu)
+  faiss_gpu_test(TestGpuIndexIVFRaBitQ.cu)
 endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
