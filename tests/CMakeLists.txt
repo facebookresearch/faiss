@@ -28,6 +28,7 @@ set(FAISS_TEST_SRC
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
+  test_hadamard_rounds.cpp
   test_custom_result_handler.cpp
   test_single_query_collect_handler.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
