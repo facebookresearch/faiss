@@ -58,6 +58,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseInt8.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
@@ -1740,6 +1741,19 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     if (h == fourcc("null")) {
         // denotes a missing index, useful for some cases
         return idx;
+    } else if (h == fourcc("IxR8")) {
+        auto idxr = std::make_unique<IndexRowwiseInt8>();
+        read_index_header(*idxr, f);
+        READ1(idxr->code_size);
+        FAISS_THROW_IF_NOT(idxr->code_size == idxr->d + sizeof(float));
+        read_vector(idxr->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxr->codes.size() ==
+                mul_no_overflow(
+                        (size_t)idxr->ntotal,
+                        idxr->code_size,
+                        "IndexRowwiseInt8 codes"));
+        idx = std::move(idxr);
     } else if (h == fourcc("IxFP") || h == fourcc("IxFp")) {
         int d;
         size_t n_levels, batch_size;
