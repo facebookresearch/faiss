@@ -16,10 +16,12 @@
 #include <type_traits>
 
 #include <algorithm>
+#include <atomic>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissException.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -326,10 +328,20 @@ void ProductQuantizer::decode(const uint8_t* code, float* x) const {
 
 void ProductQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
     int64_t n_signed = n;
+    std::exception_ptr ex;
+    std::atomic<bool> interrupt{false};
 #pragma omp parallel for if (n > 100)
     for (int64_t i = 0; i < n_signed; i++) {
-        this->decode(code + code_size * i, x + d * i);
+        if (interrupt.load(std::memory_order_relaxed)) {
+            continue;
+        }
+        try {
+            this->decode(code + code_size * i, x + d * i);
+        } catch (...) {
+            omp_capture_exception(ex, [&] { interrupt = true; });
+        }
     }
+    omp_rethrow_if_exception(ex);
 }
 
 void ProductQuantizer::compute_code_from_distance_table(
@@ -421,11 +433,22 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
     }
 
     int64_t n_signed = n;
+    std::exception_ptr ex;
+    std::atomic<bool> interrupt{false};
     if (dsub < 16) { // simple direct computation
 
 #pragma omp parallel for
-        for (int64_t i = 0; i < n_signed; i++)
-            compute_code(x + i * d, codes + i * code_size);
+        for (int64_t i = 0; i < n_signed; i++) {
+            if (interrupt.load(std::memory_order_relaxed)) {
+                continue;
+            }
+            try {
+                compute_code(x + i * d, codes + i * code_size);
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
+        }
+        omp_rethrow_if_exception(ex);
 
     } else { // worthwhile to use BLAS
         std::unique_ptr<float[]> dis_tables(new float[n * ksub * M]);
@@ -433,10 +456,18 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 #pragma omp parallel for
         for (int64_t i = 0; i < n_signed; i++) {
-            uint8_t* code = codes + i * code_size;
-            const float* tab = dis_tables.get() + i * ksub * M;
-            compute_code_from_distance_table(tab, code);
+            if (interrupt.load(std::memory_order_relaxed)) {
+                continue;
+            }
+            try {
+                uint8_t* code = codes + i * code_size;
+                const float* tab = dis_tables.get() + i * ksub * M;
+                compute_code_from_distance_table(tab, code);
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
         }
+        omp_rethrow_if_exception(ex);
     }
 }
 
