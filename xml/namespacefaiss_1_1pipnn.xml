@@ -146,15 +146,20 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="PiPNN_8h_1a67ab578e3249135db72c92914f2eac35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="PiPNN_8h_1a22197e33f0c192e4acff73ebf54b4e31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
         <definition>int32_t faiss::pipnn::medoid_and_validate</definition>
-        <argsstring>(const Index &amp;storage)</argsstring>
+        <argsstring>(const Index &amp;storage, float *norm_cv=nullptr)</argsstring>
         <name>medoid_and_validate</name>
         <qualifiedname>faiss::pipnn::medoid_and_validate</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
           <declname>storage</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>norm_cv</declname>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
