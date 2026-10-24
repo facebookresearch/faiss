@@ -70,6 +70,9 @@ void makeQuantizerOwning(Index* index) {
 std::unique_ptr<IndexIVFScalarQuantizer> clone(
         const IndexIVFScalarQuantizer* index) {
     FAISS_THROW_IF_NOT(index);
+    FAISS_THROW_IF_NOT_MSG(
+            !index->clustering_index,
+            "Metal IVFSQ cloning does not support custom clustering_index");
     auto result = std::make_unique<IndexIVFScalarQuantizer>();
     // Copy configuration without ever making the shallow CPU pointers owned.
     static_cast<Index&>(*result) = static_cast<const Index&>(*index);

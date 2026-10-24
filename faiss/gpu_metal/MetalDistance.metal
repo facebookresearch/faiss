@@ -2664,12 +2664,15 @@ inline void ivfsq_merge_new(
     threadgroup_barrier(mem_flags::mem_threadgroup);
 }
 
-// Specialize only aligned common dimensions. Other dimensions retain the
-// scalar codec layout, while codec/metric/residual flags are still constants.
+// Specialize frequent dimensions; other aligned dimensions use the same
+// vector decoder with runtime bounds. Odd dimensions retain scalar decoding.
 constant uint ivfsq_dimension [[function_constant(0)]];
 constant bool ivfsq_fp16 [[function_constant(1)]];
 constant bool ivfsq_l2 [[function_constant(2)]];
 constant bool ivfsq_residual [[function_constant(3)]];
+constant bool ivfsq_fused [[function_constant(4)]];
+constant bool ivfsq_adaptive [[function_constant(5)]];
+constant bool ivfsq_cooperative [[function_constant(6)]];
 // Compile-time, correctly rounded code centers. A small constant table avoids
 // four precise divisions per vector load without replacing division with an
 // approximate reciprocal or changing the scalar codec's decode formula.
@@ -2686,9 +2689,9 @@ constant float ivfsq_code_centers[256] = {
 #undef IVFSQ_LEVEL16
 #undef IVFSQ_LEVEL4
 
-// Retained storage follows k for latency-oriented small batches. Keep the
-// full incoming queue: shrinking it increases long-list merge frequency.
-template <uint Capacity>
+// Retained storage follows k independently of score distribution. Paired
+// queries use smaller incoming queues to bound shared memory under validation.
+template <uint Capacity, bool PairQueries = false>
 kernel void ivfsq_scan(
     device const float* queries [[buffer(0)]],
     device const uchar* codes [[buffer(1)]],
@@ -2703,45 +2706,128 @@ kernel void ivfsq_scan(
     device const float* coarseScores [[buffer(10)]],
     constant uint* p [[buffer(11)]],
     uint3 group [[threadgroup_position_in_grid]],
-    uint tid [[thread_index_in_threadgroup]]) {
+    uint tid [[thread_index_in_threadgroup]],
+    uint lane [[thread_index_in_simdgroup]],
+    uint simdWidth [[threads_per_simdgroup]]) {
     constexpr uint ivfsq_capacity = Capacity;
-    constexpr uint ivfsq_batch = 512;
+    constexpr uint ivfsq_batch = PairQueries ? 256 : 512;
     uint qi = group.z, probe = group.y;
     uint d = ivfsq_dimension ? ivfsq_dimension : p[1], k = p[2], nprobe = p[3];
     bool l2 = ivfsq_l2;
+    bool cooperative = ivfsq_cooperative;
     int list = assignments[ulong(qi) * nprobe + probe];
     bool validList = list >= 0 && uint(list) < p[4];
     uint len = validList ? lengths[list] : 0;
-    threadgroup float4 residualQuery[128];
-    // Prepare each residual query once per list chunk, rather than once per
-    // candidate. The array exists only for the aligned 128/512 variants.
-    if (ivfsq_dimension && ivfsq_l2 && ivfsq_residual && validList) {
-        for (uint i = tid; i < ivfsq_dimension/4; i += 256)
-            residualQuery[i] = reinterpret_cast<device const float4*>(queries + ulong(qi)*d)[i]
-                - reinterpret_cast<device const float4*>(centroids + ulong(list)*d)[i];
+    // Limit the sum rather than overflowing when direct callers supply very
+    // long lists. The adaptive decision is identical in every group/query.
+    // IP scoring is cheaper, so serialization stops paying off at a smaller
+    // candidate count. The statically fused path keeps its original bound.
+    uint candidateLimit = ivfsq_adaptive && !ivfsq_l2 ? 512u : 2048u;
+    uint candidates = 0;
+    if (ivfsq_fused || ivfsq_adaptive) {
+        for (uint pi = 0; pi < nprobe; ++pi) {
+            int selected = assignments[ulong(qi) * nprobe + pi];
+            if (selected >= 0 && uint(selected) < p[4])
+                candidates += min(lengths[selected], candidateLimit + 1 - candidates);
+        }
     }
+    // The regular pass pads short-query partials; the following fused pass
+    // replaces the first one. Long queries never enter the fused scorer.
+    // Keeping crossProbe a function constant removes the alternative query
+    // reconstruction and traversal from the regular inner score loop.
+    bool crossProbe = ivfsq_fused;
+    if (ivfsq_adaptive && ivfsq_fused && candidates > candidateLimit) return;
+    bool shortRegular = ivfsq_adaptive && !ivfsq_fused && candidates <= candidateLimit;
     float sentinel = l2 ? MAXFLOAT : -MAXFLOAT;
+    if (shortRegular || (crossProbe && (group.x != 0 || probe != 0))) {
+        ulong base = ((ulong(qi) * nprobe + probe) * p[9] + group.x) * k;
+        for (uint j = tid; j < k; j += 256) {
+            distances[base+j] = sentinel;
+            labels[base+j] = -1;
+        }
+        return;
+    }
+    if (crossProbe) len = candidates;
+    // Match probe occurrences, rather than just list IDs, so repeated list
+    // assignments from direct callers preserve their candidate multiplicity.
+    uint partner = qi ^ 1u;
+    int partnerProbe = -1;
+    if (PairQueries && !crossProbe && validList && partner < p[0]) {
+        uint ordinal = 0;
+        for (uint pi = 0; pi < probe; ++pi)
+            ordinal += assignments[ulong(qi) * nprobe + pi] == list;
+        for (uint pi = 0; pi < nprobe; ++pi) {
+            if (assignments[ulong(partner) * nprobe + pi] == list) {
+                if (ordinal == 0) { partnerProbe = int(pi); break; }
+                --ordinal;
+            }
+        }
+        if (ivfsq_adaptive && partnerProbe >= 0) {
+            uint partnerCandidates = 0;
+            for (uint pi = 0; pi < nprobe; ++pi) {
+                int selected = assignments[ulong(partner) * nprobe + pi];
+                if (selected >= 0 && uint(selected) < p[4])
+                    partnerCandidates += min(lengths[selected], candidateLimit + 1 - partnerCandidates);
+            }
+            if (partnerCandidates <= candidateLimit) partnerProbe = -1;
+        }
+    }
+    bool paired = partnerProbe >= 0;
+    // The even query writes both partial runs; its odd partner must leave
+    // that output untouched rather than publish padding over a live writer.
+    if (paired && (qi & 1u)) return;
+    threadgroup float4 residualQuery[128], partnerQuery[PairQueries ? 128 : 1];
+    // Prepare each residual query once per list chunk, rather than once per
+    // candidate. Larger aligned dimensions subtract centroids while scoring.
+    if (!crossProbe && d % 4 == 0 && d <= 512 && ivfsq_l2 && ivfsq_residual && validList) {
+        for (uint i = tid; i < d/4; i += 256) {
+            float4 centroid = reinterpret_cast<device const float4*>(centroids + ulong(list)*d)[i];
+            residualQuery[i] = reinterpret_cast<device const float4*>(queries + ulong(qi)*d)[i] - centroid;
+            if (paired)
+                partnerQuery[i] = reinterpret_cast<device const float4*>(queries + ulong(partner)*d)[i] - centroid;
+        }
+    }
     threadgroup float bestDist[ivfsq_capacity], newDist[ivfsq_batch];
     threadgroup long bestIds[ivfsq_capacity], newIds[ivfsq_batch];
-    threadgroup atomic_uint accepted;
+    threadgroup float partnerBest[PairQueries ? Capacity : 1], partnerNew[PairQueries ? 256 : 1];
+    threadgroup long partnerBestIds[PairQueries ? Capacity : 1], partnerNewIds[PairQueries ? 256 : 1];
+    threadgroup atomic_uint accepted, partnerAccepted;
     for (uint i = tid; i < k; i += 256) {
         bestDist[i] = sentinel; bestIds[i] = -1;
+        if (paired) { partnerBest[i] = sentinel; partnerBestIds[i] = -1; }
     }
-    if (tid == 0) atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
+    if (tid == 0) {
+        atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
+        if (paired) atomic_store_explicit(&partnerAccepted, 0u, memory_order_relaxed);
+    }
     threadgroup_barrier(mem_flags::mem_threadgroup);
     {
         uint begin = uint(min(ulong(group.x) * p[10], ulong(len)));
-        uint end = uint(min(ulong(begin) + p[10], ulong(len)));
+        uint end = crossProbe ? len : uint(min(ulong(begin) + p[10], ulong(len)));
         for (uint start = begin; start < end;) {
             uint count = min(ivfsq_batch, end - start);
-            for (uint j = tid; j < count; j += 256) {
-                ulong v = ulong(offsets[list]) + start + j;
+            for (uint j = cooperative ? tid / simdWidth : tid; j < count;
+                 j += cooperative ? 256 / simdWidth : 256) {
+                uint candidateProbe = probe;
+                uint candidateOffset = start + j;
+                int candidateList = list;
+                if (crossProbe) {
+                    for (candidateProbe = 0; candidateProbe < nprobe; ++candidateProbe) {
+                        candidateList = assignments[ulong(qi) * nprobe + candidateProbe];
+                        uint size = candidateList >= 0 && uint(candidateList) < p[4]
+                            ? lengths[candidateList] : 0;
+                        if (candidateOffset < size) break;
+                        candidateOffset -= size;
+                    }
+                }
+                ulong v = ulong(offsets[candidateList]) + candidateOffset;
                 device const uchar* code = codes + v * p[8];
-                float score = 0;
-                if (ivfsq_dimension) {
-                    float4 sums = 0;
+                float score = 0, partnerScore = 0;
+                if (d % 4 == 0) {
+                    float4 sums = 0, partnerSums = 0;
                     #pragma clang loop unroll(disable)
-                    for (uint dim = 0; dim < ivfsq_dimension; dim += 4) {
+                    for (uint dim = cooperative ? lane * 4 : 0; dim < d;
+                         dim += cooperative ? simdWidth * 4 : 4) {
                         uint i = dim / 4;
                         float4 decoded;
                         if (ivfsq_fp16) {
@@ -2753,12 +2839,21 @@ kernel void ivfsq_scan(
                             decoded = reinterpret_cast<device const float4*>(ranges)[i]
                                 + normalized * reinterpret_cast<device const float4*>(ranges + d)[i];
                         }
-                        float4 q = ivfsq_l2 && ivfsq_residual ? residualQuery[i]
+                        float4 q = ivfsq_l2 && ivfsq_residual && !crossProbe && d <= 512 ? residualQuery[i]
                             : reinterpret_cast<device const float4*>(queries + ulong(qi)*d)[i];
+                        if ((crossProbe || d > 512) && ivfsq_l2 && ivfsq_residual)
+                            q -= reinterpret_cast<device const float4*>(centroids + ulong(candidateList)*d)[i];
                         float4 delta = q - decoded;
                         sums += ivfsq_l2 ? delta * delta : q * decoded;
+                        if (paired) {
+                            float4 pq = ivfsq_l2 && ivfsq_residual ? partnerQuery[i]
+                                : reinterpret_cast<device const float4*>(queries + ulong(partner)*d)[i];
+                            float4 pd = pq - decoded;
+                            partnerSums += ivfsq_l2 ? pd * pd : pq * decoded;
+                        }
                     }
                     score = (sums.x + sums.y) + (sums.z + sums.w);
+                    if (paired) partnerScore = (partnerSums.x + partnerSums.y) + (partnerSums.z + partnerSums.w);
                 } else {
                 for (uint dim = 0; dim < d; ++dim) {
                     float decoded = ivfsq_fp16
@@ -2767,35 +2862,61 @@ kernel void ivfsq_scan(
                     float q = queries[ulong(qi) * d + dim];
                     // L2 follows the CPU residual-query formula; IP adds the
                     // coarse dot product after accumulating decoded residuals.
-                    if (ivfsq_residual && l2) q -= centroids[ulong(list) * d + dim];
+                    if (ivfsq_residual && l2) q -= centroids[ulong(candidateList) * d + dim];
                     float delta = q - decoded;
                     score += l2 ? delta * delta : q * decoded;
                 }
                 }
+                if (cooperative) {
+                    score = simd_sum(score);
+                    if (paired) partnerScore = simd_sum(partnerScore);
+                }
                 if (ivfsq_residual && !l2)
-                    score += coarseScores[ulong(qi)*nprobe+probe];
+                    score += coarseScores[ulong(qi)*nprobe+candidateProbe];
+                if (paired && ivfsq_residual && !l2)
+                    partnerScore += coarseScores[ulong(partner)*nprobe+uint(partnerProbe)];
                 // Match the CPU heap's neutral-value comparisons: NaN and
                 // metric-worst overflow never enter selection. IP +Inf is a
                 // valid best score; L2 +Inf and IP -Inf remain padding.
                 bool admitted = l2 ? score < MAXFLOAT : score > -MAXFLOAT;
                 long id = ids[v];
-                if (admitted && ivfsq_before(score, id, bestDist[k-1], bestIds[k-1], l2)) {
+                if ((!cooperative || lane == 0) && admitted && ivfsq_before(score, id, bestDist[k-1], bestIds[k-1], l2)) {
                     uint slot = atomic_fetch_add_explicit(&accepted, 1u, memory_order_relaxed);
                     newDist[slot] = score; newIds[slot] = id;
+                }
+                if (paired && (!cooperative || lane == 0) &&
+                    (l2 ? partnerScore < MAXFLOAT : partnerScore > -MAXFLOAT) &&
+                    ivfsq_before(partnerScore, id, partnerBest[k-1], partnerBestIds[k-1], l2)) {
+                    uint slot = atomic_fetch_add_explicit(&partnerAccepted, 1u, memory_order_relaxed);
+                    partnerNew[slot] = partnerScore; partnerNewIds[slot] = id;
                 }
             }
             threadgroup_barrier(mem_flags::mem_threadgroup);
             uint added = atomic_load_explicit(&accepted, memory_order_relaxed);
             ivfsq_merge_new(bestDist, bestIds, newDist, newIds, k, added, tid, l2);
-            if (tid == 0) atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
+            if (paired) {
+                uint partnerAdded = atomic_load_explicit(&partnerAccepted, memory_order_relaxed);
+                ivfsq_merge_new(partnerBest, partnerBestIds, partnerNew, partnerNewIds,
+                    k, partnerAdded, tid, l2);
+            }
+            if (tid == 0) {
+                atomic_store_explicit(&accepted, 0u, memory_order_relaxed);
+                if (paired) atomic_store_explicit(&partnerAccepted, 0u, memory_order_relaxed);
+            }
             threadgroup_barrier(mem_flags::mem_threadgroup);
             start += count;
         }
     }
-    ulong outBase = ((ulong(qi) * nprobe + probe) * p[9] + group.x) * k;
+    ulong outBase = ivfsq_fused && !ivfsq_adaptive ? ulong(qi) * k
+        : ((ulong(qi) * nprobe + probe) * p[9] + group.x) * k;
     for (uint j = tid; j < k; j += 256) {
         distances[outBase+j] = bestDist[j];
         labels[outBase+j] = bestIds[j];
+        if (paired) {
+            ulong partnerBase = ((ulong(partner) * nprobe + uint(partnerProbe)) * p[9] + group.x) * k;
+            distances[partnerBase+j] = partnerBest[j];
+            labels[partnerBase+j] = partnerBestIds[j];
+        }
     }
 }
 
@@ -2918,7 +3039,9 @@ kernel void ivfsq_flat_coarse(
     device const float* coarseScores [[buffer(10)]], \
     constant uint* p [[buffer(11)]], \
     uint3 group [[threadgroup_position_in_grid]], \
-    uint tid [[thread_index_in_threadgroup]]);
+    uint tid [[thread_index_in_threadgroup]], \
+    uint lane [[thread_index_in_simdgroup]], \
+    uint simdWidth [[threads_per_simdgroup]]);
 IVFSQ_INSTANTIATE_SCAN(16)
 IVFSQ_INSTANTIATE_SCAN(32)
 IVFSQ_INSTANTIATE_SCAN(64)
@@ -2926,6 +3049,15 @@ IVFSQ_INSTANTIATE_SCAN(128)
 IVFSQ_INSTANTIATE_SCAN(256)
 IVFSQ_INSTANTIATE_SCAN(512)
 #undef IVFSQ_INSTANTIATE_SCAN
+#define IVFSQ_INSTANTIATE_PAIR(C) \
+    template [[host_name("ivfsq_scan_pair_" #C)]] kernel void ivfsq_scan<C, true>( \
+    device const float*, device const uchar*, device const long*, \
+    device const uint*, device const uint*, device const int*, \
+    device const float*, device const float*, device float*, device long*, \
+    device const float*, constant uint*, uint3, uint, uint, uint);
+IVFSQ_INSTANTIATE_PAIR(16)
+IVFSQ_INSTANTIATE_PAIR(32)
+#undef IVFSQ_INSTANTIATE_PAIR
 #define IVFSQ_INSTANTIATE_COARSE(C) \
     template [[host_name("ivfsq_flat_coarse_" #C)]] kernel void ivfsq_flat_coarse<C>( \
     device const float* queries [[buffer(0)]], \

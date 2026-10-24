@@ -25,7 +25,8 @@ namespace faiss::gpu_metal {
  * parameters, including selectors, max_codes, quantizer_params, and derived
  * parameter types, and PARALLEL_MODE_NO_HEAP_INIT. Coarse quantizers must use
  * FlatCodes or HNSW storage, optionally wrapped in PreTransform/IDMap; cloning
- * rejects other structures rather than retaining borrowed storage.
+ * rejects other structures and custom clustering_index training dependencies
+ * rather than retaining borrowed pointers.
  * Selected GPU execution failures throw; a failed mutation
  * invalidates GPU state until reset/copyFrom. Search and mutation must be
  * serialized by the caller.

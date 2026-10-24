@@ -11,10 +11,14 @@
 #include <faiss/gpu_metal/MetalCloner.h>
 #include <faiss/gpu_metal/MetalIVFSQScan.h>
 #include <faiss/gpu_metal/MetalIndexIVFScalarQuantizer.h>
+#include <faiss/gpu_metal/MetalIndexFlat.h>
 #include <faiss/gpu_metal/StandardMetalResources.h>
 #include <faiss/impl/IDSelector.h>
 #include <gtest/gtest.h>
 #include <algorithm>
+#include <atomic>
+#include <exception>
+#include <thread>
 #include <cstring>
 #include <limits>
 #include <random>
@@ -52,14 +56,107 @@ class TestMetalIndexIVFSQ : public ::testing::Test {
     }
 };
 
+// Keep first in this executable to exercise cold generic and specialized
+// caches together. Every index is serialized individually, sharing a device.
+TEST_F(TestMetalIndexIVFSQ, ConcurrentIndependentIndexes) {
+    std::vector<std::unique_ptr<Index>> indexes;
+    std::vector<std::vector<float>> queries;
+    for (int dim : {128, 512}) {
+        queries.emplace_back(dim, 0.f);
+        IndexFlatL2 coarse(dim);
+        coarse.add(1, queries.back().data());
+        IndexIVFScalarQuantizer cpu(
+                &coarse, dim, 1, ScalarQuantizer::QT_fp16, METRIC_L2, false);
+        cpu.is_trained = true;
+        cpu.add(1, queries.back().data());
+        indexes.push_back(
+                std::make_unique<MetalIndexIVFScalarQuantizer>(res, &cpu));
+    }
+    for (int dim : {7, 19}) {
+        queries.emplace_back(dim, 0.f);
+        auto flat = std::make_unique<MetalIndexFlat>(res, dim, METRIC_L2);
+        flat->add(1, queries.back().data());
+        indexes.push_back(std::move(flat));
+    }
+    std::atomic<int> ready{0};
+    std::vector<std::exception_ptr> errors(indexes.size());
+    std::vector<float> distances(indexes.size(), -1);
+    std::vector<idx_t> labels(indexes.size(), -1);
+    std::vector<std::thread> workers;
+    for (size_t i = 0; i < indexes.size(); ++i) {
+        workers.emplace_back([&, i] {
+            @autoreleasepool {
+                ++ready;
+                while (ready.load() < int(indexes.size()))
+                    std::this_thread::yield();
+                try {
+                    for (int repeat = 0; repeat < 20; ++repeat)
+                        indexes[i]->search(
+                                1, queries[i].data(), 1,
+                                &distances[i], &labels[i]);
+                } catch (...) {
+                    errors[i] = std::current_exception();
+                }
+            }
+        });
+    }
+    for (auto& worker : workers)
+        worker.join();
+    for (size_t i = 0; i < indexes.size(); ++i) {
+        if (errors[i]) std::rethrow_exception(errors[i]);
+        ASSERT_EQ(labels[i], 0);
+        ASSERT_EQ(distances[i], 0.f);
+        if (auto* sq = dynamic_cast<MetalIndexIVFScalarQuantizer*>(indexes[i].get()))
+            ASSERT_EQ(sq->gpuSearchCount(), 20);
+    }
+}
+
+TEST_F(TestMetalIndexIVFSQ, RejectBorrowedTrainingDependency) {
+    auto x = randomData(128);
+    std::unique_ptr<MetalIndexIVFScalarQuantizer> gpu;
+    std::unique_ptr<IndexIVFScalarQuantizer> back;
+    {
+        IndexFlatL2 coarse(1), trainingAssignment(1);
+        IndexIVFScalarQuantizer cpu(&coarse, 1, 2, ScalarQuantizer::QT_fp16);
+        cpu.cp.niter = 1;
+        cpu.cp.min_points_per_centroid = 1;
+        gpu = std::make_unique<MetalIndexIVFScalarQuantizer>(res, &cpu);
+        cpu.clustering_index = &trainingAssignment;
+        EXPECT_THROW(
+                MetalIndexIVFScalarQuantizer rejected(res, &cpu),
+                std::exception);
+        EXPECT_THROW(gpu->copyFrom(&cpu), std::exception);
+        ASSERT_EQ(cpu.clustering_index, &trainingAssignment);
+        // A rejected replacement preserves the previous owning index.
+        back.reset(gpu->copyTo());
+        ASSERT_EQ(back->clustering_index, nullptr);
+        ASSERT_FALSE(back->is_trained);
+    }
+    // All original dependencies have left scope before either clone trains.
+    gpu->train(128, x.data());
+    gpu->add(128, x.data());
+    float distance;
+    idx_t label;
+    gpu->search(1, x.data(), 1, &distance, &label);
+    ASSERT_EQ(gpu->gpuSearchCount(), 1);
+    ASSERT_GE(label, 0);
+    gpu.reset();
+    back->train(128, x.data());
+    back->add(128, x.data());
+    back->search(1, x.data(), 1, &distance, &label);
+    ASSERT_GE(label, 0);
+}
+
 // Invoke the shader entry directly; the oracle decodes CPU codes independently
 // and sorts all candidates by score and final 64-bit label.
 TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
+    for (int nq : {2, 33})
     for (auto type : {ScalarQuantizer::QT_8bit, ScalarQuantizer::QT_fp16})
-        for (int d : {1, 7, 33, 128, 512, 513})
+        for (int d : {1, 7, 33, 64, 128, 512, 513, 768})
             for (bool l2 : {false, true})
                 for (bool residual : {false, true}) {
-                    const int nq = 2, probes = 4, lists = 3;
+                    if (nq == 33 && d != 128) continue;
+                    const int probes = 4, lists = 3;
                     auto training = randomData(128 * d);
                     ScalarQuantizer sq(d, type);
                     sq.train(128, training.data());
@@ -71,7 +168,8 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                          c = randomData(lists * d, 99);
                     for (int dim = 0; dim < d; ++dim) {
                         for (int qi = 0; qi < nq; ++qi)
-                            q[qi * d + dim] = float(dim % 3) - 1;
+                            q[qi * d + dim] = float(dim % 3) - 1 +
+                                (nq == 33 ? float(qi % 4) * 0.25f : 0.f);
                         for (int l = 0; l < lists; ++l)
                             c[l * d + dim] = float(l + dim % 2) - 1;
                     }
@@ -80,9 +178,24 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                     auto cb = buffer(dev, c.size() * 4, c.data());
                     auto rb = buffer(
                             dev, sq.trained.size() * 4, sq.trained.data());
-                    int32_t assign[] = {0, -1, 2, 1, 2, 1, 0, -1};
-                    auto ab = buffer(dev, sizeof(assign), assign);
-                    float scores[nq * probes] = {};
+                    const int32_t pattern[] = {0, -1, 2, 1, 2, 1, 0, -1};
+                    const int32_t pairedPattern[] = {0, 0, -1, 2, 2, 0, 0, 1};
+                    std::vector<int32_t> assign(nq * probes);
+                    for (int i = 0; i < nq * probes; ++i)
+                        assign[i] = nq == 33 ? pairedPattern[i % 8] : pattern[i % 8];
+                    // Mix short fused queries with long paired/unpaired ones
+                    // in the same batch. A long query must not steal a probe
+                    // from a neighbor that independently takes the fused path.
+                    if (nq == 33) {
+                        for (int qi = 3; qi < nq; qi += 4) {
+                            assign[qi * probes] = 2;
+                            assign[qi * probes + 1] = 1;
+                            assign[qi * probes + 2] = -1;
+                            assign[qi * probes + 3] = -1;
+                        }
+                    }
+                    auto ab = buffer(dev, assign.size() * 4, assign.data());
+                    std::vector<float> scores(nq * probes, 0.f);
                     for (int qi = 0; qi < nq; ++qi)
                         for (int probe = 0; probe < probes; ++probe) {
                             int l = assign[qi * probes + probe];
@@ -91,19 +204,23 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                                     scores[qi * probes + probe] +=
                                             q[qi * d + dim] * c[l * d + dim];
                         }
-                    auto sb = buffer(dev, sizeof(scores), scores);
+                    auto sb = buffer(dev, scores.size() * 4, scores.data());
                     for (uint32_t size :
                          {0,
                           1,
                           127,
                           128,
                           129,
+                          255,
+                          256,
+                          257,
                           511,
                           512,
                           513,
                           1024,
                           1025,
                           2051}) {
+                        if (nq == 33 && size != 129 && size != 513 && size != 2051) continue;
                         // Empty middle list, one extra vector in the last list.
                         uint32_t offsets[] = {0, size, size},
                                  lengths[] = {size, 0, 1};
@@ -129,10 +246,11 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                         auto off = buffer(dev, sizeof(offsets), offsets);
                         auto len = buffer(dev, sizeof(lengths), lengths);
                         for (uint32_t k : {1, 16, 17, 32, 33, 64, 65, 128, 129, 256, 257, 512}) {
+                            if (nq == 33 && k != 1 && k != 16 && k != 32) continue;
                             auto outD = buffer(dev, nq * k * 4),
                                  outI = buffer(dev, nq * k * 8);
                             uint32_t p[] = {
-                                    nq,
+                                    uint32_t(nq),
                                     uint32_t(d),
                                     k,
                                     probes,
@@ -141,6 +259,9 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                                     residual,
                                     l2,
                                     uint32_t(sq.code_size)};
+                            SCOPED_TRACE(::testing::Message() << "nq=" << nq << " d=" << d
+                                << " size=" << size << " k=" << k << " type=" << type
+                                << " residual=" << residual << " l2=" << l2);
                             runMetalIVFSQScan(
                                     dev,
                                     res->getCommandQueue(),

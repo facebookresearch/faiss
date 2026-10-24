@@ -27,8 +27,10 @@ void MetalKernels::encodeIVFSQScan(
         id<MTLBuffer> __unsafe_unretained const* buffers,
         const uint32_t* params,
         uint32_t chunks,
-        uint32_t chunkSize) {
-    auto state = ivfsqPipeline(params);
+        uint32_t chunkSize,
+        bool fused,
+        bool adaptive) {
+    auto state = ivfsqPipeline(params, "ivfsq_scan", fused, adaptive);
     FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= 256);
     FAISS_THROW_IF_NOT(
             state.staticThreadgroupMemoryLength <=
@@ -41,7 +43,7 @@ void MetalKernels::encodeIVFSQScan(
     args[9] = chunks;
     args[10] = chunkSize;
     [encoder setBytes:args length:sizeof(args) atIndex:11];
-    [encoder dispatchThreadgroups:MTLSizeMake(chunks, params[3], params[0])
+    [encoder dispatchThreadgroups:MTLSizeMake(fused ? 1 : chunks, fused ? 1 : params[3], params[0])
             threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
 }
 
@@ -145,6 +147,7 @@ bool MetalKernels::isValid() const {
 }
 
 id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
+    std::lock_guard<std::mutex> lock(cacheMutex_);
     std::string key(name);
     auto it = cache_.find(key);
     if (it != cache_.end())
@@ -163,19 +166,24 @@ id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
 
 // Retain cached specialized states with the same lifetime as other pipelines.
 id<MTLComputePipelineState> MetalKernels::ivfsqPipeline(
-        const uint32_t* params, const char* name) {
+        const uint32_t* params, const char* name, bool fused, bool adaptive) {
+    std::lock_guard<std::mutex> lock(cacheMutex_);
     uint32_t dim = params[1] == 128 || params[1] == 512 ? params[1] : 0;
     bool fp16 = params[5] != 0, l2 = params[7] != 0, residual = params[6] != 0;
     uint32_t capacity = 16;
     while (capacity < params[2])
         capacity *= 2;
-    // Preserve the throughput-oriented scan for larger batches. Smaller
-    // retained buffers benefit latency, but can change compiler occupancy.
-    if (params[0] >= 32 && std::string(name) == "ivfsq_scan")
-        capacity = 512;
+    // Selection capacity and score distribution are independent decisions.
+    bool cooperative = params[1] == 128 && params[2] <= 32 &&
+            (params[0] < 32 || (fused && !adaptive)) && !(fused && !adaptive && fp16);
+    bool pairQueries = std::string(name) == "ivfsq_scan" && !fused &&
+            params[0] >= 32 && params[1] == 128 && params[2] <= 32 && params[3] <= 32 &&
+            params[4] <= params[3] * 4;
     std::string key = std::string(name) + ":" + std::to_string(dim) + ":" +
             std::to_string(fp16) + std::to_string(l2) +
-            std::to_string(residual) + ":" + std::to_string(capacity);
+            std::to_string(residual) + ":" + std::to_string(capacity) +
+            ":" + std::to_string(fused) + ":" + std::to_string(adaptive) +
+            ":" + std::to_string(cooperative) + ":" + std::to_string(pairQueries);
     auto found = cache_.find(key);
     if (found != cache_.end())
         return found->second;
@@ -185,8 +193,11 @@ id<MTLComputePipelineState> MetalKernels::ivfsqPipeline(
     [constants setConstantValue:&fp16 type:MTLDataTypeBool atIndex:1];
     [constants setConstantValue:&l2 type:MTLDataTypeBool atIndex:2];
     [constants setConstantValue:&residual type:MTLDataTypeBool atIndex:3];
+    [constants setConstantValue:&fused type:MTLDataTypeBool atIndex:4];
+    [constants setConstantValue:&adaptive type:MTLDataTypeBool atIndex:5];
+    [constants setConstantValue:&cooperative type:MTLDataTypeBool atIndex:6];
     NSError* error = nil;
-    auto entry = std::string(name) + "_" + std::to_string(capacity);
+    auto entry = std::string(name) + (pairQueries ? "_pair_" : "_") + std::to_string(capacity);
     auto function = [library_ newFunctionWithName:@(entry.c_str())
                                    constantValues:constants
                                             error:&error];

@@ -13,6 +13,7 @@
 
 #import <Metal/Metal.h>
 #include <faiss/MetricType.h>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -33,7 +34,9 @@ class MetalKernels {
             id<MTLBuffer> __unsafe_unretained const* buffers,
             const uint32_t* params,
             uint32_t chunks,
-            uint32_t chunkSize);
+            uint32_t chunkSize,
+            bool fused = false,
+            bool adaptive = false);
     void encodeIVFSQMerge(
             id<MTLComputeCommandEncoder> encoder,
             id<MTLBuffer> inputDistances,
@@ -228,10 +231,15 @@ class MetalKernels {
     id<MTLComputePipelineState> pipeline(const char* name);
     id<MTLComputePipelineState> ivfsqPipeline(
             const uint32_t* params,
-            const char* name = "ivfsq_scan");
+            const char* name = "ivfsq_scan",
+            bool fused = false,
+            bool adaptive = false);
 
     id<MTLDevice> device_;
     id<MTLLibrary> library_;
+    // Shared by independent indexes on the same device. Entries are never
+    // removed, so returned states remain valid after releasing the lock.
+    std::mutex cacheMutex_;
     std::unordered_map<std::string, id<MTLComputePipelineState>> cache_;
 
     static constexpr int kTopKVariantSizes[] =

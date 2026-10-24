@@ -163,6 +163,18 @@ void runMetalIVFSQScan(
         MetalIVFSQScanPlan plan;
         FAISS_THROW_IF_NOT(makeMetalIVFSQScanPlan(
                 p[0], p[3], p[2], maxLength, device.maxBufferLength, plan));
+        // A bounded short-list scan can select across all probes in one group,
+        // writing final results without partial buffers or a merge dispatch.
+        bool fused = p[1] == 128 && p[2] <= 32 && p[3] <= 8 &&
+                maxLength <= 256;
+        if (fused) {
+            plan.parts = 1;
+            plan.chunks = 1;
+            plan.chunkSize = maxLength * p[3];
+            plan.partialItems = plan.mergeItems = 0;
+        }
+        // An extra dispatch does not amortize for a single query.
+        bool adaptive = p[0] > 1 && !fused && p[1] == 128 && p[2] <= 32 && p[3] <= 8;
         MetalIVFSQScanScratch local;
         if (!scratch)
             scratch = &local;
@@ -203,9 +215,19 @@ void runMetalIVFSQScan(
                 plan.parts > 1 ? scratch->partialIds : labels,
                 coarseScores};
         kernels.encodeIVFSQScan(
-                guard.encoder, buffers, p, plan.chunks, plan.chunkSize);
+                guard.encoder, buffers, p, plan.chunks, plan.chunkSize, fused, adaptive);
         [guard.encoder endEncoding];
         guard.encoder = nil;
+        if (adaptive) {
+            // Both passes share the same partial layout. Separate encoders
+            // order padding writes before fused results replace part zero.
+            guard.encoder = [command computeCommandEncoder];
+            FAISS_THROW_IF_NOT(guard.encoder);
+            kernels.encodeIVFSQScan(
+                    guard.encoder, buffers, p, plan.chunks, plan.chunkSize, true, true);
+            [guard.encoder endEncoding];
+            guard.encoder = nil;
+        }
         uint32_t parts = plan.parts;
         id<MTLBuffer> inputD = scratch->partialDistances,
                       inputI = scratch->partialIds;

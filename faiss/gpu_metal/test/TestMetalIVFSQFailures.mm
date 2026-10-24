@@ -18,6 +18,7 @@ namespace {
 IMP original;
 size_t allocations = 0, rejectAt = 0, allocatedBytes = 0;
 NSString* rejectedFunction = @"ivfsq_scan";
+size_t functionLookups = 0, rejectFunctionAt = 1;
 typedef id<MTLBuffer> Allocate(id, SEL, NSUInteger, MTLResourceOptions)
         __attribute__((ns_returns_retained));
 id<MTLBuffer> allocate(
@@ -40,7 +41,8 @@ id lookup(id self, SEL sel, NSString* name)
         __attribute__((ns_returns_retained));
 id lookup(id self, SEL sel, NSString* name) {
     if (([name isEqualToString:rejectedFunction] ||
-        [name hasPrefix:[rejectedFunction stringByAppendingString:@"_"]]))
+        [name hasPrefix:[rejectedFunction stringByAppendingString:@"_"]]) &&
+        ++functionLookups == rejectFunctionAt)
         return nil;
     return reinterpret_cast<Lookup*>(original)(self, sel, name);
 }
@@ -63,7 +65,8 @@ id lookupSpecialized(
         MTLFunctionConstantValues* values,
         NSError** error) {
     if (([name isEqualToString:rejectedFunction] ||
-        [name hasPrefix:[rejectedFunction stringByAppendingString:@"_"]]))
+        [name hasPrefix:[rejectedFunction stringByAppendingString:@"_"]]) &&
+        ++functionLookups == rejectFunctionAt)
         return nil;
     return reinterpret_cast<LookupSpecialized*>(original)(
             self, sel, name, values, error);
@@ -127,29 +130,33 @@ int main(int argc, char** argv) {
             return 15;
         return 0;
     }
-    IndexFlatL2 coarse(7);
+    const int dims = mode == "adaptive-pipeline" ? 128 : 7;
+    IndexFlatL2 coarse(dims);
     IndexIVFScalarQuantizer cpu(
             &coarse,
-            7,
+            dims,
             mode == "coarse-pipeline"
                     ? 128
                     : (mode == "scan-scratch"
                                ? 8
                                : (mode == "merge-pipeline" ? 2 : 1)),
             ScalarQuantizer::QT_fp16);
-    std::vector<float> x(1024 * 7);
+    std::vector<float> x(1024 * dims);
     for (size_t j = 0; j < x.size(); ++j)
         x[j] = float(j % 61) / 8;
     cpu.train(1024, x.data());
-    cpu.add(17, x.data());
+    cpu.add(mode == "adaptive-pipeline" ? 300 : 17, x.data());
     if (mode == "scan-scratch" || mode == "merge-pipeline")
         cpu.nprobe = cpu.nlist;
     MetalIndexIVFScalarQuantizer gpu(res, &cpu);
     const int k = mode == "scan-scratch" ? 512 : 13;
+    const int queries = mode == "adaptive-pipeline" ? 2 : 1;
     std::vector<float> d(1024 * k, -123);
     std::vector<idx_t> i(1024 * k, -123);
     if (mode == "pipeline" || mode == "merge-pipeline" ||
-        mode == "coarse-pipeline") {
+        mode == "coarse-pipeline" || mode == "adaptive-pipeline") {
+        if (mode == "adaptive-pipeline")
+            rejectFunctionAt = 2;
         if (mode == "coarse-pipeline")
             rejectedFunction = @"ivfsq_flat_coarse";
         if (mode == "merge-pipeline")
@@ -172,11 +179,12 @@ int main(int argc, char** argv) {
         {
             Restore restore{method};
             if (!throws([&] {
-                    gpu.search(1, x.data(), k, d.data(), i.data());
+                    gpu.search(queries, x.data(), k, d.data(), i.data());
                 }))
                 return 3;
         }
-        gpu.search(1, x.data(), k, d.data(), i.data());
+        if (gpu.gpuSearchCount() != 0) return 5;
+        gpu.search(queries, x.data(), k, d.data(), i.data());
         return gpu.gpuSearchCount() == 1 &&
                         (mode != "coarse-pipeline" ||
                          gpu.gpuCoarseSearchCount() == 1)
