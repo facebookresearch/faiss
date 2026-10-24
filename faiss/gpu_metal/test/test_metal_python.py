@@ -87,6 +87,59 @@ class TestMetalFlat(unittest.TestCase):
         np.testing.assert_array_equal(I_back, I_orig)
 
 
+class TestMetalBinaryFlat(unittest.TestCase):
+
+    def setUp(self):
+        if faiss.get_num_gpus() == 0:
+            self.skipTest("No Metal device")
+
+    def test_clone_search_and_lifetime(self):
+        import gc
+
+        rng = np.random.default_rng(1234)
+        xb = rng.integers(0, 256, (1537, 5), dtype=np.uint8)
+        xq = rng.integers(0, 256, (9, 5), dtype=np.uint8)
+        cpu = faiss.IndexBinaryFlat(40)
+        cpu.add(xb)
+        resources = faiss.StandardGpuResources()
+        gpu = faiss.index_binary_cpu_to_gpu(resources, 0, cpu)
+        del resources, cpu
+        gc.collect()
+
+        distances = np.unpackbits(xq[:, None, :] ^ xb[None, :, :], axis=2).sum(axis=2)
+        order = np.argsort(distances, axis=1, kind="stable")[:, :512]
+        expected = np.take_along_axis(distances, order, axis=1)
+        for _ in range(2):
+            d, labels = gpu.search(xq, 512)
+            self.assertEqual(d.dtype, np.int32)
+            self.assertEqual(labels.dtype, np.int64)
+            np.testing.assert_array_equal(d, expected)
+            np.testing.assert_array_equal(labels, order)
+        np.testing.assert_array_equal(gpu.reconstruct(17), xb[17])
+
+        back = faiss.index_binary_gpu_to_cpu(gpu)
+        gpu.reset()
+        self.assertEqual(back.ntotal, len(xb))
+        np.testing.assert_array_equal(back.reconstruct(17), xb[17])
+        gpu.add(xb[:7])
+        d, labels = gpu.search(xq, 20)
+        self.assertTrue(np.all(labels[:, 7:] == -1))
+        self.assertTrue(np.all(d[:, 7:] == np.iinfo(np.int32).max))
+
+    def test_cpu_fallback_and_invalid_device(self):
+        xb = np.arange(200, dtype=np.uint8).reshape(100, 2)
+        cpu = faiss.IndexBinaryFlat(16)
+        cpu.add(xb)
+        resources = faiss.StandardGpuResources()
+        with self.assertRaises(RuntimeError):
+            faiss.index_binary_cpu_to_gpu(resources, 1, cpu)
+        gpu = faiss.index_binary_cpu_to_gpu(resources, 0, cpu)
+        expected_d, expected_i = cpu.search(xb[:3], 513)
+        d, labels = gpu.search(xb[:3], 513)
+        np.testing.assert_array_equal(d, expected_d)
+        np.testing.assert_array_equal(labels, expected_i)
+
+
 class TestMetalIVFFlat(unittest.TestCase):
 
     def test_ivfflat_l2(self):

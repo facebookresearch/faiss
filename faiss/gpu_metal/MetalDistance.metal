@@ -2411,3 +2411,180 @@ kernel void ivf_merge_lists_grouped(
         outIdx [outBase + i] = i < count ? tgIdx[i] : -1L;
     }
 }
+
+// CUDA's BinaryDistance.cu uses packed words when code strides permit them.
+// Keep byte loads for odd strides: casting those rows to uint* is unaligned.
+inline int hamming_code_distance(
+        device const uchar* query,
+        device const uchar* vector,
+        uint codeSize) {
+    int distance = 0;
+    if ((codeSize & 3u) == 0) {
+        auto q = reinterpret_cast<device const uint*>(query);
+        auto v = reinterpret_cast<device const uint*>(vector);
+        for (uint word = 0; word < codeSize / 4; ++word) {
+            distance += popcount(q[word] ^ v[word]);
+        }
+    } else {
+        for (uint byte = 0; byte < codeSize; ++byte) {
+            distance += popcount(uint(query[byte] ^ vector[byte]));
+        }
+    }
+    return distance;
+}
+
+inline bool hamming_candidate_before(int a, uint ai, int b, uint bi) {
+    return a < b || (a == b && ai < bi);
+}
+
+// Exact fused Hamming search. Like CUDA WarpSelect, retain only the requested
+// k and reject candidates below the running cutoff before merging. Sort only
+// new candidates; merge their sorted run into the existing top-k by parallel
+// binary searches, rather than sorting 1024 entries after every segment.
+// params: [nq, nb, code_size, k], 1 <= k <= 512.
+kernel void hamming_distance_topk(
+        device const uchar* queries [[buffer(0)]],
+        device const uchar* database [[buffer(1)]],
+        device int* outDist [[buffer(2)]],
+        device long* outIdx [[buffer(3)]],
+        constant uint* params [[buffer(4)]],
+        uint qi [[threadgroup_position_in_grid]],
+        uint tid [[thread_position_in_threadgroup]]) {
+    constexpr uint SEG = 512;
+    constexpr uint TG = 256;
+    constexpr int INF = 0x7fffffff;
+    uint nb = params[1], codeSize = params[2], k = params[3];
+    threadgroup int bestDist[SEG], newDist[SEG], mergedDist[SEG];
+    // The GPU envelope has at most UINT32_MAX vectors, so real labels fit
+    // uint and UINT32_MAX is free for padding. Widen only at the public int64
+    // output; signed int would corrupt labels above INT32_MAX.
+    threadgroup uint bestIds[SEG], newIds[SEG], mergedIds[SEG];
+    threadgroup atomic_uint count;
+    threadgroup int threshold;
+    for (uint i = tid; i < k; i += TG) {
+        bestDist[i] = INF;
+        bestIds[i] = 0xffffffffu;
+    }
+    if (tid == 0) {
+        atomic_store_explicit(&count, 0u, memory_order_relaxed);
+        threshold = INF;
+    }
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+    device const uchar* query = queries + ulong(qi) * codeSize;
+    // 64-bit offsets/counters avoid overflow in the last uint32-sized segment.
+    for (ulong base = 0; base < nb; base += SEG) {
+        int cutoff = threshold;
+        for (uint i = tid; i < SEG; i += TG) {
+            ulong vi = base + i;
+            if (vi < nb) {
+                int distance = hamming_code_distance(
+                        query, database + vi * codeSize, codeSize);
+                // All previous labels are smaller than this segment's labels,
+                // so equality cannot improve the deterministic (distance, ID)
+                // top-k. No truncation of candidates inside a thread occurs.
+                if (distance < cutoff) {
+                    uint slot = atomic_fetch_add_explicit(
+                            &count, 1u, memory_order_relaxed);
+                    newDist[slot] = distance;
+                    newIds[slot] = uint(vi);
+                }
+            }
+        }
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+        uint added = atomic_load_explicit(&count, memory_order_relaxed);
+        if (added > 0) {
+            uint padded = 1;
+            while (padded < added)
+                padded *= 2;
+            for (uint i = added + tid; i < padded; i += TG) {
+                newDist[i] = INF;
+                newIds[i] = 0xffffffffu;
+            }
+            threadgroup_barrier(mem_flags::mem_threadgroup);
+            for (uint width = 2; width <= padded; width *= 2) {
+                for (uint stride = width / 2; stride > 0; stride /= 2) {
+                    for (uint i = tid; i < padded; i += TG) {
+                        uint j = i ^ stride;
+                        if (j > i) {
+                            bool swap = (i & width) == 0
+                                    ? hamming_candidate_before(
+                                              newDist[j],
+                                              newIds[j],
+                                              newDist[i],
+                                              newIds[i])
+                                    : hamming_candidate_before(
+                                              newDist[i],
+                                              newIds[i],
+                                              newDist[j],
+                                              newIds[j]);
+                            if (swap) {
+                                int dv = newDist[i];
+                                newDist[i] = newDist[j];
+                                newDist[j] = dv;
+                                uint iv = newIds[i];
+                                newIds[i] = newIds[j];
+                                newIds[j] = iv;
+                            }
+                        }
+                    }
+                    threadgroup_barrier(mem_flags::mem_threadgroup);
+                }
+            }
+            // Each candidate gets its unique rank in the merged order. Real
+            // labels are disjoint, and padding exists only in the old run.
+            for (uint i = tid; i < k; i += TG) {
+                int value = bestDist[i];
+                uint id = bestIds[i];
+                uint lo = 0, hi = added;
+                while (lo < hi) {
+                    uint mid = (lo + hi) / 2;
+                    if (hamming_candidate_before(
+                                newDist[mid], newIds[mid], value, id))
+                        lo = mid + 1;
+                    else
+                        hi = mid;
+                }
+                uint rank = i + lo;
+                if (rank < k) {
+                    mergedDist[rank] = value;
+                    mergedIds[rank] = id;
+                }
+            }
+            for (uint i = tid; i < added; i += TG) {
+                int value = newDist[i];
+                uint id = newIds[i];
+                uint lo = 0, hi = k;
+                while (lo < hi) {
+                    uint mid = (lo + hi) / 2;
+                    if (hamming_candidate_before(
+                                bestDist[mid], bestIds[mid], value, id))
+                        lo = mid + 1;
+                    else
+                        hi = mid;
+                }
+                uint rank = i + lo;
+                if (rank < k) {
+                    mergedDist[rank] = value;
+                    mergedIds[rank] = id;
+                }
+            }
+            threadgroup_barrier(mem_flags::mem_threadgroup);
+            for (uint i = tid; i < k; i += TG) {
+                bestDist[i] = mergedDist[i];
+                bestIds[i] = mergedIds[i];
+            }
+            if (tid == 0) {
+                threshold = mergedDist[k - 1];
+                atomic_store_explicit(&count, 0u, memory_order_relaxed);
+            }
+        }
+        // Even an empty merge must finish reading count in every thread before
+        // any thread starts appending candidates from the next segment.
+        threadgroup_barrier(mem_flags::mem_threadgroup);
+    }
+    for (uint i = tid; i < k; i += TG) {
+        outDist[ulong(qi) * k + i] = bestDist[i];
+        outIdx[ulong(qi) * k + i] =
+                bestIds[i] == 0xffffffffu ? -1L : long(bestIds[i]);
+    }
+}
