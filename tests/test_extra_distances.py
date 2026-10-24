@@ -76,6 +76,32 @@ class TestExtraDistances(unittest.TestCase):
             scipy.spatial.distance.canberra, faiss.METRIC_Canberra
         )
 
+    def test_canberra_zero_denominator(self):
+        xq = np.array([[0.0, 0.0]], dtype="float32")
+        yb = np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 2.0],
+            ],
+            dtype="float32",
+        )
+        expected = np.array([[0.0, 1.0, 1.0]], dtype="float32")
+
+        distances = faiss.pairwise_distances(
+            xq, yb, faiss.METRIC_Canberra
+        )
+        self.assertTrue(np.all(np.isfinite(distances)))
+        self.assertTrue(np.allclose(distances, expected))
+
+        index = faiss.IndexFlat(2, faiss.METRIC_Canberra)
+        index.add(yb)
+        distances, labels = index.search(xq, 3)
+        self.assertTrue(np.all(np.isfinite(distances)))
+        self.assertNotIn(-1, labels[0])
+        self.assertEqual(set(labels[0].tolist()), {0, 1, 2})
+        self.assertTrue(np.allclose(np.sort(distances[0]), expected[0]))
+
     def test_braycurtis(self):
         self.run_simple_dis_test(
             scipy.spatial.distance.braycurtis, faiss.METRIC_BrayCurtis
