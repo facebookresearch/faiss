@@ -1,5 +1,9 @@
 # One, two, and three RHT rounds for L2 search
 
+For the transform definition, the two-RHT scalar quantization guarantee,
+the paper citation, and API examples, see
+[Randomized Hadamard rotation](../tutorial/README_hadamard.md).
+
 `bench_rht.py` compares `none`, `urr`, `rht1`, `rht2`, and `rht3` for both
 `RaBitQ` and unbiased-scale `EDEN`, at 2, 3, and 4 stored bits per coordinate.
 The fixed RHT modes use native `HadamardRotation(d, seed, rounds)` inside a
