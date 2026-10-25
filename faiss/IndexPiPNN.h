@@ -18,6 +18,9 @@ namespace faiss {
 struct SearchParametersPiPNN : SearchParameters {
     /// beam width L; if 0, pipnn.search_L is used
     int search_L = 0;
+    SearchParameters* clone() const override {
+        return new SearchParametersPiPNN(*this);
+    }
 };
 
 /** The PiPNN index is a normal random-access index with a PiPNN graph built

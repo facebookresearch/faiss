@@ -547,6 +547,7 @@ void gpu_sync_all_devices()
 %include  <faiss/MetricType.h>
 
 %newobject *::get_distance_computer() const;
+%newobject *::clone() const;
 %newobject *::get_CodePacker() const;
 
 %include  <faiss/Index.h>

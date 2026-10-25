@@ -129,6 +129,11 @@ using IndexIDMap2 = IndexIDMap2Template<Index>;
 using IndexBinaryIDMap2 = IndexIDMap2Template<IndexBinary>;
 
 // IDSelector that translates the ids using an IDMap
+/** Explicit selector translation for one IDMap. Selectors in Refine and
+ * PreTransform search-parameter trees normally use external IDs and are
+ * translated automatically. A selector already translated for this IDMap
+ * is used as-is.
+ */
 struct IDSelectorTranslated : IDSelector {
     const std::vector<int64_t>& id_map;
     const IDSelector* sel;

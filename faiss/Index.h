@@ -90,6 +90,13 @@ struct SearchParameters {
     IDSelector* sel = nullptr;
     /// make sure we can dynamic_cast this
     virtual ~SearchParameters() {}
+    /** Shallow copy preserving the concrete parameter type. Subclasses must
+     * override this when used with wrappers that forward or translate
+     * selectors. Pointer fields remain non-owning, as in the original object.
+     */
+    virtual SearchParameters* clone() const {
+        return new SearchParameters(*this);
+    }
 };
 
 /** Abstract structure for an index, supports adding vectors and searching

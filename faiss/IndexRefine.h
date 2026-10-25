@@ -11,11 +11,18 @@
 
 namespace faiss {
 
+/** The selector is forwarded to the base index and intersected with any
+ * selector in base_index_params. With an enclosing IDMap, both selectors use
+ * external IDs. The caller's parameter objects are not modified.
+ */
 struct IndexRefineSearchParameters : SearchParameters {
     float k_factor = 1;
     SearchParameters* base_index_params = nullptr; // non-owning
 
     virtual ~IndexRefineSearchParameters() = default;
+    SearchParameters* clone() const override {
+        return new IndexRefineSearchParameters(*this);
+    }
 };
 
 /** Index that queries in a base_index (a fast one) and refines the

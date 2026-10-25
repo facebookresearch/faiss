@@ -15,6 +15,9 @@ namespace faiss {
 struct RaBitQSearchParameters : SearchParameters {
     uint8_t qb = 4;
     bool centered = false;
+    SearchParameters* clone() const override {
+        return new RaBitQSearchParameters(*this);
+    }
 };
 
 struct IndexRaBitQ : IndexFlatCodes {

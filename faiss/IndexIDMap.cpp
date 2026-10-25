@@ -16,6 +16,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/SearchParameters.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
@@ -146,27 +147,6 @@ void IndexIDMapTemplate<IndexT>::add_sa_codes(
     this->ntotal = index->ntotal;
 }
 
-namespace {
-
-/// RAII object to reset the IDSelector in the params object
-struct ScopedSelChange {
-    SearchParameters* params = nullptr;
-    IDSelector* old_sel = nullptr;
-
-    void set(SearchParameters* target_params, IDSelector* new_sel) {
-        this->params = target_params;
-        old_sel = target_params->sel;
-        target_params->sel = new_sel;
-    }
-    ~ScopedSelChange() {
-        if (params) {
-            params->sel = old_sel;
-        }
-    }
-};
-
-} // namespace
-
 template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::search_ex(
         idx_t n,
@@ -176,26 +156,10 @@ void IndexIDMapTemplate<IndexT>::search_ex(
         typename IndexT::distance_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    IDSelectorTranslated this_idtrans(this->id_map, nullptr);
-    ScopedSelChange sel_change;
-
-    if (params && params->sel) {
-        auto idtrans = dynamic_cast<const IDSelectorTranslated*>(params->sel);
-
-        if (!idtrans) {
-            /*
-            FAISS_THROW_IF_NOT_MSG(
-                    idtrans,
-                    "IndexIDMap requires an IDSelectorTranslated on input");
-            */
-            // then make an idtrans and force it into the SearchParameters
-            // (hence the const_cast)
-            auto params_non_const = const_cast<SearchParameters*>(params);
-            this_idtrans.sel = params->sel;
-            sel_change.set(params_non_const, &this_idtrans);
-        }
-    }
-    index->search_ex(n, x, numeric_type, k, distances, labels, params);
+    SearchParametersStorage storage;
+    const auto* translated_params = storage.translate_selectors(params, id_map);
+    index->search_ex(
+            n, x, numeric_type, k, distances, labels, translated_params);
     idx_t* li = labels;
     const idx_t id_map_size = static_cast<idx_t>(id_map.size());
 #pragma omp parallel for
@@ -229,20 +193,9 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    IDSelectorTranslated this_idtrans(this->id_map, nullptr);
-    ScopedSelChange sel_change;
-
-    if (params && params->sel) {
-        auto idtrans = dynamic_cast<const IDSelectorTranslated*>(params->sel);
-
-        if (!idtrans) {
-            // Preserve the concrete params type and its index-specific fields.
-            auto params_non_const = const_cast<SearchParameters*>(params);
-            this_idtrans.sel = params->sel;
-            sel_change.set(params_non_const, &this_idtrans);
-        }
-    }
-    index->range_search(n, x, radius, result, params);
+    SearchParametersStorage storage;
+    const auto* translated_params = storage.translate_selectors(params, id_map);
+    index->range_search(n, x, radius, result, translated_params);
 
     const idx_t id_map_size = static_cast<idx_t>(id_map.size());
 #pragma omp parallel for
