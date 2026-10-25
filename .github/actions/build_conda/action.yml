@@ -30,7 +30,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest
+        miniforge-version: '24.11.2-1'
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
@@ -40,7 +40,7 @@ runs:
         # However there is an ARM64 for macOS, so exclude that.
         architecture: ${{ (runner.arch == 'ARM64' && runner.os != 'macOS') && 'aarch64' || runner.arch }}
     - name: Install conda build tools
-      shell: ${{ steps.choose_shell.outputs.shell }}
+      shell: bash
       run: |
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
