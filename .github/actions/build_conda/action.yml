@@ -20,17 +20,15 @@ runs:
       shell: bash
       id: choose_shell
       run: |
-        # Use pwsh on Windows; bash everywhere else
-        if [ "${{ runner.os }}" != "Windows" ]; then
-          echo "shell=bash" >> "$GITHUB_OUTPUT"
-        else
-          echo "shell=pwsh" >> "$GITHUB_OUTPUT"
-        fi
+        # Use bash on all platforms; conda commands work in bash via
+        # setup-miniconda PATH setup. pwsh uses a hook wrapper that passes
+        # empty args to conda-script.py, causing 'invalid choice' errors.
+        echo "shell=bash" >> "$GITHUB_OUTPUT"
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest
+        miniforge-version: '24.11.2-1'  # pinned: latest (26.9.4-0) needs sudo for conda init
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
