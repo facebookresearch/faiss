@@ -30,7 +30,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest
+        miniforge-version: '24.11.2-1'
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
