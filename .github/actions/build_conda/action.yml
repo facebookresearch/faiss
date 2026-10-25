@@ -34,6 +34,10 @@ runs:
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
+        # Miniforge 26.x conda init on Windows requires sudo to register shell
+        # hooks. Setting auto-activate-base=false skips conda init entirely;
+        # conda is still on PATH via setup-miniconda's direct PATH injection.
+        auto-activate-base: 'false'
         # Set to runner.arch=aarch64 if we're on arm64 because
         # there's no miniforge ARM64 package, just aarch64.
         # They are the same thing, just named differently.
