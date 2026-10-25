@@ -547,7 +547,24 @@ void gpu_sync_all_devices()
 %include  <faiss/MetricType.h>
 
 %newobject *::get_distance_computer() const;
-%newobject *::clone() const;
+// Parameter clones are internal shallow C++ copies. Exposing them in Python
+// would lose the source wrapper's _sp_field_refs and allow dangling pointers.
+// List overrides too, and leave unrelated CodePacker::clone bindings unchanged.
+%ignore faiss::SearchParameters::clone;
+%ignore faiss::SearchParametersPreTransform::clone;
+%ignore faiss::IndexRefineSearchParameters::clone;
+%ignore faiss::SearchParametersPQ::clone;
+%ignore faiss::SearchParametersResidualCoarseQuantizer::clone;
+%ignore faiss::SearchParametersIVF::clone;
+%ignore faiss::IVFSQTurboQSearchParameters::clone;
+%ignore faiss::SearchParametersHNSW::clone;
+%ignore faiss::SearchParametersPiPNN::clone;
+%ignore faiss::IVFPQSearchParameters::clone;
+%ignore faiss::RaBitQSearchParameters::clone;
+%ignore faiss::IVFRaBitQSearchParameters::clone;
+%ignore faiss::gpu::SearchParametersCagra::clone;
+%ignore faiss::SearchParametersSVSIVF::clone;
+%ignore faiss::SearchParametersSVSVamana::clone;
 %newobject *::get_CodePacker() const;
 
 %include  <faiss/Index.h>

@@ -16,6 +16,7 @@ import unittest
 import faiss
 import sys
 import gc
+import weakref
 
 d = 10
 xt = np.random.rand(100, d).astype("float32")
@@ -23,6 +24,53 @@ xb = np.random.rand(20, d).astype("float32")
 
 
 class TestReferenced(unittest.TestCase):
+
+    def test_SearchParameters_native_clone_not_exposed(self):
+        # Native shallow copies do not carry Python field owners. Keep that
+        # operation internal instead of exposing a copy with dangling fields.
+        for name, cls in vars(faiss).items():
+            if (isinstance(cls, type) and
+                    issubclass(cls, faiss.SearchParameters)):
+                with self.subTest(parameter_type=name):
+                    self.assertFalse(hasattr(cls, "clone"))
+
+    def test_SearchParameters_wrapper_selector_gc(self):
+        # Internal per-call copies borrow fields while the original parameter
+        # tree keeps the Python owners alive, including after explicit GC.
+        for refine in (False, True):
+            with self.subTest(refine=refine):
+                base = faiss.IndexFlatL2(1)
+                wrapper = (faiss.IndexRefineFlat(base) if refine else
+                           faiss.IndexPreTransform(base))
+                index = faiss.IndexIDMap(wrapper)
+                xb = np.arange(4, dtype="float32").reshape(-1, 1)
+                ids = np.array([30, 10, 40, 20], dtype="int64")
+                index.add_with_ids(xb, ids)
+                outer = faiss.IDSelectorRange(10, 21)
+                inner = faiss.IDSelectorRange(15, 31)
+                leaf = faiss.SearchParameters(sel=inner)
+                params = (faiss.IndexRefineSearchParameters(
+                    sel=outer, base_index_params=leaf) if refine else
+                    faiss.SearchParametersPreTransform(
+                        sel=outer, index_params=leaf))
+                owners = [weakref.ref(obj) for obj in (outer, inner, leaf)]
+                del outer, inner, leaf
+                gc.collect()
+                self.assertTrue(all(ref() is not None for ref in owners))
+                for _ in range(2):
+                    D, I = index.search(xb[:1], 2, params=params)
+                    np.testing.assert_array_equal(I, [[20, -1]])
+                    self.assertEqual(D[0, 0], 9)
+                    lims, distances, labels = index.range_search(
+                        xb[:1], 10, params=params)
+                    np.testing.assert_array_equal(lims, [0, 1])
+                    np.testing.assert_array_equal(labels, [20])
+                    np.testing.assert_array_equal(distances, [9])
+                    gc.collect()
+                    self.assertTrue(all(ref() is not None for ref in owners))
+                del params
+                gc.collect()
+                self.assertTrue(all(ref() is None for ref in owners))
 
     def test_IndexIVF(self):
         quantizer = faiss.IndexFlatL2(d)

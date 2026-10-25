@@ -92,7 +92,10 @@ struct SearchParameters {
     virtual ~SearchParameters() {}
     /** Shallow copy preserving the concrete parameter type. Subclasses must
      * override this when used with wrappers that forward or translate
-     * selectors. Pointer fields remain non-owning, as in the original object.
+     * selectors, including an IDMap with a selector. Subclasses inheriting a
+     * base implementation are rejected if the copy would lose their type.
+     * The caller owns the returned object. Pointer fields remain non-owning;
+     * the source fields must outlive the copy. Not exposed in Python.
      */
     virtual SearchParameters* clone() const {
         return new SearchParameters(*this);
