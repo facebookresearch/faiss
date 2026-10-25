@@ -1207,13 +1207,7 @@ TEST(IVF, large_k_reservoir_matches_heap) {
         std::vector<float> Dfull(nq * k);
         std::vector<faiss::idx_t> Ifull(nq * k);
         search_knn(
-                index,
-                nq,
-                xq.data(),
-                k,
-                Dfull.data(),
-                Ifull.data(),
-                1000000);
+                index, nq, xq.data(), k, Dfull.data(), Ifull.data(), 1000000);
 
         std::vector<faiss::idx_t> keys(nq * nlist);
         std::vector<float> coarse(nq * nlist);
@@ -1551,15 +1545,7 @@ TEST(IVF, large_k_reservoir_iterable_lists) {
             Iheap.data(),
             1000000,
             &params);
-    search_knn(
-            index,
-            nq,
-            xq.data(),
-            k,
-            Dres.data(),
-            Ires.data(),
-            2,
-            &params);
+    search_knn(index, nq, xq.data(), k, Dres.data(), Ires.data(), 2, &params);
     expect_same_topk(
             nq, k, Dheap.data(), Iheap.data(), Dres.data(), Ires.data());
 }
