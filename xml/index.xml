@@ -11232,7 +11232,7 @@
     <member refid="structfaiss_1_1PiPNN_1aeb442fb111a5d291207cf9c6372582ba" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1PiPNN_1a9617a630e2fca305fcd6abe209ce3fb6" kind="function"><name>PiPNN</name></member>
     <member refid="structfaiss_1_1PiPNN_1a9b8897afab62a4c9937e6faea7da90e0" kind="function"><name>PiPNN</name></member>
-    <member refid="structfaiss_1_1PiPNN_1a471370c8426dc891a5de964c0a8df2d9" kind="function"><name>effective_alpha</name></member>
+    <member refid="structfaiss_1_1PiPNN_1a844669f152d61c0acde5a3020262d915" kind="function"><name>effective_alpha</name></member>
     <member refid="structfaiss_1_1PiPNN_1a86c1e8aed2845b61254ddd2dbcf5fa7d" kind="function"><name>check_params</name></member>
     <member refid="structfaiss_1_1PiPNN_1aa6f5d12979d19f0088ca2848d072dbec" kind="function"><name>build</name></member>
     <member refid="structfaiss_1_1PiPNN_1afecdd8a6a7fce16ec533a1aeb5f71694" kind="function"><name>search</name></member>

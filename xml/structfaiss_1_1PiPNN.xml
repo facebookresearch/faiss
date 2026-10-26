@@ -156,7 +156,7 @@
         <qualifiedname>faiss::PiPNN::alpha</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
-<para>0 = 1.2; 1.0 for IP with nonzero-norm CV &lt;= 0.05 </para>
+<para>0 = 1.2 </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -338,20 +338,15 @@
         </inbodydescription>
         <location file="faiss/impl/PiPNN.h" line="96" column="14" bodyfile="faiss/impl/PiPNN.h" bodystart="96" bodyend="96"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1PiPNN_1a471370c8426dc891a5de964c0a8df2d9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1PiPNN_1a844669f152d61c0acde5a3020262d915" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::PiPNN::effective_alpha</definition>
-        <argsstring>(MetricType metric, bool cosine=false) const</argsstring>
+        <argsstring>(MetricType metric) const</argsstring>
         <name>effective_alpha</name>
         <qualifiedname>faiss::PiPNN::effective_alpha</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
           <declname>metric</declname>
-        </param>
-        <param>
-          <type>bool</type>
-          <declname>cosine</declname>
-          <defval>false</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -484,7 +479,7 @@
       <member refid="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>c_max</name></member>
       <member refid="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>c_min</name></member>
       <member refid="structfaiss_1_1PiPNN_1a86c1e8aed2845b61254ddd2dbcf5fa7d" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>check_params</name></member>
-      <member refid="structfaiss_1_1PiPNN_1a471370c8426dc891a5de964c0a8df2d9" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>effective_alpha</name></member>
+      <member refid="structfaiss_1_1PiPNN_1a844669f152d61c0acde5a3020262d915" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>effective_alpha</name></member>
       <member refid="structfaiss_1_1PiPNN_1a8644f9eed652e2184fc83f4919a48161" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>entry_point</name></member>
       <member refid="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>fanout</name></member>
       <member refid="structfaiss_1_1PiPNN_1ab3963da4ed5e5627d48613eb6def876f" prot="public" virt="non-virtual"><scope>faiss::PiPNN</scope><name>graph</name></member>
