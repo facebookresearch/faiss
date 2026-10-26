@@ -516,7 +516,7 @@ void build_with_chunk(
             storage,
             storage.metric_type == METRIC_INNER_PRODUCT ? &norm_cv : nullptr);
     const bool cosine = norm_cv > 0.05f;
-    const float alpha = p.effective_alpha(storage.metric_type, cosine);
+    const float alpha = p.effective_alpha(storage.metric_type);
     if (verbose) {
         printf("PiPNN: medoid and validation of %zu vectors (d=%d): %.3f s\n",
                n,
@@ -677,14 +677,11 @@ void beam_search(
 
 } // namespace pipnn
 
-float PiPNN::effective_alpha(MetricType metric, bool cosine) const {
+float PiPNN::effective_alpha(MetricType metric) const {
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "PiPNN supports only METRIC_L2 and METRIC_INNER_PRODUCT");
-    if (alpha != 0) {
-        return alpha;
-    }
-    return metric == METRIC_INNER_PRODUCT && !cosine ? 1.0f : 1.2f;
+    return alpha != 0 ? alpha : 1.2f;
 }
 
 void PiPNN::check_params() const {
@@ -734,8 +731,7 @@ void PiPNN::check_params() const {
             double(leader_fraction));
     FAISS_THROW_IF_NOT_FMT(
             alpha == 0 || (std::isfinite(alpha) && alpha >= 1),
-            "PiPNN: alpha must be 0 (metric default) or finite and >= 1, "
-            "got %g",
+            "PiPNN: alpha must be 0 (default) or finite and >= 1, got %g",
             double(alpha));
 }
 
