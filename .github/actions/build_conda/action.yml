@@ -20,17 +20,15 @@ runs:
       shell: bash
       id: choose_shell
       run: |
-        # Use pwsh on Windows; bash everywhere else
-        if [ "${{ runner.os }}" != "Windows" ]; then
-          echo "shell=bash" >> "$GITHUB_OUTPUT"
-        else
-          echo "shell=pwsh" >> "$GITHUB_OUTPUT"
-        fi
+        # Use bash on all platforms.  On Windows, conda is reachable via the
+        # condabin/conda bash wrapper (cmd.exe /C CALL conda.bat $*).  pwsh
+        # caused argument-passing failures (COMMAND='') with Miniforge 24.x.
+        echo "shell=bash" >> "$GITHUB_OUTPUT"
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest
+        miniforge-version: '24.11.2-1'  # pinned: conda 25/26.x fails auto_activate config in setup-miniconda@v3
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
