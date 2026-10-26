@@ -280,8 +280,7 @@ void compute_1_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
 } // namespace
 
 void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
-    // a1: fvec_L2sqr_ny_nearest / _y_transposed have ARM_SVE specializations
-    with_simd_level_a1([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         switch (nbits) {
             case 8:
                 compute_1_code<PQEncoder8, SL>(*this, x, code);
@@ -295,7 +294,7 @@ void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
                 compute_1_code<PQEncoderGeneric, SL>(*this, x, code);
                 break;
         }
-    }); // with_simd_level_a1
+    }); // with_simd_level_with_sve
 }
 
 template <class PQDecoder>
@@ -443,8 +442,7 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
-    // a1: fvec_L2sqr_ny / _transposed have ARM_SVE specializations
-    with_simd_level_a1([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         if (transposed_centroids.empty()) {
             // use regular version
             for (size_t m = 0; m < M; m++) {
@@ -491,8 +489,12 @@ void ProductQuantizer::compute_distance_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
-    if (dsub == 2 && nbits < 8) { // interesting for a narrow range of settings
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
+        defined(COMPILE_SIMD_RISCV_RVV)
+    // The dsub2 kernels help for a narrow range of settings. They require
+    // ksub = 1 << nbits to be a multiple of 8. Therefore nbits must be 3 or
+    // more.
+    if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, false, dis_tables);
     } else
@@ -526,8 +528,9 @@ void ProductQuantizer::compute_inner_prod_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
-    if (dsub == 2 && nbits < 8) {
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
+        defined(COMPILE_SIMD_RISCV_RVV)
+    if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, true, dis_tables);
     } else
@@ -826,8 +829,7 @@ void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 
     if (dsub < 4) {
-        // a1: fvec_L2sqr_ny has an ARM_SVE specialization
-        with_simd_level_a1([&]<SIMDLevel SL>() {
+        with_simd_level_with_sve([&]<SIMDLevel SL>() {
 #pragma omp parallel for
             for (int64_t mk = 0; mk < static_cast<int64_t>(M * ksub); mk++) {
                 // allow omp to schedule in a more fine-grained way
@@ -875,8 +877,9 @@ void ProductQuantizer::search_sdc(
             float* heap_dis = res->val + i * k;
             const uint8_t* qcode = qcodes + i * code_size;
 
-            if (init_finalize_heap)
+            if (init_finalize_heap) {
                 maxheap_heapify(k, heap_dis, heap_ids);
+            }
 
             // Precompute per-subquantizer row pointers: q_row[m] points to
             // sdc_table[m*ksub^2 + qcode[m]*ksub], eliminating M
@@ -900,8 +903,9 @@ void ProductQuantizer::search_sdc(
                 bcode += code_size;
             }
 
-            if (init_finalize_heap)
+            if (init_finalize_heap) {
                 maxheap_reorder(k, heap_dis, heap_ids);
+            }
         }
     }
 }

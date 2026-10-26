@@ -105,6 +105,8 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexSQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -132,6 +134,9 @@ typedef uint64_t size_t;
 
 #include <faiss/impl/NSG.h>
 #include <faiss/IndexNSG.h>
+
+#include <faiss/impl/PiPNN.h>
+#include <faiss/IndexPiPNN.h>
 
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexIDMap.h>
@@ -437,10 +442,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
-// CAGRA is absent from the aarch64 cuVS build (cuvs-ivfpq subset), so gate the
-// CAGRA bindings on FAISS_CUVS_NO_CAGRA too, else the wrapper references
-// undefined GpuIndexCagra symbols when linked against the aarch64 faiss_cuvs.
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
@@ -450,7 +452,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 
 %}
-#endif // FAISS_ENABLE_CUVS && !FAISS_CUVS_NO_CAGRA
+#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -612,8 +614,6 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/hnsw/MinimaxHeap.h>
 %include  <faiss/impl/HNSW.h>
-%ignore faiss::IndexHNSW::locks;
-%ignore faiss::IndexBinaryHNSW::locks;
 %include  <faiss/IndexHNSW.h>
 
 %include <faiss/impl/kmeans1d.h>
@@ -642,6 +642,9 @@ void gpu_sync_all_devices()
 }
 
 %include  <faiss/IndexNSG.h>
+
+%include  <faiss/impl/PiPNN.h>
+%include  <faiss/IndexPiPNN.h>
 
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
@@ -683,12 +686,14 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexSQFastScan.h>
 
 // NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
 // class template. SWIG cannot handle this, and the Python API doesn't need
 // the internal SIMD handler types.
 // %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFSQFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
 
@@ -777,7 +782,7 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
 // IVFPQSearchCagraConfig.lut_dtype and .internal_distance_dtype are typed as
 // cudaDataType_t (a C enum from <library_types.h>). Without an int typemap
 // SWIG generates accessors that read/write a cudaDataType_t* SwigPyObject,
@@ -870,6 +875,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFPQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizer )
@@ -893,6 +899,8 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
+    DOWNCAST ( IndexSQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )
@@ -914,12 +922,16 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
     DOWNCAST ( IndexHNSWCagra )
+    DOWNCAST ( IndexHNSWRaBitQ )
     DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
+    DOWNCAST ( IndexPiPNNFlat )
+    DOWNCAST ( IndexPiPNNSQ )
+    DOWNCAST ( IndexPiPNN )
     DOWNCAST ( Index2Layer )
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
@@ -934,7 +946,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
     DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif

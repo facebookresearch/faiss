@@ -7,7 +7,7 @@
 
 // This TU provides non-templated PQ code distance dispatch wrappers
 // (pq_code_distance_8bit_single, pq_code_distance_8bit_four) declared
-// in pq_code_distance-inl.h. These use with_simd_level to route to the
+// in pq_code_distance-inl.h. These use with_simd_level_with_sve to route to the
 // best available SIMD implementation via pq_code_distance_8bit_*_impl
 // function template specializations.
 //
@@ -34,7 +34,7 @@ void pq_scan_8bit(
         float* heap_dis,
         int64_t* heap_ids,
         bool max_heap) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         pq_scan_8bit_impl<SL>(
                 M, dis_table, codes, ncodes, k, heap_dis, heap_ids, max_heap);
     });
@@ -44,7 +44,11 @@ float pq_code_distance_8bit_single(
         size_t M,
         const float* sim_table,
         const uint8_t* code) {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    return with_simd_level_with_sve([&]<SIMDLevel SL>() {
+        if (use_scalar_8bit_kernel<SL>(M)) {
+            return PQCodeDistanceScalar8<SL>::distance_single_code(
+                    M, sim_table, code);
+        }
         return pq_code_distance_8bit_single_impl<SL>(M, sim_table, code);
     });
 }
@@ -60,7 +64,21 @@ void pq_code_distance_8bit_four(
         float& result1,
         float& result2,
         float& result3) {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
+        if (use_scalar_8bit_kernel<SL>(M)) {
+            PQCodeDistanceScalar8<SL>::distance_four_codes(
+                    M,
+                    sim_table,
+                    code0,
+                    code1,
+                    code2,
+                    code3,
+                    result0,
+                    result1,
+                    result2,
+                    result3);
+            return;
+        }
         pq_code_distance_8bit_four_impl<SL>(
                 M,
                 sim_table,

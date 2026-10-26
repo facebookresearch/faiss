@@ -20,8 +20,8 @@ inline float pq_code_distance_8bit_single_impl<SIMDLevel::NONE>(
         size_t M,
         const float* sim_table,
         const uint8_t* code) {
-    return PQCodeDistanceScalar<PQDecoder8>::distance_single_code(
-            M, 8, sim_table, code);
+    return PQCodeDistanceScalar<PQDecoder8, SIMDLevel::NONE>::
+            distance_single_code(M, 8, sim_table, code);
 }
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
@@ -37,7 +37,7 @@ inline void pq_code_distance_8bit_four_impl<SIMDLevel::NONE>(
         float& result1,
         float& result2,
         float& result3) {
-    PQCodeDistanceScalar<PQDecoder8>::distance_four_codes(
+    PQCodeDistanceScalar<PQDecoder8, SIMDLevel::NONE>::distance_four_codes(
             M,
             8,
             sim_table,
@@ -60,8 +60,8 @@ inline float pq_code_distance_8bit_single_impl<SIMDLevel::ARM_NEON>(
         size_t M,
         const float* sim_table,
         const uint8_t* code) {
-    return PQCodeDistanceScalar<PQDecoder8>::distance_single_code(
-            M, 8, sim_table, code);
+    return PQCodeDistanceScalar<PQDecoder8, SIMDLevel::ARM_NEON>::
+            distance_single_code(M, 8, sim_table, code);
 }
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
@@ -77,7 +77,7 @@ inline void pq_code_distance_8bit_four_impl<SIMDLevel::ARM_NEON>(
         float& result1,
         float& result2,
         float& result3) {
-    PQCodeDistanceScalar<PQDecoder8>::distance_four_codes(
+    PQCodeDistanceScalar<PQDecoder8, SIMDLevel::ARM_NEON>::distance_four_codes(
             M,
             8,
             sim_table,

@@ -232,7 +232,14 @@ struct BinaryInvertedListScanner {
     virtual uint32_t distance_to_code(const uint8_t* code) const = 0;
 
     /** compute the distances to codes. (distances, labels) should be
-     * organized as a min- or max-heap
+     * organized as a max-heap: the scan accepts a code whose distance is
+     * below distances[0] and replaces the top. A min-heap caller reads its
+     * neutral value as a huge unsigned bound and gets wrong results.
+
+     *
+     * The heap top is the only bound. To keep the k nearest codes inside a
+     * radius, seed every heap slot with that radius instead of the neutral
+     * value; an unfilled slot keeps its label of -1.
      *
      * @param n      number of codes to scan
      * @param codes  codes to scan (n * code_size)

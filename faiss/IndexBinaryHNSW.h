@@ -11,7 +11,6 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/impl/HNSW.h>
-#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -41,10 +40,13 @@ struct IndexBinaryHNSW : IndexBinary {
     // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryHNSW*) is called.
     bool keep_max_size_level0 = false;
 
-    // Per-node locks for HNSW graph construction.
-    LockVector locks;
-    // locks are freed after each call to add() unless this flag is set.
-    bool retain_locks = false;
+    // When this index is the coarse quantizer of an IndexBinaryIVF,
+    // IndexBinaryIVF::train() calls add_level_0_links_from_sample() after it
+    // adds the centroids. The sample is the first
+    // min(n, level_0_link_samples_per_node * ntotal) training vectors. 0
+    // disables the call. Training does not call it when the quantizer is
+    // already trained. The index format does not store this value.
+    int level_0_link_samples_per_node = 16;
 
     explicit IndexBinaryHNSW();
     explicit IndexBinaryHNSW(int d, int M = 32);
@@ -71,6 +73,17 @@ struct IndexBinaryHNSW : IndexBinary {
     void reconstruct(idx_t key, uint8_t* recons) const override;
 
     void reset() override;
+
+    /** Adds level-0 links so that the search no longer stops at "sinks":
+     * nodes where it stops for many vectors whose nearest node is elsewhere.
+     * See IndexHNSW::add_level_0_links_from_sample(). x holds n binary
+     * vectors. Call this function after the last add().
+     */
+    HNSWLevel0LinkStats add_level_0_links_from_sample(
+            idx_t n,
+            const uint8_t* x,
+            const HNSWLevel0LinkParameters& params =
+                    HNSWLevel0LinkParameters());
 };
 
 struct IndexBinaryHNSWCagra : IndexBinaryHNSW {

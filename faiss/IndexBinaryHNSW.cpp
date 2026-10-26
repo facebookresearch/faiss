@@ -7,7 +7,6 @@
 
 #include <faiss/IndexBinaryHNSW.h>
 
-#include <omp.h>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -25,6 +24,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
 #include <faiss/impl/simd_dispatch.h>
 
@@ -38,140 +38,6 @@
 #undef THE_SIMD_LEVEL
 
 namespace faiss {
-
-/**************************************************************
- * add / search blocks of descriptors
- **************************************************************/
-
-namespace {
-
-void hnsw_add_vertices(
-        IndexBinaryHNSW& index_hnsw,
-        size_t n0,
-        size_t n,
-        const uint8_t* x,
-        bool verbose,
-        bool preset_levels = false) {
-    HNSW& hnsw = index_hnsw.hnsw;
-    size_t ntotal = n0 + n;
-    double t0 = getmillisecs();
-    if (verbose) {
-        printf("hnsw_add_vertices: adding %zd elements on top of %zd "
-               "(preset_levels=%d)\n",
-               n,
-               n0,
-               int(preset_levels));
-    }
-
-    int max_level = hnsw.prepare_level_tab(n, preset_levels);
-
-    if (verbose) {
-        printf("  max_level = %d\n", max_level);
-    }
-
-    auto& locks = index_hnsw.locks;
-    locks.prepare(ntotal);
-
-    // add vectors from highest to lowest level
-    std::vector<int> hist;
-    std::vector<int> order(n);
-
-    { // make buckets with vectors of the same level
-
-        // build histogram
-        for (size_t i = 0; i < n; i++) {
-            HNSW::storage_idx_t pt_id =
-                    static_cast<HNSW::storage_idx_t>(i + n0);
-            int pt_level = hnsw.levels[pt_id] - 1;
-            while (pt_level >= static_cast<int>(hist.size())) {
-                hist.push_back(0);
-            }
-            hist[pt_level]++;
-        }
-
-        // accumulate
-        std::vector<int> offsets(hist.size() + 1, 0);
-        for (size_t i = 0; i < hist.size() - 1; i++) {
-            offsets[i + 1] = offsets[i] + hist[i];
-        }
-
-        // bucket sort
-        for (size_t i = 0; i < n; i++) {
-            HNSW::storage_idx_t pt_id =
-                    static_cast<HNSW::storage_idx_t>(i + n0);
-            int pt_level = hnsw.levels[pt_id] - 1;
-            order[offsets[pt_level]++] = pt_id;
-        }
-    }
-
-    { // perform add
-        RandomGenerator rng2(789);
-
-        size_t i1 = static_cast<int>(n);
-
-        for (int pt_level = static_cast<int>(hist.size()) - 1;
-             pt_level >= int(!index_hnsw.init_level0);
-             pt_level--) {
-            size_t i0 = i1 - hist[pt_level];
-
-            if (verbose) {
-                printf("Adding %zu elements at level %d\n", i1 - i0, pt_level);
-            }
-
-            // random permutation to get rid of dataset order bias
-            for (size_t j = i0; j < i1; j++) {
-                std::swap(
-                        order[j],
-                        order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
-            }
-
-#pragma omp parallel
-            {
-                std::unique_ptr<VisitedTable> vt = VisitedTable::create(ntotal);
-
-                std::unique_ptr<DistanceComputer> dis(
-                        index_hnsw.get_distance_computer());
-                bool do_display = verbose && omp_get_thread_num() == 0;
-                size_t prev_display = 0;
-
-#pragma omp for schedule(dynamic)
-                for (int64_t i = i0; i < i1; i++) {
-                    HNSW::storage_idx_t pt_id = order[i];
-                    dis->set_query(
-                            (float*)(x + (pt_id - n0) * index_hnsw.code_size));
-
-                    hnsw.add_with_locks(
-                            *dis,
-                            pt_level,
-                            pt_id,
-                            locks,
-                            *vt,
-                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
-
-                    if (do_display && i - i0 > prev_display + 10000) {
-                        prev_display = i - i0;
-                        printf("  %zu / %zu\r", i - i0, i1 - i0);
-                        fflush(stdout);
-                    }
-                }
-            }
-            i1 = i0;
-        }
-        if (index_hnsw.init_level0) {
-            FAISS_ASSERT(i1 == 0);
-        } else {
-            FAISS_ASSERT((i1 - hist[0]) == 0);
-        }
-    }
-    if (verbose) {
-        printf("Done in %.3f ms\n", getmillisecs() - t0);
-    }
-    if (!index_hnsw.retain_locks) {
-        locks.clear();
-    }
-}
-
-} // anonymous namespace
 
 /**************************************************************
  * IndexBinaryHNSW implementation
@@ -256,7 +122,9 @@ void IndexBinaryHNSW::search(
         }
     }
 
-    hnsw_stats.combine({n1, n2, ndis, nhops});
+    if (get_search_stats_enabled()) {
+        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+    }
 
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; ++i) {
@@ -272,28 +140,23 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
 
     bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
 
-    if (hnsw_deterministic_build) {
-        hnsw_add_vertices_deterministic(
-                hnsw,
-                n0,
-                n,
-                d,
-                init_level0,
-                keep_max_size_level0,
-                preset_levels,
-                verbose,
-                [this] { return get_distance_computer(); },
-                [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
-                    dc.set_query((const float*)(x + (pt_id - n0) * code_size));
-                });
-    } else {
-        hnsw_add_vertices(*this, n0, n, x, verbose, preset_levels);
-    }
+    hnsw_add_vertices_deterministic(
+            hnsw,
+            n0,
+            n,
+            d,
+            init_level0,
+            keep_max_size_level0,
+            preset_levels,
+            verbose,
+            [this] { return get_distance_computer(); },
+            [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                dc.set_query((const float*)(x + (pt_id - n0) * code_size));
+            });
 }
 
 void IndexBinaryHNSW::reset() {
     hnsw.reset();
-    locks.clear();
     storage->reset();
     ntotal = 0;
 }
@@ -311,6 +174,67 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
         return make_binary_hnsw_distance_computer_fixSL<SL>(
                 code_size, flat_storage);
     });
+}
+
+namespace {
+
+// The sample of an IndexBinaryHNSW. Hamming distances are integers, so a
+// nearer node has a strictly smaller distance.
+struct BinaryLinkSample : HNSWLinkSampleSearch {
+    const IndexBinaryHNSW& index;
+    const uint8_t* x;
+
+    BinaryLinkSample(const IndexBinaryHNSW& index, idx_t n, const uint8_t* x)
+            : index(index), x(x) {
+        this->n = n;
+    }
+
+    void search(const SearchParametersHNSW* params, idx_t* labels)
+            const override {
+        std::vector<int32_t> distances(n);
+        index.search(n, x, 1, distances.data(), labels, params);
+    }
+
+    void search_exact(
+            size_t m,
+            const idx_t* ids,
+            const idx_t* found,
+            idx_t* exact,
+            uint8_t* nearer) const override {
+        const size_t cs = index.code_size;
+        std::vector<uint8_t> rows(m * cs);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(rows.data() + j * cs, x + ids[j] * cs, cs);
+        }
+        std::vector<int32_t> distances(m);
+        index.storage->search(m, rows.data(), 1, distances.data(), exact);
+#pragma omp parallel
+        {
+            std::unique_ptr<DistanceComputer> dis(
+                    index.get_distance_computer());
+#pragma omp for schedule(static)
+            for (int64_t j = 0; j < static_cast<int64_t>(m); j++) {
+                if (exact[j] < 0 || exact[j] == found[j]) {
+                    continue;
+                }
+                dis->set_query(
+                        reinterpret_cast<const float*>(rows.data() + j * cs));
+                nearer[j] = (*dis)(exact[j]) < (*dis)(found[j]);
+            }
+        }
+    }
+};
+
+} // namespace
+
+HNSWLevel0LinkStats IndexBinaryHNSW::add_level_0_links_from_sample(
+        idx_t n,
+        const uint8_t* x,
+        const HNSWLevel0LinkParameters& params) {
+    const BinaryLinkSample sample(*this, n, x);
+    std::unique_ptr<DistanceComputer> dis(get_distance_computer());
+    return hnsw_add_level_0_links_from_sample(
+            hnsw, ntotal, *dis, false, sample, params);
 }
 
 /**************************************************************
@@ -410,9 +334,8 @@ void IndexBinaryHNSWCagra::search(
 
                 res.end();
             }
-#pragma omp critical
-            {
-                hnsw_stats.combine(search_stats);
+            if (get_search_stats_enabled()) {
+                hnsw_stats.combine_atomic(search_stats);
             }
         }
 

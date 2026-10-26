@@ -117,6 +117,8 @@ template <class T, int A = 32>
 struct AlignedTable {
     AlignedTableTightAlloc<T, A> tab;
     size_t numel = 0;
+    // If true, resize() reallocates only when n is larger than the capacity.
+    bool keep_capacity = false;
 
     static size_t round_capacity(size_t n) {
         if (n == 0) {
@@ -141,7 +143,10 @@ struct AlignedTable {
     }
 
     void resize(size_t n) {
-        tab.resize(round_capacity(n));
+        const size_t capacity = round_capacity(n);
+        if (!keep_capacity || capacity > tab.numel) {
+            tab.resize(capacity);
+        }
         numel = n;
     }
 

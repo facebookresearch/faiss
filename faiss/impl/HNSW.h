@@ -154,8 +154,14 @@ struct HNSW {
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
 
-    /// use Panorama progressive pruning in search
-    bool is_panorama = false;
+    /// Specialized level-0 search implementations. This state is derived from
+    /// the owning IndexHNSW subtype after construction or deserialization.
+    enum Search_method_t : uint8_t {
+        SM_DEFAULT,
+        SM_PANORAMA,
+        SM_RABITQ,
+    };
+    Search_method_t search_method = SM_DEFAULT;
 
     /// distance comparison semantics: when true, distances are treated as
     /// similarity scores (larger is better). Default false matches the
@@ -202,16 +208,6 @@ struct HNSW {
             storage_idx_t nearest,
             float d_nearest,
             int level,
-            LockVector& locks,
-            VisitedTable& vt,
-            bool keep_max_size_level0 = false);
-
-    /** add point pt_id on all levels <= pt_level and build the link
-     * structure for them. */
-    void add_with_locks(
-            DistanceComputer& ptdis,
-            int pt_level,
-            int pt_id,
             LockVector& locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
@@ -282,7 +278,8 @@ struct HNSW {
     void permute_entries(const idx_t* map);
 };
 
-/** Deterministic, lock-free HNSW graph build, shared by IndexHNSW and
+/** Deterministic, lock-free HNSW graph build. This is the only graph build
+ * that add() uses, and it is shared by IndexHNSW and
  * IndexBinaryHNSW. The callbacks let both share the algorithm:
  * `make_distance_computer()` returns a fresh DistanceComputer per thread
  * (caller-owned) and `set_query(dc, pt_id)` points it at pt_id's vector. */
@@ -298,6 +295,73 @@ void hnsw_add_vertices_deterministic(
         const std::function<DistanceComputer*()>& make_distance_computer,
         const std::function<void(DistanceComputer&, HNSW::storage_idx_t)>&
                 set_query);
+
+/// Parameters of add_level_0_links_from_sample() of IndexHNSW and
+/// IndexBinaryHNSW.
+struct HNSWLevel0LinkParameters {
+    /// The search that the new links are for. nullptr: the search settings
+    /// of the index, which the IVF assignment with a coarse quantizer uses.
+    const SearchParametersHNSW* search_params = nullptr;
+    /// A sink receives at least this factor times the mean number of
+    /// vectors per node.
+    float min_mean_factor = 3.0f;
+    /// For at least this fraction of the vectors that the search sends to a
+    /// sink, an exact search finds a nearer node.
+    float min_closer_fraction = 0.5f;
+    /// Maximum number of level-0 links added to one sink in one round.
+    int max_links_per_sink = 32;
+    /// Maximum number of rounds that find sinks and add links.
+    int max_rounds = 3;
+};
+
+struct HNSWLevel0LinkStats {
+    /// Sinks found in the first round.
+    size_t n_sinks_found = 0;
+    /// Sinks found after the last round.
+    size_t n_sinks_remaining = 0;
+    /// Level-0 links written into free slots.
+    size_t n_links_added = 0;
+    /// Level-0 links that replaced a link.
+    size_t n_links_replaced = 0;
+    /// Rounds that changed links.
+    int n_rounds = 0;
+    /// Exact searches with the storage, in all rounds.
+    size_t n_exact_searches = 0;
+};
+
+/** The two searches of the sample vectors that
+ * hnsw_add_level_0_links_from_sample() compares. IndexHNSW and IndexBinaryHNSW
+ * implement them for their vector types. */
+struct HNSWLinkSampleSearch {
+    /// number of sample vectors
+    idx_t n = 0;
+
+    virtual ~HNSWLinkSampleSearch() = default;
+
+    /// HNSW search (k = 1) of all sample vectors.
+    virtual void search(const SearchParametersHNSW* params, idx_t* labels)
+            const = 0;
+
+    /** Exact search (k = 1) of the m sample vectors `ids`. nearer[j] is 1 when
+     * exact[j] is nearer than found[j] by more than rounding differences. */
+    virtual void search_exact(
+            size_t m,
+            const idx_t* ids,
+            const idx_t* found,
+            idx_t* exact,
+            uint8_t* nearer) const = 0;
+};
+
+/** add_level_0_links_from_sample() of IndexHNSW and IndexBinaryHNSW.
+ * `dis` computes distances between nodes. `similarity` is true when a larger
+ * distance is nearer. */
+HNSWLevel0LinkStats hnsw_add_level_0_links_from_sample(
+        HNSW& hnsw,
+        size_t ntotal,
+        DistanceComputer& dis,
+        bool similarity,
+        const HNSWLinkSampleSearch& sample,
+        const HNSWLevel0LinkParameters& params);
 
 struct HNSWStats {
     size_t n1 = 0; /// number of vectors searched
@@ -318,16 +382,12 @@ struct HNSWStats {
         ndis += other.ndis;
         nhops += other.nhops;
     }
+
+    void combine_atomic(const HNSWStats& other);
 };
 
 // global var that collects them all
 FAISS_API extern HNSWStats hnsw_stats;
-
-/** Use the lock-free deterministic graph build in add() rather than the
- * lock-based one. Transitional: it will become the only path.
- *
- * NOT thread-safe: set before calling add(). Sampled once per add(). */
-FAISS_API extern bool hnsw_deterministic_build;
 
 /// Internal HNSW algorithm helpers. These are not part of the public API; they
 /// are exposed here only so that unit tests (and a few cross-TU callers such as

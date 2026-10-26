@@ -18,7 +18,6 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/Panorama.h>
-#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -50,13 +49,17 @@ struct IndexHNSW : Index {
     // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
 
+    // When this index is the coarse quantizer of an IndexIVF, IndexIVF::train()
+    // calls add_level_0_links_from_sample() after it adds the centroids. The
+    // sample is the first min(n, level_0_link_samples_per_node * ntotal)
+    // training vectors, in the numeric type or encoding of the training data.
+    // 0 disables the call. Training does not call it when
+    // quantizer_trains_alone == 1 or when the quantizer is already trained.
+    // The index format does not store this value.
+    int level_0_link_samples_per_node = 16;
+
     // See impl/VisitedTable.h.
     std::optional<bool> use_visited_hashset;
-
-    // Per-node locks for HNSW graph construction.
-    LockVector locks;
-    // locks are freed after each call to add() unless this flag is set.
-    bool retain_locks = false;
 
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
@@ -128,6 +131,35 @@ struct IndexHNSW : Index {
     void reorder_links();
 
     void link_singletons();
+
+    /** Adds level-0 links so that the search no longer stops at "sinks":
+     * nodes where it stops for many vectors whose nearest node is elsewhere.
+     * With a small efSearch, HNSW as a coarse quantizer will overfill the
+     * IVF lists. Call this function after adding all centroids to this
+     * quantizer. Called automatically through IndexIVF::train.
+     */
+    HNSWLevel0LinkStats add_level_0_links_from_sample(
+            idx_t n,
+            const float* x,
+            const HNSWLevel0LinkParameters& params =
+                    HNSWLevel0LinkParameters());
+
+    /// add_level_0_links_from_sample() for Float32 or packed Float16 vectors
+    HNSWLevel0LinkStats add_level_0_links_from_sample_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const HNSWLevel0LinkParameters& params =
+                    HNSWLevel0LinkParameters());
+
+    /// add_level_0_links_from_sample() for n vectors that `codec` encoded with
+    /// sa_encode()
+    HNSWLevel0LinkStats add_level_0_links_from_sample_encoded(
+            idx_t n,
+            const uint8_t* x,
+            const Index* codec,
+            const HNSWLevel0LinkParameters& params =
+                    HNSWLevel0LinkParameters());
 
     virtual void permute_entries(const idx_t* perm);
 
@@ -214,6 +246,36 @@ struct IndexHNSWSQ : IndexHNSW {
             ScalarQuantizer::QuantizerType qtype,
             int M,
             MetricType metric = METRIC_L2);
+};
+
+/** HNSW index whose storage is RaBitQ-compressed.
+ *
+ * The graph is built directly from the compressed codes. Neighbor-diversity
+ * pruning uses a fast 1-bit symmetric L2 estimator, including when the storage
+ * contains multi-bit codes.
+ *
+ * With nb_bits >= 2 the codes carry a per-vector error factor, so search uses
+ * the staged search method: a 1-bit estimate for every neighbor and the full
+ * multi-bit distance only for candidates the error bound cannot rule out.
+ * nb_bits = 1 has no error factor and uses ordinary HNSW search.
+ */
+struct IndexHNSWRaBitQ : IndexHNSW {
+    IndexHNSWRaBitQ();
+    IndexHNSWRaBitQ(
+            int d,
+            int M,
+            uint8_t nb_bits = 1,
+            MetricType metric = METRIC_L2);
+
+    IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
+
+   private:
+    // clone_index() replaces the shallow-copied storage with a deep copy
+    // before returning it. Keep ordinary C++ copies from sharing ownership.
+    IndexHNSWRaBitQ(const IndexHNSWRaBitQ&) = default;
+#ifndef SWIG
+    friend IndexHNSW* clone_IndexHNSW(const IndexHNSW* index);
+#endif
 };
 
 /** 2-level code structure with fast random access

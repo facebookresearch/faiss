@@ -291,6 +291,12 @@ class SearchParametersPreTransform(SearchParameters):
     index_params: SearchParameters | None
     def __init__(self) -> None: ...
 
+class SearchParametersHNSW(SearchParameters):
+    efSearch: int
+    check_relative_distance: bool
+    bounded_queue: bool
+    def __init__(self) -> None: ...
+
 class SearchParametersSVSVamana(SearchParameters):
     search_window_size: int
     search_buffer_capacity: int
@@ -299,6 +305,10 @@ class SearchParametersSVSVamana(SearchParameters):
 class SearchParametersSVSIVF(SearchParameters):
     n_probes: int
     k_reorder: float
+    def __init__(self) -> None: ...
+
+class SearchParametersPiPNN(SearchParameters):
+    search_L: int
     def __init__(self) -> None: ...
 
 # Base Index class
@@ -760,8 +770,15 @@ class IndexFlatIPPanorama(IndexFlatPanorama):
         self, d: int, n_levels: int, batch_size: int = 512
     ) -> None: ...
 
+class VectorTransformVector:
+    def __init__(self) -> None: ...
+    def push_back(self, x: VectorTransform) -> None: ...
+    def clear(self) -> None: ...
+    def size(self) -> int: ...
+    def at(self, n: int) -> VectorTransform: ...
+
 class IndexPreTransform(Index):
-    chain: list[VectorTransform]  # std::vector<VectorTransform*> chain
+    chain: VectorTransformVector  # std::vector<VectorTransform*> chain
     index: Index
     own_fields: bool
 
@@ -1531,6 +1548,8 @@ class InvertedLists:
     def list_size(self, list_no: int) -> int: ...
     def get_codes(self, list_no: int) -> npt.NDArray[np.uint8]: ...
     def get_ids(self, list_no: int) -> npt.NDArray[np.int64]: ...
+    def release_codes(self, list_no: int, codes: Any) -> None: ...
+    def release_ids(self, list_no: int, ids: Any) -> None: ...
     def add_entries(
         self,
         list_no: int,
@@ -1940,11 +1959,39 @@ class HNSWStats:
     ndis: int
     nreorder: int
 
+class HNSWLevel0LinkParameters:
+    search_params: SearchParametersHNSW | None
+    min_mean_factor: float
+    min_closer_fraction: float
+    max_links_per_sink: int
+    max_rounds: int
+    def __init__(self) -> None: ...
+
+class HNSWLevel0LinkStats:
+    n_sinks_found: int
+    n_sinks_remaining: int
+    n_links_added: int
+    n_links_replaced: int
+    n_rounds: int
+    n_exact_searches: int
+
+class RaBitQStats:
+    n_1bit: int
+    n_refine: int
+
+    def reset(self) -> None: ...
+    def add(self, other: RaBitQStats) -> None: ...
+    def refine_ratio(self) -> float: ...
+
 class HNSW:
+    SM_DEFAULT: int
+    SM_PANORAMA: int
+    SM_RABITQ: int
     max_level: int
     entry_point: int
     efConstruction: int
     efSearch: int
+    search_method: int
     hnsw_stats: HNSWStats
     assign_probas: Float32Vector
     cum_nneighbor_per_level: Int32Vector
@@ -1958,6 +2005,7 @@ class IndexHNSW(Index):
     hnsw: HNSW
     storage: Index
     own_fields: bool
+    level_0_link_samples_per_node: int
     reconstruct_from_neighbors: Callable[
         [int, npt.NDArray[np.float32], npt.NDArray[np.float32]], None
     ]
@@ -1965,6 +2013,14 @@ class IndexHNSW(Index):
     def __init__(
         self, d: int, M: int, metric: MetricType = METRIC_L2
     ) -> None: ...
+    def add_level_0_links_from_sample(
+        self,
+        x: npt.NDArray[np.float32] | npt.NDArray[np.float16],
+        *,
+        params: HNSWLevel0LinkParameters | None = None,
+        numeric_type: int = ...,
+    ) -> HNSWLevel0LinkStats: ...
+
 
 class IndexHNSWFlat(IndexHNSW):
     def __init__(
@@ -2005,6 +2061,15 @@ class IndexHNSWSQ(IndexHNSW):
         d: int,
         sq: ScalarQuantizer,
         M: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+
+class IndexHNSWRaBitQ(IndexHNSW):
+    def __init__(
+        self,
+        d: int,
+        M: int,
+        nb_bits: int = 1,
         metric: MetricType = METRIC_L2,
     ) -> None: ...
 
@@ -2231,8 +2296,16 @@ class IndexBinaryHNSW(IndexBinary):
     hnsw: Any
     storage: IndexBinary
     own_fields: bool
+    level_0_link_samples_per_node: int
 
     def __init__(self, d: int, M: int) -> None: ...
+    def add_level_0_links_from_sample(
+        self,
+        x: npt.NDArray[np.uint8],
+        *,
+        params: HNSWLevel0LinkParameters | None = None,
+    ) -> HNSWLevel0LinkStats: ...
+
 
 class IndexBinaryHash(IndexBinary):
     nflip: int
@@ -2445,6 +2518,12 @@ def search_with_parameters(
     tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]
     | tuple[npt.NDArray[np.float32], npt.NDArray[np.int64], dict[str, Any]]
 ): ...
+def search_with_distance_to_code(
+    index: Index,
+    x: npt.NDArray[np.float32],
+    k: int,
+    nprobe: int | None = None,
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.int64]]: ...
 @overload
 def range_search_with_parameters(
     index: Index,
@@ -2628,6 +2707,7 @@ class ClusteringParameters:
     init_method: ClusteringInitMethod
     afkmc2_chain_length: int  # chain length for AFK-MC² initialization
     early_stop_threshold: float  # early stop threshold [0, 1]
+    use_super_kmeans: bool  # route through SuperKMeans when supported
 
     def __init__(self) -> None: ...
 
@@ -3066,12 +3146,16 @@ SIMDLevel_AVX512_SPR: int
 SIMDLevel_ARM_NEON: int
 SIMDLevel_ARM_SVE: int
 SIMDLevel_RISCV_RVV: int
+SIMDLevel_AVX512_VPOPCNT: int
 SIMDLevel_COUNT: int
+
+def compiled_simd_levels() -> int: ...
 
 class SIMDConfig:
     level: int
     supported_simd_levels: int
     avx512_split: bool
+    scalar_gather: bool
     @staticmethod
     def auto_detect_simd_level() -> int: ...
     @staticmethod
@@ -3090,6 +3174,8 @@ class SIMDConfig:
 # Utility functions
 def get_mem_usage_kb() -> int: ...
 def get_compile_options() -> str: ...
+def set_search_stats_enabled(enabled: bool) -> None: ...
+def get_search_stats_enabled() -> bool: ...
 def check_openmp() -> bool: ...
 def shard_ivf_index_centroids(
     index: IndexIVF,
@@ -3386,6 +3472,58 @@ class IndexNSGSQ(IndexNSG):
     sq: ScalarQuantizer
 
     def __init__(self, d: int, sq: ScalarQuantizer, R: int) -> None: ...
+
+# IndexPiPNN (PiPNN graph index)
+class PiPNN:
+    R: int
+    leaf_k: int
+    hash_bits: int
+    reservoir_size: int
+    c_max: int
+    c_min: int
+    leader_cap: int
+    replicas: int
+    leader_fraction: float
+    alpha: float
+    fanout: Int32Vector
+    seed: int
+    ip_partition_by_angle: bool
+    partition_wave_budget: int
+    search_L: int
+    graph: MaybeOwnedVectorInt32
+    next_copy: MaybeOwnedVectorInt32
+    entry_point: int
+    ntotal: int
+
+    def __init__(self, R: int = 64) -> None: ...
+    def effective_alpha(self, metric: MetricType, cosine: bool = False) -> float: ...
+    def check_params(self) -> None: ...
+    def reset(self) -> None: ...
+
+class IndexPiPNN(Index):
+    pipnn: PiPNN
+    storage: Index
+    own_fields: bool
+    defer_build: bool
+
+    @overload
+    def __init__(self) -> None: ...
+    @overload
+    def __init__(self, storage: Index, R: int = 64) -> None: ...
+    def build(self) -> None: ...
+    def is_built(self) -> bool: ...
+    @staticmethod
+    def check_storage_supported(storage: Index) -> None: ...
+
+class IndexPiPNNFlat(IndexPiPNN):
+    def __init__(
+        self, d: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
+
+class IndexPiPNNSQ(IndexPiPNN):
+    def __init__(
+        self, d: int, qtype: int, R: int, metric: MetricType = METRIC_L2
+    ) -> None: ...
 
 # IndexNNDescent
 class IndexNNDescent(Index):
@@ -3905,6 +4043,7 @@ class IndexSVSVamana(Index):
     use_full_search_history: bool
     is_static: bool
     storage_kind: SVSStorageKind
+    store_vectors: bool
 
     def __init__(
         self,
@@ -3913,6 +4052,7 @@ class IndexSVSVamana(Index):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_FP32,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
     @staticmethod
     def is_lvq_leanvec_enabled() -> bool: ...
@@ -3925,6 +4065,7 @@ class IndexSVSVamanaLVQ(IndexSVSVamana):
         metric: MetricType = METRIC_L2,
         storage: SVSStorageKind = SVS_LVQ4x0,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSVamanaLeanVec(IndexSVSVamana):
@@ -3938,6 +4079,7 @@ class IndexSVSVamanaLeanVec(IndexSVSVamana):
         leanvec_dims: int = 0,
         storage: SVSStorageKind = SVS_LeanVec4x4,
         is_static: bool = False,
+        store_vectors: bool = True,
     ) -> None: ...
 
 class IndexSVSIVF(Index):
@@ -4128,6 +4270,8 @@ class GpuIndexIVF(GpuIndex, IndexIVFInterface): ...
 
 class GpuIndexIVFConfig(GpuIndexConfig):
     """Configuration for GPU IVF indices"""
+
+    deterministic_tie_break: bool
 
     def __init__(self) -> None: ...
 
@@ -4356,7 +4500,7 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
-    hnsw_deterministic_build: bool
+    SIMDConfig_scalar_gather: bool
 
 cvar: _SwigGlobals
 
@@ -4493,6 +4637,7 @@ class GpuClonerOptions:
     verbose: bool
     use_cuvs: bool
     allowCpuCoarseQuantizer: bool
+    deterministic_tie_break: bool
 
     def __init__(self) -> None: ...
 

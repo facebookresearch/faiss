@@ -247,7 +247,7 @@ struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             x[i] = decode_fp16(((uint16_t*)code)[i]);
         }
@@ -318,13 +318,13 @@ struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     Quantizer8bitDirect(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
-    void encode_vector(const float* x, uint8_t* code) const final {
+    void encode_vector(const float* x, uint8_t* code) const override {
         for (size_t i = 0; i < d; i++) {
             code[i] = (uint8_t)x[i];
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             x[i] = code[i];
         }
@@ -365,7 +365,7 @@ struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             x[i] = code[i] - 128;
         }

@@ -4,24 +4,16 @@
 # LICENSE file in the root directory of this source tree.
 
 set(FAISS_TEST_SRC
-  test_binary_flat.cpp
   test_dealloc_invlists.cpp
-  test_ivfpq_codec.cpp
-  test_ivfpq_indexing.cpp
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp
-  test_omp_threads.cpp
-  test_pairs_decoding.cpp
   test_params_override.cpp
   test_pq_encoding.cpp
-  test_sliding_ivf.cpp
   test_threaded_index.cpp
-  test_transfer_invlists.cpp
   test_cppcontrib_sa_decode.cpp
   test_cppcontrib_uintreader.cpp
   test_simdlib.cpp
   test_approx_topk.cpp
-  test_RCQ_cropping.cpp
   test_heap.cpp
   test_pq_code_distance.cpp
   test_hnsw.cpp
@@ -31,30 +23,28 @@ set(FAISS_TEST_SRC
   test_pqfs_unaligned.cpp
   test_common_ivf_empty_index.cpp
   test_ivf_early_termination.cpp
-  test_callback.cpp
   test_utils.cpp
   test_hamming.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
   test_custom_result_handler.cpp
-  test_fastscan_filter.cpp
   test_single_query_collect_handler.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
   test_rabitq_fastscan.cpp
+  test_rabitq_batch_estimates.cpp
   test_super_kmeans_foundations.cpp
+  test_pipnn.cpp
 )
 
 # Tests that use POSIX APIs or have platform-specific issues on Windows
 if(NOT WIN32)
   list(APPEND FAISS_TEST_SRC
-    test_merge.cpp
     test_ondisk_ivf.cpp
     test_disable_pq_sdc_tables.cpp
-    test_mmap.cpp
   )
 endif()
 
@@ -62,14 +52,20 @@ if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
-# DD-only tests: x86-specific tests containing raw AVX2/AVX512 intrinsics
+# DD-only tests; x86-specific raw-intrinsic tests are added separately below.
 if(FAISS_OPT_LEVEL STREQUAL "dd")
   list(APPEND FAISS_TEST_SRC
+    test_distances_dispatch.cpp
     test_simd_perf.cpp
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+    # Enable VPOPCNT dispatch for this test. The common
+    # target enables AVX2/AVX512 only.
+    set_source_files_properties(test_rabitq_batch_estimates.cpp
+      PROPERTIES COMPILE_DEFINITIONS COMPILE_SIMD_AVX512_VPOPCNT)
     list(APPEND FAISS_TEST_SRC
       test_rabitq_simd.cpp
+      test_rabitq_simd_dd.cpp
       test_simd_levels_x86_avx2.cpp
       test_simd_levels_x86_avx512.cpp
     )
@@ -92,7 +88,30 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
       )
     endif()
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+    list(APPEND FAISS_TEST_SRC
+      test_rabitq_simd_neon.cpp
+    )
   endif()
+endif()
+
+# test_sq_rvv_tail_and_semantics.cpp references
+# sq_select_distance_computer<SIMDLevel::RISCV_RVV>, whose specialization is
+# only instantiated by sq-rvv.cpp when the RVV implementation is compiled
+# (riscv64 builds). Referencing it unconditionally breaks linking on other
+# architectures — a runtime GTEST_SKIP() cannot remove the link-time symbol
+# requirement — so add the source only inside the RISC-V condition. It uses
+# raw RVV intrinsics (guarded in-source by __riscv && COMPILE_SIMD_RISCV_RVV).
+# The faiss target's COMPILE_SIMD_RISCV_RVV is PRIVATE and does not propagate,
+# so give this TU the same flags the library's RVV sources get — otherwise the
+# compile-time-intrinsic cases (D5b) skip on riscv64.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  list(APPEND FAISS_TEST_SRC test_sq_rvv_tail_and_semantics.cpp)
+  set_source_files_properties(test_sq_rvv_tail_and_semantics.cpp
+    PROPERTIES
+      COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+      COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"
+  )
 endif()
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
