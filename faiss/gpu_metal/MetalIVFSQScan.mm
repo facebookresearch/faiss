@@ -154,9 +154,11 @@ void runMetalIVFSQScan(
         const auto* len = (const uint32_t*)lengths.contents;
         size_t maxEnd = 0;
         uint32_t maxLength = 0;
+        uint32_t minLength = UINT32_MAX;
         for (size_t l = 0; l < p[4]; ++l) {
             maxEnd = std::max(maxEnd, size_t(off[l]) + len[l]);
             maxLength = std::max(maxLength, len[l]);
+            minLength = std::min(minLength, len[l]);
         }
         requireBytes(codes, maxEnd, p[8], 1);
         requireBytes(ids, maxEnd, 1, 8);
@@ -174,7 +176,22 @@ void runMetalIVFSQScan(
             plan.partialItems = plan.mergeItems = 0;
         }
         // An extra dispatch does not amortize for a single query.
-        bool adaptive = p[0] > 1 && !fused && p[1] == 128 && p[2] <= 32 && p[3] <= 8;
+        // CPU assignments are available before submission. Verify validity before
+        // using a list-length lower bound; invalid probes contribute no work.
+        uint32_t adaptiveLimit = p[7] ? 2048u : 512u;
+        bool allLong = false;
+        if (!flatCoarse && uint64_t(minLength) * p[3] > adaptiveLimit) {
+            allLong = true;
+            const auto* selected = (const int32_t*)assignments.contents;
+            for (uint64_t i = 0; i < uint64_t(p[0]) * p[3]; ++i) {
+                if (selected[i] < 0 || uint32_t(selected[i]) >= p[4]) {
+                    allLong = false;
+                    break;
+                }
+            }
+        }
+        bool adaptive = p[0] > 1 && !fused && !allLong &&
+                p[1] == 128 && p[2] <= 32 && p[3] <= 8;
         MetalIVFSQScanScratch local;
         if (!scratch)
             scratch = &local;

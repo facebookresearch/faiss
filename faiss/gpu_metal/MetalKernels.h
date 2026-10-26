@@ -37,6 +37,8 @@ class MetalKernels {
             uint32_t chunkSize,
             bool fused = false,
             bool adaptive = false);
+    // Inputs are sorted best-first runs with valid IDs before sentinel padding.
+    // Duplicate (score, ID) entries retain their multiplicity.
     void encodeIVFSQMerge(
             id<MTLComputeCommandEncoder> encoder,
             id<MTLBuffer> inputDistances,

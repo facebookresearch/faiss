@@ -10,6 +10,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/gpu_metal/MetalCloner.h>
 #include <faiss/gpu_metal/MetalIVFSQScan.h>
+#include <faiss/gpu_metal/MetalKernels.h>
 #include <faiss/gpu_metal/MetalIndexIVFScalarQuantizer.h>
 #include <faiss/gpu_metal/MetalIndexFlat.h>
 #include <faiss/gpu_metal/StandardMetalResources.h>
@@ -145,6 +146,80 @@ TEST_F(TestMetalIndexIVFSQ, RejectBorrowedTrainingDependency) {
     back->add(128, x.data());
     back->search(1, x.data(), 1, &distance, &label);
     ASSERT_GE(label, 0);
+}
+
+TEST_F(TestMetalIndexIVFSQ, SortedPartialRunsMergeExactly) {
+    auto device = res->getDevice();
+    for (bool l2 : {false, true})
+        for (uint32_t k : {1, 10, 64, 128, 512})
+            for (uint32_t parts : {1, 2, 3, 8, 17}) {
+                SCOPED_TRACE(::testing::Message() << "l2=" << l2
+                    << " k=" << k << " parts=" << parts);
+                const uint32_t nq = 2, fanIn = std::min(64u, 1024u / k);
+                uint32_t groups = (parts - 1) / fanIn + 1;
+                float neutral = l2 ? std::numeric_limits<float>::max()
+                                   : -std::numeric_limits<float>::max();
+                std::vector<float> distances(nq * parts * k, -123.f);
+                std::vector<idx_t> ids(nq * parts * k, -1);
+                using Candidate = std::pair<float, idx_t>;
+                auto before = [=](const Candidate& a, const Candidate& b) {
+                    return a.first == b.first ? a.second < b.second
+                        : (l2 ? a.first < b.first : a.first > b.first);
+                };
+                for (uint32_t q = 0; q < nq; ++q)
+                    for (uint32_t run = 0; run < parts; ++run) {
+                        uint32_t mode = (q + run) % 4;
+                        uint32_t count = mode == 0 ? 0 : (mode == 1 ? 1 : k - run % k);
+                        std::vector<Candidate> sorted;
+                        for (uint32_t i = 0; i < count; ++i) {
+                            float score = l2 ? float(i % 11) : -float(i % 11);
+                            if (!l2 && i == 0) score = std::numeric_limits<float>::infinity();
+                            sorted.emplace_back(score, (idx_t(1) << 42) + i % 5);
+                        }
+                        std::sort(sorted.begin(), sorted.end(), before);
+                        size_t base = (q * parts + run) * k;
+                        for (size_t i = 0; i < sorted.size(); ++i) {
+                            distances[base+i] = sorted[i].first;
+                            ids[base+i] = sorted[i].second;
+                        }
+                    }
+                auto inputD = buffer(device, distances.size() * 4, distances.data());
+                auto inputI = buffer(device, ids.size() * 8, ids.data());
+                auto outputD = buffer(device, nq * groups * k * 4);
+                auto outputI = buffer(device, nq * groups * k * 8);
+                // Detect missing writers independently of allocator contents
+                // or a previous merge producing coincidentally equal keys.
+                std::fill_n((float*)outputD.contents, nq * groups * k,
+                            std::numeric_limits<float>::quiet_NaN());
+                std::fill_n((idx_t*)outputI.contents, nq * groups * k, idx_t(-777));
+                uint32_t params[] = {nq, parts, fanIn, k, uint32_t(l2)};
+                auto command = [res->getCommandQueue() commandBuffer];
+                auto encoder = [command computeCommandEncoder];
+                getMetalKernels(device).encodeIVFSQMerge(
+                        encoder, inputD, inputI, outputD, outputI, params);
+                [encoder endEncoding];
+                [command commit];
+                [command waitUntilCompleted];
+                ASSERT_EQ(command.status, MTLCommandBufferStatusCompleted);
+                for (uint32_t q = 0; q < nq; ++q)
+                    for (uint32_t group = 0; group < groups; ++group) {
+                        std::vector<Candidate> expected;
+                        for (uint32_t run = group * fanIn;
+                             run < std::min(parts, (group + 1) * fanIn); ++run)
+                            for (uint32_t i = 0; i < k; ++i) {
+                                size_t at = (q * parts + run) * k + i;
+                                if (ids[at] >= 0) expected.emplace_back(distances[at], ids[at]);
+                            }
+                        std::sort(expected.begin(), expected.end(), before);
+                        for (uint32_t i = 0; i < k; ++i) {
+                            size_t at = (q * groups + group) * k + i;
+                            ASSERT_EQ(((idx_t*)outputI.contents)[at],
+                                      i < expected.size() ? expected[i].second : -1);
+                            ASSERT_EQ(((float*)outputD.contents)[at],
+                                      i < expected.size() ? expected[i].first : neutral);
+                        }
+                    }
+            }
 }
 
 // Invoke the shader entry directly; the oracle decodes CPU codes independently
