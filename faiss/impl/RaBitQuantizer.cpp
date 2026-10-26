@@ -303,27 +303,10 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
     float distance_to_code_1bit_impl(
             const uint8_t* binary_data,
             const SignBitFactors* base_fac) const {
-        // this is the baseline code
-        //
-        // compute <q,o> using floats
-        float dot_qo = 0;
-        // It was a willful decision (after the discussion) to not to pre-cache
-        //   the sum of all bits, just in order to reduce the overhead per
-        //   vector.
-        uint64_t sum_q = 0;
+        const float dot_qo = fvec_masked_sum<simd512_level_selector<SL>::value>(
+                rotated_q.data(), binary_data, d);
 
-        for (size_t i = 0; i < d; i++) {
-            // Extract i-th bit
-            bool bit = rabitq_utils::extract_bit_standard(binary_data, i);
-            // accumulate dp
-            dot_qo += bit ? rotated_q[i] : 0;
-            // accumulate sum-of-bits
-            sum_q += bit ? 1 : 0;
-        }
-
-        // Apply query factors
-        float final_dot =
-                query_fac.c1 * dot_qo + query_fac.c2 * sum_q - query_fac.c34;
+        float final_dot = query_fac.c1 * dot_qo - query_fac.c34;
 
         // pre_dist = ||or - c||^2 + ||qr - c||^2 -
         //     2 * ||or - c|| * ||qr - c|| * <q,o> - (IP ? ||or||^2 : 0)
@@ -425,7 +408,6 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
         }
 
         query_fac.c1 = 2 * inv_d;
-        query_fac.c2 = 0;
         query_fac.c34 = sum_q * inv_d;
 
         if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
@@ -529,8 +511,6 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
         float final_dot = 0;
         if (centered) {
             int64_t int_dot = ((1 << qb) - 1) * d;
-            // See RaBitDistanceComputerNotQ::distance_to_code() for
-            // baseline code.
             int_dot -= 2 *
                     rabitq::bitwise_xor_dot_product<SL>(
                                rearranged_rotated_qq.data(),
