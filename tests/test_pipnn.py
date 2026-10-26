@@ -82,8 +82,13 @@ class TestPiPNNBuild(unittest.TestCase):
         p = faiss.PiPNN()
         self.assertAlmostEqual(p.effective_alpha(faiss.METRIC_L2), 1.2, 6)
         self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.0)
+        self.assertAlmostEqual(
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.2
+        )
         p.alpha = 1.5
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.5)
+        self.assertEqual(
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.5
+        )
         self.assertRaises(RuntimeError, p.effective_alpha, faiss.METRIC_L1)
 
     def test_sq8_train_add_search(self):
@@ -107,7 +112,8 @@ class TestPiPNNRecall(unittest.TestCase):
         self.assertGreaterEqual(recall(index, xb, xq), 0.97)
 
     def test_recall_IP(self):
-        xb, xq = ip_dataset(NB, NQ)
+        _, xb, xq = get_dataset_2(DIM, 0, NB, NQ)
+        faiss.normalize_L2(xb)
         index = faiss.IndexPiPNNFlat(DIM, 64, faiss.METRIC_INNER_PRODUCT)
         index.add(xb)
         self.assertGreaterEqual(recall(index, xb, xq), 0.96)
@@ -117,12 +123,28 @@ class TestPiPNNRecall(unittest.TestCase):
             D[:, 0], (xq * xb[I[:, 0]]).sum(axis=1), rtol=1e-4, atol=1e-4
         )
 
+    def test_recall_IP_varying_norms(self):
+        _, xb, xq = get_dataset_2(DIM, 0, NB, NQ)
+        xb *= np.random.RandomState(123).lognormal(sigma=2.0, size=(NB, 1))
+        index = faiss.IndexPiPNNFlat(DIM, 64, faiss.METRIC_INNER_PRODUCT)
+        index.add(xb)
+        self.assertGreaterEqual(recall(index, xb, xq), 0.98)
+
     def test_recall_one_leaf(self):
         # nb <= c_max: each point offers its reservoir_size nearest, not leaf_k
         _, xb, xq = get_dataset_2(DIM, 0, 500, NQ)
         index = faiss.IndexPiPNNFlat(DIM, 32)
         index.add(xb)
         index.pipnn.search_L = 16
+        self.assertGreaterEqual(recall(index, xb, xq), 0.95)
+
+    def test_recall_duplicates(self):
+        # the K nearest neighbours are all copies of the nearest one
+        _, xb, xq = get_dataset_2(DIM, 0, 2000, NQ)
+        xb = np.tile(xb, (K, 1))
+        index = faiss.IndexPiPNNFlat(DIM, 32)
+        index.add(xb)
+        index = faiss.deserialize_index(faiss.serialize_index(index))
         self.assertGreaterEqual(recall(index, xb, xq), 0.95)
 
 

@@ -3155,6 +3155,7 @@ class SIMDConfig:
     level: int
     supported_simd_levels: int
     avx512_split: bool
+    scalar_gather: bool
     @staticmethod
     def auto_detect_simd_level() -> int: ...
     @staticmethod
@@ -3490,11 +3491,12 @@ class PiPNN:
     partition_wave_budget: int
     search_L: int
     graph: MaybeOwnedVectorInt32
+    next_copy: MaybeOwnedVectorInt32
     entry_point: int
     ntotal: int
 
     def __init__(self, R: int = 64) -> None: ...
-    def effective_alpha(self, metric: MetricType) -> float: ...
+    def effective_alpha(self, metric: MetricType, cosine: bool = False) -> float: ...
     def check_params(self) -> None: ...
     def reset(self) -> None: ...
 
@@ -4498,6 +4500,7 @@ class _SwigGlobals:
     distance_compute_blas_database_bs: int
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
+    SIMDConfig_scalar_gather: bool
 
 cvar: _SwigGlobals
 

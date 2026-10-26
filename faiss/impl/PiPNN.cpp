@@ -10,6 +10,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cfloat>
 #include <cmath>
@@ -25,6 +26,7 @@
 #include <vector>
 
 #include <faiss/Index.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
@@ -68,16 +70,16 @@ struct BuildState {
     size_t capacity;
     size_t chunk_size;
     std::vector<ReservoirChunk> chunks;
-    // uninitialized; rows written by the final prune
+    // uninitialized; rows written by the final prune and link_copies
     std::unique_ptr<int32_t[]> graph;
 
-    BuildState(size_t n, const PiPNN& p, size_t chunk)
+    BuildState(size_t n_slots, size_t n, const PiPNN& p, size_t chunk)
             : capacity(size_t(p.reservoir_size)), chunk_size(chunk) {
         const size_t per_point = capacity * sizeof(Slot) + 2;
-        for (size_t begin = 0; begin < n; begin += chunk_size) {
+        for (size_t begin = 0; begin < n_slots; begin += chunk_size) {
             ReservoirChunk ch;
             ch.begin = begin;
-            ch.np = std::min(chunk_size, n - begin);
+            ch.np = std::min(chunk_size, n_slots - begin);
             ch.buf.reset(new uint8_t[ch.np * per_point]);
             chunks.push_back(std::move(ch));
         }
@@ -85,7 +87,7 @@ struct BuildState {
         // Touch every reservoir page now so an oversized build fails early;
         // small static blocks interleave the pages over NUMA nodes.
 #pragma omp parallel for schedule(static, 8)
-        for (int64_t i = 0; i < int64_t(n); i++) {
+        for (int64_t i = 0; i < int64_t(n_slots); i++) {
             const ReservoirRef r = reservoir(size_t(i));
             std::memset(r.slots, 0, capacity * sizeof(Slot));
             *r.count = 0;
@@ -112,9 +114,64 @@ struct GraphOwner : MaybeOwnedVectorOwner {
     explicit GraphOwner(std::unique_ptr<int32_t[]> d) : data(std::move(d)) {}
 };
 
+/// Rows with equal stored codes: the graph is built over the lowest, the
+/// others (copies) are linked behind it. Empty if all differ.
+struct Duplicates {
+    /// ascending ids of the rows the graph is built over
+    std::vector<int32_t> ids;
+    /// slot_of[i]: slot of the lowest id with the code of row i
+    std::vector<int32_t> slot_of;
+
+    explicit Duplicates(const Index& storage) {
+        const auto* flat = dynamic_cast<const IndexFlatCodes*>(&storage);
+        if (!flat) {
+            return;
+        }
+        const size_t n = size_t(storage.ntotal);
+        std::vector<int64_t> rep(n);
+        if (find_duplicate_codes(
+                    n, flat->code_size, flat->codes.data(), rep.data()) == n) {
+            return;
+        }
+        slot_of.resize(n);
+        for (size_t i = 0; i < n; i++) {
+            if (rep[i] == int64_t(i)) {
+                slot_of[i] = int32_t(ids.size());
+                ids.push_back(int32_t(i));
+            } else {
+                slot_of[i] = slot_of[rep[i]];
+            }
+        }
+    }
+
+    size_t n_slots(size_t n) const {
+        return ids.empty() ? n : ids.size();
+    }
+    size_t slot(int32_t id) const {
+        return slot_of.empty() ? size_t(id) : size_t(slot_of[id]);
+    }
+    int32_t id(size_t slot) const {
+        return ids.empty() ? int32_t(slot) : ids[slot];
+    }
+
+    /// Returns next_copy and clears the graph rows of the copies; consumes ids.
+    std::vector<int32_t> link_copies(int32_t* graph, size_t R) {
+        std::vector<int32_t> next(slot_of.size(), -1);
+        for (size_t i = 0; i < next.size(); i++) {
+            int32_t& tail = ids[slot_of[i]];
+            if (tail != int32_t(i)) {
+                std::fill(graph + i * R, graph + (i + 1) * R, -1);
+                next[tail] = int32_t(i);
+                tail = int32_t(i);
+            }
+        }
+        return next;
+    }
+};
+
 } // namespace
 
-int32_t medoid_and_validate(const Index& storage) {
+int32_t medoid_and_validate(const Index& storage, float* norm_cv) {
     const size_t d = size_t(storage.d);
     const size_t n = size_t(storage.ntotal);
     FAISS_THROW_IF_MSG(n == 0, "PiPNN: the medoid of 0 vectors is undefined");
@@ -126,6 +183,7 @@ int32_t medoid_and_validate(const Index& storage) {
     std::vector<float> mean(d);
     // (distance to the mean, id): pairs order ties by the lower id
     std::vector<std::pair<float, int32_t>> block_best(nblocks);
+    std::vector<std::array<double, 3>> norm_sums(norm_cv ? nblocks : 0);
 
     // pass 0: validate and sum per block; pass 1: per-block argmin
     for (int pass = 0; pass < 2; pass++) {
@@ -162,6 +220,11 @@ int32_t medoid_and_validate(const Index& storage) {
                                         "%g; need finite and <= FLT_MAX / 8",
                                         j0 + r,
                                         double(nrm));
+                                if (norm_cv && nrm > 0) {
+                                    norm_sums[b][0] += 1;
+                                    norm_sums[b][1] += std::sqrt(double(nrm));
+                                    norm_sums[b][2] += nrm;
+                                }
                                 for (size_t j = 0; j < d; j++) {
                                     acc[j] += double(x[j]);
                                 }
@@ -197,6 +260,20 @@ int32_t medoid_and_validate(const Index& storage) {
             }
         }
     }
+    if (norm_cv) {
+        double c = 0, s1 = 0, s2 = 0;
+        for (const auto& [bc, b1, b2] : norm_sums) {
+            c += bc;
+            s1 += b1;
+            s2 += b2;
+        }
+        if (c == 0) {
+            *norm_cv = 0;
+        } else {
+            const double mean = s1 / c;
+            *norm_cv = std::sqrt(std::max(s2 / c - mean * mean, 0.0)) / mean;
+        }
+    }
     return std::min_element(block_best.begin(), block_best.end())->second;
 }
 
@@ -218,9 +295,10 @@ PartitionParams partition_params(const PiPNN& p, MetricType metric) {
 void fill_reservoirs(
         BuildState& st,
         const Index& storage,
+        const Duplicates& dup,
         const PiPNN& p,
         bool verbose) {
-    const size_t n = size_t(storage.ntotal);
+    const size_t n = dup.n_slots(size_t(storage.ntotal));
     const size_t d = size_t(storage.d);
     const MetricType metric = storage.metric_type;
     const bool is_ip = metric == METRIC_INNER_PRODUCT;
@@ -273,7 +351,7 @@ void fill_reservoirs(
                     distance_key(is_ip ? dist + sc.norms[a] : dist);
             std::lock_guard<std::mutex> guard(
                     locks[uint32_t(ids[a]) & (kNumLocks - 1)]);
-            st.reservoir(size_t(ids[a])).offer(ids[b], hash, key);
+            st.reservoir(dup.slot(ids[a])).offer(ids[b], hash, key);
         };
         for (size_t i = 0; i < s; i++) {
             for (size_t t = 0; t < k; t++) {
@@ -296,7 +374,8 @@ void fill_reservoirs(
                 pp,
                 mix_seed(uint64_t(p.seed), uint64_t(r)),
                 on_leaf,
-                &stats);
+                &stats,
+                dup.ids);
         if (verbose) {
             printf("PiPNN: replica %d: %.3f s, %zu leaves, replication %.2f\n",
                    r,
@@ -308,7 +387,13 @@ void fill_reservoirs(
 }
 
 /// Prunes each reservoir into its graph row, freeing each chunk once pruned.
-void final_prune(BuildState& st, const Index& storage, float alpha, int R) {
+void final_prune(
+        BuildState& st,
+        const Index& storage,
+        const Duplicates& dup,
+        float alpha,
+        int R,
+        bool cosine) {
     const size_t d = size_t(storage.d);
     const MetricType metric = storage.metric_type;
     int32_t* graph = st.graph.get();
@@ -338,11 +423,14 @@ void final_prune(BuildState& st, const Index& storage, float alpha, int R) {
                     norms.resize(m);
                     ids.resize(m);
                     order.resize(l);
-                    ids[0] = int32_t(i);
+                    ids[0] = dup.id(size_t(i));
                     for (size_t t = 0; t < l; t++) {
                         ids[1 + t] = r.slots[t].id;
                     }
                     gather_rows(storage, ids.data(), m, X.get());
+                    if (cosine) {
+                        fvec_renorm_L2(d, m, X.get());
+                    }
                     for (size_t t = 0; t < m; t++) {
                         norms[t] = fvec_norm_L2sqr(X.get() + t * d, d);
                     }
@@ -356,7 +444,7 @@ void final_prune(BuildState& st, const Index& storage, float alpha, int R) {
                             alpha,
                             R,
                             order.data(),
-                            graph + size_t(i) * size_t(R));
+                            graph + size_t(ids[0]) * size_t(R));
                     if (omp_get_thread_num() == 0 && n_done++ % 64 == 0 &&
                         InterruptCallback::is_interrupted()) {
                         FAISS_THROW_MSG("computation interrupted");
@@ -414,17 +502,21 @@ void build_with_chunk(
         size_t reservoir_chunk,
         bool verbose) {
     p.check_params();
-    const float alpha =
-            p.effective_alpha(storage.metric_type); // rejects other metrics
     const size_t n = size_t(storage.ntotal);
     if (n == 0) {
+        p.effective_alpha(storage.metric_type);
         p.reset();
         return;
     }
 
     const double t0 = getmillisecs();
     InterruptCallback::check();
-    const int32_t ep = medoid_and_validate(storage);
+    float norm_cv = 0;
+    const int32_t ep = medoid_and_validate(
+            storage,
+            storage.metric_type == METRIC_INNER_PRODUCT ? &norm_cv : nullptr);
+    const bool cosine = norm_cv > 0.05f;
+    const float alpha = p.effective_alpha(storage.metric_type, cosine);
     if (verbose) {
         printf("PiPNN: medoid and validation of %zu vectors (d=%d): %.3f s\n",
                n,
@@ -432,11 +524,14 @@ void build_with_chunk(
                (getmillisecs() - t0) / 1000);
     }
 
-    BuildState st(n, p, reservoir_chunk);
-    fill_reservoirs(st, storage, p, verbose);
+    Duplicates dup(storage);
+    BuildState st(dup.n_slots(n), n, p, reservoir_chunk);
+    fill_reservoirs(st, storage, dup, p, verbose);
 
     const double t1 = getmillisecs();
-    final_prune(st, storage, alpha, p.R);
+    final_prune(st, storage, dup, alpha, p.R, cosine);
+    std::vector<int32_t> next_copy =
+            dup.link_copies(st.graph.get(), size_t(p.R));
     InterruptCallback::check();
     if (verbose) {
         printf("PiPNN: final prune: %.3f s\n", (getmillisecs() - t1) / 1000);
@@ -446,6 +541,7 @@ void build_with_chunk(
     auto owner = std::make_shared<GraphOwner>(std::move(st.graph));
     p.graph = MaybeOwnedVector<int32_t>::create_view(
             owner->data.get(), n * size_t(p.R), owner);
+    p.next_copy = std::move(next_copy);
     p.entry_point = ep;
     p.ntotal = idx_t(n);
 }
@@ -513,13 +609,26 @@ void beam_search(
     const uint32_t n = uint32_t(pipnn.ntotal);
     const size_t R = size_t(pipnn.R);
     const int32_t* graph = pipnn.graph.data();
+    const int32_t* next_copy =
+            pipnn.next_copy.size() == 0 ? nullptr : pipnn.next_copy.data();
     SearchBeam beam(cap);
 
     // id breaks ties, so the result does not depend on visit order
-    auto visit = [&](int32_t id, float dis) {
-        if (CMax<float, idx_t>::cmp2(D[0], dis, I[0], idx_t(id)) &&
-            (sel == nullptr || sel->is_member(id))) {
+    auto offer = [&](int32_t id, float dis) {
+        const bool better =
+                CMax<float, idx_t>::cmp2(D[0], dis, I[0], idx_t(id));
+        if (better && (sel == nullptr || sel->is_member(id))) {
             maxheap_replace_top(k, D, I, dis, idx_t(id));
+        }
+        return better;
+    };
+    // Copies skip the beam. Their ids increase, so the first one the heap
+    // rejects ends the chain; checking that also stops a corrupt chain.
+    auto visit = [&](int32_t id, float dis) {
+        int32_t c = id;
+        while (offer(c, dis) && next_copy && next_copy[c] > c &&
+               uint32_t(next_copy[c]) < n) {
+            c = next_copy[c];
         }
         beam.insert(dis, id);
     };
@@ -568,14 +677,14 @@ void beam_search(
 
 } // namespace pipnn
 
-float PiPNN::effective_alpha(MetricType metric) const {
+float PiPNN::effective_alpha(MetricType metric, bool cosine) const {
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "PiPNN supports only METRIC_L2 and METRIC_INNER_PRODUCT");
     if (alpha != 0) {
         return alpha;
     }
-    return metric == METRIC_INNER_PRODUCT ? 1.0f : 1.2f;
+    return metric == METRIC_INNER_PRODUCT && !cosine ? 1.0f : 1.2f;
 }
 
 void PiPNN::check_params() const {
@@ -665,6 +774,7 @@ void PiPNN::search(
 void PiPNN::reset() {
     // not graph.clear(): it asserts on the view build() publishes
     graph = MaybeOwnedVector<int32_t>();
+    next_copy = MaybeOwnedVector<int32_t>();
     entry_point = -1;
     ntotal = 0;
 }
