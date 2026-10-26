@@ -81,14 +81,11 @@ class TestPiPNNBuild(unittest.TestCase):
     def test_effective_alpha(self):
         p = faiss.PiPNN()
         self.assertAlmostEqual(p.effective_alpha(faiss.METRIC_L2), 1.2, 6)
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.0)
         self.assertAlmostEqual(
-            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.2
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.2, 6
         )
-        p.alpha = 1.5
-        self.assertEqual(
-            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.5
-        )
+        p.alpha = 1.25
+        self.assertEqual(p.effective_alpha(faiss.METRIC_L2), 1.25)
         self.assertRaises(RuntimeError, p.effective_alpha, faiss.METRIC_L1)
 
     def test_sq8_train_add_search(self):
