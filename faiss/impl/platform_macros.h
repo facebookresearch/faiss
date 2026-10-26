@@ -198,8 +198,8 @@ inline void atomic_fetch_add_relaxed(T& target, T value) {
 #endif
 
 
-// Clang also defines _MSC_VER
-#if defined(_MSC_VER) && !defined(__clang__)
+// Clang also defines _MSC_VER, and it is also defined in swigfaiss.swig
+#if defined(_MSC_VER) && !defined(__clang__) && !defined(SWIG)
 /*******************************************************
  * MSVC specific macros
  *******************************************************/
