@@ -482,7 +482,9 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
                 const float dis = distance_to_code_full(codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
-                if (handler.add_result(dis, id)) {
+                if ((keep_max ? dis > handler.threshold
+                              : dis < handler.threshold) &&
+                    handler.add_result(dis, id)) {
                     handler.stats.nheap_updates++;
                     nup++;
                 }
@@ -703,51 +705,50 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
             bool keep_max,
             ResultHandler& handler) final {
         const size_t code_size_base = (d + 7) / 8;
-        const size_t ex_bits = nb_bits - 1;
-        FAISS_ASSERT(ex_bits > 0);
 
-        // Honor IDSelectorWithContext on the multibit path too, so a RaBitQ
-        // index does not silently lose the context hook once nb_bits >= 2 (the
-        // 1-bit path already routes through run_scan_codes1).
         const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
 
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
-            if (sel != nullptr) {
-                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel_dispatch.is_member(
-                            id, IDScanContext{ids, list_size, j})) {
-                    codes += code_size;
-                    continue;
+        auto scan = [&](auto multibit) {
+            size_t nup = 0;
+            for (size_t j = 0; j < list_size; j++, codes += code_size) {
+                if (sel != nullptr) {
+                    idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                    if (!sel_dispatch.is_member(
+                                id, IDScanContext{ids, list_size, j})) {
+                        continue;
+                    }
                 }
-            }
 
-            const auto* base_fac =
-                    reinterpret_cast<const SignBitFactorsWithError*>(
-                            codes + code_size_base);
-            const float est_distance =
-                    distance_to_code_1bit_impl(codes, base_fac, code_size_base);
+                const auto* base_fac =
+                        reinterpret_cast<const SignBitFactorsWithError*>(
+                                codes + code_size_base);
+                float dis = distance_to_code_1bit_impl(
+                        codes, base_fac, code_size_base);
 
-            const bool should_refine = rabitq_utils::should_refine_candidate(
-                    est_distance,
-                    base_fac->f_error,
-                    g_error,
-                    handler.threshold,
-                    keep_max);
-            if (should_refine) {
+                if constexpr (decltype(multibit)::value) {
+                    if (!rabitq_utils::should_refine_candidate(
+                                dis,
+                                base_fac->f_error,
+                                g_error,
+                                handler.threshold,
+                                keep_max)) {
+                        continue;
+                    }
+                    dis = distance_to_code_full(codes);
+                }
                 handler.stats.scan_cnt++;
-                const float dis = distance_to_code_full(codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
-                if (handler.add_result(dis, id)) {
+                if ((keep_max ? dis > handler.threshold
+                              : dis < handler.threshold) &&
+                    handler.add_result(dis, id)) {
                     handler.stats.nheap_updates++;
                     nup++;
                 }
             }
-            codes += code_size;
-        }
-
-        return nup;
+            return nup;
+        };
+        return nb_bits == 1 ? scan(std::false_type{}) : scan(std::true_type{});
     }
 };
 

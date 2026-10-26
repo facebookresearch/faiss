@@ -16,7 +16,9 @@
 #include <gtest/gtest.h>
 
 #include <faiss/AutoTune.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/random.h>
@@ -251,6 +253,54 @@ TEST(TestIndexTypes, HNSW) {
 
 TEST(TestIndexTypes, SQ8) {
     test_index("SQ8", METRIC_L2);
+}
+
+TEST(RaBitQScanner, MatchesDistanceComputer) {
+    auto xb = make_smooth_data(nb, 4567);
+    auto xq = make_smooth_data(1, 7890);
+    for (auto [nb_bits, qb] : {std::pair{1, 4}, std::pair{4, 0}}) {
+        IndexFlatL2 quantizer(d);
+        IndexIVFRaBitQ index(&quantizer, d, 1, METRIC_L2, true, nb_bits);
+        index.qb = qb;
+        index.train(nb, xb.data());
+        index.add(nb, xb.data());
+        InvertedLists::ScopedCodes codes(index.invlists, 0);
+
+        std::unique_ptr<InvertedListScanner> scanner(
+                index.get_InvertedListScanner(true, nullptr, nullptr));
+        scanner->set_query(xq.data());
+        scanner->set_list(0, 0);
+
+        std::vector<float> dis(nb);
+        for (size_t j = 0; j < nb; j++) {
+            dis[j] = scanner->distance_to_code(
+                    codes.get() + j * index.code_size);
+        }
+        std::vector<float> sorted_dis = dis;
+        std::sort(sorted_dis.begin(), sorted_dis.end());
+        CollectAllResultHandler handler;
+        handler.threshold = sorted_dis[nb / 2];
+
+        std::vector<idx_t> expected;
+        for (size_t j = 0; j < nb; j++) {
+            if (dis[j] < handler.threshold) {
+                expected.push_back(j);
+            }
+        }
+
+        scanner->scan_codes(nb, codes.get(), nullptr, handler);
+        if (nb_bits > 1) {
+            // The probabilistic error-bound prune may drop a true hit.
+            EXPECT_TRUE(
+                    std::includes(
+                            expected.begin(),
+                            expected.end(),
+                            handler.I.begin(),
+                            handler.I.end()));
+        } else {
+            EXPECT_EQ(handler.I, expected);
+        }
+    }
 }
 
 } // namespace
