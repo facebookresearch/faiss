@@ -119,7 +119,7 @@ TEST(TestFvecL2sqr, distances_L2_squared_y_transposed) {
     // bit implementations, so they leave no partial-predicate tail; 5 and 11
     // do.
     for (const auto ny : {5, 8, 11, 16, 32}) {
-        for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 16}) {
+        for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 12, 16}) {
             // initialize inputs
             std::vector<float> x(d);
             float x_sqlen = 0;
@@ -172,7 +172,7 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
     // bit implementations, so they leave no partial-predicate tail; 5 and 11
     // do.
     for (const auto ny : {5, 8, 11, 16, 32}) {
-        for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 16}) {
+        for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 12, 16}) {
             // initialize inputs
             std::vector<float> x(d);
             float x_sqlen = 0;

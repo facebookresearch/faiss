@@ -45,6 +45,10 @@ float pq_code_distance_8bit_single(
         const float* sim_table,
         const uint8_t* code) {
     return with_simd_level_with_sve([&]<SIMDLevel SL>() {
+        if (use_scalar_8bit_kernel<SL>(M)) {
+            return PQCodeDistanceScalar8<SL>::distance_single_code(
+                    M, sim_table, code);
+        }
         return pq_code_distance_8bit_single_impl<SL>(M, sim_table, code);
     });
 }
@@ -61,6 +65,20 @@ void pq_code_distance_8bit_four(
         float& result2,
         float& result3) {
     with_simd_level_with_sve([&]<SIMDLevel SL>() {
+        if (use_scalar_8bit_kernel<SL>(M)) {
+            PQCodeDistanceScalar8<SL>::distance_four_codes(
+                    M,
+                    sim_table,
+                    code0,
+                    code1,
+                    code2,
+                    code3,
+                    result0,
+                    result1,
+                    result2,
+                    result3);
+            return;
+        }
         pq_code_distance_8bit_four_impl<SL>(
                 M,
                 sim_table,

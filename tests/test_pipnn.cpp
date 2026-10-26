@@ -9,9 +9,11 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <limits>
 #include <map>
 #include <memory>
@@ -25,7 +27,9 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/PiPNN.h>
 #include <faiss/impl/pipnn/HashPrune.h>
 #include <faiss/impl/pipnn/Partition.h>
 #include <faiss/impl/pipnn/kernels.h>
@@ -1162,3 +1166,228 @@ TEST(PiPNNPartition, InterruptStopsWithin64Items) {
     EXPECT_NE(what.find("interrupted"), std::string::npos) << what;
     EXPECT_EQ(visited - install_at, 55u);
 }
+
+/*************************************************************
+ * PiPNN build assembly
+ *************************************************************/
+
+namespace pipnn_build_test {
+
+namespace pipnn = faiss::pipnn;
+namespace ppt = pipnn_partition_test;
+
+// Many leaves, merges and depth >= 3 on 2000 points.
+faiss::PiPNN small_params() {
+    faiss::PiPNN p(16);
+    p.c_max = 64;
+    p.c_min = 16;
+    p.leader_cap = 64;
+    p.reservoir_size = 32;
+    return p;
+}
+
+std::vector<int32_t> graph_of(const faiss::PiPNN& p) {
+    return std::vector<int32_t>(
+            p.graph.data(), p.graph.data() + p.graph.size());
+}
+
+TEST(PiPNNMedoid, LowestIdArgmin) {
+    // Point 70000, in the second block, is at the mean of the others.
+    const size_t d = 8, n = pipnn::kMedoidBlock + 4465;
+    std::vector<float> x = ppt::gaussian_data(n, d, 123);
+    for (size_t i = 0; i < n * d; i++) {
+        x[i] = i / d == 70000 ? 3.0f : x[i] + 3.0f;
+    }
+    ppt::FlatData data(x, d, faiss::METRIC_L2);
+    EXPECT_EQ(pipnn::medoid_and_validate(data.index), 70000);
+
+    // All points tie, in two blocks.
+    ppt::FlatData zeros(
+            std::vector<float>(pipnn::kMedoidBlock + 1, 0.0f),
+            1,
+            faiss::METRIC_L2);
+    EXPECT_EQ(pipnn::medoid_and_validate(zeros.index), 0);
+}
+
+TEST(PiPNNMedoid, NormCVIgnoresZeros) {
+    ppt::FlatData data({2.0f, 6.0f, 0.0f}, 1, faiss::METRIC_INNER_PRODUCT);
+    float cv = 0;
+    pipnn::medoid_and_validate(data.index, &cv);
+    EXPECT_FLOAT_EQ(cv, 0.5f);
+}
+
+TEST(PiPNNMedoid, RejectsInvalidVectors) {
+    const size_t n = 100, d = 8;
+    // 1e19 squares to 1e38 > FLT_MAX / 8
+    for (float v : {std::numeric_limits<float>::quiet_NaN(), 1e19f}) {
+        SCOPED_TRACE(v);
+        std::vector<float> x = ppt::gaussian_data(n, d, 5);
+        x[37 * d + 3] = v;
+        ppt::FlatData data(x, d, faiss::METRIC_L2);
+        EXPECT_THROW(
+                pipnn::medoid_and_validate(data.index), faiss::FaissException);
+    }
+}
+
+TEST(PiPNNRobustPrune, HandExamples) {
+    std::vector<int32_t> out;
+    auto prune = [&](const float* D,
+                     const std::vector<int32_t>& cand,
+                     faiss::MetricType metric,
+                     float alpha,
+                     int R) {
+        std::vector<int> order(cand.size());
+        out.resize(R);
+        pipnn::robust_prune(
+                D,
+                cand.size() + 1,
+                cand.data(),
+                metric,
+                alpha,
+                R,
+                order.data(),
+                out.data());
+    };
+
+    // L2: x = 0 on a line, candidates 5, 6, 7 at 1, 2 and -1.5.
+    // clang-format off
+    const float L2[16] = {
+            0,     1,     4,      2.25f,
+            1,     0,     1,      6.25f,
+            4,     1,     0,      12.25f,
+            2.25f, 6.25f, 12.25f, 0};
+    // clang-format on
+    // alpha 1.2: 5 prunes 6 (1.2 * 1 < 4); 7 survives (1.2 * 6.25 > 2.25).
+    prune(L2, {5, 6, 7}, faiss::METRIC_L2, 1.2f, 3);
+    EXPECT_EQ(out, std::vector<int32_t>({5, 7, -1}));
+    prune(L2, {5, 6, 7}, faiss::METRIC_L2, 5.0f, 3); // 5 >= 4
+    EXPECT_EQ(out, std::vector<int32_t>({5, 7, 6}));
+
+    // IP, d = -dot: c is pruned by y if d(y, c) < alpha * d(x, c).
+    // clang-format off
+    const float IP[16] = {
+            -5, -4, -3,    -2,
+            -4, -5, -4,    -1,
+            -3, -4, -5,    -2.5f,
+            -2, -1, -2.5f, -5};
+    // clang-format on
+    // alpha 1: 5 prunes 6 (-4 < -3); 7 survives (-1 >= -2).
+    prune(IP, {5, 6, 7}, faiss::METRIC_INNER_PRODUCT, 1.0f, 3);
+    EXPECT_EQ(out, std::vector<int32_t>({5, 7, -1}));
+    prune(IP, {5, 6, 7}, faiss::METRIC_INNER_PRODUCT, 1.5f, 3);
+    EXPECT_EQ(out, std::vector<int32_t>({5, 6, 7})); // -4 >= -4.5
+
+    // Candidates 9 and 8 at +1 and -1: the tie goes to the lower id, and R
+    // caps the row.
+    const float tie[9] = {0, 1, 1, 1, 0, 4, 1, 4, 0};
+    prune(tie, {9, 8}, faiss::METRIC_L2, 1.2f, 1);
+    EXPECT_EQ(out, std::vector<int32_t>({8}));
+}
+
+// Counts reconstruct() calls, one per row read; call number throw_at throws.
+struct InjectingIndex : faiss::IndexFlatL2 {
+    mutable std::atomic<int64_t> calls{0};
+    int64_t throw_at = 0; // 0 = never
+
+    InjectingIndex(const std::vector<float>& x, size_t d)
+            : faiss::IndexFlatL2(d) {
+        add(x.size() / d, x.data());
+    }
+
+    void reconstruct(faiss::idx_t key, float* out) const override {
+        FAISS_THROW_IF_MSG(++calls == throw_at, "injected read failure");
+        faiss::IndexFlatL2::reconstruct(key, out);
+    }
+
+    void arm(int64_t k) {
+        throw_at = k;
+        calls = 0;
+    }
+};
+
+struct PredicateInterrupt : faiss::InterruptCallback {
+    std::function<bool()> pred;
+    explicit PredicateInterrupt(std::function<bool()> p) : pred(std::move(p)) {}
+    bool want_interrupt() override {
+        return pred();
+    }
+};
+
+// Builds once and records the graph and its read count; the two medoid passes
+// make reads 1..2n, and barriers keep counts independent of the thread count.
+class PiPNNBuilt : public testing::Test {
+   protected:
+    static constexpr size_t n = 2000, d = 16;
+    InjectingIndex storage{ppt::gaussian_data(n, d, 82), d};
+    faiss::PiPNN p = small_params();
+    std::vector<int32_t> graph;
+    int32_t entry_point = -1;
+    int64_t total = 0;
+
+    void SetUp() override {
+        p.build(storage);
+        graph = graph_of(p);
+        entry_point = p.entry_point;
+        total = storage.calls;
+    }
+
+    void expect_unchanged() {
+        EXPECT_EQ(graph_of(p), graph);
+        EXPECT_EQ(p.entry_point, entry_point);
+        EXPECT_EQ(p.ntotal, faiss::idx_t(n));
+    }
+};
+
+TEST_F(PiPNNBuilt, GraphIndependentOfChunkSize) {
+    faiss::PiPNN chunked = small_params();
+    pipnn::detail::build_with_chunk(chunked, storage, 700, false); // 3 chunks
+    EXPECT_EQ(graph_of(chunked), graph);
+}
+
+TEST_F(PiPNNBuilt, EmptyStorageResets) {
+    p.build(faiss::IndexFlatL2(d));
+    EXPECT_EQ(p.graph.size(), 0u);
+    EXPECT_EQ(p.entry_point, -1);
+    EXPECT_EQ(p.ntotal, 0);
+}
+
+TEST_F(PiPNNBuilt, ReadFailureKeepsPreviousGraph) {
+    const int64_t partition = 2 * n + 1;
+    for (int64_t k : {partition, total}) {
+        SCOPED_TRACE(k);
+        storage.arm(k);
+        EXPECT_THROW(p.build(storage), faiss::FaissException);
+        expect_unchanged();
+    }
+}
+
+// The interrupt is raised from a given read on; the build must stop by
+// last_allowed.
+TEST_F(PiPNNBuilt, InterruptStopsTheBuild) {
+    // With one thread, the medoid pass polls after its only block, and the
+    // last final-prune items run after the last poll of the region, so only
+    // the check after it sees an interrupt raised there.
+    ppt::ScopedOmpThreads one_thread(1);
+    struct Window {
+        const char* phase;
+        int64_t raise_from, last_allowed;
+    };
+    const Window windows[] = {
+            {"before any read", 0, 0},
+            {"first medoid pass", 1, n},
+            {"last read", total, total}};
+    for (const Window& w : windows) {
+        SCOPED_TRACE(w.phase);
+        storage.arm(0);
+        {
+            ppt::InterruptGuard guard;
+            faiss::InterruptCallback::instance.reset(new PredicateInterrupt(
+                    [&] { return storage.calls >= w.raise_from; }));
+            EXPECT_THROW(p.build(storage), faiss::FaissException);
+        }
+        EXPECT_LE(storage.calls.load(), w.last_allowed);
+        expect_unchanged();
+    }
+}
+
+} // namespace pipnn_build_test

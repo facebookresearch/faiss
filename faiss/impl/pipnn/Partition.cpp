@@ -91,8 +91,6 @@ constexpr size_t kScatterBlock = 65536;
 /// Above any leader index, so the merge-order seed never equals a child's.
 constexpr uint64_t kMergeShuffleIndex = uint64_t(1) << 33;
 
-constexpr int kMaxCMax = 4096;
-
 constexpr size_t kNoSplit = std::numeric_limits<size_t>::max();
 
 /// `ids` is sorted and owned by a LevelStorage (or the root list).
@@ -163,9 +161,10 @@ void check_params(const Index& storage, const PartitionParams& p) {
             "c_max x c_max float matrix",
             kMaxCMax,
             p.c_max);
-    FAISS_THROW_IF_NOT_MSG(
-            p.leader_cap >= 1 && p.leader_cap <= 65535,
-            "PiPNN partition: need 1 <= leader_cap <= 65535");
+    FAISS_THROW_IF_NOT_FMT(
+            p.leader_cap >= 1 && p.leader_cap <= kMaxLeaderCap,
+            "PiPNN partition: need 1 <= leader_cap <= %d",
+            kMaxLeaderCap);
     FAISS_THROW_IF_NOT_MSG(
             p.leader_fraction >= 0 && p.leader_fraction <= 1,
             "PiPNN partition: need 0 <= leader_fraction <= 1");
@@ -192,12 +191,6 @@ void record_leaf(PartitionStats& stats, size_t size, int depth) {
         stats.leaf_size_histogram.resize(bucket + 1, 0);
     }
     stats.leaf_size_histogram[bucket]++;
-}
-
-void ensure_size(AlignedTable<float, 64>& table, size_t n) {
-    if (table.size() < n) {
-        table.resize(n);
-    }
 }
 
 void push_slices(const Node& child, size_t c_max, SplitOutput& out) {
@@ -537,16 +530,18 @@ void partition_and_visit(
         const PartitionParams& p,
         uint64_t root_seed,
         const LeafVisitor& on_leaf,
-        PartitionStats* stats) {
+        PartitionStats* stats,
+        const std::vector<int32_t>& ids) {
     check_params(storage, p);
     PartitionStats st;
     const LevelContext ctx{storage, p, on_leaf, st};
-    const size_t n = static_cast<size_t>(storage.ntotal);
+    const size_t n =
+            ids.empty() ? static_cast<size_t>(storage.ntotal) : ids.size();
     if (n > 0) {
         InterruptCallback::check();
         std::unique_ptr<int32_t[]> root_ids(new int32_t[n]);
         for (size_t i = 0; i < n; i++) {
-            root_ids[i] = static_cast<int32_t>(i);
+            root_ids[i] = ids.empty() ? static_cast<int32_t>(i) : ids[i];
         }
         std::vector<Node> root_children;
         LevelStorage root_storage;
