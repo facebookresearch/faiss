@@ -74,7 +74,7 @@ struct PiPNN {
     int leader_cap = 1000;   ///< most leaders per split
     int replicas = 1;        ///< independent partitions, shared reservoirs
     float leader_fraction = 0.005f; ///< leaders per split, fraction of its size
-    float alpha = 0; ///< 0 = 1.2; 1.0 for IP with nonzero-norm CV <= 0.05
+    float alpha = 0;                ///< 0 = 1.2
     std::vector<int> fanout = {10, 3}; ///< leaders joined per depth, then 1
     int64_t seed = 1234;
     /// IP: rank partition leaders by angle, not inner product
@@ -95,7 +95,7 @@ struct PiPNN {
     PiPNN() = default;
     explicit PiPNN(int R) : R(R) {}
 
-    float effective_alpha(MetricType metric, bool cosine = false) const;
+    float effective_alpha(MetricType metric) const;
 
     void check_params() const;
 
