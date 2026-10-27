@@ -213,6 +213,55 @@ class TestRemove(unittest.TestCase):
         self.assertEqual(index2.reconstruct(1004)[0], 104)
 
 
+class TestRemoveShardsReplicas(unittest.TestCase):
+
+    def setUp(self):
+        self.ds = SyntheticDataset(16, 0, 1000, 20)
+        self.ids = np.arange(1000) + 5000
+        self.sel = faiss.IDSelectorRange(5100, 5300)
+        self.ref = faiss.IndexIDMap(faiss.IndexFlatL2(self.ds.d))
+        self.ref.add_with_ids(self.ds.get_database(), self.ids)
+        self.nremoved = self.ref.remove_ids(self.sel)
+
+    def check_search(self, index):
+        Dref, Iref = self.ref.search(self.ds.get_queries(), 10)
+        D, I = index.search(self.ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, Iref)
+        np.testing.assert_allclose(D, Dref, rtol=1e-5)
+
+    def test_shards(self):
+        index = faiss.IndexShards(self.ds.d, False, False)
+        subs = [
+            faiss.IndexIDMap(faiss.IndexFlatL2(self.ds.d)) for _ in range(3)
+        ]
+        for sub in subs:
+            index.add_shard(sub)
+        index.add_with_ids(self.ds.get_database(), self.ids)
+        self.assertEqual(index.remove_ids(self.sel), self.nremoved)
+        self.assertEqual(index.ntotal, self.ref.ntotal)
+        self.check_search(index)
+
+    def test_shards_successive_ids(self):
+        index = faiss.IndexShards(self.ds.d, False, True)
+        sub = faiss.IndexFlatL2(self.ds.d)
+        index.add_shard(sub)
+        with self.assertRaises(RuntimeError):
+            index.remove_ids(self.sel)
+
+    def test_replicas(self):
+        index = faiss.IndexReplicas(self.ds.d, False)
+        subs = [
+            faiss.IndexIDMap(faiss.IndexFlatL2(self.ds.d)) for _ in range(2)
+        ]
+        for sub in subs:
+            index.add_replica(sub)
+        index.add_with_ids(self.ds.get_database(), self.ids)
+        self.assertEqual(index.ntotal, 1000)
+        self.assertEqual(index.remove_ids(self.sel), self.nremoved)
+        self.assertEqual(index.ntotal, self.ref.ntotal)
+        self.check_search(index)
+
+
 class TestRangeSearch(unittest.TestCase):
 
     def test_range_search_id_map(self):
