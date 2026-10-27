@@ -15775,10 +15775,6 @@
   </compound>
   <compound refid="AuxIndexStructures_8h" kind="file"><name>AuxIndexStructures.h</name>
   </compound>
-  <compound refid="binary__hamming_2dispatch_8h" kind="file"><name>dispatch.h</name>
-  </compound>
-  <compound refid="polysemous__training_2dispatch_8h" kind="file"><name>dispatch.h</name>
-  </compound>
   <compound refid="IndexBinaryHash__impl_8h" kind="file"><name>IndexBinaryHash_impl.h</name>
     <member refid="IndexBinaryHash__impl_8h_1abe6ea42d56bb6b1cf335146f0877d7a9" kind="variable"><name>nbit</name></member>
     <member refid="IndexBinaryHash__impl_8h_1a9bce63d17740391b99c83bdb07ac6979" kind="variable"><name>nflip</name></member>
@@ -15951,6 +15947,10 @@
     <member refid="platform__macros_8h_1a25d067997fc3e57a6b1fa866376d336b" kind="define"><name>FAISS_MAYBE_UNUSED</name></member>
     <member refid="platform__macros_8h_1a4799c16a1dbf5e7750da9ba3efb15928" kind="define"><name>FAISS_FINAL</name></member>
     <member refid="platform__macros_8h_1abf6a5ab3176f433c65daf103e3e5b156" kind="define"><name>FAISS_OMP_DYNAMIC</name></member>
+  </compound>
+  <compound refid="binary__hamming_2dispatch_8h" kind="file"><name>dispatch.h</name>
+  </compound>
+  <compound refid="polysemous__training_2dispatch_8h" kind="file"><name>dispatch.h</name>
   </compound>
   <compound refid="PolysemousTraining_8h" kind="file"><name>PolysemousTraining.h</name>
   </compound>
