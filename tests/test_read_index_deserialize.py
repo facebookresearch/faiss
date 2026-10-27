@@ -2998,3 +2998,94 @@ class TestIndexFlatPanoramaSafety(FaissTestCase):
         for n0, ni in bad_ranges:
             with self.assertRaisesFaiss():
                 index.reconstruct_n_c(n0, ni, recons_ptr)
+
+
+# -----------------------------------------------------------------------
+# IndexPiPNN
+# -----------------------------------------------------------------------
+
+PIPNN_DIM = 4
+
+# A valid unbuilt, empty index.
+EMPTY_PIPNN = {
+    "ntotal": 0,
+    "entry_point": -1,
+    "graph": (),
+    "storage_ntotal": 0,
+}
+
+
+def pipnn_payload(
+    metric_type=1,
+    R=2,
+    pipnn_ntotal=None,
+    ntotal=2,
+    entry_point=0,
+    graph=(1, -1, 0, -1),
+    next_copy=(),
+    storage_ntotal=2,
+    storage_d=PIPNN_DIM,
+    panorama_storage=False,
+):
+    buf = bytearray()
+    push_fourcc(buf, "IPNf")
+    push_index_header(buf, PIPNN_DIM, ntotal, True, metric_type)
+    push_val(buf, BOOL, False)  # defer_build
+    push_val(buf, INT, R)
+    # leaf_k, hash_bits, reservoir_size, c_max, c_min, leader_cap, replicas
+    for value in (2, 12, 64, 1024, 128, 1000, 1):
+        push_val(buf, INT, value)
+    push_val(buf, FLOAT, 0.005)  # leader_fraction
+    push_val(buf, FLOAT, 0.0)  # alpha
+    push_vector(buf, INT, (10, 3))  # fanout
+    push_val(buf, INT64, 1234)  # seed
+    push_val(buf, BOOL, False)  # ip_partition_by_angle
+    push_val(buf, INT, 64)  # search_L
+    push_val(buf, INT64, ntotal if pipnn_ntotal is None else pipnn_ntotal)
+    push_val(buf, INT, entry_point)
+    for neighbor in graph:
+        push_val(buf, INT, neighbor)
+    push_vector(buf, INT, next_copy)
+    if panorama_storage:
+        push_flat_panorama(buf, PIPNN_DIM, 1, 1024, storage_ntotal, 0, 0)
+    else:
+        push_minimal_flat(buf, storage_d, storage_ntotal)
+    return buf
+
+
+class TestPiPNNDeserialize(FaissTestCase):
+
+    def test_valid_payloads(self):
+        for fields in ({}, EMPTY_PIPNN):
+            self.assertTrue(read_index(pipnn_payload(**fields)).own_fields)
+
+    def test_rejects_malformed_payloads(self):
+        cases = [
+            ({"R": 0}, "R must be >= 1"),
+            ({"ntotal": 2**31}, "exceeds INT32_MAX"),
+            ({"pipnn_ntotal": 1}, "PiPNN ntotal 1 != index ntotal"),
+            ({"graph": (1, 2, 0, -1)}, "out of range"),
+            ({"entry_point": 2}, "entry_point"),
+            ({"entry_point": -1}, "entry_point"),
+            ({"next_copy": (1,)}, "next_copy.size()"),
+            ({**EMPTY_PIPNN, "panorama_storage": True}, "unsupported storage"),
+            ({"storage_ntotal": 3}, "PiPNN storage ntotal"),
+            ({"storage_d": 2 * PIPNN_DIM}, "PiPNN storage d"),
+            ({"metric_type": 0}, "PiPNN storage metric"),
+        ]
+        for fields, msg in cases:
+            with self.subTest(**fields):
+                self.expect_read_throws(pipnn_payload(**fields), msg)
+
+    def test_corrupt_graph_view_search_stays_in_bounds(self):
+        # views skip the neighbour scan on read; search must still stay in
+        # bounds on corrupt neighbour and copy ids, above ntotal and negative
+        data = np.array(
+            pipnn_payload(graph=(1, 99, -5, -1), next_copy=(99, -1)),
+            dtype="uint8",
+        )
+        index = faiss.read_index(
+            faiss.ZeroCopyIOReader(faiss.swig_ptr(data), data.size)
+        )
+        _, labels = index.search(np.zeros((1, PIPNN_DIM), dtype="float32"), 3)
+        self.assertTrue(np.all((labels >= -1) & (labels <= 1)), labels)

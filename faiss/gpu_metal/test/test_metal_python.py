@@ -337,5 +337,40 @@ class TestMetalIVFPQ(unittest.TestCase):
         np.testing.assert_array_equal(I_back, I_orig)
 
 
+class TestMetalAllGpusHelpers(unittest.TestCase):
+
+    def test_index_cpu_to_all_gpus(self):
+        if faiss.get_num_gpus() == 0:
+            self.skipTest("No Metal device")
+        d, nb, nq, k = 32, 500, 5, 3
+        np.random.seed(77)
+        xb = np.random.randn(nb, d).astype(np.float32)
+        xq = np.random.randn(nq, d).astype(np.float32)
+
+        cpu_index = faiss.IndexFlatL2(d)
+        cpu_index.add(xb)
+        gpu_index = faiss.index_cpu_to_all_gpus(cpu_index)
+
+        D_gpu, I_gpu = gpu_index.search(xq, k)
+        D_cpu, I_cpu = cpu_index.search(xq, k)
+        np.testing.assert_allclose(D_gpu, D_cpu, rtol=1e-5, atol=1e-5)
+        np.testing.assert_array_equal(I_gpu, I_cpu)
+
+    def test_kmeans_gpu(self):
+        if faiss.get_num_gpus() == 0:
+            self.skipTest("No Metal device")
+        d, n, k = 16, 2000, 10
+        np.random.seed(88)
+        x = np.random.randn(n, d).astype(np.float32)
+
+        km_cpu = faiss.Kmeans(d, k, niter=5, seed=1)
+        km_cpu.train(x)
+        km_gpu = faiss.Kmeans(d, k, niter=5, seed=1, gpu=True)
+        km_gpu.train(x)
+        np.testing.assert_allclose(
+            km_gpu.centroids, km_cpu.centroids, rtol=1e-4, atol=1e-4
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -7,6 +7,7 @@
 
 #include <faiss/IndexPiPNN.h>
 
+#include <omp.h>
 #include <algorithm>
 #include <atomic>
 #include <exception>
@@ -92,8 +93,10 @@ void IndexPiPNN::search(
     const IDSelector* sel = params ? params->sel : nullptr;
     const bool negate = metric_type == METRIC_INNER_PRODUCT;
 
-    const idx_t check_period = InterruptCallback::get_period_hint(
-            size_t(d) * size_t(std::max(idx_t(search_L), k)));
+    const idx_t check_period =
+            InterruptCallback::get_period_hint(
+                    size_t(d) * size_t(std::max(idx_t(search_L), k))) *
+            omp_get_max_threads();
 
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         const idx_t i1 = std::min(i0 + check_period, n);

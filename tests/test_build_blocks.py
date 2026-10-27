@@ -598,6 +598,21 @@ class TestBucketSort(unittest.TestCase):
         self.do_test_bucket_sort_inplace(4, dtype="int64")
 
 
+class TestFindDuplicateCodes(unittest.TestCase):
+
+    def test_find_duplicate_codes(self):
+        # two different codes with the same bvec_checksum, then a copy
+        k_inv = pow(1686049, -1, 2**32)
+        pair = np.array([[65713 * k_inv % 2**32, 0], [0, k_inv]], "uint32")
+        codes = pair[[0, 1, 1]].view("uint8")
+        rep = np.empty(len(codes), dtype="int64")
+        n_distinct = faiss.find_duplicate_codes(
+            *codes.shape, faiss.swig_ptr(codes), faiss.swig_ptr(rep)
+        )
+        np.testing.assert_array_equal(rep, [0, 1, 1])
+        self.assertEqual(n_distinct, 2)
+
+
 class TestMergeKNNResults(unittest.TestCase):
 
     def do_test(self, ismax, dtype):

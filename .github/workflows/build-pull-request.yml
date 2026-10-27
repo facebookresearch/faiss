@@ -241,7 +241,9 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: '3.12'
-          miniforge-version: latest
+          # Miniforge3 26.9.4-0 fails `conda init` on Windows runners. Keep in
+          # sync with the Windows pin in actions/build_conda/action.yml.
+          miniforge-version: '24.11.2-1'
           channels: conda-forge
       - name: Install dependencies
         shell: pwsh

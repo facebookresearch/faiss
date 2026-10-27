@@ -6,6 +6,7 @@
  */
 
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_impl/masked_sum-avx2.h>
 
 #include <immintrin.h>
 
@@ -105,6 +106,14 @@ void fvec_madd<SIMDLevel::AVX2>(
     }
 }
 
+template <>
+float fvec_masked_sum<SIMDLevel::AVX2>(
+        const float* x,
+        const uint8_t* bits,
+        size_t d) {
+    return masked_sum<SIMDLevel::AVX2>(x, bits, d);
+}
+
 template <size_t DIM>
 void fvec_L2sqr_ny_y_transposed_D(
         float* distances,
@@ -199,8 +208,12 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::AVX2>(
     switch (d) {
         DISPATCH(1)
         DISPATCH(2)
+        DISPATCH(3)
         DISPATCH(4)
+        DISPATCH(6)
         DISPATCH(8)
+        DISPATCH(12)
+        DISPATCH(16)
         default:
             return fvec_L2sqr_ny_transposed<SIMDLevel::NONE>(
                     dis, x, y, y_sqlen, d, d_offset, ny);

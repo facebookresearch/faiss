@@ -404,6 +404,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/popcount.h
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
@@ -444,6 +445,9 @@ set(FAISS_HEADERS
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
+  utils/simd_impl/masked_sum.h
+  utils/simd_impl/masked_sum-avx2.h
+  utils/simd_impl/masked_sum-avx512.h
   utils/simd_impl/distances_sse-inl.h
 )
 

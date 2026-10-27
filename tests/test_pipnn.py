@@ -5,6 +5,9 @@
 
 """Tests for IndexPiPNN (Flat and SQ storage)."""
 
+import os
+import platform
+import tempfile
 import unittest
 
 import faiss
@@ -78,9 +81,11 @@ class TestPiPNNBuild(unittest.TestCase):
     def test_effective_alpha(self):
         p = faiss.PiPNN()
         self.assertAlmostEqual(p.effective_alpha(faiss.METRIC_L2), 1.2, 6)
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.0)
-        p.alpha = 1.5
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.5)
+        self.assertAlmostEqual(
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.2, 6
+        )
+        p.alpha = 1.25
+        self.assertEqual(p.effective_alpha(faiss.METRIC_L2), 1.25)
         self.assertRaises(RuntimeError, p.effective_alpha, faiss.METRIC_L1)
 
     def test_sq8_train_add_search(self):
@@ -104,7 +109,8 @@ class TestPiPNNRecall(unittest.TestCase):
         self.assertGreaterEqual(recall(index, xb, xq), 0.97)
 
     def test_recall_IP(self):
-        xb, xq = ip_dataset(NB, NQ)
+        _, xb, xq = get_dataset_2(DIM, 0, NB, NQ)
+        faiss.normalize_L2(xb)
         index = faiss.IndexPiPNNFlat(DIM, 64, faiss.METRIC_INNER_PRODUCT)
         index.add(xb)
         self.assertGreaterEqual(recall(index, xb, xq), 0.96)
@@ -114,12 +120,28 @@ class TestPiPNNRecall(unittest.TestCase):
             D[:, 0], (xq * xb[I[:, 0]]).sum(axis=1), rtol=1e-4, atol=1e-4
         )
 
+    def test_recall_IP_varying_norms(self):
+        _, xb, xq = get_dataset_2(DIM, 0, NB, NQ)
+        xb *= np.random.RandomState(123).lognormal(sigma=2.0, size=(NB, 1))
+        index = faiss.IndexPiPNNFlat(DIM, 64, faiss.METRIC_INNER_PRODUCT)
+        index.add(xb)
+        self.assertGreaterEqual(recall(index, xb, xq), 0.98)
+
     def test_recall_one_leaf(self):
         # nb <= c_max: each point offers its reservoir_size nearest, not leaf_k
         _, xb, xq = get_dataset_2(DIM, 0, 500, NQ)
         index = faiss.IndexPiPNNFlat(DIM, 32)
         index.add(xb)
         index.pipnn.search_L = 16
+        self.assertGreaterEqual(recall(index, xb, xq), 0.95)
+
+    def test_recall_duplicates(self):
+        # the K nearest neighbours are all copies of the nearest one
+        _, xb, xq = get_dataset_2(DIM, 0, 2000, NQ)
+        xb = np.tile(xb, (K, 1))
+        index = faiss.IndexPiPNNFlat(DIM, 32)
+        index.add(xb)
+        index = faiss.deserialize_index(faiss.serialize_index(index))
         self.assertGreaterEqual(recall(index, xb, xq), 0.95)
 
 
@@ -278,3 +300,143 @@ class TestPiPNNErrors(unittest.TestCase):
         with faiss.TimeoutGuard(1e-6):
             with self.assertRaises(RuntimeError):
                 index.search(self.xq, K)
+
+
+class TestPiPNNSerialization(unittest.TestCase):
+
+    def setUp(self):
+        _, self.xb, self.xq = get_dataset_2(DIM, 0, 2000, 50)
+
+    def assert_same_index(self, a, b):
+        np.testing.assert_equal(graph_of(b), graph_of(a))
+        np.testing.assert_equal(b.search(self.xq, K), a.search(self.xq, K))
+
+    def test_fourcc_follows_storage(self):
+        # a plain IndexPiPNN reads back as the subclass of its storage type
+        index = faiss.IndexPiPNN(faiss.IndexFlatIP(DIM), 16)
+        index.add(self.xb)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertIsInstance(index2, faiss.IndexPiPNNFlat)
+        self.assert_same_index(index, index2)
+
+        sq = faiss.IndexScalarQuantizer(DIM, faiss.ScalarQuantizer.QT_8bit)
+        sq.train(self.xb)
+        index = faiss.IndexPiPNN(sq, 16)
+        index.add(self.xb)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertIsInstance(index2, faiss.IndexPiPNNSQ)
+        self.assert_same_index(index, index2)
+
+    def test_round_trip_unbuilt_params(self):
+        index = faiss.IndexPiPNNFlat(DIM, 24, faiss.METRIC_INNER_PRODUCT)
+        values = {
+            "leaf_k": 3,
+            "hash_bits": 10,
+            "reservoir_size": 48,
+            "c_max": 512,
+            "c_min": 64,
+            "leader_cap": 500,
+            "replicas": 2,
+            "leader_fraction": 0.01,
+            "alpha": 1.1,
+            "seed": 4321,
+            "ip_partition_by_angle": True,
+            "search_L": 40,
+        }
+        for name, value in values.items():
+            setattr(index.pipnn, name, value)
+        faiss.copy_array_to_vector(
+            np.array([8, 2], dtype="int32"), index.pipnn.fanout
+        )
+        index.defer_build = True
+        index.add(self.xb)
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertTrue(index2.defer_build)
+        for name in ["R", *values]:
+            self.assertEqual(
+                getattr(index2.pipnn, name), getattr(index.pipnn, name), name
+            )
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index2.pipnn.fanout), [8, 2]
+        )
+
+    def test_state_the_reader_rejects_is_not_written(self):
+        index = faiss.IndexPiPNNFlat(DIM, 16)
+        index.add(self.xq)
+        index.pipnn.R = 8
+        with self.assertRaisesRegex(RuntimeError, "graph size"):
+            faiss.serialize_index(index)
+        index = faiss.IndexPiPNNFlat(DIM, 16)
+        index.storage.add(self.xq)
+        with self.assertRaisesRegex(RuntimeError, "cannot serialize"):
+            faiss.serialize_index(index)
+
+    @unittest.skipIf(
+        platform.system() not in ["Windows", "Linux", "Darwin"],
+        "supported OSes only",
+    )
+    def test_mmap_load(self):
+        index = faiss.IndexPiPNNFlat(DIM, 16)
+        index.add(self.xb)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        index2 = None
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            self.assertIsInstance(index2, faiss.IndexPiPNNFlat)
+            self.assertFalse(index2.pipnn.graph.is_owned)
+            self.assert_same_index(index, index2)
+        finally:
+            del index2
+            if os.path.exists(fname):
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
+
+
+class TestPiPNNClone(unittest.TestCase):
+    def test_clone_survives_original(self):
+        _, xb, xq = get_dataset_2(DIM, 0, 2000, 50)
+        index = faiss.IndexPiPNNFlat(DIM, 16)
+        index.add(xb)
+        ref = graph_of(index), index.search(xq, K)
+        clone = faiss.clone_index(index)
+        self.assertIsInstance(clone, faiss.IndexPiPNNFlat)
+        self.assertTrue(clone.own_fields)
+        index.reset()
+        del index
+        np.testing.assert_equal((graph_of(clone), clone.search(xq, K)), ref)
+
+
+class TestPiPNNFactory(unittest.TestCase):
+    def test_strings(self):
+        SQ, IP = faiss.ScalarQuantizer, faiss.METRIC_INNER_PRODUCT
+        for desc, cls, R, qtype in [
+            ("PiPNN32,Flat", faiss.IndexPiPNNFlat, 32, None),
+            ("PiPNN16", faiss.IndexPiPNNFlat, 16, None),  # as for HNSW/NSG
+            ("PiPNN_SQ8", faiss.IndexPiPNNSQ, 64, SQ.QT_8bit),
+        ]:
+            with self.subTest(desc=desc):
+                index = faiss.index_factory(DIM, desc, IP)
+                self.assertIsInstance(index, cls)
+                self.assertEqual(index.pipnn.R, R)
+                self.assertEqual(index.storage.metric_type, IP)
+                if qtype is not None:
+                    storage = faiss.downcast_index(index.storage)
+                    self.assertEqual(storage.sq.qtype, qtype)
+
+
+class TestPiPNNCoarseQuantizer(unittest.TestCase):
+    def test_ivf_pipnn(self):
+        xt, _, xq = get_dataset_2(DIM, 10000, 0, NQ)
+        index = faiss.index_factory(DIM, "IVF256_PiPNN,Flat")
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.pipnn.R, 64)
+        index.train(xt)
+        centroids = quantizer.reconstruct_n(0, quantizer.ntotal)
+        self.assertGreaterEqual(recall(quantizer, centroids, xq), 0.95)

@@ -162,8 +162,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     std::vector<float> query_vector;
 
     std::unique_ptr<FlatCodesDistanceComputer> dc;
-    RaBitQDistanceComputer* rabitq_dc =
-            nullptr; // For multi-bit adaptive filtering
+    RaBitQDistanceComputer* rabitq_dc = nullptr;
 
     uint8_t qb = 0;
     bool centered = false;
@@ -205,30 +204,15 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         return dc->distance_to_code(code);
     }
 
-    // redefiniing the scan_codes allows to inline the distance_to_code
-    // (this is unlikely to matter because it contains a virtual function call)
-    size_t scan_codes_1bit(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            ResultHandler& handler) const {
-        return run_scan_codes(*this, list_size, codes, ids, handler);
-    }
-
-    /// Override scan_codes to implement adaptive filtering for multi-bit codes
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const override {
-        size_t ex_bits = ivf_rabitq.rabitq.nb_bits - 1;
-
-        // For 1-bit codes, use default implementation
-        if (ex_bits == 0 || rabitq_dc == nullptr) {
-            return scan_codes_1bit(list_size, codes, ids, handler);
+        if (qb == 0 && ivf_rabitq.rabitq.nb_bits == 1) {
+            return run_scan_codes(*this, list_size, codes, ids, handler);
         }
 
-        // Multi-bit: Two-stage search with adaptive filtering
         return rabitq_dc->scan_codes_multibit(
                 list_size,
                 codes,
@@ -247,7 +231,6 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             if (!dc) {
                 dc.reset(ivf_rabitq.rabitq.get_distance_computer(
                         qb, nullptr, centered));
-                // Try to cast to RaBitQDistanceComputer for multi-bit support
                 rabitq_dc = dynamic_cast<RaBitQDistanceComputer*>(dc.get());
                 FAISS_THROW_IF_NOT(rabitq_dc);
             }
