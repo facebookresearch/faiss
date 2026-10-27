@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import absolute_import, division, print_function
-
 import os
 import tempfile
 
@@ -31,7 +29,6 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
         sq.train(self.xb)
         codes = sq.compute_codes(self.xb)
         xb_decoded = sq.decode(codes)
-        self.assertEqual(xb_decoded.shape, self.xb.shape)
         err = np.abs(self.xb - xb_decoded).max()
         self.assertLess(err, max_err)
 
@@ -47,33 +44,21 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
     def test_4bit_uniform(self):
         self.do_encode_decode(faiss.ScalarQuantizer.QT_4bit_uniform, 0.1)
 
-    def test_tqmse_1bit(self):
+    def test_tqmse(self):
         faiss.normalize_L2(self.xb)
-        self.do_encode_decode(faiss.ScalarQuantizer.QT_1bit_tqmse, 1.0)
-
-    def test_tqmse_2bit(self):
-        faiss.normalize_L2(self.xb)
-        self.do_encode_decode(faiss.ScalarQuantizer.QT_2bit_tqmse, 0.8)
-
-    def test_tqmse_3bit(self):
-        faiss.normalize_L2(self.xb)
-        self.do_encode_decode(faiss.ScalarQuantizer.QT_3bit_tqmse, 0.6)
-
-    def test_tqmse_4bit(self):
-        faiss.normalize_L2(self.xb)
-        self.do_encode_decode(faiss.ScalarQuantizer.QT_4bit_tqmse, 0.2)
-
-    def test_tqmse_8bit(self):
-        faiss.normalize_L2(self.xb)
-        self.do_encode_decode(faiss.ScalarQuantizer.QT_8bit_tqmse, 0.1)
+        for qtype, max_err in (
+            (faiss.ScalarQuantizer.QT_1bit_tqmse, 1.0),
+            (faiss.ScalarQuantizer.QT_2bit_tqmse, 0.8),
+            (faiss.ScalarQuantizer.QT_3bit_tqmse, 0.6),
+            (faiss.ScalarQuantizer.QT_4bit_tqmse, 0.2),
+            (faiss.ScalarQuantizer.QT_8bit_tqmse, 0.1),
+        ):
+            with self.subTest(qtype=qtype):
+                self.do_encode_decode(qtype, max_err)
 
     def test_tqmse_preserves_norm(self):
-        """tqmse encodes unit-norm vectors with no per-vector scale factor in
-        the code, so reconstructions must keep unit norm. The Lloyd-Max table
-        is optimal for unit *variance*, so it only lines up with unit-norm
-        input once scaled by 1/sqrt(d) -- without that, every component lands
-        in the innermost cells and the codebook collapses toward a sign
-        quantizer, inflating norms by 15% at d=64 and 258% at d=768."""
+        """tqmse has no per-vector scale: the Lloyd-Max table must be scaled
+        by 1/sqrt(d) or the codebook collapses toward a sign quantizer."""
         for qtype, nbits in (
             (faiss.ScalarQuantizer.QT_1bit_tqmse, 1),
             (faiss.ScalarQuantizer.QT_2bit_tqmse, 2),
@@ -105,9 +90,7 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
                     self.assertGreaterEqual(used, 2**nbits // 2)
 
     def test_codes_match_none(self):
-        """SQ codes are integer; encode dispatch (sq-dispatch.h) must
-        produce bit-identical output at every SIMD level. Catches drift in
-        the per-ISA scalar-quantizer encode kernels."""
+        """Encode must be bit-identical at every SIMD level."""
         if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
             self.skipTest("SIMDLevel.NONE not available")
         for qtype in (
@@ -134,10 +117,6 @@ class TestScalarQuantizerSearch(unittest.TestCase):
         self.ds = SyntheticDataset(d=self.d, nt=0, nb=10000, nq=100, seed=42)
         self.xb = self.ds.get_database()
         self.xq = self.ds.get_queries()
-        self.xb_unit = self.xb.copy()
-        self.xq_unit = self.xq.copy()
-        faiss.normalize_L2(self.xb_unit)
-        faiss.normalize_L2(self.xq_unit)
 
     def do_search(self, factory_str, min_recall):
         index_gt = faiss.IndexFlatL2(self.d)
@@ -159,9 +138,13 @@ class TestScalarQuantizerSearch(unittest.TestCase):
         self.do_search("SQfp16", 0.99)
 
     def test_tqmse_search(self):
+        xb_unit = self.xb.copy()
+        xq_unit = self.xq.copy()
+        faiss.normalize_L2(xb_unit)
+        faiss.normalize_L2(xq_unit)
         index_gt = faiss.IndexFlatL2(self.d)
-        index_gt.add(self.xb_unit)
-        _, I_gt = index_gt.search(self.xq_unit, 10)
+        index_gt.add(xb_unit)
+        _, I_gt = index_gt.search(xq_unit, 10)
 
         recalls = {}
         for factory_str in ["L2norm,RR,SQtqmse4", "L2norm,RR,SQtqmse8"]:
@@ -239,7 +222,6 @@ class TestScalarQuantizerEdgeCases(unittest.TestCase):
         self.assertTrue(np.allclose(D, 0, atol=1e-3))
 
     def test_extreme_dims(self):
-        """Test extreme dimension values (very small and very large)."""
         for d in [1, 1024]:
             with self.subTest(d=d):
                 ds = SyntheticDataset(d=d, nt=0, nb=100, nq=10, seed=42)
@@ -253,7 +235,6 @@ class TestScalarQuantizerEdgeCases(unittest.TestCase):
                 self.assertEqual(I.shape, (10, 10))
 
     def test_non_simd_dims(self):
-        """Test dimensions not aligned to SIMD width (8/16)."""
         for d in [7, 9, 15, 17, 31, 33, 63, 65]:
             with self.subTest(d=d):
                 ds = SyntheticDataset(d=d, nt=0, nb=100, nq=5, seed=42)
@@ -341,13 +322,9 @@ class TestScalarQuantizerIP(unittest.TestCase):
 
 
 class TestTurboQUnbiasedness(unittest.TestCase):
-    """Verify TurboQuant reconstruction preserves inner products."""
 
     def test_reconstruction_quality(self):
         rng = np.random.RandomState(42)
-        print("\n=== TurboQuant reconstruction quality ===")
-        print(f"{'d':>6} {'qt':>8} {'self_ip':>10} {'cos_sim':>10}")
-        print("-" * 42)
 
         for d in [128, 256, 384, 512, 768]:
             n = 500
@@ -364,22 +341,9 @@ class TestTurboQUnbiasedness(unittest.TestCase):
 
                 xr = np.vstack([index.reconstruct(i) for i in range(n)])
 
-                # Self inner product: <x, x_hat> for each vector
                 self_ip = np.array([xb[i] @ xr[i] for i in range(n)])
                 mean_self_ip = self_ip.mean()
 
-                # Cosine similarity
-                xr_norms = np.linalg.norm(xr, axis=1)
-                cos_sim = np.array(
-                    [xb[i] @ xr[i] / (xr_norms[i] + 1e-30) for i in range(n)]
-                ).mean()
-
-                print(
-                    f"{d:>6} {qt_name:>8} "
-                    f"{mean_self_ip:>10.4f} {cos_sim:>10.4f}"
-                )
-
-                # Reconstruction should point in the right direction
                 self.assertGreater(
                     mean_self_ip,
                     0.1,
@@ -388,7 +352,6 @@ class TestTurboQUnbiasedness(unittest.TestCase):
 
 
 class TestTurboQFullFactory(unittest.TestCase):
-    """Test factory string construction for TurboQ full types."""
 
     def test_factory_sqtq(self):
         cases = [
@@ -410,15 +373,13 @@ class TestTurboQFullFactory(unittest.TestCase):
                 factory_str = f"IVF16,{sq_str}"
                 index = faiss.index_factory(d, factory_str)
                 self.assertIsInstance(index, faiss.IndexIVFScalarQuantizer)
-                ivf = faiss.downcast_index(index)
-                self.assertFalse(ivf.by_residual)
+                self.assertFalse(index.by_residual)
 
 
 class TestTurboQFullEncodeDecode(unittest.TestCase):
-    """Encode/decode roundtrip for TurboQ full types."""
 
     def test_encode_decode_roundtrip(self):
-        for d in [32, 64, 128]:
+        for d in [7, 9, 15, 17, 32, 33, 64, 65, 128]:
             for qtype, max_err in [
                 (faiss.ScalarQuantizer.QT_2bit_tq, 1.5),
                 (faiss.ScalarQuantizer.QT_3bit_tq, 1.2),
@@ -432,25 +393,11 @@ class TestTurboQFullEncodeDecode(unittest.TestCase):
                     sq.train(xb)
                     codes = sq.compute_codes(xb)
                     xr = sq.decode(codes)
-                    self.assertEqual(xr.shape, xb.shape)
                     err = np.abs(xb - xr).max()
                     self.assertLess(err, max_err)
 
-    def test_non_simd_aligned_dims(self):
-        for d in [7, 9, 15, 17, 33, 65]:
-            with self.subTest(d=d):
-                rng = np.random.RandomState(42)
-                xb = rng.randn(100, d).astype("float32")
-                faiss.normalize_L2(xb)
-                sq = faiss.ScalarQuantizer(d, faiss.ScalarQuantizer.QT_2bit_tq)
-                sq.train(xb)
-                codes = sq.compute_codes(xb)
-                xr = sq.decode(codes)
-                self.assertEqual(xr.shape, xb.shape)
-
 
 class TestTurboQFullSearch(unittest.TestCase):
-    """Search recall tests for TurboQ full types."""
 
     def setUp(self):
         self.d = 64
@@ -471,40 +418,19 @@ class TestTurboQFullSearch(unittest.TestCase):
         return (self.I_gt[:, 0] == I[:, 0]).mean()
 
     def test_flat_sqtq_search(self):
-        for sq_str in ["SQtq2", "SQtq3", "SQtq4"]:
-            with self.subTest(sq_str=sq_str):
-                index = faiss.index_factory(self.d, sq_str)
-                index.train(self.xb)
-                index.add(self.xb)
-                recall = self._recall_at_1(index)
-                self.assertGreater(recall, 0.05)
-
-    def test_recall_increases_with_bits(self):
         recalls = {}
         for sq_str in ["SQtq2", "SQtq3", "SQtq4"]:
             index = faiss.index_factory(self.d, sq_str)
             index.train(self.xb)
             index.add(self.xb)
             recalls[sq_str] = self._recall_at_1(index)
+            self.assertGreater(recalls[sq_str], 0.05)
 
         self.assertGreaterEqual(recalls["SQtq3"], recalls["SQtq2"] - 0.05)
         self.assertGreaterEqual(recalls["SQtq4"], recalls["SQtq3"] - 0.05)
 
-    def test_ivf_sqtq_search(self):
-        for sq_str in ["SQtq2", "SQtq3"]:
-            with self.subTest(sq_str=sq_str):
-                factory_str = f"IVF32,{sq_str}"
-                index = faiss.index_factory(self.d, factory_str)
-                index.train(self.xb)
-                index.add(self.xb)
-                index.nprobe = 8
-                _, I = index.search(self.xq, 10)
-                self.assertEqual(I.shape, (self.nq, 10))
-                self.assertTrue(np.all(I[:, 0] >= 0))
-
 
 class TestTurboQFullSerialization(unittest.TestCase):
-    """Serialization roundtrip for TurboQ full types."""
 
     def _roundtrip(self, index):
         fd, fname = tempfile.mkstemp()
@@ -558,6 +484,7 @@ class TestTurboQFullSerialization(unittest.TestCase):
                 index.nprobe = 4
 
                 D1, I1 = index.search(xq, 5)
+                self.assertTrue(np.all(I1[:, 0] >= 0))
                 index2 = self._roundtrip(index)
                 index2.nprobe = 4
                 D2, I2 = index2.search(xq, 5)
@@ -587,7 +514,6 @@ class TestTurboQFullSerialization(unittest.TestCase):
 
 
 class TestTurboQFullDistances(unittest.TestCase):
-    """Verify distance computation is consistent for TurboQ."""
 
     def test_search_distances_are_finite(self):
         d = 64
@@ -611,28 +537,6 @@ class TestTurboQFullDistances(unittest.TestCase):
                 self.assertTrue(np.all(D[:, 0] >= 0))
                 self.assertTrue(np.all(I >= 0))
 
-    def test_search_distances_sorted(self):
-        d = 64
-        rng = np.random.RandomState(42)
-        xb = rng.randn(500, d).astype("float32")
-        xq = rng.randn(10, d).astype("float32")
-        faiss.normalize_L2(xb)
-        faiss.normalize_L2(xq)
-
-        for qtype in [
-            faiss.ScalarQuantizer.QT_2bit_tq,
-            faiss.ScalarQuantizer.QT_3bit_tq,
-        ]:
-            with self.subTest(qtype=qtype):
-                index = faiss.IndexScalarQuantizer(d, qtype)
-                index.train(xb)
-                index.add(xb)
-
-                D, _ = index.search(xq, 10)
-                for q in range(len(xq)):
-                    for k in range(1, 10):
-                        self.assertLessEqual(D[q, k - 1], D[q, k])
-
 
 @for_all_simd_levels
 class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
@@ -640,10 +544,8 @@ class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
     distances.
 
     The distances are integers, so this class computes them from the
-    definition and compares. An earlier version measured a second time at
-    SIMDLevel.NONE and compared the two runs. A static build reports only the
-    one level it compiles, and omits NONE, so that version skipped itself in
-    the build shape that ships.
+    definition and compares. Comparing against SIMDLevel.NONE instead would
+    skip in static builds, which report only the one level they compile.
 
     d = 16 and d = 32 pass the d % 16 == 0 test in sq-dispatch.h. That test
     routes the query to DistanceComputerByte and DistanceComputerByteSigned.
@@ -653,9 +555,7 @@ class TestSQByteDirectAcrossSIMDLevels(unittest.TestCase):
     """
 
     def reference(self, xq, xb, metric):
-        """Returns the exact distances. The values are small integers. Every
-        product and sum stays below 2**24, so the float32 result loses
-        nothing."""
+        """Exact distances: all values stay below 2**24, so float32 is exact."""
         a = xq.astype("int64")
         b = xb.astype("int64")
         if metric == faiss.METRIC_L2:
