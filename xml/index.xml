@@ -8491,6 +8491,8 @@
     <member refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" kind="function"><name>remove_replica</name></member>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1a5cdb2a340a3b4f45ec244d5398a29005" kind="function"><name>train</name></member>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9" kind="function"><name>add</name></member>
+    <member refid="classfaiss_1_1IndexReplicasTemplate_1af8a442e6540a826f1bd9f96506aa7bb6" kind="function"><name>add_with_ids</name></member>
+    <member refid="classfaiss_1_1IndexReplicasTemplate_1a9c4f092161d10ccdbec9ce124a2d1e7c" kind="function"><name>remove_ids</name></member>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1ad789f012a72a2b2db938d06ad1295019" kind="function"><name>search</name></member>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6" kind="function"><name>reconstruct</name></member>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d" kind="function"><name>syncWithSubIndexes</name></member>
@@ -8815,6 +8817,7 @@
     <member refid="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" kind="function"><name>add_shard</name></member>
     <member refid="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" kind="function"><name>remove_shard</name></member>
     <member refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexShardsTemplate_1ac1ddafa4124fb74008630008adbd117b" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" kind="function"><name>syncWithSubIndexes</name></member>
     <member refid="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" kind="function"><name>addIndex</name></member>
     <member refid="classfaiss_1_1ThreadedIndex_1a21604d6b8b8d42e6cc78c26e85564027" kind="function"><name>removeIndex</name></member>
@@ -8860,6 +8863,7 @@
     <member refid="structfaiss_1_1IndexShardsTemplate_1a15e0b4a2fd85f9345537d215a331ed91" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1IndexShardsTemplate_1ad8c210aad3ef56b82cc5ea47105095f7" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexShardsTemplate_1aa7d268a8a30e16f52e192d41a57b8626" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexShardsTemplate_1ac1ddafa4124fb74008630008adbd117b" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" kind="function"><name>syncWithSubIndexes</name></member>
     <member refid="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" kind="function"><name>addIndex</name></member>
     <member refid="classfaiss_1_1ThreadedIndex_1a21604d6b8b8d42e6cc78c26e85564027" kind="function"><name>removeIndex</name></member>

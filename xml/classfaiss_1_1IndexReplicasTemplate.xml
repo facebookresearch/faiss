@@ -218,6 +218,52 @@
         </inbodydescription>
         <location file="faiss/IndexReplicas.h" line="57" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1af8a442e6540a826f1bd9f96506aa7bb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexReplicasTemplate&lt; IndexT &gt;::add_with_ids</definition>
+        <argsstring>(idx_t n, const component_t *x, const idx_t *xids) override</argsstring>
+        <name>add_with_ids</name>
+        <qualifiedname>faiss::IndexReplicasTemplate::add_with_ids</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const component_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>xids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> API All indices receive the same call </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexReplicas.h" line="61" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1a9c4f092161d10ccdbec9ce124a2d1e7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::IndexReplicasTemplate&lt; IndexT &gt;::remove_ids</definition>
+        <argsstring>(const IDSelector &amp;sel) override</argsstring>
+        <name>remove_ids</name>
+        <qualifiedname>faiss::IndexReplicasTemplate::remove_ids</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> API All indices receive the same call </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexReplicas.h" line="66" column="12"/>
+      </memberdef>
       <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1ad789f012a72a2b2db938d06ad1295019" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexReplicasTemplate&lt; IndexT &gt;::search</definition>
@@ -256,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="62" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="71" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -278,7 +324,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="71" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="80" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -293,7 +339,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="75" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="84" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -458,7 +504,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="79" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="88" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -478,7 +524,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="82" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="91" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -590,10 +636,11 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexReplicas.h" line="21" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="21" bodyend="83"/>
+    <location file="faiss/IndexReplicas.h" line="21" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="21" bodyend="92"/>
     <listofallmembers>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add_replica</name></member>
+      <member refid="classfaiss_1_1IndexReplicasTemplate_1af8a442e6540a826f1bd9f96506aa7bb6" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add_with_ids</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" prot="public" virt="virtual"><scope>faiss::IndexReplicasTemplate</scope><name>addIndex</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a357254021639c167dedf37fce2427d9d" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>at</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a8f8108166de42429361baa030698c119" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>at</name></member>
@@ -609,6 +656,7 @@
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" prot="protected" virt="virtual"><scope>faiss::IndexReplicasTemplate</scope><name>onAfterRemoveIndex</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a1223180acd3979e7205c91d2dba9d306" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>own_indices</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>reconstruct</name></member>
+      <member refid="classfaiss_1_1IndexReplicasTemplate_1a9c4f092161d10ccdbec9ce124a2d1e7c" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>remove_ids</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>remove_replica</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a21604d6b8b8d42e6cc78c26e85564027" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>removeIndex</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a4536f6e7a8cce1f79bebc420ae1e909b" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>reset</name></member>

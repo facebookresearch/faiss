@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="94" column="10" bodyfile="faiss/IndexShards.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="99" column="10" bodyfile="faiss/IndexShards.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1ThreadedIndex_1a1223180acd3979e7205c91d2dba9d306" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -346,6 +346,25 @@
         </inbodydescription>
         <location file="faiss/IndexShards.h" line="92" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ac1ddafa4124fb74008630008adbd117b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::IndexShardsTemplate&lt; IndexT &gt;::remove_ids</definition>
+        <argsstring>(const IDSelector &amp;sel) override</argsstring>
+        <name>remove_ids</name>
+        <qualifiedname>faiss::IndexShardsTemplate::remove_ids</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Removes the ids from every shard, and returns the sum of the counts. Needs successive_ids = false: with successive ids, the ids of a shard depend on the sizes of the shards before it. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="97" column="12"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::IndexShardsTemplate&lt; IndexT &gt;::syncWithSubIndexes</definition>
@@ -359,7 +378,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="98" column="18"/>
+        <location file="faiss/IndexShards.h" line="103" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -524,7 +543,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="102" column="10"/>
+        <location file="faiss/IndexShards.h" line="107" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -544,7 +563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="105" column="10"/>
+        <location file="faiss/IndexShards.h" line="110" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="protected-attrib">
@@ -644,7 +663,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexShards.h" line="20" column="1" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="106"/>
+    <location file="faiss/IndexShards.h" line="20" column="1" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="111"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add_shard</name></member>
@@ -663,6 +682,7 @@
       <member refid="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac" prot="protected" virt="virtual"><scope>faiss::IndexShardsTemplate</scope><name>onAfterAddIndex</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" virt="virtual"><scope>faiss::IndexShardsTemplate</scope><name>onAfterRemoveIndex</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a1223180acd3979e7205c91d2dba9d306" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>own_indices</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1ac1ddafa4124fb74008630008adbd117b" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>remove_ids</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>remove_shard</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a21604d6b8b8d42e6cc78c26e85564027" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>removeIndex</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a4536f6e7a8cce1f79bebc420ae1e909b" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>reset</name></member>

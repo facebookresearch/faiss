@@ -1432,7 +1432,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="85" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/IndexReplicas.h" line="94" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a08035b3de4260d681099add5203fc045" prot="public" static="no">
         <type><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -1446,7 +1446,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="86" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="86" bodyend="-1"/>
+        <location file="faiss/IndexReplicas.h" line="95" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="95" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1aa4027ffe4b83be8ed0ad09c287853d17" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShardsTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -1460,7 +1460,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="108" column="1" bodyfile="faiss/IndexShards.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="113" column="1" bodyfile="faiss/IndexShards.h" bodystart="113" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a1e3dccddbd9b1cbe722804bbb9b2fa99" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShardsTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -1474,7 +1474,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="109" column="1" bodyfile="faiss/IndexShards.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="114" column="1" bodyfile="faiss/IndexShards.h" bodystart="114" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a6e5511ff3f78bfcab1530a6f215846c6" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HStackInvertedLists" kindref="compound">HStackInvertedLists</ref></type>
