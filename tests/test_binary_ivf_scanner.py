@@ -179,6 +179,19 @@ class TestBinaryIVFScanner(unittest.TestCase):
             )
             self.assertEqual(got, _expected(query, codes, k), f"n={n}")
 
+    def test_distance_to_code_outside_the_specialized_sizes(self):
+        """Code sizes outside WIDTHS use the default computer."""
+        rs = np.random.RandomState(789)
+        for cs in [3, 13, 96, 100, 128, 200]:
+            with self.subTest(code_size=cs):
+                query = self.random_codes(rs, 1, cs)
+                scanner = self.make_scanner(rs, query, cs=cs)
+                codes = self.random_codes(rs, 50, cs)
+                dis = [
+                    scanner.distance_to_code(faiss.swig_ptr(c)) for c in codes
+                ]
+                np.testing.assert_array_equal(dis, _hamming(query, codes))
+
     def test_range_search_matches_the_reference(self):
         """range_search reaches scan_codes_range. n is not a multiple of the
         batch size, so the batch loop and the tail both run."""
