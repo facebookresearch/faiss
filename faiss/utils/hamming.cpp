@@ -28,6 +28,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simd_dispatch.h>
+#include <faiss/utils/byteswap.h>
 #include <faiss/utils/utils.h>
 
 // Scalar (NONE) fallback — only needs the generic specializations.
@@ -86,14 +87,11 @@ void bitvecs2fvecs(
 }
 
 static uint64_t uint64_reverse_bits(uint64_t b) {
-    int i;
-    uint64_t revb = 0;
-    for (i = 0; i < 64; i++) {
-        revb <<= 1;
-        revb |= b & 1;
-        b >>= 1;
-    }
-    return revb;
+    b = byteswap64(b);
+    b = ((b & 0xF0F0F0F0F0F0F0F0ULL) >> 4) | ((b & 0x0F0F0F0F0F0F0F0FULL) << 4);
+    b = ((b & 0xCCCCCCCCCCCCCCCCULL) >> 2) | ((b & 0x3333333333333333ULL) << 2);
+    b = ((b & 0xAAAAAAAAAAAAAAAAULL) >> 1) | ((b & 0x5555555555555555ULL) << 1);
+    return b;
 }
 
 void bitvec_print(const uint8_t* b, size_t d) {
