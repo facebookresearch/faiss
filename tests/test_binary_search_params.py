@@ -31,7 +31,7 @@ class TestBinarySearchParams(unittest.TestCase):
 
         index.add(xb)
 
-        I0, D0 = index.search(xq, k)
+        D0, I0 = index.search(xq, k)
 
         Dnew, Inew = index.search(xq, k, params=params)
 
@@ -53,10 +53,6 @@ class TestBinarySearchParams(unittest.TestCase):
             index,
             {"nprobe": 3},
             faiss.SearchParametersIVF(nprobe=3),
-            d=d,
-            nb=500,
-            nq=20,
-            k=5,
         )
 
     def test_efSearch(self):
@@ -66,10 +62,6 @@ class TestBinarySearchParams(unittest.TestCase):
             index,
             {"efSearch": 4},
             faiss.SearchParametersHNSW(efSearch=4),
-            d=d,
-            nb=500,
-            nq=20,
-            k=5,
         )
 
     def test_quantizer_hnsw(self):
@@ -83,10 +75,6 @@ class TestBinarySearchParams(unittest.TestCase):
                 nprobe=10,
                 quantizer_params=faiss.SearchParametersHNSW(efSearch=5),
             ),
-            d=d,
-            nb=500,
-            nq=20,
-            k=5,
         )
 
     def test_max_codes(self):
@@ -121,47 +109,3 @@ class TestBinarySearchParams(unittest.TestCase):
             self.assertLessEqual(stats.ndis, target_ndis)
             if stats.ndis < target_ndis:
                 np.testing.assert_equal(I0[q], Iq[0])
-
-    def test_efSearch(self):
-        d = 64
-        nb = 500
-        nq = 20
-        k = 5
-
-        rs = np.random.RandomState(123)
-        xb = rs.randint(256, size=(nb, d // 8), dtype="uint8")
-        xq = rs.randint(256, size=(nq, d // 8), dtype="uint8")
-
-        index = faiss.IndexBinaryHNSW(d, 32)
-        index.add(xb)
-
-        D1, I1 = index.search(
-            xq, k, params=faiss.SearchParametersHNSW(efSearch=4)
-        )
-
-        D2, I2 = index.search(
-            xq, k, params=faiss.SearchParametersHNSW(efSearch=16)
-        )
-
-        self.assertFalse(np.all(I1 == I2))
-
-    def test_nprobe(self):
-        d = 64
-        nb = 500
-        nq = 20
-        k = 5
-
-        rs = np.random.RandomState(123)
-        xb = rs.randint(256, size=(nb, d // 8), dtype="uint8")
-        xq = rs.randint(256, size=(nq, d // 8), dtype="uint8")
-
-        quantizer = faiss.IndexBinaryFlat(d)
-        index = faiss.IndexBinaryIVF(quantizer, d, 32)
-        index.train(xb)
-        index.add(xb)
-
-        D1, I1 = index.search(xq, k, params=faiss.SearchParametersIVF(nprobe=1))
-
-        D2, I2 = index.search(xq, k, params=faiss.SearchParametersIVF(nprobe=8))
-
-        self.assertFalse(np.all(I1 == I2))

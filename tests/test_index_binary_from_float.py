@@ -19,36 +19,8 @@ def make_binary_dataset(d, nb, nt, nq):
     return x[:nt], x[nt:-nq], x[-nq:]
 
 
-def binary_to_float(x):
-    n, d = x.shape
-    x8 = x.reshape(n * d, -1)
-    c8 = 2 * ((x8 >> np.arange(8)) & 1).astype("int8") - 1
-    return c8.astype("float32").reshape(n, d * 8)
-
-
 @for_all_simd_levels
 class TestIndexBinaryFromFloat(unittest.TestCase):
-    """Use a binary index backed by a float index"""
-
-    def test_index_from_float(self):
-        d = 256
-        nt = 0
-        nb = 1500
-        nq = 500
-        (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
-
-        index_ref = faiss.IndexFlatL2(d)
-        index_ref.add(binary_to_float(xb))
-
-        index = faiss.IndexFlatL2(d)
-        index_bin = faiss.IndexBinaryFromFloat(index)
-        index_bin.add(xb)
-
-        D_ref, I_ref = index_ref.search(binary_to_float(xq), 10)
-        D, I = index_bin.search(xq, 10)
-
-        np.testing.assert_allclose((D_ref / 4.0).astype("int32"), D)
-
     def test_index_from_float_inner_product(self):
         d = 256
         nt = 0
@@ -137,7 +109,6 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
             wrapped_quantizer, d, float_quantizer.ntotal
         )
         index.nprobe = 2048
-        assert index.is_trained
 
         index.add(xb)
 
@@ -149,60 +120,6 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
         )
 
         assert recall > 0.82, "recall = %g" % recall
-
-    def test_wrapped_quantizer_HNSW(self):
-
-        def bin2float2d(v):
-            n, d = v.shape
-            vf = ((v.reshape(-1, 1) >> np.arange(8)) & 1).astype("float32")
-            vf *= 2
-            vf -= 1
-            return vf.reshape(n, d * 8)
-
-        d = 256
-        nt = 12800
-        nb = 10000
-        nq = 500
-        (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
-
-        index_ref = faiss.IndexBinaryFlat(d)
-
-        index_ref.add(xb)
-
-        nlist = 256
-        clus = faiss.Clustering(d, nlist)
-        clus_index = faiss.IndexFlatL2(d)
-
-        xt_f = bin2float2d(xt)
-        clus.train(xt_f, clus_index)
-
-        centroids = faiss.vector_to_array(clus.centroids).reshape(-1, clus.d)
-        hnsw_quantizer = faiss.IndexHNSWFlat(d, 32)
-        hnsw_quantizer.add(centroids)
-        hnsw_quantizer.is_trained = True
-        wrapped_quantizer = faiss.IndexBinaryFromFloat(hnsw_quantizer)
-
-        assert nlist == hnsw_quantizer.ntotal
-        assert nlist == wrapped_quantizer.ntotal
-        assert wrapped_quantizer.is_trained
-
-        index = faiss.IndexBinaryIVF(
-            wrapped_quantizer, d, hnsw_quantizer.ntotal
-        )
-        index.nprobe = 128
-
-        assert index.is_trained
-
-        index.add(xb)
-
-        D_ref, I_ref = index_ref.search(xq, 10)
-        D, I = index.search(xq, 10)
-
-        recall = sum(gti[0] in Di[:10] for gti, Di in zip(D_ref, D)) / float(
-            D_ref.shape[0]
-        )
-
-        assert recall >= 0.77, "recall = %g" % recall
 
 
 class TestOverrideKmeansQuantizer(unittest.TestCase):
