@@ -30,7 +30,10 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest
+        # Miniforge3 26.9.4-0 fails `conda init` on Windows runners ("needs
+        # sudo" for Scripts\conda.exe). Keep the Windows pin in sync with the
+        # windows-x86_64-DD-cmake job in workflows/build-pull-request.yml.
+        miniforge-version: ${{ runner.os == 'Windows' && '24.11.2-1' || 'latest' }}
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
