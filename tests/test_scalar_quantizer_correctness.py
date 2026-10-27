@@ -290,6 +290,35 @@ class TestScalarQuantizerEdgeCases(unittest.TestCase):
                     self.assertEqual(I.shape, (5, 10))
 
 
+class TestScalarQuantizerNonUniformTraining(unittest.TestCase):
+
+    def train(self, x):
+        sq = faiss.ScalarQuantizer(x.shape[1], faiss.ScalarQuantizer.QT_8bit)
+        sq.rangestat = faiss.ScalarQuantizer.RS_meanstd
+        sq.rangestat_arg = 2.0
+        sq.train(x)
+        return faiss.vector_to_array(sq.trained)
+
+    def test_meanstd_matches_reference(self):
+        x = np.random.RandomState(123).rand(200, 256).astype("float32")
+        x[0] = 50
+        mean, std = x.mean(0), x.std(0)
+        ref = np.hstack([mean - 2 * std, 4 * std])
+        np.testing.assert_allclose(self.train(x), ref, rtol=1e-4)
+
+    def test_multithreaded_matches_single_threaded(self):
+        x = np.random.RandomState(123).rand(3, 8192).astype("float32")
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+        try:
+            ref = self.train(x)
+            faiss.omp_set_num_threads(32)
+            for _ in range(100):
+                np.testing.assert_array_equal(self.train(x), ref)
+        finally:
+            faiss.omp_set_num_threads(nt)
+
+
 @for_all_simd_levels
 class TestScalarQuantizerIP(unittest.TestCase):
 
