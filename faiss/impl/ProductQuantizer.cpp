@@ -328,20 +328,10 @@ void ProductQuantizer::decode(const uint8_t* code, float* x) const {
 
 void ProductQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
     int64_t n_signed = n;
-    std::exception_ptr ex;
-    std::atomic<bool> interrupt{false};
 #pragma omp parallel for if (n > 100)
     for (int64_t i = 0; i < n_signed; i++) {
-        if (interrupt.load(std::memory_order_relaxed)) {
-            continue;
-        }
-        try {
-            this->decode(code + code_size * i, x + d * i);
-        } catch (...) {
-            omp_capture_exception(ex, [&] { interrupt = true; });
-        }
+        this->decode(code + code_size * i, x + d * i);
     }
-    omp_rethrow_if_exception(ex);
 }
 
 void ProductQuantizer::compute_code_from_distance_table(
@@ -433,9 +423,9 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
     }
 
     int64_t n_signed = n;
-    std::exception_ptr ex;
-    std::atomic<bool> interrupt{false};
     if (dsub < 16) { // simple direct computation
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 
 #pragma omp parallel for
         for (int64_t i = 0; i < n_signed; i++) {
@@ -456,18 +446,10 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 #pragma omp parallel for
         for (int64_t i = 0; i < n_signed; i++) {
-            if (interrupt.load(std::memory_order_relaxed)) {
-                continue;
-            }
-            try {
-                uint8_t* code = codes + i * code_size;
-                const float* tab = dis_tables.get() + i * ksub * M;
-                compute_code_from_distance_table(tab, code);
-            } catch (...) {
-                omp_capture_exception(ex, [&] { interrupt = true; });
-            }
+            uint8_t* code = codes + i * code_size;
+            const float* tab = dis_tables.get() + i * ksub * M;
+            compute_code_from_distance_table(tab, code);
         }
-        omp_rethrow_if_exception(ex);
     }
 }
 
