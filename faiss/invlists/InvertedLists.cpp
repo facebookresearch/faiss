@@ -298,23 +298,24 @@ size_t ArrayInvertedLists::add_entries(
 }
 
 size_t ArrayInvertedLists::list_size(size_t list_no) const {
-    assert(list_no < nlist);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     return ids[list_no].size();
 }
 
 bool ArrayInvertedLists::is_empty(size_t list_no, void* inverted_list_context)
         const {
     FAISS_THROW_IF_NOT(inverted_list_context == nullptr);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     return ids[list_no].size() == 0;
 }
 
 const uint8_t* ArrayInvertedLists::get_codes(size_t list_no) const {
-    assert(list_no < nlist);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     return codes[list_no].data();
 }
 
 const idx_t* ArrayInvertedLists::get_ids(size_t list_no) const {
-    assert(list_no < nlist);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     return ids[list_no].data();
 }
 
