@@ -16,6 +16,7 @@
 // -*- c++ -*-
 
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_impl/masked_sum.h>
 
 #include <cmath>
 #include <cstring>
@@ -53,6 +54,14 @@ void fvec_madd<SIMDLevel::NONE>(
     for (size_t i = 0; i < n; i++) {
         c[i] = a[i] + bf * b[i];
     }
+}
+
+template <>
+float fvec_masked_sum<SIMDLevel::NONE>(
+        const float* x,
+        const uint8_t* bits,
+        size_t d) {
+    return masked_sum<SIMDLevel::NONE>(x, bits, d);
 }
 
 template <>

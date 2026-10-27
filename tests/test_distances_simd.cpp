@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 
 // reference implementations
@@ -293,6 +294,36 @@ TEST(TestFvecMadd, multiple_add) {
 
         ASSERT_EQ(distances, true_distances)
                 << "Mismatching fvec_madd results for nrows = " << nrows;
+    }
+}
+
+TEST(TestFvecMaskedSum, masked_sum) {
+    // ints instead of floats for 100% accuracy
+    std::default_random_engine rng(123);
+    std::uniform_int_distribution<int32_t> uniform(0, 32);
+
+    // 0, 1 and 2 full 16-float blocks, each with a tail; the random bits past
+    // d in the last byte must be ignored
+    for (const size_t d : {7, 31, 33}) {
+        std::vector<uint8_t> bits((d + 7) / 8);
+        for (auto& b : bits) {
+            b = rng();
+        }
+        std::vector<float> x(d);
+        float expected = 0;
+        for (size_t j = 0; j < d; j++) {
+            x[j] = uniform(rng);
+            if ((bits[j / 8] >> (j % 8)) & 1) {
+                expected += x[j];
+            }
+        }
+
+        const float actual = faiss::with_simd_level([&]<faiss::SIMDLevel SL>() {
+            return faiss::fvec_masked_sum<
+                    faiss::simd512_level_selector<SL>::value>(
+                    x.data(), bits.data(), d);
+        });
+        ASSERT_EQ(actual, expected) << "d = " << d;
     }
 }
 

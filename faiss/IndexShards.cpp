@@ -194,6 +194,16 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
 }
 
 template <typename IndexT>
+size_t IndexShardsTemplate<IndexT>::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_MSG(
+            successive_ids, "remove_ids needs successive_ids = false");
+    const idx_t before = this->ntotal;
+    this->runOnIndex([&sel](int, IndexT* index) { index->remove_ids(sel); });
+    syncWithSubIndexes();
+    return before - this->ntotal;
+}
+
+template <typename IndexT>
 void IndexShardsTemplate<IndexT>::search(
         idx_t n,
         const component_t* x,

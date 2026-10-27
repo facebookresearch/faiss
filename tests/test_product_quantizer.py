@@ -90,6 +90,30 @@ class TestProductQuantizer(unittest.TestCase):
                 np.testing.assert_array_equal(codes, codes_none)
 
 
+class TestPQTrainParallel(unittest.TestCase):
+
+    def setUp(self):
+        faiss.omp_set_num_threads(4)
+        self.x = np.random.RandomState(123).rand(256, 32)
+        self.pq = faiss.ProductQuantizer(32, 8, 2)
+
+    def test_parallel_training_gives_sequential_centroids(self):
+        centroids = []
+        for assign_index in (None, faiss.IndexFlatL2(4)):
+            self.pq.assign_index = assign_index
+            self.pq.train(self.x)
+            centroids.append(faiss.vector_to_array(self.pq.centroids))
+        np.testing.assert_array_equal(centroids[0], centroids[1])
+
+    def test_parallel_training_error(self):
+        with self.assertRaises(RuntimeError):
+            self.pq.train(self.x[:3])
+
+    def test_parallel_training_timeout(self):
+        with faiss.TimeoutGuard(1e-6), self.assertRaises(RuntimeError):
+            self.pq.train(self.x)
+
+
 @for_all_simd_levels
 class TestPQTransposedCentroids(unittest.TestCase):
 
