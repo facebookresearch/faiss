@@ -830,11 +830,11 @@ double binary_ivf_quantizer_recall(int samples_per_node) {
 } // namespace
 
 TEST(HNSWLevel0LinksFromSample, IVFTrainingLinksHNSWQuantizer) {
-    EXPECT_GT(ivf_quantizer_recall(16), 0.95);
+    EXPECT_GT(ivf_quantizer_recall(3), 0.95);
 }
 
 TEST(HNSWLevel0LinksFromSample, IVFTrainingLinksHNSWQuantizerFloat16) {
-    EXPECT_GT(ivf_quantizer_recall(16, faiss::NumericType::Float16), 0.95);
+    EXPECT_GT(ivf_quantizer_recall(3, faiss::NumericType::Float16), 0.95);
 }
 
 TEST(HNSWLevel0LinksFromSample, IVFTrainingSkipsLinksWhenDisabled) {
@@ -842,7 +842,7 @@ TEST(HNSWLevel0LinksFromSample, IVFTrainingSkipsLinksWhenDisabled) {
 }
 
 TEST(HNSWLevel0LinksFromSample, BinaryIVFTrainingLinksHNSWQuantizer) {
-    EXPECT_GT(binary_ivf_quantizer_recall(16), 0.95);
+    EXPECT_GT(binary_ivf_quantizer_recall(3), 0.95);
 }
 
 TEST(HNSWLevel0LinksFromSample, BinaryIVFTrainingSkipsLinksWhenDisabled) {
