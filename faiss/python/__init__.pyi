@@ -577,14 +577,25 @@ class RandomRotationMatrix(LinearTransform):
     def init(self, seed: int) -> None: ...
 
 class HadamardRotation(VectorTransform):
-    """Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
-    Produces a pseudo-random rotation in O(d log d) time.
-    d_out is the smallest power of 2 >= d_in (zero-padded as needed).
+    """Compose random sign-flip / Walsh-Hadamard rounds (default: three).
+
+    HadamardRotation(d, seed, 2) selects two RHTs. Each round uses its own
+    signs, generated once from seed and shared across all input vectors.
+    Inputs are zero-padded to d_out, the next power of two, before the first
+    round; the final normalization preserves norms and inner products.
+
+    Two rounds suffice for the scalar marginal guarantees relevant to the
+    scalar quantization steps of RaBitQ, EDEN, and TurboQuant. Three rounds
+    also provide the fixed-block VQ guarantee. See Ben-Basat et al.,
+    "Quantizing With Randomized Hadamard Transforms: Efficient Heuristic Now
+    Proven", Sections 3-6, https://arxiv.org/abs/2605.06014.
+    These results do not guarantee identical ANN recall at finite dimension.
     """
 
     seed: int
+    rounds: int
 
-    def __init__(self, d: int, seed: int = 12345) -> None: ...
+    def __init__(self, d: int, seed: int = 12345, rounds: int = 3) -> None: ...
     def init(self, seed: int) -> None: ...
 
 class PCAMatrix(LinearTransform):

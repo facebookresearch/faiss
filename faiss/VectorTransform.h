@@ -126,17 +126,37 @@ struct RandomRotationMatrix : LinearTransform {
     RandomRotationMatrix() {}
 };
 
-/** Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
- * Produces a pseudo-random rotation in O(d log d) time.
- * d_out is the smallest power of 2 >= d_in (zero-padded as needed).
+/** Composition of randomized Hadamard transforms (RHTs).
+ *
+ * Each round applies random signs followed by a Walsh-Hadamard transform.
+ * With H the normalized Hadamard matrix and D_i independent random sign
+ * diagonals, rounds=r computes H D_r ... H D_1 x. The default is three
+ * rounds; rounds=2 selects the two-RHT alternative. The signs are generated
+ * once from seed and reused for all vectors, including database and queries.
+ *
+ * d_out is the smallest power of 2 >= d_in. Inputs are zero-padded once,
+ * before the first round. A final normalization preserves norms and inner
+ * products (up to floating-point error). Cost is O(rounds * d_out * log d_out).
+ *
+ * Two RHTs suffice for the asymptotically Gaussian scalar marginals used in
+ * scalar quantization, including the scalar quantization steps of RaBitQ,
+ * EDEN, and TurboQuant. Three RHTs additionally give the fixed-block guarantee
+ * for vector quantization. See Ben-Basat et al. (NeurIPS 2026),
+ * "Quantizing With Randomized Hadamard Transforms: Efficient Heuristic Now
+ * Proven", Sections 3-6:
+ * https://arxiv.org/abs/2605.06014. These are asymptotic distribution/error
+ * guarantees, not a guarantee of identical finite-dimensional ANN recall.
  */
 struct HadamardRotation : VectorTransform {
     uint32_t seed{};
 
+    /// Number of sign-flip/FWHT rounds, in [1, 3]. Defaults to three.
+    int rounds = 3;
+
     /// Sign-flip vectors, each of size d_out, generated from seed.
     std::vector<float> signs1, signs2, signs3;
 
-    explicit HadamardRotation(int d, uint32_t seed = 12345);
+    explicit HadamardRotation(int d, uint32_t seed = 12345, int rounds = 3);
 
     void init(uint32_t seed_in);
 

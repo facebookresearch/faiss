@@ -181,3 +181,4 @@ outputs:
         - test_cpu_dispatch.sh  # [linux64]
       source_files:
         - tests/
+        - benchs/bench_rht.py
