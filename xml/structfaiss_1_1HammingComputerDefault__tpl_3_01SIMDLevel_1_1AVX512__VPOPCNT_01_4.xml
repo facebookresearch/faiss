@@ -120,10 +120,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>One vector accumulator, reduced once. The partial last block is a masked load, so no byte past the code is read. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="189" column="9" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="189" bodyend="223"/>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="191" column="9" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="191" bodyend="208"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a8abcbddc7e522d3816331877b92a9bcb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -137,14 +138,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="225" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="225" bodyend="227"/>
+        <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="210" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="210" bodyend="212"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="172" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="172" bodyend="228"/>
+    <location file="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" line="172" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h" bodystart="172" bodyend="213"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a85a33c811110505048f89eadb7940c21" prot="public" virt="non-virtual"><scope>faiss::HammingComputerDefault_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>a8</name></member>
       <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a8abcbddc7e522d3816331877b92a9bcb" prot="public" virt="non-virtual"><scope>faiss::HammingComputerDefault_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</scope><name>get_code_size</name></member>
