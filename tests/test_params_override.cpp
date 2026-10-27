@@ -149,8 +149,7 @@ int test_selector_with_context(const char* index_key) {
 
 // Multibit RaBitQ (nb_bits >= 2) scans through the two hand-written loops in
 // RaBitQuantizer.cpp rather than run_scan_codes1, so it needs the context hook
-// wired separately. nb_bits=3 => ex_bits=2 => scan_codes_multibit; the default
-// qb keeps a real quantized-query distance computer (no 1-bit fallback).
+// wired separately. nb_bits=3 => ex_bits=2 => scan_codes_multibit.
 int test_selector_with_context_rabitq_multibit() {
     std::vector<float> xb = make_data(nb);
     IndexFlatL2 quantizer(d);

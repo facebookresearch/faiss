@@ -81,9 +81,11 @@ class TestPiPNNBuild(unittest.TestCase):
     def test_effective_alpha(self):
         p = faiss.PiPNN()
         self.assertAlmostEqual(p.effective_alpha(faiss.METRIC_L2), 1.2, 6)
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.0)
-        p.alpha = 1.5
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.5)
+        self.assertAlmostEqual(
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.2, 6
+        )
+        p.alpha = 1.25
+        self.assertEqual(p.effective_alpha(faiss.METRIC_L2), 1.25)
         self.assertRaises(RuntimeError, p.effective_alpha, faiss.METRIC_L1)
 
     def test_sq8_train_add_search(self):
@@ -107,7 +109,8 @@ class TestPiPNNRecall(unittest.TestCase):
         self.assertGreaterEqual(recall(index, xb, xq), 0.97)
 
     def test_recall_IP(self):
-        xb, xq = ip_dataset(NB, NQ)
+        _, xb, xq = get_dataset_2(DIM, 0, NB, NQ)
+        faiss.normalize_L2(xb)
         index = faiss.IndexPiPNNFlat(DIM, 64, faiss.METRIC_INNER_PRODUCT)
         index.add(xb)
         self.assertGreaterEqual(recall(index, xb, xq), 0.96)
@@ -116,6 +119,13 @@ class TestPiPNNRecall(unittest.TestCase):
         np.testing.assert_allclose(
             D[:, 0], (xq * xb[I[:, 0]]).sum(axis=1), rtol=1e-4, atol=1e-4
         )
+
+    def test_recall_IP_varying_norms(self):
+        _, xb, xq = get_dataset_2(DIM, 0, NB, NQ)
+        xb *= np.random.RandomState(123).lognormal(sigma=2.0, size=(NB, 1))
+        index = faiss.IndexPiPNNFlat(DIM, 64, faiss.METRIC_INNER_PRODUCT)
+        index.add(xb)
+        self.assertGreaterEqual(recall(index, xb, xq), 0.98)
 
     def test_recall_one_leaf(self):
         # nb <= c_max: each point offers its reservoir_size nearest, not leaf_k

@@ -1209,6 +1209,13 @@ TEST(PiPNNMedoid, LowestIdArgmin) {
     EXPECT_EQ(pipnn::medoid_and_validate(zeros.index), 0);
 }
 
+TEST(PiPNNMedoid, NormCVIgnoresZeros) {
+    ppt::FlatData data({2.0f, 6.0f, 0.0f}, 1, faiss::METRIC_INNER_PRODUCT);
+    float cv = 0;
+    pipnn::medoid_and_validate(data.index, &cv);
+    EXPECT_FLOAT_EQ(cv, 0.5f);
+}
+
 TEST(PiPNNMedoid, RejectsInvalidVectors) {
     const size_t n = 100, d = 8;
     // 1e19 squares to 1e38 > FLT_MAX / 8

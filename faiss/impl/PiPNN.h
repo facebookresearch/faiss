@@ -33,7 +33,7 @@ constexpr size_t kMedoidBlock = size_t(1) << 16;
 
 /// Throws unless every vector is finite with squared norm <= FLT_MAX / 8, and
 /// returns the L2 medoid: the point closest to the mean, lowest id on ties.
-int32_t medoid_and_validate(const Index& storage);
+int32_t medoid_and_validate(const Index& storage, float* norm_cv = nullptr);
 
 /// RobustPrune of x (row 0 of the m x m D) over cand[t] (row 1 + t) in
 /// (D, id) order; writes <= R ids to out, -1 padded. order: m - 1 ints.
@@ -74,7 +74,7 @@ struct PiPNN {
     int leader_cap = 1000;   ///< most leaders per split
     int replicas = 1;        ///< independent partitions, shared reservoirs
     float leader_fraction = 0.005f; ///< leaders per split, fraction of its size
-    float alpha = 0;                ///< 0 = metric default (L2 1.2, IP 1.0)
+    float alpha = 0;                ///< 0 = 1.2
     std::vector<int> fanout = {10, 3}; ///< leaders joined per depth, then 1
     int64_t seed = 1234;
     /// IP: rank partition leaders by angle, not inner product
