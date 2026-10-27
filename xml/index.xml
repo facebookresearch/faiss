@@ -816,6 +816,7 @@
   </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull" kind="struct"><name>faiss::scalar_quantizer::DCTurboQuantFull</name>
     <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a73e7f8e5e107f5741390e3a6a525b94e" kind="typedef"><name>Sim</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ac03f28a3a109bc0f40ff21e32329b5f1" kind="variable"><name>SUM_LEVEL</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a4fc91ec9a032f6300a3b355c53044cf9" kind="variable"><name>quant</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab20d78f8f6b880e8127ce98bf80f2e06" kind="variable"><name>query</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ab9fd78bbce160a51a0dc46d87b71cce7" kind="variable"><name>query_proj</name></member>
@@ -14711,6 +14712,7 @@
     <member refid="namespacefaiss_1a29753cc2772af16343641e63d0cd6ebc" kind="function"><name>fvec_madd</name></member>
     <member refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kind="function"><name>fvec_madd_and_argmin</name></member>
     <member refid="namespacefaiss_1a6a87cbe5f48bc8e8d43eeb123c3e3706" kind="function"><name>fvec_madd_and_argmin</name></member>
+    <member refid="namespacefaiss_1a7f7a047d6a320431a445b8af784350b6" kind="function"><name>fvec_masked_sum</name></member>
     <member refid="namespacefaiss_1aa5e841c092ed5a4c19640bd0689e44e2" kind="function"><name>fvec_L1_dispatch</name></member>
     <member refid="namespacefaiss_1a598c8925169d83f2172ce5a00b7d7e90" kind="function"><name>fvec_Linf_dispatch</name></member>
     <member refid="namespacefaiss_1a6d00a54eac79e09b75ced1d2a5c470ad" kind="function"><name>fvec_norm_L2sqr_dispatch</name></member>
@@ -14956,6 +14958,12 @@
   <compound refid="namespacefaiss_1_1_0d274" kind="namespace"><name>faiss::@274</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d276" kind="namespace"><name>faiss::@276</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d277" kind="namespace"><name>faiss::@277</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d278" kind="namespace"><name>faiss::@278</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d279" kind="namespace"><name>faiss::@279</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d69" kind="namespace"><name>faiss::@69</name>
   </compound>
@@ -15428,8 +15436,6 @@
     <member refid="sq-avx512-impl_8h_1a28d1f8d12d40bfa0329dfe15fc42f274" kind="function"><name>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</name></member>
     <member refid="sq-avx512-impl_8h_1ae1c356282effd3a46ae3a13255593c1b" kind="function"><name>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</name></member>
     <member refid="sq-avx512-impl_8h_1a5a1cfed7fb64603b9635903687c23234" kind="function"><name>DEFINE_LLOYD_MAX_AVX512_SPECIALIZATION</name></member>
-    <member refid="sq-dispatch_8h_1a23560fdbab78b1c750acf0d364e2f3df" kind="function"><name>turboq_masked_sum</name></member>
-    <member refid="sq-dispatch_8h_1acc653efcbe0d2b91e0a74ced595be3c0" kind="function"><name>turboq_masked_sum&lt; SIMDLevel::NONE &gt;</name></member>
     <member refid="sq-dispatch_8h_1a9aafc3129d3bd359d2a36d1684100b28" kind="function"><name>is_dimension_compatible</name></member>
     <member refid="sq-dispatch_8h_1abe3d240b2efb670c775e45054fa874f7" kind="function"><name>sq_select_quantizer&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="sq-dispatch_8h_1abe2e7ac2fd556dfc65f3c4633b25d231" kind="function"><name>select_distance_computer_body</name></member>
@@ -16290,6 +16296,12 @@
   </compound>
   <compound refid="IVFFlatScanner-inl_8h" kind="file"><name>IVFFlatScanner-inl.h</name>
     <member refid="IVFFlatScanner-inl_8h_1aa4e05f9f08dc770d3a5a2972334f9b19" kind="define"><name>DEFINE_IVFFLAT_SCANNER_METHODS</name></member>
+  </compound>
+  <compound refid="masked__sum-avx2_8h" kind="file"><name>masked_sum-avx2.h</name>
+  </compound>
+  <compound refid="masked__sum-avx512_8h" kind="file"><name>masked_sum-avx512.h</name>
+  </compound>
+  <compound refid="masked__sum_8h" kind="file"><name>masked_sum.h</name>
   </compound>
   <compound refid="partitioning__simdlib256_8h" kind="file"><name>partitioning_simdlib256.h</name>
     <member refid="partitioning__simdlib256_8h_1a3601954068ff2d3b5d249ab6b5ae8082" kind="define"><name>IFV</name></member>

@@ -10,6 +10,9 @@
     <innerfile refid="fp16__kernels_8h">fp16_kernels.h</innerfile>
     <innerfile refid="simd__impl_2hamming__impl_8h">hamming_impl.h</innerfile>
     <innerfile refid="IVFFlatScanner-inl_8h">IVFFlatScanner-inl.h</innerfile>
+    <innerfile refid="masked__sum-avx2_8h">masked_sum-avx2.h</innerfile>
+    <innerfile refid="masked__sum-avx512_8h">masked_sum-avx512.h</innerfile>
+    <innerfile refid="masked__sum_8h">masked_sum.h</innerfile>
     <innerfile refid="partitioning__simdlib256_8h">partitioning_simdlib256.h</innerfile>
     <innerfile refid="super__kmeans__dispatch_8h">super_kmeans_dispatch.h</innerfile>
     <innerfile refid="super__kmeans__kernels_8h">super_kmeans_kernels.h</innerfile>

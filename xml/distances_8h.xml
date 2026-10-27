@@ -1220,8 +1220,12 @@
 <codeline lineno="629"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,</highlight></codeline>
 <codeline lineno="630"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,</highlight></codeline>
 <codeline lineno="631"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
-<codeline lineno="632"><highlight class="normal"></highlight></codeline>
-<codeline lineno="633"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="632"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="633"><highlight class="comment">///<sp/>sum<sp/>of<sp/>x[j]<sp/>for<sp/>every<sp/>j<sp/>&lt;<sp/>d<sp/>whose<sp/>bit<sp/>is<sp/>set<sp/>in<sp/>bits<sp/>(LSB-first<sp/>per<sp/>byte)</highlight></codeline>
+<codeline lineno="634"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel&gt;</highlight></codeline>
+<codeline lineno="635" refid="namespacefaiss_1a7f7a047d6a320431a445b8af784350b6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a7f7a047d6a320431a445b8af784350b6" kindref="member">fvec_masked_sum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>bits,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d);</highlight></codeline>
+<codeline lineno="636"><highlight class="normal"></highlight></codeline>
+<codeline lineno="637"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/distances.h"/>
   </compounddef>

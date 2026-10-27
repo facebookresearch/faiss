@@ -12872,6 +12872,38 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="626" column="5" declfile="faiss/utils/distances.h" declline="626" declcolumn="5"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a7f7a047d6a320431a445b8af784350b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+          </param>
+        </templateparamlist>
+        <type>float</type>
+        <definition>float faiss::fvec_masked_sum</definition>
+        <argsstring>(const float *x, const uint8_t *bits, size_t d)</argsstring>
+        <name>fvec_masked_sum</name>
+        <qualifiedname>faiss::fvec_masked_sum</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>bits</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>sum of x[j] for every j &lt; d whose bit is set in bits (LSB-first per byte) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/distances.h" line="635" column="7" declfile="faiss/utils/distances.h" declline="635" declcolumn="7"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa5e841c092ed5a4c19640bd0689e44e2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::fvec_L1_dispatch</definition>
