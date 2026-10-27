@@ -445,6 +445,9 @@ set(FAISS_HEADERS
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
+  utils/simd_impl/masked_sum.h
+  utils/simd_impl/masked_sum-avx2.h
+  utils/simd_impl/masked_sum-avx512.h
   utils/simd_impl/distances_sse-inl.h
 )
 
