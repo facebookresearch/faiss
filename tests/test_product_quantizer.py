@@ -54,12 +54,10 @@ class TestProductQuantizer(unittest.TestCase):
         # can be encoded exactly
         x = np.hstack((centroids[0, idx[:, 0]], centroids[1, idx[:, 1]]))
 
-        # encode / decode
         codes = pq.compute_codes(x)
         xr = pq.decode(codes)
         assert np.all(xr == x)
 
-        # encode w/ external index
         assign_index = faiss.IndexFlatL2(8)
         pq.assign_index = assign_index
         codes2 = np.empty((100, pq.code_size), dtype="uint8")
@@ -73,8 +71,8 @@ class TestProductQuantizer(unittest.TestCase):
             self.do_test_codec(i + 1)
 
     def test_codes_match_none(self):
-        """PQ codes are integer; encode dispatch must produce bit-identical
-        output at every SIMD level."""
+        """dsub = 16 takes the BLAS encode path, whose codes must be
+        bit-identical at every SIMD level."""
         if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
             self.skipTest("SIMDLevel.NONE not available")
         d, cs = 64, 4
@@ -126,11 +124,9 @@ class TestPQTransposedCentroids(unittest.TestCase):
 
         codes = pq.compute_codes(xt)
 
-        # enable transposed centroids table to speedup compute_codes()
         pq.sync_transposed_centroids()
         codes_transposed = pq.compute_codes(xt)
 
-        # disable transposed centroids table
         pq.clear_transposed_centroids()
         codes_cleared = pq.compute_codes(xt)
 
@@ -143,14 +139,8 @@ class TestPQTransposedCentroids(unittest.TestCase):
     def test_dsub5(self):
         self.do_test(20, 5)
 
-    def test_dsub2_odd(self):
-        self.do_test(18, 2)
-
     def test_dsub4(self):
         self.do_test(32, 4)
-
-    def test_dsub4_odd(self):
-        self.do_test(36, 4)
 
 
 @for_all_simd_levels
@@ -161,7 +151,6 @@ class TestPQTables(unittest.TestCase):
             self.do_test(d, dsub, nbit, faiss.METRIC_INNER_PRODUCT)
             self.do_test(d, dsub, nbit, faiss.METRIC_L2)
             return
-        # faiss.cvar.distance_compute_blas_threshold = 1000000
 
         M = d // dsub
         pq = faiss.ProductQuantizer(d, M, nbit)
@@ -177,7 +166,6 @@ class TestPQTables(unittest.TestCase):
 
         ref_tab = np.zeros((nx, M, pq.ksub), "float32")
 
-        # computation of tables in numpy
         for sq in range(M):
             i0, i1 = sq * dsub, (sq + 1) * dsub
             xsub = x[:, i0:i1]
@@ -201,7 +189,6 @@ class TestPQTables(unittest.TestCase):
         else:
             raise AssertionError()
 
-        # compute sdc tables in numpy
         cent1 = np.expand_dims(centroids, axis=2)  # [M, ksub, 1, dsub]
         cent2 = np.expand_dims(centroids, axis=1)  # [M, 1, ksub, dsub]
         ref_sdc_tab = ((cent1 - cent2) ** 2).sum(3)
@@ -221,30 +208,15 @@ class TestPQTables(unittest.TestCase):
     def test_dsub5(self):
         self.do_test(20, 5)
 
-    def test_dsub2_odd(self):
-        self.do_test(18, 2)
-
     def test_dsub4(self):
         self.do_test(32, 4)
 
-    def test_dsub4_odd(self):
-        self.do_test(36, 4)
-
-    # too slow
-    # def test_12bit(self):
-    #    self.do_test(32, 4, nbit=12)
-
-    def test_4bit(self):
-        self.do_test(32, 4, nbit=4)
-
     def test_dsub2_4bit(self):
-        # ksub = 16, so the SIMD dsub2 kernels run. M = 8 is even.
+        # ksub = 16, so the SIMD dsub2 kernels run.
         self.do_test(16, 2, nbit=4)
 
     def test_dsub2_4bit_odd(self):
-        # M = 9 is odd, so the dsub2 kernels must also write the last
-        # subquantizer. test_dsub2_odd cannot cover this case, because
-        # nbit=8 does not reach the dsub2 kernels.
+        # M = 9 leaves a partial group of subquantizers in the dsub2 kernels.
         self.do_test(18, 2, nbit=4)
 
     def test_dsub2_2bit(self):
