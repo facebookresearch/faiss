@@ -26,7 +26,6 @@ TEST(IO, TestReadHNSWPQ_whenSDCDisabledFlagPassed_thenDisableSDCTable) {
             "/tmp/faiss_TestReadHNSWPQ" + std::to_string(int(dist(mt)));
     Tempfilename index_filename(&temp_file_mutex, temp_file_name);
 
-    // Create a HNSW index with PQ encoding
     int d = 32, n = 256;
     std::default_random_engine rng(123);
     std::uniform_real_distribution<float> u(0, 100);
@@ -35,7 +34,6 @@ TEST(IO, TestReadHNSWPQ_whenSDCDisabledFlagPassed_thenDisableSDCTable) {
         vectors[i] = u(rng);
     }
 
-    // Build the index and write it to the temp file
     {
         std::unique_ptr<faiss::Index> index_writer(
                 faiss::index_factory(d, "HNSW8,PQ4np", faiss::METRIC_L2));
@@ -45,8 +43,6 @@ TEST(IO, TestReadHNSWPQ_whenSDCDisabledFlagPassed_thenDisableSDCTable) {
         faiss::write_index(index_writer.get(), index_filename.c_str());
     }
 
-    // Load index from disk. Confirm that the sdc table is equal to 0 when
-    // disable sdc is set
     {
         std::unique_ptr<faiss::IndexHNSWPQ> index_reader_read_write(
                 dynamic_cast<faiss::IndexHNSWPQ*>(
