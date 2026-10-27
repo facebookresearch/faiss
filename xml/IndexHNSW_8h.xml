@@ -598,7 +598,7 @@
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>disables<sp/>the<sp/>call.<sp/>Training<sp/>does<sp/>not<sp/>call<sp/>it<sp/>when</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>quantizer_trains_alone<sp/>==<sp/>1<sp/>or<sp/>when<sp/>the<sp/>quantizer<sp/>is<sp/>already<sp/>trained.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>index<sp/>format<sp/>does<sp/>not<sp/>store<sp/>this<sp/>value.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level_0_link_samples_per_node<sp/>=<sp/>16;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level_0_link_samples_per_node<sp/>=<sp/>3;</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>See<sp/>impl/VisitedTable.h.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;bool&gt;<sp/>use_visited_hashset;</highlight></codeline>

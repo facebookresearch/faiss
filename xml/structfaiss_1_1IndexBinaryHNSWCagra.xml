@@ -116,7 +116,7 @@
         <argsstring></argsstring>
         <name>level_0_link_samples_per_node</name>
         <qualifiedname>faiss::IndexBinaryHNSW::level_0_link_samples_per_node</qualifiedname>
-        <initializer>= 16</initializer>
+        <initializer>= 3</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
