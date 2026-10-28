@@ -75,5 +75,18 @@ faiss::Index* index_gpu_to_cpu(const faiss::Index* index) {
     return index_metal_gpu_to_cpu(index);
 }
 
+faiss::IndexBinary* index_binary_cpu_to_gpu(
+        StandardMetalResourcesHolder* res,
+        int device,
+        const faiss::IndexBinary* index) {
+    FAISS_THROW_IF_NOT(res && res->impl);
+    return index_binary_cpu_to_metal_gpu(
+            static_cast<StandardMetalResources*>(res->impl), device, index);
+}
+
+faiss::IndexBinary* index_binary_gpu_to_cpu(const faiss::IndexBinary* index) {
+    return index_binary_metal_gpu_to_cpu(index);
+}
+
 } // namespace gpu_metal
 } // namespace faiss
