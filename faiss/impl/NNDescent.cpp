@@ -14,6 +14,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -200,7 +201,7 @@ void NNDescent::join(DistanceComputer& qdis) {
     idx_t check_period = InterruptCallback::get_period_hint(d * search_L);
     for (idx_t i0 = 0; i0 < (idx_t)ntotal; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, (idx_t)ntotal);
-#pragma omp parallel for default(shared) schedule(dynamic, 100)
+#pragma omp parallel for default(shared) schedule(FAISS_OMP_DYNAMIC, 100)
         for (idx_t n = i0; n < i1; n++) {
             graph[n].join([&](int i, int j) {
                 if (i != j) {

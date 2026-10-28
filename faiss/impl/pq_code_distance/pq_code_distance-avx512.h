@@ -18,7 +18,10 @@ namespace pq_code_distance {
 // the AVX2 version, which is somewhat unexpected.
 // This version is kept for completeness.
 //
-// TODO: test for AMD CPUs.
+// On AMD Zen 4/5 (SIMDConfig::scalar_gather) the scalar kernel is up to 48%
+// faster at M >= 16. Below M = 16 this kernel has no gather and its loop is
+// as fast or faster, so it is kept there. The callers select the scalar
+// kernel with use_scalar_8bit_kernel().
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>

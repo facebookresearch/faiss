@@ -17,6 +17,7 @@
 #include <limits>
 #include <memory>
 
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -308,6 +309,24 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t* x) {
 
         quantizer->add(clus.k, x_b.get());
         quantizer->is_trained = true;
+
+        auto* hnsw = dynamic_cast<IndexBinaryHNSW*>(quantizer);
+        if (hnsw && hnsw->level_0_link_samples_per_node > 0) {
+            const idx_t samples = std::min<idx_t>(
+                    n, idx_t(hnsw->level_0_link_samples_per_node) * nlist);
+            const HNSWLevel0LinkStats stats =
+                    hnsw->add_level_0_links_from_sample(samples, x);
+            if (verbose) {
+                printf("HNSW quantizer level-0 links from %" PRId64
+                       " samples: %zd sinks found, %zd remaining, %zd links "
+                       "added, %zd replaced\n",
+                       samples,
+                       stats.n_sinks_found,
+                       stats.n_sinks_remaining,
+                       stats.n_links_added,
+                       stats.n_links_replaced);
+            }
+        }
     }
 
     is_trained = true;

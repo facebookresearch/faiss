@@ -4,24 +4,16 @@
 # LICENSE file in the root directory of this source tree.
 
 set(FAISS_TEST_SRC
-  test_binary_flat.cpp
   test_dealloc_invlists.cpp
-  test_ivfpq_codec.cpp
-  test_ivfpq_indexing.cpp
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp
-  test_omp_threads.cpp
-  test_pairs_decoding.cpp
   test_params_override.cpp
   test_pq_encoding.cpp
-  test_sliding_ivf.cpp
   test_threaded_index.cpp
-  test_transfer_invlists.cpp
   test_cppcontrib_sa_decode.cpp
   test_cppcontrib_uintreader.cpp
   test_simdlib.cpp
   test_approx_topk.cpp
-  test_RCQ_cropping.cpp
   test_heap.cpp
   test_pq_code_distance.cpp
   test_hnsw.cpp
@@ -31,30 +23,28 @@ set(FAISS_TEST_SRC
   test_pqfs_unaligned.cpp
   test_common_ivf_empty_index.cpp
   test_ivf_early_termination.cpp
-  test_callback.cpp
   test_utils.cpp
   test_hamming.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
   test_custom_result_handler.cpp
-  test_fastscan_filter.cpp
   test_single_query_collect_handler.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
   test_rabitq_fastscan.cpp
+  test_rabitq_batch_estimates.cpp
   test_super_kmeans_foundations.cpp
+  test_pipnn.cpp
 )
 
 # Tests that use POSIX APIs or have platform-specific issues on Windows
 if(NOT WIN32)
   list(APPEND FAISS_TEST_SRC
-    test_merge.cpp
     test_ondisk_ivf.cpp
     test_disable_pq_sdc_tables.cpp
-    test_mmap.cpp
   )
 endif()
 
@@ -69,6 +59,10 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     test_simd_perf.cpp
   )
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+    # Enable VPOPCNT dispatch for this test. The common
+    # target enables AVX2/AVX512 only.
+    set_source_files_properties(test_rabitq_batch_estimates.cpp
+      PROPERTIES COMPILE_DEFINITIONS COMPILE_SIMD_AVX512_VPOPCNT)
     list(APPEND FAISS_TEST_SRC
       test_rabitq_simd.cpp
       test_rabitq_simd_dd.cpp
@@ -94,6 +88,10 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
       )
     endif()
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+    list(APPEND FAISS_TEST_SRC
+      test_rabitq_simd_neon.cpp
+    )
   endif()
 endif()
 

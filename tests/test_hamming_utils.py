@@ -4,15 +4,10 @@
 # LICENSE file in the root directory of this source tree.
 
 """
-Tests for the standalone Hamming distance utility functions in
-faiss/utils/hamming.h. These are dynamic-dispatch entry points that aren't
-exercised by IndexBinary tests, so they otherwise have no per-SIMD-level
-coverage.
-
-Each test computes a result at the current SIMD level (the level set by the
-@for_all_simd_levels decorator) and compares against a NumPy popcount-xor
-reference. The reference is level-independent, so any per-level dispatch
-drift surfaces as an assertion failure.
+Tests for the standalone Hamming distance functions in faiss/utils/hamming.h
+against a level-independent NumPy popcount-xor reference. IndexBinary tests
+do not reach these dynamic-dispatch entry points, so this is their only
+per-SIMD-level coverage.
 
 Threshold-predicate convention: hamming_distance/common.h uses `h <= ht`
 for hamming_count_thres, match_hamming_thres, crosshamming_count_thres --
@@ -46,16 +41,13 @@ def _make_codes(n, ncodes, seed):
 # 4 * ncodes; std grows like sqrt(2 * ncodes)). Picking ht slightly below the
 # mean produces tens-to-hundreds of matches at the test sizes used here.
 # A vacuous (zero-match) test would pass against a no-op implementation.
-_THRESHOLD_CASES = [(8, 28), (16, 60), (32, 120)]
+_THRESHOLD_CASES = [(8, 28), (16, 60), (32, 120), (64, 240)]
 
 
 @for_all_simd_levels
 class TestHammingUtils(unittest.TestCase):
-    """Direct tests for hamming.h standalone entry points."""
-
     def test_hammings_all_pairs(self):
-        # faiss.hammings: all-pairs Hamming distances.
-        # ncodes covers SIMD-aligned (8, 16, 32, 64) and tail (24, 40) paths.
+        # Templated (8, 16, 32, 64) and default-case (24, 40) code sizes.
         for ncodes in (8, 16, 32, 24, 40, 64):
             with self.subTest(ncodes=ncodes):
                 na, nb = 23, 47
@@ -93,7 +85,6 @@ class TestHammingUtils(unittest.TestCase):
                 )
 
                 full = _popcount_xor(a[:, None, :], b[None, :, :])
-                # Distance-at-returned-index agrees with the reference.
                 returned = np.take_along_axis(full, I, axis=1)
                 np.testing.assert_array_equal(D, returned)
                 # Each returned distance is no greater than the true k-th
@@ -101,7 +92,6 @@ class TestHammingUtils(unittest.TestCase):
                 # broken in some impl-defined way).
                 kth = np.partition(full, k - 1, axis=1)[:, k - 1 : k]
                 self.assertTrue(np.all(D <= kth))
-                # IDs within a row are unique.
                 for i in range(na):
                     self.assertEqual(len(np.unique(I[i])), k)
 
@@ -154,13 +144,13 @@ class TestHammingUtils(unittest.TestCase):
                     faiss.swig_ptr(dis),
                 )
                 self.assertEqual(got, expected_count)
-                # Decode the (i, j) pairs.
                 i_idx = idx[0 : 2 * got : 2]
                 j_idx = idx[1 : 2 * got : 2]
+                # Pairs come out in row-major (i, j) order.
+                np.testing.assert_array_equal(
+                    np.lexsort((j_idx, i_idx)), np.arange(got)
+                )
                 dis = dis[:got]
-                # Every reported pair is within threshold and matches the
-                # reference distance at (i, j).
-                self.assertTrue(np.all(dis <= ht))
                 np.testing.assert_array_equal(dis, full[i_idx, j_idx])
                 # Every below-threshold pair in the reference appears in the
                 # output exactly once.
@@ -207,21 +197,17 @@ class TestHammingUtils(unittest.TestCase):
                     True,
                 )
 
-                # Reference distance: number of bytes that differ.
                 ref_dist = code_size - (a[:, None, :] == b[None, :, :]).sum(
                     axis=-1
                 ).astype(np.int32)
-                # Distance at returned index matches the reference.
                 returned = np.take_along_axis(ref_dist, I, axis=1)
                 np.testing.assert_array_equal(D, returned)
                 # Each returned distance is no greater than the true k-th
                 # smallest -- catches an impl that returns I=[0..k-1].
                 kth = np.partition(ref_dist, k - 1, axis=1)[:, k - 1 : k]
                 self.assertTrue(np.all(D <= kth))
-                # ordered=True was passed: distances within each row are
-                # non-decreasing.
+                # ordered=True: distances are non-decreasing within each row.
                 self.assertTrue(np.all(np.diff(D, axis=1) >= 0))
-                # IDs are unique within a row.
                 for i in range(na):
                     self.assertEqual(len(np.unique(I[i])), k)
 

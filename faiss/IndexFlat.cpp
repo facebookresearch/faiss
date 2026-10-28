@@ -59,6 +59,40 @@ void IndexFlat::search(
     }
 }
 
+void IndexFlat::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (numeric_type != NumericType::Float16 ||
+        (metric_type != METRIC_L2 && metric_type != METRIC_INNER_PRODUCT)) {
+        Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+        return;
+    }
+    FAISS_THROW_IF_NOT(k > 0);
+    const IDSelector* sel = params ? params->sel : nullptr;
+    const uint16_t* x16 = static_cast<const uint16_t*>(x);
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        knn_inner_product_fp16(
+                x16, get_xb(), d, n, ntotal, k, distances, labels, sel);
+    } else {
+        knn_L2sqr_fp16(
+                x16,
+                get_xb(),
+                d,
+                n,
+                ntotal,
+                k,
+                distances,
+                labels,
+                nullptr,
+                sel);
+    }
+}
+
 void IndexFlat::range_search(
         idx_t n,
         const float* x,
@@ -446,6 +480,17 @@ void IndexFlat1D::reset() {
     perm.clear();
 }
 
+void IndexFlat1D::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexFlat1D::search(
         idx_t n,
         const float* x,
@@ -668,6 +713,17 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
     pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+}
+
+void IndexFlatPanorama::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search_ex(n, x, numeric_type, k, distances, labels, params);
 }
 
 void IndexFlatPanorama::search(

@@ -30,7 +30,10 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest
+        # Miniforge3 26.9.4-0 fails `conda init` on Windows runners ("needs
+        # sudo" for Scripts\conda.exe). Keep the Windows pin in sync with the
+        # windows-x86_64-DD-cmake job in workflows/build-pull-request.yml.
+        miniforge-version: ${{ runner.os == 'Windows' && '24.11.2-1' || 'latest' }}
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
@@ -100,7 +103,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            -c pytorch -c rapidsai -c conda-forge -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -110,7 +113,7 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c conda-forge -c nvidia
     - name: Check installed packages channel
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |

@@ -146,12 +146,7 @@ struct FAISS_API InterruptCallback {
 
     static void clear_instance();
 
-    /** check if:
-     * - an interrupt callback is set
-     * - the callback returns true
-     * if this is the case, then throw an exception. Should not be called
-     * from multiple threads.
-     */
+    /// Concurrent calls require a thread-safe want_interrupt().
     static void check();
 
     /// same as check() but return true if is interrupted instead of

@@ -25,7 +25,7 @@ struct Tempfilename {
     }
 
     ~Tempfilename() {
-        if (access(filename.c_str(), F_OK)) {
+        if (access(filename.c_str(), F_OK) == 0) {
             unlink(filename.c_str());
         }
     }

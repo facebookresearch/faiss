@@ -14,9 +14,18 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/extra_distances.h>
 #include <riscv_vector.h>
+
+#include <faiss/utils/simd_impl/distances_rvv_kernel.h>
 #include <vector>
 
 namespace faiss {
+
+// Clang rejects a builtin used as a function argument, so wrap the call in a
+// lambda. GCC accepts the bare name; the wrapper compiles on both.
+#define FAISS_RVV_REDUCE_OP(intrinsic)        \
+    [](auto value_, auto init_, size_t vl_) { \
+        return intrinsic(value_, init_, vl_); \
+    }
 
 template <typename Vec, typename Reduce>
 static inline float rvv_reduce(
@@ -40,7 +49,10 @@ static inline size_t rvv_argmin(const float* values, size_t n) {
         i += vl;
     }
     float min_val = rvv_reduce(
-            vmin, vlmax, __builtin_inff(), __riscv_vfredmin_vs_f32m8_f32m1);
+            vmin,
+            vlmax,
+            __builtin_inff(),
+            FAISS_RVV_REDUCE_OP(__riscv_vfredmin_vs_f32m8_f32m1));
     i = 0;
     while (i < n) {
         size_t vl = __riscv_vsetvl_e32m8(n - i);
@@ -185,7 +197,11 @@ float fvec_norm_L2sqr<SIMDLevel::RISCV_RVV>(const float* x, size_t d) {
         acc = __riscv_vfmacc_vv_f32m8_tu(acc, vx, vx, vl);
         i += vl;
     }
-    return rvv_reduce(acc, vlmax, 0.0f, __riscv_vfredusum_vs_f32m8_f32m1);
+    return rvv_reduce(
+            acc,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m8_f32m1));
 }
 
 template <>
@@ -193,18 +209,7 @@ float fvec_L2sqr<SIMDLevel::RISCV_RVV>(
         const float* x,
         const float* y,
         size_t d) {
-    size_t vlmax = __riscv_vsetvlmax_e32m8();
-    vfloat32m8_t acc = __riscv_vfmv_v_f_f32m8(0.0f, vlmax);
-    size_t i = 0;
-    while (i < d) {
-        size_t vl = __riscv_vsetvl_e32m8(d - i);
-        vfloat32m8_t vx = __riscv_vle32_v_f32m8(x + i, vl);
-        vfloat32m8_t vy = __riscv_vle32_v_f32m8(y + i, vl);
-        vx = __riscv_vfsub_vv_f32m8(vx, vy, vl);
-        acc = __riscv_vfmacc_vv_f32m8_tu(acc, vx, vx, vl);
-        i += vl;
-    }
-    return rvv_reduce(acc, vlmax, 0.0f, __riscv_vfredusum_vs_f32m8_f32m1);
+    return rvv_kernel::l2_sqr(x, y, d);
 }
 
 template <>
@@ -212,17 +217,7 @@ float fvec_inner_product<SIMDLevel::RISCV_RVV>(
         const float* x,
         const float* y,
         size_t d) {
-    size_t vlmax = __riscv_vsetvlmax_e32m8();
-    vfloat32m8_t acc = __riscv_vfmv_v_f_f32m8(0.0f, vlmax);
-    size_t i = 0;
-    while (i < d) {
-        size_t vl = __riscv_vsetvl_e32m8(d - i);
-        vfloat32m8_t vx = __riscv_vle32_v_f32m8(x + i, vl);
-        vfloat32m8_t vy = __riscv_vle32_v_f32m8(y + i, vl);
-        acc = __riscv_vfmacc_vv_f32m8_tu(acc, vx, vy, vl);
-        i += vl;
-    }
-    return rvv_reduce(acc, vlmax, 0.0f, __riscv_vfredusum_vs_f32m8_f32m1);
+    return rvv_kernel::inner_product(x, y, d);
 }
 
 template <>
@@ -239,7 +234,11 @@ float fvec_L1<SIMDLevel::RISCV_RVV>(const float* x, const float* y, size_t d) {
         acc = __riscv_vfadd_vv_f32m8_tu(acc, acc, vx, vl);
         i += vl;
     }
-    return rvv_reduce(acc, vlmax, 0.0f, __riscv_vfredusum_vs_f32m8_f32m1);
+    return rvv_reduce(
+            acc,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m8_f32m1));
 }
 
 template <>
@@ -259,7 +258,11 @@ float fvec_Linf<SIMDLevel::RISCV_RVV>(
         vmax = __riscv_vfmax_vv_f32m8_tu(vmax, vmax, vx, vl);
         i += vl;
     }
-    return rvv_reduce(vmax, vlmax, 0.0f, __riscv_vfredmax_vs_f32m8_f32m1);
+    return rvv_reduce(
+            vmax,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredmax_vs_f32m8_f32m1));
 }
 
 template <>
@@ -293,10 +296,26 @@ void fvec_inner_product_batch_4<SIMDLevel::RISCV_RVV>(
         vacc3 = __riscv_vfmacc_vv_f32m4_tu(vacc3, vx, vy, vl);
         i += vl;
     }
-    dis0 = rvv_reduce(vacc0, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
-    dis1 = rvv_reduce(vacc1, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
-    dis2 = rvv_reduce(vacc2, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
-    dis3 = rvv_reduce(vacc3, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
+    dis0 = rvv_reduce(
+            vacc0,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
+    dis1 = rvv_reduce(
+            vacc1,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
+    dis2 = rvv_reduce(
+            vacc2,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
+    dis3 = rvv_reduce(
+            vacc3,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
 }
 
 template <>
@@ -334,10 +353,26 @@ void fvec_L2sqr_batch_4<SIMDLevel::RISCV_RVV>(
         vacc3 = __riscv_vfmacc_vv_f32m4_tu(vacc3, vy, vy, vl);
         i += vl;
     }
-    dis0 = rvv_reduce(vacc0, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
-    dis1 = rvv_reduce(vacc1, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
-    dis2 = rvv_reduce(vacc2, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
-    dis3 = rvv_reduce(vacc3, vlmax, 0.0f, __riscv_vfredusum_vs_f32m4_f32m1);
+    dis0 = rvv_reduce(
+            vacc0,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
+    dis1 = rvv_reduce(
+            vacc1,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
+    dis2 = rvv_reduce(
+            vacc2,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
+    dis3 = rvv_reduce(
+            vacc3,
+            vlmax,
+            0.0f,
+            FAISS_RVV_REDUCE_OP(__riscv_vfredusum_vs_f32m4_f32m1));
 }
 
 template <>

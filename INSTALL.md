@@ -57,7 +57,7 @@ $ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 $ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.15.1
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 13.2)
-conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=13.2'
+conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=13.2'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -90,7 +90,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=26.06
+  - libcuvs=26.10
 - for the python bindings:
   - python 3,
   - numpy,
@@ -101,13 +101,13 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 ### Building with NVIDIA cuVS
 
-[cuVS](https://docs.rapids.ai/api/cuvs/nightly/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building Faiss with cuVS enabled allows a user to choose between regular GPU implementations in Faiss and cuVS implementations for specific algorithms.
+[cuVS](https://docs.rapids.ai/api/cuvs/stable/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building Faiss with cuVS enabled allows a user to choose between regular GPU implementations in Faiss and cuVS implementations for specific algorithms.
 
 The libcuvs dependency should be installed via conda:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.06 'cuda-version=13.2'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.10 'cuda-version=13.2'
 ```
-For more ways to install cuVS 26.06, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+For more ways to install cuVS 26.10, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
 ### Building with Intel(R) SVS
 

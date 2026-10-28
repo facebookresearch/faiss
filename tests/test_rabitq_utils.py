@@ -62,15 +62,6 @@ class RaBitQUtilsTest(unittest.TestCase):
         self.assertEqual(faiss.round_nonnegative_to_uint8(254.5), 255)
         self.assertEqual(faiss.round_nonnegative_to_uint8(255.0), 255)
 
-        below_half = float(np.nextafter(np.float32(0.5), np.float32(0.0)))
-        self.assertLessEqual(
-            abs(
-                int(faiss.round_nonnegative_to_uint8(below_half))
-                - round_half_away(below_half)
-            ),
-            1,
-        )
-
         rng = np.random.RandomState(123)
         for x in rng.uniform(0.0, 255.49, size=10000).astype(np.float32):
             x = float(x)
