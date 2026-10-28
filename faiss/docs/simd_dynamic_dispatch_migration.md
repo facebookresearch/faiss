@@ -137,13 +137,11 @@ void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
 
 ### Step 2: Split into per-SIMD translation units
 
-Move SIMD specializations into per-ISA `.cpp` files, each guarded by
-`#ifdef COMPILE_SIMD_*`. The original file retains only the `NONE` (scalar)
-specialization and the dispatch wrapper.
+Move SIMD specializations into per-ISA `.cpp` files. The original file
+retains only the `NONE` (scalar) specialization and the dispatch wrapper.
 
 ```cpp
-// functions_avx2.cpp — compiled with -mavx2
-#ifdef COMPILE_SIMD_AVX2
+// functions_avx2.cpp — compiled with -mavx2, only in builds with AVX2
 #include "functions.h"
 #include <immintrin.h>
 
@@ -152,7 +150,6 @@ void fvec_madd<SIMDLevel::AVX2>(
         size_t n, const float* a, float bf, const float* b, float* c) {
     // AVX2 intrinsics implementation
 }
-#endif
 ```
 
 ```cpp
@@ -180,15 +177,16 @@ void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
 
 **Key rules for per-SIMD TUs:**
 
-- Guard the entire file with `#ifdef COMPILE_SIMD_AVX2` (not `#ifdef __AVX2__`).
-  `COMPILE_SIMD_*` is a build-system define — a **link-time promise** that the
+- Do not guard the file. Register it in `FAISS_SIMD_AVX2_SRC` in
+  `CMakeLists.txt` and in `SIMD_FILES` in `xplat.bzl` (Step 4). The build
+  compiles it only with the AVX2 flags, and only in builds that define
+  `COMPILE_SIMD_AVX2`.
+- `COMPILE_SIMD_*` is a build-system define — a **link-time promise** that the
   specialization will be available when linking. `__AVX2__` is a compiler
   define that says intrinsics are available in this TU. Both are true for SIMD
   TUs, but only `COMPILE_SIMD_*` is true for common TUs in DD mode. This is
   what allows the common TU to reference `fvec_madd<SIMDLevel::AVX2>` without
   defining it — `COMPILE_SIMD_AVX2` promises the linker will find it.
-- Include the ISA-specific intrinsic headers (`<immintrin.h>`,
-  `<arm_neon.h>`, `<arm_sve.h>`) inside the guard.
 - Never pass SIMD data types (`__m256`, `float32x4_t`) across TU boundaries.
   The public interface uses plain `float*`, `uint8_t*`, etc.
 
@@ -414,6 +412,84 @@ void my_kernel(...) {
 ```
 
 
+## SIMD guard rules
+
+Two kinds of macros select SIMD code, and `utils/simd_levels.h` combines them:
+
+| Macro | Defined by | Meaning | Defined in |
+|---|---|---|---|
+| `COMPILE_SIMD_<L>` (`COMPILE_SIMD_AVX2`, `COMPILE_SIMD_ARM_NEON`, ...) | Faiss build files | The library contains code for level L. | Every file of the `faiss` target. Not in code outside Faiss. |
+| `__AVX2__`, `__AVX512F__`, `__F16C__`, `__aarch64__`, `__ARM_FEATURE_SVE`, ... | The compiler | The current file can use these instructions. | Only files with the matching flags. |
+| `FAISS_SIMD_TU(L)` | `utils/simd_levels.h` | Both of the above are true. | Any file that includes `simd_levels.h`. |
+
+Example: an x86 DD build that includes AVX512.
+
+| File | `COMPILE_SIMD_AVX512` | `__AVX512F__` | `FAISS_SIMD_TU(AVX512)` |
+|---|---|---|---|
+| `utils/distances.cpp` (common file, baseline flags) | defined | not defined | 0 |
+| `utils/simd_impl/distances_avx512.cpp` (per-level file) | defined | defined | 1 |
+| A program outside Faiss | not defined | not defined | 0 |
+
+Rules:
+
+1. **Per-level code** lives in a per-level `.cpp` file (`*_avx512.cpp`,
+   `*-neon.cpp`), or in a header that only per-level files include and whose
+   name contains the level (`hamming_computer-avx2.h`). Such a header has no
+   guard. Register the `.cpp` file in `FAISS_SIMD_<L>_SRC` in `CMakeLists.txt`
+   and in `SIMD_FILES` in `xplat.bzl` (RVV files: CMake only). The `.cpp` file
+   has no whole-file guard: the build compiles it only with the flags of L, and
+   only in builds that define `COMPILE_SIMD_<L>`, so such a guard is always
+   true. The compiler flags of a level must not exceed what the runtime
+   detection checks.
+2. **Common code** uses `COMPILE_SIMD_<L>` only to declare, reference or dispatch
+   to per-level code, never around intrinsics. Declare every per-level
+   specialization in its header under `COMPILE_SIMD_<L>`. Example:
+   `fp16_kernels.h` declares `fp16_madd<SIMDLevel::AVX512>` only under
+   `COMPILE_SIMD_AVX512`. Without the guard, a build without
+   `fp16_kernels_avx512.cpp` does not link. With `__AVX512F__`, common files
+   never see the declaration, so dispatch never uses the AVX512 kernel. Only
+   the common files in `COMPILE_SIMD_FILES` in `tests/test_simd_registry.py`
+   test `COMPILE_SIMD_<L>`. Add a file there only after review.
+3. **Fallback** is the dispatch mask only. To make AVX512 machines use the AVX2
+   version, leave AVX512 out of the mask (for example
+   `AVAILABLE_SIMD_LEVELS_BASE_NO_AVX512`). Do not write forwarding
+   specializations. Common code reaches per-level code only through
+   `with_simd_level` and `with_selected_simd_levels`, not through
+   `foo<SINGLE_SIMD_LEVEL>`.
+4. **Level code in a header that common files include** uses
+   `#if FAISS_SIMD_TU(L)`, for example `#if FAISS_SIMD_TU(AVX512)` in
+   `kernels_simd512.h`. Raw compiler macros for SIMD features are allowed only in
+   the headers listed in `tests/test_simd_registry.py`. Example: `fp16.h` uses
+   `__F16C__`, so an AVX2 file (`-mf16c`) gets F16C instructions and a common
+   file gets plain C.
+5. **Linkage.** The linker keeps one copy of an inline or template function. If
+   files with different flags compile different code under one name, a baseline
+   caller can run AVX2 or AVX-512 instructions. A function whose code differs
+   between files therefore has internal linkage (`static inline` or an anonymous
+   namespace), or a `SIMDLevel` template parameter that only files of that level
+   instantiate. This also applies to every external-linkage function that inlines
+   such code. These functions do not follow this rule yet:
+   - The `SIMDLevel::NONE` scalar quantizers that per-level files instantiate
+     (`QuantizerFP16`, `QuantizerBF16`, `Quantizer8bitDirect`,
+     `QuantizerLloydMax`, `QuantizerTurboQuantFull`), with the `fp16.h` and
+     `bf16.h` helpers that they inline.
+   - The inline virtual defaults of `DistanceComputer`,
+     `FlatCodesDistanceComputer`, `SQDistanceComputer`,
+     `IVFCoarseDistanceScanner` and `SIMDResultHandlerToFloat`.
+   - `HeapWithBucketsForHamming32::bs_addn`.
+   - `PQCodeDistanceScalar8<AVX2>` and `<AVX512>`, which
+     `pq_code_distance-generic.cpp` instantiates.
+6. **Architecture code** that is not a SIMD level (prefetch, CPU detection) uses
+   `__x86_64__`/`_M_X64` or `__aarch64__`. Keep a branch only if its code is
+   different from the other branches.
+7. **A higher level needs its whole fallback chain** in the same build:
+   AVX512_SPR → AVX512_VPOPCNT → AVX512 → AVX2, and ARM_SVE → ARM_NEON. The build
+   files do this. Users only select `FAISS_OPT_LEVEL` or the Buck dynamic
+   dispatch setting.
+
+`tests/test_simd_registry.py` checks rules 1, 2 and 4, and that CMake and Buck
+list the same per-level files.
+
 ## Key Principles
 
 1. **Static dispatch is zero-overhead.** In static mode, `with_simd_level`
@@ -424,8 +500,8 @@ void my_kernel(...) {
 
 3. **`COMPILE_SIMD_*` over compiler macros.** Use `COMPILE_SIMD_AVX2` (build
    system control) instead of `__AVX2__` (compiler feature detection) for
-   dispatch guards. Lower-level headers like `simdlib.h` still use compiler
-   macros for intrinsic type selection.
+   dispatch guards, and `FAISS_SIMD_TU(L)` for level code in shared headers.
+   See [SIMD guard rules](#simd-guard-rules).
 
 4. **Dispatch once, outside the loop.** Call `with_simd_level` at the
    factory/constructor boundary. The constructed object carries its
@@ -442,7 +518,8 @@ void my_kernel(...) {
    in `utils/simd_levels.h`.
 
 7. **Build system parity.** Every change must be reflected in both
-   CMakeLists.txt and Buck's xplat.bzl.
+   CMakeLists.txt and Buck's xplat.bzl. `tests/test_simd_registry.py` checks
+   the per-level file lists.
 
 ## Conversion approach
 

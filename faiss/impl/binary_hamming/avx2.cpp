@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #define THE_SIMD_LEVEL SIMDLevel::AVX2
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
@@ -22,5 +20,3 @@
 #include <faiss/impl/binary_hamming/IndexIVFSpectralHash_impl.h> // IWYU pragma: keep
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexPQ_impl.h>
-
-#endif // COMPILE_SIMD_AVX2

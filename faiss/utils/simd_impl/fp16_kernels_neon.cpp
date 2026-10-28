@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_ARM_NEON
-
 #include <faiss/utils/simd_impl/fp16_kernels.h>
 
 #include <arm_neon.h>
@@ -48,5 +46,3 @@ void fp16_to_fp32_kernel<SIMDLevel::ARM_NEON>(
 
 } // namespace detail
 } // namespace faiss
-
-#endif // COMPILE_SIMD_ARM_NEON

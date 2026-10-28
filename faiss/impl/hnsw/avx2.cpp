@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/impl/hnsw/MinimaxHeap.h>
 
 #include <immintrin.h>
@@ -146,5 +144,3 @@ int pop_min_tpl<CMin<float, int32_t>, SIMDLevel::AVX2>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX2

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512_SPR
-
 #include <immintrin.h>
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
@@ -534,5 +532,3 @@ struct DCTemplate<
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512_SPR
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
-
-#endif // COMPILE_SIMD_AVX512_SPR
