@@ -3,6 +3,7 @@
   <compounddef id="MetalCloner_8h" kind="file" language="C++">
     <compoundname>MetalCloner.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includes refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includes>
     <incdepgraph>
       <node id="2">
         <label>faiss/Index.h</label>
@@ -12,6 +13,16 @@
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -30,6 +41,8 @@
         <label>faiss/gpu_metal/MetalCloner.h</label>
         <link refid="MetalCloner_8h"/>
         <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="7">
@@ -123,28 +136,39 @@
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">StandardMetalResources;</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="20"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>Metal<sp/>&quot;devices&quot;<sp/>(1<sp/>if<sp/>Metal<sp/>is<sp/>available,<sp/>else<sp/>0).</highlight></codeline>
-<codeline lineno="21"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>get_num_gpus();</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="23"><highlight class="comment">///<sp/>Clone<sp/>a<sp/>CPU<sp/>index<sp/>to<sp/>Metal<sp/>GPU.<sp/>Supports<sp/>IndexFlat,<sp/>IndexFlatL2,</highlight></codeline>
-<codeline lineno="24"><highlight class="comment">///<sp/>IndexFlatIP.<sp/>device<sp/>must<sp/>be<sp/>0.<sp/>Caller<sp/>owns<sp/>the<sp/>returned<sp/>index.</highlight></codeline>
-<codeline lineno="25"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_cpu_to_metal_gpu(</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>StandardMetalResources*<sp/>res,</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="30"><highlight class="comment">///<sp/>Copy<sp/>a<sp/>Metal<sp/>index<sp/>back<sp/>to<sp/>CPU.<sp/>Supports<sp/>MetalIndexFlat<sp/>-&gt;<sp/>IndexFlat.</highlight></codeline>
-<codeline lineno="31"><highlight class="comment">///<sp/>Caller<sp/>owns<sp/>the<sp/>returned<sp/>index.</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_metal_gpu_to_cpu(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexBinary.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu_metal<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">StandardMetalResources;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>Metal<sp/>&quot;devices&quot;<sp/>(1<sp/>if<sp/>Metal<sp/>is<sp/>available,<sp/>else<sp/>0).</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>get_num_gpus();</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="24"><highlight class="comment">///<sp/>Clone<sp/>a<sp/>CPU<sp/>index<sp/>to<sp/>Metal<sp/>GPU.<sp/>Supports<sp/>IndexFlat,<sp/>IndexFlatL2,</highlight></codeline>
+<codeline lineno="25"><highlight class="comment">///<sp/>IndexFlatIP.<sp/>device<sp/>must<sp/>be<sp/>0.<sp/>Caller<sp/>owns<sp/>the<sp/>returned<sp/>index.</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_cpu_to_metal_gpu(</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>StandardMetalResources*<sp/>res,</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment">///<sp/>Copy<sp/>a<sp/>Metal<sp/>index<sp/>back<sp/>to<sp/>CPU.<sp/>Supports<sp/>MetalIndexFlat<sp/>-&gt;<sp/>IndexFlat.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>Caller<sp/>owns<sp/>the<sp/>returned<sp/>index.</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_metal_gpu_to_cpu(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment">///<sp/>Clone<sp/>IndexBinaryFlat<sp/>to<sp/>Metal.<sp/>device<sp/>must<sp/>be<sp/>0;<sp/>caller<sp/>owns<sp/>the<sp/>result.</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref>*<sp/>index_binary_cpu_to_metal_gpu(</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>StandardMetalResources*<sp/>res,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="41"><highlight class="comment">///<sp/>Clone<sp/>MetalIndexBinaryFlat<sp/>to<sp/>CPU.<sp/>Caller<sp/>owns<sp/>the<sp/>returned<sp/>index.</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref>*<sp/>index_binary_metal_gpu_to_cpu(</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu_metal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu_metal/MetalCloner.h"/>
   </compounddef>

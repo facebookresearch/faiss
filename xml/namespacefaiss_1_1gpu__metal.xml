@@ -3,6 +3,7 @@
   <compounddef id="namespacefaiss_1_1gpu__metal" kind="namespace" language="C++">
     <compoundname>faiss::gpu_metal</compoundname>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndex" prot="public">faiss::gpu_metal::MetalIndex</innerclass>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexBinaryFlat" prot="public">faiss::gpu_metal::MetalIndexBinaryFlat</innerclass>
     <innerclass refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" prot="public">faiss::gpu_metal::MetalIndexConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexFlat" prot="public">faiss::gpu_metal::MetalIndexFlat</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexIVFFlat" prot="public">faiss::gpu_metal::MetalIndexIVFFlat</innerclass>
@@ -132,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalCloner.h" line="21" column="5" declfile="faiss/gpu_metal/MetalCloner.h" declline="21" declcolumn="5"/>
+        <location file="faiss/gpu_metal/MetalCloner.h" line="22" column="5" declfile="faiss/gpu_metal/MetalCloner.h" declline="22" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="MetalCloner_8h_1a9e959820115fb7a0135d6de4d35e03e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -159,7 +160,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalCloner.h" line="25" column="14" declfile="faiss/gpu_metal/MetalCloner.h" declline="25" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalCloner.h" line="26" column="14" declfile="faiss/gpu_metal/MetalCloner.h" declline="26" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="MetalCloner_8h_1aa2ae418db7667b7884cd570acf3c1f55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -178,7 +179,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalCloner.h" line="32" column="14" declfile="faiss/gpu_metal/MetalCloner.h" declline="32" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalCloner.h" line="33" column="14" declfile="faiss/gpu_metal/MetalCloner.h" declline="33" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalCloner_8h_1a4521aa286c6c9c28815fe46d87c24e8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary * faiss::gpu_metal::index_binary_cpu_to_metal_gpu</definition>
+        <argsstring>(StandardMetalResources *res, int device, const faiss::IndexBinary *index)</argsstring>
+        <name>index_binary_cpu_to_metal_gpu</name>
+        <qualifiedname>faiss::gpu_metal::index_binary_cpu_to_metal_gpu</qualifiedname>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu__metal_1_1StandardMetalResources" kindref="compound">StandardMetalResources</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Clone <ref refid="structfaiss_1_1IndexBinaryFlat" kindref="compound">IndexBinaryFlat</ref> to Metal. device must be 0; caller owns the result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalCloner.h" line="36" column="20" declfile="faiss/gpu_metal/MetalCloner.h" declline="36" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalCloner_8h_1aeb7d309fdff4a26bddf181a22153fb93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary * faiss::gpu_metal::index_binary_metal_gpu_to_cpu</definition>
+        <argsstring>(const faiss::IndexBinary *index)</argsstring>
+        <name>index_binary_metal_gpu_to_cpu</name>
+        <qualifiedname>faiss::gpu_metal::index_binary_metal_gpu_to_cpu</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Clone <ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexBinaryFlat" kindref="compound">MetalIndexBinaryFlat</ref> to CPU. Caller owns the returned index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalCloner.h" line="42" column="20" declfile="faiss/gpu_metal/MetalCloner.h" declline="42" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="MetalDistance_8h_1a62800263a493c3059746bb291a995e6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -859,7 +906,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="201" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="201" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="214" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="214" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="MetalPythonBridge_8h_1a0dcb213f19d10870207c1f259ebb5c04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -873,7 +920,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="31" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="31" declcolumn="6"/>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="32" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="32" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="MetalPythonBridge_8h_1addd75c1cf92de4bfefb77ede9137511a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -887,7 +934,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="32" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="32" declcolumn="6"/>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="33" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="33" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="MetalPythonBridge_8h_1a030a7dcbba3215ee1edea6f00f58355e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -901,7 +948,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="33" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="33" declcolumn="6"/>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="34" column="6" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="34" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="MetalPythonBridge_8h_1a1232682240f2c4321066d3486be3c36a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -928,7 +975,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="36" column="14" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="36" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="37" column="14" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="37" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="MetalPythonBridge_8h_1a02c8f2b9abab340872fe77061da05a44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -947,7 +994,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="42" column="14" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="42" declcolumn="14"/>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="43" column="14" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="43" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1ae70c5c0405aa1dca78863a08baf50ef9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary * faiss::gpu_metal::index_binary_cpu_to_gpu</definition>
+        <argsstring>(StandardMetalResourcesHolder *res, int device, const faiss::IndexBinary *index)</argsstring>
+        <name>index_binary_cpu_to_gpu</name>
+        <qualifiedname>faiss::gpu_metal::index_binary_cpu_to_gpu</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1gpu__metal_1_1StandardMetalResourcesHolder" kindref="compound">StandardMetalResourcesHolder</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Clone CPU <ref refid="structfaiss_1_1IndexBinaryFlat" kindref="compound">IndexBinaryFlat</ref> to Metal. Caller owns the returned index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="46" column="20" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="46" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalPythonBridge_8h_1a7ac3bd057f98213a7fd3ebbf70be90ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary * faiss::gpu_metal::index_binary_gpu_to_cpu</definition>
+        <argsstring>(const faiss::IndexBinary *index)</argsstring>
+        <name>index_binary_gpu_to_cpu</name>
+        <qualifiedname>faiss::gpu_metal::index_binary_gpu_to_cpu</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Clone <ref refid="classfaiss_1_1gpu__metal_1_1MetalIndexBinaryFlat" kindref="compound">MetalIndexBinaryFlat</ref> back to CPU. Caller owns the returned index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalPythonBridge.h" line="52" column="20" declfile="faiss/gpu_metal/MetalPythonBridge.h" declline="52" declcolumn="20"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

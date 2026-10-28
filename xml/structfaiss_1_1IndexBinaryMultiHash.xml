@@ -774,6 +774,7 @@
         <name>reconstruct</name>
         <qualifiedname>faiss::IndexBinary::reconstruct</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9d65d48c6bb7a65da2cf1489efa364cc">reconstruct</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu__metal_1_1MetalIndexBinaryFlat_1a915379df10a867502f0c2d9ac8b9b447">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1a65c83fa2f2740fc17089e63dc7b70076">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1ad233d3fcf4e001849301c0fbeb675f81">reconstruct</reimplementedby>

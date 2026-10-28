@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="192" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="192" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="205" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="205" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1afe03814888d1625b311a7b35adabd937" prot="private" static="no" mutable="no">
         <type>id&lt; MTLLibrary &gt;</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="193" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="193" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="206" column="8" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="206" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d4223225f89427bb6b4932f65fd62ba" prot="private" static="no" mutable="no">
         <type>std::unordered_map&lt; std::string, id&lt; MTLComputePipelineState &gt; &gt;</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="194" column="24" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="194" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="207" column="24" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="207" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-static-attrib">
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="196" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="196" bodyend="197"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="209" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="209" bodyend="210"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1ae1c610902f2da67a4ff97da3931752f1" prot="private" static="yes" constexpr="yes" mutable="no">
         <type>constexpr int</type>
@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="198" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="198" bodyend="-1"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="211" column="26" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="211" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -820,6 +820,56 @@
         </inbodydescription>
         <location file="faiss/gpu_metal/MetalKernels.h" line="174" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1a6dfb3172bcf64b4f4654a555bec35938" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu_metal::MetalKernels::encodeHammingDistanceTopK</definition>
+        <argsstring>(id&lt; MTLComputeCommandEncoder &gt; enc, id&lt; MTLBuffer &gt; queries, id&lt; MTLBuffer &gt; database, id&lt; MTLBuffer &gt; outDist, id&lt; MTLBuffer &gt; outIdx, uint32_t nq, uint32_t nb, uint32_t codeSize, uint32_t k)</argsstring>
+        <name>encodeHammingDistanceTopK</name>
+        <qualifiedname>faiss::gpu_metal::MetalKernels::encodeHammingDistanceTopK</qualifiedname>
+        <param>
+          <type>id&lt; MTLComputeCommandEncoder &gt;</type>
+          <declname>enc</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>database</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outDist</declname>
+        </param>
+        <param>
+          <type>id&lt; MTLBuffer &gt;</type>
+          <declname>outIdx</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>codeSize</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>k</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="189" column="10"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
       <memberdef kind="function" id="classfaiss_1_1gpu__metal_1_1MetalKernels_1ab959e9ffd4412c0af1d30f0982f27604" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -838,7 +888,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="187" column="16"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="200" column="16"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -858,19 +908,20 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu_metal/MetalKernels.h" line="190" column="8"/>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="203" column="8"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu_metal/MetalKernels.h" line="24" column="1" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="24" bodyend="199"/>
+    <location file="faiss/gpu_metal/MetalKernels.h" line="24" column="1" bodyfile="faiss/gpu_metal/MetalKernels.h" bodystart="24" bodyend="212"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d4223225f89427bb6b4932f65fd62ba" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>cache_</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a1ef58ac57d802c7b382846f66a72504a" prot="private" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>device_</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1abfec97ecc8723370f86f1ffa86074c22" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeComputeNorms</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a8d3f6787e5803af03698271880abba9c" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeDistanceMatrix</name></member>
+      <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a6dfb3172bcf64b4f4654a555bec35938" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeHammingDistanceTopK</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a795419baef42c0a13c330199c7d713b5" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeIVFMergeLists</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1a0da8449383ade8a2810dbfbbbd2c3f28" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeIVFMergeListsGrouped</name></member>
       <member refid="classfaiss_1_1gpu__metal_1_1MetalKernels_1af69be564b3de3cc3f66fef695180d850" prot="public" virt="non-virtual"><scope>faiss::gpu_metal::MetalKernels</scope><name>encodeIVFPQBuildLookupTables</name></member>

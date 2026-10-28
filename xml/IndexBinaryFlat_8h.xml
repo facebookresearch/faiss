@@ -9,6 +9,7 @@
     <includedby refid="IndexBinaryHNSW_8h" local="no">faiss/IndexBinaryHNSW.h</includedby>
     <includedby refid="IndexBinaryHash_8h" local="no">faiss/IndexBinaryHash.h</includedby>
     <includedby refid="GpuIndexBinaryFlat_8h" local="no">faiss/gpu/GpuIndexBinaryFlat.h</includedby>
+    <includedby refid="MetalIndexBinaryFlat_8h" local="no">faiss/gpu_metal/MetalIndexBinaryFlat.h</includedby>
     <includedby refid="IndexBinaryHNSW__impl_8h" local="no">faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h</includedby>
     <includedby refid="IndexBinaryHash__impl_8h" local="no">faiss/impl/binary_hamming/IndexBinaryHash_impl.h</includedby>
     <incdepgraph>
@@ -259,6 +260,8 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
       </node>
@@ -283,6 +286,10 @@
         <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
       <node id="7">
+        <label>faiss/gpu_metal/MetalIndexBinaryFlat.h</label>
+        <link refid="MetalIndexBinaryFlat_8h_source"/>
+      </node>
+      <node id="8">
         <label>faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h</label>
         <link refid="IndexBinaryHNSW__impl_8h_source"/>
       </node>

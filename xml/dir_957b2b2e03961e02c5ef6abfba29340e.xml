@@ -8,6 +8,7 @@
     <innerfile refid="MetalDistance_8h">MetalDistance.h</innerfile>
     <innerfile refid="MetalFlatKernels_8h">MetalFlatKernels.h</innerfile>
     <innerfile refid="MetalIndex_8h">MetalIndex.h</innerfile>
+    <innerfile refid="MetalIndexBinaryFlat_8h">MetalIndexBinaryFlat.h</innerfile>
     <innerfile refid="MetalIndexFlat_8h">MetalIndexFlat.h</innerfile>
     <innerfile refid="MetalIndexIVFFlat_8h">MetalIndexIVFFlat.h</innerfile>
     <innerfile refid="MetalIndexIVFPQ_8h">MetalIndexIVFPQ.h</innerfile>

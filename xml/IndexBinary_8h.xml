@@ -15,6 +15,8 @@
     <includedby refid="IndexShards_8h" local="no">faiss/IndexShards.h</includedby>
     <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
     <includedby refid="GpuIndexBinaryCagra_8h" local="no">faiss/gpu/GpuIndexBinaryCagra.h</includedby>
+    <includedby refid="MetalCloner_8h" local="no">faiss/gpu_metal/MetalCloner.h</includedby>
+    <includedby refid="MetalPythonBridge_8h" local="no">faiss/gpu_metal/MetalPythonBridge.h</includedby>
     <includedby refid="ThreadedIndex_8h" local="no">faiss/impl/ThreadedIndex.h</includedby>
     <includedby refid="index__factory_8h" local="no">faiss/index_factory.h</includedby>
     <incdepgraph>
@@ -128,10 +130,10 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -141,25 +143,29 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -173,10 +179,12 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/IndexBinaryFromFloat.h</label>
         <link refid="IndexBinaryFromFloat_8h_source"/>
       </node>
@@ -192,41 +200,41 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss/IndexIDMap.h</label>
         <link refid="IndexIDMap_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss/IndexReplicas.h</label>
         <link refid="IndexReplicas_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>faiss/IndexShards.h</label>
-        <link refid="IndexShards_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="21">
+        <label>faiss/IndexShards.h</label>
+        <link refid="IndexShards_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss/MetaIndexes.h</label>
         <link refid="MetaIndexes_8h_source"/>
       </node>
@@ -234,7 +242,7 @@
         <label>faiss/gpu/GpuAutoTune.h</label>
         <link refid="GpuAutoTune_8h_source"/>
       </node>
-      <node id="22">
+      <node id="23">
         <label>faiss/gpu/GpuCloner.h</label>
         <link refid="GpuCloner_8h_source"/>
       </node>
@@ -246,19 +254,31 @@
         <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
         <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
       </node>
-      <node id="23">
-        <label>faiss/impl/ThreadedIndex.h</label>
-        <link refid="ThreadedIndex_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
+      <node id="24">
+        <label>faiss/gpu_metal/MetalCloner.h</label>
+        <link refid="MetalCloner_8h_source"/>
       </node>
       <node id="10">
+        <label>faiss/gpu_metal/MetalIndexBinaryFlat.h</label>
+        <link refid="MetalIndexBinaryFlat_8h_source"/>
+      </node>
+      <node id="25">
+        <label>faiss/gpu_metal/MetalPythonBridge.h</label>
+        <link refid="MetalPythonBridge_8h_source"/>
+      </node>
+      <node id="26">
+        <label>faiss/impl/ThreadedIndex.h</label>
+        <link refid="ThreadedIndex_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h</label>
         <link refid="IndexBinaryHNSW__impl_8h_source"/>
       </node>
@@ -266,15 +286,15 @@
         <label>faiss/impl/binary_hamming/IndexBinaryHash_impl.h</label>
         <link refid="IndexBinaryHash__impl_8h_source"/>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/impl/binary_hamming/IndexBinaryIVF_impl.h</label>
         <link refid="IndexBinaryIVF__impl_8h_source"/>
       </node>
-      <node id="24">
+      <node id="27">
         <label>faiss/index_factory.h</label>
         <link refid="index__factory_8h_source"/>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
