@@ -5,15 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/*
- * RaBitQ kernels that a static build does not compile, against the scalar
- * reference.
- *
- * A static x86 build holds AVX2 kernels only, so the AVX512 and
- * AVX512_VPOPCNT specializations exist in a dynamic dispatch build alone.
- * test_rabitq_simd.cpp builds in both modes and cannot reference them, so
- * they are tested here instead. The target is dynamic dispatch only.
- */
+// AVX512 and AVX512_VPOPCNT RaBitQ kernels against the scalar reference.
+// Only a dynamic dispatch build compiles these specializations.
 
 #include <gtest/gtest.h>
 
