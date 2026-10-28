@@ -435,7 +435,14 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 (uint32_t)0);
     }
 
-    // Update the pointers and the sizes
+    raft::update_device(
+            cuvs_index->list_sizes().data_handle(),
+            list_sizes_.data(),
+            nlist,
+            raft_handle.get_stream());
+
+    // Recompute accumulated list sizes after uploading the actual sizes.
+    // cuVS uses them to size the search workspace for large k.
     cuvs::neighbors::ivf_flat::helpers::recompute_internal_state(
             raft_handle, cuvs_index.get());
 
@@ -445,12 +452,6 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 i, ivf->get_codes(i), ivf->get_ids(i), listSize);
     }
 
-    raft::update_device(
-            cuvs_index->list_sizes().data_handle(),
-            list_sizes_.data(),
-            nlist,
-            raft_handle.get_stream());
-
     // Precompute the centers vector norms for L2Expanded distance
     if (this->metric_ == faiss::METRIC_L2) {
         cuvs_index->allocate_center_norms(raft_handle);
@@ -459,7 +460,7 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 cuvs_index->centers().data_handle(),
                 cuvs_index->dim(),
                 (uint32_t)nlist,
-                raft_handle.get_stream());
+                raft_handle.get_stream().get());
     }
 }
 

@@ -78,10 +78,6 @@ class TestComputeGT(unittest.TestCase):
     def test_compute_GT_L2_FP16(self):
         self.do_compute_GT(faiss.METRIC_L2, faiss.Float16)
 
-    @unittest.skip(
-        "GPU CAGRA inner-product + FP16 search deadlocks on CUDA 12.9; "
-        "root cause TBD."
-    )
     def test_compute_GT_IP_FP16(self):
         self.do_compute_GT(faiss.METRIC_INNER_PRODUCT, faiss.Float16)
 
@@ -229,10 +225,6 @@ class TestIDMapCagra(unittest.TestCase):
     def test_IDMapCagra_L2(self):
         self.do_IDMapCagra(faiss.METRIC_L2, faiss.Float32)
 
-    @unittest.skip(
-        "GPU CAGRA inner-product search via IndexIDMap hangs during process "
-        "teardown on cuVS 26.06; root cause TBD."
-    )
     def test_IDMapCagra_IP(self):
         self.do_IDMapCagra(faiss.METRIC_INNER_PRODUCT, faiss.Float32)
 

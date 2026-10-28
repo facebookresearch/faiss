@@ -140,6 +140,7 @@ set(FAISS_SRC
   IndexAdditiveQuantizerFastScan.cpp
   IndexIVFIndependentQuantizer.cpp
   IndexPQFastScan.cpp
+  IndexPiPNN.cpp
   IndexPreTransform.cpp
   IndexRaBitQ.cpp
   IndexRaBitQFastScan.cpp
@@ -171,6 +172,7 @@ set(FAISS_SRC
   impl/hnsw/MinimaxHeap.cpp
   impl/result_handler/ResultHandler.cpp
   impl/NSG.cpp
+  impl/PiPNN.cpp
   impl/pipnn/HashPrune.cpp
   impl/pipnn/Partition.cpp
   impl/pipnn/kernels.cpp
@@ -278,6 +280,7 @@ set(FAISS_HEADERS
   IndexFastScan.h
   IndexAdditiveQuantizerFastScan.h
   IndexPQFastScan.h
+  IndexPiPNN.h
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
@@ -327,6 +330,7 @@ set(FAISS_HEADERS
   impl/Panorama.h
   impl/PanoramaStats.h
   impl/PdxLayout.h
+  impl/PiPNN.h
   impl/PolysemousTraining.h
   impl/polysemous_training/dispatch.h
   impl/ProductQuantizer-inl.h
@@ -400,6 +404,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/popcount.h
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
@@ -440,6 +445,9 @@ set(FAISS_HEADERS
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
+  utils/simd_impl/masked_sum.h
+  utils/simd_impl/masked_sum-avx2.h
+  utils/simd_impl/masked_sum-avx512.h
   utils/simd_impl/distances_sse-inl.h
 )
 

@@ -35,6 +35,11 @@ struct PartitionParams {
     int fanout_at(int depth) const;
 };
 
+/// Each partition thread holds a c_max x c_max float matrix.
+inline constexpr int kMaxCMax = 4096;
+/// Leader indices are stored as uint16_t.
+inline constexpr int kMaxLeaderCap = 65535;
+
 struct PartitionStats {
     size_t n_leaves = 0;
     size_t n_point_instances = 0; // sum of leaf sizes
@@ -51,15 +56,17 @@ struct PartitionStats {
 /// the calling thread. `ids` is valid only during the call.
 using LeafVisitor = std::function<void(const int32_t* ids, size_t s)>;
 
-/// Randomized Ball Carving with multi-level fanout. Calls `on_leaf` exactly
-/// once per leaf and fills `*stats` (if not null). On an exception or an
-/// interrupt it rethrows with some leaves unvisited and `*stats` unchanged.
+/// Randomized Ball Carving with multi-level fanout over the sorted `ids` (all
+/// of storage if empty). Calls `on_leaf` exactly once per leaf and fills
+/// `*stats` (if not null). On an exception or an interrupt it rethrows with
+/// some leaves unvisited and `*stats` unchanged.
 void partition_and_visit(
         const Index& storage,
         const PartitionParams& p,
         uint64_t root_seed,
         const LeafVisitor& on_leaf,
-        PartitionStats* stats);
+        PartitionStats* stats,
+        const std::vector<int32_t>& ids = {});
 
 /// Deterministic hash of (a, b) for derived seeds. For a fixed a, distinct b
 /// give distinct results.

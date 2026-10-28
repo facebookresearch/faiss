@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <cstdio>
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -32,11 +31,9 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
     int nq = 100;
     int k = 10;
 
-    // generate smooth random data for training + database
     std::vector<float> xb((nb1 + nb2) * d);
     rand_smooth_vectors((nb1 + nb2), d, xb.data(), 1234);
 
-    // build the index via factory
     std::unique_ptr<IndexIVF> index(
             dynamic_cast<IndexIVF*>(index_factory(d, factory_string, metric)));
 
@@ -48,7 +45,6 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
     std::vector<float> xq(nq * d);
     rand_smooth_vectors(nq, d, xq.data(), 5678);
 
-    // search
     std::vector<float> D0(nq * k);
     std::vector<idx_t> I0(nq * k);
 
@@ -78,7 +74,6 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
     std::unique_ptr<InvertedListScanner> scanner(
             index->get_InvertedListScanner(false, nullptr, nullptr));
 
-    // for each query, find its nprobe nearest lists
     int nprobe = index->nprobe;
     std::vector<float> coarse_dis(nq * nprobe);
     std::vector<idx_t> coarse_ids(nq * nprobe);
@@ -103,7 +98,6 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
         const float* query = xq.data() + q * d;
         scanner->set_query(query);
 
-        // loop over probed lists
         for (int p = 0; p < nprobe; p++) {
             idx_t list_no = coarse_ids[q * nprobe + p];
             if (list_no < 0) {
@@ -111,7 +105,6 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
             }
             scanner->set_list(list_no, coarse_dis[q * nprobe + p]);
 
-            // scan extra codes for this list
             size_t n_extra = extra_ids[list_no].size();
             for (size_t j = 0; j < n_extra; j++) {
                 float dis = scanner->distance_to_code(
@@ -130,7 +123,6 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
             }
         }
 
-        // reorder from heap order to sorted order
         if (is_similarity) {
             minheap_reorder(k, D0q, I0q);
         } else {
@@ -161,7 +153,6 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
     }
     // accept a small amount of discrepancy, because the FastScan look-up tables
     // are quantized to int8 so not as accurate.
-    printf("total ndiff=%d / %d\n", ndiff_total, nq * k);
     EXPECT_LE(ndiff_total, nq * k / 200);
 }
 

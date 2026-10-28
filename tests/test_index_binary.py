@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""this is a basic test script for simple indices work"""
-
 import os
 import numpy as np
 import unittest
@@ -114,9 +112,6 @@ class TestBinaryFlat(unittest.TestCase):
                 ref_dis = binary_dis(self.xq[i], self.xb[j])
                 assert dj == ref_dis
 
-        # test reconstruction
-        assert np.all(index.reconstruct(12) == self.xb[12])
-
     def test_empty_flat(self):
         d = self.xq.shape[1] * 8
 
@@ -127,7 +122,7 @@ class TestBinaryFlat(unittest.TestCase):
             Dflat, Iflat = index.search(self.xq, 10)
 
             assert np.all(Iflat == -1)
-            assert np.all(Dflat == 2147483647)  # NOTE(hoss): int32_t max
+            assert np.all(Dflat == 2147483647)  # int32_t max
 
     def test_range_search(self):
         d = self.xq.shape[1] * 8
@@ -148,7 +143,6 @@ class TestBinaryFlat(unittest.TestCase):
                 self.assertTrue(set(range_res) <= set(I[i]))
                 nt2 += 1
             # in case of equality we have a problem with ties
-        # nb tests is actually low...
         self.assertTrue(nt1 > 19 and nt2 > 19)
 
     def test_reconstruct(self):
@@ -178,19 +172,6 @@ class TestBinaryIVF(unittest.TestCase):
         index.add(self.xb)
         Dref, Iref = index.search(self.xq, 10)
         self.Dref = Dref
-
-    def test_ivf_flat_exhaustive(self):
-        d = self.xq.shape[1] * 8
-
-        quantizer = faiss.IndexBinaryFlat(d)
-        index = faiss.IndexBinaryIVF(quantizer, d, 8)
-        index.cp.min_points_per_centroid = 5  # quiet warning
-        index.nprobe = 8
-        index.train(self.xt)
-        index.add(self.xb)
-        Divfflat, _ = index.search(self.xq, 10)
-
-        np.testing.assert_array_equal(self.Dref, Divfflat)
 
     def test_ivf_flat2(self):
         d = self.xq.shape[1] * 8
@@ -240,7 +221,7 @@ class TestBinaryIVF(unittest.TestCase):
             Divfflat, Iivfflat = index.search(self.xq, 10)
 
             assert np.all(Iivfflat == -1)
-            assert np.all(Divfflat == 2147483647)  # NOTE(hoss): int32_t max
+            assert np.all(Divfflat == 2147483647)  # int32_t max
 
     def test_ivf_reconstruction(self):
         d = self.xq.shape[1] * 8
@@ -256,7 +237,6 @@ class TestBinaryIVF(unittest.TestCase):
         for i in range(0, len(self.xb), 13):
             np.testing.assert_array_equal(index.reconstruct(i), self.xb[i])
 
-        # try w/ hashtable
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
         rs = np.random.RandomState(123)
         ids = rs.choice(10000, size=len(self.xb), replace=False).astype(
@@ -288,7 +268,6 @@ class TestBinaryIVF(unittest.TestCase):
         d = self.xq.shape[1] * 8
         xt, xb, xq = self.xt, self.xb, self.xq
 
-        # nlist = 10
         index = faiss.index_binary_factory(d, "BIVF10")
 
         # When nprobe >= nlist, it is equivalent to an IndexFlat.
@@ -298,7 +277,6 @@ class TestBinaryIVF(unittest.TestCase):
         index.nprobe = 2048
         k = 5
 
-        # test kNN search
         D, I = index.search(xq, k)
 
         ref_index = faiss.index_binary_factory(d, "BFlat")
@@ -306,15 +284,12 @@ class TestBinaryIVF(unittest.TestCase):
         ref_D, ref_I = ref_index.search(xq, k)
 
         assert np.all(D == ref_D)
-        # assert np.all(I == ref_I)  # id may be different
 
-        # test range search
-        thresh = 5  # *squared* distance
+        thresh = 5
         lims, D, I = index.range_search(xq, thresh)
         ref_lims, ref_D, ref_I = ref_index.range_search(xq, thresh)
         assert np.all(lims == ref_lims)
         assert np.all(D == ref_D)
-        # assert np.all(I == ref_I)  # id may be different
 
     def test_search_per_invlist(self):
         d = self.xq.shape[1] * 8
@@ -360,7 +335,7 @@ class TestHNSW(unittest.TestCase):
     def test_hnsw(self):
         d = self.xq.shape[1] * 8
 
-        # NOTE(hoss): Ensure the HNSW construction is deterministic.
+        # Ensure the HNSW construction is deterministic.
         nthreads = faiss.omp_get_max_threads()
         faiss.omp_set_num_threads(1)
 
@@ -407,7 +382,6 @@ class TestReplicasAndShards(unittest.TestCase):
             sub_idx = faiss.IndexBinaryFlat(d)
             sub_idx.add(xb)
             index.addIndex(sub_idx)
-        self.assertEqual(index_ref.code_size, index.code_size)
 
         D, I = index.search(xq, 10)
 

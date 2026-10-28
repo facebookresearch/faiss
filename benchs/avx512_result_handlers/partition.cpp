@@ -60,7 +60,6 @@ constexpr int B = 16; // AVX-512 processes 16 floats at a time
 struct KVBufferB {
     __m512 val;
     __m512i idx;
-    static constexpr uint32_t nval = B; // always full
 };
 
 struct KVPartialBuffer {
@@ -74,7 +73,7 @@ struct PartialBuffer2B {
     KVBufferB b1;
     uint32_t nval = 0; // number of values, size <= 2 * B
 
-    // Append a buffer (KVBufferB or KVPartialBuffer) to this 2B buffer
+    // Append a partial buffer to this 2B buffer
     template <typename BufferT>
     inline void append(const BufferT& partial) {
         const uint32_t partial_nval = partial.nval;

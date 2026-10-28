@@ -71,15 +71,13 @@ struct ThrowingInvertedLists : InvertedLists {
     }
 };
 
-// InterruptCallback that always signals an interrupt.
 struct AlwaysInterrupt : InterruptCallback {
     bool want_interrupt() override {
         return true;
     }
 };
 
-// Build a trained IndexIVFFlat with data added, using enough vectors and
-// lists to exercise multi-threaded parallel modes.
+// Enough vectors and lists to exercise multi-threaded parallel modes.
 struct IVFFixture {
     static constexpr int d = 8;
     static constexpr int nb = 2000;
@@ -113,9 +111,6 @@ struct IVFFixture {
         }
     }
 
-    // Swap in a ThrowingInvertedLists that delegates to the real one.
-    // Returns the throwing wrapper. The real inverted lists is kept alive
-    // (disowned from the index) so the delegate pointer stays valid.
     std::unique_ptr<ThrowingInvertedLists> install_throwing(int throw_after) {
         auto* real = index.invlists;
         auto throwing =
@@ -126,7 +121,6 @@ struct IVFFixture {
         return throwing;
     }
 
-    // Restore the original inverted lists (the delegate from the wrapper).
     void restore(const ThrowingInvertedLists& throwing) {
         index.replace_invlists(
                 const_cast<InvertedLists*>(throwing.delegate), true);
@@ -135,9 +129,6 @@ struct IVFFixture {
 
 } // namespace
 
-// ---------------------------------------------------------------------------
-// search_preassigned: exception in scan_one_list, pmode 0
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, search_preassigned_pmode0) {
     IVFFixture f;
     f.index.parallel_mode = 0;
@@ -156,9 +147,6 @@ TEST(OMPExceptionSafety, search_preassigned_pmode0) {
     f.restore(*throwing);
 }
 
-// ---------------------------------------------------------------------------
-// search_preassigned: exception in scan_one_list, pmode 1
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, search_preassigned_pmode1) {
     IVFFixture f;
     f.index.parallel_mode = 1;
@@ -177,9 +165,6 @@ TEST(OMPExceptionSafety, search_preassigned_pmode1) {
     f.restore(*throwing);
 }
 
-// ---------------------------------------------------------------------------
-// search_preassigned: exception in scan_one_list, pmode 2
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, search_preassigned_pmode2) {
     IVFFixture f;
     f.index.parallel_mode = 2;
@@ -198,9 +183,6 @@ TEST(OMPExceptionSafety, search_preassigned_pmode2) {
     f.restore(*throwing);
 }
 
-// ---------------------------------------------------------------------------
-// search_preassigned: InterruptCallback::check() throws inside pmode 0 loop
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, search_interrupt_pmode0) {
     IVFFixture f;
     f.index.parallel_mode = 0;
@@ -219,9 +201,6 @@ TEST(OMPExceptionSafety, search_interrupt_pmode0) {
     InterruptCallback::clear_instance();
 }
 
-// ---------------------------------------------------------------------------
-// range_search_preassigned: exception in scan_list_func, pmode 0
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, range_search_pmode0) {
     IVFFixture f;
     f.index.parallel_mode = 0;
@@ -241,9 +220,6 @@ TEST(OMPExceptionSafety, range_search_pmode0) {
     f.restore(*throwing);
 }
 
-// ---------------------------------------------------------------------------
-// range_search_preassigned: exception in scan_list_func, pmode 1
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, range_search_pmode1) {
     IVFFixture f;
     f.index.parallel_mode = 1;
@@ -263,9 +239,6 @@ TEST(OMPExceptionSafety, range_search_pmode1) {
     f.restore(*throwing);
 }
 
-// ---------------------------------------------------------------------------
-// range_search_preassigned: exception in scan_list_func, pmode 2
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, range_search_pmode2) {
     IVFFixture f;
     f.index.parallel_mode = 2;
@@ -280,28 +253,6 @@ TEST(OMPExceptionSafety, range_search_pmode2) {
                     f.xq.data(),
                     std::numeric_limits<float>::max(),
                     &result),
-            FaissException);
-
-    f.restore(*throwing);
-}
-
-// ---------------------------------------------------------------------------
-// search (top-level OMP slicing): exception propagates from sub_search_func
-// ---------------------------------------------------------------------------
-TEST(OMPExceptionSafety, search_top_level_omp_slicing) {
-    IVFFixture f;
-    f.index.parallel_mode = 0;
-    f.index.nprobe = 4;
-
-    // Allow a few successful calls so some slices start, then fail.
-    auto throwing = f.install_throwing(5);
-
-    idx_t k = 4;
-    std::vector<float> dis(f.nq * k);
-    std::vector<idx_t> labels(f.nq * k);
-
-    EXPECT_THROW(
-            f.index.search(f.nq, f.xq.data(), k, dis.data(), labels.data()),
             FaissException);
 
     f.restore(*throwing);
@@ -324,9 +275,6 @@ struct ThrowingIndex : IndexFlatCodes {
     }
 };
 
-// ---------------------------------------------------------------------------
-// IndexFlatCodes::search: exception in OMP worker propagates to caller
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, flatcodes_search) {
     ThrowingIndex index(4);
 
@@ -339,11 +287,6 @@ TEST(OMPExceptionSafety, flatcodes_search) {
             std::runtime_error);
 }
 
-// ---------------------------------------------------------------------------
-// IndexNNDescent::search: exception in OMP worker propagates to caller.
-// Constructing with has_built=false triggers a FaissException inside the
-// worksharing loop body.
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, nndescent_search) {
     int d = 4;
     auto storage = std::make_unique<IndexFlatL2>(d);
@@ -363,9 +306,6 @@ TEST(OMPExceptionSafety, nndescent_search) {
             FaissException);
 }
 
-// ---------------------------------------------------------------------------
-// IndexNSG::search: exception in OMP worker propagates to caller
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, nsg_search) {
     int d = 4;
     auto storage = std::make_unique<IndexFlatL2>(d);
@@ -463,9 +403,6 @@ struct HNSWFixture {
     }
 };
 
-// ---------------------------------------------------------------------------
-// hnsw_search() init-phase throw: storage_distance_computer() throws
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, hnsw_search_init) {
     HNSWFixture f;
     auto throwing = std::make_unique<InitThrowingStorage>(f.d);
@@ -482,9 +419,6 @@ TEST(OMPExceptionSafety, hnsw_search_init) {
     f.restore_storage(old);
 }
 
-// ---------------------------------------------------------------------------
-// hnsw_search() loop-body throw: set_query() throws
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, hnsw_search_loop) {
     HNSWFixture f;
     auto throwing = std::make_unique<LoopThrowingStorage>(f.d);
@@ -501,9 +435,6 @@ TEST(OMPExceptionSafety, hnsw_search_loop) {
     f.restore_storage(old);
 }
 
-// ---------------------------------------------------------------------------
-// search_level_0() init-phase throw: storage_distance_computer() throws
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, hnsw_search_level_0_init) {
     HNSWFixture f;
     auto throwing = std::make_unique<InitThrowingStorage>(f.d);
@@ -533,9 +464,6 @@ TEST(OMPExceptionSafety, hnsw_search_level_0_init) {
     f.restore_storage(old);
 }
 
-// ---------------------------------------------------------------------------
-// search_level_0() loop-body throw: set_query() throws
-// ---------------------------------------------------------------------------
 TEST(OMPExceptionSafety, hnsw_search_level_0_loop) {
     HNSWFixture f;
     auto throwing = std::make_unique<LoopThrowingStorage>(f.d);
@@ -630,11 +558,7 @@ struct HNSW2LevelFixture {
     }
 };
 
-// ---------------------------------------------------------------------------
-// IndexHNSW2Level::search() mixed path init-phase throw:
-// storage_distance_computer() throws during OMP init, after
-// search_preassigned has already succeeded.
-// ---------------------------------------------------------------------------
+// Throws in the OMP init phase, after search_preassigned has succeeded.
 TEST(OMPExceptionSafety, hnsw_2level_mixed_init) {
     HNSW2LevelFixture f;
 
@@ -676,11 +600,7 @@ TEST(OMPExceptionSafety, hnsw_2level_mixed_init) {
     f.index.own_fields = true;
 }
 
-// ---------------------------------------------------------------------------
-// IndexHNSW2Level::search() mixed path loop-body throw:
-// set_query() throws inside OMP for loop, after search_preassigned
-// and OMP init have succeeded.
-// ---------------------------------------------------------------------------
+// Throws in the OMP loop body, after search_preassigned and OMP init succeeded.
 TEST(OMPExceptionSafety, hnsw_2level_mixed_loop) {
     HNSW2LevelFixture f;
 

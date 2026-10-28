@@ -28,12 +28,14 @@
 #include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <memory>
 #include <optional>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
 
 #include <cuvs/neighbors/cagra.hpp>
+#include <raft/core/device_mdarray.hpp>
 
 namespace faiss {
 
@@ -108,7 +110,7 @@ class BinaryCuvsCagra {
     /// the index.
     /// NB: This is also required to be set to true for deserializing
     /// an IndexHNSWCagra object.
-    bool store_dataset_ = true;
+    bool searchable_index_ = true;
 
     /// Parameters to build cuVS CAGRA index
     faiss::cagra_build_algo graph_build_algo_;
@@ -117,8 +119,13 @@ class BinaryCuvsCagra {
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
+    /// Device padded copy when `storage_` is host memory (KNN-graph ctor path).
+    std::unique_ptr<cuvs::neighbors::device_padded_dataset<uint8_t, int64_t>>
+            device_padded_dataset_;
+
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
             cuvs_index{nullptr};
 };
 

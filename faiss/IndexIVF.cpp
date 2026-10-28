@@ -23,12 +23,14 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/expanded_scanners.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -57,6 +59,30 @@ Level1Quantizer::~Level1Quantizer() {
 
 namespace {
 
+void add_hnsw_quantizer_links(
+        IndexHNSW& hnsw,
+        size_t n,
+        const uint8_t* x,
+        NumericType numeric_type,
+        const Index* codec,
+        bool verbose) {
+    const size_t samples = std::min(
+            n,
+            size_t(hnsw.level_0_link_samples_per_node) * size_t(hnsw.ntotal));
+    const HNSWLevel0LinkStats stats = codec
+            ? hnsw.add_level_0_links_from_sample_encoded(samples, x, codec)
+            : hnsw.add_level_0_links_from_sample_ex(samples, x, numeric_type);
+    if (verbose) {
+        printf("HNSW quantizer level-0 links from %zd samples: %zd sinks found, "
+               "%zd remaining, %zd links added, %zd replaced\n",
+               samples,
+               stats.n_sinks_found,
+               stats.n_sinks_remaining,
+               stats.n_links_added,
+               stats.n_links_replaced);
+    }
+}
+
 /** Trains `q1` on rows encoded by `codec` or, if codec is null, stored as
  * `numeric_type`. */
 void train_q1_impl(
@@ -71,6 +97,13 @@ void train_q1_impl(
     const size_t nlist = q1.nlist;
     const ClusteringParameters& cp = q1.cp;
     Index* clustering_index = q1.clustering_index;
+
+    auto add_quantizer_links = [&]() {
+        auto* hnsw = dynamic_cast<IndexHNSW*>(quantizer);
+        if (hnsw && hnsw->level_0_link_samples_per_node > 0) {
+            add_hnsw_quantizer_links(*hnsw, n, x, numeric_type, codec, verbose);
+        }
+    };
 
     // k-means on the training rows, with `assigner` as assignment index
     auto train_clustering = [&](Clustering& clus, Index& assigner) {
@@ -144,6 +177,7 @@ void train_q1_impl(
             }
         }
         quantizer->is_trained = true;
+        add_quantizer_links();
     } else if (q1.quantizer_trains_alone == 2) {
         if (verbose) {
             printf("Training L2 quantizer on %zd vectors in %zdD%s\n",
@@ -174,6 +208,7 @@ void train_q1_impl(
             quantizer->train(nlist, clus.centroids.data());
         }
         quantizer->add(nlist, clus.centroids.data());
+        add_quantizer_links();
     }
 }
 
@@ -770,7 +805,7 @@ void IndexIVF::search_preassigned(
                     scanner->set_query(x + i * d);
                     init_result(local_dis.data(), local_idx.data());
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                     for (idx_t ik = 0; ik < cur_nprobe; ik++) {
                         try {
                             ndis += scan_one_list(
@@ -812,7 +847,7 @@ void IndexIVF::search_preassigned(
                     init_result(distances + i * k, labels + i * k);
                 }
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                 for (int64_t ij = 0; ij < n * cur_nprobe; ij++) {
                     try {
                         size_t i = ij / cur_nprobe;
@@ -1035,7 +1070,7 @@ void IndexIVF::range_search_preassigned(
 
                     RangeQueryResult& qres = pres.new_result(i);
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                     for (int64_t ik = 0; ik < cur_nprobe; ik++) {
                         try {
                             scan_list_func(i, ik, qres);
@@ -1047,7 +1082,7 @@ void IndexIVF::range_search_preassigned(
             } else if (parallel_mode == 2) {
                 RangeQueryResult* qres = nullptr;
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
                 for (idx_t iik = 0; iik < nx * (idx_t)cur_nprobe; iik++) {
                     try {
                         idx_t i = iik / (idx_t)cur_nprobe;
