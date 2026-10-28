@@ -161,6 +161,7 @@ set(FAISS_SRC
   clone_index.cpp
   index_factory.cpp
   impl/AdSampling.cpp
+  impl/SearchParameters.cpp
   impl/AuxIndexStructures.cpp
   impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
@@ -304,6 +305,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdSampling.h
   impl/AdditiveQuantizer.h
+  impl/SearchParameters.h
   impl/AuxIndexStructures.h
   impl/InvertedListScannerStats.h
   impl/VisitedTable.h

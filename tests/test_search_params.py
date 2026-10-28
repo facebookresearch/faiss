@@ -19,6 +19,175 @@ faiss.omp_set_num_threads(4)
 @for_all_simd_levels
 class TestSelector(unittest.TestCase):
 
+    def test_wrapper_selectors(self):
+        self.do_test_wrapper_selectors()
+
+    def test_wrapper_range_selectors(self):
+        self.do_test_wrapper_selectors(range_search=True)
+
+    def do_test_wrapper_selectors(self, range_search=False):
+        # Selectors at every wrapper level use the IDs returned to the caller.
+        rs = np.random.RandomState(0)
+        d, nb, nq, k = 16, 1000, 5, 10
+        xb = rs.rand(nb, d).astype("float32")
+        xq = rs.rand(nq, d).astype("float32")
+        external_ids = rs.permutation(nb).astype("int64")
+        allowed = np.arange(0, nb, 4, dtype="int64")
+        inner_allowed = np.arange(0, nb, 3, dtype="int64")
+        sel = faiss.IDSelectorBatch(allowed)
+        inner_sel = faiss.IDSelectorBatch(inner_allowed)
+
+        for wrapper in ("refine", "rflat", "pretransform", "combined",
+                        "pre_refine"):
+            for idmap in (None, faiss.IndexIDMap, faiss.IndexIDMap2):
+                for placement in ("outer", "inner", "both", "none"):
+                    with self.subTest(wrapper=wrapper, idmap=idmap,
+                                      placement=placement):
+                        base = faiss.IndexFlatL2(d)
+                        if wrapper == "refine":
+                            refine = faiss.IndexFlatL2(d)
+                            index = faiss.IndexRefine(base, refine)
+                        elif wrapper == "rflat":
+                            index = faiss.IndexRefineFlat(base)
+                        elif wrapper == "pre_refine":
+                            refine_wrapper = faiss.IndexRefineFlat(base)
+                            index = faiss.IndexPreTransform(refine_wrapper)
+                        else:
+                            index = faiss.index_factory(
+                                d, "PCA16,Flat" if wrapper == "pretransform"
+                                else "PCA16,Flat,RFlat")
+                        if idmap:
+                            index = idmap(index)
+                        index.train(xb)
+                        ids = external_ids if idmap else np.arange(nb)
+                        if idmap:
+                            index.add_with_ids(xb, ids)
+                        else:
+                            index.add(xb)
+
+                        outer = sel if placement in ("outer", "both") else None
+                        inner = (inner_sel if placement == "both" else sel
+                                 if placement == "inner" else None)
+                        leaf = faiss.SearchParameters(sel=inner)
+                        if wrapper == "pre_refine":
+                            middle = faiss.IndexRefineSearchParameters(
+                                base_index_params=leaf)
+                            params = faiss.SearchParametersPreTransform(
+                                sel=outer, index_params=middle)
+                        elif wrapper == "pretransform":
+                            params = faiss.SearchParametersPreTransform(
+                                sel=outer, index_params=leaf)
+                        elif wrapper == "combined":
+                            middle = faiss.SearchParametersPreTransform(
+                                index_params=leaf)
+                            params = faiss.IndexRefineSearchParameters(
+                                sel=outer, base_index_params=middle)
+                        else:
+                            params = faiss.IndexRefineSearchParameters(
+                                sel=outer, base_index_params=leaf,
+                                k_factor=2)
+
+                        mask = np.ones(nb, dtype=bool)
+                        if outer is not None:
+                            mask &= np.isin(ids, allowed)
+                        if inner is not None:
+                            mask &= np.isin(ids, inner_allowed if placement
+                                            == "both" else allowed)
+                        ref = faiss.IndexFlatL2(d)
+                        ref.add(xb[mask])
+                        if not range_search:
+                            Dref, Iref = ref.search(xq, k)
+                            D, I = index.search(xq, k, params=params)
+                            np.testing.assert_array_equal(I, ids[mask][Iref])
+                            np.testing.assert_allclose(D, Dref, atol=2e-5)
+                        ref_range = ref.range_search(xq, 2.0)
+                        actual_range = index.range_search(xq, 2.0,
+                                                         params=params)
+                        check_ref_range_results(
+                            ref_range[0], ref_range[1],
+                            ids[mask][ref_range[2]], *actual_range)
+                        # Reusing parameters must not retain translated or
+                        # combined selectors owned by a previous search.
+                        self.assertEqual(
+                            int(leaf.sel.this) if leaf.sel else None,
+                            int(inner.this) if inner else None)
+                        self.assertEqual(
+                            int(params.sel.this) if params.sel else None,
+                            int(outer.this) if outer else None)
+                        if not range_search:
+                            np.testing.assert_array_equal(
+                                index.search(xq, k, params=params)[1], I)
+
+    def test_wrapper_selector_without_nested_params(self):
+        rs = np.random.RandomState(123)
+        xb = rs.rand(300, 16).astype("float32")
+        xq = xb[:5]
+        allowed = np.arange(0, 300, 4, dtype="int64")
+        sel = faiss.IDSelectorBatch(allowed)
+        for key in ("Flat,RFlat", "PCA16,Flat", "IVF8,Flat,RFlat",
+                    "PCA16,IVF8,Flat"):
+            with self.subTest(key=key):
+                index = faiss.index_factory(16, key)
+                index.train(xb)
+                index.add(xb)
+                if "IVF" in key:
+                    faiss.ParameterSpace().set_index_parameters(
+                        index, "nprobe=8")
+                params = (faiss.IndexRefineSearchParameters(sel=sel)
+                          if key.endswith("RFlat") else
+                          faiss.SearchParametersPreTransform(sel=sel))
+                ref = faiss.IndexFlatL2(16)
+                ref.add(xb[allowed])
+                Dref, Iref = ref.search(xq, 10)
+                D, I = index.search(xq, 10, params=params)
+                np.testing.assert_array_equal(I, allowed[Iref])
+                np.testing.assert_allclose(D, Dref, atol=2e-5)
+
+    def test_wrapper_ivf_parameters(self):
+        rs = np.random.RandomState(234)
+        xb = rs.rand(400, 16).astype("float32")
+        ids = rs.permutation(400).astype("int64")
+        allowed = np.arange(0, 400, 4, dtype="int64")
+        sel = faiss.IDSelectorBatch(allowed)
+        for key in ("IDMap,IVF8,Flat,RFlat", "IDMap,PCA16,IVF8,Flat"):
+            with self.subTest(key=key):
+                index = faiss.index_factory(16, key)
+                index.train(xb)
+                index.add_with_ids(xb, ids)
+                # The index's default nprobe=1 cannot produce the exact result.
+                leaf = faiss.SearchParametersIVF(nprobe=8)
+                params = (faiss.IndexRefineSearchParameters(
+                    sel=sel, base_index_params=leaf, k_factor=2)
+                    if key.endswith("RFlat") else
+                    faiss.SearchParametersPreTransform(
+                        sel=sel, index_params=leaf))
+                ref = faiss.IndexFlatL2(16)
+                mask = np.isin(ids, allowed)
+                ref.add(xb[mask])
+                Dref, Iref = ref.search(xb[:5], 10)
+                D, I = index.search(xb[:5], 10, params=params)
+                np.testing.assert_array_equal(I, ids[mask][Iref])
+                np.testing.assert_allclose(D, Dref, atol=2e-5)
+                self.assertEqual(leaf.nprobe, 8)
+                self.assertIsNone(leaf.sel)
+
+    def test_pretransform_selector_search_and_reconstruct(self):
+        rs = np.random.RandomState(345)
+        xb = rs.rand(100, 16).astype("float32")
+        allowed = np.arange(0, 100, 4, dtype="int64")
+        sel = faiss.IDSelectorBatch(allowed)
+        index = faiss.index_factory(16, "PCA16,Flat")
+        index.train(xb)
+        index.add(xb)
+        params = faiss.SearchParametersPreTransform(sel=sel)
+        ref = faiss.IndexFlatL2(16)
+        ref.add(xb[allowed])
+        Dref, Iref = ref.search(xb[:5], 10)
+        D, I, R = index.search_and_reconstruct(xb[:5], 10, params=params)
+        np.testing.assert_array_equal(I, allowed[Iref])
+        np.testing.assert_allclose(D, Dref, atol=2e-5)
+        np.testing.assert_allclose(R, xb[I], atol=2e-5)
+
     def do_test_id_selector(
         self,
         index_key,

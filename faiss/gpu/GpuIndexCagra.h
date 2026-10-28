@@ -299,6 +299,9 @@ struct SearchParametersCagra : SearchParameters {
     uint32_t num_random_samplings = 1;
     /// Bit mask used for initial random seed node selection.
     uint64_t seed = 0x128394;
+    SearchParameters* clone() const override {
+        return new SearchParametersCagra(*this);
+    }
 };
 
 struct GpuIndexCagra : public GpuIndex {
