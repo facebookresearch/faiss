@@ -128,6 +128,11 @@ float fvec_masked_sum<SIMDLevel::AVX512>(
     return masked_sum<SIMDLevel::AVX512>(x, bits, d);
 }
 
+// Internal linkage: the same template is compiled with other -m flags in
+// the other per-SIMD distances TU, and a shared symbol would let the linker
+// hand one level the other's code.
+namespace {
+
 template <size_t DIM>
 void fvec_L2sqr_ny_y_transposed_D(
         float* distances,
@@ -200,6 +205,8 @@ void fvec_L2sqr_ny_y_transposed_D(
         }
     }
 }
+
+} // namespace
 
 template <>
 void fvec_L2sqr_ny_transposed<SIMDLevel::AVX512>(
