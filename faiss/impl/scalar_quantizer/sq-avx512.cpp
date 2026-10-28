@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512
-
 #include <faiss/impl/simdlib/simdlib_avx512.h>
 
 #include <cstring>
@@ -796,5 +794,3 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX512>
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
 #endif
-
-#endif // COMPILE_SIMD_AVX512

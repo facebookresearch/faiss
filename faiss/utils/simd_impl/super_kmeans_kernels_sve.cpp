@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_ARM_SVE
-
 #include <faiss/utils/simd_impl/super_kmeans_kernels.h>
 
 #include <arm_sve.h>
@@ -30,5 +28,3 @@ float block_l2<SIMDLevel::ARM_SVE>(const float* x, const float* y, int n) {
 
 } // namespace detail
 } // namespace faiss
-
-#endif // COMPILE_SIMD_ARM_SVE

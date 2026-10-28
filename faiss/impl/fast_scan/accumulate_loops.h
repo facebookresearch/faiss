@@ -37,10 +37,11 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/fast_scan/LookupTableScaler.h>
 #include <faiss/impl/fast_scan/kernels_simd256.h>
-#if defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
+#if FAISS_SIMD_TU(ARM_NEON)
 #include <faiss/impl/fast_scan/kernels_neon.h>
 #endif
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
