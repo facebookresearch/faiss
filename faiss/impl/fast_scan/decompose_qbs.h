@@ -20,7 +20,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/fast_scan/kernels_simd256.h>
 #include <faiss/impl/fast_scan/kernels_simd512.h>
-#ifdef COMPILE_SIMD_ARM_NEON
+#if defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
 #include <faiss/impl/fast_scan/kernels_neon.h>
 #endif
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
