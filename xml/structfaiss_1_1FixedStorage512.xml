@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1FixedStorage512" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::FixedStorage512</compoundname>
+    <templateparamlist>
+      <param>
+        <type>int</type>
+        <declname>NQ</declname>
+        <defname>NQ</defname>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>BB</declname>
+        <defname>BB</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1FixedStorage512_1ac413605ba792281535f11ae76653bd10" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SIMDLevel::AVX2 &gt;</type>
+        <definition>using faiss::FixedStorage512&lt; NQ, BB &gt;::simd16uint16_avx2 =  simd16uint16_tpl&lt;SIMDLevel::AVX2&gt;</definition>
+        <argsstring></argsstring>
+        <name>simd16uint16_avx2</name>
+        <qualifiedname>faiss::FixedStorage512::simd16uint16_avx2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="60" column="5" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1FixedStorage512_1a70841ffa0e75c0368401d8faaa80cb13" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1AVX2_01_4" kindref="compound">simd16uint16_avx2</ref></type>
+        <definition>simd16uint16_avx2 faiss::FixedStorage512&lt; NQ, BB &gt;::dis[NQ][BB]</definition>
+        <argsstring>[NQ][BB]</argsstring>
+        <name>dis</name>
+        <qualifiedname>faiss::FixedStorage512::dis</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="62" column="23" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FixedStorage512_1afb1807ab447c8dca007827d7fc3c895c" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::FixedStorage512&lt; NQ, BB &gt;::i0</definition>
+        <argsstring></argsstring>
+        <name>i0</name>
+        <qualifiedname>faiss::FixedStorage512::i0</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="63" column="9" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1FixedStorage512_1a0c676e9fa93041afa0d6a5583c68b601" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::FixedStorage512&lt; NQ, BB &gt;::handle</definition>
+        <argsstring>(size_t q, size_t b, simd16uint16_avx2 d0, simd16uint16_avx2 d1)</argsstring>
+        <name>handle</name>
+        <qualifiedname>faiss::FixedStorage512::handle</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1AVX2_01_4" kindref="compound">simd16uint16_avx2</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1AVX2_01_4" kindref="compound">simd16uint16_avx2</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="65" column="10" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="65" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FixedStorage512_1a72ab418881274730cc7c29e23dc137a7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::FixedStorage512&lt; NQ, BB &gt;::set_block_origin</definition>
+        <argsstring>(size_t i0_in, size_t)</argsstring>
+        <name>set_block_origin</name>
+        <qualifiedname>faiss::FixedStorage512::set_block_origin</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>i0_in</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="74" column="10" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="74" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FixedStorage512_1a11d397894dafb590d17ca3bbbdaf5eac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class OtherResultHandler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::FixedStorage512&lt; NQ, BB &gt;::to_other_handler</definition>
+        <argsstring>(OtherResultHandler &amp;other) const</argsstring>
+        <name>to_other_handler</name>
+        <qualifiedname>faiss::FixedStorage512::to_other_handler</qualifiedname>
+        <param>
+          <type>OtherResultHandler &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="79" column="10" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="79" bodyend="85"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::FixedStorage512&lt; NQ, BB &gt;</label>
+        <link refid="structfaiss_1_1FixedStorage512"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>dis</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd16uint16_tpl&lt; SIMDLevel::AVX2 &gt;</label>
+        <link refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1AVX2_01_4"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::simd256bit_tpl&lt; SIMDLevel::AVX2 &gt;</label>
+        <link refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1AVX2_01_4"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>@1</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/fast_scan/accumulate_loops_512.h" line="59" column="1" bodyfile="faiss/impl/fast_scan/accumulate_loops_512.h" bodystart="59" bodyend="86"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FixedStorage512_1a70841ffa0e75c0368401d8faaa80cb13" prot="public" virt="non-virtual"><scope>faiss::FixedStorage512</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1FixedStorage512_1a0c676e9fa93041afa0d6a5583c68b601" prot="public" virt="non-virtual"><scope>faiss::FixedStorage512</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1FixedStorage512_1afb1807ab447c8dca007827d7fc3c895c" prot="public" virt="non-virtual"><scope>faiss::FixedStorage512</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1FixedStorage512_1a72ab418881274730cc7c29e23dc137a7" prot="public" virt="non-virtual"><scope>faiss::FixedStorage512</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1FixedStorage512_1ac413605ba792281535f11ae76653bd10" prot="public" virt="non-virtual"><scope>faiss::FixedStorage512</scope><name>simd16uint16_avx2</name></member>
+      <member refid="structfaiss_1_1FixedStorage512_1a11d397894dafb590d17ca3bbbdaf5eac" prot="public" virt="non-virtual"><scope>faiss::FixedStorage512</scope><name>to_other_handler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

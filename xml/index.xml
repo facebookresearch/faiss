@@ -1184,6 +1184,14 @@
     <member refid="structfaiss_1_1FileIOWriter_1a7a95b4427902bee7b903db9ea09b755c" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06" kind="function"><name>filedescriptor</name></member>
   </compound>
+  <compound refid="structfaiss_1_1FixedStorage512" kind="struct"><name>faiss::FixedStorage512</name>
+    <member refid="structfaiss_1_1FixedStorage512_1ac413605ba792281535f11ae76653bd10" kind="typedef"><name>simd16uint16_avx2</name></member>
+    <member refid="structfaiss_1_1FixedStorage512_1a70841ffa0e75c0368401d8faaa80cb13" kind="variable"><name>dis</name></member>
+    <member refid="structfaiss_1_1FixedStorage512_1afb1807ab447c8dca007827d7fc3c895c" kind="variable"><name>i0</name></member>
+    <member refid="structfaiss_1_1FixedStorage512_1a0c676e9fa93041afa0d6a5583c68b601" kind="function"><name>handle</name></member>
+    <member refid="structfaiss_1_1FixedStorage512_1a72ab418881274730cc7c29e23dc137a7" kind="function"><name>set_block_origin</name></member>
+    <member refid="structfaiss_1_1FixedStorage512_1a11d397894dafb590d17ca3bbbdaf5eac" kind="function"><name>to_other_handler</name></member>
+  </compound>
   <compound refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" kind="struct"><name>faiss::simd_result_handlers::FixedStorageHandler</name>
     <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae3df54abf30835dc9705d28bdc25c35e" kind="variable"><name>dis</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a651ec7dc52685e7f3b8869f30902370a" kind="variable"><name>i0</name></member>
@@ -1254,6 +1262,12 @@
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputer16__tpl" kind="struct"><name>faiss::GenHammingComputer16_tpl</name>
   </compound>
+  <compound refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a7c2fc365f3b8d7b94a8fbbb19db5ab52" kind="variable"><name>a0</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a34c21c14efcab1e457586847a2e77742" kind="function"><name>GenHammingComputer16_tpl</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a11e0acd8e26b9f910a13354fada709f0" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a8c5e0852170eb5f037a81ea501b68e78" kind="function"><name>get_code_size</name></member>
+  </compound>
   <compound refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1AVX2_01_4" kind="struct"><name>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::AVX2 &gt;</name>
     <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1AVX2_01_4_1a5464985a897de7279770d9f073ad2ac8" kind="variable"><name>a</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1AVX2_01_4_1a49f49c4058391622911a2654194445ea" kind="function"><name>GenHammingComputer16_tpl</name></member>
@@ -1274,6 +1288,13 @@
     <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1NONE_01_4_1aa3fead3a92d67dd9871036b491f65cbb" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputer32__tpl" kind="struct"><name>faiss::GenHammingComputer32_tpl</name>
+  </compound>
+  <compound refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::GenHammingComputer32_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ab9edf4ab517586ca21163db828cb42da" kind="variable"><name>a0</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5ca1d0594e4bb2568d1ff7d17d938b46" kind="variable"><name>a1</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac7683efd260d6ae7aa0efa32a422dea6" kind="function"><name>GenHammingComputer32_tpl</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aaf61ec6ed6c3a7bfd39a8c6fd6bf0f8f" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a0a967b09f6847bca3dde9df149312201" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1AVX2_01_4" kind="struct"><name>faiss::GenHammingComputer32_tpl&lt; SIMDLevel::AVX2 &gt;</name>
     <member refid="structfaiss_1_1GenHammingComputer32__tpl_3_01SIMDLevel_1_1AVX2_01_4_1ab5869d347751feeb548bf0b8842196ee" kind="variable"><name>a</name></member>
@@ -1298,6 +1319,12 @@
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputer8__tpl" kind="struct"><name>faiss::GenHammingComputer8_tpl</name>
   </compound>
+  <compound refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::GenHammingComputer8_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a6f71634d4c7da3fc890627cf2a4972f7" kind="variable"><name>a0</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a0dc640f0173aabcf2338da29ec03fd8f" kind="function"><name>GenHammingComputer8_tpl</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2234ede8f71a914178d9c5859970ee38" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a57b7304c839321be9913e571110d24fd" kind="function"><name>get_code_size</name></member>
+  </compound>
   <compound refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::GenHammingComputer8_tpl&lt; SIMDLevel::NONE &gt;</name>
     <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1NONE_01_4_1a912fce7fa5a0ed8eadf23f2be8770fe0" kind="variable"><name>a0</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1NONE_01_4_1af022c479db01b69df6fe23fcd8fcafcc" kind="function"><name>GenHammingComputer8_tpl</name></member>
@@ -1305,6 +1332,13 @@
     <member refid="structfaiss_1_1GenHammingComputer8__tpl_3_01SIMDLevel_1_1NONE_01_4_1a4b8e1e1d4cef0e5250fd670d07a333cb" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputerM8__tpl" kind="struct"><name>faiss::GenHammingComputerM8_tpl</name>
+  </compound>
+  <compound refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::GenHammingComputerM8_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a0cc95fca9b257e89a0b970800227fa92" kind="variable"><name>a</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ab71b7f9469367bacbacd3f5f530789ad" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a38a0ee9ebc184854dee4c513a8d4356e" kind="function"><name>GenHammingComputerM8_tpl</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a65e2ef95232e37c471950e7cf89fd582" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a4f150e0bdd01849c0bf366c7af06f2ef" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1AVX2_01_4" kind="struct"><name>faiss::GenHammingComputerM8_tpl&lt; SIMDLevel::AVX2 &gt;</name>
     <member refid="structfaiss_1_1GenHammingComputerM8__tpl_3_01SIMDLevel_1_1AVX2_01_4_1aeef8e9363bf6c995496a1fb0e09b001c" kind="variable"><name>a</name></member>
@@ -2421,6 +2455,14 @@
   </compound>
   <compound refid="structfaiss_1_1HammingComputer16__tpl" kind="struct"><name>faiss::HammingComputer16_tpl</name>
   </compound>
+  <compound refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::HammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a6e878896c5a910a4f342264871935595" kind="variable"><name>a0</name></member>
+    <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1adb444c2af3b20c00de26b2b6723e98d1" kind="function"><name>HammingComputer16_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aaeacde6e1904ab0e95792f3568e644bf" kind="function"><name>HammingComputer16_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a18417d756bef277d0de9aea73a08b8e8" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a7a4a0bed5f7b1c384b007401fc88ef92" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a00a6c50e6a04e36bef6410e6a8b228c7" kind="function"><name>get_code_size</name></member>
+  </compound>
   <compound refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::HammingComputer16_tpl&lt; SIMDLevel::NONE &gt;</name>
     <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1NONE_01_4_1afdddc7222f03dcda266f0e908e1b9499" kind="variable"><name>a0</name></member>
     <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1NONE_01_4_1aee48808ba28ee2eb7117ec0ad14db905" kind="variable"><name>a1</name></member>
@@ -2431,6 +2473,15 @@
     <member refid="structfaiss_1_1HammingComputer16__tpl_3_01SIMDLevel_1_1NONE_01_4_1ab1d66c1219dd585b2b09c40a34467e50" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer20__tpl" kind="struct"><name>faiss::HammingComputer20_tpl</name>
+  </compound>
+  <compound refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2b923cb0ac7ea63c1799040eaae7b6bb" kind="variable"><name>a0</name></member>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3ebb74bbee78e062744cca0702bb60de" kind="variable"><name>a2</name></member>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3fbece769dbbdf43e5cee8bafdf0a198" kind="function"><name>HammingComputer20_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac2159b8d62c7a9b479b18f8e8d64ffb9" kind="function"><name>HammingComputer20_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a59c9538fff914665bc53f0cc739fdd3d" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a58025cb838022db80e8cca1b13911144" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ae871965287924986006a6f7735d80a1f" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4" kind="struct"><name>faiss::HammingComputer20_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</name>
     <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1af54f5fb594d7c7e3f42c1671a69ae047" kind="variable"><name>batch_size</name></member>
@@ -2450,6 +2501,15 @@
     <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1NONE_01_4_1a54bf017222620a4118c081d432c569db" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer32__tpl" kind="struct"><name>faiss::HammingComputer32_tpl</name>
+  </compound>
+  <compound refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::HammingComputer32_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a293a3ceb48ac90ee853203e033fd8bdb" kind="variable"><name>a0</name></member>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1afc399d49455f7170a64de3b9a7fee4fd" kind="variable"><name>a1</name></member>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aca9f448653b685e075d9558ff1a0c693" kind="function"><name>HammingComputer32_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ad82aced1498baeeedcc89893dd48cee5" kind="function"><name>HammingComputer32_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a357b5f7c8947fb72a34175f509f11019" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1abea132df08dfc0067f475f55e18d114e" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac0a291818fb2132cd4ebef3e1438209f" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4" kind="struct"><name>faiss::HammingComputer32_tpl&lt; SIMDLevel::AVX512_VPOPCNT &gt;</name>
     <member refid="structfaiss_1_1HammingComputer32__tpl_3_01SIMDLevel_1_1AVX512__VPOPCNT_01_4_1a2cba877cd178b4f565e53960ec1b8426" kind="variable"><name>a8</name></member>
@@ -2479,6 +2539,15 @@
     <member refid="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer64__tpl" kind="struct"><name>faiss::HammingComputer64_tpl</name>
+  </compound>
+  <compound refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::HammingComputer64_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a0fe636063e148c51f27ab42801663f42" kind="variable"><name>hc0</name></member>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac500796e87bbc6ea43aa807fea0b1b2f" kind="variable"><name>hc1</name></member>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a6c6eda1551bc7b46c992e7134a49c28a" kind="function"><name>HammingComputer64_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a490543bc677aedf2c00cff6b3bfeeba0" kind="function"><name>HammingComputer64_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a1d76f847c281d08c27c302c2c8aa6b27" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a16f901951b7e13275eb9af8de33c23b4" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a09617286b121a5fee75ad2bbd2e237b5" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512_01_4" kind="struct"><name>faiss::HammingComputer64_tpl&lt; SIMDLevel::AVX512 &gt;</name>
     <member refid="structfaiss_1_1HammingComputer64__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a0f6930e059d8ae4dea6a1a1dc571ea72" kind="variable"><name>a0</name></member>
@@ -2528,6 +2597,16 @@
     <member refid="structfaiss_1_1HammingComputer8_1aa0a046051749d7e4ded2cac67d0ba27f" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputerDefault__tpl" kind="struct"><name>faiss::HammingComputerDefault_tpl</name>
+  </compound>
+  <compound refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct"><name>faiss::HammingComputerDefault_tpl&lt; SIMDLevel::ARM_NEON &gt;</name>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5f8b6aaf832f68503f85c3e80816cf50" kind="variable"><name>a8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1abdeafc957ed3bc80c9d41284f5051c53" kind="variable"><name>quotient8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5aeb0b348729e024a0040acec2327f1f" kind="variable"><name>remainder8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a6e55c3ca7a564a80ec4920c401c9da01" kind="function"><name>HammingComputerDefault_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a1d6b8ee55acb48a96286e9f611e9f1fe" kind="function"><name>HammingComputerDefault_tpl</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a85f8c6394e02f1068153a90362394b8f" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a9a427ee11ac9a5a403dabef2d7fa39a2" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a674e1e2e5d7b3eeba1720c9ff85e1b91" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512_01_4" kind="struct"><name>faiss::HammingComputerDefault_tpl&lt; SIMDLevel::AVX512 &gt;</name>
     <member refid="structfaiss_1_1HammingComputerDefault__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a659b526a41c192de52b6b85312c966de" kind="variable"><name>a8</name></member>
@@ -14518,6 +14597,8 @@
     <member refid="namespacefaiss_1a3306f3a82cfb339696e1bf1f039c5993" kind="function"><name>pq4_accumulate_loop_fixed_scaler</name></member>
     <member refid="namespacefaiss_1a922f10ad55fe654f04ee1e4c2ce4380b" kind="function"><name>accumulate_q_4step_for_simd</name></member>
     <member refid="namespacefaiss_1a758c8c1c33d07b03f080bdcbb2cb2a1e" kind="function"><name>pq4_accumulate_loop_qbs_fixed_scaler_simd</name></member>
+    <member refid="namespacefaiss_1aa5f1b6f6f1f1a9a11c479ff71a8775ba" kind="function"><name>accumulate_q_4step_512</name></member>
+    <member refid="namespacefaiss_1aa50a7c9c3f2e067bdf4a55f03668290f" kind="function"><name>pq4_accumulate_loop_qbs_fixed_scaler_512</name></member>
     <member refid="namespacefaiss_1a9c768b846686f73773cd8c7370310ec2" kind="function"><name>kernel_accumulate_block</name></member>
     <member refid="namespacefaiss_1abe878e9026de759b6acffadd1d6fb319" kind="function"><name>kernel_accumulate_block_loop</name></member>
     <member refid="namespacefaiss_1af3b48b50d13e993560f281330b2cf34e" kind="function"><name>accumulate</name></member>
@@ -14957,6 +15038,12 @@
     <member refid="namespacefaiss_1a23ad4ba1ce30a52a3f1479a3dc9b6503" kind="function"><name>hashtable_int64_to_int64_init</name></member>
     <member refid="namespacefaiss_1a619e1b624d0c6b0a5f833a4744f325a1" kind="function"><name>hashtable_int64_to_int64_add</name></member>
     <member refid="namespacefaiss_1a8e9fac1f36f69b1b18b64cc3e4147101" kind="function"><name>hashtable_int64_to_int64_lookup</name></member>
+    <member refid="namespacefaiss_1a3542fe009433e7c3ecea25805dc2bf5f" kind="function"><name>transpose_8x2</name></member>
+    <member refid="namespacefaiss_1ac351dc61a42544d8a76fa8ddbd492c06" kind="function"><name>transpose_8x4</name></member>
+    <member refid="namespacefaiss_1aa96c26df9a268034340e659f61d4bf3f" kind="function"><name>transpose_8x8</name></member>
+    <member refid="namespacefaiss_1aa675f46ea91ab60f3751e160fb85ff36" kind="function"><name>transpose_16x2</name></member>
+    <member refid="namespacefaiss_1a98664c9dbf19b6b4f3c695fedc633f9c" kind="function"><name>transpose_16x4</name></member>
+    <member refid="namespacefaiss_1a2b335e5d2c26f92a4f768084ceed330d" kind="function"><name>transpose_16x8</name></member>
     <member refid="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" kind="function"><name>get_compile_options</name></member>
     <member refid="namespacefaiss_1a7492814a6d7dd80de1e5a375758534b5" kind="function"><name>get_version</name></member>
     <member refid="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" kind="function"><name>getmillisecs</name></member>
@@ -15903,6 +15990,7 @@
     <member refid="accumulate__loops_8h_1af8c30e13630f6991d00b4a05d529a016" kind="define"><name>FAISS_NQ_DISPATCH</name></member>
   </compound>
   <compound refid="accumulate__loops__512_8h" kind="file"><name>accumulate_loops_512.h</name>
+    <member refid="accumulate__loops__512_8h_1a50a5d09a63338f8ee9b9cf354cb5e5ce" kind="define"><name>FAISS_QBS512_DISPATCH</name></member>
   </compound>
   <compound refid="decompose__qbs_8h" kind="file"><name>decompose_qbs.h</name>
     <member refid="decompose__qbs_8h_1a3e746e039cdd58e656513533b61cfb23" kind="define"><name>DISPATCH</name></member>
@@ -16369,6 +16457,14 @@
   </compound>
   <compound refid="simd__levels_8h" kind="file"><name>simd_levels.h</name>
     <member refid="simd__levels_8h_1a8945b533221b1c3f6d70b4ef8c95d4f2" kind="define"><name>COMPILE_SIMD_NONE</name></member>
+    <member refid="simd__levels_8h_1aaf4df8a858c953890fc8673cf74636ae" kind="define"><name>FAISS_SIMD_TU_AVX2</name></member>
+    <member refid="simd__levels_8h_1a89328d88e6545b5cad1cd31e17917f00" kind="define"><name>FAISS_SIMD_TU_AVX512</name></member>
+    <member refid="simd__levels_8h_1abf568991abd55f5dc517acdc3e646e78" kind="define"><name>FAISS_SIMD_TU_AVX512_VPOPCNT</name></member>
+    <member refid="simd__levels_8h_1acd5026630b373308c7892ccf8f0e1cca" kind="define"><name>FAISS_SIMD_TU_AVX512_SPR</name></member>
+    <member refid="simd__levels_8h_1a2a739475e3f0a7c4c6cba8b6dc8c4fe2" kind="define"><name>FAISS_SIMD_TU_ARM_NEON</name></member>
+    <member refid="simd__levels_8h_1ae32c338fb9be8003193352b9041a2ff1" kind="define"><name>FAISS_SIMD_TU_ARM_SVE</name></member>
+    <member refid="simd__levels_8h_1aabf52438382356ee29dd74734094ba0e" kind="define"><name>FAISS_SIMD_TU_RISCV_RVV</name></member>
+    <member refid="simd__levels_8h_1a6023eeeb3858d2f3425464f976fd0aae" kind="define"><name>FAISS_SIMD_TU</name></member>
   </compound>
   <compound refid="sorting_8h" kind="file"><name>sorting.h</name>
   </compound>

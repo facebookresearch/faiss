@@ -156,6 +156,8 @@
         <link refid="simdlib__dispatch_8h_source"/>
         <childnode refid="43" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
       <node id="44">
         <label>faiss/impl/simdlib/simdlib_emulated.h</label>

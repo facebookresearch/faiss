@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2b923cb0ac7ea63c1799040eaae7b6bb" prot="public" static="no" mutable="no">
+        <type>uint8x16_t</type>
+        <definition>uint8x16_t faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::a0</definition>
+        <argsstring></argsstring>
+        <name>a0</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::a0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="69" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3ebb74bbee78e062744cca0702bb60de" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::a2</definition>
+        <argsstring></argsstring>
+        <name>a2</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::a2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="70" column="14" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3fbece769dbbdf43e5cee8bafdf0a198" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::HammingComputer20_tpl</definition>
+        <argsstring>()</argsstring>
+        <name>HammingComputer20_tpl</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::HammingComputer20_tpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="72" column="5" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac2159b8d62c7a9b479b18f8e8d64ffb9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::HammingComputer20_tpl</definition>
+        <argsstring>(const uint8_t *a8, int code_size)</argsstring>
+        <name>HammingComputer20_tpl</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::HammingComputer20_tpl</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="74" column="5" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="74" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a59c9538fff914665bc53f0cc739fdd3d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::set</definition>
+        <argsstring>(const uint8_t *a8, FAISS_MAYBE_UNUSED int code_size)</argsstring>
+        <name>set</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::set</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>FAISS_MAYBE_UNUSED int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="78" column="10" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="78" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a58025cb838022db80e8cca1b13911144" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::hamming</definition>
+        <argsstring>(const uint8_t *b8) const</argsstring>
+        <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::hamming</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b8</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="87" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="87" bodyend="96"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ae871965287924986006a6f7735d80a1f" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int</type>
+        <definition>static constexpr int faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::get_code_size</definition>
+        <argsstring>()</argsstring>
+        <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;::get_code_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="98" column="33" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="98" bodyend="100"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="68" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="68" bodyend="101"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2b923cb0ac7ea63c1799040eaae7b6bb" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>a0</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3ebb74bbee78e062744cca0702bb60de" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>a2</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ae871965287924986006a6f7735d80a1f" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a58025cb838022db80e8cca1b13911144" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>hamming</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3fbece769dbbdf43e5cee8bafdf0a198" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>HammingComputer20_tpl</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac2159b8d62c7a9b479b18f8e8d64ffb9" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>HammingComputer20_tpl</name></member>
+      <member refid="structfaiss_1_1HammingComputer20__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a59c9538fff914665bc53f0cc739fdd3d" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

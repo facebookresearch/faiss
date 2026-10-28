@@ -6,6 +6,7 @@
     <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <includedby refid="hamming__computer-avx2_8h" local="no">faiss/utils/hamming_distance/hamming_computer-avx2.h</includedby>
     <includedby refid="hamming__computer-avx512_8h" local="no">faiss/utils/hamming_distance/hamming_computer-avx512.h</includedby>
+    <includedby refid="hamming__computer-neon_8h" local="no">faiss/utils/hamming_distance/hamming_computer-neon.h</includedby>
     <includedby refid="hamming__computer-rvv_8h" local="no">faiss/utils/hamming_distance/hamming_computer-rvv.h</includedby>
     <incdepgraph>
       <node id="7">
@@ -163,8 +164,14 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
       </node>
       <node id="16">
+        <label>faiss/utils/hamming_distance/hamming_computer-neon.h</label>
+        <link refid="hamming__computer-neon_8h_source"/>
+      </node>
+      <node id="17">
         <label>faiss/utils/hamming_distance/hamming_computer-rvv.h</label>
         <link refid="hamming__computer-rvv_8h_source"/>
       </node>

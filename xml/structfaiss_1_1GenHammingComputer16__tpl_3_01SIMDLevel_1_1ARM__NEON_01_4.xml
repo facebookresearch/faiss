@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a7c2fc365f3b8d7b94a8fbbb19db5ab52" prot="public" static="no" mutable="no">
+        <type>uint8x16_t</type>
+        <definition>uint8x16_t faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::a0</definition>
+        <argsstring></argsstring>
+        <name>a0</name>
+        <qualifiedname>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::a0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="232" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="232" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a34c21c14efcab1e457586847a2e77742" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::GenHammingComputer16_tpl</definition>
+        <argsstring>(const uint8_t *a8, FAISS_MAYBE_UNUSED int code_size)</argsstring>
+        <name>GenHammingComputer16_tpl</name>
+        <qualifiedname>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::GenHammingComputer16_tpl</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>FAISS_MAYBE_UNUSED int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="234" column="5" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="234" bodyend="239"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a11e0acd8e26b9f910a13354fada709f0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::hamming</definition>
+        <argsstring>(const uint8_t *b8) const</argsstring>
+        <name>hamming</name>
+        <qualifiedname>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::hamming</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b8</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="241" column="16" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="241" bodyend="246"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a8c5e0852170eb5f037a81ea501b68e78" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int</type>
+        <definition>static constexpr int faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::get_code_size</definition>
+        <argsstring>()</argsstring>
+        <name>get_code_size</name>
+        <qualifiedname>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;::get_code_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="248" column="33" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="248" bodyend="250"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/hamming_distance/hamming_computer-neon.h" line="231" column="1" bodyfile="faiss/utils/hamming_distance/hamming_computer-neon.h" bodystart="231" bodyend="251"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a7c2fc365f3b8d7b94a8fbbb19db5ab52" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>a0</name></member>
+      <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a34c21c14efcab1e457586847a2e77742" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>GenHammingComputer16_tpl</name></member>
+      <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a8c5e0852170eb5f037a81ea501b68e78" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1GenHammingComputer16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a11e0acd8e26b9f910a13354fada709f0" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>hamming</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
