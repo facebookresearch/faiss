@@ -8,8 +8,6 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/simd_impl/masked_sum.h>
 
-#ifdef __aarch64__
-
 #include <arm_neon.h>
 #include <limits>
 
@@ -159,5 +157,3 @@ int fvec_madd_and_argmin<SIMDLevel::ARM_NEON>(
 }
 
 } // namespace faiss
-
-#endif // __aarch64__
