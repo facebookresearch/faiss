@@ -246,14 +246,33 @@ jobs:
           miniforge-version: '24.11.2-1'
           channels: conda-forge
       - name: Install dependencies
-        shell: pwsh
+        # bash, not pwsh: the conda of the pinned Miniforge passes empty
+        # arguments to conda.exe from its PowerShell wrapper, so conda.exe
+        # rejects them ("invalid choice: ''") and the activation in the pwsh
+        # profile fails. The pwsh steps below get the env from this step
+        # through GITHUB_ENV and GITHUB_PATH.
+        shell: bash -el {0}
         run: |
           conda install -y -q cmake swig "numpy>=2.0,<3.0" scipy pytest gflags setuptools
           conda install -y -q mkl=2024.2.2 mkl-devel=2024.2.2
+          prefix=$(cygpath -w "$CONDA_PREFIX")
+          echo "CONDA_PREFIX=$prefix" >> "$GITHUB_ENV"
+          # Each GITHUB_PATH line goes to the front, so the env root ends first.
+          echo "$prefix\\Scripts" >> "$GITHUB_PATH"
+          echo "$prefix\\Library\\bin" >> "$GITHUB_PATH"
+          echo "$prefix" >> "$GITHUB_PATH"
       - name: Build
-        shell: pwsh
+        # -NoProfile: the profile from setup-miniconda activates base, sets
+        # CONDA_PREFIX and PATH to base, and then fails to activate the env
+        # (see Install dependencies). These steps use CONDA_PREFIX and PATH
+        # from Install dependencies instead.
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
-          $pythonExe = (Get-Command python).Source
+          # The env python, not the first python on PATH: FindPython also
+          # searches the registry, where the runner Pythons have no NumPy.
+          $pythonExe = Join-Path $env:CONDA_PREFIX "python.exe"
+          & $pythonExe -c "import sys, numpy; print(sys.executable, sys.version); print(numpy.get_include())"
+          if ($LASTEXITCODE -ne 0) { throw "The conda env python at $pythonExe cannot import numpy" }
           $pythonDir = Split-Path $pythonExe
           # Add Python libs dir so MSVC linker can find python312.lib
           $env:LIB = "$pythonDir\libs;$env:LIB"
@@ -266,13 +285,15 @@ jobs:
             -DFAISS_ENABLE_C_API=OFF `
             -DBLA_VENDOR=Intel10_64_dyn `
             -DCMAKE_BUILD_TYPE=Release `
+            -DPython_EXECUTABLE="$pythonExe" `
+            -DPython_FIND_REGISTRY=NEVER `
             -DPython_ROOT_DIR="$pythonDir" `
             .
           # Add faiss.dll and dependency DLLs to PATH for GoogleTest discovery
           $env:PATH = "$PWD\build\faiss\Release;$env:CONDA_PREFIX\Library\bin;$env:PATH"
           cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: C++ tests
-        shell: pwsh
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
           # Copy all required DLLs next to the test executable:
           # faiss.dll, gtest/gtest_main DLLs, and conda dependency DLLs
@@ -283,24 +304,25 @@ jobs:
           cd build
           ctest --output-on-failure -C Release -E "SIMDConfig.modern_hardware_has_simd_support"
       - name: Install Python extension
-        shell: pwsh
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
           $repoRoot = $PWD.Path
           $env:PATH = "$repoRoot\build\faiss\Release;$env:CONDA_PREFIX\Library\bin;$env:PATH"
+          $pythonExe = Join-Path $env:CONDA_PREFIX "python.exe"
           cd build\faiss\python
-          python setup.py install
+          & $pythonExe setup.py install
           # Copy faiss.dll and MKL DLLs next to the installed _swigfaiss.pyd
-          $siteDir = python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
+          $siteDir = & $pythonExe -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
           $siteDir = "$siteDir\faiss"
           Copy-Item "$repoRoot\build\faiss\Release\faiss.dll" $siteDir\
           Copy-Item "$env:CONDA_PREFIX\Library\bin\mkl_*.dll" $siteDir\ -ErrorAction SilentlyContinue
           Copy-Item "$env:CONDA_PREFIX\Library\bin\libiomp5md.dll" $siteDir\ -ErrorAction SilentlyContinue
       - name: Python tests
-        shell: pwsh
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
           $env:PATH = "$env:CONDA_PREFIX\Library\bin;$env:PATH"
           $tests = (Get-ChildItem tests/test_*.py).FullName
-          pytest $tests
+          & (Join-Path $env:CONDA_PREFIX "python.exe") -m pytest $tests
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
     needs: [linux-x86_64-cmake, changes]
