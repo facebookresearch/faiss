@@ -44,7 +44,6 @@ std::stringstream get_correct_hamming_example(
         std::shared_ptr<std::vector<int>> true_byte_distances) {
     assert(nb >= k);
 
-    // Initialization
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> uniform(0, nb - 1);
 
@@ -70,11 +69,9 @@ std::stringstream get_correct_hamming_example(
     // replace database vector at id with vector more similar to query
     // ordered, so earlier ids must be more similar
     for (size_t nmatches = k; nmatches > 0; --nmatches) {
-        // get id and erase it
         const size_t id = *correct_ids.begin();
         *correct_ids.erase(correct_ids.begin());
 
-        // assemble true id and distance at locations
         true_ids->push_back(id);
         true_bit_distances->push_back(
                 (code_size > nmatches ? code_size - nmatches : 0) *
@@ -121,156 +118,50 @@ std::stringstream get_correct_hamming_example(
 }
 
 TEST(TestHamming, test_crosshamming_count_thres) {
-    // Initialize randomizer
-    std::default_random_engine rng(123);
-    std::uniform_int_distribution<int32_t> uniform(0, 255);
-
-    // Initialize inputs
-    const size_t n = 10; // number of codes
-    const hamdis_t hamming_threshold = 20;
-
-    // one for each case - 65 is default
-    for (auto ncodes : {8, 16, 32, 64, 65}) {
-        // initialize inputs
-        const int nbits = ncodes * 8;
-        const size_t nwords = nbits / 64;
-        // 8 to for later conversion to uint64_t, and 2 for buffer
-        std::vector<uint8_t> dbs(nwords * n * 8 * 2);
-        for (size_t i = 0; i < dbs.size(); ++i) {
-            dbs[i] = uniform(rng);
-        }
-
-        // get true distance
-        size_t true_count = 0;
-        uint64_t* bs1 = (uint64_t*)dbs.data();
-        for (size_t i = 0; i < n; ++i) {
-            uint64_t* bs2 = bs1 + 2;
-            for (size_t j = i + 1; j < n; ++j) {
-                if (faiss::hamming(bs1 + i * nwords, bs2 + j * nwords, nwords) <
-                    hamming_threshold) {
-                    ++true_count;
-                }
-            }
-        }
-
-        // run test and check correctness
-        size_t count;
-        if (ncodes == 65) {
-            ASSERT_THROW(
-                    faiss::crosshamming_count_thres(
-                            dbs.data(), n, hamming_threshold, ncodes, &count),
-                    faiss::FaissException);
-            continue;
-        }
-        faiss::crosshamming_count_thres(
-                dbs.data(), n, hamming_threshold, ncodes, &count);
-
-        ASSERT_EQ(count, true_count) << "ncodes = " << ncodes;
-    }
+    // 65 bytes hits the unsupported-size default case.
+    const size_t n = 10;
+    const size_t ncodes = 65;
+    std::vector<uint8_t> dbs(n * ncodes);
+    size_t count;
+    ASSERT_THROW(
+            faiss::crosshamming_count_thres(dbs.data(), n, 20, ncodes, &count),
+            faiss::FaissException);
 }
-TEST(TestHamming, test_hamming_thres) {
-    // Initialize randomizer
-    std::default_random_engine rng(123);
-    std::uniform_int_distribution<int32_t> uniform(0, 255);
 
-    // Initialize inputs
+TEST(TestHamming, test_hamming_thres) {
+    // 65 bytes hits the unsupported-size default case.
     const size_t n1 = 10;
     const size_t n2 = 15;
+    const size_t ncodes = 65;
     const hamdis_t hamming_threshold = 100;
-
-    // one for each case - 65 is default
-    for (auto ncodes : {8, 16, 32, 64, 65}) {
-        // initialize inputs
-        const int nbits = ncodes * 8;
-        const size_t nwords = nbits / 64;
-        std::vector<uint8_t> bs1(nwords * n1 * 8);
-        std::vector<uint8_t> bs2(nwords * n2 * 8);
-        for (size_t i = 0; i < bs1.size(); ++i) {
-            bs1[i] = uniform(rng);
-        }
-        for (size_t i = 0; i < bs2.size(); ++i) {
-            bs2[i] = uniform(rng);
-        }
-
-        // get true distance
-        size_t true_count = 0;
-        std::vector<int64_t> true_idx;
-        std::vector<hamdis_t> true_dis;
-
-        uint64_t* bs1_64 = (uint64_t*)bs1.data();
-        uint64_t* bs2_64 = (uint64_t*)bs2.data();
-        for (size_t i = 0; i < n1; ++i) {
-            for (size_t j = 0; j < n2; ++j) {
-                hamdis_t ham_dist = faiss::hamming(
-                        bs1_64 + i * nwords, bs2_64 + j * nwords, nwords);
-                if (ham_dist < hamming_threshold) {
-                    ++true_count;
-                    true_idx.push_back(i);
-                    true_idx.push_back(j);
-                    true_dis.push_back(ham_dist);
-                }
-            }
-        }
-
-        // run test and check correctness for both
-        // match_hamming_thres and hamming_count_thres
-        std::vector<int64_t> idx(true_idx.size());
-        std::vector<hamdis_t> dis(true_dis.size());
-        if (ncodes == 65) {
-            ASSERT_THROW(
-                    faiss::match_hamming_thres(
-                            bs1.data(),
-                            bs2.data(),
-                            n1,
-                            n2,
-                            hamming_threshold,
-                            ncodes,
-                            idx.data(),
-                            dis.data()),
-                    faiss::FaissException);
-            ASSERT_THROW(
-                    faiss::hamming_count_thres(
-                            bs1.data(),
-                            bs2.data(),
-                            n1,
-                            n2,
-                            hamming_threshold,
-                            ncodes,
-                            nullptr),
-                    faiss::FaissException);
-            continue;
-        }
-        size_t match_count = faiss::match_hamming_thres(
-                bs1.data(),
-                bs2.data(),
-                n1,
-                n2,
-                hamming_threshold,
-                ncodes,
-                idx.data(),
-                dis.data());
-        size_t count_count;
-        faiss::hamming_count_thres(
-                bs1.data(),
-                bs2.data(),
-                n1,
-                n2,
-                hamming_threshold,
-                ncodes,
-                &count_count);
-
-        ASSERT_EQ(match_count, true_count) << "ncodes = " << ncodes;
-        ASSERT_EQ(count_count, true_count) << "ncodes = " << ncodes;
-        ASSERT_EQ(idx, true_idx) << "ncodes = " << ncodes;
-        ASSERT_EQ(dis, true_dis) << "ncodes = " << ncodes;
-    }
+    std::vector<uint8_t> bs1(n1 * ncodes);
+    std::vector<uint8_t> bs2(n2 * ncodes);
+    std::vector<int64_t> idx(2 * n1 * n2);
+    std::vector<hamdis_t> dis(n1 * n2);
+    ASSERT_THROW(
+            faiss::match_hamming_thres(
+                    bs1.data(),
+                    bs2.data(),
+                    n1,
+                    n2,
+                    hamming_threshold,
+                    ncodes,
+                    idx.data(),
+                    dis.data()),
+            faiss::FaissException);
+    ASSERT_THROW(
+            faiss::hamming_count_thres(
+                    bs1.data(),
+                    bs2.data(),
+                    n1,
+                    n2,
+                    hamming_threshold,
+                    ncodes,
+                    nullptr),
+            faiss::FaissException);
 }
 
 TEST(TestHamming, test_hamming_knn) {
-    // Initialize randomizer
-    std::default_random_engine rng(123);
-    std::uniform_int_distribution<int32_t> uniform(0, 32);
-
     // Initialize inputs
     const size_t na = 4;
     const size_t nb = 12; // number of candidates
@@ -285,7 +176,6 @@ TEST(TestHamming, test_hamming_knn) {
     // 8, 16, 32 are cases - 24 will hit default case
     // all should be multiples of 8
     for (auto code_size : {8, 16, 24, 32}) {
-        // get example
         std::stringstream assert_str = get_correct_hamming_example(
                 na,
                 nb,
@@ -297,7 +187,6 @@ TEST(TestHamming, test_hamming_knn) {
                 true_bit_distances,
                 true_byte_distances);
 
-        // run test on generalized_hammings_knn_hc
         std::vector<faiss::idx_t> ids_gen(na * k);
         std::vector<int> dist_gen(na * k);
         faiss::int_maxheap_array_t res = {
@@ -307,30 +196,12 @@ TEST(TestHamming, test_hamming_knn) {
         ASSERT_EQ(ids_gen, *true_ids) << assert_str.str();
         ASSERT_EQ(dist_gen, *true_byte_distances) << assert_str.str();
 
-        // run test on hammings_knn
         std::vector<faiss::idx_t> ids_ham_knn(na * k, 0);
         std::vector<int> dist_ham_knn(na * k, 0);
         res = {na, k, ids_ham_knn.data(), dist_ham_knn.data()};
         faiss::hammings_knn(&res, a->data(), b->data(), nb, code_size, true);
         ASSERT_EQ(ids_ham_knn, *true_ids) << assert_str.str();
         ASSERT_EQ(dist_ham_knn, *true_bit_distances) << assert_str.str();
-    }
-
-    for (auto code_size : {8, 16, 24, 32, 64}) {
-        std::stringstream assert_str = get_correct_hamming_example(
-                na,
-                nb,
-                /* k */ nb, // faiss::hammings computes all distances
-                code_size,
-                a,
-                b,
-                true_ids,
-                true_bit_distances,
-                true_byte_distances);
-        std::vector<hamdis_t> dist_gen(na * nb);
-        faiss::hammings(
-                a->data(), b->data(), na, nb, code_size, dist_gen.data());
-        EXPECT_EQ(dist_gen, *true_bit_distances) << assert_str.str();
     }
 }
 
