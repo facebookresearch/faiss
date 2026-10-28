@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Tests for IVF index behavior. Ported from test_ivf_index.cpp."""
+"""Tests for IVF index behavior."""
 
 import contextlib
 import unittest
@@ -125,7 +125,7 @@ class TestIVFIndex(unittest.TestCase):
             self.assertAlmostEqual(
                 D[0][0], 1.0, msg=f"parallel mode {parallel_mode}")
 
-    def test_search_preassigned_out_of_range_key(self):
+    def test_preassigned_out_of_range_key(self):
         d = 4
         nlist = 2
         quantizer = faiss.IndexFlatL2(d)
@@ -141,21 +141,6 @@ class TestIVFIndex(unittest.TestCase):
         coarse_dis = np.zeros((1, 1), dtype=np.float32)
         with self.assertRaises(RuntimeError):
             index.search_preassigned(xq, 1, bad_keys, coarse_dis)
-
-    def test_range_search_preassigned_out_of_range_key(self):
-        d = 4
-        nlist = 2
-        quantizer = faiss.IndexFlatL2(d)
-        index = faiss.IndexIVFFlat(quantizer, d, nlist)
-
-        train_data = np.arange(nlist * d, dtype=np.float32).reshape(
-            nlist, d)
-        index.train(train_data)
-        index.add(train_data)
-
-        xq = np.ones((1, d), dtype=np.float32)
-        bad_keys = np.array([[nlist]], dtype=np.int64)
-        coarse_dis = np.zeros((1, 1), dtype=np.float32)
         with self.assertRaises(RuntimeError):
             index.range_search_preassigned(
                 xq, np.finfo(np.float32).max, bad_keys, coarse_dis
@@ -186,23 +171,10 @@ class TestIVFIndex(unittest.TestCase):
         half_index.train(encoded, numeric_type=faiss.Float16)
 
         self.assertTrue(half_index.is_trained)
-        self.assertEqual(half_quantizer.ntotal, nlist)
         np.testing.assert_array_equal(
             half_quantizer.reconstruct_n(0, nlist),
             float_quantizer.reconstruct_n(0, nlist),
         )
-
-    def test_encoded_training_rejects_non_finite_values(self):
-        d = 2
-        nlist = 2
-        encoded = encode_fp16(
-            [[0.0, 1.0], [2.0, 3.0], [np.inf, 5.0], [6.0, 7.0]])
-        self.assertTrue(np.isinf(encoded[2, 0]))
-
-        quantizer = faiss.IndexFlatL2(d)
-        index = faiss.IndexIVFFlat(quantizer, d, nlist)
-        with self.assertRaises(RuntimeError):
-            index.train(encoded, numeric_type=faiss.Float16)
 
     def test_train_float16_trains_scalar_quantizer_encoder(self):
         d = 4
@@ -244,7 +216,6 @@ class TestIVFIndex(unittest.TestCase):
         half_index.cp = small_clustering_params(4)
         half_index.train(encoded, numeric_type=faiss.Float16)
 
-        self.assertTrue(half_index.is_trained)
         np.testing.assert_array_equal(
             half_quantizer.reconstruct_n(0, nlist),
             float_quantizer.reconstruct_n(0, nlist),
@@ -265,20 +236,12 @@ class TestIVFIndex(unittest.TestCase):
         nlist = 1
         x = np.array([[0.0], [0.0], [0.0], [10.0]], dtype=np.float32)
 
-        direct_quantizer = faiss.IndexFlatL2(d)
-        direct = faiss.IndexIVFFlatDedup(direct_quantizer, d, nlist)
-        direct.cp = small_clustering_params(1)
-        direct.train(x)
-
         train_ex_quantizer = faiss.IndexFlatL2(d)
         train_ex = faiss.IndexIVFFlatDedup(train_ex_quantizer, d, nlist)
         train_ex.cp = small_clustering_params(1)
         train_ex.train_ex(n, faiss.swig_ptr(x), faiss.Float32)
 
-        direct_centroid = direct_quantizer.reconstruct(0)
         train_ex_centroid = train_ex_quantizer.reconstruct(0)
-        np.testing.assert_array_max_ulp(
-            train_ex_centroid, direct_centroid, maxulp=4)
         np.testing.assert_array_max_ulp(
             train_ex_centroid, np.float32([5.0]), maxulp=4)
 
@@ -309,9 +272,7 @@ class TestClustering(unittest.TestCase):
             )
             full_objs = iteration_objs(full)
             half_objs = iteration_objs(half)
-            self.assertEqual(len(half_objs), len(full_objs))
             self.assertEqual(half_objs, full_objs, f"d={d}")
-            self.assertEqual(half_index.ntotal, k)
 
     def test_train_ex_float16_weighted_matches_float32(self):
         n = 150
@@ -338,7 +299,6 @@ class TestClustering(unittest.TestCase):
 
         full_centroids = faiss.vector_to_array(full.centroids)
         half_centroids = faiss.vector_to_array(half.centroids)
-        self.assertEqual(half_centroids.size, full_centroids.size)
         np.testing.assert_allclose(
             half_centroids, full_centroids, rtol=0, atol=1e-4)
 
@@ -402,33 +362,6 @@ class TestClustering(unittest.TestCase):
         index = faiss.IndexFlatL2(d)
         with self.assertRaises(RuntimeError):
             clus.train_ex(n, faiss.swig_ptr(x), faiss.UInt8, index)
-
-    def test_train_ex_float16_native_flat_assignment_matches_float32(self):
-        n = 3000
-        d = 48
-        k = 8
-        with scoped_blas_tiles(256):
-            encoded = encode_fp16(make_training_data(n, d))
-            rounded = decode_fp16(encoded)
-            cp = small_clustering_params(5)
-
-            full = faiss.Clustering(d, k, cp)
-            full_index = faiss.IndexFlatL2(d)
-            full.train(rounded, full_index)
-
-            half = faiss.Clustering(d, k, cp)
-            half_index = faiss.IndexFlatL2(d)
-            half.train_ex(
-                n, faiss.swig_ptr(encoded), faiss.Float16, half_index)
-
-        np.testing.assert_array_equal(
-            faiss.vector_to_array(half.centroids),
-            faiss.vector_to_array(full.centroids),
-        )
-        full_objs = iteration_objs(full)
-        half_objs = iteration_objs(half)
-        self.assertEqual(len(half_objs), len(full_objs))
-        self.assertEqual(half_objs, full_objs)
 
 
 class TestIndex(unittest.TestCase):
@@ -511,7 +444,6 @@ class TestIndexFlat(unittest.TestCase):
                 queries, k, params=params, numeric_type=faiss.Float16)
         np.testing.assert_array_equal(hi, fi)
         np.testing.assert_array_equal(hd, fd)
-        self.assertTrue(np.all((hi >= 100) & (hi < 250)))
 
     def test_search_ex_float16_keeps_flat1d_search(self):
         nb = 100

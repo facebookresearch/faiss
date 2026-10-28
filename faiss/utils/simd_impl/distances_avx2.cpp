@@ -6,6 +6,7 @@
  */
 
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_impl/masked_sum-avx2.h>
 
 #include <immintrin.h>
 
@@ -103,6 +104,14 @@ void fvec_madd<SIMDLevel::AVX2>(
         const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
         _mm256_maskstore_ps(c + idx, mask, abmul);
     }
+}
+
+template <>
+float fvec_masked_sum<SIMDLevel::AVX2>(
+        const float* x,
+        const uint8_t* bits,
+        size_t d) {
+    return masked_sum<SIMDLevel::AVX2>(x, bits, d);
 }
 
 template <size_t DIM>

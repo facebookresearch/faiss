@@ -11,7 +11,6 @@
 
 using namespace faiss::nndescent;
 
-/// Helper: build a Nhood with known data in all fields.
 static Nhood make_populated_nhood() {
     std::mt19937 rng(42);
     int N = 200;

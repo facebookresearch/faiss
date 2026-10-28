@@ -9,6 +9,8 @@
 
 #include <faiss/impl/ProductQuantizer.h>
 
+#include <omp.h>
+#include <atomic>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
@@ -143,8 +145,8 @@ void ProductQuantizer::train(size_t n, const float* x) {
             }
         }
 
-        std::unique_ptr<float[]> xslice(new float[n * dsub]);
-        for (size_t m = 0; m < M; m++) {
+        const auto train_slice = [&](size_t m) {
+            std::unique_ptr<float[]> xslice(new float[n * dsub]);
             for (size_t j = 0; j < n; j++)
                 memcpy(xslice.get() + j * dsub,
                        x + j * d + m * dsub,
@@ -152,7 +154,6 @@ void ProductQuantizer::train(size_t n, const float* x) {
 
             Clustering clus(dsub, ksub, cp);
 
-            // we have some initialization for the centroids
             if (final_train_type != Train_default) {
                 clus.centroids.resize(dsub * ksub);
             }
@@ -189,6 +190,28 @@ void ProductQuantizer::train(size_t n, const float* x) {
             IndexFlatL2 index(dsub);
             clus.train(n, xslice.get(), assign_index ? *assign_index : index);
             set_params(clus.centroids.data(), m);
+        };
+
+        if (!assign_index && x != centroids.data() && M > 1 &&
+            M * 8 >= static_cast<size_t>(omp_get_max_threads())) {
+            std::exception_ptr ex;
+            std::atomic<bool> failed{false};
+#pragma omp parallel for
+            for (int64_t m = 0; m < static_cast<int64_t>(M); m++) {
+                if (failed) {
+                    continue;
+                }
+                try {
+                    train_slice(m);
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { failed = true; });
+                }
+            }
+            omp_rethrow_if_exception(ex);
+        } else {
+            for (size_t m = 0; m < M; m++) {
+                train_slice(m);
+            }
         }
 
     } else {

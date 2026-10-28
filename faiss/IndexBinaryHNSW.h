@@ -46,7 +46,7 @@ struct IndexBinaryHNSW : IndexBinary {
     // min(n, level_0_link_samples_per_node * ntotal) training vectors. 0
     // disables the call. Training does not call it when the quantizer is
     // already trained. The index format does not store this value.
-    int level_0_link_samples_per_node = 16;
+    int level_0_link_samples_per_node = 3;
 
     explicit IndexBinaryHNSW();
     explicit IndexBinaryHNSW(int d, int M = 32);

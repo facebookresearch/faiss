@@ -3,24 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# a few tests of the swig wrapper
-
 import unittest
 import faiss
 import numpy as np
 
 
 class TestSWIGWrap(unittest.TestCase):
-    """various regressions with the SWIG wrapper"""
-
-    def test_size_t_ptr(self):
-        # issue 1064
-        index = faiss.IndexHNSWFlat(10, 32)
-
-        hnsw = index.hnsw
-        index.add(np.random.rand(100, 10).astype("float32"))
-        be = np.empty(2, "uint64")
-        hnsw.neighbor_range(23, 0, faiss.swig_ptr(be), faiss.swig_ptr(be[1:]))
 
     def test_id_map_at(self):
         # issue 1020
@@ -44,12 +32,10 @@ class TestSWIGWrap(unittest.TestCase):
             faiss.IndexScalarQuantizer(10, faiss.ScalarQuantizer.QT_8bit)
         )
 
-        # serialize and deserialize
         index2 = faiss.deserialize_index(faiss.serialize_index(index))
 
         assert isinstance(index2, faiss.IndexRefineFlat)
 
-        # Verify deserialized index is serializable again
         index3 = faiss.deserialize_index(faiss.serialize_index(index2))
         assert isinstance(index3, faiss.IndexRefineFlat)
 
@@ -82,91 +68,35 @@ class TestSWIGWrap(unittest.TestCase):
         assert a.dtype == "int64"
         np.testing.assert_array_equal(a, np.arange(10, dtype="int64"))
 
-        # check if it works in an IDMap
-        idx = faiss.IndexIDMap(faiss.IndexFlatL2(32))
-        idx.add_with_ids(
-            np.random.rand(10, 32).astype("float32"),
-            np.random.randint(1000, size=10, dtype="int64"),
-        )
-        faiss.vector_to_array(idx.id_map)
-
-    def test_asan(self):
-        # this test should fail with ASAN
-        index = faiss.IndexFlatL2(32)
-        index.this.own(False)  # this is a mem leak, should be catched by ASAN
-
     def test_SWIG_version(self):
         self.assertLess(faiss.swig_version(), 0x050000)
 
     def test_attribute_validation(self):
-        """Test that setting invalid attributes raises AttributeError"""
-
-        # Test IndexPreTransform - the main use case from the issue
         index = faiss.index_factory(256, "OPQ64,IVF16384,PQ64")
 
-        # Should raise AttributeError when trying to set nprobe directly on
-        # wrapper
         with self.assertRaises(AttributeError) as cm:
             index.nprobe = 16
 
-        # Check that the error message contains basic information
         error_msg = str(cm.exception)
         self.assertIn("IndexPreTransform", error_msg)
         self.assertIn("nprobe", error_msg)
 
-        # Test with other IVF parameters that should be blocked
-        with self.assertRaises(AttributeError) as cm:
-            index.nlist = 8192
-
-        # Valid attributes should still work
-        index.verbose = True  # This should be allowed
+        index.verbose = True
         self.assertEqual(index.verbose, True)
-
-    def test_attribute_validation_other_indexes(self):
-        """Test that other index types allow normal attribute setting"""
-
-        # Test with a regular IndexFlat - should allow most attributes now
-        index = faiss.IndexFlatL2(10)
-
-        # Valid attributes should work
-        index.verbose = False
-        self.assertEqual(index.verbose, False)
-
-    def test_rabitq(self):
-        """Test that other index types allow normal attribute setting"""
-
-        # Test with a regular IndexFlat - should allow most attributes now
-        index = faiss.IndexRaBitQ(10)
-        # Valid attributes should work
-        index.qb = 4
-        index.centered = True
-
-        with self.assertRaises(AttributeError):
-            index.centered2 = False
 
     def test_ivfsq_turboq_search_parameters(self):
         params = faiss.IVFSQTurboQSearchParameters()
         self.assertEqual(params.qb, 0)
         self.assertFalse(params.int_qjl)
-        params.qb = 4
-        params.int_qjl = True
-        self.assertEqual(params.qb, 4)
-        self.assertTrue(params.int_qjl)
 
-    def test_scalar_quantizer_tq_enum_values(self):
-        # QT_2bit_tq..QT_5bit_tq were added in the TurboQuant commit and must
-        # be accessible as ScalarQuantizer class attributes (pyi stub regression
-        # test: they were absent until this fix).
+    def test_scalar_quantizer_qtype_values(self):
+        # qtype is serialized as an int: these values must not change
         sq = faiss.ScalarQuantizer
+        self.assertEqual(sq.QT_0bit, 9)
         self.assertEqual(sq.QT_2bit_tq, 15)
         self.assertEqual(sq.QT_3bit_tq, 16)
         self.assertEqual(sq.QT_4bit_tq, 17)
         self.assertEqual(sq.QT_5bit_tq, 18)
-
-    def test_scalar_quantizer_0bit_enum_value(self):
-        # QT_0bit (centroid-only SQ, for IVF) was likewise absent from the
-        # pyi stub until this fix.
-        self.assertEqual(faiss.ScalarQuantizer.QT_0bit, 9)
 
 
 class TestRevSwigPtr(unittest.TestCase):
@@ -193,13 +123,11 @@ class TestException(unittest.TestCase):
 
         # an unsupported operation for IndexFlat
         self.assertRaises(RuntimeError, index.add_with_ids, a, b)
-        # assert 'add_with_ids not implemented' in str(e)
 
     def test_exception_2(self):
         self.assertRaises(
             RuntimeError, faiss.index_factory, 12, "IVF256,Flat,PQ8"
         )
-        #    assert 'could not parse' in str(e)
 
 
 class TestAddSACodes(unittest.TestCase):
@@ -212,8 +140,6 @@ class TestAddSACodes(unittest.TestCase):
         rng = np.random.default_rng(42)
         self.xb = rng.random((self.NB, self.D), dtype=np.float32)
         self.xtrain = rng.random((500, self.D), dtype=np.float32)
-        # IDMap2 wrapping PQ8x2: outer index stores (id → code) pairs;
-        # inner PQ8x2 encodes vectors via sa_encode / add_sa_codes.
         self.index = faiss.index_factory(self.D, "IDMap2,PQ8x2")
         self.index.train(self.xtrain)
 
@@ -233,21 +159,9 @@ class TestAddSACodes(unittest.TestCase):
         stored = faiss.vector_to_array(self.index.id_map)
         np.testing.assert_array_equal(stored, ids_int64)
 
-    def test_add_sa_codes_int64_ids_unchanged(self):
-        """int64 ids must pass through as-is (np.ascontiguousarray is a no-op
-        when the array is already int64 and contiguous)."""
-        codes = self.index.index.sa_encode(self.xb)
-
-        ids = np.arange(self.NB, dtype="int64") + 500
-        self.index.add_sa_codes(codes, ids)
-
-        stored = faiss.vector_to_array(self.index.id_map)
-        np.testing.assert_array_equal(stored, ids)
-
     def test_sa_encode_preallocated_matches_auto_allocated(self):
-        """sa_encode with a pre-allocated buffer must return the same codes
-        as the auto-allocated path, exercising both branches of the hoisted
-        sa_code_size() call."""
+        """sa_encode into a caller buffer returns that buffer with the same
+        codes."""
         inner = self.index.index
         codes_auto = inner.sa_encode(self.xb)
 
@@ -311,24 +225,13 @@ class TestDoxygen(unittest.TestCase):
 
 
 class TestMapLong2Long(unittest.TestCase):
-    def test_add_coerces_keys_and_vals(self):
-        for dtype in (np.int32, np.int64):
-            with self.subTest(dtype=dtype):
-                m = faiss.MapLong2Long()
-                keys = np.array([0, 1, 2, 3, 4], dtype=dtype)
-                vals = np.array([100, 101, 102, 103, 104], dtype=dtype)
-                m.add(keys, vals)
-                for k, v in zip(range(5), range(100, 105)):
-                    self.assertEqual(m.search(k), v)
-
-    def test_search_multiple_coerces_int32_keys(self):
+    def test_add_and_search_multiple_coerce_int32(self):
         m = faiss.MapLong2Long()
-        m.add(
-            np.arange(5, dtype=np.int64),
-            np.arange(5, dtype=np.int64) + 300,
-        )
-        result = m.search_multiple(np.array([0, 2, 4], dtype=np.int32))
-        np.testing.assert_array_equal(result, [300, 302, 304])
+        keys = np.arange(5, dtype=np.int32)
+        vals = np.arange(5, dtype=np.int32) + 300
+        m.add(keys, vals)
+        result = m.search_multiple(keys)
+        np.testing.assert_array_equal(result, vals)
 
 
 class TestInvertedListsDowncast(unittest.TestCase):

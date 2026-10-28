@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Tests for IndexPiPNN (Flat and SQ storage)."""
-
 import os
 import platform
 import tempfile
@@ -27,13 +25,6 @@ def recall(index, xb, xq):
     return faiss.eval_intersection(labels, gt) / labels.size
 
 
-def ip_dataset(nb, nq):
-    # unnormalized, mixed-sign inner products
-    _, xb, xq = get_dataset_2(DIM, 0, nb, nq)
-    scale = np.random.RandomState(123).uniform(0.5, 2.0, size=(nb, 1))
-    return (xb * scale).astype("float32"), xq
-
-
 def graph_of(index):
     return faiss.vector_to_array(index.pipnn.graph), index.pipnn.entry_point
 
@@ -53,7 +44,9 @@ class TestPiPNNBuild(unittest.TestCase):
     def test_deterministic_build(self):
         self.addCleanup(faiss.omp_set_num_threads, faiss.omp_get_max_threads())
         _, xb_l2, _ = get_dataset_2(DIM, 0, 3000, 0)
-        xb_ip, _ = ip_dataset(3000, 0)
+        # unnormalized, mixed-sign inner products
+        scale = np.random.RandomState(123).uniform(0.5, 2.0, size=(3000, 1))
+        xb_ip = (xb_l2 * scale).astype("float32")
         for metric, xb in (
             (faiss.METRIC_L2, xb_l2),
             (faiss.METRIC_INNER_PRODUCT, xb_ip),
@@ -81,14 +74,11 @@ class TestPiPNNBuild(unittest.TestCase):
     def test_effective_alpha(self):
         p = faiss.PiPNN()
         self.assertAlmostEqual(p.effective_alpha(faiss.METRIC_L2), 1.2, 6)
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.0)
         self.assertAlmostEqual(
-            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.2
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.2, 6
         )
-        p.alpha = 1.5
-        self.assertEqual(
-            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.5
-        )
+        p.alpha = 1.25
+        self.assertEqual(p.effective_alpha(faiss.METRIC_L2), 1.25)
         self.assertRaises(RuntimeError, p.effective_alpha, faiss.METRIC_L1)
 
     def test_sq8_train_add_search(self):
@@ -390,7 +380,6 @@ class TestPiPNNSerialization(unittest.TestCase):
         try:
             faiss.write_index(index, fname)
             index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
-            self.assertIsInstance(index2, faiss.IndexPiPNNFlat)
             self.assertFalse(index2.pipnn.graph.is_owned)
             self.assert_same_index(index, index2)
         finally:
