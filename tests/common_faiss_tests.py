@@ -3,15 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# a few common functions for the tests
-
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
-
 import sys
 import unittest
 
@@ -78,7 +69,6 @@ class Randu10kUnbalanced(Randu10k):
 
         dotprods = np.dot(self.xq, self.xb.T)
         self.gt = dotprods.argmax(1)
-        self.k = 100
 
 
 def get_dataset(d, nb, nt, nq):
@@ -130,7 +120,7 @@ def compare_binary_result_lists(D1, I1, D2, I2):
         norm = I.max() + 1.0
         Dr = D.astype("float64") + I / norm
         # ignore -1s and elements on last column
-        Dr[I1 == -1] = 1e20
+        Dr[I == -1] = 1e20
         Dr[D == D[:, -1:]] = 1e20
         Dr.sort(axis=1)
         return Dr
@@ -139,7 +129,6 @@ def compare_binary_result_lists(D1, I1, D2, I2):
     assert ndiff == 0, "%d differences in normalized D matrix" % ndiff
 
 
-# Map SIMDLevel enum values to their string names.
 _SIMD_LEVEL_NAMES = {
     faiss.SIMDLevel_NONE: "NONE",
     faiss.SIMDLevel_AVX2: "AVX2",

@@ -9,6 +9,8 @@
 
 #include <faiss/clone_index.h>
 
+#include <memory>
+
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/Index2Layer.h>
@@ -37,6 +39,7 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
@@ -167,6 +170,17 @@ IndexNSG* clone_IndexNSG(const IndexNSG* insg) {
     TRYCLONE(IndexNSGSQ, insg)
     TRYCLONE(IndexNSG, insg) {
         FAISS_THROW_MSG("clone not supported for this type of IndexNSG");
+    }
+}
+
+static IndexPiPNN* clone_IndexPiPNN(const IndexPiPNN* ipipnn) {
+    TRYCLONE(IndexPiPNNFlat, ipipnn)
+    TRYCLONE(IndexPiPNNSQ, ipipnn) {
+        FAISS_THROW_IF_NOT_FMT(
+                typeid(*ipipnn) == typeid(IndexPiPNN),
+                "clone not supported for this type of IndexPiPNN: %s",
+                typeid(*ipipnn).name());
+        return new IndexPiPNN(*ipipnn);
     }
 }
 
@@ -355,6 +369,16 @@ Index* Cloner::clone_Index(const Index* index) {
 
         res->own_fields = true;
         res->storage = clone_Index(insg->storage);
+        return res;
+    } else if (
+            const IndexPiPNN* ipipnn = dynamic_cast<const IndexPiPNN*>(index)) {
+        // make sure we don't get a GPU index here
+        std::unique_ptr<Index> storage(
+                ipipnn->storage ? Cloner::clone_Index(ipipnn->storage)
+                                : nullptr);
+        IndexPiPNN* res = clone_IndexPiPNN(ipipnn);
+        res->storage = storage.release();
+        res->own_fields = true;
         return res;
     } else if (
             const IndexNNDescent* innd =

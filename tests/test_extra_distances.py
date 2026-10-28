@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# noqa E741
-
 import numpy as np
 
 import faiss
@@ -18,8 +16,7 @@ from faiss.contrib.evaluation import check_ref_knn_with_draws
 import scipy.spatial.distance
 
 
-@for_all_simd_levels
-class TestExtraDistances(unittest.TestCase):
+class ScipyRefMixin:
     """check wrt. the scipy implementation"""
 
     def make_example(self):
@@ -34,6 +31,9 @@ class TestExtraDistances(unittest.TestCase):
         new_dis = faiss.pairwise_distances(xq, yb, metric_type)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
+
+@for_all_simd_levels
+class TestSIMDDistances(ScipyRefMixin, unittest.TestCase):
     def test_L1(self):
         self.run_simple_dis_test(
             scipy.spatial.distance.cityblock, faiss.METRIC_L1
@@ -52,12 +52,10 @@ class TestExtraDistances(unittest.TestCase):
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_L2)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
-        ref_dis = np.array(
-            [[scipy.spatial.distance.euclidean(x, y) for y in yb] for x in xq]
-        )
-        new_dis = np.sqrt(new_dis)  # post processing
-        self.assertTrue(np.allclose(ref_dis, new_dis))
 
+# These metrics always run at SIMDLevel::NONE (with_VectorDistance), so one
+# level is enough.
+class TestExtraDistances(ScipyRefMixin, unittest.TestCase):
     def test_Lp(self):
         p = 1.5
         xq, yb = self.make_example()
@@ -68,7 +66,7 @@ class TestExtraDistances(unittest.TestCase):
             ]
         )
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_Lp, p)
-        new_dis = new_dis ** (1 / p)  # post processing
+        new_dis = new_dis ** (1 / p)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
     def test_canberra(self):
@@ -173,8 +171,8 @@ class TestExtraDistances(unittest.TestCase):
         # (negative integers)
         xq = np.array(
             [
-                [0.5, 0.3, -1, -2],  # First query vector
-                [0.7, 0.8, -1, -3],  # Second query vector
+                [0.5, 0.3, -1, -2],
+                [0.7, 0.8, -1, -3],
             ],
             dtype="float32",
         )
@@ -189,7 +187,6 @@ class TestExtraDistances(unittest.TestCase):
             dtype="float32",
         )
 
-        # Compute distances using FAISS
         dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_GOWER)
 
         # Expected distances:
@@ -207,8 +204,8 @@ class TestExtraDistances(unittest.TestCase):
 
         expected = np.array(
             [
-                [0.05, 0.15, 0.25, 0.50],  # Distances for first query
-                [0.475, 0.475, 0.675, 0.425],  # Distances for second query
+                [0.05, 0.15, 0.25, 0.50],
+                [0.475, 0.475, 0.675, 0.425],
             ],
             dtype="float32",
         )

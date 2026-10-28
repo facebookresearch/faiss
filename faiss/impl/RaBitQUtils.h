@@ -353,7 +353,7 @@ inline int extract_code_inline(
  * The multi-bit distance combines the sign bit (1-bit) with additional
  * magnitude bits (ex_bits) to compute a more accurate distance estimate.
  * Uses SIMD-optimized bit-plane decomposition (AVX2+BMI2) for ex_bits 1-7,
- * with scalar fallback for non-x86 or non-BMI2 platforms.
+ * with scalar fallback for non-x86 platforms.
  *
  * @param sign_bits       unpacked sign bits (1-bit codes in standard format)
  * @param ex_code         packed ex-bit codes

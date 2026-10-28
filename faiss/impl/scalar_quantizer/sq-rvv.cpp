@@ -12,9 +12,10 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/impl/scalar_quantizer/sq8_coefficients.h>
+#include <faiss/impl/scalar_quantizer/sq8_rvv_kernel.h>
 
 #include <riscv_vector.h>
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 
@@ -91,12 +92,59 @@ template <>
 struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
             : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        const auto* code16 = reinterpret_cast<const uint16_t*>(code);
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e16m4(d - i);
+            vuint16m4_t vh = __riscv_vle16_v_u16m4(code16 + i, vl);
+            vbool4_t is_nan = __riscv_vmsgtu_vx_u16m4_b4(
+                    __riscv_vand_vx_u16m4(vh, 0x7FFF, vl), 0x7C00, vl);
+            vfloat32m8_t vf = __riscv_vfwcvt_f_f_v_f32m8_m(
+                    __riscv_vmnot_m_b4(is_nan, vl),
+                    __riscv_vreinterpret_v_u16m4_f16m4(vh),
+                    vl);
+            vf = __riscv_vfsub_vf_f32m8_m(
+                    __riscv_vmnot_m_b4(is_nan, vl), vf, 0.0f, vl);
+            if (__riscv_vfirst_m_b4(is_nan, vl) >= 0) {
+                vint32m8_t bits = __riscv_vsext_vf2_i32m8(
+                        __riscv_vreinterpret_v_u16m4_i16m4(vh), vl);
+                bits = __riscv_vsll_vx_i32m8(bits, 13, vl);
+                bits = __riscv_vand_vx_i32m8(bits, -0x70002000, vl);
+                bits = __riscv_vor_vx_i32m8(bits, 0x70000000, vl);
+                vf = __riscv_vmerge_vvm_f32m8(
+                        vf,
+                        __riscv_vreinterpret_v_i32m8_f32m8(bits),
+                        is_nan,
+                        vl);
+            }
+            __riscv_vse32_v_f32m8(x + i, vf, vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
 struct QuantizerBF16<SIMDLevel::RISCV_RVV> : QuantizerBF16<SIMDLevel::NONE> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
             : QuantizerBF16<SIMDLevel::NONE>(d, trained) {}
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        const auto* code16 = reinterpret_cast<const uint16_t*>(code);
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e16m4(d - i);
+            vuint16m4_t v = __riscv_vle16_v_u16m4(code16 + i, vl);
+            vuint32m8_t w = __riscv_vzext_vf2_u32m8(v, vl);
+            w = __riscv_vsll_vx_u32m8(w, 16, vl);
+            __riscv_vse32_v_f32m8(
+                    x + i, __riscv_vreinterpret_v_u32m8_f32m8(w), vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
@@ -104,6 +152,19 @@ struct Quantizer8bitDirect<SIMDLevel::RISCV_RVV>
         : Quantizer8bitDirect<SIMDLevel::NONE> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
             : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e8m2(d - i);
+            vuint8m2_t b = __riscv_vle8_v_u8m2(code + i, vl);
+            vuint16m4_t u = __riscv_vzext_vf2_u16m4(b, vl);
+            vfloat32m8_t f = __riscv_vfwcvt_f_xu_v_f32m8(u, vl);
+            __riscv_vse32_v_f32m8(x + i, f, vl);
+            i += vl;
+        }
+    }
 
     void encode_vector(const float* x, uint8_t* code) const final {
         std::size_t i = 0;
@@ -125,6 +186,21 @@ struct Quantizer8bitDirectSigned<SIMDLevel::RISCV_RVV>
         : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
             : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {}
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        size_t i = 0;
+        const size_t d = this->d;
+        while (i < d) {
+            const size_t vl = __riscv_vsetvl_e8m2(d - i);
+            vint8m2_t v = __riscv_vle8_v_i8m2(
+                    reinterpret_cast<const int8_t*>(code) + i, vl);
+            v = __riscv_vxor_vx_i8m2(v, -128, vl);
+            vint16m4_t v16 = __riscv_vsext_vf2_i16m4(v, vl);
+            vfloat32m8_t f = __riscv_vfwcvt_f_x_v_f32m8(v16, vl);
+            __riscv_vse32_v_f32m8(x + i, f, vl);
+            i += vl;
+        }
+    }
 };
 
 template <>
@@ -1967,13 +2043,7 @@ struct DCTemplate<
 
     DCTemplate(size_t d_in, const std::vector<float>& trained)
             : d(d_in), a_v(d_in, 0.0f), rmin_v(d_in, 0.0f), e_v(d_in, 0.0f) {
-        const float* vmin = trained.data();
-        const float* vdiff = trained.data() + d_in;
-        for (size_t i = 0; i < d_in; i++) {
-            float a = vdiff[i] / 255.0f;
-            a_v[i] = a;
-            rmin_v[i] = vmin[i] + 0.5f * a;
-        }
+        sq8::make_coefficients(trained.data(), d_in, a_v.data(), rmin_v.data());
     }
 
     void set_query(const float* x) final {
@@ -1986,61 +2056,7 @@ struct DCTemplate<
 
     /// Full-precision vector L2 over the 1-byte-per-dim code.
     float compute_l2(const uint8_t* code) const {
-        const float* pa = a_v.data();
-        const float* pe = e_v.data();
-
-        // Hoist vsetvl: VLMAX for e8m1 (== f32 lanes per m4 group).
-        // d==0: guard so vsetvl(0) doesn't return 0 and the prologue
-        // `if (i + vl <= d)` + chunk loop don't stall.
-        const size_t vl = __riscv_vsetvl_e8m1(d > 0 ? d : 1);
-        vfloat32m4_t acc = __riscv_vfmv_v_f_f32m4(0.0f, vl);
-
-        size_t i = 0;
-        if (i + vl <= d) {
-            // Software pipeline depth 1: preload the next chunk's code
-            // bytes at the top of this iteration.
-            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vl); // prologue
-            i += vl;
-
-            for (; i + vl <= d; i += vl) {
-                vuint8m1_t c8_next = __riscv_vle8_v_u8m1(code + i, vl);
-                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
-                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
-                t = __riscv_vfnmsac_vv_f32m4(
-                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
-                c8 = c8_next; // rotate
-            }
-
-            // Epilogue: process the last full chunk (already loaded).
-            {
-                vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
-                        __riscv_vzext_vf4_u32m4(c8, vl), vl);
-                vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i - vl, vl);
-                t = __riscv_vfnmsac_vv_f32m4(
-                        t, __riscv_vle32_v_f32m4(pa + i - vl, vl), cf, vl);
-                acc = __riscv_vfmacc_vv_f32m4(acc, t, t, vl);
-            }
-        }
-
-        // Tail: fewer than vl dims left; accumulates into the first
-        // lanes of acc (safe: reduction below covers all vl lanes).
-        if (i < d) {
-            size_t vt = __riscv_vsetvl_e8m1(d - i);
-            vuint8m1_t c8 = __riscv_vle8_v_u8m1(code + i, vt);
-            vfloat32m4_t cf = __riscv_vfcvt_f_xu_v_f32m4(
-                    __riscv_vzext_vf4_u32m4(c8, vt), vt);
-            vfloat32m4_t t = __riscv_vle32_v_f32m4(pe + i, vt);
-            t = __riscv_vfnmsac_vv_f32m4(
-                    t, __riscv_vle32_v_f32m4(pa + i, vt), cf, vt);
-            acc = __riscv_vfmacc_vv_f32m4_tu(acc, t, t, vt);
-        }
-
-        // Horizontal reduce over all vl lanes
-        vfloat32m1_t red = __riscv_vfredusum_vs_f32m4_f32m1(
-                acc, __riscv_vfmv_v_f_f32m1(0.0f, 1), vl);
-        return __riscv_vfmv_f_s_f32m1_f32(red);
+        return sq8_rvv::l2_distance(code, a_v.data(), e_v.data(), d);
     }
 
     float query_to_code(const uint8_t* code) const final {
@@ -2112,13 +2128,7 @@ struct DCTemplate<
               // vle32 loads stay in bounds (padding lanes never used).
               b_v(d_in + 2 * __riscv_vsetvlmax_e8m1(), 0.0f),
               k_q(0.0f) {
-        const float* vmin = trained.data();
-        const float* vdiff = trained.data() + d_in;
-        for (size_t i = 0; i < d_in; i++) {
-            float a = vdiff[i] / 255.0f;
-            a_v[i] = a;
-            rmin_v[i] = vmin[i] + 0.5f * a;
-        }
+        sq8::make_coefficients(trained.data(), d_in, a_v.data(), rmin_v.data());
     }
 
     void set_query(const float* x) final {
@@ -3360,32 +3370,6 @@ struct DCTemplate<
         dis3 = compute_ip(q, code_3);
     }
 };
-
-/**********************************************************
- * TurboQuant masked_sum RVV specialization (scalar fallback)
- **********************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-float turboq_masked_sum<SIMDLevel::RISCV_RVV>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    float result = 0;
-    for (size_t byte_idx = 0; byte_idx < (d + 7) / 8; byte_idx++) {
-        uint8_t b = bits[byte_idx];
-        size_t base = byte_idx * 8;
-        size_t end = std::min(base + 8, d);
-        for (size_t j = base; j < end; j++) {
-            if (b & (1 << (j - base))) {
-                result += arr[j];
-            }
-        }
-    }
-    return result;
-}
 
 } // namespace scalar_quantizer
 } // namespace faiss
