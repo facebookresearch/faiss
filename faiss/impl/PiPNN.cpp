@@ -40,6 +40,7 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/ordered_key_value.h>
+#include <faiss/utils/prefetch.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -583,6 +584,16 @@ struct SearchBeam {
         }
     }
 
+    /// The closest unexpanded entry after the cursor, or -1.
+    int32_t peek_next() const {
+        for (size_t c = cursor + 1; c < entries.size(); c++) {
+            if (!entries[c].expanded) {
+                return entries[c].id;
+            }
+        }
+        return -1;
+    }
+
     /// Marks the closest unexpanded entry expanded; returns its id, or -1.
     int32_t expand_next() {
         while (cursor < entries.size() && entries[cursor].expanded) {
@@ -600,6 +611,8 @@ template <class VT>
 void beam_search(
         const PiPNN& pipnn,
         DistanceComputer& qdis,
+        const uint8_t* codes,
+        size_t code_size,
         size_t cap,
         size_t k,
         idx_t* I,
@@ -636,7 +649,29 @@ void beam_search(
     vt.set(size_t(pipnn.entry_point));
     visit(pipnn.entry_point, qdis(pipnn.entry_point));
 
+    // Prefetching more than 1 KiB per vector costs more than it saves.
+    const size_t prefetch_bytes = std::min(code_size, size_t(1024));
+    auto prefetch = [](const void* p, size_t nbytes) {
+        const uintptr_t a = reinterpret_cast<uintptr_t>(p);
+        for (uintptr_t b = a & ~uintptr_t(63); b < a + nbytes; b += 64) {
+            prefetch_L1(reinterpret_cast<const void*>(b));
+        }
+    };
+    auto prefetch_code = [&](int32_t id) {
+        prefetch(codes + size_t(id) * code_size, prefetch_bytes);
+    };
+    // Vectors are prefetched about 4 KiB ahead of the distance computation,
+    // at least one batch: prefetching all neighbors of a large-vector graph at
+    // once evicts the ones about to be read when two threads share a core.
+    const size_t ahead = std::max(
+            size_t(4), size_t(4096) / std::max(prefetch_bytes, size_t(64)));
+    std::vector<int32_t> todo(R);
     for (int32_t v0 = beam.expand_next(); v0 >= 0; v0 = beam.expand_next()) {
+        // The closest unexpanded entry usually comes next.
+        const int32_t next = beam.peek_next();
+        if (next >= 0) {
+            prefetch(graph + size_t(next) * R, R * sizeof(int32_t));
+        }
         const int32_t* row = graph + size_t(v0) * R;
         // One unsigned compare stops at the -1 padding and at any id that is
         // out of range in a corrupt (e.g. mmapped) graph.
@@ -645,30 +680,36 @@ void beam_search(
             vt.prefetch(size_t(row[jmax]));
             jmax++;
         }
-        int32_t batch[4];
-        int nbatch = 0;
+        size_t nt = 0;
         for (size_t j = 0; j < jmax; j++) {
-            batch[nbatch] = row[j];
-            nbatch += vt.set(size_t(row[j])) ? 1 : 0;
-            if (nbatch == 4) {
-                float d4[4];
-                qdis.distances_batch_4(
-                        batch[0],
-                        batch[1],
-                        batch[2],
-                        batch[3],
-                        d4[0],
-                        d4[1],
-                        d4[2],
-                        d4[3]);
-                for (int i = 0; i < 4; i++) {
-                    visit(batch[i], d4[i]);
+            if (vt.set(size_t(row[j]))) {
+                if (nt < ahead) {
+                    prefetch_code(row[j]);
                 }
-                nbatch = 0;
+                todo[nt++] = row[j];
             }
         }
-        for (int i = 0; i < nbatch; i++) {
-            visit(batch[i], qdis(batch[i]));
+        size_t i = 0;
+        for (; i + 4 <= nt; i += 4) {
+            for (size_t t = i + ahead; t < std::min(i + ahead + 4, nt); t++) {
+                prefetch_code(todo[t]);
+            }
+            float d4[4];
+            qdis.distances_batch_4(
+                    todo[i],
+                    todo[i + 1],
+                    todo[i + 2],
+                    todo[i + 3],
+                    d4[0],
+                    d4[1],
+                    d4[2],
+                    d4[3]);
+            for (size_t t = 0; t < 4; t++) {
+                visit(todo[i + t], d4[t]);
+            }
+        }
+        for (; i < nt; i++) {
+            visit(todo[i], qdis(todo[i]));
         }
     }
 }
@@ -755,8 +796,17 @@ void PiPNN::search(
     }
     // At most ntotal distinct nodes enter the beam.
     const size_t cap = size_t(std::min(std::max(idx_t(L), k), ntotal));
+    // The codes of Flat and SQ storage, to prefetch.
+    DistanceComputer* base = &qdis;
+    if (auto* neg = dynamic_cast<NegativeDistanceComputer*>(base)) {
+        base = neg->basedis;
+    }
+    const auto* fc = dynamic_cast<const FlatCodesDistanceComputer*>(base);
+    const uint8_t* codes = fc ? fc->codes : nullptr;
+    const size_t code_size = fc ? fc->code_size : 0;
     auto run = [&](auto& vtc) {
-        pipnn::beam_search(*this, qdis, cap, size_t(k), I, D, vtc, sel);
+        pipnn::beam_search(
+                *this, qdis, codes, code_size, cap, size_t(k), I, D, vtc, sel);
     };
     if (auto* vtv = dynamic_cast<VisitedTableVector*>(&vt)) {
         run(*vtv);
