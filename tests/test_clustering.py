@@ -193,6 +193,25 @@ class TestCompositeClustering(unittest.TestCase):
 
         self.assertGreater(obj10, obj1)
 
+    def test_progressive_dim_assign(self):
+        rs = np.random.RandomState(123)
+        x = rs.randn(200, 8).astype("float32")
+        queries = rs.randn(10, 8).astype("float32")
+        kmeans = faiss.Kmeans(8, 2, niter=2, progressive_dim_steps=3)
+
+        for training_data in (x, x + 5):
+            kmeans.train(training_data)
+            expected = (
+                (queries[:, None, :] - kmeans.centroids[None, :, :]) ** 2
+            ).sum(axis=2)
+            for _ in range(2):
+                distances, labels = kmeans.assign(queries)
+                np.testing.assert_array_equal(labels, expected.argmin(axis=1))
+                np.testing.assert_allclose(
+                    distances, expected.min(axis=1), rtol=1e-5
+                )
+            self.assertTrue(kmeans.index.thisown)
+
     def test_progressive_dim(self):
         d = 32
         n = 10000
