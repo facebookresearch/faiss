@@ -11349,7 +11349,6 @@
     <member refid="structfaiss_1_1PiPNN_1afd52f518a8e0825b588daaf2528e7757" kind="variable"><name>c_max</name></member>
     <member refid="structfaiss_1_1PiPNN_1a1c73b83b98f07e915ce9fe455e01abcb" kind="variable"><name>c_min</name></member>
     <member refid="structfaiss_1_1PiPNN_1ac6eda5d3056c5ae0309b028301096864" kind="variable"><name>leader_cap</name></member>
-    <member refid="structfaiss_1_1PiPNN_1a5e171a52eaea2f6e287be3ecd1cfb772" kind="variable"><name>replicas</name></member>
     <member refid="structfaiss_1_1PiPNN_1a65a0c0bf3ecc3f635c4f67b9ce45a519" kind="variable"><name>leader_fraction</name></member>
     <member refid="structfaiss_1_1PiPNN_1a1984ee2af491162161353a5f725967d0" kind="variable"><name>alpha</name></member>
     <member refid="structfaiss_1_1PiPNN_1a7033b3fc0a7cede50ed0936fbb74397b" kind="variable"><name>fanout</name></member>
