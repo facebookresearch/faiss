@@ -1370,7 +1370,9 @@ static void read_PiPNN(PiPNN& pipnn, idx_t index_ntotal, IOReader* f) {
     READ1(pipnn.c_max);
     READ1(pipnn.c_min);
     READ1(pipnn.leader_cap);
-    READ1(pipnn.replicas);
+    // Former replicas field: build metadata that search does not need.
+    int replicas;
+    READ1(replicas);
     READ1(pipnn.leader_fraction);
     READ1(pipnn.alpha);
     READVECTOR(pipnn.fanout);

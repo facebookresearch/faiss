@@ -291,8 +291,8 @@ PartitionParams partition_params(const PiPNN& p, MetricType metric) {
             .wave_budget = p.partition_wave_budget};
 }
 
-/// Offers the nearest neighbours of every leaf point, in every replica, to the
-/// HashPrune reservoirs.
+/// Offers the nearest neighbours of every leaf point to the HashPrune
+/// reservoirs.
 void fill_reservoirs(
         BuildState& st,
         const Index& storage,
@@ -366,24 +366,20 @@ void fill_reservoirs(
         }
     };
 
-    const PartitionParams pp = partition_params(p, metric);
-    for (int r = 0; r < p.replicas; r++) {
-        const double t0 = getmillisecs();
-        PartitionStats stats;
-        partition_and_visit(
-                storage,
-                pp,
-                mix_seed(uint64_t(p.seed), uint64_t(r)),
-                on_leaf,
-                &stats,
-                dup.ids);
-        if (verbose) {
-            printf("PiPNN: replica %d: %.3f s, %zu leaves, replication %.2f\n",
-                   r,
-                   (getmillisecs() - t0) / 1000,
-                   stats.n_leaves,
-                   double(stats.n_point_instances) / double(n));
-        }
+    const double t0 = getmillisecs();
+    PartitionStats stats;
+    partition_and_visit(
+            storage,
+            partition_params(p, metric),
+            mix_seed(uint64_t(p.seed), 0),
+            on_leaf,
+            &stats,
+            dup.ids);
+    if (verbose) {
+        printf("PiPNN: partition: %.3f s, %zu leaves, replication %.2f\n",
+               (getmillisecs() - t0) / 1000,
+               stats.n_leaves,
+               double(stats.n_point_instances) / double(n));
     }
 }
 
@@ -745,8 +741,6 @@ void PiPNN::check_params() const {
             "PiPNN: need R <= reservoir_size, got R=%d reservoir_size=%d",
             R,
             reservoir_size);
-    FAISS_THROW_IF_NOT_FMT(
-            replicas >= 1, "PiPNN: replicas must be >= 1, got %d", replicas);
     for (int f : fanout) {
         FAISS_THROW_IF_NOT_FMT(
                 f >= 1, "PiPNN: every fanout must be >= 1, got %d", f);
