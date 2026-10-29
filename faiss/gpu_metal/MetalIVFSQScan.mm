@@ -190,7 +190,8 @@ void runMetalIVFSQScan(
                 }
             }
         }
-        bool adaptive = p[0] > 1 && !fused && !allLong &&
+        // IP uses the regular parallel scan; avoid a second pass for cheap scores.
+        bool adaptive = p[7] && p[0] > 1 && !fused && !allLong &&
                 p[1] == 128 && p[2] <= 32 && p[3] <= 8;
         MetalIVFSQScanScratch local;
         if (!scratch)

@@ -2695,7 +2695,8 @@ inline void ivfsq_merge_new(
 }
 
 // Specialize frequent dimensions; other aligned dimensions use the same
-// vector decoder with runtime bounds. Odd dimensions retain scalar decoding.
+// vector decoder with runtime bounds. Odd dimensions use packed loads and
+// scalar-order accumulation with a scalar tail.
 constant uint ivfsq_dimension [[function_constant(0)]];
 constant bool ivfsq_fp16 [[function_constant(1)]];
 constant bool ivfsq_l2 [[function_constant(2)]];
@@ -2740,7 +2741,9 @@ kernel void ivfsq_scan(
     uint lane [[thread_index_in_simdgroup]],
     uint simdWidth [[threads_per_simdgroup]]) {
     constexpr uint ivfsq_capacity = Capacity;
-    constexpr uint ivfsq_batch = PairQueries ? 256 : 512;
+    // Bound incoming sorting work for small retained sets. Each batch is
+    // merged before advancing, so every candidate still participates.
+    constexpr uint ivfsq_batch = PairQueries ? 256 : (Capacity <= 32 ? 128 : 512);
     uint qi = group.z, probe = group.y;
     uint d = ivfsq_dimension ? ivfsq_dimension : p[1], k = p[2], nprobe = p[3];
     bool l2 = ivfsq_l2;
@@ -2885,7 +2888,29 @@ kernel void ivfsq_scan(
                     score = (sums.x + sums.y) + (sums.z + sums.w);
                     if (paired) partnerScore = (partnerSums.x + partnerSums.y) + (partnerSums.z + partnerSums.w);
                 } else {
-                for (uint dim = 0; dim < d; ++dim) {
+                uint dim = 0;
+                // Packed loads require only scalar alignment: odd row strides
+                // need not align to float4 or half4. Accumulate in the original
+                // dimension order to preserve scalar-path rounding.
+                for (; dim + 3 < d; dim += 4) {
+                    float4 decoded;
+                    if (ivfsq_fp16) {
+                        decoded = float4(*reinterpret_cast<device const packed_half4*>(code + 2*dim));
+                    } else {
+                        float4 normalized(ivfsq_code_centers[code[dim]], ivfsq_code_centers[code[dim+1]],
+                                          ivfsq_code_centers[code[dim+2]], ivfsq_code_centers[code[dim+3]]);
+                        decoded = float4(*reinterpret_cast<device const packed_float4*>(ranges + dim))
+                            + normalized * float4(*reinterpret_cast<device const packed_float4*>(ranges + d + dim));
+                    }
+                    float4 q = float4(*reinterpret_cast<device const packed_float4*>(queries + ulong(qi)*d + dim));
+                    if (ivfsq_residual && l2)
+                        q -= float4(*reinterpret_cast<device const packed_float4*>(centroids + ulong(candidateList)*d + dim));
+                    for (uint c = 0; c < 4; ++c) {
+                        float delta = q[c] - decoded[c];
+                        score += l2 ? delta * delta : q[c] * decoded[c];
+                    }
+                }
+                for (; dim < d; ++dim) {
                     float decoded = ivfsq_fp16
                         ? float(as_type<half>(ushort(ushort(code[2*dim]) | (ushort(code[2*dim+1]) << 8))))
                         : ranges[dim] + ivfsq_code_centers[code[dim]] * ranges[d + dim];
