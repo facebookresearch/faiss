@@ -18,6 +18,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/ClusteringHelpers.h>
@@ -880,4 +881,620 @@ TEST(IVF, train_float16_clustering_index_sees_bounded_batches) {
     EXPECT_EQ(quantizer.ntotal, nlist);
     EXPECT_GT(clustering_index.max_search_rows, 0);
     EXPECT_LE(clustering_index.max_search_rows, index.cp.decode_block_size);
+}
+
+namespace {
+
+// Puts the global reservoir cutoff back even if search throws.
+struct RestoreReservoirThreshold {
+    int saved;
+    explicit RestoreReservoirThreshold(int value)
+            : saved(faiss::distance_compute_min_k_reservoir) {
+        faiss::distance_compute_min_k_reservoir = value;
+    }
+    ~RestoreReservoirThreshold() {
+        faiss::distance_compute_min_k_reservoir = saved;
+    }
+};
+
+// Distances must match. Ids must match inside a tied group, except the
+// cutoff group, where the heap and the reservoir may keep different ids.
+void expect_same_topk(
+        size_t nq,
+        size_t k,
+        const float* Dref,
+        const faiss::idx_t* Iref,
+        const float* Dnew,
+        const faiss::idx_t* Inew) {
+    for (size_t i = 0; i < nq; i++) {
+        for (size_t j = 0; j < k; j++) {
+            EXPECT_EQ(Dref[i * k + j], Dnew[i * k + j])
+                    << "query " << i << " rank " << j;
+        }
+        for (size_t j = 0; j < k;) {
+            size_t j1 = j + 1;
+            while (j1 < k && Dref[i * k + j1] == Dref[i * k + j]) {
+                j1++;
+            }
+            const bool cutoff_tie = j1 == k && j1 - j > 1;
+            if (!cutoff_tie) {
+                std::multiset<faiss::idx_t> ref(
+                        Iref + i * k + j, Iref + i * k + j1);
+                std::multiset<faiss::idx_t> got(
+                        Inew + i * k + j, Inew + i * k + j1);
+                EXPECT_EQ(ref, got) << "query " << i << " rank " << j
+                                    << " distance " << Dref[i * k + j];
+            }
+            j = j1;
+        }
+    }
+}
+
+void search_knn(
+        faiss::Index& index,
+        faiss::idx_t n,
+        const float* x,
+        faiss::idx_t k,
+        float* distances,
+        faiss::idx_t* labels,
+        int min_k_reservoir,
+        const faiss::SearchParameters* params = nullptr) {
+    RestoreReservoirThreshold restore(min_k_reservoir);
+    index.search(n, x, k, distances, labels, params);
+}
+
+void search_preassigned_knn(
+        faiss::IndexIVF& index,
+        faiss::idx_t n,
+        const float* x,
+        faiss::idx_t k,
+        const faiss::idx_t* keys,
+        const float* coarse_dis,
+        float* distances,
+        faiss::idx_t* labels,
+        bool store_pairs,
+        int min_k_reservoir) {
+    RestoreReservoirThreshold restore(min_k_reservoir);
+    index.search_preassigned(
+            n,
+            x,
+            k,
+            keys,
+            coarse_dis,
+            distances,
+            labels,
+            store_pairs,
+            nullptr,
+            nullptr);
+}
+
+} // namespace
+
+// Large-k IVF search keeps a reservoir instead of a heap. Results must match
+// the heap path, including parallel modes and a caller-owned heap.
+TEST(IVF, large_k_reservoir_matches_heap) {
+    constexpr int d = 16;
+    constexpr faiss::idx_t nb = 2500;
+    constexpr size_t nlist = 16;
+    constexpr faiss::idx_t nq = 5;
+    constexpr faiss::idx_t k = 32;
+
+    std::mt19937 rng(123);
+    std::uniform_real_distribution<float> distrib(-1.f, 1.f);
+    std::vector<float> xb(nb * d);
+    std::vector<float> xq(nq * d);
+    for (float& v : xb) {
+        v = distrib(rng);
+    }
+    for (float& v : xq) {
+        v = distrib(rng);
+    }
+
+    const int saved_threads = omp_get_max_threads();
+    omp_set_num_threads(4);
+    struct RestoreThreads {
+        int threads;
+        ~RestoreThreads() {
+            omp_set_num_threads(threads);
+        }
+    } restore{saved_threads};
+
+    for (faiss::MetricType metric :
+         {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+        SCOPED_TRACE(metric == faiss::METRIC_L2 ? "L2" : "IP");
+        faiss::IndexFlatL2 quantizer_l2(d);
+        faiss::IndexFlatIP quantizer_ip(d);
+        faiss::Index* quantizer = metric == faiss::METRIC_L2
+                ? static_cast<faiss::Index*>(&quantizer_l2)
+                : static_cast<faiss::Index*>(&quantizer_ip);
+        faiss::IndexIVFFlat index(quantizer, d, nlist, metric);
+        index.train(nb, xb.data());
+        index.add(nb, xb.data());
+        index.nprobe = nlist;
+
+        std::vector<float> Dheap(nq * k), Dres(nq * k);
+        std::vector<faiss::idx_t> Iheap(nq * k), Ires(nq * k);
+
+        for (int pm : {0, 1, 2, 3}) {
+            SCOPED_TRACE(testing::Message() << "parallel_mode=" << pm);
+            index.parallel_mode = pm;
+            search_knn(
+                    index,
+                    nq,
+                    xq.data(),
+                    k,
+                    Dheap.data(),
+                    Iheap.data(),
+                    1000000);
+            search_knn(index, nq, xq.data(), k, Dres.data(), Ires.data(), 2);
+            expect_same_topk(
+                    nq,
+                    k,
+                    Dheap.data(),
+                    Iheap.data(),
+                    Dres.data(),
+                    Ires.data());
+        }
+
+        // k == 1 stays on the heap even if the reservoir threshold is 0.
+        index.parallel_mode = 0;
+        std::vector<float> D1(nq), D1b(nq);
+        std::vector<faiss::idx_t> I1(nq), I1b(nq);
+        search_knn(index, nq, xq.data(), 1, D1.data(), I1.data(), 0);
+        search_knn(index, nq, xq.data(), 1, D1b.data(), I1b.data(), 1000000);
+        EXPECT_EQ(D1, D1b);
+        EXPECT_EQ(I1, I1b);
+
+        // Cutoff 100, the production default: k above it matches a forced heap.
+        constexpr faiss::idx_t k_default = 120;
+        std::vector<float> Ddef_heap(nq * k_default), Ddef_res(nq * k_default);
+        std::vector<faiss::idx_t> Idef_heap(nq * k_default),
+                Idef_res(nq * k_default);
+        search_knn(
+                index,
+                nq,
+                xq.data(),
+                k_default,
+                Ddef_heap.data(),
+                Idef_heap.data(),
+                1000000);
+        search_knn(
+                index,
+                nq,
+                xq.data(),
+                k_default,
+                Ddef_res.data(),
+                Idef_res.data(),
+                100);
+        expect_same_topk(
+                nq,
+                k_default,
+                Ddef_heap.data(),
+                Idef_heap.data(),
+                Ddef_res.data(),
+                Idef_res.data());
+
+        // Fewer hits than k: the tail is the neutral distance and id -1.
+        constexpr faiss::idx_t k_wide = nb + 8;
+        std::vector<float> Dwide_heap(nq * k_wide), Dwide_res(nq * k_wide);
+        std::vector<faiss::idx_t> Iwide_heap(nq * k_wide),
+                Iwide_res(nq * k_wide);
+        search_knn(
+                index,
+                nq,
+                xq.data(),
+                k_wide,
+                Dwide_heap.data(),
+                Iwide_heap.data(),
+                1000000);
+        search_knn(
+                index,
+                nq,
+                xq.data(),
+                k_wide,
+                Dwide_res.data(),
+                Iwide_res.data(),
+                2);
+        expect_same_topk(
+                nq,
+                k_wide,
+                Dwide_heap.data(),
+                Iwide_heap.data(),
+                Dwide_res.data(),
+                Iwide_res.data());
+        // Sentinel slots share the neutral distance, so the tie check above
+        // does not compare their ids. Every database vector was scanned.
+        EXPECT_EQ(index.ntotal, nb);
+        for (faiss::idx_t qi = 0; qi < nq; qi++) {
+            for (faiss::idx_t j = nb; j < k_wide; j++) {
+                EXPECT_EQ(Iwide_heap[qi * k_wide + j], faiss::idx_t(-1));
+                EXPECT_EQ(Iwide_res[qi * k_wide + j], faiss::idx_t(-1));
+            }
+        }
+
+        faiss::IDSelectorRange selector(nb / 2, nb);
+        faiss::SearchParametersIVF params;
+        params.nprobe = nlist;
+        params.sel = &selector;
+        params.max_codes = 80;
+        std::vector<float> Dsel_heap(nq * k), Dsel_res(nq * k);
+        std::vector<faiss::idx_t> Isel_heap(nq * k), Isel_res(nq * k);
+        search_knn(
+                index,
+                nq,
+                xq.data(),
+                k,
+                Dsel_heap.data(),
+                Isel_heap.data(),
+                1000000,
+                &params);
+        search_knn(
+                index,
+                nq,
+                xq.data(),
+                k,
+                Dsel_res.data(),
+                Isel_res.data(),
+                2,
+                &params);
+        expect_same_topk(
+                nq,
+                k,
+                Dsel_heap.data(),
+                Isel_heap.data(),
+                Dsel_res.data(),
+                Isel_res.data());
+        for (faiss::idx_t id : Isel_res) {
+            EXPECT_TRUE(id == -1 || selector.is_member(id));
+        }
+
+        // Two search_preassigned calls share one caller heap. Modes 0 and 3
+        // merge a reservoir into that heap. The merged top-k matches one
+        // heap search over the same lists.
+        index.parallel_mode = 0;
+        index.nprobe = nlist;
+        std::vector<float> Dfull(nq * k);
+        std::vector<faiss::idx_t> Ifull(nq * k);
+        search_knn(
+                index, nq, xq.data(), k, Dfull.data(), Ifull.data(), 1000000);
+
+        std::vector<faiss::idx_t> keys(nq * nlist);
+        std::vector<float> coarse(nq * nlist);
+        index.quantizer->search(
+                nq, xq.data(), nlist, coarse.data(), keys.data());
+        const faiss::idx_t half = nlist / 2;
+        std::vector<faiss::idx_t> keys1(nq * half), keys2(nq * half);
+        std::vector<float> coarse1(nq * half), coarse2(nq * half);
+        for (faiss::idx_t i = 0; i < nq; i++) {
+            for (faiss::idx_t j = 0; j < half; j++) {
+                keys1[i * half + j] = keys[i * nlist + j];
+                coarse1[i * half + j] = coarse[i * nlist + j];
+                keys2[i * half + j] = keys[i * nlist + half + j];
+                coarse2[i * half + j] = coarse[i * nlist + half + j];
+            }
+        }
+        std::vector<float> Dmerge(nq * k);
+        std::vector<faiss::idx_t> Imerge(nq * k);
+        using HeapForL2 = faiss::CMax<float, faiss::idx_t>;
+        using HeapForIP = faiss::CMin<float, faiss::idx_t>;
+        index.nprobe = half;
+        RestoreReservoirThreshold restore_threshold(2);
+        const int no_heap = index.PARALLEL_MODE_NO_HEAP_INIT;
+        for (int pmode : {no_heap, no_heap | 3}) {
+            SCOPED_TRACE(testing::Message() << "NO_HEAP merge pmode=" << pmode);
+            for (faiss::idx_t i = 0; i < nq; i++) {
+                if (metric == faiss::METRIC_L2) {
+                    faiss::heap_heapify<HeapForL2>(
+                            k, Dmerge.data() + i * k, Imerge.data() + i * k);
+                } else {
+                    faiss::heap_heapify<HeapForIP>(
+                            k, Dmerge.data() + i * k, Imerge.data() + i * k);
+                }
+            }
+            index.parallel_mode = pmode;
+            index.search_preassigned(
+                    nq,
+                    xq.data(),
+                    k,
+                    keys1.data(),
+                    coarse1.data(),
+                    Dmerge.data(),
+                    Imerge.data(),
+                    false,
+                    nullptr,
+                    nullptr);
+            index.search_preassigned(
+                    nq,
+                    xq.data(),
+                    k,
+                    keys2.data(),
+                    coarse2.data(),
+                    Dmerge.data(),
+                    Imerge.data(),
+                    false,
+                    nullptr,
+                    nullptr);
+            for (faiss::idx_t i = 0; i < nq; i++) {
+                if (metric == faiss::METRIC_L2) {
+                    faiss::heap_reorder<HeapForL2>(
+                            k, Dmerge.data() + i * k, Imerge.data() + i * k);
+                } else {
+                    faiss::heap_reorder<HeapForIP>(
+                            k, Dmerge.data() + i * k, Imerge.data() + i * k);
+                }
+            }
+            expect_same_topk(
+                    nq,
+                    k,
+                    Dfull.data(),
+                    Ifull.data(),
+                    Dmerge.data(),
+                    Imerge.data());
+        }
+    }
+
+    faiss::IndexFlatL2 sq_quantizer(d);
+    faiss::IndexIVFScalarQuantizer sq(
+            &sq_quantizer, d, nlist, faiss::ScalarQuantizer::QT_8bit);
+    sq.train(nb, xb.data());
+    sq.add(nb, xb.data());
+    sq.nprobe = nlist;
+    sq.parallel_mode = 3;
+    std::vector<float> Dsq_heap(nq * k), Dsq_res(nq * k);
+    std::vector<faiss::idx_t> Isq_heap(nq * k), Isq_res(nq * k);
+    search_knn(sq, nq, xq.data(), k, Dsq_heap.data(), Isq_heap.data(), 1000000);
+    search_knn(sq, nq, xq.data(), k, Dsq_res.data(), Isq_res.data(), 2);
+    expect_same_topk(
+            nq,
+            k,
+            Dsq_heap.data(),
+            Isq_heap.data(),
+            Dsq_res.data(),
+            Isq_res.data());
+}
+
+// store_pairs packs list_no into the high 32 bits and the list offset into
+// the low 32 bits. search_and_reconstruct decodes that pair back to an id.
+TEST(IVF, large_k_reservoir_store_pairs) {
+    constexpr int d = 16;
+    constexpr faiss::idx_t nb = 2500;
+    constexpr size_t nlist = 16;
+    constexpr faiss::idx_t nq = 5;
+    constexpr faiss::idx_t k = 32;
+
+    std::mt19937 rng(123);
+    std::uniform_real_distribution<float> distrib(-1.f, 1.f);
+    std::vector<float> xb(nb * d);
+    std::vector<float> xq(nq * d);
+    for (float& v : xb) {
+        v = distrib(rng);
+    }
+    for (float& v : xq) {
+        v = distrib(rng);
+    }
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+    index.train(nb, xb.data());
+    index.add(nb, xb.data());
+    index.nprobe = nlist;
+    index.parallel_mode = 0;
+
+    std::vector<faiss::idx_t> keys(nq * nlist);
+    std::vector<float> coarse(nq * nlist);
+    quantizer.search(nq, xq.data(), nlist, coarse.data(), keys.data());
+
+    std::vector<float> Dheap(nq * k), Dres(nq * k);
+    std::vector<faiss::idx_t> Iheap(nq * k), Ires(nq * k);
+    search_preassigned_knn(
+            index,
+            nq,
+            xq.data(),
+            k,
+            keys.data(),
+            coarse.data(),
+            Dheap.data(),
+            Iheap.data(),
+            true,
+            1000000);
+    search_preassigned_knn(
+            index,
+            nq,
+            xq.data(),
+            k,
+            keys.data(),
+            coarse.data(),
+            Dres.data(),
+            Ires.data(),
+            true,
+            2);
+    expect_same_topk(
+            nq, k, Dheap.data(), Iheap.data(), Dres.data(), Ires.data());
+
+    for (const faiss::idx_t* I : {Iheap.data(), Ires.data()}) {
+        const float* D = (I == Iheap.data()) ? Dheap.data() : Dres.data();
+        for (faiss::idx_t i = 0; i < nq; i++) {
+            for (faiss::idx_t j = 0; j < k; j++) {
+                faiss::idx_t key = I[i * k + j];
+                ASSERT_GE(key, 0);
+                size_t list_no = faiss::lo_listno(key);
+                size_t offset = faiss::lo_offset(key);
+                EXPECT_EQ(static_cast<faiss::idx_t>(list_no), key >> 32);
+                EXPECT_LT(list_no, nlist);
+                EXPECT_LT(offset, index.invlists->list_size(list_no));
+                faiss::idx_t id =
+                        index.invlists->get_single_id(list_no, offset);
+                ASSERT_GE(id, 0);
+                ASSERT_LT(id, nb);
+                float acc = 0;
+                for (int t = 0; t < d; t++) {
+                    float diff = xq[i * d + t] - xb[id * d + t];
+                    acc += diff * diff;
+                }
+                EXPECT_NEAR(acc, D[i * k + j], 1e-4f);
+            }
+        }
+    }
+}
+
+// IVFPQ scans PQ codes through search_preassigned. IndexIVFFlatDedup
+// expands duplicate ids after that search returns.
+TEST(IVF, large_k_reservoir_ivfpq_and_dedup) {
+    constexpr int d = 16;
+    constexpr faiss::idx_t nb = 2500;
+    constexpr size_t nlist = 16;
+    constexpr faiss::idx_t nq = 5;
+    constexpr faiss::idx_t k = 32;
+
+    std::mt19937 rng(123);
+    std::uniform_real_distribution<float> distrib(-1.f, 1.f);
+    std::vector<float> xb(nb * d);
+    std::vector<float> xq(nq * d);
+    for (float& v : xb) {
+        v = distrib(rng);
+    }
+    for (float& v : xq) {
+        v = distrib(rng);
+    }
+
+    {
+        faiss::IndexFlatL2 quantizer(d);
+        faiss::IndexIVFPQ index(&quantizer, d, nlist, /*M=*/4, /*nbits=*/4);
+        index.cp.min_points_per_centroid = 1;
+        index.train(nb, xb.data());
+        index.add(nb, xb.data());
+        index.nprobe = nlist;
+        index.parallel_mode = 0;
+
+        std::vector<float> Dheap(nq * k), Dres(nq * k);
+        std::vector<faiss::idx_t> Iheap(nq * k), Ires(nq * k);
+        search_knn(
+                index, nq, xq.data(), k, Dheap.data(), Iheap.data(), 1000000);
+        search_knn(index, nq, xq.data(), k, Dres.data(), Ires.data(), 2);
+        expect_same_topk(
+                nq, k, Dheap.data(), Iheap.data(), Dres.data(), Ires.data());
+    }
+
+    constexpr faiss::idx_t nunique = 40;
+    constexpr int ncopy = 6;
+    constexpr faiss::idx_t nb_dup = nunique * ncopy;
+    constexpr size_t nlist_dup = 4;
+    constexpr faiss::idx_t k_dup = 16;
+    std::vector<float> uniq(nunique * d);
+    for (float& v : uniq) {
+        v = distrib(rng);
+    }
+    std::vector<float> xb_dup(nb_dup * d);
+    for (faiss::idx_t i = 0; i < nunique; i++) {
+        for (int c = 0; c < ncopy; c++) {
+            for (int t = 0; t < d; t++) {
+                xb_dup[(i * ncopy + c) * d + t] = uniq[i * d + t];
+            }
+        }
+    }
+    std::vector<float> xq_dup(nq * d);
+    for (faiss::idx_t i = 0; i < nq; i++) {
+        for (int t = 0; t < d; t++) {
+            xq_dup[i * d + t] = uniq[i * d + t];
+        }
+    }
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlatDedup index(&quantizer, d, nlist_dup);
+    index.cp.min_points_per_centroid = 1;
+    index.train(nb_dup, xb_dup.data());
+    index.add(nb_dup, xb_dup.data());
+    index.nprobe = nlist_dup;
+    index.parallel_mode = 0;
+    EXPECT_FALSE(index.instances.empty());
+
+    std::vector<float> Dheap(nq * k_dup), Dres(nq * k_dup);
+    std::vector<faiss::idx_t> Iheap(nq * k_dup), Ires(nq * k_dup);
+    search_knn(
+            index,
+            nq,
+            xq_dup.data(),
+            k_dup,
+            Dheap.data(),
+            Iheap.data(),
+            1000000);
+    search_knn(index, nq, xq_dup.data(), k_dup, Dres.data(), Ires.data(), 2);
+    expect_same_topk(
+            nq, k_dup, Dheap.data(), Iheap.data(), Dres.data(), Ires.data());
+
+    std::set<faiss::idx_t> dup_ids;
+    for (const auto& it : index.instances) {
+        dup_ids.insert(it.second);
+    }
+    bool saw_duplicate = false;
+    for (faiss::idx_t id : Ires) {
+        if (dup_ids.count(id) != 0) {
+            saw_duplicate = true;
+        }
+    }
+    EXPECT_TRUE(saw_duplicate);
+}
+
+// Iterable lists disable the reservoir. A low threshold must still match a
+// forced heap (the scanner walks the iterator, not array codes).
+TEST(IVF, large_k_reservoir_iterable_lists) {
+    constexpr int d = 8;
+    constexpr faiss::idx_t nb = 400;
+    constexpr size_t nlist = 8;
+    constexpr faiss::idx_t nq = 3;
+    constexpr faiss::idx_t k = 32;
+
+    const int saved_threads = omp_get_max_threads();
+    omp_set_num_threads(1);
+    struct RestoreThreads {
+        int threads;
+        ~RestoreThreads() {
+            omp_set_num_threads(threads);
+        }
+    } restore{saved_threads};
+
+    std::mt19937 rng(456);
+    std::uniform_real_distribution<float> distrib(-1.f, 1.f);
+    std::vector<float> xb(nb * d);
+    std::vector<float> xq(nq * d);
+    for (float& v : xb) {
+        v = distrib(rng);
+    }
+    for (float& v : xq) {
+        v = distrib(rng);
+    }
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+    TestInvertedLists inverted_lists(nlist, index.code_size);
+    index.replace_invlists(&inverted_lists);
+    index.cp.min_points_per_centroid = 1;
+    index.train(nb, xb.data());
+    TestContext context;
+    std::vector<faiss::idx_t> coarse_idx(nb);
+    index.quantizer->assign(nb, xb.data(), coarse_idx.data());
+    std::vector<faiss::idx_t> xids(nb);
+    for (faiss::idx_t i = 0; i < nb; i++) {
+        xids[i] = i;
+    }
+    index.add_core(nb, xb.data(), xids.data(), coarse_idx.data(), &context);
+    index.nprobe = nlist;
+
+    faiss::SearchParametersIVF params;
+    params.nprobe = nlist;
+    params.inverted_list_context = &context;
+    std::vector<float> Dheap(nq * k), Dres(nq * k);
+    std::vector<faiss::idx_t> Iheap(nq * k), Ires(nq * k);
+    search_knn(
+            index,
+            nq,
+            xq.data(),
+            k,
+            Dheap.data(),
+            Iheap.data(),
+            1000000,
+            &params);
+    search_knn(index, nq, xq.data(), k, Dres.data(), Ires.data(), 2, &params);
+    expect_same_topk(
+            nq, k, Dheap.data(), Iheap.data(), Dres.data(), Ires.data());
 }

@@ -17,7 +17,7 @@ struct InvertedListScannerStats {
     /// Number of distances computed after IDSelector filtering.
     size_t scan_cnt = 0;
 
-    /// Number of heap updates.
+    /// Number of heap updates. Reservoir scans count threshold updates.
     size_t nheap_updates = 0;
 };
 
