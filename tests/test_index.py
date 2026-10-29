@@ -210,6 +210,32 @@ class TestDbParallelSearch(unittest.TestCase):
         finally:
             faiss.omp_set_num_threads(saved_nt)
 
+    def test_nested_in_ivf_search(self):
+        """With parallel_mode=0, IndexIVF::search runs the quantizer search
+        inside its own parallel region, where the database-parallel search
+        gets a one-thread team."""
+        d, nlist, nb, nq = 16, 12000, 2000, 8
+        rs = np.random.RandomState(123)
+        quantizer = faiss.IndexFlatL2(d)
+        quantizer.add(rs.rand(nlist, d).astype("float32"))
+        index = faiss.IndexIVFFlat(quantizer, d, nlist)
+        index.is_trained = True
+        index.add(rs.rand(nb, d).astype("float32"))
+        index.nprobe = 4
+        xq = rs.rand(nq, d).astype("float32")
+
+        saved_nt = faiss.omp_get_max_threads()
+        try:
+            faiss.omp_set_num_threads(4)
+            index.parallel_mode = 1
+            Dref, Iref = index.search(xq, 5)
+            index.parallel_mode = 0
+            D, I = index.search(xq, 5)
+        finally:
+            faiss.omp_set_num_threads(saved_nt)
+        np.testing.assert_array_equal(I, Iref)
+        np.testing.assert_allclose(D, Dref, rtol=1e-5)
+
 
 @for_all_simd_levels
 class TestIndexFlatL2(unittest.TestCase):
