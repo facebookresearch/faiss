@@ -13,12 +13,8 @@
 
 using namespace faiss;
 
-// Verify that Top1BlockResultHandler::begin_multiple initializes ids_tab to -1.
-// The single-query path (SingleResultHandler::begin) explicitly sets
-// min_idx=-1; begin_multiple must be consistent so that
-// begin_multiple/end_multiple without an intervening add_results produces the
-// "no result found" sentinel -1 in ids_tab rather than leaving it
-// uninitialized.
+// begin_multiple/end_multiple with no add_results must leave ids = -1, like
+// SingleResultHandler::begin.
 TEST(Top1BlockResultHandler, BeginMultipleInitializesIds) {
     constexpr size_t nq = 16;
     std::vector<float> dis_tab(nq, 12345.0f);
@@ -47,8 +43,6 @@ TEST(Heap, addn_with_ids) {
     heaps.heapify();
     std::vector<int64_t> labels(n, 1);
     std::vector<float> distances(n, 0.0f);
-    std::vector<int64_t> subset(n);
-    std::iota(subset.begin(), subset.end(), 0);
     heaps.addn_with_ids(1, distances.data(), labels.data(), 1);
     heaps.reorder();
     EXPECT_TRUE(

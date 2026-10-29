@@ -31,8 +31,6 @@
  * dispatching.h's conditional include.
  */
 
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
-
 #include <cassert>
 
 #include <faiss/impl/FaissAssert.h>
@@ -184,5 +182,3 @@ void pq4_accumulate_loop_qbs_fixed_scaler_512(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512 && __AVX512F__

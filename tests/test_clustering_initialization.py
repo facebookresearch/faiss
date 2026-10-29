@@ -11,7 +11,6 @@ from faiss.contrib import datasets
 
 
 def get_method_name(method):
-    """Get human-readable name for initialization method."""
     method_names = {
         faiss.ClusteringInitMethod_RANDOM: "RANDOM",
         faiss.ClusteringInitMethod_KMEANS_PLUS_PLUS: "KMEANS++",
@@ -21,7 +20,6 @@ def get_method_name(method):
 
 
 def verify_centroids_from_dataset(test_case, centroids, dataset):
-    """Verify centroids are from the dataset."""
     D, _ = faiss.knn(centroids, dataset, 1)
     threshold = 1e-3 * centroids.shape[1]
     test_case.assertTrue(
@@ -30,13 +28,11 @@ def verify_centroids_from_dataset(test_case, centroids, dataset):
 
 
 def verify_centroids_unique(test_case, centroids):
-    """Verify all centroids are unique (no duplicates)."""
     D, _ = faiss.knn(centroids, centroids, 2)
     test_case.assertTrue(np.all(D[:, 1] > 1e-4), "Duplicate centroids found")
 
 
 def generate_clustered_data(n, d, n_clusters, seed=42):
-    """Generate well-separated clustered data for testing."""
     np.random.seed(seed)
     centers = np.random.randn(n_clusters, d).astype(np.float32) * 20
     labels = np.random.randint(0, n_clusters, n)
@@ -46,7 +42,6 @@ def generate_clustered_data(n, d, n_clusters, seed=42):
 
 
 def run_init(method, xt, d, k, seed=42, chain_length=None):
-    """Run clustering initialization and return centroids."""
     init = faiss.ClusteringInitialization(d, k)
     init.method = method
     init.seed = seed
@@ -58,10 +53,7 @@ def run_init(method, xt, d, k, seed=42, chain_length=None):
 
 
 class TestClusteringInitialization(unittest.TestCase):
-    """Test ClusteringInitialization standalone API and algorithm behavior."""
-
     def test_initialization_methods(self):
-        """Test all init methods produce valid, unique centroids."""
         ds = datasets.SyntheticDataset(128, 100000, 0, 0)
         xt = ds.get_train()
         k = 64
@@ -77,7 +69,6 @@ class TestClusteringInitialization(unittest.TestCase):
                 verify_centroids_unique(self, centroids)
 
     def test_determinism(self):
-        """Test that initialization is deterministic with the same seed."""
         ds = datasets.SyntheticDataset(64, 100000, 0, 0)
         xt = ds.get_train()
         k = 32
@@ -93,7 +84,6 @@ class TestClusteringInitialization(unittest.TestCase):
                 np.testing.assert_array_equal(centroids1, centroids2)
 
     def test_afkmc2_chain_length_effect(self):
-        """Test that longer AFK-MC² chain lengths produce better init."""
         d, k = 32, 64
         xt = generate_clustered_data(10000, d, k)
 
@@ -116,7 +106,6 @@ class TestClusteringInitialization(unittest.TestCase):
                 total_obj += np.sum(D)
             results[chain_length] = total_obj / n_trials
 
-        # Verify monotonic improvement: each longer chain should not be worse
         for i in range(1, len(chain_lengths)):
             prev, curr = chain_lengths[i - 1], chain_lengths[i]
             self.assertLessEqual(
@@ -126,7 +115,6 @@ class TestClusteringInitialization(unittest.TestCase):
             )
 
     def test_with_existing_centroids(self):
-        """Test that considering existing centroids improves initialization."""
         n, d, k = 10000, 32, 64
         n_existing = 10
         xt = generate_clustered_data(n, d, k)

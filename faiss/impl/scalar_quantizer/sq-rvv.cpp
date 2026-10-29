@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
@@ -16,7 +14,6 @@
 #include <faiss/impl/scalar_quantizer/sq8_rvv_kernel.h>
 
 #include <riscv_vector.h>
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 
@@ -3372,36 +3369,8 @@ struct DCTemplate<
     }
 };
 
-/**********************************************************
- * TurboQuant masked_sum RVV specialization (scalar fallback)
- **********************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-float turboq_masked_sum<SIMDLevel::RISCV_RVV>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    float result = 0;
-    for (size_t byte_idx = 0; byte_idx < (d + 7) / 8; byte_idx++) {
-        uint8_t b = bits[byte_idx];
-        size_t base = byte_idx * 8;
-        size_t end = std::min(base + 8, d);
-        for (size_t j = base; j < end; j++) {
-            if (b & (1 << (j - base))) {
-                result += arr[j];
-            }
-        }
-    }
-    return result;
-}
-
 } // namespace scalar_quantizer
 } // namespace faiss
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::RISCV_RVV
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
-
-#endif // COMPILE_SIMD_RISCV_RVV

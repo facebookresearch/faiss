@@ -9,8 +9,6 @@
 
 #include <faiss/utils/distances.h>
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/extra_distances.h>
 #include <riscv_vector.h>
@@ -651,5 +649,3 @@ DEFINE_VECTOR_DISTANCE_RVV_FALLBACK(METRIC_GOWER)
 #define THE_SIMD_LEVEL SIMDLevel::RISCV_RVV
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
-
-#endif // COMPILE_SIMD_RISCV_RVV

@@ -631,4 +631,8 @@ int fvec_madd_and_argmin(
         const float* b,
         float* c);
 
+/// sum of x[j] for every j < d whose bit is set in bits (LSB-first per byte)
+template <SIMDLevel>
+float fvec_masked_sum(const float* x, const uint8_t* bits, size_t d);
+
 } // namespace faiss

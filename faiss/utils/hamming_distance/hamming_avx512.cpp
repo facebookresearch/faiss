@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512
-
 #define THE_SIMD_LEVEL SIMDLevel::AVX512
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/hamming_distance/hamming_computer-avx512.h>
 #include <faiss/utils/hamming_distance/hamming_impl.h>
-
-#endif // COMPILE_SIMD_AVX512

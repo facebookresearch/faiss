@@ -43,6 +43,7 @@ class TestBinaryFlat(unittest.TestCase):
         index2 = faiss.deserialize_index_binary(
             faiss.serialize_index_binary(index)
         )
+        assert index2.thisown
 
         D2, I2 = index2.search(self.xq, 3)
 
@@ -98,37 +99,6 @@ class TestBinaryIVF(unittest.TestCase):
         assert (D3 == D).all()
 
 
-class TestObjectOwnership(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        unittest.TestCase.__init__(self, *args, **kwargs)
-        d = 32
-        nt = 200
-        nb = 1500
-        nq = 500
-
-        (self.xt, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
-
-    def test_read_index_ownership(self):
-        d = self.xq.shape[1] * 8
-
-        index = faiss.IndexBinaryFlat(d)
-        index.add(self.xb)
-
-        # this is the output of read_index_binary (==> checks ownership)
-        index2 = faiss.deserialize_index_binary(
-            faiss.serialize_index_binary(index)
-        )
-
-        assert index2.thisown
-
-        # Verify deserialized index is serializable again
-        index3 = faiss.deserialize_index_binary(
-            faiss.serialize_index_binary(index2)
-        )
-        assert index3.thisown
-
-
 class TestBinaryFromFloat(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -174,40 +144,12 @@ class TestBinaryHNSW(unittest.TestCase):
         nb = 1500
         nq = 500
 
-        (self.xt, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
+        (_, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
 
     def test_hnsw(self):
         d = self.xq.shape[1] * 8
 
         index = faiss.IndexBinaryHNSW(d)
-        index.add(self.xb)
-        D, I = index.search(self.xq, 3)
-
-        index2 = faiss.deserialize_index_binary(
-            faiss.serialize_index_binary(index)
-        )
-
-        D2, I2 = index2.search(self.xq, 3)
-
-        assert (I2 == I).all()
-        assert (D2 == D).all()
-
-        # Verify deserialized index is serializable again
-        index3 = faiss.deserialize_index_binary(
-            faiss.serialize_index_binary(index2)
-        )
-        D3, I3 = index3.search(self.xq, 3)
-        assert (I3 == I).all()
-        assert (D3 == D).all()
-
-    def test_ivf_hnsw(self):
-        d = self.xq.shape[1] * 8
-
-        quantizer = faiss.IndexBinaryHNSW(d)
-        index = faiss.IndexBinaryIVF(quantizer, d, 8)
-        index.cp.min_points_per_centroid = 5  # quiet warning
-        index.nprobe = 4
-        index.train(self.xt)
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 

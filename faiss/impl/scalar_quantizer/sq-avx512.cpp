@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512
-
 #include <faiss/impl/simdlib/simdlib_avx512.h>
 
 #include <cstring>
@@ -16,6 +14,7 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/utils/simd_impl/masked_sum-avx512.h>
 
 namespace faiss {
 
@@ -788,44 +787,6 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX512>
     }
 };
 
-/**********************************************************
- * TurboQuant masked_sum AVX512 specialization
- **********************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-float turboq_masked_sum<SIMDLevel::AVX512>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    __m512 acc = _mm512_setzero_ps();
-    size_t i = 0;
-    size_t full_16 = (d / 16) * 16;
-    for (; i < full_16; i += 16) {
-        uint16_t mask16;
-        memcpy(&mask16, bits + i / 8, sizeof(mask16));
-        __mmask16 k = _cvtu32_mask16(mask16);
-        __m512 vals = _mm512_loadu_ps(arr + i);
-        acc = _mm512_mask_add_ps(acc, k, acc, vals);
-    }
-    float result = _mm512_reduce_add_ps(acc);
-    if (i < d) {
-        size_t remaining = d - i;
-        __mmask16 tail_mask = _cvtu32_mask16((1u << remaining) - 1);
-        __m512 tail_vals = _mm512_maskz_loadu_ps(tail_mask, arr + i);
-        uint16_t bits_tail = 0;
-        size_t bytes_remaining = (remaining + 7) / 8;
-        memcpy(&bits_tail, bits + i / 8, bytes_remaining);
-        __mmask16 bits_k = _cvtu32_mask16(bits_tail);
-        __mmask16 combined = _kand_mask16(tail_mask, bits_k);
-        __m512 masked_tail = _mm512_maskz_mov_ps(combined, tail_vals);
-        result += _mm512_reduce_add_ps(masked_tail);
-    }
-    return result;
-}
-
 } // namespace scalar_quantizer
 } // namespace faiss
 
@@ -833,5 +794,3 @@ float turboq_masked_sum<SIMDLevel::AVX512>(
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
 #endif
-
-#endif // COMPILE_SIMD_AVX512

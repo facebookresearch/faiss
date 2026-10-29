@@ -7,8 +7,6 @@
 
 // AVX2 compilation unit for the simdlib-based fused distance kernel.
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/distances_fused/simdlib_kernel-inl.h>
@@ -71,5 +69,3 @@ bool exhaustive_L2sqr_fused_cmax<SIMDLevel::AVX2>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX2

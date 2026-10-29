@@ -39,6 +39,7 @@ set(FAISS_SIMD_AVX512_SRC
   impl/scalar_quantizer/sq-avx512.cpp
   impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
+  utils/simd_impl/fp16_kernels_avx512.cpp
   utils/distances_fused/avx512.cpp
   utils/hamming_distance/hamming_avx512.cpp
   impl/scalar_quantizer/EDENQuantizer-avx512.cpp
@@ -82,6 +83,7 @@ set(FAISS_SIMD_RVV_SRC
   utils/simd_impl/distances_rvv.cpp
   utils/hamming_distance/hamming_rvv.cpp
   utils/simd_impl/rabitq_rvv.cpp
+  utils/distances_fused/rvv.cpp
 )
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
@@ -445,6 +447,9 @@ set(FAISS_HEADERS
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
+  utils/simd_impl/masked_sum.h
+  utils/simd_impl/masked_sum-avx2.h
+  utils/simd_impl/masked_sum-avx512.h
   utils/simd_impl/distances_sse-inl.h
 )
 

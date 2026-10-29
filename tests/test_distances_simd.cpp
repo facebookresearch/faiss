@@ -12,9 +12,9 @@
 #include <random>
 #include <vector>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 
-// reference implementations
 static void fvec_inner_products_ny_ref(
         float* ip,
         const float* x,
@@ -39,7 +39,6 @@ static void fvec_L2sqr_ny_ref(
     }
 }
 
-// test templated versions of fvec_L2sqr_ny
 TEST(TestFvecL2sqrNy, D2) {
     // we're using int values in order to get 100% accurate
     // results with floats.
@@ -76,7 +75,6 @@ TEST(TestFvecL2sqrNy, D2) {
     }
 }
 
-// fvec_inner_products_ny
 TEST(TestFvecInnerProductsNy, D2) {
     // we're using int values in order to get 100% accurate
     // results with floats.
@@ -120,7 +118,6 @@ TEST(TestFvecL2sqr, distances_L2_squared_y_transposed) {
     // do.
     for (const auto ny : {5, 8, 11, 16, 32}) {
         for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 12, 16}) {
-            // initialize inputs
             std::vector<float> x(d);
             float x_sqlen = 0;
             for (size_t i = 0; i < x.size(); i++) {
@@ -136,7 +133,6 @@ TEST(TestFvecL2sqr, distances_L2_squared_y_transposed) {
                 }
             }
 
-            // perform function
             std::vector<float> true_distances(ny, 0);
             for (int i = 0; i < ny; i++) {
                 float dp = 0;
@@ -173,7 +169,6 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
     // do.
     for (const auto ny : {5, 8, 11, 16, 32}) {
         for (const auto d : {1, 2, 3, 4, 5, 6, 7, 8, 12, 16}) {
-            // initialize inputs
             std::vector<float> x(d);
             float x_sqlen = 0;
             for (size_t i = 0; i < x.size(); i++) {
@@ -189,7 +184,6 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
                 }
             }
 
-            // get distances
             std::vector<float> distances(ny, 0);
             for (int i = 0; i < ny; i++) {
                 float dp = 0;
@@ -198,7 +192,6 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
                 }
                 distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
             }
-            // find nearest
             size_t true_nearest_idx = 0;
             float min_dis = HUGE_VALF;
             for (int i = 0; i < ny; i++) {
@@ -230,7 +223,7 @@ TEST(TestFvecL1, manhattan_distance) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> uniform(0, 32);
 
-    // modulo 8 results - 16 is to repeat the while loop in the function
+    // every n % 8 tail, plus 16 for a second full block
     for (const auto nrows : {8, 9, 10, 11, 12, 13, 14, 15, 16}) {
         std::vector<float> x(nrows);
         std::vector<float> y(nrows);
@@ -253,7 +246,7 @@ TEST(TestFvecLinf, chebyshev_distance) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> uniform(0, 32);
 
-    // modulo 8 results - 16 is to repeat the while loop in the function
+    // every n % 8 tail, plus 16 for a second full block
     for (const auto nrows : {8, 9, 10, 11, 12, 13, 14, 15, 16}) {
         std::vector<float> x(nrows);
         std::vector<float> y(nrows);
@@ -276,7 +269,7 @@ TEST(TestFvecMadd, multiple_add) {
     std::default_random_engine rng(123);
     std::uniform_int_distribution<int32_t> uniform(0, 32);
 
-    // modulo 8 results - 16 is to repeat the while loop in the function
+    // every n % 8 tail, plus 16 for a second full block
     for (const auto nrows : {8, 9, 10, 11, 12, 13, 14, 15, 16}) {
         std::vector<float> a(nrows);
         std::vector<float> b(nrows);
@@ -293,6 +286,36 @@ TEST(TestFvecMadd, multiple_add) {
 
         ASSERT_EQ(distances, true_distances)
                 << "Mismatching fvec_madd results for nrows = " << nrows;
+    }
+}
+
+TEST(TestFvecMaskedSum, masked_sum) {
+    // ints instead of floats for 100% accuracy
+    std::default_random_engine rng(123);
+    std::uniform_int_distribution<int32_t> uniform(0, 32);
+
+    // 0, 1 and 2 full 16-float blocks, each with a tail; the random bits past
+    // d in the last byte must be ignored
+    for (const size_t d : {7, 31, 33}) {
+        std::vector<uint8_t> bits((d + 7) / 8);
+        for (auto& b : bits) {
+            b = rng();
+        }
+        std::vector<float> x(d);
+        float expected = 0;
+        for (size_t j = 0; j < d; j++) {
+            x[j] = uniform(rng);
+            if ((bits[j / 8] >> (j % 8)) & 1) {
+                expected += x[j];
+            }
+        }
+
+        const float actual = faiss::with_simd_level([&]<faiss::SIMDLevel SL>() {
+            return faiss::fvec_masked_sum<
+                    faiss::simd512_level_selector<SL>::value>(
+                    x.data(), bits.data(), d);
+        });
+        ASSERT_EQ(actual, expected) << "d = " << d;
     }
 }
 
@@ -327,7 +350,7 @@ TEST(TestFvecAdd, add_value) {
 
     for (const auto nrows : {1, 2, 5, 10, 15, 20, 25}) {
         std::vector<float> a(nrows);
-        const float b = uniform(rng); // value to add
+        const float b = uniform(rng);
         std::vector<float> true_distances(nrows);
         for (size_t i = 0; i < a.size(); i++) {
             a[i] = uniform(rng);

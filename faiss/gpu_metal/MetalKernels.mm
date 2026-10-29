@@ -115,6 +115,30 @@ id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
     return ps;
 }
 
+void MetalKernels::encodeHammingDistanceTopK(
+        id<MTLComputeCommandEncoder> enc,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> database,
+        id<MTLBuffer> outDist,
+        id<MTLBuffer> outIdx,
+        uint32_t nq,
+        uint32_t nb,
+        uint32_t codeSize,
+        uint32_t k) {
+    FAISS_THROW_IF_NOT(nq > 0 && nb > 0 && codeSize > 0 && k > 0 && k <= 512);
+    auto ps = pipeline("hamming_distance_topk");
+    FAISS_THROW_IF_NOT_MSG(ps, "Metal Hamming pipeline unavailable");
+    [enc setComputePipelineState:ps];
+    [enc setBuffer:queries offset:0 atIndex:0];
+    [enc setBuffer:database offset:0 atIndex:1];
+    [enc setBuffer:outDist offset:0 atIndex:2];
+    [enc setBuffer:outIdx offset:0 atIndex:3];
+    uint32_t args[] = {nq, nb, codeSize, k};
+    [enc setBytes:args length:sizeof(args) atIndex:4];
+    [enc dispatchThreadgroups:MTLSizeMake(nq, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
+
 void MetalKernels::encodeDistanceMatrix(
         id<MTLComputeCommandEncoder> enc,
         id<MTLBuffer> queries,

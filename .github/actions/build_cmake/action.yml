@@ -134,7 +134,7 @@ runs:
 
         # install SVS runtime for SVS builds
         if [ "${{ inputs.svs }}" = "ON" ]; then
-          conda install -y -q -p "$CONDA" libsvs-runtime=0.4.0 -c conda-forge
+          conda install -y -q -p "$CONDA" libsvs-runtime=0.5.0 -c conda-forge
         fi
 
         # install test packages
@@ -288,7 +288,11 @@ runs:
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_PREFIX_PATH="$(brew --prefix libomp)" \
               .
-        cmake --build build --target faiss faiss_metal swigfaiss TestMetalIndexFlat TestMetalIndexIVFFlat TestMetalIndexIVFPQ -j$(sysctl -n hw.logicalcpu)
+        cmake --build build --target \
+              faiss faiss_metal swigfaiss \
+              TestMetalIndexFlat TestMetalIndexIVFFlat TestMetalIndexIVFPQ \
+              TestMetalIndexBinaryFlat TestMetalBinaryFlatFailures \
+              -j$(sysctl -n hw.logicalcpu)
     - name: C++ tests
       if: inputs.metal != 'ON'
       shell: bash
