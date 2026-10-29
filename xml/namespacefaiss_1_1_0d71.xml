@@ -6,6 +6,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h" line="33" column="1"/>
+    <location file="faiss/impl/binary_hamming/IndexBinaryHash_impl.h" line="33" column="1"/>
   </compounddef>
 </doxygen>

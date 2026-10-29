@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="105" column="9" bodyfile="faiss/Index.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/Index.h" line="109" column="9" bodyfile="faiss/Index.h" bodystart="109" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="106" column="11" bodyfile="faiss/Index.h" bodystart="106" bodyend="-1"/>
+        <location file="faiss/Index.h" line="110" column="11" bodyfile="faiss/Index.h" bodystart="110" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="107" column="10" bodyfile="faiss/Index.h" bodystart="107" bodyend="-1"/>
+        <location file="faiss/Index.h" line="111" column="10" bodyfile="faiss/Index.h" bodystart="111" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -148,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="111" column="10" bodyfile="faiss/Index.h" bodystart="111" bodyend="-1"/>
+        <location file="faiss/Index.h" line="115" column="10" bodyfile="faiss/Index.h" bodystart="115" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="114" column="16" bodyfile="faiss/Index.h" bodystart="114" bodyend="-1"/>
+        <location file="faiss/Index.h" line="118" column="16" bodyfile="faiss/Index.h" bodystart="118" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="115" column="11" bodyfile="faiss/Index.h" bodystart="115" bodyend="-1"/>
+        <location file="faiss/Index.h" line="119" column="11" bodyfile="faiss/Index.h" bodystart="119" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -276,6 +276,26 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexNeuralNetCodec.h" line="27" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Index_1a2f1a031e11d0f844466d6834ab01610e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Index::train</definition>
+        <argsstring>(const gpu::Dataset &amp;dataset)</argsstring>
+        <name>train</name>
+        <qualifiedname>faiss::Index::train</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a4a1942e1f37cad075cd1837e44fdf90b">train</reimplementedby>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">gpu::Dataset</ref> &amp;</type>
+          <declname>dataset</declname>
+        </param>
+        <briefdescription>
+<para>Train from caller-controlled storage. Unsupported by default. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="139" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNeuralNetCodec_1a90a9e0e680a9734bf24b029e4218a43c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -409,6 +429,26 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexFlatCodes.h" line="33" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Index_1a66533ba416cec3a3b7d2243f7af680cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Index::add</definition>
+        <argsstring>(const gpu::Dataset &amp;dataset)</argsstring>
+        <name>add</name>
+        <qualifiedname>faiss::Index::add</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1aa8b9ed20589740cd4efa392d55f44e6f">add</reimplementedby>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">gpu::Dataset</ref> &amp;</type>
+          <declname>dataset</declname>
+        </param>
+        <briefdescription>
+<para>Add caller-controlled storage. Unsupported by default. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="174" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1afedfd72f57bcbc7d3a94fda7cb90c88b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -942,7 +982,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="142" column="18"/>
+        <location file="faiss/Index.h" line="149" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -972,7 +1012,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="148" column="18" bodyfile="faiss/Index.h" bodystart="148" bodyend="154"/>
+        <location file="faiss/Index.h" line="155" column="18" bodyfile="faiss/Index.h" bodystart="155" bodyend="161"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1000,7 +1040,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="166" column="18" bodyfile="faiss/Index.h" bodystart="166" bodyend="172"/>
+        <location file="faiss/Index.h" line="176" column="18" bodyfile="faiss/Index.h" bodystart="176" bodyend="182"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1064,7 +1104,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="183" column="18"/>
+        <location file="faiss/Index.h" line="193" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1095,7 +1135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="184" column="18" bodyfile="faiss/Index.h" bodystart="184" bodyend="194"/>
+        <location file="faiss/Index.h" line="194" column="18" bodyfile="faiss/Index.h" bodystart="194" bodyend="204"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1144,7 +1184,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="221" column="18"/>
+        <location file="faiss/Index.h" line="231" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1211,7 +1251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="263" column="18"/>
+        <location file="faiss/Index.h" line="273" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1265,7 +1305,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="290" column="18"/>
+        <location file="faiss/Index.h" line="300" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1363,7 +1403,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="315" column="18"/>
+        <location file="faiss/Index.h" line="325" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1467,7 +1507,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="338" column="18"/>
+        <location file="faiss/Index.h" line="348" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1523,7 +1563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="358" column="18"/>
+        <location file="faiss/Index.h" line="368" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1591,7 +1631,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="374" column="18"/>
+        <location file="faiss/Index.h" line="384" column="18"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
@@ -1607,7 +1647,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="102" column="5" bodyfile="faiss/Index.h" bodystart="102" bodyend="-1"/>
+        <location file="faiss/Index.h" line="106" column="5" bodyfile="faiss/Index.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" static="no">
         <type>float</type>
@@ -1621,7 +1661,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="103" column="5" bodyfile="faiss/Index.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/Index.h" line="107" column="5" bodyfile="faiss/Index.h" bodystart="107" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -1709,6 +1749,7 @@
     <location file="faiss/IndexNeuralNetCodec.h" line="35" column="1" bodyfile="faiss/IndexNeuralNetCodec.h" bodystart="35" bodyend="47"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>add</name></member>
+      <member refid="structfaiss_1_1Index_1a66533ba416cec3a3b7d2243f7af680cb" prot="public" virt="virtual" ambiguityscope="faiss::Index::"><scope>faiss::IndexQINCo</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>add_ex</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1ad30841b719b3c4949f0ac5f656e28ee2" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>add_sa_codes</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>add_with_ids</name></member>
@@ -1755,6 +1796,7 @@
       <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>search_ex</name></member>
       <member refid="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>search_subset</name></member>
       <member refid="structfaiss_1_1IndexNeuralNetCodec_1ab8fc8d69687d1c8055016045405e7691" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1a2f1a031e11d0f844466d6834ab01610e" prot="public" virt="virtual" ambiguityscope="faiss::IndexFlatCodes::"><scope>faiss::IndexQINCo</scope><name>train</name></member>
       <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" virt="virtual"><scope>faiss::IndexQINCo</scope><name>train_with_queries</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexQINCo</scope><name>verbose</name></member>

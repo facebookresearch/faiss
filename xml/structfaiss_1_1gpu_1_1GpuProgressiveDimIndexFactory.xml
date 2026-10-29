@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="88" column="30" bodyfile="faiss/gpu/GpuCloner.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/gpu/GpuCloner.h" line="90" column="30" bodyfile="faiss/gpu/GpuCloner.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac477c154125b04c6ac5bbffbeda39b47" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt;</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="89" column="17" bodyfile="faiss/gpu/GpuCloner.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/gpu/GpuCloner.h" line="91" column="17" bodyfile="faiss/gpu/GpuCloner.h" bodystart="91" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ad88346e2195f1b0b9f55b267a889ef73" prot="public" static="no" mutable="no">
         <type>std::vector&lt; int &gt;</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="90" column="17" bodyfile="faiss/gpu/GpuCloner.h" bodystart="90" bodyend="-1"/>
+        <location file="faiss/gpu/GpuCloner.h" line="92" column="17" bodyfile="faiss/gpu/GpuCloner.h" bodystart="92" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1af169086fe6ba5743149efb2389fb7a56" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="91" column="9" bodyfile="faiss/gpu/GpuCloner.h" bodystart="91" bodyend="-1"/>
+        <location file="faiss/gpu/GpuCloner.h" line="93" column="9" bodyfile="faiss/gpu/GpuCloner.h" bodystart="93" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="93" column="14"/>
+        <location file="faiss/gpu/GpuCloner.h" line="95" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ab6588f346d7a2acb9b651b49e4ef9fb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -99,7 +99,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="95" column="11"/>
+        <location file="faiss/gpu/GpuCloner.h" line="97" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a3daef564abba3be06c01d8b40bb93c91" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="97" column="13"/>
+        <location file="faiss/gpu/GpuCloner.h" line="99" column="13"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -158,7 +158,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuCloner.h" line="87" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="87" bodyend="98"/>
+    <location file="faiss/gpu/GpuCloner.h" line="89" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="89" bodyend="100"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ad88346e2195f1b0b9f55b267a889ef73" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>devices</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a7dad261772a26571a1bb87dd90d1b709" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>GpuProgressiveDimIndexFactory</name></member>

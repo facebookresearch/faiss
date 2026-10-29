@@ -32,6 +32,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/Dataset.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cstddef&gt;</highlight></codeline>
@@ -72,7 +73,6 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>graph_degree,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faiss::cagra_build_algo<sp/>graph_build_algo,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>nn_descent_niter,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>store_dataset,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faiss::MetricType<sp/>metric,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>metricArg,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndicesOptions<sp/>indicesOptions,</highlight></codeline>
@@ -88,7 +88,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>n,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>graph_degree,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>data_t*<sp/>dataset,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Dataset*<sp/>dataset,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>idx_t*<sp/>knn_graph,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faiss::MetricType<sp/>metric,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>metricArg,</highlight></codeline>
@@ -96,7 +96,11 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>~CuvsCagra()<sp/>=<sp/>default;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>train(idx_t<sp/>n,<sp/>const<sp/>data_t*<sp/>x);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>train(const<sp/>Dataset&amp;<sp/>dataset);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>updateDataset(const<sp/>Dataset&amp;<sp/>dataset);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>isSearchReady()<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>search(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;data_t,<sp/>2,<sp/>true&gt;&amp;<sp/>queries,</highlight></codeline>
@@ -124,22 +128,18 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/>get_knngraph()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>data_t*<sp/>get_training_dataset()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Dataset&amp;<sp/>getDataset()<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>private:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Collection<sp/>of<sp/>GPU<sp/>resources<sp/>that<sp/>we<sp/>use</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Training<sp/>dataset</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>data_t*<sp/>storage_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>n_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Borrowed<sp/>metadata<sp/>only;<sp/>the<sp/>caller<sp/>owns<sp/>the<sp/>backing<sp/>allocation.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;Dataset&gt;<sp/>dataset_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>n_<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Expected<sp/>dimensionality<sp/>of<sp/>the<sp/>vectors</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>int<sp/>dim_;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Controls<sp/>the<sp/>underlying<sp/>cuVS<sp/>index<sp/>if<sp/>it<sp/>should<sp/>support<sp/>search</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>capabilities<sp/>on<sp/>the<sp/>index.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>searchable_index_<sp/>=<sp/>true;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Metric<sp/>type<sp/>of<sp/>the<sp/>index</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>faiss::MetricType<sp/>metric_;</highlight></codeline>
@@ -161,10 +161,6 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameter<sp/>to<sp/>use<sp/>MST<sp/>optimization<sp/>to<sp/>guarantee<sp/>graph<sp/>connectivity</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>guarantee_connectivity_<sp/>=<sp/>false;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Device<sp/>padded<sp/>copy<sp/>when<sp/>`storage_`<sp/>is<sp/>host<sp/>memory<sp/>(KNN-graph<sp/>ctor<sp/>path).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;cuvs::neighbors::device_padded_dataset&lt;data_t,<sp/>int64_t&gt;&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>device_padded_dataset_;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Instance<sp/>of<sp/>trained<sp/>cuVS<sp/>CAGRA<sp/>index</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;</highlight></codeline>

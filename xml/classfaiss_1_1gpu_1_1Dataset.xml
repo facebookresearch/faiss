@@ -1,0 +1,520 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfaiss_1_1gpu_1_1Dataset" kind="class" language="C++" prot="public">
+    <compoundname>faiss::gpu::Dataset</compoundname>
+    <includes refid="Dataset_8h" local="no">Dataset.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0f" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>Layout</name>
+        <qualifiedname>faiss::gpu::Dataset::Layout</qualifiedname>
+        <enumvalue id="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0faeb6d8ae6f20283755b339c0dc273988b" prot="public">
+          <name>Standard</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0fa79097d17a7769a1e58370782a242a84d" prot="public">
+          <name>Padded</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="30" column="5" bodyfile="faiss/gpu/Dataset.h" bodystart="30" bodyend="30"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1Dataset_1a2fd7a5986ea14a9a34f11555dd102362" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; Impl &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; faiss::gpu::Dataset::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>faiss::gpu::Dataset::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="108" column="21" bodyfile="faiss/gpu/Dataset.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a1ac7499c5c413af05e768a1eaf391bae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::Dataset::~Dataset</definition>
+        <argsstring>()</argsstring>
+        <name>~Dataset</name>
+        <qualifiedname>faiss::gpu::Dataset::~Dataset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aabb34d5f669b5728b0d6b41a4f374774" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::Dataset::Dataset</definition>
+        <argsstring>(Dataset &amp;&amp;) noexcept</argsstring>
+        <name>Dataset</name>
+        <qualifiedname>faiss::gpu::Dataset::Dataset</qualifiedname>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="33" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a9aab571e1fd9b534b41c85a2c0ca7e6a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
+        <definition>Dataset &amp; faiss::gpu::Dataset::operator=</definition>
+        <argsstring>(Dataset &amp;&amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::gpu::Dataset::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="34" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a71b3886d3769bd47706bf92c3d69a0ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::Dataset::Dataset</definition>
+        <argsstring>(const Dataset &amp;)=delete</argsstring>
+        <name>Dataset</name>
+        <qualifiedname>faiss::gpu::Dataset::Dataset</qualifiedname>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="35" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aa3e1d524a1f1ee7027c553392b1c798c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
+        <definition>Dataset &amp; faiss::gpu::Dataset::operator=</definition>
+        <argsstring>(const Dataset &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::gpu::Dataset::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="36" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a75784ff66e256cf7c3dd2cc2a5406bda" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const void *</type>
+        <definition>const void * faiss::gpu::Dataset::getData</definition>
+        <argsstring>() const</argsstring>
+        <name>getData</name>
+        <qualifiedname>faiss::gpu::Dataset::getData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="81" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a8c4ce229575d42bbe6fe33d42e4af58b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::gpu::Dataset::getNumRows</definition>
+        <argsstring>() const</argsstring>
+        <name>getNumRows</name>
+        <qualifiedname>faiss::gpu::Dataset::getNumRows</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="82" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1ad4f73c517cc4b7ab9508757cde9b8f2f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu::Dataset::getDim</definition>
+        <argsstring>() const</argsstring>
+        <name>getDim</name>
+        <qualifiedname>faiss::gpu::Dataset::getDim</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="83" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a9441348f16c3fa87ed0f7257657fd50d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::gpu::Dataset::getRowStride</definition>
+        <argsstring>() const</argsstring>
+        <name>getRowStride</name>
+        <qualifiedname>faiss::gpu::Dataset::getRowStride</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="84" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a3f2df8a19e35a3874d786e43d09362db" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>NumericType</type>
+        <definition>NumericType faiss::gpu::Dataset::getNumericType</definition>
+        <argsstring>() const</argsstring>
+        <name>getNumericType</name>
+        <qualifiedname>faiss::gpu::Dataset::getNumericType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="85" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aabfeba51b3b6d401c8eb5dbc20306073" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu::Dataset::getDevice</definition>
+        <argsstring>() const</argsstring>
+        <name>getDevice</name>
+        <qualifiedname>faiss::gpu::Dataset::getDevice</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="86" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aaf0f06da6bd66d9082beccaee1553694" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Layout</type>
+        <definition>Layout faiss::gpu::Dataset::getLayout</definition>
+        <argsstring>() const</argsstring>
+        <name>getLayout</name>
+        <qualifiedname>faiss::gpu::Dataset::getLayout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="87" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1ae60a05ee5dd875f7edbbc518841d9f24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::Dataset::isDevice</definition>
+        <argsstring>() const</argsstring>
+        <name>isDevice</name>
+        <qualifiedname>faiss::gpu::Dataset::isDevice</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="88" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a3a7342d93a28cc533fcbb130c1ff100e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::Dataset::ownsData</definition>
+        <argsstring>() const</argsstring>
+        <name>ownsData</name>
+        <qualifiedname>faiss::gpu::Dataset::ownsData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="89" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aba66ca7a3a66ff39f27ba4e0bef8e0ec" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::Dataset::isCagraCompatible</definition>
+        <argsstring>() const</argsstring>
+        <name>isCagraCompatible</name>
+        <qualifiedname>faiss::gpu::Dataset::isCagraCompatible</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reports device residency, base alignment, and exact required row stride. Does not inspect padding values; zero padding is a caller contract. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="93" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a296f1a54a40143d07571d378170659c4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
+        <definition>Dataset faiss::gpu::Dataset::view</definition>
+        <argsstring>() const</argsstring>
+        <name>view</name>
+        <qualifiedname>faiss::gpu::Dataset::view</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create a non-owning view of the same storage by copying its metadata. Does not retain ownership of the backing allocation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="97" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1add8dac5286b0894c94f6f4608f01c1e2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::Dataset::copyToHost</definition>
+        <argsstring>(void *destination) const</argsstring>
+        <name>copyToHost</name>
+        <qualifiedname>faiss::gpu::Dataset::copyToHost</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>destination</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy logical columns into packed host storage. destination must have numRows * dim * sizeof(element) bytes. Completes all device work using the source device before copying and returns with the host data ready. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="102" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1ad7a15482649a59ca440c3c923142c032" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
+        <definition>static Dataset faiss::gpu::Dataset::viewHost</definition>
+        <argsstring>(const void *data, idx_t numRows, int dim, NumericType numericType, idx_t rowStride)</argsstring>
+        <name>viewHost</name>
+        <qualifiedname>faiss::gpu::Dataset::viewHost</qualifiedname>
+        <param>
+          <type>const void *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>numRows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numericType</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>rowStride</declname>
+        </param>
+        <briefdescription>
+<para>Borrow host storage. rowStride must be at least dim. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="39" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
+        <definition>static Dataset faiss::gpu::Dataset::viewDevice</definition>
+        <argsstring>(const void *data, idx_t numRows, int dim, NumericType numericType, idx_t rowStride, int device)</argsstring>
+        <name>viewDevice</name>
+        <qualifiedname>faiss::gpu::Dataset::viewDevice</qualifiedname>
+        <param>
+          <type>const void *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>numRows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numericType</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>rowStride</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Borrow storage accessible on device. A Standard view can also be CAGRA-compatible when its physical stride and alignment satisfy padding. When used by CAGRA, elements between dim and rowStride must be zero. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="49" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
+        <definition>static Dataset faiss::gpu::Dataset::viewDevicePadded</definition>
+        <argsstring>(const void *data, idx_t numRows, int dim, NumericType numericType, idx_t rowStride, int device)</argsstring>
+        <name>viewDevicePadded</name>
+        <qualifiedname>faiss::gpu::Dataset::viewDevicePadded</qualifiedname>
+        <param>
+          <type>const void *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>numRows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numericType</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>rowStride</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Borrow CAGRA-compatible device storage without copying. The base address must be 16-byte aligned and rowStride must equal dim rounded up to a 16-byte row width. The caller must zero elements between dim and rowStride, including for compatible Standard views used by CAGRA. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="61" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a0b1c5ef746689bde846f68bf1dc86a0f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
+        <definition>static Dataset faiss::gpu::Dataset::makeDevicePadded</definition>
+        <argsstring>(GpuResourcesProvider *resources, const Dataset &amp;source, int device)</argsstring>
+        <name>makeDevicePadded</name>
+        <qualifiedname>faiss::gpu::Dataset::makeDevicePadded</qualifiedname>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
+          <declname>resources</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create padded device storage using cuVS make_device_padded_dataset. Device/managed input whose stride already matches the required padding is rejected; use a view for that storage. Copies logical columns and zeroes padding asynchronously on the resource&apos;s stream. Source data must be ready on that stream and stay alive and unchanged until copying finishes. Order subsequent use on that stream. Retains the resources needed to release the allocation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="76" column="20"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a6acd450f64b2da11fb24d7c6972aebcd" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::Dataset::Dataset</definition>
+        <argsstring>(std::unique_ptr&lt; Impl &gt; impl)</argsstring>
+        <name>Dataset</name>
+        <qualifiedname>faiss::gpu::Dataset::Dataset</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; Impl &gt;</type>
+          <declname>impl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="106" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a3e669db7fe2367d3c9aba3127720dfa4" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const Impl &amp;</type>
+        <definition>const Impl &amp; faiss::gpu::Dataset::getImpl</definition>
+        <argsstring>() const</argsstring>
+        <name>getImpl</name>
+        <qualifiedname>faiss::gpu::Dataset::getImpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="107" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Caller-controlled dense vector storage for cuVS CAGRA.</para>
+<para>Dimensions and row strides are in elements, with contiguous columns. Binary vectors use UInt8, and their dimension is the number of bytes, not bits. Views never own or copy their allocation. An owning <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> controls the allocation&apos;s lifetime; CAGRA always borrows it. Keep the backing allocation alive and unchanged until all indexes using it and queued GPU work finish. Moving an owning <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> preserves its allocation and existing borrowed views. </para>
+    </detaileddescription>
+    <location file="faiss/gpu/Dataset.h" line="28" column="1" bodyfile="faiss/gpu/Dataset.h" bodystart="28" bodyend="109"/>
+    <listofallmembers>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1add8dac5286b0894c94f6f4608f01c1e2" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>copyToHost</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1aabb34d5f669b5728b0d6b41a4f374774" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Dataset</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a71b3886d3769bd47706bf92c3d69a0ed" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Dataset</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a6acd450f64b2da11fb24d7c6972aebcd" prot="private" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Dataset</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a75784ff66e256cf7c3dd2cc2a5406bda" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getData</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1aabfeba51b3b6d401c8eb5dbc20306073" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getDevice</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1ad4f73c517cc4b7ab9508757cde9b8f2f" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getDim</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a3e669db7fe2367d3c9aba3127720dfa4" prot="private" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getImpl</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1aaf0f06da6bd66d9082beccaee1553694" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getLayout</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a3f2df8a19e35a3874d786e43d09362db" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getNumericType</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a8c4ce229575d42bbe6fe33d42e4af58b" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getNumRows</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a9441348f16c3fa87ed0f7257657fd50d" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getRowStride</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a2fd7a5986ea14a9a34f11555dd102362" prot="private" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>impl_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1aba66ca7a3a66ff39f27ba4e0bef8e0ec" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>isCagraCompatible</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1ae60a05ee5dd875f7edbbc518841d9f24" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>isDevice</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0f" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Layout</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a0b1c5ef746689bde846f68bf1dc86a0f" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>makeDevicePadded</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a9aab571e1fd9b534b41c85a2c0ca7e6a" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>operator=</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1aa3e1d524a1f1ee7027c553392b1c798c" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>operator=</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a3a7342d93a28cc533fcbb130c1ff100e" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>ownsData</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a296f1a54a40143d07571d378170659c4" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>view</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewDevice</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewDevicePadded</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1ad7a15482649a59ca440c3c923142c032" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewHost</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a1ac7499c5c413af05e768a1eaf391bae" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>~Dataset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

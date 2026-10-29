@@ -1,0 +1,254 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="Dataset_8h" kind="file" language="C++">
+    <compoundname>Dataset.h</compoundname>
+    <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includes local="no">memory</includes>
+    <includedby refid="GpuIndexCagra_8h" local="no">faiss/gpu/GpuIndexCagra.h</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/gpu/Dataset.h</label>
+        <link refid="Dataset_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>atomic</label>
+      </node>
+      <node id="15">
+        <label>cinttypes</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
+        <label>cstdio</label>
+      </node>
+      <node id="6">
+        <label>cstdlib</label>
+      </node>
+      <node id="9">
+        <label>exception</label>
+      </node>
+      <node id="16">
+        <label>limits</label>
+      </node>
+      <node id="17">
+        <label>memory</label>
+      </node>
+      <node id="10">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+      <node id="12">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/gpu/Dataset.h</label>
+        <link refid="Dataset_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/gpu/GpuIndexBinaryCagra.h</label>
+        <link refid="GpuIndexBinaryCagra_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/gpu/GpuIndexCagra.h</label>
+        <link refid="GpuIndexCagra_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classfaiss_1_1gpu_1_1Dataset" prot="public">faiss::gpu::Dataset</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="15" refid="namespacefaiss_1_1gpu" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="18"><highlight class="comment">/**<sp/>Caller-controlled<sp/>dense<sp/>vector<sp/>storage<sp/>for<sp/>cuVS<sp/>CAGRA.</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>Dimensions<sp/>and<sp/>row<sp/>strides<sp/>are<sp/>in<sp/>elements,<sp/>with<sp/>contiguous<sp/>columns.<sp/>Binary</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>vectors<sp/>use<sp/>UInt8,<sp/>and<sp/>their<sp/>dimension<sp/>is<sp/>the<sp/>number<sp/>of<sp/>bytes,<sp/>not<sp/>bits.</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>Views<sp/>never<sp/>own<sp/>or<sp/>copy<sp/>their<sp/>allocation.<sp/>An<sp/>owning<sp/>Dataset<sp/>controls<sp/>the</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>allocation&apos;s<sp/>lifetime;<sp/>CAGRA<sp/>always<sp/>borrows<sp/>it.<sp/>Keep<sp/>the<sp/>backing<sp/>allocation</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>alive<sp/>and<sp/>unchanged<sp/>until<sp/>all<sp/>indexes<sp/>using<sp/>it<sp/>and<sp/>queued<sp/>GPU<sp/>work<sp/>finish.</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/>Moving<sp/>an<sp/>owning<sp/>Dataset<sp/>preserves<sp/>its<sp/>allocation<sp/>and<sp/>existing<sp/>borrowed</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>views.</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="classfaiss_1_1gpu_1_1Dataset" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref><sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>Layout<sp/>{<sp/>Standard,<sp/>Padded<sp/>};</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">~Dataset</ref>();</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>(<ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;&amp;)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;&amp;)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Borrow<sp/>host<sp/>storage.<sp/>rowStride<sp/>must<sp/>be<sp/>at<sp/>least<sp/>dim.</highlight></codeline>
+<codeline lineno="39" refid="classfaiss_1_1gpu_1_1Dataset_1ad7a15482649a59ca440c3c923142c032" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1ad7a15482649a59ca440c3c923142c032" kindref="member">viewHost</ref>(</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>data,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>numRows,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumericType<sp/>numericType,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>rowStride);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Borrow<sp/>storage<sp/>accessible<sp/>on<sp/>device.<sp/>A<sp/>Standard<sp/>view<sp/>can<sp/>also<sp/>be</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>CAGRA-compatible<sp/>when<sp/>its<sp/>physical<sp/>stride<sp/>and<sp/>alignment<sp/>satisfy<sp/>padding.</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>used<sp/>by<sp/>CAGRA,<sp/>elements<sp/>between<sp/>dim<sp/>and<sp/>rowStride<sp/>must<sp/>be<sp/>zero.</highlight></codeline>
+<codeline lineno="49" refid="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" kindref="member">viewDevice</ref>(</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>data,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>numRows,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumericType<sp/>numericType,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>rowStride,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Borrow<sp/>CAGRA-compatible<sp/>device<sp/>storage<sp/>without<sp/>copying.<sp/>The<sp/>base<sp/>address</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>must<sp/>be<sp/>16-byte<sp/>aligned<sp/>and<sp/>rowStride<sp/>must<sp/>equal<sp/>dim<sp/>rounded<sp/>up<sp/>to<sp/>a</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>16-byte<sp/>row<sp/>width.<sp/>The<sp/>caller<sp/>must<sp/>zero<sp/>elements<sp/>between<sp/>dim<sp/>and</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>rowStride,<sp/>including<sp/>for<sp/>compatible<sp/>Standard<sp/>views<sp/>used<sp/>by<sp/>CAGRA.</highlight></codeline>
+<codeline lineno="61" refid="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" kindref="member">viewDevicePadded</ref>(</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>data,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>numRows,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumericType<sp/>numericType,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>rowStride,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Create<sp/>padded<sp/>device<sp/>storage<sp/>using<sp/>cuVS<sp/>make_device_padded_dataset.</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Device/managed<sp/>input<sp/>whose<sp/>stride<sp/>already<sp/>matches<sp/>the<sp/>required<sp/>padding</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>is<sp/>rejected;<sp/>use<sp/>a<sp/>view<sp/>for<sp/>that<sp/>storage.<sp/>Copies<sp/>logical<sp/>columns<sp/>and</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>zeroes<sp/>padding<sp/>asynchronously<sp/>on<sp/>the<sp/>resource&apos;s<sp/>stream.<sp/>Source<sp/>data<sp/>must</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>be<sp/>ready<sp/>on<sp/>that<sp/>stream<sp/>and<sp/>stay<sp/>alive<sp/>and<sp/>unchanged<sp/>until<sp/>copying</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>finishes.<sp/>Order<sp/>subsequent<sp/>use<sp/>on<sp/>that<sp/>stream.<sp/>Retains<sp/>the<sp/>resources</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>needed<sp/>to<sp/>release<sp/>the<sp/>allocation.</highlight></codeline>
+<codeline lineno="76" refid="classfaiss_1_1gpu_1_1Dataset_1a0b1c5ef746689bde846f68bf1dc86a0f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1a0b1c5ef746689bde846f68bf1dc86a0f" kindref="member">makeDevicePadded</ref>(</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>resources,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>&amp;<sp/>source,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>getData()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>getNumRows()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDim()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>getRowStride()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>NumericType<sp/>getNumericType()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDevice()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>-1<sp/>for<sp/>host<sp/>storage</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>Layout<sp/>getLayout()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isDevice()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ownsData()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Reports<sp/>device<sp/>residency,<sp/>base<sp/>alignment,<sp/>and<sp/>exact<sp/>required<sp/>row<sp/>stride.</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Does<sp/>not<sp/>inspect<sp/>padding<sp/>values;<sp/>zero<sp/>padding<sp/>is<sp/>a<sp/>caller<sp/>contract.</highlight></codeline>
+<codeline lineno="93" refid="classfaiss_1_1gpu_1_1Dataset_1aba66ca7a3a66ff39f27ba4e0bef8e0ec" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1aba66ca7a3a66ff39f27ba4e0bef8e0ec" kindref="member">isCagraCompatible</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Create<sp/>a<sp/>non-owning<sp/>view<sp/>of<sp/>the<sp/>same<sp/>storage<sp/>by<sp/>copying<sp/>its<sp/>metadata.</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Does<sp/>not<sp/>retain<sp/>ownership<sp/>of<sp/>the<sp/>backing<sp/>allocation.</highlight></codeline>
+<codeline lineno="97" refid="classfaiss_1_1gpu_1_1Dataset_1a296f1a54a40143d07571d378170659c4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1a296f1a54a40143d07571d378170659c4" kindref="member">view</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Copy<sp/>logical<sp/>columns<sp/>into<sp/>packed<sp/>host<sp/>storage.<sp/>destination<sp/>must<sp/>have</highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>numRows<sp/>*<sp/>dim<sp/>*<sp/>sizeof(element)<sp/>bytes.<sp/>Completes<sp/>all<sp/>device<sp/>work<sp/>using</highlight></codeline>
+<codeline lineno="101"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>source<sp/>device<sp/>before<sp/>copying<sp/>and<sp/>returns<sp/>with<sp/>the<sp/>host<sp/>data<sp/>ready.</highlight></codeline>
+<codeline lineno="102" refid="classfaiss_1_1gpu_1_1Dataset_1add8dac5286b0894c94f6f4608f01c1e2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset_1add8dac5286b0894c94f6f4608f01c1e2" kindref="member">copyToHost</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>destination)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">Impl;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>(std::unique_ptr&lt;Impl&gt;<sp/>impl);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Impl&amp;<sp/>getImpl()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;Impl&gt;<sp/>impl_;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/Dataset.h"/>
+  </compounddef>
+</doxygen>

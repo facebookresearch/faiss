@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="184" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="184" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="189" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="189" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig_1a604e7b9ed265135e9bb8fdef47dbf01a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="188" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="188" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="193" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="193" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig_1a74504e78c97f70791f4703069be2f4b6" prot="public" static="no" mutable="no">
         <type>uint32_t</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="193" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="193" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="198" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="198" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig_1a3c562ec74a624a58cd2f3a54a86a8722" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="198" column="11" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="198" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="203" column="11" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="203" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig_1ad78aa2625338adaaec1d250ab916970a" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="203" column="10" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="203" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="208" column="10" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="208" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -90,7 +90,7 @@
     <detaileddescription>
 <para>Knobs for the multi-GPU build path, selected by listing more than one device in <ref refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a907a0ba20f86d9a9cc545661bdcb924b" kindref="member">GpuIndexCagraConfig::devices</ref>. Degrees, build_algo and metric still come from <ref refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig" kindref="compound">GpuIndexCagraConfig</ref>. </para>
     </detaileddescription>
-    <location file="faiss/gpu/GpuIndexCagra.h" line="181" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="181" bodyend="204"/>
+    <location file="faiss/gpu/GpuIndexCagra.h" line="186" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="186" bodyend="209"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig_1a74504e78c97f70791f4703069be2f4b6" prot="public" virt="non-virtual"><scope>faiss::gpu::AllNeighborsCagraConfig</scope><name>ivf_pq_search_batch_size</name></member>
       <member refid="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig_1ad78aa2625338adaaec1d250ab916970a" prot="public" virt="non-virtual"><scope>faiss::gpu::AllNeighborsCagraConfig</scope><name>ivf_pq_size_from_cluster</name></member>

@@ -6,6 +6,7 @@
     <innerdir refid="dir_a183f389f7fdb8e3b256673548812ad2">faiss/gpu/perf</innerdir>
     <innerdir refid="dir_221463c854b1b8cd5e47ba008a62b54d">faiss/gpu/test</innerdir>
     <innerdir refid="dir_42f4926097fe2768058790a30a036468">faiss/gpu/utils</innerdir>
+    <innerfile refid="Dataset_8h">Dataset.h</innerfile>
     <innerfile refid="GpuAutoTune_8h">GpuAutoTune.h</innerfile>
     <innerfile refid="GpuCloner_8h">GpuCloner.h</innerfile>
     <innerfile refid="GpuClonerOptions_8h">GpuClonerOptions.h</innerfile>
