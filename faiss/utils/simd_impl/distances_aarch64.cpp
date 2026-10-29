@@ -20,6 +20,146 @@
 
 namespace faiss {
 
+namespace {
+
+/// Component-wise operations between x and y for the small-d kernels below.
+struct NeonElementOpIP {
+    static float op(float x, float y) {
+        return x * y;
+    }
+
+    static float32x4_t op(float32x4_t x, float32x4_t y) {
+        return vmulq_f32(x, y);
+    }
+};
+
+struct NeonElementOpL2 {
+    static float op(float x, float y) {
+        const float tmp = x - y;
+        return tmp * tmp;
+    }
+
+    static float32x4_t op(float32x4_t x, float32x4_t y) {
+        const float32x4_t tmp = vsubq_f32(x, y);
+        return vmulq_f32(tmp, tmp);
+    }
+};
+
+/// Returns {sum(a), sum(b), sum(c), sum(d)}.
+inline float32x4_t horizontal_sum_4x4(
+        float32x4_t a,
+        float32x4_t b,
+        float32x4_t c,
+        float32x4_t d) {
+    return vpaddq_f32(vpaddq_f32(a, b), vpaddq_f32(c, d));
+}
+
+template <class ElementOp>
+void fvec_op_ny_neon_d1(float* dis, const float* x, const float* y, size_t ny) {
+    const float x0s = x[0];
+    const float32x4_t x0 = vdupq_n_f32(x0s);
+    size_t i = 0;
+    for (; i + 16 <= ny; i += 16) {
+        vst1q_f32(dis + i, ElementOp::op(x0, vld1q_f32(y + i)));
+        vst1q_f32(dis + i + 4, ElementOp::op(x0, vld1q_f32(y + i + 4)));
+        vst1q_f32(dis + i + 8, ElementOp::op(x0, vld1q_f32(y + i + 8)));
+        vst1q_f32(dis + i + 12, ElementOp::op(x0, vld1q_f32(y + i + 12)));
+    }
+    for (; i + 4 <= ny; i += 4) {
+        vst1q_f32(dis + i, ElementOp::op(x0, vld1q_f32(y + i)));
+    }
+    for (; i < ny; i++) {
+        dis[i] = ElementOp::op(x0s, y[i]);
+    }
+}
+
+template <class ElementOp>
+void fvec_op_ny_neon_d2(float* dis, const float* x, const float* y, size_t ny) {
+    // {x0, x1, x0, x1}: one register covers two rows of y
+    const float32x4_t x01 = vcombine_f32(vld1_f32(x), vld1_f32(x));
+    size_t i = 0;
+    for (; i + 4 <= ny; i += 4) {
+        const float32x4_t a = ElementOp::op(x01, vld1q_f32(y));
+        const float32x4_t b = ElementOp::op(x01, vld1q_f32(y + 4));
+        vst1q_f32(dis + i, vpaddq_f32(a, b));
+        y += 8;
+    }
+    for (; i < ny; i++) {
+        dis[i] = ElementOp::op(x[0], y[0]) + ElementOp::op(x[1], y[1]);
+        y += 2;
+    }
+}
+
+/// d = 4 * NV: each row of y is NV registers, reduced to one register per
+/// row and then across four rows so that four results leave in one store.
+template <class ElementOp, size_t NV>
+void fvec_op_ny_neon_d4n(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    constexpr size_t d = 4 * NV;
+    float32x4_t xv[NV];
+    for (size_t k = 0; k < NV; k++) {
+        xv[k] = vld1q_f32(x + 4 * k);
+    }
+    auto row = [&](const float* yr) {
+        float32x4_t acc = ElementOp::op(xv[0], vld1q_f32(yr));
+        for (size_t k = 1; k < NV; k++) {
+            acc = vaddq_f32(acc, ElementOp::op(xv[k], vld1q_f32(yr + 4 * k)));
+        }
+        return acc;
+    };
+    size_t i = 0;
+    for (; i + 4 <= ny; i += 4) {
+        vst1q_f32(
+                dis + i,
+                horizontal_sum_4x4(
+                        row(y), row(y + d), row(y + 2 * d), row(y + 3 * d)));
+        y += 4 * d;
+    }
+    for (; i < ny; i++) {
+        dis[i] = vaddvq_f32(row(y));
+        y += d;
+    }
+}
+
+/// Dedicated kernels for the sub-quantizer dimensions that PQ table
+/// construction uses most (the x86 path has 1, 2, 4, 8, 12; SVE at 128 bits
+/// has 1, 2, 4, 8, 12, 16). Returns false when d has none.
+template <class ElementOp>
+bool fvec_op_ny_neon_small_d(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny) {
+    switch (d) {
+        case 1:
+            fvec_op_ny_neon_d1<ElementOp>(dis, x, y, ny);
+            return true;
+        case 2:
+            fvec_op_ny_neon_d2<ElementOp>(dis, x, y, ny);
+            return true;
+        case 4:
+            fvec_op_ny_neon_d4n<ElementOp, 1>(dis, x, y, ny);
+            return true;
+        case 8:
+            fvec_op_ny_neon_d4n<ElementOp, 2>(dis, x, y, ny);
+            return true;
+        case 12:
+            fvec_op_ny_neon_d4n<ElementOp, 3>(dis, x, y, ny);
+            return true;
+        case 16:
+            fvec_op_ny_neon_d4n<ElementOp, 4>(dis, x, y, ny);
+            return true;
+        default:
+            return false;
+    }
+}
+
+} // namespace
+
 template <>
 void fvec_madd<SIMDLevel::ARM_NEON>(
         size_t n,
@@ -69,7 +209,15 @@ void fvec_inner_products_ny<SIMDLevel::ARM_NEON>(
         const float* y,
         size_t d,
         size_t ny) {
-    fvec_inner_products_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+    if (fvec_op_ny_neon_small_d<NeonElementOpIP>(dis, x, y, d, ny)) {
+        return;
+    }
+    // call the NEON kernel directly rather than the dispatching
+    // fvec_inner_product() once per row
+    for (size_t i = 0; i < ny; i++) {
+        dis[i] = fvec_inner_product<SIMDLevel::ARM_NEON>(x, y, d);
+        y += d;
+    }
 }
 
 template <>
@@ -79,7 +227,15 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_NEON>(
         const float* y,
         size_t d,
         size_t ny) {
-    fvec_L2sqr_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+    if (fvec_op_ny_neon_small_d<NeonElementOpL2>(dis, x, y, d, ny)) {
+        return;
+    }
+    // call the NEON kernel directly rather than the dispatching fvec_L2sqr()
+    // once per row
+    for (size_t i = 0; i < ny; i++) {
+        dis[i] = fvec_L2sqr<SIMDLevel::ARM_NEON>(x, y, d);
+        y += d;
+    }
 }
 
 template <>
