@@ -72,7 +72,6 @@ struct PiPNN {
     int c_max = 1024;        ///< largest leaf
     int c_min = 128;         ///< smaller partition children are merged
     int leader_cap = 1000;   ///< most leaders per split
-    int replicas = 1;        ///< independent partitions, shared reservoirs
     float leader_fraction = 0.005f; ///< leaders per split, fraction of its size
     float alpha = 0;                ///< 0 = 1.2
     std::vector<int> fanout = {10, 3}; ///< leaders joined per depth, then 1

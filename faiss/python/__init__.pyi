@@ -3482,7 +3482,6 @@ class PiPNN:
     c_max: int
     c_min: int
     leader_cap: int
-    replicas: int
     leader_fraction: float
     alpha: float
     fanout: Int32Vector

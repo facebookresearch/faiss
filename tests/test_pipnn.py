@@ -53,23 +53,30 @@ class TestPiPNNBuild(unittest.TestCase):
         ):
             with self.subTest(metric=metric):
                 faiss.omp_set_num_threads(1)
-                i1 = self.build(xb, metric, replicas=2)
+                i1 = self.build(xb, metric)
                 faiss.omp_set_num_threads(8)
-                i8 = self.build(xb, metric, replicas=2, partition_wave_budget=1)
+                i8 = self.build(xb, metric, partition_wave_budget=1)
                 np.testing.assert_equal(graph_of(i8), graph_of(i1))
                 # the entry point is the L2 medoid
                 d2 = ((xb - xb.mean(axis=0, dtype=np.float64)) ** 2).sum(1)
                 self.assertEqual(i1.pipnn.entry_point, np.argmin(d2))
 
-    def test_second_replica_adds_neighbours(self):
+    def test_larger_fanout_adds_neighbours(self):
         _, xb, _ = get_dataset_2(DIM, 0, 3000, 0)
         _, nn = faiss.knn(xb, xb, 2)
 
-        def nn_in_row(replicas):
-            g, _ = graph_of(self.build(xb, faiss.METRIC_L2, replicas=replicas))
+        def nn_in_row(fanout):
+            index = faiss.IndexPiPNNFlat(DIM, 16)
+            index.pipnn.c_max = 64
+            index.pipnn.c_min = 16
+            faiss.copy_array_to_vector(
+                np.array(fanout, dtype="int32"), index.pipnn.fanout
+            )
+            index.add(xb)
+            g, _ = graph_of(index)
             return (g.reshape(len(xb), -1) == nn[:, 1:]).any(axis=1).mean()
 
-        self.assertGreater(nn_in_row(2), nn_in_row(1))
+        self.assertGreater(nn_in_row([20, 3]), nn_in_row([2, 1]))
 
     def test_effective_alpha(self):
         p = faiss.PiPNN()
@@ -253,7 +260,6 @@ class TestPiPNNErrors(unittest.TestCase):
             ("hash_bits", 0),
             ("reservoir_size", 0),
             ("reservoir_size", 256),
-            ("replicas", 0),
             ("c_min", 0),
             ("c_min", 2000),  # > c_max
             ("c_max", 4097),
@@ -329,7 +335,6 @@ class TestPiPNNSerialization(unittest.TestCase):
             "c_max": 512,
             "c_min": 64,
             "leader_cap": 500,
-            "replicas": 2,
             "leader_fraction": 0.01,
             "alpha": 1.1,
             "seed": 4321,
