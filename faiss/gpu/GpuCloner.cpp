@@ -240,10 +240,10 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;
         config.device = device;
-        GpuIndexCagra* res =
-                new GpuIndexCagra(provider, icg->d, icg->metric_type, config);
-        res->copyFrom_ex(icg, icg->get_numeric_type());
-        return res;
+        auto res = std::make_unique<GpuIndexCagra>(
+                provider, icg->d, icg->metric_type, config);
+        res->copyFrom(icg);
+        return res.release();
     }
 #endif
     else {
@@ -563,10 +563,10 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
             auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;
         config.device = device;
-        GpuIndexBinaryCagra* res =
-                new GpuIndexBinaryCagra(provider, ii->d, config);
+        auto res =
+                std::make_unique<GpuIndexBinaryCagra>(provider, ii->d, config);
         res->copyFrom(ii);
-        return res;
+        return res.release();
     }
 #endif
     else {

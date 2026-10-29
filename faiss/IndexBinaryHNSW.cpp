@@ -333,6 +333,7 @@ void IndexBinaryHNSWCagra::search(
                         params);
 
                 res.end();
+                vt->advance();
             }
             if (get_search_stats_enabled()) {
                 hnsw_stats.combine_atomic(search_stats);

@@ -33,6 +33,7 @@ namespace faiss {
 namespace gpu {
 
 class BinaryCuvsCagra;
+class Dataset;
 
 struct GpuIndexBinaryCagra : public IndexBinary {
    public:
@@ -49,22 +50,34 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// stream and handle resources on the GPU
     std::shared_ptr<GpuResources> getResources();
 
-    /// Trains CAGRA based on the given vector data and add them along with ids.
-    /// NB: The use of the add function here is to build the CAGRA graph on
-    /// the base dataset. Use this function when you want to add vectors with
-    /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
+    /// Pointer-based construction is unsupported. Use a caller-owned Dataset.
     void add(idx_t n, const uint8_t* x) override;
-
-    /// Trains CAGRA based on the given vector data.
-    /// NB: The use of the train function here is to build the CAGRA graph on
-    /// the base dataset and is currently the only function to add the full set
-    /// of vectors (without IDs) to the index. There is no external quantizer to
-    /// be trained here.
     void train(idx_t n, const uint8_t* x) override;
 
-    /// Initialize ourselves from the given CPU index; will overwrite
-    /// all data in ourselves
-    void copyFrom(const faiss::IndexBinaryHNSWCagra* index);
+    /// Build the full graph, borrowing UInt8 vectors with dim == d / 8.
+    /// The backing storage must remain alive and unchanged until all index
+    /// operations have completed. Does nothing if already trained; call reset()
+    /// before building again.
+    void train(const Dataset& dataset) override;
+    void add(const Dataset& dataset) override;
+
+    /// Rebind search storage without changing the graph. The vectors and their
+    /// ordering must match the training data. Requires compatible device data;
+    /// any padding must be zero and the caller retains ownership. Previous
+    /// work on the index stream completes before rebinding.
+    void updateDataset(const Dataset& dataset);
+    bool isSearchReady() const;
+
+    /// Copy the CPU graph. Without a Dataset, import only the graph and
+    /// metadata; attach vectors with updateDataset before search or copyTo.
+    /// If provided, dataset must describe writable, compatible storage on this
+    /// device with the CPU index's shape and UInt8 type. Copy CPU vectors into
+    /// that allocation, zero padding, and borrow it for search. The caller owns
+    /// the allocation and must keep it alive through index use. Copies complete
+    /// before return, so the CPU index can be released in either case.
+    void copyFrom(
+            const faiss::IndexBinaryHNSWCagra* index,
+            Dataset* dataset = nullptr);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance

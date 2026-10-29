@@ -168,7 +168,8 @@ def build_cagra_hnsw(
     index = faiss.GpuIndexCagra(res_list[0], d, faiss.METRIC_L2, config)
 
     t0 = time.time()
-    index.train(xb)
+    dataset = faiss.Dataset.viewHost(xb)
+    index.train(dataset)
     timings["build"] = time.time() - t0
 
     t0 = time.time()
