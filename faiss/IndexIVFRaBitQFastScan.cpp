@@ -35,6 +35,7 @@ using rabitq_utils::QueryFactorsData;
 using rabitq_utils::round_nonnegative_to_uint16;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
+using rabitq_utils::write_subset_sum_lut;
 
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
@@ -366,32 +367,6 @@ void IndexIVFRaBitQFastScan::encode_vectors(
 
 bool IndexIVFRaBitQFastScan::lookup_table_is_3d() const {
     return true;
-}
-
-// out[code] = base + sum of v_i for each set bit in code.
-inline void write_subset_sum_lut(
-        float* out,
-        float base,
-        float v0,
-        float v1,
-        float v2,
-        float v3) {
-    out[0] = base;
-    out[1] = base + v0;
-    out[2] = base + v1;
-    out[3] = base + v0 + v1;
-    out[4] = base + v2;
-    out[5] = base + v0 + v2;
-    out[6] = base + v1 + v2;
-    out[7] = base + v0 + v1 + v2;
-    out[8] = base + v3;
-    out[9] = base + v0 + v3;
-    out[10] = base + v1 + v3;
-    out[11] = base + v0 + v1 + v3;
-    out[12] = base + v2 + v3;
-    out[13] = base + v0 + v2 + v3;
-    out[14] = base + v1 + v2 + v3;
-    out[15] = base + v0 + v1 + v2 + v3;
 }
 
 // Computes lookup table for residual vectors in RaBitQ FastScan format
