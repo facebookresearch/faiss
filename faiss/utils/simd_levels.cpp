@@ -31,6 +31,7 @@ uint64_t SIMDConfig::supported_simd_levels = 0;
 // detect_x86_uarch_flags() at load time.
 bool SIMDConfig::avx512_split = false;
 bool SIMDConfig::scalar_gather = false;
+bool SIMDConfig::sq_avx512_4_accumulators = false;
 
 // Resolved here rather than in the header so that dependents, which never see
 // FAISS_ENABLE_DD, still get the answer for the faiss they link against.
@@ -142,6 +143,9 @@ void detect_x86_uarch_flags() {
     // keep the gather kernels.
     SIMDConfig::scalar_gather =
             is_amd && (display_family == 0x19u || display_family == 0x1Au);
+    // Measured on Bergamo (0x19) and Turin (0x1A). Intel Skylake and Sapphire
+    // Rapids are faster with one accumulator.
+    SIMDConfig::sq_avx512_4_accumulators = SIMDConfig::scalar_gather;
 }
 
 #else // Not x86-64
