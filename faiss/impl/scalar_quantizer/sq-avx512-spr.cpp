@@ -5,134 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <immintrin.h>
-
-#include <faiss/impl/scalar_quantizer/codecs.h>
-#include <faiss/impl/scalar_quantizer/distance_computers.h>
-#include <faiss/impl/scalar_quantizer/quantizers.h>
-#include <faiss/impl/scalar_quantizer/scanners.h>
-#include <faiss/impl/scalar_quantizer/similarities.h>
-#include <faiss/impl/simdlib/simdlib_avx512.h>
-#include <faiss/utils/simd_impl/masked_sum-avx512.h>
-
+#define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512_SPR
 #include <faiss/impl/scalar_quantizer/sq-avx512-impl.h>
+#include <faiss/utils/simd_impl/masked_sum-avx512.h>
 
 namespace faiss {
 namespace scalar_quantizer {
-
-/**********************************************************
- * Codecs — inherit AVX512 implementations
- **********************************************************/
-
-template <>
-struct Codec8bit<SIMDLevel::AVX512_SPR> : Codec8bit<SIMDLevel::AVX512> {};
-
-template <>
-struct Codec4bit<SIMDLevel::AVX512_SPR> : Codec4bit<SIMDLevel::AVX512> {};
-
-template <>
-struct Codec6bit<SIMDLevel::AVX512_SPR> : Codec6bit<SIMDLevel::AVX512> {};
-
-/**********************************************************
- * Quantizers — inherit AVX512 implementations
- **********************************************************/
-
-template <class Codec>
-struct QuantizerTemplate<
-        Codec,
-        QuantizerTemplateScaling::UNIFORM,
-        SIMDLevel::AVX512_SPR>
-        : QuantizerTemplate<
-                  Codec,
-                  QuantizerTemplateScaling::UNIFORM,
-                  SIMDLevel::AVX512> {
-    using QuantizerTemplate<
-            Codec,
-            QuantizerTemplateScaling::UNIFORM,
-            SIMDLevel::AVX512>::QuantizerTemplate;
-};
-
-template <class Codec>
-struct QuantizerTemplate<
-        Codec,
-        QuantizerTemplateScaling::NON_UNIFORM,
-        SIMDLevel::AVX512_SPR>
-        : QuantizerTemplate<
-                  Codec,
-                  QuantizerTemplateScaling::NON_UNIFORM,
-                  SIMDLevel::AVX512> {
-    using QuantizerTemplate<
-            Codec,
-            QuantizerTemplateScaling::NON_UNIFORM,
-            SIMDLevel::AVX512>::QuantizerTemplate;
-};
-
-template <>
-struct QuantizerFP16<SIMDLevel::AVX512_SPR> : QuantizerFP16<SIMDLevel::AVX512> {
-    using QuantizerFP16<SIMDLevel::AVX512>::QuantizerFP16;
-};
-
-template <>
-struct QuantizerBF16<SIMDLevel::AVX512_SPR> : QuantizerBF16<SIMDLevel::AVX512> {
-    using QuantizerBF16<SIMDLevel::AVX512>::QuantizerBF16;
-
-    void encode_vector(const float* x, uint8_t* code) const override {
-        encode_bf16_simd(x, (uint16_t*)code, this->d);
-    }
-
-    void decode_vector(const uint8_t* code, float* x) const override {
-        decode_bf16_simd((const uint16_t*)code, x, this->d);
-    }
-};
-
-template <>
-struct Quantizer8bitDirect<SIMDLevel::AVX512_SPR>
-        : Quantizer8bitDirect<SIMDLevel::AVX512> {
-    using Quantizer8bitDirect<SIMDLevel::AVX512>::Quantizer8bitDirect;
-};
-
-template <>
-struct Quantizer8bitDirectSigned<SIMDLevel::AVX512_SPR>
-        : Quantizer8bitDirectSigned<SIMDLevel::AVX512> {
-    using Quantizer8bitDirectSigned<
-            SIMDLevel::AVX512>::Quantizer8bitDirectSigned;
-};
-
-/**********************************************************
- * Lloyd-Max scalar quantizer - inherit AVX512 implementations
- **********************************************************/
-
-template <int NBits>
-struct QuantizerLloydMax<NBits, SIMDLevel::AVX512_SPR>
-        : QuantizerLloydMax<NBits, SIMDLevel::AVX512> {
-    using QuantizerLloydMax<NBits, SIMDLevel::AVX512>::QuantizerLloydMax;
-};
-
-/**********************************************************
- * Similarities — inherit AVX512 implementations
- **********************************************************/
-
-template <>
-struct SimilarityL2<SIMDLevel::AVX512_SPR> : SimilarityL2<SIMDLevel::AVX512> {
-    using SimilarityL2<SIMDLevel::AVX512>::SimilarityL2;
-    static constexpr SIMDLevel simd_level = SIMDLevel::AVX512_SPR;
-};
-
-template <>
-struct SimilarityIP<SIMDLevel::AVX512_SPR> : SimilarityIP<SIMDLevel::AVX512> {
-    using SimilarityIP<SIMDLevel::AVX512>::SimilarityIP;
-    static constexpr SIMDLevel simd_level = SIMDLevel::AVX512_SPR;
-};
-
-/**********************************************************
- * Generic DCTemplate — delegate to AVX512 implementations
- **********************************************************/
-
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512_SPR>
-        : DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512> {
-    using DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>::DCTemplate;
-};
 
 /**********************************************************
  * DistanceComputerByte: AVX512-VNNI
@@ -530,5 +408,4 @@ struct DCTemplate<
 } // namespace scalar_quantizer
 } // namespace faiss
 
-#define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512_SPR
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
