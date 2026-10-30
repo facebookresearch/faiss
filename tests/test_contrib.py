@@ -3,10 +3,14 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import io
 import os
+import pickle
 import platform
 import shutil
+import socket
 import tempfile
+import threading
 import unittest
 from contextlib import contextmanager
 
@@ -17,12 +21,14 @@ from common_faiss_tests import get_dataset_2
 
 from faiss.contrib import (
     big_batch_search,
+    client_server,
     clustering,
     datasets,
     evaluation,
     factory_tools,
     inspect_tools,
     ivf_tools,
+    rpc,
 )
 from faiss.contrib.exhaustive_search import (
     exponential_query_iterator,
@@ -955,3 +961,96 @@ class TestFactoryTools(unittest.TestCase):
                 factory_tools.reverse_index_factory(ivf_index),
                 f"IVF8,{expected}",
             )
+
+
+class TestClientServer(unittest.TestCase):
+    """ClientIndex connected to SearchServers that run in threads"""
+
+    def serve(self, index):
+        """like run_index_server, but on localhost and for a single client
+        connection. Returns (host, port)"""
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(("127.0.0.1", 0))
+        sock.listen(1)
+        host, port = sock.getsockname()
+
+        def accept():
+            conn, _ = sock.accept()
+            sock.close()
+            try:
+                client_server.SearchServer(conn, index).exec_loop()
+            finally:
+                # so that the client does not wait if the server fails
+                conn.close()
+
+        threading.Thread(target=accept, daemon=True).start()
+        return host, port
+
+    def connect(self, shards):
+        return client_server.ClientIndex([self.serve(s) for s in shards])
+
+    def make_shards(self, metric, nshard):
+        """IVF shards that each hold a slice of the database, and a
+        single index that holds all of it"""
+        ds = datasets.SyntheticDataset(32, 1000, 200, 10)
+        xb = ds.get_database()
+        index = faiss.index_factory(ds.d, "IVF4,Flat", metric)
+        index.train(ds.get_train())
+        index.nprobe = 4
+        shards = []
+        bounds = np.linspace(0, ds.nb, nshard + 1).astype(int)
+        for i0, i1 in zip(bounds[:-1], bounds[1:]):
+            shard = faiss.clone_index(index)
+            shard.add_with_ids(xb[i0:i1], np.arange(i0, i1))
+            shards.append(shard)
+        index.add(xb)
+        return shards, index, ds.get_queries()
+
+    def do_test_search(self, metric):
+        shards, index, xq = self.make_shards(metric, 2)
+        client_index = self.connect(shards)
+        self.assertEqual(client_index.ntotal, index.ntotal)
+        client_index.set_nprobe(index.nprobe)
+        Dref, Iref = index.search(xq, 10)
+        Dnew, Inew = client_index.search(xq, 10)
+        np.testing.assert_array_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref, rtol=1e-5)
+
+    def test_search_L2(self):
+        self.do_test_search(faiss.METRIC_L2)
+
+    def test_search_IP(self):
+        self.do_test_search(faiss.METRIC_INNER_PRODUCT)
+
+    def test_metric_type(self):
+        for metric in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
+            shards = [faiss.index_factory(32, "IVF4,Flat", metric)] * 2
+            self.assertEqual(self.connect(shards).metric_type, metric)
+
+    def test_mixed_metric_types(self):
+        shards = [
+            faiss.index_factory(32, "IVF4,Flat", metric)
+            for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT)
+        ]
+        with self.assertRaises(RuntimeError):
+            self.connect(shards)
+
+    def test_set_omp_num_threads(self):
+        client_index = self.connect([faiss.index_factory(32, "IVF4,Flat")])
+        # the server runs in this process, so keep the current setting
+        client_index.set_omp_num_threads(faiss.omp_get_max_threads())
+
+    def test_unknown_method(self):
+        client_index = self.connect([faiss.index_factory(32, "IVF4,Flat")])
+        sub_index = client_index.sub_indexes[0]
+        with self.assertRaisesRegex(
+            rpc.ServerException, "unknown method no_such_method"
+        ):
+            sub_index.no_such_method()
+        # the connection is still usable
+        self.assertEqual(sub_index.get_ntotal(), 0)
+
+    def test_unpickle_array(self):
+        x = np.arange(12, dtype="float32").reshape(3, 4)
+        buf = io.BytesIO(pickle.dumps(x, protocol=4))
+        np.testing.assert_array_equal(rpc.RestrictedUnpickler(buf).load(), x)
