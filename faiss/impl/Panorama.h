@@ -14,6 +14,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/PanoramaStats.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_levels.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -21,7 +22,7 @@
 #include <cstring>
 #include <vector>
 
-#if defined(COMPILE_SIMD_AVX2) && defined(__AVX2__) && defined(__BMI2__)
+#if FAISS_SIMD_TU(AVX2) && defined(__BMI2__)
 #include <immintrin.h>
 #endif
 
@@ -162,7 +163,7 @@ inline size_t compact_active_kernel(
     size_t next_active = 0;
     size_t i = 0;
 
-#if defined(COMPILE_SIMD_AVX2) && defined(__AVX2__) && defined(__BMI2__)
+#if FAISS_SIMD_TU(AVX2) && defined(__BMI2__)
     for (; i + 8 <= num_active; i += 8) {
         uint64_t bytes;
         memcpy(&bytes, &active_byteset[i], 8);

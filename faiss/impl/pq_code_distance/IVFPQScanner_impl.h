@@ -559,6 +559,13 @@ InvertedListScanner* make_IVFPQInvertedListScanner<THE_SIMD_LEVEL>(
 
     auto with_decoder = [&]<bool use_sel>() -> InvertedListScanner* {
         if (ivfpq.pq.nbits == 8) {
+            if constexpr (has_scalar_8bit_kernel<THE_SIMD_LEVEL>()) {
+                if (use_scalar_8bit_kernel<THE_SIMD_LEVEL>(ivfpq.pq.M)) {
+                    return make.template operator()<
+                            PQCodeDistanceScalar8Dist<THE_SIMD_LEVEL>,
+                            use_sel>();
+                }
+            }
             return make.template
             operator()<PQCodeDistance<PQDecoder8, THE_SIMD_LEVEL>, use_sel>();
         } else if (ivfpq.pq.nbits == 16) {

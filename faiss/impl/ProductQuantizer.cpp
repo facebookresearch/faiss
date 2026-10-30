@@ -9,6 +9,8 @@
 
 #include <faiss/impl/ProductQuantizer.h>
 
+#include <omp.h>
+#include <atomic>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
@@ -16,10 +18,12 @@
 #include <type_traits>
 
 #include <algorithm>
+#include <atomic>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissException.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -141,8 +145,8 @@ void ProductQuantizer::train(size_t n, const float* x) {
             }
         }
 
-        std::unique_ptr<float[]> xslice(new float[n * dsub]);
-        for (size_t m = 0; m < M; m++) {
+        const auto train_slice = [&](size_t m) {
+            std::unique_ptr<float[]> xslice(new float[n * dsub]);
             for (size_t j = 0; j < n; j++)
                 memcpy(xslice.get() + j * dsub,
                        x + j * d + m * dsub,
@@ -150,7 +154,6 @@ void ProductQuantizer::train(size_t n, const float* x) {
 
             Clustering clus(dsub, ksub, cp);
 
-            // we have some initialization for the centroids
             if (final_train_type != Train_default) {
                 clus.centroids.resize(dsub * ksub);
             }
@@ -187,6 +190,28 @@ void ProductQuantizer::train(size_t n, const float* x) {
             IndexFlatL2 index(dsub);
             clus.train(n, xslice.get(), assign_index ? *assign_index : index);
             set_params(clus.centroids.data(), m);
+        };
+
+        if (!assign_index && x != centroids.data() && M > 1 &&
+            M * 8 >= static_cast<size_t>(omp_get_max_threads())) {
+            std::exception_ptr ex;
+            std::atomic<bool> failed{false};
+#pragma omp parallel for
+            for (int64_t m = 0; m < static_cast<int64_t>(M); m++) {
+                if (failed) {
+                    continue;
+                }
+                try {
+                    train_slice(m);
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { failed = true; });
+                }
+            }
+            omp_rethrow_if_exception(ex);
+        } else {
+            for (size_t m = 0; m < M; m++) {
+                train_slice(m);
+            }
         }
 
     } else {
@@ -422,10 +447,21 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
     int64_t n_signed = n;
     if (dsub < 16) { // simple direct computation
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 
 #pragma omp parallel for
-        for (int64_t i = 0; i < n_signed; i++)
-            compute_code(x + i * d, codes + i * code_size);
+        for (int64_t i = 0; i < n_signed; i++) {
+            if (interrupt.load(std::memory_order_relaxed)) {
+                continue;
+            }
+            try {
+                compute_code(x + i * d, codes + i * code_size);
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
+        }
+        omp_rethrow_if_exception(ex);
 
     } else { // worthwhile to use BLAS
         std::unique_ptr<float[]> dis_tables(new float[n * ksub * M]);

@@ -15,6 +15,7 @@
 #include <faiss/impl/scalar_quantizer/similarities.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
+#include <faiss/utils/simd_impl/masked_sum.h>
 #include <limits>
 
 #ifndef THE_LEVEL_TO_DISPATCH
@@ -37,35 +38,6 @@ inline constexpr SIMDLevel rabitq_popcount_level =
         SL0 == SIMDLevel::AVX512_SPR ? SIMDLevel::AVX512_VPOPCNT : SL0;
 
 /*******************************************************************
- * TurboQuant SIMD kernel: masked_sum
- * Compute sum of arr[j] where bit j of the bitmask is set.
- * NONE specialization is inline; AVX2/AVX512/NEON specializations
- * live in sq-avx2.cpp / sq-avx512.cpp / sq-neon.cpp.
- *******************************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-inline float turboq_masked_sum<SIMDLevel::NONE>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    float result = 0;
-    for (size_t byte_idx = 0; byte_idx < (d + 7) / 8; byte_idx++) {
-        uint8_t b = bits[byte_idx];
-        size_t base = byte_idx * 8;
-        size_t end = std::min(base + 8, d);
-        for (size_t j = base; j < end; j++) {
-            if (b & (1 << (j - base))) {
-                result += arr[j];
-            }
-        }
-    }
-    return result;
-}
-
-/*******************************************************************
  * Full TurboQuant DC — lives here because it needs both
  * quantizers.h (QuantizerTurboQuantFull, SQTurboQFactors) and
  * similarities.h (Similarity::metric_type). distance_computers.h
@@ -73,6 +45,8 @@ inline float turboq_masked_sum<SIMDLevel::NONE>(
  *******************************************************************/
 template <int NBits, class Similarity, SIMDLevel SL2>
 struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
+    // The AVX-512 levels share the AVX512 masked_sum specialization.
+    static constexpr SIMDLevel SUM_LEVEL = simd512_level_selector<SL2>::value;
     using Sim = Similarity;
     QuantizerTurboQuantFull<NBits, SIMDLevel::NONE> quant;
     std::vector<float> query;
@@ -277,19 +251,19 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
                         mse_popcnt_scale * static_cast<float>(pop);
             } else {
                 // Float path: masked accumulation
-                float pos_sum = turboq_masked_sum<SL2>(query.data(), code, d);
+                float pos_sum = masked_sum<SUM_LEVEL>(query.data(), code, d);
                 mse_dot = scaled_c0 * total_q_sum + delta_centroid * pos_sum;
             }
         } else if constexpr (NBits == 3) {
             // 2-bit MSE: decompose into 3 masked sums over bit-planes.
             size_t pb = quant.mse_plane_bytes;
-            float s0 = turboq_masked_sum<SL2>(query.data(), code, d);
-            float s1 = turboq_masked_sum<SL2>(query.data(), code + pb, d);
+            float s0 = masked_sum<SUM_LEVEL>(query.data(), code, d);
+            float s1 = masked_sum<SUM_LEVEL>(query.data(), code + pb, d);
             for (size_t i = 0; i < pb; i++) {
                 scratch_and[i] = code[i] & code[pb + i];
             }
             float s01 =
-                    turboq_masked_sum<SL2>(query.data(), scratch_and.data(), d);
+                    masked_sum<SUM_LEVEL>(query.data(), scratch_and.data(), d);
             mse_dot = mse_multi_base + mse_coeff_s0 * s0 + mse_coeff_s1 * s1 +
                     mse_coeff_s01 * s01;
         } else {
@@ -336,7 +310,7 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
             qjl_dot = qjl_coeff * gamma * (2.0f * pos_sum - total_qproj_sum);
         } else {
             float pos_sum =
-                    turboq_masked_sum<SL2>(query_proj.data(), qjl_code, d);
+                    masked_sum<SUM_LEVEL>(query_proj.data(), qjl_code, d);
             qjl_dot = qjl_coeff * gamma * (2.0f * pos_sum - total_qproj_sum);
         }
 

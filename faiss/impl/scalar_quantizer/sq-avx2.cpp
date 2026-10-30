@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
 #include <cstring>
@@ -16,6 +14,7 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/utils/simd_impl/masked_sum-avx2.h>
 
 namespace faiss {
 
@@ -236,7 +235,8 @@ struct QuantizerTemplate<
  **********************************************************/
 
 // 1-bit MSE: boundary is always at centroids midpoint.
-// Encode: 8 comparisons → 1 byte via movemask.
+// Encode: 8 comparisons → 1 byte via movemask. NLT_UQ is !(x < b), matching
+// the scalar upper_bound tie-break: x == b (and NaN) encodes to the upper bin.
 // Decode: gather 8 centroids via index unpack.
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
@@ -260,7 +260,7 @@ struct QuantizerLloydMax<1, SIMDLevel::AVX2>
         for (size_t i = 0; i < this->d; i += 8) {
             __m256 vals = _mm256_loadu_ps(x + i);
             int mask = _mm256_movemask_ps(
-                    _mm256_cmp_ps(vals, boundary, _CMP_GT_OQ));
+                    _mm256_cmp_ps(vals, boundary, _CMP_NLT_UQ));
             code[i / 8] = static_cast<uint8_t>(mask);
         }
     }
@@ -295,7 +295,8 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
     }
 
     void encode_vector(const float* x, uint8_t* code) const final {
-        // 3 boundaries → branchless: idx = (x>b0) + (x>b1) + (x>b2)
+        // 3 boundaries → branchless: idx = !(x<b0) + !(x<b1) + !(x<b2),
+        // matching the scalar upper_bound tie-break.
         // _mm256_cmp_ps returns all-ones (-1 as int32) for true,
         // so we negate the sum to get positive indices.
         __m256 b0 = _mm256_set1_ps(this->boundaries[0]);
@@ -303,16 +304,16 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
         __m256 b2 = _mm256_set1_ps(this->boundaries[2]);
         for (size_t i = 0; i < this->d; i += 8) {
             __m256 vals = _mm256_loadu_ps(x + i);
-            __m256i gt0 =
-                    _mm256_castps_si256(_mm256_cmp_ps(vals, b0, _CMP_GT_OQ));
-            __m256i gt1 =
-                    _mm256_castps_si256(_mm256_cmp_ps(vals, b1, _CMP_GT_OQ));
-            __m256i gt2 =
-                    _mm256_castps_si256(_mm256_cmp_ps(vals, b2, _CMP_GT_OQ));
-            // Each gt is 0 or -1 (0xFFFFFFFF). Sum = -(index).
+            __m256i ge0 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b0, _CMP_NLT_UQ));
+            __m256i ge1 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b1, _CMP_NLT_UQ));
+            __m256i ge2 =
+                    _mm256_castps_si256(_mm256_cmp_ps(vals, b2, _CMP_NLT_UQ));
+            // Each ge is 0 or -1 (0xFFFFFFFF). Sum = -(index).
             __m256i idx = _mm256_sub_epi32(
                     _mm256_setzero_si256(),
-                    _mm256_add_epi32(_mm256_add_epi32(gt0, gt1), gt2));
+                    _mm256_add_epi32(_mm256_add_epi32(ge0, ge1), ge2));
             // Pack 8 x 2-bit indices into 2 bytes.
             // Store to temp array and pack scalarly - faster than
             // extract+permute.
@@ -853,54 +854,8 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX2>
     }
 };
 
-/**********************************************************
- * TurboQuant masked_sum AVX2 specialization
- **********************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-float turboq_masked_sum<SIMDLevel::AVX2>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    const __m256i bit_masks = _mm256_set_epi32(128, 64, 32, 16, 8, 4, 2, 1);
-    __m256 acc = _mm256_setzero_ps();
-    size_t full_bytes = d / 8;
-    for (size_t byte_idx = 0; byte_idx < full_bytes; byte_idx++) {
-        __m256i byte_broadcast =
-                _mm256_set1_epi32(static_cast<int>(bits[byte_idx]));
-        __m256i masked = _mm256_and_si256(byte_broadcast, bit_masks);
-        __m256i cmp = _mm256_cmpeq_epi32(masked, bit_masks);
-        __m256 mask = _mm256_castsi256_ps(cmp);
-        __m256 vals = _mm256_loadu_ps(arr + byte_idx * 8);
-        acc = _mm256_add_ps(acc, _mm256_and_ps(mask, vals));
-    }
-    __m128 hi = _mm256_extractf128_ps(acc, 1);
-    __m128 lo = _mm256_castps256_ps128(acc);
-    __m128 sum128 = _mm_add_ps(lo, hi);
-    __m128 shuf = _mm_movehdup_ps(sum128);
-    __m128 sums = _mm_add_ps(sum128, shuf);
-    shuf = _mm_movehl_ps(shuf, sums);
-    sums = _mm_add_ss(sums, shuf);
-    float result = _mm_cvtss_f32(sums);
-    size_t tail_start = full_bytes * 8;
-    if (tail_start < d) {
-        uint8_t last_byte = bits[full_bytes];
-        for (size_t j = tail_start; j < d; j++) {
-            if (last_byte & (1 << (j - tail_start))) {
-                result += arr[j];
-            }
-        }
-    }
-    return result;
-}
-
 } // namespace scalar_quantizer
 } // namespace faiss
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
-
-#endif // COMPILE_SIMD_AVX2

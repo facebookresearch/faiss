@@ -16,8 +16,6 @@
 // hamming_computer-generic.h. SIMDLevel::ARM_NEON specializations for the
 // ISA-varying HammingComputer and GenHammingComputer structs live in this file.
 
-#ifdef __aarch64__
-
 #include <arm_neon.h>
 
 #include <cassert>
@@ -316,7 +314,5 @@ struct GenHammingComputerM8_tpl<SIMDLevel::ARM_NEON> {
 };
 
 } // namespace faiss
-
-#endif
 
 #endif

@@ -176,6 +176,67 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     });
 }
 
+namespace {
+
+// The sample of an IndexBinaryHNSW. Hamming distances are integers, so a
+// nearer node has a strictly smaller distance.
+struct BinaryLinkSample : HNSWLinkSampleSearch {
+    const IndexBinaryHNSW& index;
+    const uint8_t* x;
+
+    BinaryLinkSample(const IndexBinaryHNSW& index, idx_t n, const uint8_t* x)
+            : index(index), x(x) {
+        this->n = n;
+    }
+
+    void search(const SearchParametersHNSW* params, idx_t* labels)
+            const override {
+        std::vector<int32_t> distances(n);
+        index.search(n, x, 1, distances.data(), labels, params);
+    }
+
+    void search_exact(
+            size_t m,
+            const idx_t* ids,
+            const idx_t* found,
+            idx_t* exact,
+            uint8_t* nearer) const override {
+        const size_t cs = index.code_size;
+        std::vector<uint8_t> rows(m * cs);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(rows.data() + j * cs, x + ids[j] * cs, cs);
+        }
+        std::vector<int32_t> distances(m);
+        index.storage->search(m, rows.data(), 1, distances.data(), exact);
+#pragma omp parallel
+        {
+            std::unique_ptr<DistanceComputer> dis(
+                    index.get_distance_computer());
+#pragma omp for schedule(static)
+            for (int64_t j = 0; j < static_cast<int64_t>(m); j++) {
+                if (exact[j] < 0 || exact[j] == found[j]) {
+                    continue;
+                }
+                dis->set_query(
+                        reinterpret_cast<const float*>(rows.data() + j * cs));
+                nearer[j] = (*dis)(exact[j]) < (*dis)(found[j]);
+            }
+        }
+    }
+};
+
+} // namespace
+
+HNSWLevel0LinkStats IndexBinaryHNSW::add_level_0_links_from_sample(
+        idx_t n,
+        const uint8_t* x,
+        const HNSWLevel0LinkParameters& params) {
+    const BinaryLinkSample sample(*this, n, x);
+    std::unique_ptr<DistanceComputer> dis(get_distance_computer());
+    return hnsw_add_level_0_links_from_sample(
+            hnsw, ntotal, *dis, false, sample, params);
+}
+
 /**************************************************************
  * IndexBinaryHNSWCagra implementation
  **************************************************************/
@@ -272,6 +333,7 @@ void IndexBinaryHNSWCagra::search(
                         params);
 
                 res.end();
+                vt->advance();
             }
             if (get_search_stats_enabled()) {
                 hnsw_stats.combine_atomic(search_stats);

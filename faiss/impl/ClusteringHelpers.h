@@ -51,6 +51,15 @@ idx_t subsample_training_set(
         uint8_t** x_out,
         float** weights_out);
 
+/** Initialize non-random centroids directly from packed IEEE binary16 rows. */
+void init_centroids_fp16(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const uint16_t* x,
+        float* centroids,
+        size_t n_existing_centroids = 0,
+        const float* existing_centroids = nullptr);
+
 /** compute centroids as (weighted) sum of training points
  *
  * @param x            training vectors, size n * code_size (from codec)
@@ -74,6 +83,33 @@ void compute_centroids(
         const float* weights,
         float* hassign,
         float* centroids);
+
+/** Same as compute_centroids for training vectors stored as packed IEEE
+ * binary16 values.
+ *
+ * Rows are widened in registers and accumulated directly into the fp32
+ * centroids: there is no per-row decode call and no decode buffer.
+ *
+ * @param x            training vectors, size n * d
+ */
+void compute_centroids_fp16(
+        size_t d,
+        size_t k,
+        size_t n,
+        size_t k_frozen,
+        const uint16_t* x,
+        const int64_t* assign,
+        const float* weights,
+        float* hassign,
+        float* centroids);
+
+/** Check packed IEEE binary16 values for NaNs and infinities.
+ *
+ * The check runs on the bit patterns, without widening to fp32.
+ *
+ * @return true iff none of the `n` values is a NaN or an infinity
+ */
+bool fp16_all_finite(size_t n, const uint16_t* x);
 
 /** Handle empty clusters by splitting larger ones.
  *

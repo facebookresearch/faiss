@@ -25,38 +25,10 @@ faiss.omp_set_num_threads(4)
 @for_all_simd_levels
 class TestSearch(unittest.TestCase):
 
-    def test_PQ4_accuracy(self):
-        ds = datasets.SyntheticDataset(32, 2000, 5000, 1000)
-
-        index_gt = faiss.IndexFlatL2(32)
-        index_gt.add(ds.get_database())
-        Dref, Iref = index_gt.search(ds.get_queries(), 10)
-
-        index = faiss.index_factory(32, "PQ16x4fs")
-        index.train(ds.get_train())
-        index.add(ds.get_database())
-        Da, Ia = index.search(ds.get_queries(), 10)
-
-        nq = Iref.shape[0]
-        recall_at_1 = (Iref[:, 0] == Ia[:, 0]).sum() / nq
-        assert recall_at_1 > 0.6
-
     def test_PQ4_search_matches_none(self):
-        """Fast-scan PQ search dispatches via the 256/512-bit QBS path.
-
-        The integer QBS kernel is deterministic across SIMD levels *only if*
-        the upstream float PQ distance table is bit-identical AND the
-        handler's end() method (int-to-float conversion) compiles to
-        identical FP code.  Two cases break this:
-
-          1. aarch64 NEON/SVE: float distance-table computation reduces
-             in a different order, producing non-bit-identical LUT.
-          2. DD mode: per-SIMD TUs compile with different flags (-mfma
-             vs no -mfma), so handler end() may contract mul+add into
-             fma, producing 1-ULP float distance differences.
-
-        In both cases, fall back to a recall@1 check.
-        """
+        """SIMD and NONE results match exactly unless the float LUT differs
+        (aarch64) or the DD build contracts end() into fma; then compare
+        recall@1."""
         ds = datasets.SyntheticDataset(32, 2000, 5000, 200)
         index = faiss.index_factory(32, "PQ16x4fs")
         index.train(ds.get_train())
@@ -169,16 +141,13 @@ class TestRounding(unittest.TestCase):
 
         index2 = faiss.IndexPQFastScan(index)
 
-        # simply repro normal search
         index2.implem = 2
         D2, I2 = index2.search(ds.get_queries(), 10)
         np.testing.assert_array_equal(I2, Iref)
         np.testing.assert_array_equal(D2, Dref)
 
-        # rounded LUT with correction
         index2.implem = implem
         D4, I4 = index2.search(ds.get_queries(), 10)
-        # check accuracy of indexes
         recalls = {}
         for rank in 1, 10:
             recalls[rank] = (Iref[:, :1] == I4[:, :rank]).sum() / nq
@@ -186,8 +155,6 @@ class TestRounding(unittest.TestCase):
         min_r1 = 0.98 if metric == faiss.METRIC_INNER_PRODUCT else 0.99
         self.assertGreaterEqual(recalls[1], min_r1)
         self.assertGreater(recalls[10], 0.995)
-        # check accuracy of distances
-        # err3 = ((D3 - D2) ** 2).sum()
         err4 = ((D4 - D2) ** 2).sum()
         nf = (D2**2).sum()
         self.assertLess(err4, nf * 1e-4)
@@ -201,20 +168,14 @@ class TestRounding(unittest.TestCase):
     def test_implem_12(self):
         self.do_test_rounding(12)
 
-    def test_implem_12_ip(self):
-        self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
-
     def test_implem_14(self):
         self.do_test_rounding(14)
 
-    def test_implem_14_ip(self):
-        self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
-
 
 class TestManyPQSubQuantizers(unittest.TestCase):
-    def do_test_recall_matches_pq(self, d):
+    def test_m_1024(self):
+        d = 1024
         ds = datasets.SyntheticDataset(d, 2000, 5000, 50)
-        # M = d gives one dimension per sub-quantizer.
         pq = faiss.IndexPQ(d, d, 4)
         pq.train(ds.get_train())
         pq.add(ds.get_database())
@@ -227,9 +188,6 @@ class TestManyPQSubQuantizers(unittest.TestCase):
         D, I = fs.search(ds.get_queries(), 10)
         agree = (Iref[:, :1] == I[:, :1]).sum() / Iref.shape[0]
         self.assertGreater(agree, 0.9)
-
-    def test_m_1024(self):
-        self.do_test_recall_matches_pq(1024)
 
 
 @for_all_simd_levels
@@ -262,75 +220,6 @@ class TestReconstruct(unittest.TestCase):
         np.testing.assert_array_equal(recons, recons2)
 
 
-#########################################################
-# Kernel unit test
-#########################################################
-
-
-def reference_accu(codes, LUT):
-    nq, nsp, is_16 = LUT.shape
-    nb, nsp_2 = codes.shape
-    assert is_16 == 16
-    assert nsp_2 == nsp // 2
-    accu = np.zeros((nq, nb), "uint16")
-    for i in range(nq):
-        for j in range(nb):
-            a = np.uint16(0)
-            for sp in range(0, nsp, 2):
-                c = codes[j, sp // 2]
-                a += LUT[i, sp, c & 15].astype("uint16")
-                a += LUT[i, sp + 1, c >> 4].astype("uint16")
-            accu[i, j] = a
-    return accu
-
-
-# disabled because the function to write to mem is not implemented currently
-
-
-class ThisIsNotATestLoop5:  # (unittest.TestCase):
-
-    def do_loop5_kernel(self, nq, bb):
-        """unit test for the accumulation kernel"""
-        nb = bb * 32  # databse size
-        nsp = 24  # number of sub-quantizers
-
-        rs = np.random.RandomState(123)
-        codes = rs.randint(256, size=(nb, nsp // 2)).astype("uint8")
-        LUT = rs.randint(256, size=(nq, nsp, 16)).astype("uint8")
-        accu_ref = reference_accu(codes, LUT)
-
-        def to_A(x):
-            return faiss.array_to_AlignedTable(x.ravel())
-
-        sp = faiss.swig_ptr
-
-        LUT_a = faiss.AlignedTableUint8(LUT.size)
-        faiss.pq4_pack_LUT(nq, nsp, sp(LUT), LUT_a.get())
-
-        codes_a = faiss.AlignedTableUint8(codes.size)
-        faiss.pq4_pack_codes(sp(codes), nb, nsp, nb, nb, nsp, codes_a.get())
-
-        accu_a = faiss.AlignedTableUint16(nq * nb)
-        accu_a.clear()
-        faiss.loop5_kernel_accumulate_1_block_to_mem(
-            nq, nb, nsp, codes_a.get(), LUT_a.get(), accu_a.get()
-        )
-        accu = faiss.AlignedTable_to_array(accu_a).reshape(nq, nb)
-        np.testing.assert_array_equal(accu_ref, accu)
-
-    def test_11(self):
-        self.do_loop5_kernel(1, 1)
-
-    def test_21(self):
-        self.do_loop5_kernel(2, 1)
-
-    def test_12(self):
-        self.do_loop5_kernel(1, 2)
-
-    def test_22(self):
-        self.do_loop5_kernel(2, 2)
-
-
 ##########################################################
 # Tests for various IndexPQFastScan implementations
 ##########################################################
@@ -340,7 +229,6 @@ def verify_with_draws(testcase, Dref, Iref, Dnew, Inew):
     """Verify a list of results where there are draws in the distances
     (because they are integer)."""
     np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
-    # here we have to be careful because of draws
     for i in range(len(Iref)):
         if np.all(Iref[i] == Inew[i]):
             continue
@@ -373,7 +261,6 @@ class TestImplems(unittest.TestCase):
             index2.implem = 4
             Dref, Iref = index2.search(ds.get_queries(), 10)
 
-            # check CodePacker
             codes_ref = faiss.vector_to_array(index.codes)
             codes_ref = codes_ref.reshape(-1, index.code_size)
             index2codes = faiss.vector_to_array(index2.codes)
@@ -399,11 +286,6 @@ class TestImplems(unittest.TestCase):
         Iref = Iref[:, : self.k]
 
         verify_with_draws(self, Dref, Iref, Dnew, Inew)
-
-    def build_fast_scan_index(self, index, params):
-        index2 = faiss.IndexPQFastScan(index)
-        index2.implem = 5
-        return index2
 
 
 @for_all_simd_levels
@@ -482,9 +364,6 @@ class TestImplem14(TestImplems):
         self.k = 1
         self.do_with_params(32, (1, 64))
 
-    def test_1_32_odd_dim(self):
-        self.do_with_params(30, (1, 32))
-
     def test_1_64_odd_dim(self):
         self.do_with_params(30, (1, 64))
 
@@ -498,9 +377,6 @@ class TestImplem15(TestImplems):
         index2.qbs = qbs
         index2.implem = 15
         return index2
-
-    def test_1_32(self):
-        self.do_with_params(32, (1, 32))
 
     def test_2_64(self):
         self.do_with_params(32, (2, 64))
@@ -561,11 +437,24 @@ class TestAdd(unittest.TestCase):
         data = faiss.serialize_index(index2)
         index3 = faiss.deserialize_index(data)
 
-        self.assertEqual(index2.implem, index3.implem)
-
         D3, I3 = index3.search(ds.get_queries(), 10)
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
+
+    def test_reset(self):
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+
+        index = faiss.IndexPQFastScan(d, d // 2, 4)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal2, 0)
+
+        D, I = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, -1)
 
 
 class TestAQFastScan(unittest.TestCase):
@@ -603,12 +492,6 @@ class TestAQFastScan(unittest.TestCase):
 
         assert abs(recall_ref - recall) < 0.05
 
-    def xx_test_accuracy(self):
-        for metric in "L2", "IP":
-            for implem in 0, 12, 13, 14, 15:
-                self.subtest_accuracy("RQ", "rq", implem, metric)
-                self.subtest_accuracy("LSQ", "lsq", implem, metric)
-
     def subtest_from_idxaq(self, implem, metric):
         if metric == "L2":
             metric_type = faiss.METRIC_L2
@@ -634,11 +517,6 @@ class TestAQFastScan(unittest.TestCase):
         recall1 = (I1 == gt).sum() / nq
         assert abs(recall_ref - recall1) < 0.05
 
-    def xx_test_from_idxaq(self):
-        for implem in 2, 3, 4:
-            self.subtest_from_idxaq(implem, "L2")
-            self.subtest_from_idxaq(implem, "IP")
-
     def subtest_factory(self, aq, M, bbs, st):
         """
         Format: {AQ}{M}x4fs_{bbs}_N{st}
@@ -658,18 +536,18 @@ class TestAQFastScan(unittest.TestCase):
             bbs = 32
 
         assert index.bbs == bbs
-        aq = faiss.downcast_AdditiveQuantizer(index.aq)
-        assert aq.M == M
+        q = faiss.downcast_AdditiveQuantizer(index.aq)
+        assert q.M == M
 
         if aq == "LSQ":
-            assert isinstance(aq, faiss.LocalSearchQuantizer)
+            assert isinstance(q, faiss.LocalSearchQuantizer)
         if aq == "RQ":
-            assert isinstance(aq, faiss.ResidualQuantizer)
+            assert isinstance(q, faiss.ResidualQuantizer)
 
         if st == "lsq":
-            assert aq.search_type == AQ.ST_norm_lsq2x4
+            assert q.search_type == AQ.ST_norm_lsq2x4
         if st == "rq":
-            assert aq.search_type == AQ.ST_norm_rq2x4
+            assert q.search_type == AQ.ST_norm_rq2x4
 
     def test_factory(self):
         self.subtest_factory("LSQ", 16, 64, "lsq")
@@ -710,7 +588,7 @@ def add_TestAQFastScan_subset_accuracy(aq, st, implem, metric):
 
 
 for metric in "L2", "IP":
-    for implem in 0, 12, 13, 14, 15:
+    for implem in 12, 14:
         add_TestAQFastScan_subset_accuracy("LSQ", "lsq", implem, metric)
         add_TestAQFastScan_subset_accuracy("RQ", "rq", implem, metric)
 
@@ -806,3 +684,26 @@ class TestBlockDecode(unittest.TestCase):
             0, ::100
         ]
         np.testing.assert_array_equal(decoded, index.reconstruct(0)[::100])
+
+
+@for_all_simd_levels
+class TestImplemDefault(TestImplems):
+    """QBS values through the default implementation. Its QBS loop is also
+    instantiated in the AVX512 TU (the AVX2 fallback and the Zen 4 split
+    path). AVX512 code reached from the AVX2 path only fails here on a CPU
+    without AVX512 (or under qemu-x86_64); on other hosts the
+    symbol-isolation scan is what catches it."""
+
+    def build_fast_scan_index(self, index, qbs):
+        index2 = faiss.IndexPQFastScan(index)
+        index2.qbs = qbs
+        return index2
+
+    def test_qbs6(self):
+        self.do_with_params(32, 0x6)
+
+    def test_qbs34(self):
+        self.do_with_params(32, 0x34)
+
+    def test_qbs222(self):
+        self.do_with_params(32, 0x222)

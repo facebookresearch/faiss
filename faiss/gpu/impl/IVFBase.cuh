@@ -41,6 +41,11 @@ class IVFBase {
 
     virtual ~IVFBase();
 
+    /// See GpuIndexIVFConfig::deterministic_tie_break.
+    void setDeterministicTieBreak(bool on) {
+        deterministicTieBreak_ = on;
+    }
+
     /// Reserve GPU memory in our inverted lists for this number of vectors
     virtual void reserveMemory(idx_t numVecs);
 
@@ -252,6 +257,8 @@ class IVFBase {
 
     /// How are user indices stored on the GPU?
     const IndicesOptions indicesOptions_;
+
+    bool deterministicTieBreak_ = false;
 
     /// What memory space our inverted list storage is in
     const MemorySpace space_;

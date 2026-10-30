@@ -30,6 +30,7 @@ uint64_t SIMDConfig::supported_simd_levels = 0;
 // Microarchitecture flags (x86). Default false; set by
 // detect_x86_uarch_flags() at load time.
 bool SIMDConfig::avx512_split = false;
+bool SIMDConfig::scalar_gather = false;
 
 // Resolved here rather than in the header so that dependents, which never see
 // FAISS_ENABLE_DD, still get the answer for the faiss they link against.
@@ -137,6 +138,10 @@ void detect_x86_uarch_flags() {
     // AMD Zen 4 / Zen 4c (Bergamo) is family 0x19 and splits AVX-512.
     // (Zen 5, family 0x1A, has a native 512-bit datapath and is excluded.)
     SIMDConfig::avx512_split = is_amd && display_family == 0x19u;
+    // Measured on Milan, Bergamo (0x19) and Turin (0x1A); other AMD families
+    // keep the gather kernels.
+    SIMDConfig::scalar_gather =
+            is_amd && (display_family == 0x19u || display_family == 0x1Au);
 }
 
 #else // Not x86-64
@@ -191,6 +196,8 @@ SIMDConfig::SIMDConfig(const char** faiss_simd_level_env) {
     if (!env_var) {
         level = auto_detect_simd_level();
     } else {
+        // The microarchitecture flags describe the CPU, not the forced level.
+        detect_x86_uarch_flags();
         // Forcing a level the CPU lacks is allowed. Forcing one the binary
         // does not hold is not: dispatch would fall to NONE and skip every
         // level between. Walk down to the nearest compiled level instead.
@@ -274,7 +281,9 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 
 #if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_AVX512)
         bool has_avx2 = (ebx7 & (1 << 5)) != 0;
-        if (has_avx2) {
+        // The AVX2 and higher SIMD files compile with -mbmi2.
+        bool has_bmi2 = (ebx7 & (1 << 8)) != 0;
+        if (has_avx2 && has_bmi2) {
             supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::AVX2));
             detected_level = SIMDLevel::AVX2;
         }
@@ -282,7 +291,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #if defined(COMPILE_SIMD_AVX512)
         bool cpu_has_avx512f = (ebx7 & (1 << 16)) != 0;
         bool os_supports_avx512 = (xcr0 & 0xE0) == 0xE0;
-        bool has_avx512f = cpu_has_avx512f && os_supports_avx512;
+        bool has_avx512f = cpu_has_avx512f && os_supports_avx512 && has_bmi2;
         if (has_avx512f) {
             bool has_avx512cd = (ebx7 & (1 << 28)) != 0;
             bool has_avx512vl = (ebx7 & (1 << 31)) != 0;

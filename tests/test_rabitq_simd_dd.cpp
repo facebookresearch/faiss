@@ -5,15 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/*
- * RaBitQ kernels that a static build does not compile, against the scalar
- * reference.
- *
- * A static x86 build holds AVX2 kernels only, so the AVX512 and
- * AVX512_VPOPCNT specializations exist in a dynamic dispatch build alone.
- * test_rabitq_simd.cpp builds in both modes and cannot reference them, so
- * they are tested here instead. The target is dynamic dispatch only.
- */
+// AVX512 and AVX512_VPOPCNT RaBitQ kernels against the scalar reference.
+// Only a dynamic dispatch build compiles these specializations.
 
 #include <gtest/gtest.h>
 
@@ -29,37 +22,8 @@
 
 using faiss::SIMDLevel;
 
-namespace {
-
-std::vector<uint8_t> random_bytes(size_t n, uint32_t seed) {
-    std::mt19937 rng(seed);
-    std::vector<uint8_t> v(n);
-    for (size_t i = 0; i < n; i++) {
-        v[i] = static_cast<uint8_t>(rng());
-    }
-    return v;
-}
-
-// Widths on either side of every register boundary the kernels step over.
-const std::vector<size_t> kDims = {
-        1,
-        8,
-        16,
-        31,
-        32,
-        33,
-        100,
-        128,
-        255,
-        256,
-        257,
-        384,
-        512,
-        768,
-        1024,
-        2048};
-
-} // namespace
+using faiss_test::kDims;
+using faiss_test::random_bytes;
 
 TEST(RaBitQVpopcnt, BitwiseKernelsMatchScalarAcrossTails) {
     if (!faiss::SIMDConfig::is_simd_level_available(
