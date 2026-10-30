@@ -9853,6 +9853,7 @@
     <member refid="structfaiss_1_1InvertedListScanner_1a97cab8fbf8203bdda6c42fc4b8f92319" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19e1c4d0e237eae9e24cad0a7b34e4b0" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" kind="function"><name>distances_to_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
@@ -9953,6 +9954,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1ae8219353ae254850009f1da6e7cb2b09" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a531a6f0124c2aa32c2481e8083a56529" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a68fae4e9b4fe7721b3d78cc5eaa5134f" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" kind="function"><name>distances_to_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a9f01f56555294a395bd527f761f32ab0" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
@@ -9988,6 +9990,7 @@
     <member refid="structfaiss_1_1IVFFlatScanner_1a554a16daa1af18ccc551f92b9c098b71" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1IVFFlatScanner_1a4a6451c30aa63d933b4eb4edd95f899e" kind="function"><name>distance_to_code</name></member>
     <member refid="structfaiss_1_1IVFFlatScanner_1adaab9927cefb200b5fd0cbd4ab5fe3d7" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" kind="function"><name>distances_to_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
@@ -10038,6 +10041,7 @@
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a2d07fec4013aff537e760f8f5a5f6e2b" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a8132a080a79a5432c7be481d6693f34d" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a017f80ea597db3ceaf0f2ad910910ab9" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1aff2dc69f4e0296e2e788577b8e4b341b" kind="function"><name>distances_to_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a3b87583e9686b4251b4b29ca682f7178" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a9f01f56555294a395bd527f761f32ab0" kind="function"><name>scan_codes</name></member>
@@ -10206,6 +10210,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a799c381d6dc4c1ce219ce21b9706415e" kind="function"><name>distance_to_code</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a3094fb8480c1638be3376bdbdbc0d192" kind="function"><name>distance_to_codes_batch_4</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1af4602275509ac492f5e37de3ede50b2a" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" kind="function"><name>distances_to_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
@@ -10228,6 +10233,7 @@
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a92a120a2b6f83a9a1037771e134e15f5" kind="function"><name>distance_to_code</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a62b52ca8400928bddbb99bfb83d03a1a" kind="function"><name>distance_to_codes_batch_4</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1aa0a064413a7205841ad31070dc839901" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" kind="function"><name>distances_to_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
@@ -15716,6 +15722,7 @@
     <member refid="polysemous__training_2dispatch_8h_1a65adecb39acda39bc07518fb00bd66fa" kind="function"><name>distances_cost_update&lt; SIMDLevel::AVX512 &gt;</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1pq__code__distance" kind="namespace"><name>faiss::pq_code_distance</name>
+    <member refid="IVFPQScanner__impl_8h_1afb7581d9a2eccfec90e767a1d1500ca7" kind="function"><name>pq_distances_8bit_by_block</name></member>
     <member refid="IVFPQScanner__impl_8h_1ace0b9d251c207f412bc85ce02eb63543" kind="function"><name>make_IVFPQInvertedListScanner</name></member>
     <member refid="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" kind="function"><name>make_IVFPQInvertedListScanner</name></member>
     <member refid="IVFPQScanner__impl_8h_1a8b7d516c0e893c41329d32f46c52a7ea" kind="function"><name>make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</name></member>

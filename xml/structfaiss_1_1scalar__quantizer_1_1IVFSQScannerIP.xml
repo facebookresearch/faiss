@@ -311,6 +311,34 @@
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/scanners.h" line="107" column="12" bodyfile="faiss/impl/scalar_quantizer/scanners.h" bodystart="107" bodyend="119"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::InvertedListScanner::distances_to_codes</definition>
+        <argsstring>(size_t n, const uint8_t *codes, float *distances) const</argsstring>
+        <name>distances_to_codes</name>
+        <qualifiedname>faiss::InvertedListScanner::distances_to_codes</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1aff2dc69f4e0296e2e788577b8e4b341b">distances_to_codes</reimplementedby>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute the distances to n consecutive codes of code_size bytes. A distance can differ in the last bits from distance_to_code. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="571" column="18"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::InvertedListScanner::scan_codes</definition>
@@ -400,7 +428,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="581" column="12"/>
+        <location file="faiss/IndexIVF.h" line="588" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -434,7 +462,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="590" column="20"/>
+        <location file="faiss/IndexIVF.h" line="597" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -470,7 +498,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="601" column="18"/>
+        <location file="faiss/IndexIVF.h" line="608" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -500,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="609" column="18"/>
+        <location file="faiss/IndexIVF.h" line="616" column="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -546,6 +574,7 @@
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a94366880f594b7d12ac5d221268c5a2c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>dc</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a799c381d6dc4c1ce219ce21b9706415e" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a3094fb8480c1638be3376bdbdbc0d192" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>distance_to_codes_batch_4</name></member>
+      <member refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>distances_to_codes</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a567a5905d2c5a1a7afaeddc503dc2dbd" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>InvertedListScanner</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>iterate_codes</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerIP</scope><name>iterate_codes_range</name></member>

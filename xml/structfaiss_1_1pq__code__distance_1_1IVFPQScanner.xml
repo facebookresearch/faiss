@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="447" column="9" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="447" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="493" column="9" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="493" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1ab5d167c487a84221045ec123cd69e3af" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="448" column="22" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="448" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="494" column="22" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="494" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="82" column="19" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="82" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="128" column="19" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="128" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" prot="public" static="no" mutable="no">
         <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="83" column="18" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="83" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="129" column="18" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="129" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -91,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="84" column="12" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="84" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="130" column="12" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="130" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a5966393133c0879e7db11ac936cd519f" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -105,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="220" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="220" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="266" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="266" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref> &amp;</type>
@@ -484,7 +484,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="450" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="450" bodyend="461"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="496" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="496" bodyend="507"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a2d07fec4013aff537e760f8f5a5f6e2b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -504,7 +504,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="463" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="463" bodyend="469"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="509" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="509" bodyend="515"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a8132a080a79a5432c7be481d6693f34d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -528,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="471" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="471" bodyend="477"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="517" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="517" bodyend="523"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a017f80ea597db3ceaf0f2ad910910ab9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -548,7 +548,35 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="479" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="479" bodyend="487"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="525" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="525" bodyend="533"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1aff2dc69f4e0296e2e788577b8e4b341b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::IVFPQScanner&lt; METRIC_TYPE, C, PQCodeDist, use_sel &gt;::distances_to_codes</definition>
+        <argsstring>(size_t n, const uint8_t *codes, float *distances) const override</argsstring>
+        <name>distances_to_codes</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScanner::distances_to_codes</qualifiedname>
+        <reimplements refid="structfaiss_1_1InvertedListScanner_1ac059c166640fe4035775db1aecc13f67">distances_to_codes</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute the distances to n consecutive codes of code_size bytes. A distance can differ in the last bits from distance_to_code. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="535" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="535" bodyend="556"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a3b87583e9686b4251b4b29ca682f7178" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>size_t</type>
@@ -579,7 +607,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="489" column="12" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="489" bodyend="514"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="558" column="12" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="558" bodyend="583"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -670,7 +698,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="446" column="5"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="492" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a9f01f56555294a395bd527f761f32ab0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -701,7 +729,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="446" column="5"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="492" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -728,7 +756,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="123" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="123" bodyend="194"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="169" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="169" bodyend="240"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -755,7 +783,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="199" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="199" bodyend="218"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="245" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="245" bodyend="264"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1aa952d1db606a7a277fdf4ec61d813c6d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -769,7 +797,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="222" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="222" bodyend="233"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="268" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="268" bodyend="279"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a022568aac24e404f9c26725c434f3490" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -787,7 +815,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="235" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="235" bodyend="243"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="281" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="281" bodyend="289"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -814,7 +842,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="247" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="247" bodyend="256"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="293" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="293" bodyend="302"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -840,7 +868,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="303" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="303" bodyend="417"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="349" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="349" bodyend="463"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -866,7 +894,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="420" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="420" bodyend="430"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="466" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="466" bodyend="476"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1043,7 +1071,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="590" column="20"/>
+        <location file="faiss/IndexIVF.h" line="597" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1079,7 +1107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="601" column="18"/>
+        <location file="faiss/IndexIVF.h" line="608" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1109,7 +1137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="609" column="18"/>
+        <location file="faiss/IndexIVF.h" line="616" column="18"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
@@ -1125,7 +1153,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="81" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="81" bodyend="-1"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="127" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="127" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -1314,7 +1342,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="444" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="445" bodyend="515"/>
+    <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="490" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="491" bodyend="584"/>
     <listofallmembers>
       <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6cd7203ba440e80bb5d8189340846ef9" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>by_residual</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0dc6128a30ee72ea68a319319b2ec6d5" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>coarse_dis</name></member>
@@ -1324,6 +1352,7 @@
       <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aff544e8018be17736dc6a72af94d320f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>dis0</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a017f80ea597db3ceaf0f2ad910910ab9" prot="public" virt="virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a022568aac24e404f9c26725c434f3490" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>distance_to_code_on_the_fly</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1aff2dc69f4e0296e2e788577b8e4b341b" prot="public" virt="virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>distances_to_codes</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8a0cf44570e8fa877ad10f3a3d7bda85" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>init_list</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac42bc903a0a3b00a00fcc2a644781d0f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>init_list_cycles</name></member>
       <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScanner</scope><name>init_query</name></member>

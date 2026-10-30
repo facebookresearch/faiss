@@ -12,6 +12,52 @@
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1QueryTables" prot="public">faiss::pq_code_distance::QueryTables</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult" prot="public">faiss::pq_code_distance::WrappedSearchResult</innerclass>
     <sectiondef kind="func">
+      <memberdef kind="function" id="IVFPQScanner__impl_8h_1afb7581d9a2eccfec90e767a1d1500ca7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::pq_distances_8bit_by_block</definition>
+        <argsstring>(size_t M, const float *sim_table, float dis0, size_t n, const uint8_t *codes, float *distances)</argsstring>
+        <name>pq_distances_8bit_by_block</name>
+        <qualifiedname>faiss::pq_code_distance::pq_distances_8bit_by_block</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>dis0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>For each sub-quantizer, a block of codes reads one 1 KB table slice, which stays in L1; code by code, a table larger than L1 makes every lookup an L1 miss. SL as in <ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">PQCodeDistanceScalar</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="82" column="6" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="82" bodyend="118"/>
+      </memberdef>
       <memberdef kind="function" id="IVFPQScanner__impl_8h_1ace0b9d251c207f412bc85ce02eb63543" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -47,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="518" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="518" declcolumn="21"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="587" column="21" declfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" declline="587" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -80,7 +126,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="525" column="28" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="525" bodyend="531"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="594" column="28" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="594" bodyend="600"/>
       </memberdef>
       <memberdef kind="function" id="IVFPQScanner__impl_8h_1a8b7d516c0e893c41329d32f46c52a7ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -112,7 +158,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="535" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="535" bodyend="586"/>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="604" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="604" bodyend="655"/>
       </memberdef>
       <memberdef kind="function" id="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
