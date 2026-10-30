@@ -26,6 +26,7 @@ set(FAISS_GPU_SRC
   GpuIndex.cu
   GpuIndexBinaryFlat.cu
   GpuIndexFlat.cu
+  GpuIndexRowwiseInt8.cu
   GpuIndexIVF.cu
   GpuIndexIVFFlat.cu
   GpuIndexIVFPQ.cu
@@ -93,6 +94,7 @@ set(FAISS_GPU_HEADERS
   GpuIndex.h
   GpuIndexBinaryFlat.h
   GpuIndexFlat.h
+  GpuIndexRowwiseInt8.h
   GpuIndexIVF.h
   GpuIndexIVFFlat.h
   GpuIndexIVFPQ.h
