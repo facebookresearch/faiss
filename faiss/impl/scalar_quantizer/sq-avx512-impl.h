@@ -254,8 +254,8 @@ struct QuantizerTemplate<
 // NLT_UQ is !(x < b), matching the scalar upper_bound tie-break.
 template <>
 struct QuantizerLloydMax<1, THE_LEVEL_TO_DISPATCH>
-        : QuantizerLloydMax<1, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<1, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<1, THE_LEVEL_TO_DISPATCH> {
+    using Base = QuantizerLloydMaxBase<1, THE_LEVEL_TO_DISPATCH>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -293,8 +293,8 @@ struct QuantizerLloydMax<1, THE_LEVEL_TO_DISPATCH>
 #define DEFINE_LLOYD_MAX_AVX512_MULTIBIT(NBITS, UNPACK_EXPR)                  \
     template <>                                                               \
     struct QuantizerLloydMax<NBITS, THE_LEVEL_TO_DISPATCH>                    \
-            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {                     \
-        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;               \
+            : QuantizerLloydMaxBase<NBITS, THE_LEVEL_TO_DISPATCH> {           \
+        using Base = QuantizerLloydMaxBase<NBITS, THE_LEVEL_TO_DISPATCH>;     \
                                                                               \
         QuantizerLloydMax(size_t d, const std::vector<float>& trained)        \
                 : Base(d, trained) {                                          \
@@ -325,8 +325,8 @@ DEFINE_LLOYD_MAX_AVX512_MULTIBIT(4, unpack_16x4bit_to_u32(code, i));
 // 8-bit Lloyd-Max AVX512
 template <>
 struct QuantizerLloydMax<8, THE_LEVEL_TO_DISPATCH>
-        : QuantizerLloydMax<8, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<8, THE_LEVEL_TO_DISPATCH> {
+    using Base = QuantizerLloydMaxBase<8, THE_LEVEL_TO_DISPATCH>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -356,9 +356,10 @@ struct QuantizerLloydMax<8, THE_LEVEL_TO_DISPATCH>
  **********************************************************/
 
 template <>
-struct QuantizerFP16<THE_LEVEL_TO_DISPATCH> : QuantizerFP16<SIMDLevel::NONE> {
+struct QuantizerFP16<THE_LEVEL_TO_DISPATCH>
+        : QuantizerFP16Base<THE_LEVEL_TO_DISPATCH> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {
+            : QuantizerFP16Base<THE_LEVEL_TO_DISPATCH>(d, trained) {
         assert(d % 16 == 0);
     }
 
@@ -374,9 +375,10 @@ struct QuantizerFP16<THE_LEVEL_TO_DISPATCH> : QuantizerFP16<SIMDLevel::NONE> {
  **********************************************************/
 
 template <>
-struct QuantizerBF16<THE_LEVEL_TO_DISPATCH> : QuantizerBF16<SIMDLevel::NONE> {
+struct QuantizerBF16<THE_LEVEL_TO_DISPATCH>
+        : QuantizerBF16Base<THE_LEVEL_TO_DISPATCH> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {
+            : QuantizerBF16Base<THE_LEVEL_TO_DISPATCH>(d, trained) {
         assert(d % 16 == 0);
     }
 
@@ -387,16 +389,6 @@ struct QuantizerBF16<THE_LEVEL_TO_DISPATCH> : QuantizerBF16<SIMDLevel::NONE> {
         code_512i = _mm512_slli_epi32(code_512i, 16);
         return simd16float32(_mm512_castsi512_ps(code_512i));
     }
-
-    // Same as the base, but compiled at this level: the linker keeps one copy
-    // of the base inline virtuals, and it may come from any level object.
-    void encode_vector(const float* x, uint8_t* code) const override {
-        encode_bf16_simd(x, (uint16_t*)code, d);
-    }
-
-    void decode_vector(const uint8_t* code, float* x) const override {
-        decode_bf16_simd((const uint16_t*)code, x, d);
-    }
 };
 
 /**********************************************************
@@ -405,9 +397,9 @@ struct QuantizerBF16<THE_LEVEL_TO_DISPATCH> : QuantizerBF16<SIMDLevel::NONE> {
 
 template <>
 struct Quantizer8bitDirect<THE_LEVEL_TO_DISPATCH>
-        : Quantizer8bitDirect<SIMDLevel::NONE> {
+        : Quantizer8bitDirectBase<THE_LEVEL_TO_DISPATCH> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {
+            : Quantizer8bitDirectBase<THE_LEVEL_TO_DISPATCH>(d, trained) {
         assert(d % 16 == 0);
     }
 
@@ -425,9 +417,9 @@ struct Quantizer8bitDirect<THE_LEVEL_TO_DISPATCH>
 
 template <>
 struct Quantizer8bitDirectSigned<THE_LEVEL_TO_DISPATCH>
-        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
+        : Quantizer8bitDirectSignedBase<THE_LEVEL_TO_DISPATCH> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {
+            : Quantizer8bitDirectSignedBase<THE_LEVEL_TO_DISPATCH>(d, trained) {
         assert(d % 16 == 0);
     }
 

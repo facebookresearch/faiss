@@ -87,9 +87,10 @@ struct QuantizerTemplate<
 };
 
 template <>
-struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
+struct QuantizerFP16<SIMDLevel::RISCV_RVV>
+        : QuantizerFP16Base<SIMDLevel::RISCV_RVV> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
+            : QuantizerFP16Base<SIMDLevel::RISCV_RVV>(d, trained) {}
 
     void decode_vector(const uint8_t* code, float* x) const final {
         const auto* code16 = reinterpret_cast<const uint16_t*>(code);
@@ -125,9 +126,10 @@ struct QuantizerFP16<SIMDLevel::RISCV_RVV> : QuantizerFP16<SIMDLevel::NONE> {
 };
 
 template <>
-struct QuantizerBF16<SIMDLevel::RISCV_RVV> : QuantizerBF16<SIMDLevel::NONE> {
+struct QuantizerBF16<SIMDLevel::RISCV_RVV>
+        : QuantizerBF16Base<SIMDLevel::RISCV_RVV> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {}
+            : QuantizerBF16Base<SIMDLevel::RISCV_RVV>(d, trained) {}
 
     void decode_vector(const uint8_t* code, float* x) const final {
         const auto* code16 = reinterpret_cast<const uint16_t*>(code);
@@ -147,9 +149,9 @@ struct QuantizerBF16<SIMDLevel::RISCV_RVV> : QuantizerBF16<SIMDLevel::NONE> {
 
 template <>
 struct Quantizer8bitDirect<SIMDLevel::RISCV_RVV>
-        : Quantizer8bitDirect<SIMDLevel::NONE> {
+        : Quantizer8bitDirectBase<SIMDLevel::RISCV_RVV> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
+            : Quantizer8bitDirectBase<SIMDLevel::RISCV_RVV>(d, trained) {}
 
     void decode_vector(const uint8_t* code, float* x) const final {
         size_t i = 0;
@@ -181,9 +183,9 @@ struct Quantizer8bitDirect<SIMDLevel::RISCV_RVV>
 
 template <>
 struct Quantizer8bitDirectSigned<SIMDLevel::RISCV_RVV>
-        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
+        : Quantizer8bitDirectSignedBase<SIMDLevel::RISCV_RVV> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {}
+            : Quantizer8bitDirectSignedBase<SIMDLevel::RISCV_RVV>(d, trained) {}
 
     void decode_vector(const uint8_t* code, float* x) const final {
         size_t i = 0;
@@ -203,8 +205,8 @@ struct Quantizer8bitDirectSigned<SIMDLevel::RISCV_RVV>
 
 template <>
 struct QuantizerLloydMax<1, SIMDLevel::RISCV_RVV>
-        : QuantizerLloydMax<1, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<1, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<1, SIMDLevel::RISCV_RVV> {
+    using Base = QuantizerLloydMaxBase<1, SIMDLevel::RISCV_RVV>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {}
@@ -240,8 +242,8 @@ struct QuantizerLloydMax<1, SIMDLevel::RISCV_RVV>
 
 template <>
 struct QuantizerLloydMax<2, SIMDLevel::RISCV_RVV>
-        : QuantizerLloydMax<2, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<2, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<2, SIMDLevel::RISCV_RVV> {
+    using Base = QuantizerLloydMaxBase<2, SIMDLevel::RISCV_RVV>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {}
@@ -278,8 +280,8 @@ struct QuantizerLloydMax<2, SIMDLevel::RISCV_RVV>
 
 template <>
 struct QuantizerLloydMax<3, SIMDLevel::RISCV_RVV>
-        : QuantizerLloydMax<3, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<3, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<3, SIMDLevel::RISCV_RVV> {
+    using Base = QuantizerLloydMaxBase<3, SIMDLevel::RISCV_RVV>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {}
@@ -322,8 +324,8 @@ struct QuantizerLloydMax<3, SIMDLevel::RISCV_RVV>
 
 template <>
 struct QuantizerLloydMax<4, SIMDLevel::RISCV_RVV>
-        : QuantizerLloydMax<4, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<4, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<4, SIMDLevel::RISCV_RVV> {
+    using Base = QuantizerLloydMaxBase<4, SIMDLevel::RISCV_RVV>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {}
@@ -361,8 +363,8 @@ struct QuantizerLloydMax<4, SIMDLevel::RISCV_RVV>
 
 template <>
 struct QuantizerLloydMax<8, SIMDLevel::RISCV_RVV>
-        : QuantizerLloydMax<8, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<8, SIMDLevel::RISCV_RVV> {
+    using Base = QuantizerLloydMaxBase<8, SIMDLevel::RISCV_RVV>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {}

@@ -149,11 +149,11 @@ struct QuantizerTemplate<
 /*******************************************************************
  * Lloyd-Max scalar quantizer
  *******************************************************************/
+// Each QuantizerXBase<SL> holds the scalar code of a quantizer. It takes the
+// SIMD level of the file that uses it, so each per-level file compiles its own
+// copy under its own name.
 template <int NBits, SIMDLevel SL>
-struct QuantizerLloydMax;
-
-template <int NBits>
-struct QuantizerLloydMax<NBits, SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
+struct QuantizerLloydMaxBase : ScalarQuantizer::SQuantizer {
     static_assert(NBits >= 1 && NBits <= 8);
 
     static constexpr size_t kCentroidsCount = size_t(1) << NBits;
@@ -164,7 +164,7 @@ struct QuantizerLloydMax<NBits, SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const float* centroids;
     const float* boundaries;
 
-    QuantizerLloydMax(size_t d_in, const std::vector<float>& trained)
+    QuantizerLloydMaxBase(size_t d_in, const std::vector<float>& trained)
             : d(d_in), centroids(nullptr), boundaries(nullptr) {
         FAISS_THROW_IF_NOT(trained.size() == 2 * kCentroidsCount - 1);
         centroids = trained.data();
@@ -220,8 +220,8 @@ struct QuantizerLloydMax<NBits, SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
 };
 
 template <int NBits, SIMDLevel SL>
-struct QuantizerLloydMax : QuantizerLloydMax<NBits, SIMDLevel::NONE> {
-    using QuantizerLloydMax<NBits, SIMDLevel::NONE>::QuantizerLloydMax;
+struct QuantizerLloydMax : QuantizerLloydMaxBase<NBits, SL> {
+    using QuantizerLloydMaxBase<NBits, SL>::QuantizerLloydMaxBase;
 };
 
 template <int NBits, SIMDLevel SL>
@@ -232,13 +232,10 @@ using QuantizerTurboQuantMSE = QuantizerLloydMax<NBits, SL>;
  *******************************************************************/
 
 template <SIMDLevel SL>
-struct QuantizerFP16;
-
-template <>
-struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
+struct QuantizerFP16Base : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    QuantizerFP16(size_t d_in, const std::vector<float>& /* unused */)
+    QuantizerFP16Base(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
@@ -261,8 +258,8 @@ struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
 };
 
 template <SIMDLevel SL>
-struct QuantizerFP16 : QuantizerFP16<SIMDLevel::NONE> {
-    using QuantizerFP16<SIMDLevel::NONE>::QuantizerFP16;
+struct QuantizerFP16 : QuantizerFP16Base<SL> {
+    using QuantizerFP16Base<SL>::QuantizerFP16Base;
 };
 
 /*******************************************************************
@@ -270,13 +267,10 @@ struct QuantizerFP16 : QuantizerFP16<SIMDLevel::NONE> {
  *******************************************************************/
 
 template <SIMDLevel SL>
-struct QuantizerBF16;
-
-template <>
-struct QuantizerBF16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
+struct QuantizerBF16Base : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    QuantizerBF16(size_t d_in, const std::vector<float>& /* unused */)
+    QuantizerBF16Base(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const override {
@@ -295,8 +289,8 @@ struct QuantizerBF16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
 };
 
 template <SIMDLevel SL>
-struct QuantizerBF16 : QuantizerBF16<SIMDLevel::NONE> {
-    using QuantizerBF16<SIMDLevel::NONE>::QuantizerBF16;
+struct QuantizerBF16 : QuantizerBF16Base<SL> {
+    using QuantizerBF16Base<SL>::QuantizerBF16Base;
 };
 
 template <>
@@ -309,13 +303,10 @@ struct QuantizerBF16<SIMDLevel::AVX512_SPR>;
  *******************************************************************/
 
 template <SIMDLevel SL>
-struct Quantizer8bitDirect;
-
-template <>
-struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
+struct Quantizer8bitDirectBase : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    Quantizer8bitDirect(size_t d_in, const std::vector<float>& /* unused */)
+    Quantizer8bitDirectBase(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const override {
@@ -338,8 +329,8 @@ struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
 };
 
 template <SIMDLevel SL>
-struct Quantizer8bitDirect : Quantizer8bitDirect<SIMDLevel::NONE> {
-    using Quantizer8bitDirect<SIMDLevel::NONE>::Quantizer8bitDirect;
+struct Quantizer8bitDirect : Quantizer8bitDirectBase<SL> {
+    using Quantizer8bitDirectBase<SL>::Quantizer8bitDirectBase;
 };
 
 /*******************************************************************
@@ -347,14 +338,10 @@ struct Quantizer8bitDirect : Quantizer8bitDirect<SIMDLevel::NONE> {
  *******************************************************************/
 
 template <SIMDLevel SL>
-struct Quantizer8bitDirectSigned;
-
-template <>
-struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
-        : ScalarQuantizer::SQuantizer {
+struct Quantizer8bitDirectSignedBase : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    Quantizer8bitDirectSigned(
+    Quantizer8bitDirectSignedBase(
             size_t d_in,
             const std::vector<float>& /* unused */)
             : d(d_in) {}
@@ -379,8 +366,8 @@ struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
 };
 
 template <SIMDLevel SL>
-struct Quantizer8bitDirectSigned : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
-    using Quantizer8bitDirectSigned<SIMDLevel::NONE>::Quantizer8bitDirectSigned;
+struct Quantizer8bitDirectSigned : Quantizer8bitDirectSignedBase<SL> {
+    using Quantizer8bitDirectSignedBase<SL>::Quantizer8bitDirectSignedBase;
 };
 
 /*******************************************************************
@@ -403,11 +390,7 @@ struct SQTurboQFactors {
 FAISS_PACK_STRUCTS_END
 
 template <int NBits, SIMDLevel SL>
-struct QuantizerTurboQuantFull;
-
-template <int NBits>
-struct QuantizerTurboQuantFull<NBits, SIMDLevel::NONE>
-        : ScalarQuantizer::SQuantizer {
+struct QuantizerTurboQuantFull : ScalarQuantizer::SQuantizer {
     static_assert(NBits >= 2 && NBits <= 5);
 
     static constexpr int kMSEBits = NBits - 1;
@@ -656,13 +639,6 @@ struct QuantizerTurboQuantFull<NBits, SIMDLevel::NONE>
             x[j] *= factors->norm;
         }
     }
-};
-
-template <int NBits, SIMDLevel SL>
-struct QuantizerTurboQuantFull
-        : QuantizerTurboQuantFull<NBits, SIMDLevel::NONE> {
-    using QuantizerTurboQuantFull<NBits, SIMDLevel::NONE>::
-            QuantizerTurboQuantFull;
 };
 
 /*******************************************************************

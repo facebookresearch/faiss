@@ -228,14 +228,9 @@ struct IVFCoarseDistanceScanner : InvertedListScanner {
 
     void set_query(const float* /*query_vector*/) override {}
 
-    void set_list(idx_t list_no_in, float coarse_dis_in) override {
-        this->list_no = list_no_in;
-        this->coarse_dis = coarse_dis_in;
-    }
+    void set_list(idx_t list_no_in, float coarse_dis_in) override;
 
-    float distance_to_code(const uint8_t* /*code*/) const override {
-        return coarse_dis;
-    }
+    float distance_to_code(const uint8_t* /*code*/) const override;
 };
 
 } // namespace scalar_quantizer
