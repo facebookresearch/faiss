@@ -357,14 +357,21 @@ struct QuantizerLloydMax<8, THE_LEVEL_TO_DISPATCH>
 
 template <>
 struct QuantizerFP16<THE_LEVEL_TO_DISPATCH> : QuantizerFP16<SIMDLevel::NONE> {
-    QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {
-        assert(d % 16 == 0);
-    }
+    using QuantizerFP16<SIMDLevel::NONE>::QuantizerFP16;
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
         __m256i codei = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
+        return simd16float32(_mm512_cvtph_ps(codei));
+    }
+
+    /// Components i .. i + 15 selected by mask, the others 0. Reads no byte
+    /// past the selected components.
+    FAISS_ALWAYS_INLINE simd16float32 reconstruct_16_components_masked(
+            const uint8_t* code,
+            int i,
+            __mmask16 mask) const {
+        __m256i codei = _mm256_maskz_loadu_epi16(mask, code + 2 * i);
         return simd16float32(_mm512_cvtph_ps(codei));
     }
 };
@@ -375,14 +382,24 @@ struct QuantizerFP16<THE_LEVEL_TO_DISPATCH> : QuantizerFP16<SIMDLevel::NONE> {
 
 template <>
 struct QuantizerBF16<THE_LEVEL_TO_DISPATCH> : QuantizerBF16<SIMDLevel::NONE> {
-    QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {
-        assert(d % 16 == 0);
-    }
+    using QuantizerBF16<SIMDLevel::NONE>::QuantizerBF16;
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
         __m256i code_256i = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
+        return widen(code_256i);
+    }
+
+    /// Components i .. i + 15 selected by mask, the others 0. Reads no byte
+    /// past the selected components.
+    FAISS_ALWAYS_INLINE simd16float32 reconstruct_16_components_masked(
+            const uint8_t* code,
+            int i,
+            __mmask16 mask) const {
+        return widen(_mm256_maskz_loadu_epi16(mask, code + 2 * i));
+    }
+
+    static FAISS_ALWAYS_INLINE simd16float32 widen(__m256i code_256i) {
         __m512i code_512i = _mm512_cvtepu16_epi32(code_256i);
         code_512i = _mm512_slli_epi32(code_512i, 16);
         return simd16float32(_mm512_castsi512_ps(code_512i));
@@ -476,6 +493,13 @@ struct SimilarityL2<THE_LEVEL_TO_DISPATCH> {
         accu16 = accu16 + tmp * tmp;
     }
 
+    FAISS_ALWAYS_INLINE void fmadd_16_components_2(
+            simd16float32 x,
+            simd16float32 y_2) {
+        simd16float32 tmp = y_2 - x;
+        accu16 = fmadd(tmp, tmp, accu16);
+    }
+
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
@@ -526,6 +550,12 @@ struct SimilarityIP<THE_LEVEL_TO_DISPATCH> {
         accu16 = accu16 + x1 * x2;
     }
 
+    FAISS_ALWAYS_INLINE void fmadd_16_components_2(
+            simd16float32 x1,
+            simd16float32 x2) {
+        accu16 = fmadd(x1, x2, accu16);
+    }
+
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
@@ -552,8 +582,20 @@ struct SimilarityIP<THE_LEVEL_TO_DISPATCH> {
  * Distance Computers
  **********************************************************/
 
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH>
+namespace {
+
+/// 16 lanes to 4: lanes j, j + 4, j + 8 and j + 12 summed into lane j.
+FAISS_ALWAYS_INLINE __m128 reduce_16_to_4(__m512 a) {
+    const __m256 hi =
+            _mm256_castpd_ps(_mm512_extractf64x4_pd(_mm512_castps_pd(a), 1));
+    const __m256 s8 = _mm256_add_ps(_mm512_castps512_ps256(a), hi);
+    return _mm_add_ps(_mm256_castps256_ps128(s8), _mm256_extractf128_ps(s8, 1));
+}
+
+} // namespace
+
+template <class Quantizer, class Similarity, bool four_acc>
+struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH, four_acc>
         : SQDistanceComputer {
     using Sim = Similarity;
 
@@ -577,13 +619,75 @@ struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH>
         }
     }
 
+    /// The quantizer can decode a partial block, so d need not be a
+    /// multiple of 16.
+    static constexpr bool has_masked_tail() {
+        return requires(const Quantizer& q, const uint8_t* c) {
+            { q.reconstruct_16_components_masked(c, 0, __mmask16(0)) };
+        };
+    }
+
+    /// Adds the partial last block, from component i, of a d that is not a
+    /// multiple of 16.
+    FAISS_ALWAYS_INLINE void add_tail(
+            Similarity& sim,
+            const float* x,
+            const uint8_t* code,
+            size_t i) const {
+        if constexpr (has_masked_tail()) {
+            if (i < quant.d) {
+                const __mmask16 mask = __mmask16((1u << (quant.d - i)) - 1);
+                sim.fmadd_16_components_2(
+                        quant.reconstruct_16_components_masked(
+                                code, static_cast<int>(i), mask),
+                        simd16float32(_mm512_maskz_loadu_ps(mask, x + i)));
+            }
+        }
+    }
+
+    /// Similarity terms of one code with four accumulators.
+    FAISS_ALWAYS_INLINE __m512
+    accumulate_4(const float* x, const uint8_t* code) const {
+        struct Acc : Similarity {
+            Acc() : Similarity(nullptr) {}
+        };
+        Acc s[4];
+        for (int j = 0; j < 4; j++) {
+            s[j].begin_16();
+        }
+        const size_t d = quant.d;
+        size_t i = 0;
+        for (; i + 64 <= d; i += 64) {
+            for (int j = 0; j < 4; j++) {
+                s[j].fmadd_16_components_2(
+                        quant.reconstruct_16_components(
+                                code, static_cast<int>(i + 16 * j)),
+                        simd16float32(x + i + 16 * j));
+            }
+        }
+        for (; i + 16 <= d; i += 16) {
+            s[0].fmadd_16_components_2(
+                    quant.reconstruct_16_components(code, static_cast<int>(i)),
+                    simd16float32(x + i));
+        }
+        add_tail(s[0], x, code, i);
+        return _mm512_add_ps(
+                _mm512_add_ps(s[0].accu16.f, s[1].accu16.f),
+                _mm512_add_ps(s[2].accu16.f, s[3].accu16.f));
+    }
+
     float compute_distance(const float* x, const uint8_t* code) const {
+        if constexpr (four_acc) {
+            return reduce_4(reduce_16_to_4(accumulate_4(x, code)));
+        }
         Similarity sim(x);
         sim.begin_16();
-        for (size_t i = 0; i < quant.d; i += 16) {
+        const size_t d16 = quant.d & ~size_t(15);
+        for (size_t i = 0; i < d16; i += 16) {
             simd16float32 xi = quant.reconstruct_16_components(code, i);
             sim.add_16_components(xi);
         }
+        add_tail(sim, x, code, d16);
         return sim.result_16();
     }
 
@@ -591,10 +695,20 @@ struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH>
             const {
         Similarity sim(nullptr);
         sim.begin_16();
-        for (size_t i = 0; i < quant.d; i += 16) {
+        const size_t d16 = quant.d & ~size_t(15);
+        for (size_t i = 0; i < d16; i += 16) {
             simd16float32 x1 = quant.reconstruct_16_components(code1, i);
             simd16float32 x2 = quant.reconstruct_16_components(code2, i);
             sim.add_16_components_2(x1, x2);
+        }
+        if constexpr (has_masked_tail()) {
+            if (d16 < quant.d) {
+                const __mmask16 mask = __mmask16((1u << (quant.d - d16)) - 1);
+                const int i = static_cast<int>(d16);
+                sim.add_16_components_2(
+                        quant.reconstruct_16_components_masked(code1, i, mask),
+                        quant.reconstruct_16_components_masked(code2, i, mask));
+            }
         }
         return sim.result_16();
     }
@@ -645,6 +759,21 @@ struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH>
             float& dis1,
             float& dis2,
             float& dis3) const final {
+        if constexpr (four_acc) {
+            alignas(16) float dis[4];
+            _mm_store_ps(
+                    dis,
+                    reduce_4x4(
+                            reduce_16_to_4(accumulate_4(q, code_0)),
+                            reduce_16_to_4(accumulate_4(q, code_1)),
+                            reduce_16_to_4(accumulate_4(q, code_2)),
+                            reduce_16_to_4(accumulate_4(q, code_3))));
+            dis0 = dis[0];
+            dis1 = dis[1];
+            dis2 = dis[2];
+            dis3 = dis[3];
+            return;
+        }
         Similarity sim0(q);
         Similarity sim1(q);
         Similarity sim2(q);
@@ -655,7 +784,8 @@ struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH>
         sim2.begin_16();
         sim3.begin_16();
 
-        for (size_t i = 0; i < quant.d; i += 16) {
+        const size_t d16 = quant.d & ~size_t(15);
+        for (size_t i = 0; i < d16; i += 16) {
             simd16float32 xi0 = quant.reconstruct_16_components(code_0, i);
             simd16float32 xi1 = quant.reconstruct_16_components(code_1, i);
             simd16float32 xi2 = quant.reconstruct_16_components(code_2, i);
@@ -665,6 +795,10 @@ struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH>
             sim2.add_16_components(xi2);
             sim3.add_16_components(xi3);
         }
+        add_tail(sim0, q, code_0, d16);
+        add_tail(sim1, q, code_1, d16);
+        add_tail(sim2, q, code_2, d16);
+        add_tail(sim3, q, code_3, d16);
 
         dis0 = sim0.result_16();
         dis1 = sim1.result_16();

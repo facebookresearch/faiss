@@ -603,8 +603,18 @@ struct SimilarityIP<SIMDLevel::AVX2> {
  * Distance computers
  **********************************************************/
 
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
+namespace {
+
+/// 8 lanes to 4: lanes j and j + 4 summed into lane j.
+FAISS_ALWAYS_INLINE __m128 reduce_8_to_4(__m256 a) {
+    return _mm_add_ps(_mm256_castps256_ps128(a), _mm256_extractf128_ps(a, 1));
+}
+
+} // namespace
+
+template <class Quantizer, class Similarity, bool four_acc>
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2, four_acc>
+        : SQDistanceComputer {
     using Sim = Similarity;
 
     Quantizer quant;
@@ -627,7 +637,40 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
         }
     }
 
+    /// Similarity terms of one code with four accumulators.
+    FAISS_ALWAYS_INLINE __m256
+    accumulate_4(const float* x, const uint8_t* code) const {
+        struct Acc : Similarity {
+            Acc() : Similarity(nullptr) {}
+        };
+        Acc s[4];
+        for (int j = 0; j < 4; j++) {
+            s[j].begin_8();
+        }
+        const size_t d = quant.d;
+        size_t i = 0;
+        for (; i + 32 <= d; i += 32) {
+            for (int j = 0; j < 4; j++) {
+                s[j].add_8_components_2(
+                        quant.reconstruct_8_components(
+                                code, static_cast<int>(i + 8 * j)),
+                        simd8float32(x + i + 8 * j));
+            }
+        }
+        for (; i < d; i += 8) {
+            s[0].add_8_components_2(
+                    quant.reconstruct_8_components(code, static_cast<int>(i)),
+                    simd8float32(x + i));
+        }
+        return _mm256_add_ps(
+                _mm256_add_ps(s[0].accu8.f, s[1].accu8.f),
+                _mm256_add_ps(s[2].accu8.f, s[3].accu8.f));
+    }
+
     float compute_distance(const float* x, const uint8_t* code) const {
+        if constexpr (four_acc) {
+            return reduce_4(reduce_8_to_4(accumulate_4(x, code)));
+        }
         Similarity sim(x);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
@@ -698,6 +741,21 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) const final {
+        if constexpr (four_acc) {
+            alignas(16) float dis[4];
+            _mm_store_ps(
+                    dis,
+                    reduce_4x4(
+                            reduce_8_to_4(accumulate_4(q, code_0)),
+                            reduce_8_to_4(accumulate_4(q, code_1)),
+                            reduce_8_to_4(accumulate_4(q, code_2)),
+                            reduce_8_to_4(accumulate_4(q, code_3))));
+            dis0 = dis[0];
+            dis1 = dis[1];
+            dis2 = dis[2];
+            dis3 = dis[3];
+            return;
+        }
         Similarity sim0(q);
         Similarity sim1(q);
         Similarity sim2(q);
