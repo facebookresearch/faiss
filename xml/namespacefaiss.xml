@@ -1598,7 +1598,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="390" column="28" declfile="faiss/impl/HNSW.h" declline="390" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="393" column="28" declfile="faiss/impl/HNSW.h" declline="393" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -5860,7 +5860,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="358" column="21" declfile="faiss/impl/HNSW.h" declline="358" declcolumn="21"/>
+        <location file="faiss/impl/HNSW.h" line="361" column="21" declfile="faiss/impl/HNSW.h" declline="361" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33ed65d2964288386fdff36911993d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

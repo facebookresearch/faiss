@@ -2896,7 +2896,7 @@
   <compound refid="structfaiss_1_1HNSWLinkSampleSearch" kind="struct"><name>faiss::HNSWLinkSampleSearch</name>
     <member refid="structfaiss_1_1HNSWLinkSampleSearch_1aaaff638fda859e0c8448b983d3fe908d" kind="variable"><name>n</name></member>
     <member refid="structfaiss_1_1HNSWLinkSampleSearch_1ab7a622ebcb699cd5a9b80f4d4bfde0bf" kind="function"><name>~HNSWLinkSampleSearch</name></member>
-    <member refid="structfaiss_1_1HNSWLinkSampleSearch_1aee9c01ca1b657dff77c849947f65671c" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1HNSWLinkSampleSearch_1ac7a3ce4d4874eed0308d40bf216f321a" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1HNSWLinkSampleSearch_1a13f061b9c96d444f445f982d999759b5" kind="function"><name>search_exact</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSWStats" kind="struct"><name>faiss::HNSWStats</name>
