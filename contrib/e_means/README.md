@@ -156,6 +156,48 @@ are means of the final pass's own assignments in ordinary mode; never-assigned
 centroids retain their current positions. `obj` remains the moving-pass objective, rather than a score against the
 closing means. `train` returns the centroids and last-pass assignments.
 
+CPU or GPU callers use `DistributedEmeans(d, k, group=group, transport="auto", ...)`
+with an initialized, caller-owned process group. Group and transport are fixed
+at construction. `begin(global_n, init_centroids)` takes matching NumPy FP32
+arrays or Torch tensors on each rank and broadcasts its owned FP32 centroid
+state from group rank zero. CPU state requires Gloo; CUDA
+retains the supported backend/representation combinations. Root values are
+authoritative; caller arrays are never modified.
+The remaining `accumulate`/`update`/`end_epoch`/`finalize` lifecycle is shared
+with `Emeans`; distributed `train(x)` is rejected. Centroid state is replicated;
+the caller supplies matching recipes/codecs and disjoint rank-local contributions
+to each prescribed global batch. Every batch, including the final tail, must
+divide evenly by group size; this is checked at `begin` before broadcasting.
+Each update checks that local `stats["n"]` equals its prescribed global size
+divided by group size. Every rank participates in the same updates and epoch
+closes. Local `Emeans.update(stats)` has no group or transport arguments;
+`DistributedEmeans` requires an explicit group, not an implicit world group.
+
+Dense transport all-reduces FP32 statistics. Sparse transport packs occupied
+IDs, all-gathers and merges in group-rank order. It can synchronize during
+packing/size discovery; padded receive storage is approximately
+`ranks * max_local_occupied * (d+1) * 4` bytes plus IDs. Automatic selection
+uses known batch/table/rank sizes, conservatively bounds padding and amortizes
+packing on large payloads; it is not a portable network crossover. Use an
+explicit `"dense"` or `"sparse"` override where appropriate, and ensure the
+state and transport workspace fit. No batch size is silently reduced.
+
+One scalar FP64 epoch collective sums local moving-pass objective contributions.
+Already-global FP64 pass counts and FP32 closing sums are captured once. Equal
+row counts can still have different occupied-centroid counts, which sparse
+transport discovers separately. Divergent collective schedules remain a caller
+error; this API does not recover from them. Revival IDs are
+selected by group rank zero and broadcast; every replica applies the same
+split. NumPy and Torch CPU use the same class lifecycle and dense/sparse/auto
+transports with Gloo. External assignment engines can call `update` with LOCAL
+FP32 sums/counts, an FP64 objective and the prescribed LOCAL `n`, without
+calling `accumulate`. Statistics must match the model's array type. NumPy
+buffers are staged in owned storage; sparse results remain NumPy arrays. Local
+`Emeans.update` still performs no communication. Unequal row contributions are
+unsupported. See
+`demos/demo_e_means_distributed.py` in the source checkout for a small
+`torchrun` example.
+
 ## Numerical limits
 
 The training objective follows the moving-pass assignments, not the returned
@@ -173,7 +215,7 @@ python -m unittest discover -s tests -p 'torch_test_e_means*.py'
 ```
 
 Both filename patterns are needed: default discovery omits the Torch files.
-Torch is required for the second command. GPU/backend and multi-GPU
+Torch is required for the second command. GPU/backend and two-/three-GPU
 cases report explicit skips when their dependencies or devices are unavailable;
 those skips do not establish qualification of the unavailable scopes.
 

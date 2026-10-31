@@ -460,6 +460,10 @@ class Emeans:
         return centroids, norm
 
     def _revive_unused(self, rng):
+        source, target = self._choose_splits(rng)
+        return 0 if source is None else self._apply_splits(source, target)
+
+    def _choose_splits(self, rng):
         # Sample donors without replacement in proportion to their usage.
         if _is_torch_tensor(self._usage):
             import torch
@@ -472,7 +476,7 @@ class Emeans:
             ).tolist()
             nsplit = min(nunused, ndonors)
             if nsplit == 0:
-                return 0
+                return None, None
 
             uniform = torch.rand(
                 self.k,
@@ -481,27 +485,26 @@ class Emeans:
                 generator=rng,
             ).clamp_min(torch.finfo(self._usage.dtype).tiny)
             if self._usage.is_cuda:
-                keys = torch.where(donors, self._usage.log() - (-uniform.log()).log(),
-                                   float("-inf"))
+                # Fixed shapes avoid compaction's host reads.
+                keys = torch.where(
+                    donors, self._usage.log() - (-uniform.log()).log(), float("-inf")
+                )
+                source = torch.topk(keys, nsplit).indices
                 target = torch.sort(unused.byte(), descending=True, stable=True).indices[:nsplit]
             else:
                 keys = torch.full_like(self._usage, float("-inf"))
                 keys[donors] = self._usage[donors].log() - (
                     -uniform[donors].log()
                 ).log()
+                source = torch.topk(keys, nsplit).indices
                 target = unused.nonzero(as_tuple=False).flatten()[:nsplit]
-            source = torch.topk(keys, nsplit).indices
-            centroids = self._centroids[source]
-            sign = torch.ones(
-                self.d, dtype=centroids.dtype, device=centroids.device
-            )
         else:
             threshold = _numpy_unused_threshold(self._usage, self.k)
             unused = self._usage < threshold
             donors = (~unused) & (self._usage > 0)
             nsplit = min(int(unused.sum()), int(donors.sum()))
             if nsplit == 0:
-                return 0
+                return None, None
 
             uniform = np.maximum(
                 rng.random_sample(self.k), np.finfo("float64").tiny
@@ -512,9 +515,17 @@ class Emeans:
             )
             source = np.argsort(keys)[-nsplit:][::-1]
             target = np.flatnonzero(unused)[:nsplit]
-            centroids = self._centroids[source]
-            sign = np.ones(self.d, dtype="float32")
 
+        return source, target
+
+    def _apply_splits(self, source, target):
+        centroids = self._centroids[source]
+        if _is_torch_tensor(centroids):
+            import torch
+
+            sign = torch.ones(self.d, dtype=centroids.dtype, device=centroids.device)
+        else:
+            sign = np.ones(self.d, dtype="float32")
         sign[1::2] = -1.0
         offset = _SPLIT_EPSILON * sign
         donor_centroids = centroids * (1.0 - offset)
@@ -526,9 +537,9 @@ class Emeans:
         self._centroids[source] = donor_centroids
         self._usage[target] = half_usage
         self._centroids[target] = child_centroids
-        self.n_splits += nsplit
+        self.n_splits += len(source)
         self._invalidate_readout()
-        return nsplit
+        return len(source)
 
     def _assign_rows(self, x, centroids, centroid_norm=None):
         if _is_torch_tensor(x):
@@ -628,7 +639,8 @@ class Emeans:
             "init_usage": _INIT_USAGE,
             "seed": self.seed,
             "backend": "torch" if is_torch else "faiss",
-            "assignment_chunk_size": self._get_assignment_chunk_size(is_torch, is_torch and centroids.is_cuda),
+            "assignment_chunk_size": self._get_assignment_chunk_size(
+                is_torch, is_torch and centroids.is_cuda),
         }
         if is_torch:
             self.recipe.update(
@@ -831,27 +843,11 @@ class Emeans:
             stats["labels"] = captured_labels
         return stats
 
-    def update(self, stats):
-        """Consume one frozen-snapshot batch and perform EMA then revival.
-
-        ``n`` must equal the prescribed logical batch size. Statistics use
-        the same array type/device as state; values and row membership are
-        caller obligations. Global CPU statistics may be combined externally.
-        """
-        self._require_running()
-        if (self._pending_stats is not None
-                and 0 < self._pending_stats["n"] < self._local_batch_size()):
-            raise ValueError("complete the pending batch before update")
-        if self._epoch_steps == self.recipe["epoch_steps"][self._epoch]:
-            raise RuntimeError("call end_epoch before the next update")
+    def _prepare_statistics(self, stats, expected_n):
+        """Validate one contribution and return statistics for the shared update."""
         sums, counts, objective, n = (
             stats["sums"], stats["counts"], stats["objective"], stats["n"]
         )
-        expected_n = self._local_batch_size()
-        if not isinstance(n, (int, np.integer)) or n != expected_n:
-            raise ValueError(
-                "stats n must equal the prescribed batch size %d" % expected_n
-            )
         for value, shape, expected_dtype in (
             (sums, (self.k, self.d), "float32"),
             (counts, (self.k,), "float32"),
@@ -873,11 +869,31 @@ class Emeans:
                 raise ValueError("statistics have incompatible shape or dtype")
         if self._is_torch:
             sums, counts, objective = sums.detach(), counts.detach(), objective.detach()
+        if not isinstance(n, (int, np.integer)) or n != expected_n:
+            raise ValueError("stats n must match the prescribed batch size")
+        return None, sums, counts, objective
+
+    def update(self, stats):
+        """Consume one local frozen-snapshot batch and perform EMA then revival.
+
+        ``n`` equals the prescribed batch size. CPU communication may combine
+        statistics externally before this call. Values and row membership remain
+        caller obligations; shape, dtype, device and host row count are checked.
+        """
+        self._require_running()
+        if (self._pending_stats is not None
+                and 0 < self._pending_stats["n"] < self._local_batch_size()):
+            raise ValueError("complete the pending batch before update")
+        if self._epoch_steps == self.recipe["epoch_steps"][self._epoch]:
+            raise RuntimeError("call end_epoch before the next update")
+        expected_n = min(self.recipe["batch_size"],
+                         self.recipe["epoch_rows"][self._epoch] - self._epoch_rows)
+        ids, sums, counts, objective = self._prepare_statistics(stats, expected_n)
         alpha = _scheduled_alpha(
             self.recipe["alpha0"], self._step, self.recipe["total_steps"]
         )
         try:
-            self._apply_statistics(sums, counts, objective,
+            self._apply_statistics(ids, sums, counts, objective,
                                    alpha, 1.0 - alpha, alpha == 1)
             self._finish_step(expected_n)
         except BaseException:
@@ -885,52 +901,66 @@ class Emeans:
             self.assignments = None
             raise
 
-    def _apply_statistics(self, sums, counts, objective,
+    def _apply_statistics(self, ids, sums, counts, objective,
                           alpha, decay, replace_usage=False):
+        # Capture already-global statistics once before reuse/EMA/revival.
+        self._objective += objective  # Local contribution; reduced once per epoch.
+        if ids is None:
+            self._pass_counts += counts
+            if self._pass_sums is not None:
+                self._pass_sums += sums
+        else:
+            if self._is_torch:
+                self._pass_counts.index_add_(0, ids, counts.double())
+                if self._pass_sums is not None:
+                    self._pass_sums.index_add_(0, ids, sums)
+            else:
+                np.add.at(self._pass_counts, ids, counts)
+                if self._pass_sums is not None:
+                    np.add.at(self._pass_sums, ids, sums)
         if self._is_torch:
             import torch
 
-        # Capture this pass's own pre-update assignments before workspace reuse.
-        self._pass_counts += counts
-        self._objective += objective
-        if self._pass_sums is not None:
-            self._pass_sums += sums
-        touched = counts > 0
-        if self._is_torch:
+            touched = counts > 0
             # Fixed-shape masks avoid dynamic row selection/host reads. Inactive
             # lanes divide zero by one; only touched lanes divide by statistics.
             safe_counts = torch.where(touched, counts, 1)
             mean = sums.clone()
             mean.masked_fill_(~touched[:, None], 0)
-            mean.div_(safe_counts[:, None])
-            retained = self._usage * decay
+            mean /= safe_counts[:, None]
+            if not replace_usage:
+                self._usage *= decay
+            usage = self._usage if ids is None else self._usage[ids]
+            centroids = self._centroids if ids is None else self._centroids[ids]
+            retained = usage if not replace_usage else torch.zeros_like(usage)
             mass = retained + alpha * counts
             weight = alpha * counts / torch.where(touched, mass, 1)
-            position = mean - self._centroids
-            position.mul_(weight[:, None]).add_(self._centroids)
+            position = mean - centroids
+            position.mul_(weight[:, None]).add_(centroids)
             torch.where((weight == 1)[:, None], mean, position, out=position)
-            torch.where(
-                touched[:, None], position, self._centroids, out=self._centroids
-            )
-            self._usage.copy_(
-                torch.where(touched, mass, self._usage) if replace_usage else mass
-            )
+            torch.where(touched[:, None], position, centroids, out=centroids)
+            torch.where(touched, mass, usage, out=usage)
+            if ids is not None:
+                self._centroids.index_copy_(0, ids, centroids)
+                self._usage.index_copy_(0, ids, usage)
         else:
+            touched = counts > 0
+            selected = touched if ids is None else ids[touched]
             if not replace_usage:
                 self._usage *= decay
             retained = (
-                self._usage[touched] if not replace_usage
+                self._usage[selected] if not replace_usage
                 else np.zeros_like(counts[touched])
             )
             mass = retained + alpha * counts[touched]
             mean = sums[touched] / counts[touched, None]
             weight = alpha * counts[touched] / mass
-            position = self._centroids[touched] + weight[:, None] * (
-                mean - self._centroids[touched]
+            position = self._centroids[selected] + weight[:, None] * (
+                mean - self._centroids[selected]
             )
             position[weight == 1] = mean[weight == 1]
-            self._centroids[touched] = position
-            self._usage[touched] = mass
+            self._centroids[selected] = position
+            self._usage[selected] = mass
         self._invalidate_readout()
 
     def _finish_step(self, expected_n):
@@ -944,6 +974,9 @@ class Emeans:
         self._batch_accumulation = self._batch_objective = None
         self._batch_norm = self._batch_operand = None
 
+    def _epoch_objective(self):
+        return self._objective
+
     def end_epoch(self):
         """Finish one complete pass and record its moving-pass objective."""
         self._require_running()
@@ -955,12 +988,12 @@ class Emeans:
         if self._is_torch:
             import torch
 
-            totals = torch.stack(
-                (self._objective, torch.dot(self._pass_counts, self._pass_counts))
-            )
-            objective, count_square = totals.tolist()
+            objective = self._epoch_objective()
+            objective, count_square = torch.stack(
+                (objective, torch.dot(self._pass_counts, self._pass_counts))
+            ).tolist()
         else:
-            objective = float(self._objective)
+            objective = float(self._epoch_objective())
             count_square = float(np.dot(self._pass_counts, self._pass_counts))
         stat = {
             "obj": objective,
@@ -1088,7 +1121,7 @@ class Emeans:
                     torch.index_select(epoch_rates, 0, position, out=rate.unsqueeze(0))
                     # Explicit staging is recorded even before the final epoch.
                     stats = self._accumulate_core(x, index, labels_out)
-                    self._apply_statistics(stats["sums"], stats["counts"],
+                    self._apply_statistics(None, stats["sums"], stats["counts"],
                                            stats["objective"], rate[0], rate[1])
                     position.add_(1)
                 finally:
