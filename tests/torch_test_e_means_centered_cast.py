@@ -8,23 +8,42 @@
 CPU tests qualify codec/metadata only; CPU E-means still rejects quantizers.
 GPU tests are small synthetic contracts, not accuracy or performance claims.
 """
+import datetime
 import gc
+import importlib.metadata
 import importlib.util
+import json
+import os
+from pathlib import Path
+import tempfile
 import unittest
 import weakref
 from unittest import mock
 
 import torch
 
-from faiss.contrib.e_means import Emeans
+from faiss.contrib.e_means import Emeans, DistributedEmeans
 from faiss.contrib.e_means.e_means import _resolve_recipe, _separate_splits
 from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
+from e_means_test_utils import known_torch_centroids
 
+_DISTRIBUTED_EVIDENCE = []
 
 
 def _cuda_ready():
     return (torch.cuda.is_available() and not torch.version.hip
             and torch.cuda.get_device_capability() >= (8, 0))
+
+
+def _cute_ready():
+    if not _cuda_ready() or torch.cuda.get_device_capability() != (9, 0):
+        return False
+    try:
+        return (importlib.metadata.version("quack-kernels") == "0.6.5"
+                and importlib.metadata.version("nvidia-cutlass-dsl") == "4.7.1"
+                and importlib.metadata.version("cuda-python").startswith("13."))
+    except importlib.metadata.PackageNotFoundError:
+        return False
 
 
 def _fit(shift, dtype, device="cpu"):
@@ -228,6 +247,7 @@ class _GPUContracts:
                     counts.index_add_(0, expected_labels[start:end], counts.new_ones(end-start))
                     torch.testing.assert_close(stats["sums"], sums, rtol=0, atol=0)
                     torch.testing.assert_close(stats["counts"], counts, rtol=0, atol=0)
+                    self.assertFalse(model._batch_code_units)
                     model.update(stats)
                     all_sums += sums
                     all_counts += counts
@@ -276,6 +296,7 @@ class _GPUContracts:
                 centroids, labels = model.train(codes)
                 self.assertIs(centroids, model.centroids)
                 self.assertIs(labels, model.assignments)
+                self.assertEqual(model.obj[-1].ndim, 0)
                 self.assertEqual(model.centroids.item(), q.decode(codes)[0].item())
                 model.begin(3, initial)
                 q.shift.add_(1)
@@ -298,14 +319,19 @@ class _GPUContracts:
                 calls = [0]
                 original = torch.cuda.CUDAGraph.replay
                 capture = Emeans._capture_step
-                graphs, pools = [], []
+                owners = []
+                graphs, pools, bindings = [], [], []
 
                 def retained(
                     model,
                     *args,
                     _capture=capture,
+                    _backend=backend,
+                    _bindings=bindings,
                     _graphs=graphs,
+                    _owners=owners,
                     _pools=pools,
+                    _q=q,
                     **kwargs,
                 ):
                     result = _capture(model, *args, **kwargs)
@@ -313,18 +339,30 @@ class _GPUContracts:
                     _pools.append(
                         weakref.ref(result[1] if len(result) == 2 else result[2])
                     )
+                    if _backend == "cute":
+                        _owners.append(weakref.ref(result[1]))
+                        _bindings.extend(
+                            weakref.ref(binding)
+                            for binding in result[1].bindings.values()
+                        )
+                        self.assertIs(result[1].transform_bias, _q.shift)
                     return result
 
                 def counted(
                     graph,
                     _calls=calls,
+                    _bindings=bindings,
                     _graphs=graphs,
+                    _owners=owners,
                     _pools=pools,
                     _original=original,
                 ):
                     _calls[0] += 1
                     self.assertTrue(
-                        all(owner() is not None for owner in _graphs + _pools)
+                        all(
+                            owner() is not None
+                            for owner in _owners + _graphs + _pools + _bindings
+                        )
                     )
                     return _original(graph)
 
@@ -338,18 +376,133 @@ class _GPUContracts:
                 torch.testing.assert_close(replay.assignments, eager.assignments, rtol=0, atol=0)
                 torch.testing.assert_close(replay.obj, eager.obj, atol=2e-4, rtol=2e-5)
                 gc.collect()
-                # Train retires its graph/pool; both must be gone after train.
+                # Train retires its graph/pool; the reusable model cache stays
+                # owned until reset, as in the original CuTe lifetime contract.
                 self.assertTrue(graphs and pools)
                 self.assertTrue(all(owner() is None for owner in graphs + pools))
+                if backend == "cute":
+                    self.assertTrue(owners and bindings)
+                    self.assertIs(replay._cute_assignment_cache, owners[-1]())
+                    self.assertIs(replay._cute_assignment_cache.transform_bias, q.shift)
                 replay.reset()
                 gc.collect()
-
+                self.assertIsNone(replay._cute_assignment_cache)
+                self.assertTrue(all(owner() is None for owner in owners + bindings))
 
 
 @unittest.skipUnless(_cuda_ready(), "NVIDIA SM80 or later required")
 class TestCenteredCastCUDA(_GPUContracts, unittest.TestCase):
     pass
 
+
+@unittest.skipUnless(_cute_ready(), "pinned CuTe BF16 stack on SM90 required")
+class TestCenteredCastCute(_GPUContracts, unittest.TestCase):
+    def arms(self):
+        return [("cute", torch.bfloat16)]
+
+    def test_prepared_identity_refresh(self):
+        q = _fit([100.] * 65, torch.bfloat16, "cuda")
+        c = q.shift + torch.arange(257, device="cuda").float()[:, None].expand(-1, 65) / 8
+        rows = q.compute_codes(c[:17] + .03125)
+        model = known_torch_centroids(c, quantizer=q, assignment_backend="cute")
+        allocations = []
+        center_rows = q._center_rows
+
+        def measured(value):
+            before = torch.cuda.memory_allocated()
+            result = center_rows(value)
+            allocations.append(dict(shape=list(result.shape), device=str(result.device),
+                                    dtype=str(result.dtype), logical_bytes=result.numel() * result.element_size(),
+                                    allocated_delta=torch.cuda.memory_allocated() - before))
+            return result
+
+        def check_result(result):
+            distance, labels = result
+            oracle = (rows.double()[:, None] - q.compute_codes(model.centroids).double()[None]).square().sum(2)
+            torch.testing.assert_close(labels, oracle.argmin(1), rtol=0, atol=0)
+            torch.testing.assert_close(distance.double(), oracle.min(1).values, atol=2e-4, rtol=2e-5)
+
+        with mock.patch.object(q, "_center_rows", measured):
+            check_result(model.assign(rows))
+            cached = model._cute_assignment_cache
+            pointers = (cached.centroids.data_ptr(), cached.norms.data_ptr())
+            torch.testing.assert_close(cached.centroids[:, :65], q.compute_codes(c), rtol=0, atol=0)
+            check_result(model.assign(rows))
+            self.assertIs(model._cute_assignment_cache, cached)
+            model.centroids.add_(.25)
+            check_result(model.assign(rows))
+            self.assertIs(model._cute_assignment_cache, cached)
+            self.assertEqual((cached.centroids.data_ptr(), cached.norms.data_ptr()), pointers)
+            torch.testing.assert_close(cached.centroids[:, :65], q.compute_codes(model.centroids), rtol=0, atol=0)
+            self.assertIs(cached.transform_bias, q.shift)
+        print("CENTERED_CAST_MIRROR_TEMP " + json.dumps(allocations, sort_keys=True), flush=True)
+
+
+def _distributed_worker(rank, rendezvous):
+    import torch.distributed as dist
+    torch.cuda.set_device(rank)
+    device = torch.device("cuda", rank)
+    torch.cuda.reset_peak_memory_stats(device)
+    dist.init_process_group("nccl", init_method=rendezvous, rank=rank, world_size=2,
+                            timeout=datetime.timedelta(seconds=90))
+    try:
+        for dtype in (torch.float16, torch.bfloat16):
+            for transport in ("dense", "sparse"):
+                q = _fit([100.], dtype, device)
+                initial = torch.tensor([[100.], [104.]], device=device)
+                model = DistributedEmeans(1, 2, niter=1, batch_size=8, alpha0=1,
+                                          quantizer=q, group=dist.group.WORLD, transport=transport)
+                model.begin(10, initial)
+                expected_sums = torch.zeros_like(initial)
+                expected_counts = initial.new_zeros(2)
+                for n in (4, 1):
+                    # Both ranks contribute distinct dyadic rows, stable labels.
+                    x = initial[rank:rank+1].expand(n, -1) + (-.25 if rank else .25)
+                    codes = q.compute_codes(x)
+                    model.accumulate(codes[:0])
+                    if n > 1:
+                        model.accumulate(codes[:1])
+                    stats = model.accumulate(x[1:] if n > 1 else x)
+                    sums, counts = torch.zeros_like(initial), initial.new_zeros(2)
+                    sums[rank] = q.decode(codes).sum(0)
+                    counts[rank] = n
+                    torch.testing.assert_close(stats["sums"], sums, rtol=0, atol=0)
+                    torch.testing.assert_close(stats["counts"], counts, rtol=0, atol=0)
+                    external = {key: value.clone() if isinstance(value, torch.Tensor) else value
+                                for key, value in stats.items()}
+                    model.update(external)
+                    torch.testing.assert_close(external["sums"], sums, rtol=0, atol=0)
+                    dist.all_reduce(sums)
+                    dist.all_reduce(counts)
+                    expected_sums += sums
+                    expected_counts += counts
+                    torch.testing.assert_close(model._pass_sums, expected_sums, rtol=0, atol=0)
+                model.end_epoch()
+                torch.testing.assert_close(model.current_centroids(), expected_sums / expected_counts[:, None], rtol=0, atol=0)
+                torch.testing.assert_close(model.finalize(), expected_sums / expected_counts[:, None], rtol=0, atol=0)
+                dist.barrier()
+        peak = torch.cuda.max_memory_allocated(device)
+        assert peak <= 2**30, "child Torch allocated peak exceeds 1 GiB"
+        record = dict(rank=rank, pid=os.getpid(), device=str(device),
+                      torch_peak_allocated_bytes=peak, source=__file__,
+                      gpu_name=torch.cuda.get_device_name(device),
+                      gpu_sm=list(torch.cuda.get_device_capability(device)))
+        path = Path(rendezvous.removeprefix("file://")).parent / ("rank_%d.json" % rank)
+        path.write_text(json.dumps(record, sort_keys=True) + "\n")
+    finally:
+        dist.destroy_process_group()
+
+
+@unittest.skipUnless(_cuda_ready() and torch.cuda.device_count() >= 2,
+                     "two NVIDIA SM80 or later devices required")
+class TestCenteredCastDistributed(unittest.TestCase):
+    def test_two_rank_original_statistics_dense_sparse(self):
+        with tempfile.TemporaryDirectory() as folder:
+            torch.multiprocessing.spawn(_distributed_worker,
+                                        args=("file://" + folder + "/rendezvous",), nprocs=2, join=True)
+            records = [json.loads((Path(folder) / ("rank_%d.json" % rank)).read_text()) for rank in range(2)]
+            _DISTRIBUTED_EVIDENCE.extend(records)
+            print("CENTERED_CAST_DISTRIBUTED_PEAK " + json.dumps(records, sort_keys=True), flush=True)
 
 
 if __name__ == "__main__":

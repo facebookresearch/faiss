@@ -17,6 +17,19 @@ def as_numpy(value):
     return value.detach().cpu().numpy() if hasattr(value, "detach") else np.asarray(value)
 
 
+def known_torch_centroids(centroids, **kwargs):
+    """Install fixed means through the documented external-statistics API."""
+    import torch
+    k, d = centroids.shape
+    model = Emeans(d, k, niter=1, batch_size=k, alpha0=1, **kwargs)
+    model.begin(k, centroids)
+    model.update(dict(sums=centroids.clone(), counts=torch.ones(k, device=centroids.device),
+                      objective=torch.zeros((), dtype=torch.float64, device=centroids.device), n=k))
+    model.end_epoch()
+    torch.testing.assert_close(model.finalize(), centroids, rtol=0, atol=0)
+    return model
+
+
 @contextmanager
 def highest_fp32(backend):
     if backend == "numpy":

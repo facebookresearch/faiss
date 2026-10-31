@@ -22,7 +22,7 @@ from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
 from faiss.contrib.e_means.e_means_fp8 import Fp8Quantizer
 from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
 from faiss.contrib.e_means import e_means
-from e_means_test_utils import EmeansReferenceContracts, highest_fp32
+from e_means_test_utils import EmeansReferenceContracts, highest_fp32, known_torch_centroids
 
 TRITON_CUDA = (torch.cuda.is_available() and not torch.version.hip
                and torch.cuda.get_device_capability() >= (8, 0)
@@ -1890,17 +1890,7 @@ if cuda_supported:
                                    torch.tensor([[65520.]]).half(), rtol=0, atol=0)
 
     def _known_centroids(self, centroids, **kwargs):
-        """Install fixed means through the documented external-statistics API."""
-        k, d = centroids.shape
-        model = Emeans(d, k, niter=1, batch_size=k, alpha0=1, **kwargs)
-        model.begin(k, centroids)
-        model.update(dict(sums=centroids.clone(),
-                          counts=torch.ones(k, device=centroids.device),
-                          objective=torch.zeros((), dtype=torch.float64, device=centroids.device),
-                          n=k))
-        model.end_epoch()
-        torch.testing.assert_close(model.finalize(), centroids, rtol=0, atol=0)
-        return model
+        return known_torch_centroids(centroids, **kwargs)
 
     @unittest.skipUnless(torch.cuda.is_available() and getattr(torch.version, "hip", None) is None
                          and torch.cuda.get_device_capability() >= (8, 0), "NVIDIA SM80 required")
@@ -2446,6 +2436,10 @@ if cuda_supported:
         if INT8_CUDA:
             self._check_cuda_replay_failure(torch.uint8, None, "triton")
             self._check_cuda_replay_failure(torch.float32, Int8Quantizer(3), "triton")
+        from torch_test_e_means_cute import _ready
+        if _ready():
+            self._check_cuda_replay_failure(torch.bfloat16, None, "cute")
+            self._check_cuda_replay_failure(torch.float32, CastQuantizer(3, torch.bfloat16), "cute")
 
     def _check_cuda_replay_failure(self, dtype, quantizer, backend="native"):
         x = (torch.arange(93, device="cuda", dtype=torch.float32) / 8).reshape(31, 3)
@@ -2535,7 +2529,8 @@ if cuda_supported:
         centroids, captured = model.train(rows, rows[[0, 2]])
         recipe = dict(model.recipe)
         model._input_dtype = torch.bfloat16  # Represents a completed BF16 run.
-        with mock.patch.object(e_means, '_get_triton_assign_rows', side_effect=AssertionError("CPU probed Triton")):
+        with mock.patch.object(e_means, '_get_triton_assign_rows', side_effect=AssertionError("CPU probed Triton")), \
+                mock.patch.object(e_means, '_get_cute_functions', side_effect=AssertionError("CPU probed CuTe")):
             distance, labels = model.assign(rows)
         torch.testing.assert_close(distance, torch.ones(4), rtol=0, atol=0)
         torch.testing.assert_close(labels, torch.tensor([0, 0, 1, 1]), rtol=0, atol=0)
@@ -2590,6 +2585,43 @@ if cuda_supported:
         stats = model.accumulate(rows[1:])
         torch.testing.assert_close(stats['counts'], torch.tensor([2., 2.]), rtol=0, atol=0)
         torch.testing.assert_close(stats['sums'], torch.tensor([[2.], [22.]]), rtol=0, atol=0)
+
+    def test_auto_metadata_preference_and_no_encoded_fallback(self):
+        from types import ModuleType, SimpleNamespace
+        import faiss.contrib.e_means as package
+
+        cute = ModuleType('faiss.contrib.e_means.e_means_cute')
+        cute._check_device = mock.Mock()
+        cute._check_extent = mock.Mock()
+        cute._check_padded_span = mock.Mock()
+        cute._padded_extent = lambda value, alignment: (value + alignment - 1) // alignment * alignment
+        with mock.patch.object(package, 'e_means_cute', cute, create=True), \
+                mock.patch.dict(sys.modules, {cute.__name__: cute}), \
+                mock.patch.object(e_means, '_is_torch_tensor', return_value=True), \
+                mock.patch.object(torch.cuda, 'get_device_capability', return_value=(9, 0)), \
+                mock.patch.object(e_means, '_get_triton_assign_rows', return_value=object()) as triton:
+            for dtype, quantizer, expected in (
+                    (torch.bfloat16, None, 'cute'), (torch.float32, None, 'triton'),
+                    (torch.float16, None, 'triton'),
+                    (torch.float32, CastQuantizer(1, torch.bfloat16), 'cute')):
+                with self.subTest(dtype=dtype, explicit_codec=quantizer is not None):
+                    model = Emeans(1, 2, quantizer=quantizer)
+                    rows = SimpleNamespace(device=torch.device('cuda:7'), dtype=dtype)
+                    model._resolve_assignment_backend(rows)
+                    self.assertEqual(model._assignment_backend, expected)
+                    self.assertEqual(model.assignment_backend, 'auto')
+                    calls = triton.call_count
+                    model._resolve_assignment_backend(rows)
+                    self.assertEqual(triton.call_count, calls)  # Fixed within the run.
+            cute._check_device.side_effect = RuntimeError('metadata incompatibility')
+            model = Emeans(1, 2)
+            model._resolve_assignment_backend(SimpleNamespace(device=torch.device('cuda:7'), dtype=torch.bfloat16))
+            self.assertEqual(model._assignment_backend, 'triton')
+            triton.side_effect = ImportError('optional dependency unavailable')
+            for dtype in (torch.int8, torch.uint8, torch.float8_e4m3fn):
+                with self.subTest(encoded=dtype), self.assertRaisesRegex(RuntimeError, 'no compatible backend'):
+                    Emeans(1, 2)._resolve_assignment_backend(
+                        SimpleNamespace(device=torch.device('cuda:7'), dtype=dtype))
 
     @unittest.skipUnless((torch.cuda.is_available() and not torch.version.hip
                          and torch.cuda.get_device_capability() >= (8, 0)
