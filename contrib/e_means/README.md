@@ -16,8 +16,10 @@ The default statistical batch size and EMA step are selected together; set
 `batch_size` and `alpha0` together to override them. With the default
 `spherical=False`, NumPy input uses exact Faiss L2 assignment. PyTorch input
 stays on its CPU or CUDA device and does not call Faiss; PyTorch is optional.
-The native backend is the reference path for dense Euclidean clustering.
-See `demos/demo_e_means.py` in the source checkout for a DEEP1M example.
+The native backend is the reference path for
+dense Euclidean clustering; supported low-precision and byte formats are
+described below. See `demos/demo_e_means.py` in the source checkout for a DEEP1M
+example.
 
 With `spherical=True`, explicitly normalize input rows before conversion or
 prequantization for `train`, `accumulate`, `assign` and any frozen closing scan;
@@ -89,7 +91,8 @@ an input staging buffer. Centroids and masses remain resident. Positive partial
 results report cumulative `n` and FP64 `objective`, with `sums` and `counts`
 set to `None`. This replaces the older partial-result behavior that exposed
 arrays although `update` rejected them. At completion, the mapping contains
-model-owned FP32 sums/counts. Consume it once with `update`; borrowed statistics
+model-owned sums/counts in the run's FP32 or raw-byte INT64 schema. Consume it
+once with `update`; borrowed statistics
 expire on extension/update. Copy complete values for independent retention,
 and keep their provenance yourself; there is no stale-copy token validation.
 An earlier Torch objective tensor can also change on extension; its receipt's
@@ -107,10 +110,27 @@ CPU callers can sum all four statistics fields
 with their own communication and call local `update`. CUDA requires finite
 caller-validated values fitting the chosen format; metadata is always checked, with
 no implicit CUDA value scan. NumPy/Torch CPU validation still checks finiteness.
-Whole statistical batches above 2²⁴ rows use temporary FP64 sums/counts
+Floating statistical batches above 2²⁴ rows use temporary FP64 sums/counts
 accumulation across supplied chunks, with one FP32 conversion at completion.
 This requires additional memory and computation; there is no extra K*d table
 for ordinary batches.
+
+Floating or explicitly quantized inputs retain FP32 statistics. Raw CUDA
+INT8/UINT8 with `quantizer=None` instead returns matching INT64 sums/counts,
+including small, empty and tail batches. Native input metadata or the first
+external matching pair fixes the run's schema. Later incompatible statistics
+raise "statistics dtype must match the run's fixed statistics schema"; input
+metadata must also match the selected schema and native format. Previous FP32
+contributions are not silently widened into an integer run.
+Raw integer runs require declared global `255*global_n <= 2**53`. Whole local
+batches up to 2²⁴ rows use bounded INT32 scratch, reconstructing UINT8 totals
+in INT64 once at completion. Larger batches retain exact FP64 integer scatter
+under that bound, then convert directly to INT64. Scratch and UINT8 shift
+selection cover the whole prescribed batch, not each supplied chunk.
+Integer final-pass totals are divided in FP64 before returning FP32 centroids.
+EMA still rounds batch sums/counts once to FP32 at its existing update boundary.
+Callers combining statistics remain responsible for valid totals within the bound;
+final floating division/output rounding is not an exact rational or code contract.
 
 ## Train results and last-pass labels
 
@@ -202,17 +222,20 @@ divided by group size. Every rank participates in the same updates and epoch
 closes. Local `Emeans.update(stats)` has no group or transport arguments;
 `DistributedEmeans` requires an explicit group, not an implicit world group.
 
-Dense transport all-reduces FP32 statistics. Sparse transport packs occupied
+Dense transport all-reduces the matching FP32 or INT64 statistics. All ranks
+must use the same fixed schema. Sparse transport packs occupied
 IDs, all-gathers and merges in group-rank order. It can synchronize during
 packing/size discovery; padded receive storage is approximately
-`ranks * max_local_occupied * (d+1) * 4` bytes plus IDs. Automatic selection
-uses known batch/table/rank sizes, conservatively bounds padding and amortizes
+`ranks * max_local_occupied * (d+1) * element_size` bytes plus IDs, where
+element_size is 4 for FP32 or 8 for INT64. Automatic selection
+uses actual element size and known batch/table/rank sizes, bounds padding and amortizes
 packing on large payloads; it is not a portable network crossover. Use an
 explicit `"dense"` or `"sparse"` override where appropriate, and ensure the
 state and transport workspace fit. No batch size is silently reduced.
 
 One scalar FP64 epoch collective sums local moving-pass objective contributions.
-Already-global FP64 pass counts and FP32 closing sums are captured once. Equal
+Already-global matching integer totals, or FP64 counts/FP32 floating closing sums,
+are captured once before EMA conversion. Equal
 row counts can still have different occupied-centroid counts, which sparse
 transport discovers separately. Divergent collective schedules remain a caller
 error; this API does not recover from them. Revival IDs are
@@ -250,6 +273,25 @@ uncentered FP8 batches accumulate in code units and apply the decode scale once
 at completion; other batches retain the existing decoded-row accumulation.
 Only complete statistics expose FP32 sums/counts in the selected model units.
 
+Native INT8/UINT8 assignment uses exact INT32 ranking (dimension at most
+43,919), with FP32 returned distances, on qualified NVIDIA SM80/SM90/SM100.
+An explicit INT8 quantizer returns decoded centroids and distances:
+
+```python
+from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
+
+q = Int8Quantizer(d)
+q.train(representative_sample)
+q.to(x.device)
+codes = q.compute_codes(x)  # rounds and clips finite outliers, in bounded chunks
+km = Emeans(d, k, quantizer=q, assignment_backend="triton")
+km.train(codes)  # matching native codes only; no floating-to-INT8 JIT
+```
+
+Without a quantizer, native signed/unsigned bytes retain their numeric units.
+Calibration, device placement and validation are explicit; unchecked nonfinite
+values have no meaningful encoding result. Use `q.validate(x)` when needed.
+
 ## Numerical limits
 
 Low precision can round distinct rows or centroid operands to the same values.
@@ -257,9 +299,19 @@ Calibration can reduce this loss on some data, but it cannot guarantee distinct
 assignments or recover information already lost in the supplied representation.
 Use native FP32 input with `quantizer=None` and native Torch or Triton assignment
 when representation loss is unacceptable. These CUDA
-paths still use expanded L2 ranking (`centroid_norm - 2*dot`), so a large common
-offset can cancel small distance differences. Native FP32 follows the caller's
-Torch matmul settings; this fallback is not a direct-distance accuracy guarantee.
+paths use expanded L2 ranking (`centroid_norm - 2*dot`) in ordinary mode, so a
+large common offset can cancel small distance differences. Native FP32 follows
+the caller's Torch matmul settings; this fallback is not a direct-distance
+accuracy guarantee.
+
+Pass native INT8/UINT8 tensors with `quantizer=None` on supported Triton
+CUDA backends to retain integer statistics within the documented bounds.
+Converting byte data to floating point uses FP32 statistics and loses that
+exact-total contract. Floating and calibrated inputs retain FP32 statistics,
+whose accumulation can depend on order. With `Int8Quantizer`, distances and
+centroids are decoded FP32 values. Comparing decoded FP32 distances can make
+exact integer-code ties appear slightly unequal; this does not imply an error
+in integer-code ranking.
 
 The training objective follows the moving-pass assignments, not the returned
 closing centroids. When precision matters, also assess the final centroids on

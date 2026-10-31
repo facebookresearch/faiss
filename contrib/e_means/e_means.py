@@ -179,10 +179,11 @@ def _as_input_matrix(x, name, is_torch, allow_empty=False, prepare=True):
     if not isinstance(x, torch.Tensor):
         raise TypeError("%s must be a torch.Tensor" % name)
     if x.dtype not in (torch.float32, torch.float16, torch.bfloat16,
-                       getattr(torch, "float8_e4m3fn", None)):
-        raise ValueError("%s must be FP32, FP16, BF16 or E4M3" % name)
-    if x.device.type != "cuda" and x.dtype == getattr(torch, "float8_e4m3fn", None):
-        raise ValueError("native E4M3 input requires CUDA")
+                       getattr(torch, "float8_e4m3fn", None), torch.int8, torch.uint8):
+        raise ValueError("%s must be FP32, FP16, BF16, E4M3, INT8 or UINT8" % name)
+    if x.device.type != "cuda" and x.dtype in (
+            getattr(torch, "float8_e4m3fn", None), torch.int8, torch.uint8):
+        raise ValueError("native code input requires CUDA")
     # Metadata checks do not allocate or widen a resident population.
     if x.layout != torch.strided or x.ndim != 2:
         raise ValueError("%s must be a dense 2-D tensor" % name)
@@ -309,6 +310,14 @@ def _get_triton_assign_rows():
     return assign_rows
 
 
+def _get_triton_int8_functions():
+    try:
+        from .e_means_triton import assign_int8_rows, prepare_int8_centroids
+    except ImportError as error:
+        raise ImportError("Triton assignment requires the triton package") from error
+    return assign_int8_rows, prepare_int8_centroids
+
+
 class Emeans:
     """Cluster vectors with mini-batch exponential moving averages.
 
@@ -354,7 +363,7 @@ class Emeans:
         a compatible Triton installation. It uses bounded tiled/split assignment,
         IEEE dot input precision for FP32 inputs, and no runtime autotuning or backend fallback.
         centroid_chunk_size applies only to native Torch assignment.
-    quantizer : CastQuantizer or Fp8Quantizer, optional
+    quantizer : CastQuantizer, Fp8Quantizer or Int8Quantizer, optional
         Explicit represented-value conversion for CUDA batches. CastQuantizer
         provides FP16/BF16 conversion, with optional default-off centering.
         Centered casts require explicit train/to before use; matching dtype
@@ -370,6 +379,11 @@ class Emeans:
         Triton: floating batches encode per chunk; matching native E4M3 codes
         bypass encoding. Statistics, centroids and distances use decoded units.
         None with native E4M3 uses raw code values, also requiring Triton.
+        Int8Quantizer accepts matching native INT8 codes only, requires Triton,
+        and returns decoded units. Raw INT8/UINT8 with None retain numeric units;
+        sums/counts are INT64 within global 255*n <= 2**53, with FP32 EMA and
+        output centroids. UINT8 translation is internal. INT8 ranking is exact with d <= 43919,
+        qualified NVIDIA SM80/SM90/SM100, and FP32 returned distances.
         CPU computes in FP32 and requires quantizer=None.
 
     Attributes
@@ -401,7 +415,7 @@ class Emeans:
 
     Every epoch includes its ragged final batch. CPU input conversion and
     finite-value validation scan the input. CUDA accepts native FP32/FP16/BF16
-    and, with Triton, E4M3. CUDA requires caller-validated
+    and, with Triton, E4M3/INT8/UINT8. CUDA requires caller-validated
     finite values fitting the represented format;
     metadata checks do not scan CUDA values.
     Random permutations and
@@ -459,19 +473,26 @@ class Emeans:
             raise ValueError("Triton assignment requires k <= 2**31 - 256")
         self.quantizer = quantizer
         self._centered_cast = False
-        self._fp8_quantizer = False
+        self._fp8_quantizer = self._int8_quantizer = False
         if quantizer is not None:
             from .e_means_quantizer import CastQuantizer
             from .e_means_fp8 import Fp8Quantizer
+            from .e_means_int8 import Int8Quantizer
 
-            if not isinstance(quantizer, (CastQuantizer, Fp8Quantizer)) or quantizer.d != self.d:
-                raise ValueError("quantizer must be a matching CastQuantizer or Fp8Quantizer")
+            if not isinstance(quantizer, (CastQuantizer, Fp8Quantizer, Int8Quantizer)) or quantizer.d != self.d:
+                raise ValueError("quantizer must be a matching CastQuantizer, Fp8Quantizer or Int8Quantizer")
             self._centered_cast = isinstance(quantizer, CastQuantizer) and quantizer.center
             if self.spherical and self._centered_cast:
                 raise ValueError("spherical assignment does not support centered CastQuantizer")
             self._fp8_quantizer = isinstance(quantizer, Fp8Quantizer)
-            if self.spherical and self._fp8_quantizer:
+            self._int8_quantizer = isinstance(quantizer, Int8Quantizer)
+            if self.spherical and (self._fp8_quantizer or self._int8_quantizer):
                 raise ValueError("spherical assignment requires floating operands, not encoded formats")
+            if self._int8_quantizer:
+                if assignment_backend not in ('auto', 'triton'):
+                    raise ValueError("INT8 requires Triton assignment")
+                if self.d > 43919:
+                    raise ValueError("INT8 assignment requires d <= 43919")
             if self._fp8_quantizer and assignment_backend not in ('auto', 'triton'):
                 raise ValueError("FP8 requires Triton assignment")
 
@@ -610,7 +631,12 @@ class Emeans:
         import torch
         dtype = self.quantizer.dtype if self.quantizer is not None else x.dtype
         cuda = getattr(torch.version, 'hip', None) is None and torch.cuda.get_device_capability(x.device) >= (8, 0)
-        if dtype == getattr(torch, 'float8_e4m3fn', None):
+        if dtype in (torch.int8, torch.uint8):
+            from .e_means_int8 import _check_int8_support
+            _check_int8_support(x.device)
+            if self.d > 43919:
+                raise ValueError('INT8 assignment requires d <= 43919')
+        elif dtype == getattr(torch, 'float8_e4m3fn', None):
             from .e_means_fp8 import _check_fp8_support
             _check_fp8_support(x.device)
         if cuda and self.k <= 2 ** 31 - 256:
@@ -672,15 +698,25 @@ class Emeans:
         ):
             raise ValueError("spherical assignment requires unencoded floating operands")
         self._resolve_assignment_backend(x)
-        if dtype == getattr(torch, "float8_e4m3fn", None):
+        if dtype in (torch.int8, torch.uint8):
+            from .e_means_int8 import _check_int8_support
+
+            if self._assignment_backend != "triton":
+                raise ValueError("INT8 requires Triton assignment")
+            if self.d > 43919:
+                raise ValueError("INT8 assignment requires d <= 43919")
+            if x.dtype != dtype:
+                raise TypeError("INT8 training requires matching native codes; no JIT INT8")
+            _check_int8_support(x.device)
+        elif dtype == getattr(torch, "float8_e4m3fn", None):
             from .e_means_fp8 import _check_fp8_support
 
             if self._assignment_backend != "triton":
                 raise ValueError("FP8 requires Triton assignment")
             _check_fp8_support(x.device)
-        elif x.dtype == getattr(torch, "float8_e4m3fn", None):
+        elif x.dtype in (getattr(torch, "float8_e4m3fn", None), torch.int8, torch.uint8):
             raise ValueError("native codes must match the quantizer dtype")
-        if self._fp8_quantizer:
+        if self._fp8_quantizer or self._int8_quantizer:
             self.quantizer._validate(x, "x")
         if x.device.type == "cuda" and (dtype != torch.float32 or self._assignment_backend == "triton"):
             if (getattr(torch.version, "hip", None) is not None
@@ -688,6 +724,13 @@ class Emeans:
                 raise RuntimeError("selected assignment requires NVIDIA SM80 or later")
         if self._input_dtype is not None and dtype != self._input_dtype:
             raise ValueError("native input dtype must be consistent across the run")
+        if self._centroids is not None:
+            self._select_statistics_dtype(
+                torch.int64
+                if self.quantizer is None
+                and dtype in (torch.int8, torch.uint8)
+                else torch.float32
+            )
         self._input_dtype = dtype
         if self.recipe is not None:
             self.recipe.update(
@@ -715,6 +758,8 @@ class Emeans:
             if rows.dtype == self.quantizer.dtype:
                 return rows
         self._check_fp8_input_dtype(rows)
+        if self._int8_quantizer and rows.dtype != self.quantizer.dtype:
+            raise TypeError("INT8 training requires matching native codes; no JIT INT8")
         if self.quantizer is None or rows.dtype == self.quantizer.dtype:
             return rows
         return self.quantizer.compute_codes(rows)
@@ -727,6 +772,13 @@ class Emeans:
         if self.spherical and centroids is self._centroids:
             centroids = self._readout()
         dtype = self._input_dtype or torch.float32
+        if dtype in (torch.int8, torch.uint8):
+            from .e_means_quantizer import _transform
+            from .e_means_int8 import representation
+
+            _, prepare = _get_triton_int8_functions()
+            value = _transform(centroids, self.quantizer if self._int8_quantizer else None)
+            return prepare(value, representation(dtype), validate=False)
         if dtype == getattr(torch, "float8_e4m3fn", None):
             from .e_means_fp8 import Fp8Quantizer, _transform, _update_fp8_peak
 
@@ -862,7 +914,15 @@ class Emeans:
                         else (donor_centroids, child_centroids)
                     )
                 )
-        if _is_torch_tensor(child_centroids) and self._input_dtype == getattr(torch, "float8_e4m3fn", None):
+        if _is_torch_tensor(child_centroids) and self._input_dtype in (torch.int8, torch.uint8):
+            from .e_means_int8 import representation, separate_splits
+
+            # Retain the source guard on internally generated finite FP32 splits.
+            _check_torch_abs_bound("revived centroids", torch.finfo(torch.float32).max,
+                                   donor_centroids, child_centroids)
+            separate_splits(donor_centroids, child_centroids,
+                            representation(self._input_dtype), self.quantizer)
+        elif _is_torch_tensor(child_centroids) and self._input_dtype == getattr(torch, "float8_e4m3fn", None):
             from .e_means_fp8 import separate_splits
 
             separate_splits(donor_centroids, child_centroids, self.quantizer)
@@ -883,23 +943,38 @@ class Emeans:
         self._invalidate_readout()
         return len(source)
 
-    def _assign_rows(self, x, centroids, centroid_norm=None):
+    def _assign_rows(self, x, centroids, centroid_norm=None, distance_out=None):
+        """Private assignment; native bytes may retain exact INT64 distances."""
         if _is_torch_tensor(x):
             import torch
 
+            if distance_out is not None and distance_out.dtype == torch.int64:
+                if self.quantizer is not None or self._input_dtype not in (torch.int8, torch.uint8):
+                    raise ValueError("INT64 distances require native-byte input and quantizer=None")
             if self._assignment_backend == "triton":
-                if x.shape[1] != centroids.shape[1]:
-                    from .e_means_triton import _pad_columns
+                import torch
 
-                    x = _pad_columns(x, 64 if centroids.dtype == torch.float8_e4m3fn else 16)
-                distance, labels = _get_triton_assign_rows()(
-                    x, centroids, centroid_norm,
-                    **({"spherical": True} if self.spherical else {}))
-                if self._fp8_quantizer:
+                if self._input_dtype in (torch.int8, torch.uint8):
+                    from .e_means_int8 import representation
+
+                    assign, _ = _get_triton_int8_functions()
+                    distance, labels = assign(x, centroids, centroid_norm,
+                                              representation(self._input_dtype), distance_out)
+                else:
+                    if x.shape[1] != centroids.shape[1]:
+                        from .e_means_triton import _pad_columns
+
+                        x = _pad_columns(x, 64 if centroids.dtype == torch.float8_e4m3fn else 16)
+                    distance, labels = _get_triton_assign_rows()(
+                        x, centroids, centroid_norm,
+                        **({"spherical": True} if self.spherical else {}))
+                if self._fp8_quantizer or self._int8_quantizer:
                     from .e_means_quantizer import _ldexp
 
                     distance = _ldexp(distance, self.quantizer._distance_exponent)
                 return distance, labels
+            import torch
+
             x_norm = None if self.spherical else x.float().square().sum(dim=1)
             best_score = torch.full(
                 (len(x),), float("inf"), dtype=torch.float32, device=x.device
@@ -956,7 +1031,7 @@ class Emeans:
             raise ValueError("Triton assignment requires CUDA tensors")
         if self.quantizer is not None and (not is_torch or centroids.device.type != "cuda"):
             raise ValueError("CPU E-means requires quantizer=None")
-        if self._fp8_quantizer:
+        if self._fp8_quantizer or self._int8_quantizer:
             self.quantizer._validate(centroids, "init_centroids")
         if getattr(self, "_centered_cast", False):
             self.quantizer._matrix(centroids)
@@ -1035,6 +1110,31 @@ class Emeans:
             raise RuntimeError("begin a run before accumulating or updating")
         self._check_cast_fit()
 
+    def _select_statistics_dtype(self, dtype):
+        # Input metadata or a validated external pair fixes one run schema.
+        import torch
+
+        if dtype == self._batch_stats.dtype:
+            return
+        if self._step or self._input_dtype is not None or self._pending_stats is not None:
+            raise ValueError("statistics dtype must match the run's fixed statistics schema")
+        if (dtype != torch.int64 or self.quantizer is not None or self.spherical
+                or not self._centroids.is_cuda
+                or self._assignment_backend not in ("triton",)):
+            raise ValueError("integer statistics require raw CUDA byte assignment")
+        if 255 * self._n > 2**53:
+            raise ValueError("integer statistics require global 255*n <= 2**53")
+        try:
+            with torch.inference_mode(self._batch_stats.is_inference()):
+                self._batch_stats = self._batch_stats.new_empty(self._batch_stats.shape, dtype=dtype)
+                self._pass_counts = self._pass_counts.to(dtype)
+                if self._pass_sums is not None:
+                    self._pass_sums = self._pass_sums.to(dtype)
+            self._stats_operand = None
+        except BaseException:
+            self._failed = True
+            raise
+
     def _local_batch_size(self):
         return min(self.recipe["batch_size"],
                    self.recipe["epoch_rows"][self._epoch] - self._epoch_rows)
@@ -1065,7 +1165,7 @@ class Emeans:
                 self._pass_counts.zero_()
                 self._objective.zero_()
             self._pass_sums = (
-                self._centroids.new_zeros((self.k, self.d))
+                self._centroids.new_zeros((self.k, self.d), dtype=self._batch_stats.dtype)
                 if self._epoch == len(self.recipe["epoch_rows"]) - 1 else None
             )
         else:
@@ -1080,11 +1180,13 @@ class Emeans:
     def accumulate(self, x):
         """Extend one local statistical batch against fixed centroids.
 
-        Return a mapping with FP32 ``sums`` (k,d), FP32 ``counts`` (k),
-        scalar FP64 ``objective`` and host integer ``n`` at completion. Before
-        completion, sums/counts are None and objective/n report cumulative
-        progress. Complete sums/counts are borrowed workspace, invalidated by
-        extension/update; copy retained values. CPU callers may
+        Return a mapping with ``sums`` (k,d), matching ``counts`` (k), scalar
+        FP64 ``objective`` and host integer ``n`` at completion. Raw CUDA
+        INT8/UINT8 with quantizer=None uses INT64 sums/counts within global
+        255*n <= 2**53; other inputs use FP32. Before completion, sums/counts
+        are None and objective/n report cumulative progress. Complete totals
+        are borrowed workspace, invalidated by extension/update; copy retained
+        values. CPU callers may
         combine matching frozen-snapshot statistics themselves, summing all
         four fields, then call the same local update.
 
@@ -1122,7 +1224,7 @@ class Emeans:
                     stats["labels"] = np.empty(0, dtype="int64")
             return stats
         try:
-            stats = self._accumulate_core(x, index, labels_out)
+            stats = self._accumulate_core(x, index, labels_out=labels_out)
         except BaseException:
             self._failed = True
             self.assignments = None
@@ -1130,15 +1232,22 @@ class Emeans:
         self._pending_stats = stats
         return stats
 
-    def _accumulate_core(self, x, index=None, labels_out=None):
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
+        # Tensor work shared by checked public accumulation and run-local replay.
+        # Raw replay may consume unshifted bounded INT32 byte totals directly.
         n = len(x) if index is None else len(index)
         pending_n = 0 if self._pending_stats is None else self._pending_stats["n"]
         target = self._local_batch_size()
+        wide = n > 0 and target > 2**24
+        borrowed = False
         if self._is_torch:
             import torch
+
+            integer_stats = self._batch_stats.dtype == torch.int64
+            shift = integer_stats and x.dtype == torch.uint8 and 255 * target >= 2**31
+            borrowed = raw and integer_stats and n > 0 and n == target and not wide and not shift
         if pending_n == 0:
             # Bound the whole contribution, not each supplied/assignment chunk.
-            wide = n > 0 and target > 2**24
             if self._is_torch:
                 from .e_means_fp8 import Fp8Quantizer
 
@@ -1150,9 +1259,15 @@ class Emeans:
                     and not any(name in vars(q) for name in ("decode", "compute_codes"))
                     and not torch.are_deterministic_algorithms_enabled()
                 )
-                accumulation = (self._batch_stats.new_zeros(
-                    self._batch_stats.shape, dtype=torch.float64)
-                    if wide else self._batch_stats.zero_())
+                if borrowed:
+                    # Complete private replay borrows storage, never public chunks.
+                    accumulation = self._batch_stats.view(torch.int32)[:, :self.d + 1]
+                    accumulation.zero_()
+                else:
+                    accumulation = (self._batch_stats.new_zeros(
+                        self._batch_stats.shape, dtype=torch.int32
+                        if integer_stats and not wide else torch.float64)
+                        if (integer_stats and n) or wide else self._batch_stats.zero_())
                 self._batch_objective = self._objective.new_zeros(())
                 # Retain represented operands through the whole contribution.
                 if self.spherical:
@@ -1178,8 +1293,9 @@ class Emeans:
             code_units = self._batch_code_units
             native_stats = (type(self) is Emeans and self.quantizer is None
                             and self._centroids.is_cuda
-                            and self._assignment_backend == "triton"
-                            and n > 0 and target <= 2**24 and x.dtype == torch.float16
+                            and self._assignment_backend in ("triton",)
+                            and n > 0 and target <= 2**24
+                            and x.dtype in (torch.int8, torch.uint8, torch.float16)
                             and not torch.are_deterministic_algorithms_enabled())
             fp8_stats = (code_units and type(self) is Emeans
                          and not torch.are_deterministic_algorithms_enabled())
@@ -1206,7 +1322,7 @@ class Emeans:
             if self._is_torch:
                 objective += distance.sum(dtype=torch.float64)
                 if (native_stats and rows.dtype == x.dtype
-                        and accumulate_bytes(rows, labels, accumulation)):
+                        and accumulate_bytes(rows, labels, accumulation, shift=shift)):
                     continue
                 codes = rows
                 if (fp8_stats and accumulate_bytes(
@@ -1216,16 +1332,23 @@ class Emeans:
                     if self._stats_operand is None:
                         with torch.inference_mode(self._batch_stats.is_inference()):
                             self._stats_operand = self._centroids.new_ones(
-                                (min(chunk_size, self.recipe["batch_size"]), self.d + 1))
-                    operand = (self._stats_operand if accumulation is self._batch_stats
-                               else self._stats_operand.double())
+                                (min(chunk_size, self.recipe["batch_size"]), self.d + 1),
+                                dtype=torch.int32 if integer_stats else torch.float32)
+                    operand = self._stats_operand.to(accumulation.dtype)
                 values = operand[:len(rows)]
                 direct_bf16 = (q is None and index is not None and type(self) is Emeans
                                and type(x) is torch.Tensor and type(values) is torch.Tensor
                                and rows.dtype is torch.bfloat16 and values.dtype is torch.float32)
                 represented = (codes if code_units else self.quantizer.decode(codes)
-                               if self.quantizer is not None else rows if direct_bf16 else rows.float())
-                values[:, :-1].copy_(represented if code_units or direct_bf16 else represented.float())
+                               if self.quantizer is not None else rows
+                               if integer_stats or direct_bf16 else rows.float())
+                values[:, :-1].copy_(
+                    represented
+                    if integer_stats or code_units or direct_bf16
+                    else represented.float()
+                )
+                if accumulation.dtype == torch.int32 and shift:
+                    values[:, :-1].sub_(128)
                 accumulation.index_add_(0, labels, values)
             else:
                 objective += distance.sum(dtype="float64")
@@ -1235,7 +1358,12 @@ class Emeans:
         total_n = pending_n + n
         if self._is_torch and total_n == target and code_units:
             sums.mul_(2.0 ** -q.exponent)
-        if total_n == target and accumulation is not self._batch_stats:
+        if total_n == target and self._is_torch and integer_stats and not wide and not borrowed:
+            from .e_means_triton import copy_byte_stats
+
+            copy_byte_stats(accumulation, self._batch_stats, unsigned=shift)
+            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+        elif total_n == target and not borrowed and accumulation is not self._batch_stats:
             if self._is_torch:
                 self._batch_stats.copy_(accumulation)
             else:
@@ -1254,9 +1382,18 @@ class Emeans:
         sums, counts, objective, n = (
             stats["sums"], stats["counts"], stats["objective"], stats["n"]
         )
+        dtype = "float32"
+        if self._is_torch:
+            import torch
+
+            if not isinstance(sums, torch.Tensor):
+                raise TypeError("statistics must be tensors")
+            if sums.dtype not in (torch.float32, torch.int64):
+                raise ValueError("statistics have incompatible dtype")
+            dtype = str(sums.dtype).removeprefix("torch.")
         for value, shape, expected_dtype in (
-            (sums, (self.k, self.d), "float32"),
-            (counts, (self.k,), "float32"),
+            (sums, (self.k, self.d), dtype),
+            (counts, (self.k,), dtype),
             (objective, (), "float64"),
         ):
             if self._is_torch:
@@ -1277,6 +1414,8 @@ class Emeans:
             sums, counts, objective = sums.detach(), counts.detach(), objective.detach()
         if not isinstance(n, (int, np.integer)) or n != expected_n:
             raise ValueError("stats n must match the prescribed batch size")
+        if self._is_torch:
+            self._select_statistics_dtype(sums.dtype)
         return None, sums, counts, objective
 
     def update(self, stats):
@@ -1285,6 +1424,7 @@ class Emeans:
         ``n`` equals the prescribed batch size. CPU communication may combine
         statistics externally before this call. Values and row membership remain
         caller obligations; shape, dtype, device and host row count are checked.
+        Sums/counts must match the run's fixed FP32 or raw-byte INT64 schema.
         """
         self._require_running()
         if (self._pending_stats is not None
@@ -1317,7 +1457,7 @@ class Emeans:
                 self._pass_sums += sums
         else:
             if self._is_torch:
-                self._pass_counts.index_add_(0, ids, counts.double())
+                self._pass_counts.index_add_(0, ids, counts.to(self._pass_counts.dtype))
                 if self._pass_sums is not None:
                     self._pass_sums.index_add_(0, ids, sums)
             else:
@@ -1335,6 +1475,8 @@ class Emeans:
                 fused = ema_update(sums, counts, self._centroids, self._usage,
                                    alpha, decay, replace_usage)
             if not fused:
+                # Totals above keep their schema; EMA keeps its FP32 boundary.
+                sums, counts = sums.float(), counts.float()
                 touched = counts > 0
                 # Fixed-shape masks avoid dynamic row selection/host reads. Inactive
                 # lanes divide zero by one; only touched lanes divide by statistics.
@@ -1412,8 +1554,9 @@ class Emeans:
                     self._fp8_peak = self._centroids.new_zeros(())
                 _update_fp8_peak(_transform(self._centroids, self.quantizer), self._fp8_peak)
             objective = self._epoch_objective()
+            report_counts = self._pass_counts.double()
             totals = torch.stack(
-                (objective, torch.dot(self._pass_counts, self._pass_counts))
+                (objective, torch.dot(report_counts, report_counts))
                 + ((self._fp8_peak.double(),) if fp8 else ())
             ).tolist()
             objective, count_square = totals[:2]
@@ -1492,7 +1635,15 @@ class Emeans:
         elif self._is_torch:
             import torch
 
-            mean = self._pass_sums / self._pass_counts.clamp_min(1).float()[:, None]
+            dtype = (torch.float64 if self._pass_sums.dtype in
+                     (torch.int64, torch.float64) else torch.float32)
+            mean = self._pass_sums.to(dtype)
+            divisor = self._pass_counts.clamp_min(1).to(dtype)[:, None]
+            if dtype == torch.float64:
+                mean.div_(divisor)
+                mean = mean.float()
+            else:
+                mean = mean / divisor
             self.centroids = torch.where(
                 nonempty[:, None], mean, centroids
             ).contiguous()
@@ -1530,8 +1681,9 @@ class Emeans:
         if self.quantizer is not None:
             from .e_means_quantizer import CastQuantizer
             from .e_means_fp8 import Fp8Quantizer
+            from .e_means_int8 import Int8Quantizer
 
-            if type(self.quantizer) not in (CastQuantizer, Fp8Quantizer):
+            if type(self.quantizer) not in (CastQuantizer, Fp8Quantizer, Int8Quantizer):
                 return False
             if any(name in vars(self.quantizer) for name in ("decode", "compute_codes")):
                 return False
@@ -1558,7 +1710,7 @@ class Emeans:
                     torch.index_select(batches, 0, position, out=index.unsqueeze(0))
                     torch.index_select(epoch_rates, 0, position, out=rate.unsqueeze(0))
                     # Explicit staging is recorded even before the final epoch.
-                    stats = self._accumulate_core(x, index, labels_out)
+                    stats = self._accumulate_core(x, index, raw=True, labels_out=labels_out)
                     self._apply_statistics(None, stats["sums"], stats["counts"],
                                            stats["objective"], rate[0], rate[1])
                     position.add_(1)
@@ -1571,10 +1723,10 @@ class Emeans:
                 # No retry/rollback of failed capture or execution errors.
                 stats = None
                 graph.reset()
-        return graph, pool
+        return graph, pool, stats and stats["sums"]
 
     def train(self, x, init_centroids=None):
-        """Train a dense floating matrix through the same caller-driven loop.
+        """Train a dense supported matrix through the same caller-driven loop.
 
         Return centroids and last-pass labels; objective history remains in obj. Initialization and epoch shuffles
         use the existing local seeded policy. No whole logical batch is gathered.
@@ -1618,7 +1770,7 @@ class Emeans:
         rates = None
         order = index = rate = epoch_rates = position = batches = None
         graph_has_sums = False
-        graph = pool = None
+        graph = pool = closing = None
         assignments = batch_labels = None
         try:
             if self._replay_eligible(x):
@@ -1664,7 +1816,7 @@ class Emeans:
                     if replay and primed:
                         if graph is None:
                             graph_has_sums = self._pass_sums is not None
-                            graph, pool = self._capture_step(
+                            graph, pool, closing = self._capture_step(
                                 x, index, rate, batches, epoch_rates, position, batch_labels)
                         graph.replay()
                         if assignments is not None and epoch == len(self.recipe["epoch_rows"]) - 1:
@@ -1672,7 +1824,7 @@ class Emeans:
                             assignments[index] = batch_labels
                         if self._pass_sums is not None and not graph_has_sums:
                             # Same dense ATen closing add, before revival/next stats zero.
-                            self._pass_sums.add_(self._batch_stats[:, :-1])
+                            self._pass_sums.add_(closing)
                         # Replay writes do not execute Python mutation notifications.
                         torch.autograd.graph.increment_version((self._centroids, self._usage))
                         self._finish_step(len(batch))
@@ -1714,7 +1866,7 @@ class Emeans:
                 self._failed = True
                 raise
             finally:
-                graph = pool = None  # noqa: F841 - release pool after reset
+                graph = closing = pool = None  # noqa: F841 - release pool after reset
                 order = shuffled = batches = None
                 index = rate = epoch_rates = position = None
                 batch_labels = None
@@ -1783,6 +1935,8 @@ class Emeans:
             labels = torch.empty(
                 len(x), dtype=torch.int64, device=x.device
             )
+            if self._input_dtype in (torch.int8, torch.uint8):
+                _check_torch_abs_bound("centroids", torch.finfo(torch.float32).max, centroids)
             self._fp8_peak = None
             centroids, centroid_norm = self._prepare_torch_assignment(centroids)
             if self._input_dtype == getattr(torch, "float8_e4m3fn", None):
