@@ -20,7 +20,6 @@ or Torch tensors; no mixing is allowed.
 
 """
 
-
 import faiss
 import torch
 import contextlib
@@ -450,7 +449,7 @@ def handle_torch_Index(the_class):
 
     def torch_replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
         if ni == -1:
-            ni = self.ntotal
+            ni = self.ntotal - n0
 
         # No tensor inputs are required, but with importing this module, we
         # assume that the default should be torch tensors. If we are passed a
