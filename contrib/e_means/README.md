@@ -235,8 +235,15 @@ backend differences alone do not change broadcast sizes/order. Explicit
 backends and chunk overrides keep their existing behavior/configuration contract.
 Use an explicit common supported backend when uniform computation across a
 heterogeneous group is required. Sharded models still require quantizer=None.
-IVF retains its own assignment engine: auto keeps native auxiliary execution
-and the old chunk bound, without changing coarse routing or FP16 fine scoring.
+IVF uses its own assignment engine. Auto keeps native auxiliary execution
+and the common sharder chunk bound. `IndexIVFFlat` supports native, FP16 and
+BF16 variants through validated mutable `implem`, `dtype` and `lowp_scope`
+attributes, with padded and grouped search. Query-policy changes recompute
+coarse routing norms coherently. Changes to the effective fine representation
+require `add` to rebuild candidate storage; incompatible search raises rather
+than reinterpreting bytes. Ordinary MM/BMM produces FP32 dots; grouped MM
+follows its selected output precision. See [ivf_flat.md](ivf_flat.md) for
+selectors, supplied-norm semantics, ownership and allocation limits.
 No new agreement collective is added: replicated partial accumulation still
 communicates nothing and permits differing supplied chunk sizes/call counts.
 No automatic cross-rank codec/configuration verification is added.
@@ -350,8 +357,8 @@ fallback is the warned dependency-absent grouping provider described below.
 For BF16 L2, a coarse `B * K >= 2**31` work threshold and legal grid/resources
 select tile selection plus grouping and recovery. This uses actual local
 assignment chunk B and local K across resident, caller, replica and centroid
-sharder operations; centered casts use the same prepared-operand rule.
-Grouping prefers `cuda-cccl`
+sharder operations; centered casts use the same prepared-operand rule. IVF
+candidate search keeps its own algorithm. Grouping prefers `cuda-cccl`
 (`cuda.compute` CountingIterator, SortOrder, make_lower_bound and
 make_radix_sort; tested with 1.2.0). When that Python distribution is genuinely
 absent, CuTe emits one `RuntimeWarning` and uses stable Torch sort/search grouping,

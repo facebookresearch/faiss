@@ -13,6 +13,17 @@ import torch.distributed as dist
 from .e_means import Emeans, _epoch_seed, _resolve_recipe, _torch_generator
 from .e_means_distributed import _check_group
 
+# Preserve the original star-import names and lazy access to the moved class.
+__all__ = ["math", "torch", "dist", "Emeans", "EmeansShardedCentroids",  # noqa: F822 - lazy export supplied by __getattr__
+           "EmeansShardedCentroidsIVF"]
+
+
+def __getattr__(name):
+    if name == "EmeansShardedCentroidsIVF":
+        from .sharded_centroids_ivf import EmeansShardedCentroidsIVF
+        return EmeansShardedCentroidsIVF
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 class EmeansShardedCentroids(Emeans):
     """Train resident rank-local rows against sharded CUDA centroids.
