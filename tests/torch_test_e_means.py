@@ -4,18 +4,219 @@
 # LICENSE file in the root directory of this source tree.
 
 import unittest
+import tempfile
+import datetime
 from unittest import mock
 
 import torch
 import numpy as np
 
-from faiss.contrib.e_means import Emeans
+from faiss.contrib.e_means import Emeans, DistributedEmeans
 from faiss.contrib.e_means.e_means import _epoch_seed
 from faiss.contrib.e_means import e_means
 from e_means_test_utils import EmeansReferenceContracts
 
 
+def _cpu_gloo_replica(rank, rendezvous):
+    import torch.distributed as dist
+    from faiss.contrib.e_means.e_means_distributed import _combine
+
+    torch.set_num_threads(1)
+    dist.init_process_group("gloo", init_method=rendezvous, rank=rank, world_size=2,
+                            timeout=datetime.timedelta(seconds=60))
+    try:
+        check = unittest.TestCase()
+        for numpy_state in (True, False):
+            def array(values, _numpy_state=numpy_state):
+                return (
+                    np.asarray(values, dtype="float32")
+                    if _numpy_state
+                    else torch.tensor(values, dtype=torch.float32)
+                )
+
+            def host(value, _numpy_state=numpy_state):
+                return value if _numpy_state else value.detach().numpy()
+            for transport in ("dense", "sparse", "auto"):
+                initial = array([[0.], [2.], [100.], [200.]])
+                caller_initial = initial + rank * 1000
+                saved_initial = host(caller_initial).copy()
+                rows = array(np.array([0., .25, 2., 2.25])[np.arange(10) % 4, None])
+                args = dict(niter=2, batch_size=4, alpha0=0.5, seed=7,
+                            capture_assignments=True)
+                model = DistributedEmeans(1, 4, group=dist.group.WORLD, transport=transport, **args)
+                reference = Emeans(1, 4, **args)
+                with check.assertRaisesRegex(ValueError, "divisible"):
+                    model.begin(9, caller_initial)
+                with check.assertRaises(RuntimeError):
+                    model.accumulate(rows[:1])
+                with check.assertRaises(NotImplementedError):
+                    model.train(rows)
+                model.begin(len(rows), caller_initial)
+                reference.begin(len(rows), initial)
+                np.testing.assert_array_equal(host(model.current_centroids()), host(initial))
+                np.testing.assert_array_equal(host(caller_initial), saved_initial)
+                if rank:
+                    model._split_rng.seed(123456) if numpy_state else model._split_rng.manual_seed(123456)
+                for epoch in range(2):
+                    for begin in range(0, len(rows), 4):
+                        n = min(4, len(rows) - begin)
+                        start = begin + rank * (n // 2)
+                        local = rows[start:start + n // 2]
+                        if epoch == begin == 0:
+                            # External LOCAL statistics without calling accumulate:
+                            # Initial labels and distances have exact dyadic truth.
+                            labels = (host(local)[:, 0] >= 2).astype("int64")
+                            sums = array(np.bincount(labels, weights=host(local)[:, 0], minlength=4)[:, None])
+                            counts = array(np.bincount(labels, minlength=4))
+                            objective = np.float64(((host(local)[:, 0] - 2 * labels) ** 2).sum())
+                            if numpy_state:
+                                sums = sums[::-1].copy()[::-1]  # Valid negative stride.
+                                sums.flags.writeable = counts.flags.writeable = False
+                            else:
+                                objective = torch.tensor(objective, dtype=torch.float64)
+                            stats = dict(sums=sums, counts=counts, objective=objective, n=len(local))
+                        else:
+                            before = host(model.current_centroids()).copy()
+                            if rank == 0 and len(local) > 1:
+                                partial = model.accumulate(local[:1])
+                                assert partial["n"] == 1 and partial["sums"] is None
+                                assert partial["counts"] is None
+                                with check.assertRaisesRegex(ValueError, "complete the pending"):
+                                    model.update({})
+                                np.testing.assert_array_equal(host(model.current_centroids()), before)
+                                stats = model.accumulate(local[1:])
+                            else:
+                                stats = model.accumulate(local)
+                            if epoch == 1:
+                                supplied = local[1:] if rank == 0 and len(local) > 1 else local
+                                labels = ((host(supplied)[:, None, :] - before[None, :, :]) ** 2).sum(2).argmin(1)
+                                np.testing.assert_array_equal(host(stats["labels"]), labels)
+                            stats = {name: value.copy() if isinstance(value, np.ndarray)
+                                     else value.clone() if isinstance(value, torch.Tensor) else value
+                                     for name, value in stats.items()}
+                        saved = {name: host(stats[name]).copy() for name in ("sums", "counts")}
+                        with check.assertRaisesRegex(ValueError, "prescribed batch size"):
+                            model.update(dict(stats, n=n))
+                        model.update(stats)
+                        assert model._epoch_rows == begin + n
+                        for name, value in saved.items():
+                            np.testing.assert_array_equal(host(stats[name]), value)
+                        reference.update(reference.accumulate(rows[begin:begin + n]))
+                        np.testing.assert_allclose(host(model.current_centroids()), host(reference.current_centroids()), rtol=1e-6, atol=1e-6)
+                        np.testing.assert_array_equal(host(model._pass_counts), host(reference._pass_counts))
+                        if model._pass_sums is not None:
+                            np.testing.assert_allclose(host(model._pass_sums), host(reference._pass_sums), rtol=1e-6, atol=1e-6)
+                    model.end_epoch()
+                    reference.end_epoch()
+                    np.testing.assert_allclose(float(model._objective), float(reference._objective), rtol=1e-6, atol=1e-6)
+                np.testing.assert_allclose(host(model.finalize()), host(reference.finalize()), rtol=1e-6, atol=1e-6)
+                np.testing.assert_allclose(host(model.obj), host(reference.obj), rtol=1e-6, atol=1e-6)
+                assert model.assignments is None  # Caller chunks own labels, not a dataset result.
+                assert model.n_splits == reference.n_splits and model.n_splits >= 2
+                final = model.centroids
+                saved_final = host(final).copy()
+                model.reset()
+                np.testing.assert_array_equal(host(final), saved_final)
+            # Fail after real collective execution, then recover only via begin.
+            class CollectiveFailure(BaseException):
+                pass
+            model = DistributedEmeans(1, 1, group=dist.group.WORLD,
+                                      transport="dense", niter=1,
+                                      batch_size=2, alpha0=0.5)
+            initial = array([[0.]])
+            broadcast = dist.broadcast
+            def failed_broadcast(*args, _broadcast=broadcast, **kwargs):
+                _broadcast(*args, **kwargs)
+                raise CollectiveFailure()
+            with mock.patch.object(dist, "broadcast", side_effect=failed_broadcast):
+                with check.assertRaises(CollectiveFailure):
+                    model.begin(2, initial)
+            with check.assertRaises(RuntimeError):
+                model.current_centroids()
+            model.begin(2, initial)
+            stats = model.accumulate(array([[.25]]))
+            with check.assertRaisesRegex(ValueError, "prescribed batch size"):
+                model.update(dict(stats, n=2))
+            np.testing.assert_array_equal(host(model.current_centroids()), host(initial))
+            def failed_combine(*args, **kwargs):
+                _combine(*args, **kwargs)
+                raise CollectiveFailure()
+            with mock.patch("faiss.contrib.e_means.e_means_distributed._combine", side_effect=failed_combine):
+                with check.assertRaises(CollectiveFailure):
+                    model.update(stats)
+            for call in (
+                lambda _model=model: _model.accumulate(array([[.25]])),
+                lambda _model=model, _stats=stats: _model.update(_stats),
+                model.end_epoch,
+                model.finalize,
+                model.current_centroids,
+            ):
+                with check.assertRaises(RuntimeError):
+                    call()
+            model.begin(2, initial)
+            model.update(model.accumulate(array([[.25]])))
+            model.end_epoch()
+            np.testing.assert_array_equal(host(model.finalize()), [[.25]])
+            if numpy_state:
+                # A reversed singleton can report C-contiguous yet retain a
+                # negative stride. Exercise a real one-donor broadcast too.
+                args = dict(niter=1, batch_size=2, alpha0=0.5, seed=7)
+                model = DistributedEmeans(1, 2, group=dist.group.WORLD,
+                                          transport="dense", **args)
+                reference = Emeans(1, 2, **args)
+                initial = array([[0.], [100.]])
+                model.begin(10, initial + rank * 1000)
+                reference.begin(10, initial)
+                for _ in range(5):
+                    model.update(model.accumulate(array([[.25]])))
+                    reference.update(reference.accumulate(array([[.25], [.25]])))
+                assert model.n_splits == reference.n_splits == 1
+                model.end_epoch()
+                reference.end_epoch()
+                np.testing.assert_allclose(model.finalize(), reference.finalize(), rtol=1e-6, atol=1e-6)
+                np.testing.assert_allclose(model.obj, reference.obj, rtol=1e-6, atol=1e-6)
+            # Packing edge cases independent of row-count validation: a rank
+            # with no occupied IDs, and then all ranks with no occupied IDs.
+            for all_empty in (False, True):
+                counts = array([0., 0.] if rank or all_empty else [2., 0.])
+                sums = array([[0.], [0.]])
+                workspace = np.empty((2, 2), dtype="float32") if numpy_state else torch.empty((2, 2))
+                ids, combined_sums, combined_counts = _combine(sums, counts, workspace, dist.group.WORLD, "sparse", 4)
+                assert isinstance(ids, np.ndarray if numpy_state else torch.Tensor)
+                assert isinstance(combined_sums, np.ndarray if numpy_state else torch.Tensor)
+                np.testing.assert_array_equal(host(ids), [] if all_empty else [0])
+                np.testing.assert_array_equal(host(combined_counts), [] if all_empty else [2.])
+                assert combined_sums.shape == (0 if all_empty else 1, 1)
+        dist.barrier()
+    finally:
+        dist.destroy_process_group()
+
+
 class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
+    @unittest.skipUnless(torch.distributed.is_available() and
+                         torch.distributed.is_gloo_available(), "Gloo unavailable")
+    def test_cpu_gloo_caller_owned_statistics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.start_processes(
+                _cpu_gloo_replica, args=("file://" + directory + "/group",),
+                nprocs=2, join=True, start_method="spawn"
+            )
+
+    def test_local_update_has_no_group_argument(self):
+        model = Emeans(1, 1, niter=1, batch_size=2, alpha0=0.5)
+        model.begin(4, torch.zeros((1, 1)))
+        stats = model.accumulate(torch.zeros((2, 1)))
+        with self.assertRaises(TypeError):
+            model.update(stats, group=object())
+        model.update(stats)
+        stats = model.accumulate(torch.ones((2, 1)))
+        with self.assertRaises(TypeError):
+            model.update(stats, group=object())
+        model.update(stats)
+        model.end_epoch()
+        torch.testing.assert_close(model.finalize(), torch.tensor([[0.5]]))
+
+
     def reference_arrays(self):
         devices = ("cpu", "cuda") if torch.cuda.is_available() else ("cpu",)
         return [(device, lambda values, dtype="float32", device=device:
