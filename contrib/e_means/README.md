@@ -227,9 +227,34 @@ unsupported. See
 `demos/demo_e_means_distributed.py` in the source checkout for a small
 `torchrun` example.
 
+For calibrated E4M3 on qualified Triton CUDA GPUs, use an explicit quantizer:
+
+```python
+from faiss.contrib.e_means.e_means_fp8 import Fp8Quantizer
+q = Fp8Quantizer(x.shape[1])
+q.train(representative_sample)
+q.to(x.device)
+q.validate(x)  # optional explicit finite/range scan
+km = Emeans(x.shape[1], k, quantizer=q, assignment_backend="triton")
+km.train(x)  # floating chunks encode during assignment
+# Alternatively: km.train(q.compute_codes(x))
+centroids = km.centroids  # already decoded FP32; do not decode again
+```
+
+FP8 codes with `quantizer=None` define raw numeric code units. FP8 input requires
+NVIDIA SM90, SM100 or SM103. Conversion does not clip or scan values: unchecked
+out-of-range/nonfinite values can produce NaN codes and invalid results. The
+existing internal-centroid range check runs at epoch close and during assign.
+Partial calls retain the fitted transform and frozen centroid operands. Eligible
+uncentered FP8 batches accumulate in code units and apply the decode scale once
+at completion; other batches retain the existing decoded-row accumulation.
+Only complete statistics expose FP32 sums/counts in the selected model units.
+
 ## Numerical limits
 
 Low precision can round distinct rows or centroid operands to the same values.
+Calibration can reduce this loss on some data, but it cannot guarantee distinct
+assignments or recover information already lost in the supplied representation.
 Use native FP32 input with `quantizer=None` and native Torch or Triton assignment
 when representation loss is unacceptable. These CUDA
 paths still use expanded L2 ranking (`centroid_norm - 2*dot`), so a large common
