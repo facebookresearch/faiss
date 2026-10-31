@@ -19,12 +19,17 @@
       <param>
         <type>typename HammingComputerT</type>
       </param>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
+      </param>
     </templateparamlist>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="27" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="27" bodyend="29"/>
+    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="33" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="33" bodyend="35"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

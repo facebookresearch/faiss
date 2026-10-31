@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01THE__LEVEL__TO__DISPATCH_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</compoundname>
-    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;</basecompoundref>
     <templateparamlist>
     </templateparamlist>
     <sectiondef kind="public-func">
@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="429" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="429" bodyend="432"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="421" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="421" bodyend="424"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01THE__LEVEL__TO__DISPATCH_01_4_1a8f91c485360af5a2116be31806656cba" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE <ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
@@ -48,14 +48,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="435" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="435" bodyend="441"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="427" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="427" bodyend="433"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a6024bdd73074592db4de26a4ea972621" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1a15f1b234b6aafec3def2cdc975796ed6" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::encode_vector</definition>
+        <definition>void faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; SL &gt;::encode_vector</definition>
         <argsstring>(const float *x, uint8_t *code) const final</argsstring>
         <name>encode_vector</name>
-        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::encode_vector</qualifiedname>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;::encode_vector</qualifiedname>
         <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
         <param>
           <type>const float *</type>
@@ -71,14 +71,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="362" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="362" bodyend="366"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="349" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="349" bodyend="353"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1addb0ac0a25878f0c90adf9455f52a60b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::decode_vector</definition>
+        <definition>void faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; SL &gt;::decode_vector</definition>
         <argsstring>(const uint8_t *code, float *x) const override</argsstring>
         <name>decode_vector</name>
-        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::decode_vector</qualifiedname>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;::decode_vector</qualifiedname>
         <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -94,14 +94,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="368" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="368" bodyend="372"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="355" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="355" bodyend="359"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a5863eb2731c2a92dfa8aa116e05d8890" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1a9e6bfcbf6b014c83785664395ceffeda" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
-        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::reconstruct_component</definition>
+        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; SL &gt;::reconstruct_component</definition>
         <argsstring>(const uint8_t *code, size_t i) const</argsstring>
         <name>reconstruct_component</name>
-        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::reconstruct_component</qualifiedname>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;::reconstruct_component</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -116,23 +116,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="374" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="374" bodyend="378"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="361" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="361" bodyend="365"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a3a3aec1298c72300c1a39bd06c061044" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1abab7eb8bd106306d9ab48327365531ad" prot="public" static="no" mutable="no">
         <type>const size_t</type>
-        <definition>const size_t faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::d</definition>
+        <definition>const size_t faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; SL &gt;::d</definition>
         <argsstring></argsstring>
         <name>d</name>
-        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;::d</qualifiedname>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="355" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="355" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="342" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="342" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -140,15 +140,15 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
-      </node>
-      <node id="2">
-        <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
@@ -158,15 +158,15 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirectSignedBase&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
-      </node>
-      <node id="2">
-        <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
@@ -175,14 +175,15 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="427" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="428" bodyend="442"/>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="419" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="420" bodyend="434"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a3a3aec1298c72300c1a39bd06c061044" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>d</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_vector</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a6024bdd73074592db4de26a4ea972621" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1abab7eb8bd106306d9ab48327365531ad" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1addb0ac0a25878f0c90adf9455f52a60b" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1a15f1b234b6aafec3def2cdc975796ed6" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>encode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01THE__LEVEL__TO__DISPATCH_01_4_1ad083a25ad257facba85b269d51ea632c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>Quantizer8bitDirectSigned</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1acc6359cc6babbd8c6c3fa1c25d9bd638" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>Quantizer8bitDirectSignedBase</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01THE__LEVEL__TO__DISPATCH_01_4_1a8f91c485360af5a2116be31806656cba" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>reconstruct_16_components</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a5863eb2731c2a92dfa8aa116e05d8890" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase_1a9e6bfcbf6b014c83785664395ceffeda" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>reconstruct_component</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>~SQuantizer</name></member>
     </listofallmembers>
   </compounddef>

@@ -159,16 +159,22 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss::SingleQueryBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
         <link refid="structfaiss_1_1SingleQueryBlockResultHandler_1_1SingleResultHandler"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss::Top1BlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
         <link refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler"/>
         <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map, SL &gt;::Reservoir</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1_1Reservoir"/>
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

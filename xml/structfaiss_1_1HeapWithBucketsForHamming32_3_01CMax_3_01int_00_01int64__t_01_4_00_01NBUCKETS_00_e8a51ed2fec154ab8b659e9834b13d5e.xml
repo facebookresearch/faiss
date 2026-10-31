@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</compoundname>
+  <compounddef id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;</compoundname>
     <templateparamlist>
       <param>
         <type>uint32_t</type>
@@ -16,14 +16,19 @@
       <param>
         <type>typename HammingComputerT</type>
       </param>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
+      </param>
     </templateparamlist>
     <sectiondef kind="public-static-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" prot="public" static="yes" constexpr="yes" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e_1aed8b6e518c1229764700bacd441f9348" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr uint32_t</type>
-        <definition>constexpr uint32_t faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::NBUCKETS_8</definition>
+        <definition>constexpr uint32_t faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;::NBUCKETS_8</definition>
         <argsstring></argsstring>
         <name>NBUCKETS_8</name>
-        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::NBUCKETS_8</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;::NBUCKETS_8</qualifiedname>
         <initializer>= NBUCKETS / 8</initializer>
         <briefdescription>
         </briefdescription>
@@ -31,16 +36,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="37" column="31" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="48" column="31" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="48" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a9d82b4fcbc5b16a0c2020e7962faf444" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e_1acd91972ceab8684065630e275a5daa6f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::addn</definition>
+        <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;::addn</definition>
         <argsstring>(const uint32_t n, const HammingComputerT &amp;hc, const uint8_t *const __restrict binaryVectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids, const IDSelector *sel=nullptr)</argsstring>
         <name>addn</name>
-        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::addn</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;::addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>n</declname>
@@ -76,14 +81,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="42" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="42" bodyend="59"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="53" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="53" bodyend="70"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a661872af0bc9db133c7571de5590be21" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e_1a22ea1dea5a50c331235156b82ee299a6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::bs_addn</definition>
+        <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;::bs_addn</definition>
         <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const HammingComputerT &amp;hc, const uint8_t *const __restrict binary_vectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids, const IDSelector *sel=nullptr)</argsstring>
         <name>bs_addn</name>
-        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::bs_addn</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;::bs_addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>beam_size</declname>
@@ -123,18 +128,18 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="61" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="61" bodyend="202"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="72" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="72" bodyend="213"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="32" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="36" bodyend="203"/>
+    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="42" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="47" bodyend="214"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a9d82b4fcbc5b16a0c2020e7962faf444" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>addn</name></member>
-      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a661872af0bc9db133c7571de5590be21" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>bs_addn</name></member>
-      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>NBUCKETS_8</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e_1acd91972ceab8684065630e275a5daa6f" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;</scope><name>addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e_1a22ea1dea5a50c331235156b82ee299a6" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;</scope><name>bs_addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_e8a51ed2fec154ab8b659e9834b13d5e_1aed8b6e518c1229764700bacd441f9348" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT, SL &gt;</scope><name>NBUCKETS_8</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

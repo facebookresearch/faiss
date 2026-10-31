@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::Quantizer8bitDirectBase</compoundname>
+    <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::SQuantizer</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SL &gt;</derivedcompoundref>
+    <templateparamlist>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a22acd65687618a06af283761c1086e84" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectBase::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="307" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="307" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a4e63cf5e82537916f75a13498ed08531" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;::Quantizer8bitDirectBase</definition>
+        <argsstring>(size_t d_in, const std::vector&lt; float &gt; &amp;)</argsstring>
+        <name>Quantizer8bitDirectBase</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectBase::Quantizer8bitDirectBase</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d_in</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="309" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="309" bodyend="310"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a10f49ab3c411812a66ec8689c6da98ef" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;::encode_vector</definition>
+        <argsstring>(const float *x, uint8_t *code) const override</argsstring>
+        <name>encode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectBase::encode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="312" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="312" bodyend="316"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a40de9ade9742a5358e958d365fb9744e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;::decode_vector</definition>
+        <argsstring>(const uint8_t *code, float *x) const override</argsstring>
+        <name>decode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectBase::decode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="318" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="318" bodyend="322"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1ad9d727ab0e1553442e8b03521f62d4a6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE float</type>
+        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;::reconstruct_component</definition>
+        <argsstring>(const uint8_t *code, size_t i) const</argsstring>
+        <name>reconstruct_component</name>
+        <qualifiedname>faiss::scalar_quantizer::Quantizer8bitDirectBase::reconstruct_component</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="324" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="324" bodyend="328"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="3">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirectBase&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="306" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="306" bodyend="329"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a22acd65687618a06af283761c1086e84" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectBase</scope><name>d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a40de9ade9742a5358e958d365fb9744e" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectBase</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a10f49ab3c411812a66ec8689c6da98ef" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectBase</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a4e63cf5e82537916f75a13498ed08531" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectBase</scope><name>Quantizer8bitDirectBase</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1ad9d727ab0e1553442e8b03521f62d4a6" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectBase</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirectBase</scope><name>~SQuantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

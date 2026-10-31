@@ -1,0 +1,315 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1_1Reservoir" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd_result_handlers::ReservoirHandler::Reservoir</compoundname>
+    <basecompoundref refid="structfaiss_1_1ReservoirTopN" prot="public" virt="non-virtual">faiss::ReservoirTopN&lt; C &gt;</basecompoundref>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1ReservoirTopN_1aa69a045c4e21d83e1105c3c6bfdf1e65" prot="public" static="no">
+        <type>typename C::T</type>
+        <definition>using faiss::ReservoirTopN&lt; C &gt;::T =  typename C::T</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <qualifiedname>faiss::ReservoirTopN::T</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="394" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="394" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1ReservoirTopN_1a1177b732a5a783a10e2bcf9a575558ca" prot="public" static="no">
+        <type>typename C::TI</type>
+        <definition>using faiss::ReservoirTopN&lt; C &gt;::TI =  typename C::TI</definition>
+        <argsstring></argsstring>
+        <name>TI</name>
+        <qualifiedname>faiss::ReservoirTopN::TI</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="395" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="395" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1ada9e507ee559be6ff0280dabfd04c6d6" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* faiss::ReservoirTopN&lt; C &gt;::vals</definition>
+        <argsstring></argsstring>
+        <name>vals</name>
+        <qualifiedname>faiss::ReservoirTopN::vals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="398" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="398" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1abfb7e50f5e60feb25eee99e1abe3698a" prot="public" static="no" mutable="no">
+        <type>TI *</type>
+        <definition>TI* faiss::ReservoirTopN&lt; C &gt;::ids</definition>
+        <argsstring></argsstring>
+        <name>ids</name>
+        <qualifiedname>faiss::ReservoirTopN::ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="399" column="8" bodyfile="faiss/impl/ResultHandler.h" bodystart="399" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1a251b7eaf31199ab93b7d421d9451a76c" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReservoirTopN&lt; C &gt;::i</definition>
+        <argsstring></argsstring>
+        <name>i</name>
+        <qualifiedname>faiss::ReservoirTopN::i</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="401" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="401" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1ab1c6355a289cd09717c65372f2864ad1" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReservoirTopN&lt; C &gt;::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <qualifiedname>faiss::ReservoirTopN::n</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="402" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="402" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1af1917705e1d452fde77df5433e197c47" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReservoirTopN&lt; C &gt;::capacity</definition>
+        <argsstring></argsstring>
+        <name>capacity</name>
+        <qualifiedname>faiss::ReservoirTopN::capacity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="403" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="403" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ResultHandlerUnordered_1a1ada12ca763782120f2c1b8bc47c2584" prot="public" static="no" mutable="no">
+        <type>C::T</type>
+        <definition>C::T  faiss::ResultHandlerUnordered&lt; C::T , C::TI  &gt;::threshold</definition>
+        <argsstring></argsstring>
+        <name>threshold</name>
+        <qualifiedname>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;::threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="32" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ResultHandlerUnordered_1a4f036aa994636a558a6815ed4cb97015" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1InvertedListScannerStats" kindref="compound">InvertedListScannerStats</ref></type>
+        <definition>InvertedListScannerStats faiss::ResultHandlerUnordered&lt; C::T , C::TI  &gt;::stats</definition>
+        <argsstring></argsstring>
+        <name>stats</name>
+        <qualifiedname>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;::stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="35" column="30" bodyfile="faiss/impl/ResultHandler.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::ReservoirTopN&lt; C &gt;::add_result</definition>
+        <argsstring>(T val, TI id) final</argsstring>
+        <name>add_result</name>
+        <qualifiedname>faiss::ReservoirTopN::add_result</qualifiedname>
+        <reimplements refid="structfaiss_1_1ResultHandlerUnordered_1ab45ce5bc55959438c08d17c785c22320">add_result</reimplements>
+        <param>
+          <type>T</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>TI</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="413" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="413" bodyend="425"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReservoirTopN&lt; C &gt;::add</definition>
+        <argsstring>(T val, TI id)</argsstring>
+        <name>add</name>
+        <qualifiedname>faiss::ReservoirTopN::add</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>TI</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="427" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="427" bodyend="429"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a245c853afda40ce193a7f39944bb82c6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReservoirTopN&lt; C &gt;::shrink_fuzzy</definition>
+        <argsstring>()</argsstring>
+        <name>shrink_fuzzy</name>
+        <qualifiedname>faiss::ReservoirTopN::shrink_fuzzy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="433" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="433" bodyend="438"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1ac2089937fa4314560faec451e42f471d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReservoirTopN&lt; C &gt;::shrink</definition>
+        <argsstring>()</argsstring>
+        <name>shrink</name>
+        <qualifiedname>faiss::ReservoirTopN::shrink</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="440" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="440" bodyend="443"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a7a14b612f7b55a1034d9ff85568b1d68" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReservoirTopN&lt; C &gt;::to_result</definition>
+        <argsstring>(T *heap_dis, TI *heap_ids) const</argsstring>
+        <name>to_result</name>
+        <qualifiedname>faiss::ReservoirTopN::to_result</qualifiedname>
+        <param>
+          <type>T *</type>
+          <declname>heap_dis</declname>
+        </param>
+        <param>
+          <type>TI *</type>
+          <declname>heap_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="445" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="445" bodyend="459"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerUnordered"/>
+      </node>
+      <node id="2">
+        <label>faiss::ReservoirTopN&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ReservoirTopN"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::ResultHandlerT&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerT"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map, SL &gt;::Reservoir</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1_1Reservoir"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerUnordered"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>stats</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::InvertedListScannerStats</label>
+        <link refid="structfaiss_1_1InvertedListScannerStats"/>
+      </node>
+      <node id="2">
+        <label>faiss::ReservoirTopN&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ReservoirTopN"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::ResultHandlerT&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerT"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map, SL &gt;::Reservoir</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1_1Reservoir"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="604" column="5" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="604" bodyend="606"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>add</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>add_result</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1af1917705e1d452fde77df5433e197c47" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>capacity</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1a251b7eaf31199ab93b7d421d9451a76c" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>i</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1abfb7e50f5e60feb25eee99e1abe3698a" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>ids</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1ab1c6355a289cd09717c65372f2864ad1" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>n</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1a0fd4d046638b028662d4af1a3324bf28" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>ReservoirTopN</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1ad777bb899730466f072a156d0ada9133" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>ReservoirTopN</name></member>
+      <member refid="structfaiss_1_1ResultHandlerT_1a03408188595f8f8a35a29b58c4fdfa0d" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>ResultHandlerT</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1ac2089937fa4314560faec451e42f471d" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>shrink</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1a245c853afda40ce193a7f39944bb82c6" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>shrink_fuzzy</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1a4f036aa994636a558a6815ed4cb97015" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>stats</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1aa69a045c4e21d83e1105c3c6bfdf1e65" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>T</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1a1ada12ca763782120f2c1b8bc47c2584" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>threshold</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1a1177b732a5a783a10e2bcf9a575558ca" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>TI</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1a7a14b612f7b55a1034d9ff85568b1d68" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>to_result</name></member>
+      <member refid="structfaiss_1_1ReservoirTopN_1ada9e507ee559be6ff0280dabfd04c6d6" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>vals</name></member>
+      <member refid="structfaiss_1_1ResultHandlerT_1a5547e43a22995bd449d279eb2536cc5a" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>~ResultHandlerT</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1abdb19c231ff11313ea9eaf72d6dd3631" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::ReservoirHandler::Reservoir</scope><name>~ResultHandlerUnordered</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

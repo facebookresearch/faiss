@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</compoundname>
-    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;</basecompoundref>
     <templateparamlist>
     </templateparamlist>
     <sectiondef kind="public-func">
@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="378" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="378" bodyend="381"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="380" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="380" bodyend="383"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a7cd6151771c0d913f02d8d5fa88e7d1c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE <ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
@@ -48,15 +48,15 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="384" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="384" bodyend="389"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="386" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="386" bodyend="391"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a43a6d6eb3c44c6062ec8460176895787" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1ae6a5a35f69255b5c333e14f970a849ac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;::encode_vector</definition>
+        <definition>void faiss::scalar_quantizer::QuantizerBF16Base&lt; SL &gt;::encode_vector</definition>
         <argsstring>(const float *x, uint8_t *code) const override</argsstring>
         <name>encode_vector</name>
-        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;::encode_vector</qualifiedname>
-        <reimplements refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a532e2d55a8ea80f6526077e1c2440f14">encode_vector</reimplements>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;::encode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -71,15 +71,15 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="393" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="393" bodyend="395"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="276" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="276" bodyend="278"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1aff7377cb684352e853665daf0e0b54f1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1a52b729b3a5318f35591f51b6222135b8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;::decode_vector</definition>
+        <definition>void faiss::scalar_quantizer::QuantizerBF16Base&lt; SL &gt;::decode_vector</definition>
         <argsstring>(const uint8_t *code, float *x) const override</argsstring>
         <name>decode_vector</name>
-        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;::decode_vector</qualifiedname>
-        <reimplements refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab669f4006a87989fc6ca8b68b435e4b3">decode_vector</reimplements>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;::decode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -94,14 +94,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="397" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="397" bodyend="399"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="280" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="280" bodyend="282"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab0e067b24664dc0570f2c93280049424" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1a3cd79c55671a09da417df9e0abb42ede" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
-        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::reconstruct_component</definition>
+        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::QuantizerBF16Base&lt; SL &gt;::reconstruct_component</definition>
         <argsstring>(const uint8_t *code, size_t i) const</argsstring>
         <name>reconstruct_component</name>
-        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::reconstruct_component</qualifiedname>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;::reconstruct_component</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -116,23 +116,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="290" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="290" bodyend="294"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="284" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="284" bodyend="288"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a5ee9cb2cce6d52fe0d6a3ec22bc0c8e3" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1ab5685c1603f679dc19f011412fe91cbe" prot="public" static="no" mutable="no">
         <type>const size_t</type>
-        <definition>const size_t faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::d</definition>
+        <definition>const size_t faiss::scalar_quantizer::QuantizerBF16Base&lt; SL &gt;::d</definition>
         <argsstring></argsstring>
         <name>d</name>
-        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::d</qualifiedname>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="277" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="277" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="271" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="271" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -140,15 +140,15 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
-      </node>
-      <node id="2">
-        <label>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
@@ -158,15 +158,15 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::scalar_quantizer::QuantizerBF16Base&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
-      </node>
-      <node id="2">
-        <label>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
@@ -175,14 +175,15 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="377" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="377" bodyend="400"/>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="378" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="379" bodyend="392"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a5ee9cb2cce6d52fe0d6a3ec22bc0c8e3" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>d</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1aff7377cb684352e853665daf0e0b54f1" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_vector</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a43a6d6eb3c44c6062ec8460176895787" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1ab5685c1603f679dc19f011412fe91cbe" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1a52b729b3a5318f35591f51b6222135b8" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1ae6a5a35f69255b5c333e14f970a849ac" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>encode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a36a48f3a152e1789895977127828ab44" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>QuantizerBF16</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1a46391edc45e557b74631bea3021db509" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>QuantizerBF16Base</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a7cd6151771c0d913f02d8d5fa88e7d1c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>reconstruct_16_components</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab0e067b24664dc0570f2c93280049424" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base_1a3cd79c55671a09da417df9e0abb42ede" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>reconstruct_component</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>~SQuantizer</name></member>
     </listofallmembers>
   </compounddef>

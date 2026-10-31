@@ -4,6 +4,7 @@
     <compoundname>faiss::ReservoirTopN</compoundname>
     <basecompoundref refid="structfaiss_1_1ResultHandlerT" prot="public" virt="non-virtual">faiss::ResultHandlerT&lt; C &gt;</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1_1Reservoir" prot="public" virt="non-virtual">faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map, SL &gt;::Reservoir</derivedcompoundref>
     <includes refid="ResultHandler_8h" local="no">ResultHandler.h</includes>
     <templateparamlist>
       <param>
@@ -307,6 +308,12 @@
         <label>faiss::ResultHandlerT&lt; C &gt;</label>
         <link refid="structfaiss_1_1ResultHandlerT"/>
         <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map, SL &gt;::Reservoir</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1_1Reservoir"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

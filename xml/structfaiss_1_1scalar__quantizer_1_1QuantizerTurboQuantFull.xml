@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull" kind="struct" language="C++" prot="public">
     <compoundname>faiss::scalar_quantizer::QuantizerTurboQuantFull</compoundname>
+    <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::SQuantizer</basecompoundref>
     <templateparamlist>
       <param>
         <type>int</type>
@@ -14,12 +15,465 @@
         <defname>SL</defname>
       </param>
     </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a536d7ef384a6de0594dc8731f98b08e7" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::kMSEBits</definition>
+        <argsstring></argsstring>
+        <name>kMSEBits</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::kMSEBits</qualifiedname>
+        <initializer>= NBits - 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="396" column="26" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="396" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a68e75c83ec88d70eec31c0e0e350bbde" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::kCentroidsCount</definition>
+        <argsstring></argsstring>
+        <name>kCentroidsCount</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::kCentroidsCount</qualifiedname>
+        <initializer>= size_t(1) &lt;&lt; kMSEBits</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="397" column="29" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="397" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a89dd4c91552c4a55f65a70c488d53388" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="399" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="399" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a17b045ba36a2b717f7126aad2859c52a" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::centroids</definition>
+        <argsstring></argsstring>
+        <name>centroids</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::centroids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="400" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="400" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1ae5da5e8d74a9bde24765029f345b5cbd" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::boundaries</definition>
+        <argsstring></argsstring>
+        <name>boundaries</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::boundaries</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="401" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="401" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1aeab938f3c09417811e201c5a3ebad779" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::qjl_type</definition>
+        <argsstring></argsstring>
+        <name>qjl_type</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::qjl_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="404" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="404" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a65084c0f05a992be9898638b89d75fbc" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::padded_d</definition>
+        <argsstring></argsstring>
+        <name>padded_d</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::padded_d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="407" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="407" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a9d8d826caa133708cac8dded45a93781" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::fwht_signs</definition>
+        <argsstring></argsstring>
+        <name>fwht_signs</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::fwht_signs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="408" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="408" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a92c73168dd4e5a9045cc45ddb03a63dd" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::rr_matrix</definition>
+        <argsstring></argsstring>
+        <name>rr_matrix</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::rr_matrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="411" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="411" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1abcdd8e73be3d7d0731c0072efd45ae2e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::mse_plane_bytes</definition>
+        <argsstring></argsstring>
+        <name>mse_plane_bytes</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::mse_plane_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="413" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="413" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a5d2f719f8987383e193c7fb31d907228" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::mse_total_bytes</definition>
+        <argsstring></argsstring>
+        <name>mse_total_bytes</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::mse_total_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="414" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="414" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a5e553cf412b322990f49e17d94e5c713" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::qjl_plane_bytes</definition>
+        <argsstring></argsstring>
+        <name>qjl_plane_bytes</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::qjl_plane_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="415" column="12" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="415" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a0f21c586c01a1578b78760cd1440c138" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::QuantizerTurboQuantFull</definition>
+        <argsstring>(size_t d_in, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>QuantizerTurboQuantFull</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::QuantizerTurboQuantFull</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d_in</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="417" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="417" bodyend="453"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1af97618be5958773defb2b647f0f58bf2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::fwht_inplace</definition>
+        <argsstring>(float *x, size_t n) const</argsstring>
+        <name>fwht_inplace</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::fwht_inplace</qualifiedname>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="455" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="455" bodyend="466"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1ae2cb709b0d1ca983b6c37981d792e5b8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::project_forward</definition>
+        <argsstring>(const float *residual, float *out) const</argsstring>
+        <name>project_forward</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::project_forward</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>residual</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Forward QJL projection: residual -&gt; projected (d outputs) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="469" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="469" bodyend="485"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a299aec2f098f0f2c1c4c754cf9f2ed73" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::project_inverse</definition>
+        <argsstring>(float *signs_buf, float *out) const</argsstring>
+        <name>project_inverse</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::project_inverse</qualifiedname>
+        <param>
+          <type>float *</type>
+          <declname>signs_buf</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Inverse QJL projection: signs_buf -&gt; reconstructed (d outputs) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="488" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="488" bodyend="497"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1af8beced2a238ba4782ffc8f95384e067" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::rr_forward</definition>
+        <argsstring>(const float *x, float *out) const</argsstring>
+        <name>rr_forward</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::rr_forward</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="499" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="499" bodyend="517"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1abe6886d789a1979edaf20095be688fbc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::rr_inverse</definition>
+        <argsstring>(const float *x, float *out) const</argsstring>
+        <name>rr_inverse</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::rr_inverse</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="519" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="519" bodyend="537"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1ad832b46b01d263a61e82c16607bacd3e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::store_mse_index</definition>
+        <argsstring>(uint8_t idx, uint8_t *code, size_t j) const</argsstring>
+        <name>store_mse_index</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::store_mse_index</qualifiedname>
+        <param>
+          <type>uint8_t</type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Store MSE index for dimension j using BIT-PLANE layout. Plane p stores bit p of every dimension&apos;s index. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="541" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="541" bodyend="547"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a79d570aeb6b29632cdca26eaa98aceb6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::load_mse_index</definition>
+        <argsstring>(const uint8_t *code, size_t j) const</argsstring>
+        <name>load_mse_index</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::load_mse_index</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>Load MSE index for dimension j from BIT-PLANE layout. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="550" column="13" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="550" bodyend="558"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a3adf7de1c88561113887c9b5ccab5d04" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::encode_vector</definition>
+        <argsstring>(const float *x, uint8_t *code) const final</argsstring>
+        <name>encode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::encode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="560" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="560" bodyend="601"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a9fafa75a48297f13cc1eeda19f711741" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;::decode_vector</definition>
+        <argsstring>(const uint8_t *code, float *x) const final</argsstring>
+        <name>decode_vector</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTurboQuantFull::decode_vector</qualifiedname>
+        <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="603" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="603" bodyend="641"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="662" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="663" bodyend="666"/>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::ScalarQuantizer::SQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SL &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="393" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="393" bodyend="642"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1ae5da5e8d74a9bde24765029f345b5cbd" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>boundaries</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a17b045ba36a2b717f7126aad2859c52a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>centroids</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a89dd4c91552c4a55f65a70c488d53388" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a9fafa75a48297f13cc1eeda19f711741" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a3adf7de1c88561113887c9b5ccab5d04" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1af97618be5958773defb2b647f0f58bf2" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>fwht_inplace</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a9d8d826caa133708cac8dded45a93781" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>fwht_signs</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a68e75c83ec88d70eec31c0e0e350bbde" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>kCentroidsCount</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a536d7ef384a6de0594dc8731f98b08e7" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>kMSEBits</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a79d570aeb6b29632cdca26eaa98aceb6" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>load_mse_index</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1abcdd8e73be3d7d0731c0072efd45ae2e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>mse_plane_bytes</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a5d2f719f8987383e193c7fb31d907228" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>mse_total_bytes</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a65084c0f05a992be9898638b89d75fbc" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>padded_d</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1ae2cb709b0d1ca983b6c37981d792e5b8" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>project_forward</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a299aec2f098f0f2c1c4c754cf9f2ed73" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>project_inverse</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a5e553cf412b322990f49e17d94e5c713" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>qjl_plane_bytes</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1aeab938f3c09417811e201c5a3ebad779" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>qjl_type</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a0f21c586c01a1578b78760cd1440c138" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>QuantizerTurboQuantFull</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1af8beced2a238ba4782ffc8f95384e067" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>rr_forward</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1abe6886d789a1979edaf20095be688fbc" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>rr_inverse</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1a92c73168dd4e5a9045cc45ddb03a63dd" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>rr_matrix</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_1ad832b46b01d263a61e82c16607bacd3e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>store_mse_index</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTurboQuantFull</scope><name>~SQuantizer</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

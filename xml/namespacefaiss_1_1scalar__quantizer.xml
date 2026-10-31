@@ -22,28 +22,27 @@
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP" prot="public">faiss::scalar_quantizer::IVFSQScannerIP</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2" prot="public">faiss::scalar_quantizer::IVFSQScannerL2</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; THE_LEVEL_TO_DISPATCH &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectBase</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSignedBase" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSignedBase</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" prot="public">faiss::scalar_quantizer::QuantizerBF16</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16Base" prot="public">faiss::scalar_quantizer::QuantizerBF16Base</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16" prot="public">faiss::scalar_quantizer::QuantizerFP16</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::QuantizerFP16&lt; THE_LEVEL_TO_DISPATCH &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16Base" prot="public">faiss::scalar_quantizer::QuantizerFP16Base</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax" prot="public">faiss::scalar_quantizer::QuantizerLloydMax</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_011_00_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::QuantizerLloydMax&lt; 1, THE_LEVEL_TO_DISPATCH &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_018_00_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::QuantizerLloydMax&lt; 8, THE_LEVEL_TO_DISPATCH &gt;</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerLloydMax&lt; NBits, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMaxBase" prot="public">faiss::scalar_quantizer::QuantizerLloydMaxBase</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate" prot="public">faiss::scalar_quantizer::QuantizerTemplate</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quantid1109e617b02bf3f7be1ccaa972cdd73" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::NON_UNIFORM, THE_LEVEL_TO_DISPATCH &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01scalar__quantizer_1_1Quantibe194374188cfea6534993ff04ff6737" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, scalar_quantizer::QuantizerTemplateScaling::UNIFORM, THE_LEVEL_TO_DISPATCH &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull" prot="public">faiss::scalar_quantizer::QuantizerTurboQuantFull</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTurboQuantFull_3_01NBits_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::QuantizerTurboQuantFull&lt; NBits, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP" prot="public">faiss::scalar_quantizer::SimilarityIP</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::SimilarityIP&lt; THE_LEVEL_TO_DISPATCH &gt;</innerclass>
@@ -297,7 +296,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="674" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="674" declcolumn="29"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="650" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="650" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="scanners_8h_1af1bd640b0cf7fcd8824123c8ab99d38c" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

@@ -36,7 +36,7 @@
         </inbodydescription>
         <location file="faiss/impl/ScalarQuantizer.h" line="122" column="23"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4</definition>
         <argsstring>(const uint8_t *code_0, const uint8_t *code_1, const uint8_t *code_2, const uint8_t *code_3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3) const</argsstring>
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="128" column="22" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="128" bodyend="141"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="128" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="143" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="143" bodyend="145"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="138" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="138" bodyend="140"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a68ef6365d3a9e98d8d2a17519f684744" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -149,7 +149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="147" column="14" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="147" bodyend="157"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="142" column="14" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="142" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -169,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="129" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="129" bodyend="131"/>
+        <location file="faiss/impl/DistanceComputer.h" line="119" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="119" bodyend="121"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -217,9 +217,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="133" column="10" bodyfile="faiss/impl/DistanceComputer.h" bodystart="133" bodyend="151"/>
+        <location file="faiss/impl/DistanceComputer.h" line="123" column="10" bodyfile="faiss/impl/DistanceComputer.h" bodystart="123" bodyend="141"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>float</type>
         <definition>virtual float faiss::FlatCodesDistanceComputer::partial_dot_product</definition>
         <argsstring>(const idx_t, const uint32_t, const uint32_t)</argsstring>
@@ -247,9 +247,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="181" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="181" bodyend="186"/>
+        <location file="faiss/impl/DistanceComputer.h" line="171" column="19"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</definition>
         <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dp0, float &amp;dp1, float &amp;dp2, float &amp;dp3, const uint32_t offset, const uint32_t num_components)</argsstring>
@@ -302,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="207" column="18" bodyfile="faiss/impl/DistanceComputer.h" bodystart="207" bodyend="231"/>
+        <location file="faiss/impl/DistanceComputer.h" line="195" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -357,7 +357,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="57" column="19"/>
+        <location file="faiss/impl/DistanceComputer.h" line="47" column="19"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -373,7 +373,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="113" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="113" bodyend="-1"/>
+        <location file="faiss/impl/DistanceComputer.h" line="103" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -387,7 +387,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
+        <location file="faiss/impl/DistanceComputer.h" line="104" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -402,7 +402,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="116" column="17" bodyfile="faiss/impl/DistanceComputer.h" bodystart="116" bodyend="-1"/>
+        <location file="faiss/impl/DistanceComputer.h" line="106" column="17" bodyfile="faiss/impl/DistanceComputer.h" bodystart="106" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
