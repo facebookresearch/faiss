@@ -19,6 +19,7 @@ import torch
 
 from faiss.contrib.e_means import Emeans
 from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
+from faiss.contrib.e_means.e_means_fp8 import Fp8Quantizer
 from faiss.contrib.e_means import e_means
 from e_means_test_utils import known_torch_centroids
 
@@ -142,7 +143,7 @@ class TestEmeansCute(unittest.TestCase):
         distance, labels = native.assign(x.bfloat16())
         torch.testing.assert_close(distance, torch.ones(4, device='cuda'))
         torch.testing.assert_close(labels, torch.tensor([0, 0, 1, 1], device='cuda'))
-        with self.assertRaisesRegex(ValueError, 'requires native BF16'):
+        with self.assertRaisesRegex(ValueError, 'requires native BF16/E4M3'):
             Emeans(1, 2, assignment_backend='cute').train(x, initial)
 
     def test_optional_stack_and_device_scope(self):
@@ -252,43 +253,44 @@ if cuda:
     @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
     def test_bf16_destinations_ragged_ties_and_owned_outputs(self):
         from faiss.contrib.e_means.e_means_cute import _prepare_centroids, _assign_rows
-        for n, k, d in ((1, 128, 1), (3, 256, 17), (33, 512, 96), (129, 384, 65), (7, 193, 257)):
-            with self.subTest(n=n, k=k, d=d):
-                g = torch.Generator(device='cuda').manual_seed(n+k+d)
-                rows = torch.randint(-2, 3, (n, d), generator=g, device='cuda').bfloat16()
-                c = torch.randint(-2, 3, (k, d), generator=g, device='cuda').float()
-                c[1].copy_(c[0])
-                if (k, d) == (384, 65):
-                    c[-1].fill_(3)
-                    rows[-1].fill_(3)
-                before_rows, before_centroids = rows.clone(), c.clone()
-                prepared = _prepare_centroids(c)
-                distances = torch.full((n+2,), -123., device='cuda')
-                labels = torch.full((n+2,), -123, dtype=torch.int64, device='cuda')
-                result = _assign_rows(rows, prepared, distances[1:-1], labels[1:-1])
-                self.assertEqual(tuple(t.data_ptr() for t in result),
-                                 (distances[1:-1].data_ptr(), labels[1:-1].data_ptr()))
-                truth = (rows.double()[:, None]-c.bfloat16().double()[None]).square().sum(2)
-                torch.testing.assert_close(distances[1:-1].double(), truth.min(1).values, rtol=0, atol=2e-4)
-                torch.testing.assert_close(labels[1:-1], truth.argmin(1), rtol=0, atol=0)
-                if (k, d) == (384, 65):
-                    self.assertEqual(labels[-2].item(), k-1)
-                self.assertEqual((distances[[0, -1]].tolist(), labels[[0, -1]].tolist()), ([-123., -123.], [-123, -123]))
-                caller_saved = distances.clone(), labels.clone()
-                owned = _assign_rows(rows, prepared)
-                saved = tuple(t.clone() for t in owned)
-                _assign_rows(-rows, prepared)
-                _assign_rows(rows[:1], prepared)
-                for actual, expected in zip(owned, saved):
-                    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
-                model = known_torch_centroids(c, assignment_backend='cute', assignment_chunk_size=max(1, n-1))
-                public = model.assign(rows)
-                torch.testing.assert_close(public[0].double(), truth.min(1).values, rtol=0, atol=2e-4)
-                torch.testing.assert_close(public[1], truth.argmin(1), rtol=0, atol=0)
-                for actual, expected in zip((distances, labels), caller_saved):
-                    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
-                torch.testing.assert_close(rows, before_rows, rtol=0, atol=0)
-                torch.testing.assert_close(c, before_centroids, rtol=0, atol=0)
+        for dtype in (torch.bfloat16, torch.float8_e4m3fn):
+            for n, k, d in ((1, 128, 1), (3, 256, 17), (33, 512, 96), (129, 384, 65), (7, 193, 257)) + (((17, 384, 385), (3, 384, 513)) if dtype is torch.float8_e4m3fn else ()):
+                with self.subTest(dtype=dtype, n=n, k=k, d=d):
+                    g = torch.Generator(device='cuda').manual_seed(n+k+d)
+                    rows = torch.randint(-2, 3, (n, d), generator=g, device='cuda').to(dtype)
+                    c = torch.randint(-2, 3, (k, d), generator=g, device='cuda').float()
+                    c[1].copy_(c[0])
+                    if (k, d) == (384, 65):
+                        c[-1].fill_(3)
+                        rows[-1].fill_(3)
+                    before_rows, before_centroids = rows.clone(), c.clone()
+                    prepared = _prepare_centroids(c, dtype=dtype)
+                    distances = torch.full((n+2,), -123., device='cuda')
+                    labels = torch.full((n+2,), -123, dtype=torch.int64, device='cuda')
+                    result = _assign_rows(rows, prepared, distances[1:-1], labels[1:-1])
+                    self.assertEqual(tuple(t.data_ptr() for t in result),
+                                     (distances[1:-1].data_ptr(), labels[1:-1].data_ptr()))
+                    truth = (rows.double()[:, None]-c.to(dtype).double()[None]).square().sum(2)
+                    torch.testing.assert_close(distances[1:-1].double(), truth.min(1).values, rtol=0, atol=2e-4 if dtype is torch.bfloat16 else 0)
+                    torch.testing.assert_close(labels[1:-1], truth.argmin(1), rtol=0, atol=0)
+                    if (k, d) == (384, 65):
+                        self.assertEqual(labels[-2].item(), k-1)
+                    self.assertEqual((distances[[0, -1]].tolist(), labels[[0, -1]].tolist()), ([-123., -123.], [-123, -123]))
+                    caller_saved = distances.clone(), labels.clone()
+                    owned = _assign_rows(rows, prepared)
+                    saved = tuple(t.clone() for t in owned)
+                    _assign_rows((-rows.float()).to(dtype), prepared)
+                    _assign_rows(rows[:1], prepared)
+                    for actual, expected in zip(owned, saved):
+                        torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+                    model = known_torch_centroids(c, assignment_backend='cute', assignment_chunk_size=max(1, n-1))
+                    public = model.assign(rows)
+                    torch.testing.assert_close(public[0].double(), truth.min(1).values, rtol=0, atol=2e-4 if dtype is torch.bfloat16 else 0)
+                    torch.testing.assert_close(public[1], truth.argmin(1), rtol=0, atol=0)
+                    for actual, expected in zip((distances, labels), caller_saved):
+                        torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+                    torch.testing.assert_close(rows.view(torch.uint8), before_rows.view(torch.uint8), rtol=0, atol=0)
+                    torch.testing.assert_close(c, before_centroids, rtol=0, atol=0)
         c = torch.full((193, 17), 10., device='cuda')
         c[0].zero_()
         c[127].zero_()
@@ -351,33 +353,35 @@ if cuda:
 
     @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
     def test_bf16_high_ids_and_planted_large_batch(self):
-        from faiss.contrib.e_means.e_means_cute import _prepare_centroids, _assign_rows
-        start = time.monotonic()
-        torch.cuda.reset_peak_memory_stats()
-        c = torch.full((16384, 96), 4., device='cuda')
-        c[0].zero_()
-        c[128].zero_()
-        c[777].fill_(1)
-        c[1024].fill_(1)
-        c[-1].fill_(-1)
-        rows = torch.zeros(8192, 96, dtype=torch.bfloat16, device='cuda')
-        rows[1].fill_(1)
-        rows[2].fill_(-1)
-        rows[3].fill_(.25)
-        distance, labels = known_torch_centroids(c, assignment_backend='cute', assignment_chunk_size=8192).assign(rows)
-        self.assertEqual(labels[:4].tolist(), [0, 777, 16383, 0])
-        torch.testing.assert_close(distance[:4], torch.tensor([0., 0., 0., 6.], device='cuda'), rtol=0, atol=1e-5)
-        self.assertTrue(bool((labels[4:] == 0).all()))
-        torch.testing.assert_close(distance[4:], torch.zeros_like(distance[4:]), rtol=0, atol=1e-5)
-        c = torch.zeros(65537, 1, device='cuda')
-        c[-1].fill_(2)
-        labels = torch.full((4,), -123, dtype=torch.int64, device='cuda')
-        distance, _ = _assign_rows(torch.full((2, 1), 2., dtype=torch.bfloat16, device='cuda'),
-                                   _prepare_centroids(c), labels_out=labels[1:-1])
-        self.assertEqual(labels.tolist(), [-123, 65536, 65536, -123])
-        torch.testing.assert_close(distance, torch.zeros_like(distance), rtol=0, atol=0)
-        print('CuTe BF16 correctness stress cost', time.monotonic()-start,
-              'seconds, peak', torch.cuda.max_memory_allocated(), 'bytes')
+        for dtype in (torch.bfloat16, torch.float8_e4m3fn):
+            with self.subTest(dtype=dtype):
+                from faiss.contrib.e_means.e_means_cute import _prepare_centroids, _assign_rows
+                start = time.monotonic()
+                torch.cuda.reset_peak_memory_stats()
+                c = torch.full((16384, 96), 4., device='cuda')
+                c[0].zero_()
+                c[128].zero_()
+                c[777].fill_(1)
+                c[1024].fill_(1)
+                c[-1].fill_(-1)
+                rows = torch.zeros(8192, 96, dtype=dtype, device='cuda')
+                rows[1].fill_(1)
+                rows[2].fill_(-1)
+                rows[3].fill_(.25)
+                distance, labels = known_torch_centroids(c, assignment_backend='cute', assignment_chunk_size=8192).assign(rows)
+                self.assertEqual(labels[:4].tolist(), [0, 777, 16383, 0])
+                torch.testing.assert_close(distance[:4], torch.tensor([0., 0., 0., 6.], device='cuda'), rtol=0, atol=1e-5)
+                self.assertTrue(bool((labels[4:] == 0).all()))
+                torch.testing.assert_close(distance[4:], torch.zeros_like(distance[4:]), rtol=0, atol=1e-5)
+                c = torch.zeros(65537, 1, device='cuda')
+                c[-1].fill_(2)
+                labels = torch.full((4,), -123, dtype=torch.int64, device='cuda')
+                distance, _ = _assign_rows(torch.full((2, 1), 2., dtype=dtype, device='cuda'),
+                                           _prepare_centroids(c, dtype=dtype), labels_out=labels[1:-1])
+                self.assertEqual(labels.tolist(), [-123, 65536, 65536, -123])
+                torch.testing.assert_close(distance, torch.zeros_like(distance), rtol=0, atol=0)
+                print('CuTe correctness stress cost', dtype, time.monotonic()-start,
+                      'seconds, peak', torch.cuda.max_memory_allocated(), 'bytes')
 
     @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
     def test_bf16_decoded_tail_statistics_closing_and_sync(self):
@@ -470,38 +474,229 @@ if cuda:
 
     @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
     def test_bf16_ordered_refresh_and_noncurrent_device(self):
-        from faiss.contrib.e_means.e_means_cute import _prepare_centroids, _assign_rows
-        current = torch.cuda.current_device()
-        device = torch.device('cuda', (current+1) % torch.cuda.device_count())
-        c = torch.stack((torch.zeros(17, device=device), torch.ones(17, device=device)))
-        rows = torch.zeros(257, 17, dtype=torch.bfloat16, device=device)
-        model = known_torch_centroids(c, assignment_backend='cute')
-        first = model.assign(rows)
-        saved = tuple(t.clone() for t in first)
-        torch.cuda.synchronize(device)
-        producer, side = torch.cuda.Stream(device=device), torch.cuda.Stream(device=device)
-        with torch.cuda.stream(producer):
-            torch.cuda._sleep(50_000_000)
-            rows.fill_(1)
-        side.wait_stream(producer)
-        with torch.cuda.stream(side):
-            one = model.assign(rows)
-            model.centroids[0].fill_(1)
-            model.centroids[1].zero_()
-            changed = model.assign(rows)
-            model.assign(rows[:3])
-            model.assign(rows[:2])
-        torch.cuda.current_stream(device).wait_stream(side)
-        for actual, expected in zip(first, saved):
-            torch.testing.assert_close(actual, expected, rtol=0, atol=0)
-        for pair, label in ((one, 1), (changed, 0)):
-            self.assertEqual((pair[0].device, pair[1].device), (device, device))
-            torch.testing.assert_close(pair[0], torch.zeros_like(pair[0]), rtol=0, atol=0)
-            self.assertTrue(bool((pair[1] == label).all()))
-        self.assertEqual(torch.cuda.current_device(), current)
-        if torch.cuda.device_count() >= 2:
-            with self.assertRaisesRegex(ValueError, 'same device'):
-                model.assign(rows.to(torch.device('cuda', current)))
-        prepared = _prepare_centroids(model.centroids)
-        with self.assertRaisesRegex(ValueError, 'contiguous CUDA BF16'):
-            _assign_rows(rows.float(), prepared)
+        for dtype in (torch.bfloat16, torch.float8_e4m3fn):
+            with self.subTest(dtype=dtype):
+                from faiss.contrib.e_means.e_means_cute import _prepare_centroids, _assign_rows
+                current = torch.cuda.current_device()
+                device = torch.device('cuda', (current+1) % torch.cuda.device_count())
+                c = torch.stack((torch.zeros(17, device=device), torch.ones(17, device=device)))
+                rows = torch.zeros(257, 17, dtype=dtype, device=device)
+                model = known_torch_centroids(c, assignment_backend='cute')
+                first = model.assign(rows)
+                saved = tuple(t.clone() for t in first)
+                torch.cuda.synchronize(device)
+                producer, side = torch.cuda.Stream(device=device), torch.cuda.Stream(device=device)
+                with torch.cuda.stream(producer):
+                    torch.cuda._sleep(50_000_000)
+                    rows.fill_(1)
+                side.wait_stream(producer)
+                with torch.cuda.stream(side):
+                    one = model.assign(rows)
+                    model.centroids[0].fill_(1)
+                    model.centroids[1].zero_()
+                    changed = model.assign(rows)
+                    model.assign(rows[:3])
+                    model.assign(rows[:2])
+                torch.cuda.current_stream(device).wait_stream(side)
+                for actual, expected in zip(first, saved):
+                    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+                for pair, label in ((one, 1), (changed, 0)):
+                    self.assertEqual((pair[0].device, pair[1].device), (device, device))
+                    torch.testing.assert_close(pair[0], torch.zeros_like(pair[0]), rtol=0, atol=0)
+                    self.assertTrue(bool((pair[1] == label).all()))
+                self.assertEqual(torch.cuda.current_device(), current)
+                if torch.cuda.device_count() >= 2:
+                    with self.assertRaisesRegex(ValueError, 'same device'):
+                        model.assign(rows.to(torch.device('cuda', current)))
+                prepared = _prepare_centroids(model.centroids, dtype=dtype)
+                with self.assertRaisesRegex(ValueError, 'contiguous CUDA BF16'):
+                    _assign_rows(rows.float(), prepared)
+
+    @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
+    def test_fp8_recalibration_after_training_matches_fresh_assignment(self):
+        x = torch.linspace(-1, 1, 32, device='cuda')[:, None].expand(32, 128).contiguous()
+        initial = x[[4, 12, 20, 28]].clone()
+        q = Fp8Quantizer(128)
+        q.train(x)
+        model = Emeans(128, 4, niter=2, quantizer=q, assignment_backend='cute')
+        model.train(q.compute_codes(x), initial)
+        retained = model.assign(q.compute_codes(x[:9]))
+        saved = tuple(value.clone() for value in retained)
+        for offset in (0.0625, 0.125, 0.25):
+            q.train(x + offset)
+            rows = q.compute_codes(x[:9])
+            actual = model.assign(rows)
+            fresh = known_torch_centroids(model.centroids.clone(), quantizer=q, assignment_backend='cute')
+            expected = fresh.assign(rows)
+            for observed, reference in zip(actual, expected):
+                torch.testing.assert_close(observed, reference, rtol=0, atol=0)
+            for observed, reference in zip(retained, saved):
+                torch.testing.assert_close(observed, reference, rtol=0, atol=0)
+
+    @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
+    def test_fp8_native_and_jit_share_decoded_state_and_output_units(self):
+        x = torch.tensor([[0.], [2.], [10.], [12.]], device='cuda')
+        q = Fp8Quantizer(1)
+        q.train(x)
+        models = [Emeans(1, 2, niter=1, batch_size=4, alpha0=.5,
+                         quantizer=q, assignment_backend='cute') for _ in range(2)]
+        for model,rows in zip(models, (q.compute_codes(x),x)):
+            model.train(rows, x[[0,2]])
+            torch.testing.assert_close(model.centroids,x.new_tensor([[1.],[11.]]))
+            self.assertEqual(model.obj.item(),8.)
+            distance,labels = model.assign(rows)
+            torch.testing.assert_close(distance,torch.ones(4,device=x.device))
+            torch.testing.assert_close(labels,torch.tensor([0,0,1,1],device=x.device))
+        low, high = torch.full((5, 65), .1, device='cuda'), torch.full((5, 65), 2.3, device='cuda')
+        x = torch.cat((low, high))
+        q = Fp8Quantizer(65)
+        q.train(x)
+        self.assertTrue(q.centered)
+        represented = q.decode(q.compute_codes(x))
+        for rows in (q.compute_codes(x), x):
+            model = Emeans(65, 2, niter=1, batch_size=10, alpha0=1., quantizer=q, assignment_backend='cute')
+            model.train(rows, torch.stack((low[0], high[0])))
+            torch.testing.assert_close(model.centroids, torch.stack((represented[:5].mean(0), represented[5:].mean(0))))
+            distance, labels = model.assign(rows)
+            self.assertEqual((model.centroids.dtype, distance.dtype, labels.dtype), (torch.float32, torch.float32, torch.int64))
+            self.assertEqual(labels.tolist(), [0]*5+[1]*5)
+            torch.testing.assert_close(distance, torch.zeros_like(distance))
+            query = low[:1].clone()
+            query[0, 0] += .125
+            distance, labels = model.assign(query)
+            self.assertEqual(labels.item(), 0)
+            torch.testing.assert_close(distance, torch.tensor([.015625], device='cuda'))
+
+    @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
+    def test_fp8_seeded_chunks_selected_distance_and_explicit_validation(self):
+        g = torch.Generator(device='cuda').manual_seed(31)
+        x = torch.randn(256, 128, generator=g, device='cuda').mul_(.25)
+        initial = torch.randn(512, 128, generator=g, device='cuda').mul_(.25)
+        q = Fp8Quantizer(128)
+        q.train(x)
+        codes = q.compute_codes(x)
+        before = codes.view(torch.uint8).clone()
+        represented, operands = q.decode(codes).double(), q.decode(q.compute_codes(initial)).double()
+        for chunk in (len(x), 64):
+            model = known_torch_centroids(initial, quantizer=q, assignment_backend='cute',
+                                          assignment_chunk_size=chunk)
+            for rows in (x, codes):
+                with self.subTest(chunk=chunk, native=rows is codes):
+                    distance, labels = model.assign(rows)
+                    self.assertEqual((distance.shape, labels.shape), ((len(x),), (len(x),)))
+                    self.assertTrue(bool(((labels >= 0) & (labels < len(initial))).all()))
+                    selected = (represented - operands[labels]).square().sum(1)
+                    torch.testing.assert_close(distance.double(), selected, rtol=2e-6, atol=1e-3)
+                    saved = tuple(value.clone() for value in (distance, labels))
+                    model.assign(rows[:3])
+                    for observed, reference in zip((distance, labels), saved):
+                        torch.testing.assert_close(observed, reference, rtol=0, atol=0)
+        torch.testing.assert_close(codes.view(torch.uint8), before, rtol=0, atol=0)
+        for position, value in ((0, 1000.), (3, 1000.), (5, 1000.),
+                                (2, float('nan')), (4, float('inf')), (1, float('-inf'))):
+            query = torch.zeros(6, 128, device='cuda')
+            query[position, 0] = value
+            with self.subTest(position=position, value=value), self.assertRaisesRegex(ValueError, 'representable range'):
+                q.validate(query)
+
+    @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
+    def test_fp8_decoded_caller_tail_revival_and_closing(self):
+        x = torch.tensor([[0., 0.], [.25, .5], [2., 2.], [2.25, 2.5],
+                          [4., 4.], [4.25, 4.5], [4.5, 4.75]], device='cuda')
+        initial = torch.tensor([[0., 0.], [2., 2.], [100., 100.]], device='cuda')
+        q = Fp8Quantizer(2)
+        q.train(torch.tensor([[-128., -128.], [128., 128.]], device='cuda').repeat(1024, 1))
+        self.assertFalse(q.centered)
+        codes = q.compute_codes(x)
+        before = codes.view(torch.uint8).clone()
+        self.assertTrue(bool((codes.float().abs().sum(0)*512 < 2**24).all()))
+        for incoming in (codes, x):
+            with self.subTest(native=incoming is codes):
+                args = dict(niter=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
+                            assignment_backend='cute', assignment_chunk_size=2, capture_assignments=True)
+                matrix, caller = Emeans(2, 3, **args), Emeans(2, 3, **args)
+                matrix.train(incoming, initial)
+                caller.begin(len(x), initial)
+                for epoch in range(2):
+                    order = e_means._randperm(len(x), e_means._epoch_seed(7, epoch), True, x.device)
+                    for start in range(0, len(x), 3):
+                        ids = order[start:start+3]
+                        represented = q.decode(codes.float()[ids])
+                        snapshot = caller.current_centroids().clone()
+                        operands = q.decode(q.compute_codes(snapshot))
+                        truth = (represented[:, None]-operands[None]).square().sum(2)
+                        labels = truth.argmin(1)
+                        partial = caller.accumulate(incoming[ids[:1]])
+                        if len(ids) > 1:
+                            self.assertIsNone(partial['sums'])
+                            self.assertIsNone(partial['counts'])
+                            torch.testing.assert_close(caller.current_centroids(), snapshot, rtol=0, atol=0)
+                            stats = caller.accumulate(incoming[ids[1:]])
+                        else:
+                            stats = partial
+                        if epoch == caller.niter - 1:
+                            torch.testing.assert_close(stats['labels'], labels[-len(stats['labels']):], rtol=0, atol=0)
+                        else:
+                            self.assertNotIn('labels', stats)
+                        empty = caller.accumulate(incoming[ids[:0]])
+                        torch.testing.assert_close(empty['sums'], stats['sums'], rtol=0, atol=0)
+                        torch.testing.assert_close(empty['counts'], stats['counts'], rtol=0, atol=0)
+                        sums = torch.zeros_like(stats['sums'])
+                        sums.index_add_(0, labels, represented)
+                        # At most three bounded dyadic addends, uncentered
+                        # normal decode: exact totals do not depend on order.
+                        torch.testing.assert_close(stats['sums'], sums, rtol=0, atol=0)
+                        torch.testing.assert_close(stats['counts'], torch.bincount(labels, minlength=3).float(), rtol=0, atol=0)
+                        torch.testing.assert_close(stats['objective'], truth.min(1).values.double().sum(), rtol=1e-6, atol=3e-5)
+                        caller.update(stats)
+                    caller.end_epoch()
+                counts, sums, state = caller._pass_counts, caller._pass_sums, caller._centroids
+                closing = torch.where(counts[:, None] > 0, sums/counts.clamp_min(1).float()[:, None], state)
+                torch.testing.assert_close(caller.finalize(), closing, rtol=0, atol=0)
+                torch.testing.assert_close(caller.centroids, matrix.centroids, rtol=1e-6, atol=1e-6)
+                torch.testing.assert_close(caller.obj, matrix.obj, rtol=1e-6, atol=3e-5)
+                self.assertGreater(caller.n_splits, 0)
+        torch.testing.assert_close(codes.view(torch.uint8), before, rtol=0, atol=0)
+
+    @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
+    def test_fp8_seed_decode_and_independent_closing_distortion(self):
+        x = torch.tensor([[-1.625, -1.875], [-.375, .125], [.375, .625], [1.125, 1.375],
+                          [1.625, 1.875], [.125, .375], [-.625, -.875], [.75, 1.25], [-1.25, -1.75]], device='cuda')
+        for centered, all_rows in ((False, False), (True, False), (True, True)):
+            rows = (x + 10 if centered else x)[:2 if all_rows else len(x)]
+            q = Fp8Quantizer(2)
+            q.train(rows.cpu() if centered else torch.tensor([[-3., -3.], [3., 3.]]).repeat(2048, 1))
+            q.to(rows.device)
+            self.assertEqual(q.centered, centered)
+            self.assertNotEqual(q.scale, 1.)
+            codes = q.compute_codes(rows)
+            before = codes.view(torch.uint8).clone()
+            indices = torch.arange(len(rows), device=rows.device) if all_rows else e_means._randperm(len(rows), 7, True, rows.device)[:2]
+            initial = q.decode(codes.float()[indices])
+            args = dict(niter=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
+                        assignment_backend='cute', assignment_chunk_size=2)
+            native, jit, explicit = (Emeans(2, 2, **args) for _ in range(3))
+            for model, incoming in ((native, codes), (jit, rows)):
+                with mock.patch.object(model, 'begin', wraps=model.begin) as begin:
+                    model.train(incoming)
+                torch.testing.assert_close(begin.call_args.args[1], initial, rtol=0, atol=0)
+            explicit.train(rows, initial)
+            for model in (native, explicit):
+                torch.testing.assert_close(model.centroids, jit.centroids, rtol=1e-6, atol=1e-6)
+                torch.testing.assert_close(model.obj, jit.obj, rtol=1e-6, atol=3e-5)
+            torch.testing.assert_close(codes.view(torch.uint8), before, rtol=0, atol=0)
+        d, k = 1024, 4
+        g = torch.Generator(device='cuda').manual_seed(1821)
+        base = (torch.arange(d, device='cuda') % 31 + 128).float()
+        initial = torch.stack([base + 32*i for i in range(k)]).to(torch.float8_e4m3fn).float()
+        rows = (initial[torch.arange(128, device='cuda') % k] + torch.randint(-8, 9, (128, d), generator=g, device='cuda')).to(torch.float8_e4m3fn)
+        scores = []
+        for backend in ('triton', 'cute'):
+            model = Emeans(d, k, niter=2, seed=1234, assignment_backend=backend)
+            model.train(rows, initial)
+            self.assertTrue(bool(torch.isfinite(model.centroids).all()))
+            # Returned closing centroids stay FP32: this fresh oracle does not
+            # call assign or compare the moving-pass training objective.
+            direct = (rows.double()[:, None] - model.centroids.double()[None]).square().sum(2)
+            scores.append(direct.min(1).values)
+        torch.testing.assert_close(scores[1], scores[0], rtol=1e-5, atol=1e-3)
