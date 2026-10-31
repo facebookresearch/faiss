@@ -210,6 +210,16 @@ class TestDbParallelSearch(unittest.TestCase):
         finally:
             faiss.omp_set_num_threads(saved_nt)
 
+    def test_nested_search(self):
+        # IndexIVF::search calls the quantizer inside a parallel region
+        d, nlist = 8, 10000
+        _, xb, xq = get_dataset(d, nlist, 0, 2)
+        quantizer = faiss.IndexFlatL2(d)
+        quantizer.add(xb)
+        index = faiss.IndexIVFFlat(quantizer, d, nlist)
+        index.add(xq)
+        np.testing.assert_array_equal(index.search(xq, 1)[1], [[0], [1]])
+
 
 @for_all_simd_levels
 class TestIndexFlatL2(unittest.TestCase):
