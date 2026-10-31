@@ -21,6 +21,18 @@
 
 namespace faiss {
 namespace gpu_metal {
+namespace {
+bool ivfsqCooperative(const uint32_t* p, bool fused, bool adaptive) {
+    return p[1] == 128 && p[2] <= 32 &&
+            (p[0] < 32 || (fused && !adaptive)) &&
+            !(fused && !adaptive && p[5]);
+}
+bool ivfsqPairQueries(const uint32_t* p, bool fused) {
+    return !fused && p[0] >= 32 && p[1] == 128 && p[2] <= 32 &&
+            p[3] <= 32 && p[4] <= p[3] * 4;
+}
+} // namespace
+
 
 void MetalKernels::encodeIVFSQScan(
         id<MTLComputeCommandEncoder> encoder,
@@ -30,8 +42,18 @@ void MetalKernels::encodeIVFSQScan(
         uint32_t chunkSize,
         bool fused,
         bool adaptive) {
+    // Unpaired, noncooperative small-k scans admit at most 128 rows per batch.
+    // For d <= 512, query preparation, sorting, merging and output also fit in
+    // the first 128 lanes: the shader's 256-stride loops need no second iteration.
+    // Keep this bound in sync with ivfsq_scan and ivfsq_merge_new.
+    const uint32_t threads = !fused && (params[1] <= 64 || params[1] == 128 ||
+                     (params[1] == 512 && params[5])) &&
+                    params[2] <= 32 &&
+                    !ivfsqCooperative(params, fused, adaptive) &&
+                    !ivfsqPairQueries(params, fused)
+            ? 128 : 256;
     auto state = ivfsqPipeline(params, "ivfsq_scan", fused, adaptive);
-    FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= 256);
+    FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= threads);
     FAISS_THROW_IF_NOT(
             state.staticThreadgroupMemoryLength <=
             device_.maxThreadgroupMemoryLength);
@@ -44,7 +66,7 @@ void MetalKernels::encodeIVFSQScan(
     args[10] = chunkSize;
     [encoder setBytes:args length:sizeof(args) atIndex:11];
     [encoder dispatchThreadgroups:MTLSizeMake(fused ? 1 : chunks, fused ? 1 : params[3], params[0])
-            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+            threadsPerThreadgroup:MTLSizeMake(threads, 1, 1)];
 }
 
 void MetalKernels::encodeIVFSQMerge(
@@ -168,17 +190,17 @@ id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
 id<MTLComputePipelineState> MetalKernels::ivfsqPipeline(
         const uint32_t* params, const char* name, bool fused, bool adaptive) {
     std::lock_guard<std::mutex> lock(cacheMutex_);
-    uint32_t dim = params[1] == 128 || params[1] == 512 ? params[1] : 0;
+    uint32_t dim = params[1] == 7 || params[1] == 33 || params[1] == 64 ||
+                    params[1] == 128 || params[1] == 512 || params[1] == 768
+            ? params[1] : 0;
     bool fp16 = params[5] != 0, l2 = params[7] != 0, residual = params[6] != 0;
     uint32_t capacity = 16;
     while (capacity < params[2])
         capacity *= 2;
     // Selection capacity and score distribution are independent decisions.
-    bool cooperative = params[1] == 128 && params[2] <= 32 &&
-            (params[0] < 32 || (fused && !adaptive)) && !(fused && !adaptive && fp16);
-    bool pairQueries = std::string(name) == "ivfsq_scan" && !fused &&
-            params[0] >= 32 && params[1] == 128 && params[2] <= 32 && params[3] <= 32 &&
-            params[4] <= params[3] * 4;
+    bool cooperative = ivfsqCooperative(params, fused, adaptive);
+    bool pairQueries = std::string(name) == "ivfsq_scan" &&
+            ivfsqPairQueries(params, fused);
     std::string key = std::string(name) + ":" + std::to_string(dim) + ":" +
             std::to_string(fp16) + std::to_string(l2) +
             std::to_string(residual) + ":" + std::to_string(capacity) +

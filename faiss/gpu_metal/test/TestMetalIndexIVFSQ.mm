@@ -225,13 +225,18 @@ TEST_F(TestMetalIndexIVFSQ, SortedPartialRunsMergeExactly) {
 // Invoke the shader entry directly; the oracle decodes CPU codes independently
 // and sorts all candidates by score and final 64-bit label.
 TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
-    for (int nq : {2, 33})
+    for (int nq : {2, 33, 35})
     for (auto type : {ScalarQuantizer::QT_8bit, ScalarQuantizer::QT_fp16})
         for (int d : {1, 7, 33, 64, 128, 512, 513, 768})
             for (bool l2 : {false, true})
                 for (bool residual : {false, true}) {
-                    if (nq == 33 && d != 128) continue;
-                    const int probes = 4, lists = 3;
+                    if (nq == 35 && d != 128 && d != 768 &&
+                        !(d == 512 && type == ScalarQuantizer::QT_fp16)) continue;
+                    if (nq == 33 && d != 7 && d != 33 && d != 64 && d != 128)
+                        continue;
+                    // The larger codebook excludes pairing for the 35-query
+                    // batch, covering bounded launches and specialized 768-D scans.
+                    const int probes = 4, lists = nq == 35 ? 17 : 3;
                     auto training = randomData(128 * d);
                     ScalarQuantizer sq(d, type);
                     sq.train(128, training.data());
@@ -244,7 +249,7 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                     for (int dim = 0; dim < d; ++dim) {
                         for (int qi = 0; qi < nq; ++qi)
                             q[qi * d + dim] = float(dim % 3) - 1 +
-                                (nq == 33 ? float(qi % 4) * 0.25f : 0.f);
+                                (nq >= 33 ? float(qi % 4) * 0.25f : 0.f);
                         for (int l = 0; l < lists; ++l)
                             c[l * d + dim] = float(l + dim % 2) - 1;
                     }
@@ -257,11 +262,11 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                     const int32_t pairedPattern[] = {0, 0, -1, 2, 2, 0, 0, 1};
                     std::vector<int32_t> assign(nq * probes);
                     for (int i = 0; i < nq * probes; ++i)
-                        assign[i] = nq == 33 ? pairedPattern[i % 8] : pattern[i % 8];
+                        assign[i] = nq >= 33 ? pairedPattern[i % 8] : pattern[i % 8];
                     // Mix short fused queries with long paired/unpaired ones
                     // in the same batch. A long query must not steal a probe
                     // from a neighbor that independently takes the fused path.
-                    if (nq == 33) {
+                    if (nq >= 33) {
                         for (int qi = 3; qi < nq; qi += 4) {
                             assign[qi * probes] = 2;
                             assign[qi * probes + 1] = 1;
@@ -295,11 +300,16 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                           1024,
                           1025,
                           2051}) {
-                        if (nq == 33 && size != 129 && size != 513 && size != 2051) continue;
+                        if (nq >= 33 && size != 129 && size != 513 && size != 2051) continue;
                         // Empty middle list, one extra vector in the last list.
-                        uint32_t offsets[] = {0, size, size},
-                                 lengths[] = {size, 0, 1};
-                        size_t nb = size + 1;
+                        std::vector<uint32_t> offsets(lists, size + 1), lengths(lists, 0);
+                        offsets[0] = 0; offsets[1] = offsets[2] = size;
+                        lengths[0] = size; lengths[2] = 1;
+                        // An unselected long list must not force extra chunks
+                        // for the CPU-assigned batch. Other batches still select
+                        // their longest list and exercise the original layout.
+                        if (nq == 35) lengths.back() = 4097;
+                        size_t nb = size + 1 + (nq == 35 ? lengths.back() : 0);
                         std::vector<float> x(nb * d);
                         for (size_t v = 0; v < nb; ++v)
                             for (int dim = 0; dim < d; ++dim)
@@ -318,10 +328,10 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                             id[j] = (idx_t(1) << 42) + nb - j;
                         auto codes = buffer(dev, code.size(), code.data());
                         auto ids = buffer(dev, id.size() * 8, id.data());
-                        auto off = buffer(dev, sizeof(offsets), offsets);
-                        auto len = buffer(dev, sizeof(lengths), lengths);
+                        auto off = buffer(dev, offsets.size() * 4, offsets.data());
+                        auto len = buffer(dev, lengths.size() * 4, lengths.data());
                         for (uint32_t k : {1, 16, 17, 32, 33, 64, 65, 128, 129, 256, 257, 512}) {
-                            if (nq == 33 && k != 1 && k != 16 && k != 32) continue;
+                            if (nq >= 33 && k != 1 && k != 16 && k != 32) continue;
                             auto outD = buffer(dev, nq * k * 4),
                                  outI = buffer(dev, nq * k * 8);
                             uint32_t p[] = {
@@ -329,7 +339,7 @@ TEST_F(TestMetalIndexIVFSQ, DirectExactSegmentsAndTies) {
                                     uint32_t(d),
                                     k,
                                     probes,
-                                    lists,
+                                    uint32_t(lists),
                                     type == ScalarQuantizer::QT_fp16,
                                     residual,
                                     l2,
@@ -1002,7 +1012,7 @@ TEST_F(TestMetalIndexIVFSQ, ParallelChunksAndManyProbeMergeRounds) {
 }
 
 TEST_F(TestMetalIndexIVFSQ, FlatCoarseRunsInScanCommand) {
-    for (int dim : {7, 128, 512})
+    for (int dim : {7, 33, 64, 128, 512, 768})
         for (bool coarseL2 : {false, true})
             for (bool residual : {false, true}) {
                 constexpr int lists = 128, nq = 3, k = 10;

@@ -165,6 +165,20 @@ void runMetalIVFSQScan(
         MetalIVFSQScanPlan plan;
         FAISS_THROW_IF_NOT(makeMetalIVFSQScanPlan(
                 p[0], p[3], p[2], maxLength, device.maxBufferLength, plan));
+        // CPU assignments are ready before submission. An unselected outlier
+        // need not determine the partial layout for this batch.
+        if (!flatCoarse && plan.chunks > 1) {
+            const auto* selected = (const int32_t*)assignments.contents;
+            uint32_t selectedMax = 0;
+            for (uint64_t i = 0; i < uint64_t(p[0]) * p[3]; ++i) {
+                int32_t list = selected[i];
+                if (list >= 0 && uint32_t(list) < p[4])
+                    selectedMax = std::max(selectedMax, len[list]);
+            }
+            if (selectedMax < maxLength)
+                FAISS_THROW_IF_NOT(makeMetalIVFSQScanPlan(
+                        p[0], p[3], p[2], selectedMax, device.maxBufferLength, plan));
+        }
         // A bounded short-list scan can select across all probes in one group,
         // writing final results without partial buffers or a merge dispatch.
         bool fused = p[1] == 128 && p[2] <= 32 && p[3] <= 8 &&
