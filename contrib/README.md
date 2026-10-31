@@ -68,6 +68,11 @@ Contains:
 
 - a 2-level clustering routine and a function that can apply it to train an IndexIVF
 
+### e_means
+
+Mini-batch k-means with FP32 centroid state and exponential moving averages.
+See the [E-means documentation](e_means/README.md) for the public `Emeans` API.
+
 ### big_batch_search.py
 
 Search IVF indexes with one centroid after another. Useful for large
