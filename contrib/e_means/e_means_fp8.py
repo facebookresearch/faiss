@@ -9,7 +9,7 @@ import math
 
 import torch
 
-from .e_means_quantizer import _ldexp
+from .e_means_quantizer import _ldexp, _transform
 
 
 _CENTER_GAIN = 1.5
@@ -216,14 +216,6 @@ class Fp8Quantizer:
             raise TypeError("x must be floating rows or E4M3 codes")
         if len(value):
             _check_fp8_range(float(value.abs().max()), "x")
-
-
-def _transform(value, quantizer):
-    if quantizer is None:
-        return value
-    if quantizer._bias is None:
-        return value * quantizer.scale
-    return torch.add(quantizer._bias, value, alpha=quantizer.scale)
 
 
 def _update_fp8_peak(transformed, peak_out):
