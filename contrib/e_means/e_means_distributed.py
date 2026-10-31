@@ -27,7 +27,7 @@ class DistributedEmeans(Emeans):
     """E-means with equal row contributions and replicated FP32 centroids.
 
     ``group`` is explicit and caller-owned; ``transport`` is fixed at construction.
-    All ranks must establish matching recipes/codecs and collective schedules. Partial accumulation adds no communication. Begin
+    All ranks must establish matching recipes/codecs and collective schedules. Auto does not add partial-accumulation communication. Begin
     takes same-shape/device arrays on each rank; group rank zero supplies their
     values. NumPy and Torch CPU state use Gloo and FP32 statistics; CUDA retains
     its supported schemas. Use the caller-driven lifecycle, not the local trainer.
