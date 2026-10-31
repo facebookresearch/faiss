@@ -35,8 +35,14 @@ enum MetricType {
                           /// metric_arg
 
     /// some additional metrics defined in scipy.spatial.distance
+    /// sum_i |a_i - b_i| / (|a_i| + |b_i|), as scipy canberra
     METRIC_Canberra = 20,
+    /// sum_i |a_i - b_i| / sum_i |a_i + b_i|, as scipy braycurtis
     METRIC_BrayCurtis,
+    /// Jensen-Shannon divergence with natural log, i.e. the square of
+    /// scipy.spatial.distance.jensenshannon. Inputs should be
+    /// non-negative and L1-normalized. Take the square root of the
+    /// result to get the Jensen-Shannon distance.
     METRIC_JensenShannon,
 
     /// sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)) where a_i, b_i > 0
