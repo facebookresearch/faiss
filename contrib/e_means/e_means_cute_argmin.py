@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Packed ``(FP32 score, int32 id)`` atomic argmin support for CuTe."""
+"""Packed score/centroid-ID argmin and operand preparation for CuTe."""
 
 from collections import OrderedDict
 import math
@@ -11,7 +11,7 @@ from typing import NamedTuple
 
 import cuda.bindings.driver as cuda
 import cutlass.cute as cute
-from cutlass import BFloat16, Float8E4M3FN, Float32, Int32, Int64, Uint32, const_expr
+from cutlass import BFloat16, Float32, Int8, Int32, Int64, Uint32, const_expr
 from cutlass.cute.runtime import from_dlpack
 from quack import utils as quack_utils
 import torch
@@ -22,6 +22,8 @@ _COMPILED = OrderedDict()
 _AFFINE_PREPARE_COMPILED = OrderedDict()
 _STAGE_ROW_NORMS_COMPILED = OrderedDict()
 _PACKED_ROWS = 8
+_INT8_STAGE_COMPILED = OrderedDict()
+INTEGER_INITIAL_KEY = 0x7FFFFFFFFFFFFFFF
 
 
 def require_tensor(
@@ -74,6 +76,84 @@ def decode_argmin_score(key: Int64) -> Float32:
         else ~ordered
     )
     return score_bits.bitcast(Float32)
+
+
+@torch.no_grad()
+def stage_int8_rows(x, out, norms, representation):
+    """Stage native bytes or quantize FP32 rows into INT8 with INT32 norms."""
+    if representation not in ("int8", "uint8"):
+        raise ValueError("unknown native-byte representation")
+    quantize = isinstance(x, torch.Tensor) and x.dtype is torch.float32
+    expected = (torch.float32 if quantize else
+                torch.int8 if representation == "int8" else torch.uint8)
+    require_tensor(
+        x, "native-byte rows", dtype=expected, contiguous=False
+    )
+    if x.ndim != 2:
+        raise ValueError("native-byte rows must be rank two")
+    require_tensor(
+        out,
+        "signed row mirror",
+        dtype=torch.int8,
+        shape=x.shape,
+        device=x.device,
+        contiguous=False,
+    )
+    require_tensor(
+        norms,
+        "row norms",
+        dtype=torch.int32,
+        shape=(len(x),),
+        device=x.device,
+    )
+    if x.stride(1) != 1 or out.stride(1) != 1:
+        raise ValueError("native-byte rows and mirror need unit inner stride")
+    input_pitch = x.stride(0)
+    output_pitch = out.stride(0)
+    if input_pitch < x.shape[1] or output_pitch < x.shape[1]:
+        raise ValueError("native-byte row pitches must cover the dimension")
+    if output_pitch % 16 or out.data_ptr() % 16:
+        raise ValueError("signed row mirror must retain 16-byte alignment")
+    input_storage = x.as_strided((len(x), input_pitch), (input_pitch, 1))
+    output_storage = out.as_strided((len(x), output_pitch), (output_pitch, 1))
+    with torch.cuda.device(x.device):
+        flat_x, flat_out = input_storage.reshape(-1), output_storage.reshape(-1)
+        key = (
+            _PACKED_ROWS,
+            tuple(x.shape),
+            input_pitch,
+            output_pitch,
+            representation,
+            quantize,
+            x.device.index,
+        )
+        compiled = _INT8_STAGE_COMPILED.pop(key, None)
+        if compiled is None:
+            compiled = cute.compile(
+                _StageRowNormsSm90(
+                    integer=True,
+                    unsigned=representation == "uint8",
+                    quantize=quantize,
+                ),
+                from_dlpack(flat_x, assumed_align=4 if quantize else 1),
+                from_dlpack(flat_out, assumed_align=16),
+                from_dlpack(flat_out, assumed_align=16),
+                from_dlpack(norms, assumed_align=4),
+                from_dlpack(norms, assumed_align=4),
+                Int64(x.shape[1]),
+                Int64(input_pitch),
+                Int64(output_pitch),
+                Int64(output_pitch),
+                cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True),
+                options="--enable-tvm-ffi",
+            )
+        _INT8_STAGE_COMPILED[key] = compiled
+        while len(_INT8_STAGE_COMPILED) > 4:
+            _INT8_STAGE_COMPILED.popitem(last=False)
+        compiled(
+            flat_x, flat_out, flat_out, norms, norms,
+            x.shape[1], input_pitch, output_pitch, output_pitch,
+        )
 
 
 class _AffineCastSm90:
@@ -173,15 +253,30 @@ class _AffineCastSm90:
 
 
 class _StageRowNormsSm90:
-    """Reduce direct selected-centroid E4M3 squared differences."""
+    """Stage signed bytes and norms, or reduce selected FP8 differences."""
 
-    def __init__(self, rows_per_block=_PACKED_ROWS):
+    def __init__(
+        self,
+        integer=False,
+        unsigned=False,
+        rows_per_block=_PACKED_ROWS,
+        quantize=False,
+    ):
+        self.integer = integer
+        self.unsigned = unsigned
+        self.quantize = quantize
         self.rows_per_block = rows_per_block
 
     @cute.jit
-    def __call__(self, x, centroids, labels, norms, dim, pitch, centroid_pitch, stream):
+    def __call__(
+        self, x, out, centroids, labels, norms, dim, input_pitch, output_pitch,
+        centroid_pitch, stream
+    ):
         rows = norms.shape[0]
-        self.kernel(x, centroids, labels, norms, dim, pitch, centroid_pitch).launch(
+        self.kernel(
+            x, out, centroids, labels, norms, dim, input_pitch, output_pitch,
+            centroid_pitch
+        ).launch(
             grid=((rows + self.rows_per_block - 1) // self.rows_per_block,
                   1, 1),
             block=(32 * self.rows_per_block, 1, 1),
@@ -189,8 +284,18 @@ class _StageRowNormsSm90:
         )
 
     @cute.kernel
-    def kernel(self, x: cute.Tensor, centroids: cute.Tensor, labels: cute.Tensor,
-               norms: cute.Tensor, dim: Int64, pitch: Int64, centroid_pitch: Int64):
+    def kernel(
+        self,
+        x: cute.Tensor,
+        out: cute.Tensor,
+        centroids: cute.Tensor,
+        labels: cute.Tensor,
+        norms: cute.Tensor,
+        dim: Int64,
+        input_pitch: Int64,
+        output_pitch: Int64,
+        centroid_pitch: Int64,
+    ):
         thread, _, _ = cute.arch.thread_idx()
         block, _, _ = cute.arch.block_idx()
         thread = thread.to(Int64)
@@ -199,13 +304,39 @@ class _StageRowNormsSm90:
                + thread // Int64(32))
         rows = norms.shape[0]
         column = lane
-        total = Float32(0.0)
-        if row < rows:
-            while column < dim:
-                stored = x[row * pitch + column].to(Float32)
-                stored -= centroids[labels[row] * centroid_pitch + column].to(Float32)
-                total += stored * stored
-                column += Int64(32)
+        if const_expr(self.integer):
+            total = Int32(0)
+            if row < rows:
+                while column < output_pitch:
+                    output_index = row * output_pitch + column
+                    if column < dim:
+                        if const_expr(self.quantize):
+                            code = x[row * input_pitch + column]
+                            if const_expr(self.unsigned):
+                                code -= Float32(128.0)
+                            code = cute.math.roundeven(code)
+                            code = Float32(-128.0) if code < -128.0 else code
+                            code = Float32(127.0) if code > 127.0 else code
+                            value = code.to(Int32)
+                        else:
+                            value = x[row * input_pitch + column].to(Int32)
+                            if const_expr(self.unsigned):
+                                value -= Int32(128)
+                        out[output_index] = value.to(Int8)
+                        total += value * value
+                    else:
+                        out[output_index] = Int32(0).to(Int8)
+                    column += Int64(32)
+        else:
+            total = Float32(0.0)
+            if row < rows:
+                while column < dim:
+                    stored = x[
+                        row * input_pitch + column
+                    ].to(Float32)
+                    stored -= centroids[labels[row] * centroid_pitch + column].to(Float32)
+                    total += stored * stored
+                    column += Int64(32)
         for offset in (16, 8, 4, 2, 1):
             total += cute.arch.shuffle_sync_bfly(total, offset=offset)
         if row < rows and lane == 0:
@@ -251,10 +382,12 @@ def prepare_row_norms(mirror, norms, centroids):
             compiled = cute.compile(
                 _StageRowNormsSm90(),
                 from_dlpack(storage, assumed_align=16),
+                from_dlpack(storage, assumed_align=16),
                 from_dlpack(flat_centroids, assumed_align=16),
                 from_dlpack(labels, assumed_align=4),
                 from_dlpack(norms, assumed_align=4),
                 Int64(dim),
+                Int64(pitch),
                 Int64(pitch),
                 Int64(centroid_pitch),
                 cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True),
@@ -277,10 +410,11 @@ def launch_row_norms(prepared, norms_out=None, labels=None):
     require_tensor(labels, "labels", dtype=torch.int64,
                    shape=norms.shape, device=norms.device)
     with torch.cuda.device(prepared.mirror.device):
-        prepared.compiled(prepared.flat_mirror,
+        prepared.compiled(prepared.flat_mirror, prepared.flat_mirror,
                           prepared.flat_centroids,
                           labels, norms,
                           prepared.mirror.shape[1], prepared.mirror.stride(0),
+                          prepared.mirror.stride(0),
                           prepared.centroids.stride(0))
 
 
@@ -453,3 +587,23 @@ def launch_argmin_decode(prepared, codes_out=None):
     codes = prepared.codes if codes_out is None else codes_out
     with torch.cuda.device(prepared.scores.device):
         prepared.compiled(prepared.keys, codes, prepared.scores)
+
+
+@torch.no_grad()
+def finalize_int8_outputs(prepared, labels_out=None, distance_out=None):
+    """Decode packed winners and reconstruct distances through INT64."""
+    keys, row_norms, distances, labels = prepared
+    distance_dtype = distances.dtype
+    if distance_dtype not in (torch.float32, torch.int64):
+        raise ValueError("integer distances require FP32 or INT64")
+    labels = labels if labels_out is None else labels_out
+    distances = distances if distance_out is None else distance_out
+    require_tensor(labels, "labels", dtype=torch.int64,
+                   shape=row_norms.shape, device=row_norms.device)
+    require_tensor(distances, "distances", dtype=distance_dtype,
+                   shape=row_norms.shape, device=row_norms.device)
+    flat = keys.reshape(-1)
+    labels.copy_(flat).bitwise_and_(0xFFFFFFFF)
+    flat.bitwise_right_shift_(32).add_(row_norms)
+    distances.copy_(flat)
+    flat.fill_(INTEGER_INITIAL_KEY)
