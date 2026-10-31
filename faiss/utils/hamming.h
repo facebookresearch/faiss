@@ -107,6 +107,13 @@ struct BitstringReader {
 
 FAISS_API extern size_t hamming_batch_size;
 
+/// Exact Hamming k-NN normally parallelizes over queries, so with fewer
+/// queries than threads some threads stay idle (a single query runs on one
+/// thread). When nq <= nthreads / 2 and the database has at least this many
+/// vectors, the database is split across threads instead. Set to SIZE_MAX
+/// to disable.
+FAISS_API extern size_t hamming_db_parallel_min_vectors;
+
 /** Compute a set of Hamming distances between na and nb binary vectors
  *
  * @param  a             size na * nbytespercode
