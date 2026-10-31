@@ -151,6 +151,8 @@
         <link refid="quantizers_8h_source"/>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
       </node>
@@ -159,6 +161,10 @@
         <link refid="scanners_8h_source"/>
         <childnode refid="13" relation="include">
         </childnode>
+      </node>
+      <node id="14">
+        <label>faiss/impl/scalar_quantizer/sq-avx512-impl.h</label>
+        <link refid="sq-avx512-impl_8h_source"/>
       </node>
       <node id="13">
         <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>

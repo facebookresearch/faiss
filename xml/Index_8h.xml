@@ -257,27 +257,27 @@
         </childnode>
         <childnode refid="117" relation="include">
         </childnode>
-        <childnode refid="126" relation="include">
-        </childnode>
         <childnode refid="127" relation="include">
+        </childnode>
+        <childnode refid="128" relation="include">
         </childnode>
         <childnode refid="66" relation="include">
         </childnode>
         <childnode refid="83" relation="include">
         </childnode>
-        <childnode refid="128" relation="include">
-        </childnode>
         <childnode refid="129" relation="include">
         </childnode>
-        <childnode refid="84" relation="include">
-        </childnode>
         <childnode refid="130" relation="include">
+        </childnode>
+        <childnode refid="84" relation="include">
         </childnode>
         <childnode refid="131" relation="include">
         </childnode>
         <childnode refid="132" relation="include">
         </childnode>
-        <childnode refid="135" relation="include">
+        <childnode refid="133" relation="include">
+        </childnode>
+        <childnode refid="136" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -904,13 +904,13 @@
         <childnode refid="66" relation="include">
         </childnode>
       </node>
-      <node id="126">
+      <node id="127">
         <label>faiss/impl/NNDescent.h</label>
         <link refid="NNDescent_8h_source"/>
         <childnode refid="90" relation="include">
         </childnode>
       </node>
-      <node id="127">
+      <node id="128">
         <label>faiss/impl/NSG.h</label>
         <link refid="NSG_8h_source"/>
         <childnode refid="34" relation="include">
@@ -993,17 +993,17 @@
         </childnode>
         <childnode refid="120" relation="include">
         </childnode>
-        <childnode refid="121" relation="include">
-        </childnode>
         <childnode refid="122" relation="include">
         </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
         <childnode refid="123" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
         </childnode>
         <childnode refid="124" relation="include">
         </childnode>
         <childnode refid="125" relation="include">
+        </childnode>
+        <childnode refid="126" relation="include">
         </childnode>
       </node>
       <node id="83">
@@ -1050,7 +1050,7 @@
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
-      <node id="128">
+      <node id="129">
         <label>faiss/impl/kmeans1d.h</label>
         <link refid="kmeans1d_8h_source"/>
       </node>
@@ -1100,7 +1100,7 @@
         <label>faiss/impl/pq_code_distance/pq_scan_impl.h</label>
         <link refid="pq__scan__impl_8h_source"/>
       </node>
-      <node id="129">
+      <node id="130">
         <label>faiss/impl/residual_quantizer_encode_steps.h</label>
         <link refid="residual__quantizer__encode__steps_8h_source"/>
       </node>
@@ -1109,21 +1109,27 @@
         <link refid="codecs_8h_source"/>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
-        </childnode>
-      </node>
-      <node id="121">
-        <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
-        <link refid="distance__computers_8h_source"/>
-        <childnode refid="44" relation="include">
+        <childnode refid="121" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
       </node>
       <node id="122">
+        <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
+        <link refid="distance__computers_8h_source"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="123">
         <label>faiss/impl/scalar_quantizer/quantizers.h</label>
         <link refid="quantizers_8h_source"/>
         <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
@@ -1134,23 +1140,29 @@
         <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="123">
+      <node id="124">
         <label>faiss/impl/scalar_quantizer/similarities.h</label>
         <link refid="similarities_8h_source"/>
         <childnode refid="44" relation="include">
         </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
         <childnode refid="45" relation="include">
         </childnode>
+      </node>
+      <node id="121">
+        <label>faiss/impl/scalar_quantizer/sq-avx512-impl.h</label>
+        <link refid="sq-avx512-impl_8h_source"/>
       </node>
       <node id="45">
         <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
         <link refid="sq-dispatch_8h_source"/>
       </node>
-      <node id="124">
+      <node id="125">
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>
-      <node id="125">
+      <node id="126">
         <label>faiss/impl/sq_fastscan_utils.h</label>
         <link refid="sq__fastscan__utils_8h_source"/>
         <childnode refid="18" relation="include">
@@ -1168,51 +1180,51 @@
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
-      <node id="130">
+      <node id="131">
         <label>faiss/svs/IndexSVSFaissUtils.h</label>
         <link refid="IndexSVSFaissUtils_8h_source"/>
-        <childnode refid="131" relation="include">
-        </childnode>
         <childnode refid="132" relation="include">
+        </childnode>
+        <childnode refid="133" relation="include">
+        </childnode>
+        <childnode refid="136" relation="include">
+        </childnode>
+      </node>
+      <node id="132">
+        <label>faiss/svs/IndexSVSFlat.h</label>
+        <link refid="IndexSVSFlat_8h_source"/>
+      </node>
+      <node id="133">
+        <label>faiss/svs/IndexSVSIVF.h</label>
+        <link refid="IndexSVSIVF_8h_source"/>
+        <childnode refid="134" relation="include">
         </childnode>
         <childnode refid="135" relation="include">
         </childnode>
       </node>
-      <node id="131">
-        <label>faiss/svs/IndexSVSFlat.h</label>
-        <link refid="IndexSVSFlat_8h_source"/>
-      </node>
-      <node id="132">
-        <label>faiss/svs/IndexSVSIVF.h</label>
-        <link refid="IndexSVSIVF_8h_source"/>
-        <childnode refid="133" relation="include">
-        </childnode>
-        <childnode refid="134" relation="include">
-        </childnode>
-      </node>
-      <node id="133">
+      <node id="134">
         <label>faiss/svs/IndexSVSIVFLVQ.h</label>
         <link refid="IndexSVSIVFLVQ_8h_source"/>
       </node>
-      <node id="134">
+      <node id="135">
         <label>faiss/svs/IndexSVSIVFLeanVec.h</label>
         <link refid="IndexSVSIVFLeanVec_8h_source"/>
       </node>
-      <node id="135">
+      <node id="136">
         <label>faiss/svs/IndexSVSVamana.h</label>
         <link refid="IndexSVSVamana_8h_source"/>
-        <childnode refid="132" relation="include">
-        </childnode>
-        <childnode refid="136" relation="include">
+        <childnode refid="133" relation="include">
         </childnode>
         <childnode refid="137" relation="include">
         </childnode>
+        <childnode refid="138" relation="include">
+        </childnode>
       </node>
-      <node id="136">
+      <node id="137">
         <label>faiss/svs/IndexSVSVamanaLVQ.h</label>
         <link refid="IndexSVSVamanaLVQ_8h_source"/>
       </node>
-      <node id="137">
+      <node id="138">
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>

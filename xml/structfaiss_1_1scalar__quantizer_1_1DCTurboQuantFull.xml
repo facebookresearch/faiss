@@ -678,6 +678,7 @@
         <argsstring>(const uint8_t *code_0, const uint8_t *code_1, const uint8_t *code_2, const uint8_t *code_3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3) const</argsstring>
         <name>query_to_codes_batch_4</name>
         <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_01_4_1a4f83bb135b02ea6ea031a3eb05fc6dc4">query_to_codes_batch_4</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code_0</declname>

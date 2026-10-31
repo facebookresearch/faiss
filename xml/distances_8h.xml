@@ -477,6 +477,8 @@
         <link refid="quantizers_8h_source"/>
         <childnode refid="52" relation="include">
         </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
         <childnode refid="53" relation="include">
         </childnode>
       </node>
@@ -485,6 +487,10 @@
         <link refid="scanners_8h_source"/>
         <childnode refid="53" relation="include">
         </childnode>
+      </node>
+      <node id="62">
+        <label>faiss/impl/scalar_quantizer/sq-avx512-impl.h</label>
+        <link refid="sq-avx512-impl_8h_source"/>
       </node>
       <node id="53">
         <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
@@ -545,8 +551,6 @@
         </childnode>
         <childnode refid="53" relation="include">
         </childnode>
-        <childnode refid="62" relation="include">
-        </childnode>
         <childnode refid="63" relation="include">
         </childnode>
         <childnode refid="64" relation="include">
@@ -555,8 +559,10 @@
         </childnode>
         <childnode refid="66" relation="include">
         </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
       </node>
-      <node id="62">
+      <node id="63">
         <label>faiss/utils/distances_dispatch.h</label>
         <link refid="distances__dispatch_8h"/>
         <childnode refid="37" relation="include">
@@ -566,19 +572,19 @@
         <label>faiss/utils/simd_impl/IVFFlatScanner-inl.h</label>
         <link refid="IVFFlatScanner-inl_8h_source"/>
       </node>
-      <node id="63">
+      <node id="64">
         <label>faiss/utils/simd_impl/distances_autovec-inl.h</label>
         <link refid="distances__autovec-inl_8h_source"/>
       </node>
-      <node id="64">
+      <node id="65">
         <label>faiss/utils/simd_impl/distances_simdlib256.h</label>
         <link refid="distances__simdlib256_8h_source"/>
       </node>
-      <node id="65">
+      <node id="66">
         <label>faiss/utils/simd_impl/distances_sse-inl.h</label>
         <link refid="distances__sse-inl_8h_source"/>
       </node>
-      <node id="66">
+      <node id="67">
         <label>faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h</label>
         <link refid="exhaustive__L2sqr__blas__cmax_8h_source"/>
       </node>

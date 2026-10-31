@@ -25,6 +25,7 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerLloydMax_3_01NBits_00_01SIMDLevel_1_1NONE_01_4_1a5eaef6990061736b8ccc047423f972c0">encode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a532e2d55a8ea80f6526077e1c2440f14">encode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1acd0b8465211553015c88a12f93665c6d">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a43a6d6eb3c44c6062ec8460176895787">encode_vector</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -55,6 +56,7 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab669f4006a87989fc6ca8b68b435e4b3">decode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1af59a8ba64161f5858e60c268d2e23132">decode_vector</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1afbeb0bd7ac9b7a775079d5812503c5cd">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1aff7377cb684352e853665daf0e0b54f1">decode_vector</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -95,22 +97,16 @@
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
       </node>
-      <node id="3">
-        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
-        <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="4" relation="public-inheritance">
+      <node id="3">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01THE__LEVEL__TO__DISPATCH_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
@@ -119,10 +115,10 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
-        <label>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="6" relation="public-inheritance">
+      <node id="5">
+        <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01THE__LEVEL__TO__DISPATCH_01_4"/>
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
       <node id="6">
@@ -131,16 +127,22 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
-        <label>faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="8" relation="public-inheritance">
+      <node id="7">
+        <label>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4"/>
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
       <node id="8">
         <label>faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::scalar_quantizer::QuantizerFP16&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01THE__LEVEL__TO__DISPATCH_01_4"/>
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
       <node id="10">

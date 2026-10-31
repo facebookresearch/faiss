@@ -3,7 +3,7 @@
   <compounddef id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</compoundname>
     <basecompoundref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer::SQuantizer</basecompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1AVX512_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::AVX512 &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</derivedcompoundref>
     <templateparamlist>
     </templateparamlist>
     <sectiondef kind="public-attrib">
@@ -51,6 +51,7 @@
         <name>encode_vector</name>
         <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::encode_vector</qualifiedname>
         <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d">encode_vector</reimplements>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1a43a6d6eb3c44c6062ec8460176895787">encode_vector</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -74,6 +75,7 @@
         <name>decode_vector</name>
         <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::decode_vector</qualifiedname>
         <reimplements refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4">decode_vector</reimplements>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4_1aff7377cb684352e853665daf0e0b54f1">decode_vector</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -122,16 +124,16 @@
         <label>faiss::ScalarQuantizer::SQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
       </node>
-      <node id="3">
-        <label>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::AVX512 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1AVX512_01_4"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::scalar_quantizer::QuantizerBF16&lt; THE_LEVEL_TO_DISPATCH &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01THE__LEVEL__TO__DISPATCH_01_4"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

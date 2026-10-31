@@ -8,6 +8,7 @@
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="simdlib_8h" local="no">faiss/impl/simdlib/simdlib.h</includes>
     <includes refid="simdlib__avx2_8h" local="no">faiss/impl/simdlib/simdlib_avx2.h</includes>
+    <includedby refid="sq-avx512-impl_8h" local="no">faiss/impl/scalar_quantizer/sq-avx512-impl.h</includedby>
     <incdepgraph>
       <node id="5">
         <label>faiss/impl/platform_macros.h</label>
@@ -103,6 +104,18 @@
         <label>string</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/impl/scalar_quantizer/sq-avx512-impl.h</label>
+        <link refid="sq-avx512-impl_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/simdlib/simdlib_avx512.h</label>
+        <link refid="simdlib__avx512_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint16__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::simd32uint16_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1simd64uint8__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::simd64uint8_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>

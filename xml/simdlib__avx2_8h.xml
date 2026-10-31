@@ -88,6 +88,10 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="3">
+        <label>faiss/impl/scalar_quantizer/sq-avx512-impl.h</label>
+        <link refid="sq-avx512-impl_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/impl/simdlib/simdlib_avx2.h</label>
         <link refid="simdlib__avx2_8h"/>
@@ -97,6 +101,8 @@
       <node id="2">
         <label>faiss/impl/simdlib/simdlib_avx512.h</label>
         <link refid="simdlib__avx512_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1AVX2_01_4" prot="public">faiss::simd256bit_tpl&lt; SIMDLevel::AVX2 &gt;</innerclass>
