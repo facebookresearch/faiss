@@ -241,8 +241,8 @@ struct QuantizerTemplate<
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
 struct QuantizerLloydMax<1, SIMDLevel::AVX2>
-        : QuantizerLloydMax<1, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<1, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<1, SIMDLevel::AVX2> {
+    using Base = QuantizerLloydMaxBase<1, SIMDLevel::AVX2>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -280,8 +280,8 @@ struct QuantizerLloydMax<1, SIMDLevel::AVX2>
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
 struct QuantizerLloydMax<2, SIMDLevel::AVX2>
-        : QuantizerLloydMax<2, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<2, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<2, SIMDLevel::AVX2> {
+    using Base = QuantizerLloydMaxBase<2, SIMDLevel::AVX2>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -340,8 +340,8 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
 #define DEFINE_LLOYD_MAX_AVX2_MULTIBIT(NBITS, UNPACK_EXPR)                   \
     template <>                                                              \
     struct QuantizerLloydMax<NBITS, SIMDLevel::AVX2>                         \
-            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {                    \
-        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;              \
+            : QuantizerLloydMaxBase<NBITS, SIMDLevel::AVX2> {                \
+        using Base = QuantizerLloydMaxBase<NBITS, SIMDLevel::AVX2>;          \
                                                                              \
         QuantizerLloydMax(size_t d, const std::vector<float>& trained)       \
                 : Base(d, trained) {                                         \
@@ -371,8 +371,8 @@ DEFINE_LLOYD_MAX_AVX2_MULTIBIT(4, unpack_8x4bit_to_u32(code, i));
 // 8-bit Lloyd-Max: indices are raw bytes, no bit packing.
 template <>
 struct QuantizerLloydMax<8, SIMDLevel::AVX2>
-        : QuantizerLloydMax<8, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<8, SIMDLevel::AVX2> {
+    using Base = QuantizerLloydMaxBase<8, SIMDLevel::AVX2>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -402,9 +402,9 @@ struct QuantizerLloydMax<8, SIMDLevel::AVX2>
  **********************************************************/
 
 template <>
-struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16<SIMDLevel::NONE> {
+struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16Base<SIMDLevel::AVX2> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {
+            : QuantizerFP16Base<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -420,9 +420,9 @@ struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16<SIMDLevel::NONE> {
  **********************************************************/
 
 template <>
-struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
+struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16Base<SIMDLevel::AVX2> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {
+            : QuantizerBF16Base<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -441,9 +441,9 @@ struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
 
 template <>
 struct Quantizer8bitDirect<SIMDLevel::AVX2>
-        : Quantizer8bitDirect<SIMDLevel::NONE> {
+        : Quantizer8bitDirectBase<SIMDLevel::AVX2> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {
+            : Quantizer8bitDirectBase<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -461,9 +461,9 @@ struct Quantizer8bitDirect<SIMDLevel::AVX2>
 
 template <>
 struct Quantizer8bitDirectSigned<SIMDLevel::AVX2>
-        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
+        : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {
+            : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 

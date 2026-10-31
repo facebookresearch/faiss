@@ -42,6 +42,8 @@ inline float decode_bf16(const uint16_t v) {
     return fp.as_f32;
 }
 
+namespace {
+
 inline void encode_bf16_simd(const float* src, uint16_t* dst, size_t n) {
     size_t i = 0;
 #ifdef __AVX512BF16__
@@ -98,5 +100,7 @@ inline void decode_bf16_simd(const uint16_t* src, float* dst, size_t n) {
         dst[i] = decode_bf16(src[i]);
     }
 }
+
+} // namespace
 
 } // namespace faiss

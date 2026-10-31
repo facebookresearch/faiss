@@ -21,19 +21,30 @@ using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
 using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
 
 // HeapWithBucketsForHamming32 uses simd8uint32 under the
-// hood.
+// hood. SL is the SIMD level of the file that uses it, so each level compiles
+// its own copy under its own name.
 
-template <typename C, uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
+template <
+        typename C,
+        uint32_t NBUCKETS,
+        uint32_t N,
+        typename HammingComputerT,
+        SIMDLevel SL>
 struct HeapWithBucketsForHamming32 {
     // this case was not implemented yet.
 };
 
-template <uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
+template <
+        uint32_t NBUCKETS,
+        uint32_t N,
+        typename HammingComputerT,
+        SIMDLevel SL>
 struct HeapWithBucketsForHamming32<
         CMax<int, int64_t>,
         NBUCKETS,
         N,
-        HammingComputerT> {
+        HammingComputerT,
+        SL> {
     static constexpr uint32_t NBUCKETS_8 = NBUCKETS / 8;
     static_assert(
             (NBUCKETS) > 0 && ((NBUCKETS % 8) == 0),

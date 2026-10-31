@@ -468,17 +468,11 @@ Rules:
    between files therefore has internal linkage (`static inline` or an anonymous
    namespace), or a `SIMDLevel` template parameter that only files of that level
    instantiate. This also applies to every external-linkage function that inlines
-   such code. These functions do not follow this rule yet:
-   - The `SIMDLevel::NONE` scalar quantizers that per-level files instantiate
-     (`QuantizerFP16`, `QuantizerBF16`, `Quantizer8bitDirect`,
-     `QuantizerLloydMax`, `QuantizerTurboQuantFull`), with the `fp16.h` and
-     `bf16.h` helpers that they inline.
-   - The inline virtual defaults of `DistanceComputer`,
-     `FlatCodesDistanceComputer`, `SQDistanceComputer`,
-     `IVFCoarseDistanceScanner` and `SIMDResultHandlerToFloat`.
-   - `HeapWithBucketsForHamming32::bs_addn`.
-   - `PQCodeDistanceScalar8<AVX2>` and `<AVX512>`, which
-     `pq_code_distance-generic.cpp` instantiates.
+   such code, and to these cases:
+   - A default virtual function is defined in a common `.cpp` file, not in the
+     header, for example `DistanceComputer::distances_batch_4`.
+   - A standard container in per-level code has an element or hash type that
+     differs per level, for example `ReservoirHandler::Reservoir`.
 6. **Architecture code** that is not a SIMD level (prefetch, CPU detection) uses
    `__x86_64__`/`_M_X64` or `__aarch64__`. Keep a branch only if its code is
    different from the other branches.

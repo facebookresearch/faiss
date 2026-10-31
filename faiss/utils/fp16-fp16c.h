@@ -12,6 +12,8 @@
 
 namespace faiss {
 
+namespace {
+
 inline uint16_t encode_fp16(float x) {
     __m128 xf = _mm_set1_ps(x);
     __m128i xi =
@@ -24,5 +26,7 @@ inline float decode_fp16(uint16_t x) {
     __m128 xf = _mm_cvtph_ps(xi);
     return _mm_cvtss_f32(xf);
 }
+
+} // namespace
 
 } // namespace faiss

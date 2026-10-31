@@ -48,7 +48,7 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
     // The AVX-512 levels share the AVX512 masked_sum specialization.
     static constexpr SIMDLevel SUM_LEVEL = simd512_level_selector<SL2>::value;
     using Sim = Similarity;
-    QuantizerTurboQuantFull<NBits, SIMDLevel::NONE> quant;
+    QuantizerTurboQuantFull<NBits, SL2> quant;
     std::vector<float> query;
     std::vector<float> query_proj;
     float q_norm_sq = 0;
