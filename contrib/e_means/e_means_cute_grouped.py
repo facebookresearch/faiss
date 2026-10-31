@@ -17,7 +17,7 @@ from typing import NamedTuple
 
 import cutlass
 import cutlass.cute as cute
-from cutlass import BFloat16, Float32, Int32, const_expr
+from cutlass import Float32, Int8, Int32, const_expr
 from cutlass.cute.runtime import from_dlpack
 from cutlass.utils import LayoutEnum
 import cutlass.utils.hopper_helpers as hopper_utils
@@ -26,7 +26,7 @@ from quack import layout_utils, sm90_utils
 
 from .e_means_cute_argmin import require_tensor
 from .e_means_cute_row_owned import (
-    TILE_N, _RowOwnedAssignSm90, _assert_candidate_order,
+    TILE_N, _RowOwnedAssignSm90, _assert_candidate_order, _operand_type,
     _required_smem, _row_owned_shape_legal, _validate_operand,
 )
 
@@ -38,9 +38,9 @@ _COMPILED = {}
 class _TileSelectSm90(_RowOwnedAssignSm90):
     def __init__(self, operand_type, tile_k, tile_m, stages):
         # Integer selection carries raw keys, rather than packed centroid IDs.
-        super().__init__(operand_type, tile_k, tile_m, stages,
+        super().__init__(operand_type, False, tile_k, tile_m, stages,
                          1 if tile_m == 64 else 2)
-        self.score_type = Float32
+        self.score_type = Int32 if operand_type is Int8 else Float32
 
     @cute.jit
     def fold(self, accumulator, n_smem, coordinates, row_min, row_id, block, stage):
@@ -83,7 +83,7 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
                 row_id[row] = block if take else row_id[row]
 
     @cute.jit
-    def store(self, q, output_values, output_labels,
+    def store(self, q, row_norms, output_values, output_labels,
               coordinates, row_min, row_id):
         row_block, _, _ = cute.arch.block_idx()
         if cute.arch.lane_idx() % 4 == 0:
@@ -268,13 +268,12 @@ def _plan_fits_smem(dtype, plan, smem):
 
 
 def _validate_plan(batch, clusters, dim, dtype, plan, smem):
-    if dtype is not torch.bfloat16:
-        raise ValueError("grouped operands require BF16")
+    _operand_type(dtype)
     if (not isinstance(plan, tuple) or len(plan) != 3
             or not all(type(value) is int for value in plan)):
         raise ValueError('grouped plan requires explicit (tile_k, tile_m, stages)')
     tile_k, tile_m, stages = plan
-    if (not _row_owned_shape_legal(batch, clusters, dim)
+    if (not _row_owned_shape_legal(batch, clusters, dim, dtype is torch.int8)
             or tile_k < dim or tile_k % (16 if dtype is torch.bfloat16 else 32)
             or tile_m not in (64, 128, 256) or stages not in (2, 3)):
         raise ValueError('grouped plan does not cover legal operands')
@@ -308,7 +307,7 @@ def prepare_grouped(rows, prepared, values, labels, plan):
 
     _require_stack()
     centroids, norms = prepared.centroids, prepared.norms
-    operand_type = BFloat16
+    operand_type = _operand_type(rows.dtype)
     _validate_operand(rows, 'grouped rows', rows.device)
     _validate_operand(centroids, 'grouped centroids', rows.device)
     if prepared.spherical or centroids.dtype is not rows.dtype or rows.shape[1] != centroids.shape[1]:
@@ -341,7 +340,7 @@ def prepare_grouped(rows, prepared, values, labels, plan):
         key = (rows.dtype, plan, tuple(rows.shape), tuple(centroids.shape),
                rows.stride(0), centroids.stride(0), rows.device.index)
         selection = _compile('select', _TileSelectSm90(operand_type, *plan),
-                             (rows, centroids, norms, None, codes), key)
+                             (rows, centroids, norms, None, None, codes), key)
         recovery = _compile('recover', _RecoverTilesSm90(operand_type, rows.shape[1], tile_k),
                             (rows, centroids, norms, grouping.order, grouping.offsets, codes, values), key)
     return PreparedGrouped(selection, recovery, rows, centroids, norms,
@@ -357,7 +356,7 @@ def launch_grouped(prepared, labels_out=None):
                    shape=prepared.labels.shape, device=prepared.labels.device)
     with torch.cuda.device(prepared.rows.device):
         prepared.selection(prepared.rows, prepared.centroids, prepared.norms,
-                           None, prepared.codes)
+                           None, None, prepared.codes)
         launch_grouping(prepared.grouping)
         prepared.recovery(prepared.rows, prepared.centroids, prepared.norms,
                           prepared.grouping.order, prepared.grouping.offsets,
