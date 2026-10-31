@@ -34,6 +34,20 @@ automatic choice. No dataset download is required. This is an integration
 example, not a disk-loading or performance measurement.
 
 
+demo_e_means_sharded.py
+----------------------
+
+Small CUDA/NCCL centroid-ownership example with two ranks. Each rank keeps
+only its contiguous centroid shard, and supplies equal row contributions.
+Several partial accumulations complete one prescribed local share before
+update; the last batch has a real tail. No dataset download is required.
+
+    torchrun --standalone --nproc-per-node=2 demos/demo_e_means_sharded.py
+
+Add `--stream` to generate bounded chunks instead of keeping the small local
+row matrix. This illustrates the public lifecycle, not disk IO or performance.
+
+
 demo_ondisk_ivf.py
 ------------------
 

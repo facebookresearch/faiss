@@ -265,7 +265,175 @@ def _invalid_sizes(group, transport, device):
         [[1 / 24, 1 / 24], [5., 5.]], device=device), rtol=0, atol=0)
 
 
-def _nccl_worker(rank, world_size, rendezvous, subgroup_only):
+def _sharder_contracts(group, device):
+    from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
+    from torch_test_e_means_cute import _ready
+
+    rank = dist.get_rank(group)
+    check = unittest.TestCase()
+    q = CastQuantizer(1, torch.bfloat16)
+    with check.assertRaisesRegex(ValueError, "sharded centroids currently require quantizer=None"):
+        EmeansShardedCentroids(1, 2, group=group, quantizer=q)
+    with check.assertRaisesRegex(ValueError, "sharded centroids currently require quantizer=None"):
+        EmeansShardedCentroids(
+            1,
+            2,
+            25,
+            None,
+            None,
+            "throughput",
+            1234,
+            False,
+            None,
+            4096,
+            q,
+            group=group,
+        )
+    initial = torch.tensor([[0.], [2.], [4.], [9.]], device=device)
+    expected = torch.tensor([[.25], [1.75], [4.25], [9.]], device=device)
+    local = torch.tensor([[.25], [1.75], [4.25]] * 2, device=device)
+    saved_rows = local.clone()
+    shard = slice(2 * rank, 2 * rank + 2)
+    args = dict(group=group, niter=2, batch_size=8, alpha0=1,
+                assignment_chunk_size=3, capture_assignments=True)
+    model = EmeansShardedCentroids(1, 4, **args)
+    with check.assertRaisesRegex(ValueError, "divisible"):
+        model.begin(11, initial[shard])
+    model.begin(12, initial[shard])
+    torch.testing.assert_close(model.current_centroids(), initial[shard], rtol=0, atol=0)
+    with check.assertRaises(RuntimeError):
+        model.final_closing_mean([local])
+    retained_labels = []
+    for epoch in range(2):
+        for begin in (0, 4):
+            rows = local[begin:begin + 4]
+            parts = [torch.empty_like(model.current_centroids()) for _ in range(2)]
+            dist.all_gather(parts, model.current_centroids(), group=group)
+            frozen = torch.cat(parts)
+            global_rows = torch.cat((rows, rows))
+            distances = (global_rows.double()[:, None] - frozen.double()).square().sum(2)
+            labels = distances.argmin(1)
+            counts = torch.bincount(labels, minlength=4)
+            sums = torch.zeros((4, 1), dtype=torch.float64, device=device)
+            sums.index_add_(0, labels, global_rows.double())
+            before = model.current_centroids().clone()
+            partial = model.accumulate(rows[:1])
+            assert partial["n"] == 2 and partial["sums"] is None and partial["counts"] is None
+            torch.testing.assert_close(model.current_centroids(), before, rtol=0, atol=0)
+            stats = model.accumulate(rows[1:])
+            assert stats["n"] == 2 * len(rows)
+            torch.testing.assert_close(stats["sums"], sums[shard].float(), rtol=0, atol=0)
+            torch.testing.assert_close(stats["counts"], counts[shard].float(), rtol=0, atol=0)
+            owned = (labels >= 2 * rank) & (labels < 2 * rank + 2)
+            torch.testing.assert_close(stats["objective"], distances[owned, labels[owned]].sum(),
+                                       rtol=0, atol=0)
+            if epoch == 1:
+                for contribution, oracle in ((partial, labels[:1]), (stats, labels[1:len(rows)])):
+                    torch.testing.assert_close(contribution["labels"], oracle, rtol=0, atol=0)
+                    retained_labels.append((contribution["labels"], oracle.clone()))
+            else:
+                assert "labels" not in partial and "labels" not in stats
+            model.update(stats)
+        model.end_epoch()
+    torch.testing.assert_close(model.current_centroids(), expected[shard], rtol=0, atol=0)
+    closed = model.final_closing_mean([local[:2], local[2:]])
+    torch.testing.assert_close(closed, expected[shard], rtol=0, atol=0)
+    assert closed.dtype == torch.float32 and not closed.requires_grad
+    torch.testing.assert_close(local, saved_rows, rtol=0, atol=0)
+    torch.testing.assert_close(initial, torch.tensor([[0.], [2.], [4.], [9.]], device=device), rtol=0, atol=0)
+    for labels, oracle in retained_labels:
+        torch.testing.assert_close(labels, oracle, rtol=0, atol=0)
+    with check.assertRaises(RuntimeError):
+        model.current_centroids()
+    saved_closed = closed.clone()
+    model.reset()
+    torch.testing.assert_close(closed, saved_closed, rtol=0, atol=0)
+    resident = EmeansShardedCentroids(1, 4, **args)
+    resident.train(local, init_centroids=initial[shard])
+    torch.testing.assert_close(resident.centroids, expected[shard], rtol=0, atol=0)
+    torch.testing.assert_close(resident.assignments, torch.tensor([0, 1, 2, 0, 1, 2], device=device), rtol=0, atol=0)
+
+    # Wrong closing row count poisons the run; reset permits real same-model recovery.
+    failed = EmeansShardedCentroids(1, 2, group=group, niter=1, batch_size=4, alpha0=1)
+    ones = torch.ones((2, 1), device=device)
+    own_initial = torch.tensor([[1. if rank == 0 else 9.]], device=device)
+    failed.begin(4, own_initial)
+    failed.update(failed.accumulate(ones))
+    failed.end_epoch()
+    with check.assertRaisesRegex(ValueError, "cover global_n"):
+        failed.final_closing_mean([ones[:1]])
+    with check.assertRaises(RuntimeError):
+        failed.accumulate(ones)
+    failed.reset()
+    failed.begin(4, own_initial)
+    failed.update(failed.accumulate(ones))
+    failed.end_epoch()
+    torch.testing.assert_close(failed.final_closing_mean([ones]), own_initial, rtol=0, atol=0)
+
+    raw_supported = (not torch.version.hip and torch.cuda.get_device_capability(device)
+                     in ((8, 0), (9, 0), (10, 0)))
+    if importlib.util.find_spec("triton") is None:
+        print("sharder raw checks unavailable: Triton not installed", flush=True)
+    elif not raw_supported:
+        rejected = EmeansShardedCentroids(1, 2, group=group, assignment_backend="triton")
+        rejected.begin(4, own_initial)
+        with check.assertRaisesRegex(RuntimeError, "INT8 assignment requires"):
+            rejected.accumulate(ones.to(torch.int8))
+    else:
+        for backend in (("triton", "cute") if _ready() else ("triton",)):
+            for dtype, offset in ((torch.int8, 0), (torch.uint8, 128)):
+                for tie in (False, True):
+                    d = 8192
+                    rows = torch.full((2, d), offset, dtype=dtype, device=device)
+                    centers = torch.full((2, d), float(offset), device=device)
+                    centers[:, :1024] -= 128
+                    if not tie:
+                        centers[0, 1024] += 1
+                    distances = (centers.long() - rows[0].long()).square().sum(1)
+                    oracle = int(distances.argmin())  # Exact ties choose the lowest global ID.
+                    assert distances.tolist() == ([2**24, 2**24] if tie else [2**24 + 1, 2**24])
+                    raw = EmeansShardedCentroids(
+                        d,
+                        2,
+                        group=group,
+                        niter=1,
+                        batch_size=4,
+                        alpha0=1,
+                        capture_assignments=True,
+                        assignment_backend=backend,
+                    )
+                    raw.begin(4, centers[rank:rank + 1])
+                    stats = raw.accumulate(rows)
+                    torch.testing.assert_close(stats["labels"], torch.full((2,), oracle, device=device), rtol=0, atol=0)
+                    count = 4 if rank == oracle else 0
+                    torch.testing.assert_close(stats["sums"], torch.full((1, d), count * offset, dtype=torch.int64, device=device), rtol=0, atol=0)
+                    assert stats["counts"].dtype == torch.int64 and stats["counts"].item() == count
+                    saved_labels = stats["labels"].clone()
+                    raw.update(stats)
+                    raw.end_epoch()
+                    frozen = raw.current_centroids().clone()
+                    result = raw.finalize()
+                    expected_raw = rows[:1].float() if rank == oracle else frozen
+                    torch.testing.assert_close(result, expected_raw, rtol=0, atol=0)
+                    torch.testing.assert_close(stats["labels"], saved_labels, rtol=0, atol=0)
+                    # External INT64 stats fix the schema, not signed/unsigned
+                    # row metadata. The first raw closing rows must prepare the
+                    # matching centroid operand without private priming.
+                    raw.reset()
+                    raw.begin(4, centers[rank:rank + 1])
+                    raw.update({
+                        "sums": torch.full((1, d), count * offset, dtype=torch.int64, device=device),
+                        "counts": torch.tensor([count], dtype=torch.int64, device=device),
+                        "objective": distances[oracle].double() * count,
+                        "n": 4,
+                    })
+                    raw.end_epoch()
+                    scanned = raw.final_closing_mean([rows[:1], rows[1:]])
+                    torch.testing.assert_close(scanned, expected_raw, rtol=0, atol=0)
+                    print("sharder raw exact: %s %s tie=%s" % (backend, dtype, tie), flush=True)
+
+
+def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False):
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)
     device = torch.device("cuda", rank)
@@ -273,7 +441,9 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only):
     dist.init_process_group("nccl", init_method=rendezvous, rank=rank,
                             world_size=world_size, timeout=datetime.timedelta(seconds=60))
     try:
-        if subgroup_only:
+        if sharder_only:
+            _sharder_contracts(dist.group.WORLD, device)
+        elif subgroup_only:
             # Every world rank creates the group; global rank0 is not its root
             # and never participates in any of its training collectives.
             subgroup = dist.new_group([1, 2], timeout=datetime.timedelta(seconds=60))
@@ -327,6 +497,17 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only):
 class TestDistributedEmeans(unittest.TestCase):
     @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
                          and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    def test_two_gpu_sharded_centroids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _nccl_worker,
+                args=(2, "file://" + directory + "/group", False, True),
+                nprocs=2,
+                join=True,
+            )
+
+    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
+                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
     def test_two_gpu_caller_owned_transports(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -346,6 +527,28 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=3,
                 join=True,
             )
+
+    def test_auto_sharder_chunk_bound_is_independent_of_compute_backend(self):
+        from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
+
+        # Pure setup metadata; no process group, CUDA allocation or collective.
+        native = Emeans(128, 4096, assignment_backend='native')
+        model = EmeansShardedCentroids.__new__(EmeansShardedCentroids)
+        model.d, model.k, model.centroid_chunk_size = native.d, native.k, native.centroid_chunk_size
+        model.assignment_chunk_size = native.assignment_chunk_size
+        model.assignment_backend = 'auto'
+        expected_native_bound = native._get_assignment_chunk_size(True, True)
+        for backend in ('native', 'triton', 'cute'):
+            model._resolved_assignment_backend = backend
+            self.assertEqual(model._get_assignment_chunk_size(True, True), expected_native_bound)
+        for requested in ('native', 'triton', 'cute'):
+            control = Emeans(native.d, native.k, assignment_backend=requested,
+                             centroid_chunk_size=native.centroid_chunk_size)
+            model.assignment_backend = requested
+            self.assertEqual(model._get_assignment_chunk_size(True, True),
+                             control._get_assignment_chunk_size(True, True))
+        model.assignment_backend, model.assignment_chunk_size = 'auto', 37
+        self.assertEqual(model._get_assignment_chunk_size(True, True), 37)
 
 
 if __name__ == "__main__":
