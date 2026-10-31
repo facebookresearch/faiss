@@ -367,7 +367,10 @@ class Emeans:
         Defaults to True; False opts out without disabling CUDA graph replay.
 
     assignment_backend : {"auto", "native", "triton", "cute"}, optional
-        Auto is the default and resolves available compatible backends without changing input precision. Triton requires NVIDIA CUDA SM80 or later and
+        Auto is the default: actual device/effective dtype select compatible
+        CuTe for Hopper BF16, otherwise Triton then supported native, without
+        implicit precision conversion. Explicit backend failures are unchanged.
+        Triton requires NVIDIA CUDA SM80 or later and
         a compatible Triton installation. It uses bounded tiled/split assignment,
         IEEE dot input precision for FP32 inputs, and no runtime autotuning or backend fallback.
         centroid_chunk_size applies only to native Torch assignment.
@@ -485,15 +488,15 @@ class Emeans:
         self.capture_assignments = bool(capture_assignments)
         self.spherical = bool(spherical)
         self.assignment_backend = assignment_backend
-        if assignment_backend not in ('auto', 'native', 'triton', 'cute'):
+        if assignment_backend not in ("auto", "native", "triton", "cute"):
             raise ValueError("assignment_backend must be auto, native, triton or cute")
         if assignment_backend == "triton" and self.k > 2**31 - 256:
             raise ValueError("Triton assignment requires k <= 2**31 - 256")
         if assignment_backend == "cute" and self.k > 2**31 - 192:
             raise ValueError("CuTe padded centroid IDs must fit signed int32")
         self.quantizer = quantizer
-        self._centered_cast = False
         self._fp8_quantizer = self._int8_quantizer = False
+        self._centered_cast = False
         if quantizer is not None:
             from .e_means_quantizer import CastQuantizer
             from .e_means_fp8 import Fp8Quantizer
@@ -501,19 +504,19 @@ class Emeans:
 
             if not isinstance(quantizer, (CastQuantizer, Fp8Quantizer, Int8Quantizer)) or quantizer.d != self.d:
                 raise ValueError("quantizer must be a matching CastQuantizer, Fp8Quantizer or Int8Quantizer")
+            self._fp8_quantizer = isinstance(quantizer, Fp8Quantizer)
+            self._int8_quantizer = isinstance(quantizer, Int8Quantizer)
             self._centered_cast = isinstance(quantizer, CastQuantizer) and quantizer.center
             if self.spherical and self._centered_cast:
                 raise ValueError("spherical assignment does not support centered CastQuantizer")
-            self._fp8_quantizer = isinstance(quantizer, Fp8Quantizer)
-            self._int8_quantizer = isinstance(quantizer, Int8Quantizer)
             if self.spherical and (self._fp8_quantizer or self._int8_quantizer):
                 raise ValueError("spherical assignment requires floating operands, not encoded formats")
             if self._int8_quantizer:
-                if assignment_backend not in ('auto', 'triton', 'cute'):
+                if assignment_backend not in ("auto", "triton", "cute"):
                     raise ValueError("INT8 requires Triton or CuTe assignment")
                 if self.d > 43919:
                     raise ValueError("INT8 assignment requires d <= 43919")
-            if self._fp8_quantizer and assignment_backend not in ('auto', 'triton', 'cute'):
+            if self._fp8_quantizer and assignment_backend not in ("auto", "triton", "cute"):
                 raise ValueError("FP8 requires Triton or CuTe assignment")
 
         if assignment_backend == "cute" and quantizer is not None:
@@ -564,11 +567,16 @@ class Emeans:
         self._resolved_assignment_backend = (None if self.assignment_backend == "auto"
                                              else self.assignment_backend)
         self.assignment_recipe = None
-        self._cast_fit_token = None
         self._fp8_peak = None
         self._cute_assignment_cache = None
+        self._cast_fit_token = None
         self._unit_centroids = self._unit_version = None
         self._unit_generation = 0
+
+    def _invalidate_readout(self):
+        if self.spherical:
+            self._unit_generation += 1
+            self._unit_version = None
 
     def _check_cast_fit(self):
         # Fit identity/mutation versions are host metadata, never GPU values.
@@ -576,11 +584,6 @@ class Emeans:
             token = self.quantizer._fit_token()
             if self._cast_fit_token is not None and token != self._cast_fit_token:
                 raise RuntimeError("quantizer fit changed; begin a new run before model use")
-
-    def _invalidate_readout(self):
-        if self.spherical:
-            self._unit_generation += 1
-            self._unit_version = None
 
     def _readout(self, force=False):
         if not self.spherical:
@@ -627,19 +630,6 @@ class Emeans:
         view = centroids.view()
         view.flags.writeable = False
         return view
-
-    def _get_assignment_chunk_size(self, is_torch, cuda=False):
-        if self.assignment_chunk_size is not None:
-            return self.assignment_chunk_size
-        if cuda:
-            # Fewer, larger chunks amortize per-chunk host work and fill the
-            # device. Target roughly 256 MiB per FP32 statistics matrix or
-            # native Torch score tile.
-            width = self.d
-            if self._assignment_backend == "native":
-                width = max(width, min(self.k, self.centroid_chunk_size))
-            return min(2**20, max(8192, 2**26 // width))
-        return 8192 if is_torch else 65536
 
     @property
     def _assignment_backend(self):
@@ -699,6 +689,19 @@ class Emeans:
             return
         raise RuntimeError("auto assignment has no compatible backend for this device and representation")
 
+    def _get_assignment_chunk_size(self, is_torch, cuda=False):
+        if self.assignment_chunk_size is not None:
+            return self.assignment_chunk_size
+        if cuda:
+            # Fewer, larger chunks amortize per-chunk host work and fill the
+            # device. Target roughly 256 MiB per FP32 statistics matrix or
+            # native Torch score tile.
+            width = self.d
+            if self._assignment_backend == "native":
+                width = max(width, min(self.k, self.centroid_chunk_size))
+            return min(2**20, max(8192, 2**26 // width))
+        return 8192 if is_torch else 65536
+
     def _prepare_input(self, x, allow_empty=False, prepare=True):
         self._check_cast_fit()
         state = self._centroids if self._centroids is not None else self.centroids
@@ -716,6 +719,8 @@ class Emeans:
         x = _as_input_matrix(x, "x", is_torch, allow_empty, prepare)
         if x.shape[1] != self.d:
             raise ValueError("x must have dimension d")
+        if is_torch and x.device != state.device:
+            raise ValueError("x and centroids must be on the same device")
         if not is_torch:
             self._resolve_assignment_backend(x)
             if self.recipe is not None:
@@ -725,12 +730,7 @@ class Emeans:
                     representation="float32",
                 )
             return x
-        if x.device != state.device:
-            raise ValueError("x and centroids must be on the same device")
         import torch
-
-        if getattr(self, "_centered_cast", False):
-            self.quantizer._matrix(x)
 
         self._check_fp8_input_dtype(x)
         dtype = (self.quantizer.dtype if self.quantizer is not None
@@ -770,6 +770,8 @@ class Emeans:
             raise ValueError("native codes must match the quantizer dtype")
         if self._fp8_quantizer or self._int8_quantizer:
             self.quantizer._validate(x, "x")
+        elif getattr(self, "_centered_cast", False):
+            self.quantizer._matrix(x)
         if x.device.type == "cuda" and (dtype != torch.float32 or self._assignment_backend == "triton"):
             if (getattr(torch.version, "hip", None) is not None
                     or torch.cuda.get_device_capability(x.device) < (8, 0)):
@@ -807,8 +809,6 @@ class Emeans:
             if not new_run:
                 self._check_cast_fit()
             self.quantizer._matrix(rows)
-            if rows.dtype == self.quantizer.dtype:
-                return rows
         self._check_fp8_input_dtype(rows)
         if self._int8_quantizer and rows.dtype != self.quantizer.dtype:
             raise TypeError("INT8 training requires matching native codes; no JIT INT8")
@@ -823,7 +823,6 @@ class Emeans:
         import torch
 
         self._check_cast_fit()
-
         if self.spherical and centroids is self._centroids:
             centroids = self._readout()
         if self._assignment_backend == "cute":
@@ -978,16 +977,11 @@ class Emeans:
 
             if self._input_dtype == torch.float16:
                 # Preserve the existing guard on internally generated splits.
+                guarded = ((self.quantizer._center_rows(donor_centroids),
+                            self.quantizer._center_rows(child_centroids))
+                           if getattr(self, "_centered_cast", False) else (donor_centroids, child_centroids))
                 _check_torch_abs_bound(
-                    "revived centroids", 65504.0,
-                    *(
-                        tuple(
-                            self.quantizer._center_rows(x)
-                            for x in (donor_centroids, child_centroids)
-                        )
-                        if getattr(self, "_centered_cast", False)
-                        else (donor_centroids, child_centroids)
-                    )
+                    "revived centroids", 65504.0, *guarded
                 )
         if _is_torch_tensor(child_centroids) and self._input_dtype in (torch.int8, torch.uint8):
             from .e_means_int8 import representation, separate_splits
@@ -1113,7 +1107,7 @@ class Emeans:
             raise ValueError("CPU E-means requires quantizer=None")
         if self._fp8_quantizer or self._int8_quantizer:
             self.quantizer._validate(centroids, "init_centroids")
-        if getattr(self, "_centered_cast", False):
+        elif getattr(self, "_centered_cast", False):
             self.quantizer._matrix(centroids)
         self.reset()
         if getattr(self, "_centered_cast", False):
@@ -1817,7 +1811,8 @@ class Emeans:
     def train(self, x, init_centroids=None):
         """Train a dense supported matrix through the same caller-driven loop.
 
-        Return centroids and last-pass labels; objective history remains in obj. Initialization and epoch shuffles
+        Return centroids and last-pass labels (None with capture disabled).
+        Objective history remains in obj. Initialization and epoch shuffles
         use the existing local seeded policy. No whole logical batch is gathered.
         Explicit initial centroids must match x's array type and device.
         """
@@ -1832,6 +1827,7 @@ class Emeans:
         if d != self.d or n < self.k:
             raise ValueError("x must have dimension d and at least k rows")
         device = x.device if is_torch else None
+        # Candidate preparation must not change a live run if begin preflight fails.
         import copy
         preparation = copy.copy(self)
         preparation._input_dtype = None
@@ -1845,6 +1841,8 @@ class Emeans:
                 else x[_randperm(n, self.seed, is_torch, device)[:self.k]]
             )
             if is_torch:
+                # Seed decoding belongs to the new fit, even when an explicit
+                # refit has invalidated this model's previous run.
                 rows = (preparation._prepare_rows(init_centroids, new_run=True)
                         if getattr(self, "_centered_cast", False) else preparation._prepare_rows(init_centroids))
                 # Fused CuTe JIT defers chunk encoding; seed positions still need codes.

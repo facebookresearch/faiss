@@ -5,3 +5,12 @@
 
 from .e_means import Emeans
 from .e_means_distributed import DistributedEmeans
+
+__all__ = ["Emeans", "DistributedEmeans", "EmeansShardedCentroids"]
+
+
+def __getattr__(name):
+    if name == "EmeansShardedCentroids":
+        from .sharded_centroids import EmeansShardedCentroids
+        return EmeansShardedCentroids
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

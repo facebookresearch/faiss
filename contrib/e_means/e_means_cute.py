@@ -258,7 +258,8 @@ def _refresh_prepared(cached, centroids, source_version, transform, peak_out):
         from .e_means_cute_argmin import affine_cast
 
         wide = None if cached.spherical else torch.empty_like(centroids)
-        value = centroids.detach() if transform is None else transform._center_rows(centroids.detach())
+        value = (centroids.detach() if transform is None
+                 else transform._center_rows(centroids.detach()))
         affine_cast(value, None, 1.0, cached.centroids, None, squares=wide)
         torch.autograd.graph.increment_version(cached.centroids)
         if cached.spherical:
@@ -272,7 +273,7 @@ def _refresh_prepared(cached, centroids, source_version, transform, peak_out):
         peak = centroids.new_zeros(()) if peak_out is None else peak_out
         cached.peak = peak
         wide = torch.empty_like(centroids)
-        affine_cast(centroids.detach(), _transform_parameter(transform),
+        affine_cast(centroids.detach(), None if transform is None else transform._bias,
                     1.0 if transform is None else transform.scale,
                     cached.centroids, peak, squares=wide)
         torch.sum(wide, dim=1, out=cached.norms)
@@ -309,12 +310,13 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
     ):
         raise ValueError("centroids must be contiguous CUDA FP32")
     dtype = torch.bfloat16 if dtype is None else dtype
-    if dtype is torch.bfloat16 and transform is not None:
-        from .e_means_quantizer import CastQuantizer
-        if not isinstance(transform, CastQuantizer) or not transform.center:
-            raise ValueError("BF16 transform requires a centered CastQuantizer")
     if spherical and (dtype is not torch.bfloat16 or transform is not None):
         raise ValueError("spherical CuTe requires unencoded BF16 operands")
+    if dtype is torch.bfloat16 and transform is not None:
+        from .e_means_quantizer import CastQuantizer
+
+        if not isinstance(transform, CastQuantizer) or not transform.center:
+            raise ValueError("BF16 transform requires a centered CastQuantizer")
     representation = ("int8" if dtype is torch.int8 else
                       "uint8" if dtype is torch.uint8 else None)
     if dtype not in (torch.bfloat16, torch.float8_e4m3fn, torch.int8, torch.uint8):
@@ -337,7 +339,7 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
         and cached.source_ref() is centroids
         and source_version is not None
         and cached.source_version == source_version
-        and cached.transform_bias is (_transform_parameter(transform))
+        and cached.transform_bias is _transform_parameter(transform)
         and cached.transform_token == transform_token
         and cached.centroids.dtype is dtype
         and cached.representation == representation

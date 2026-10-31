@@ -162,6 +162,39 @@ assert 'torch' not in sys.modules
         np.testing.assert_array_equal(labels, [0, 0, 1, 1])
         np.testing.assert_array_equal(distance, [1.0, 1.0, 1.0, 1.0])
 
+    def test_train_tuple_capture_opt_out_and_owned_lifetime(self):
+        x = np.array([[0.], [2.], [10.], [12.]], dtype="float32")
+        initial = np.array([[0.], [10.]], dtype="float32")
+        for capture in (None, False):
+            options = {} if capture is None else dict(capture_assignments=capture)
+            model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5, **options)
+            calls, original = [], model._assign_rows
+
+            def assignment(*args, _calls=calls, _original=original, **kwargs):
+                _calls.append(True)
+                return _original(*args, **kwargs)
+
+            model._assign_rows = assignment
+            centroids, labels = model.train(x, initial)
+            self.assertEqual(len(calls), 1)  # No extra closing-centroid search.
+            self.assertIs(centroids, model.centroids)
+            self.assertIs(labels, model.assignments)
+            self.assertEqual(model.obj[-1], 8.)
+            self.assertEqual(model.assignment_backend, "auto")
+            self.assertEqual(model.recipe["assignment_backend"], "native")
+            if capture is None:
+                self.assertEqual(labels.dtype, np.dtype("int64"))
+                np.testing.assert_array_equal(labels, [0, 0, 1, 1])
+            else:
+                self.assertIsNone(labels)
+            saved_centroids = centroids.copy()
+            saved_labels = None if labels is None else labels.copy()
+            model.reset()
+            model.train(x + 100, initial + 100)
+            np.testing.assert_array_equal(centroids, saved_centroids)
+            if labels is not None:
+                np.testing.assert_array_equal(labels, saved_labels)
+
     def test_resident_capture_memory_is_bounded_by_assignment_chunks(self):
         # PR3's memory witness: a full-dataset logical batch must not allocate
         # another full-dataset label array before scattering its assignments.
@@ -356,40 +389,6 @@ assert 'torch' not in sys.modules
             km.train(np.full((4, 3), np.nan, dtype="float32"))
         with self.assertRaises(RuntimeError):
             km.assign(np.zeros((1, 3), dtype="float32"))
-
-    def test_train_tuple_capture_opt_out_and_owned_lifetime(self):
-        x = np.array([[0.], [2.], [10.], [12.]], dtype="float32")
-        initial = np.array([[0.], [10.]], dtype="float32")
-        for capture in (None, False):
-            options = {} if capture is None else dict(capture_assignments=capture)
-            model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5, **options)
-            calls, original = [], model._assign_rows
-
-            def assignment(*args, _calls=calls, _original=original, **kwargs):
-                _calls.append(True)
-                return _original(*args, **kwargs)
-
-            model._assign_rows = assignment
-            centroids, labels = model.train(x, initial)
-            self.assertEqual(len(calls), 1)  # No extra closing-centroid search.
-            self.assertIs(centroids, model.centroids)
-            self.assertIs(labels, model.assignments)
-            self.assertEqual(model.obj[-1], 8.)
-            self.assertEqual(model.assignment_backend, "auto")
-            self.assertEqual(model.recipe["assignment_backend"], "native")
-            if capture is None:
-                self.assertEqual(labels.dtype, np.dtype("int64"))
-                np.testing.assert_array_equal(labels, [0, 0, 1, 1])
-            else:
-                self.assertIsNone(labels)
-            saved_centroids = centroids.copy()
-            saved_labels = None if labels is None else labels.copy()
-            model.reset()
-            model.train(x + 100, initial + 100)
-            np.testing.assert_array_equal(centroids, saved_centroids)
-            if labels is not None:
-                np.testing.assert_array_equal(labels, saved_labels)
-
 
 if __name__ == "__main__":
     unittest.main()
