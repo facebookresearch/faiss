@@ -375,6 +375,8 @@ assert 'torch' not in sys.modules
             self.assertIs(centroids, model.centroids)
             self.assertIs(labels, model.assignments)
             self.assertEqual(model.obj[-1], 8.)
+            self.assertEqual(model.assignment_backend, "auto")
+            self.assertEqual(model.recipe["assignment_backend"], "native")
             if capture is None:
                 self.assertEqual(labels.dtype, np.dtype("int64"))
                 np.testing.assert_array_equal(labels, [0, 0, 1, 1])
