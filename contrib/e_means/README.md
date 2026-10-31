@@ -292,7 +292,7 @@ Without a quantizer, native signed/unsigned bytes retain their numeric units.
 Calibration, device placement and validation are explicit; unchecked nonfinite
 values have no meaningful encoding result. Use `q.validate(x)` when needed.
 
-CuTe BF16 assignment is an explicit optional backend on exactly NVIDIA SM90,
+CuTe BF16/E4M3 assignment is an explicit optional backend on exactly NVIDIA SM90,
 requiring `quack-kernels==0.6.5`, `nvidia-cutlass-dsl==4.7.1` and
 `cuda-python>=13,<14`, plus Triton for dense CUDA EMA updates.
 Native Torch/CPU/NumPy updates do not require Triton. Supply native BF16 rows with `quantizer=None`, or use
@@ -330,12 +330,22 @@ work remain unfinished; this release does not claim those gaps repaired.
 Spherical BF16 keeps the incumbent kernels; grouped routing for that metric
 remains deferred despite sharing the represented dot-product primitive.
 Bit-equal scores select the lower centroid ID; FP64-only ties can differ.
+E4M3 uses native codes or caller-calibrated `Fp8Quantizer` batch conversion,
+with decoded FP32 state/statistics and stock exponent-scaled distances. FP8
+tensor-core partial accumulation uses FP32 promotion every 128 contraction
+coordinates. Ranking is approximate; distances are recomputed from selected
+represented operands. Unchecked invalid
+JIT inputs have no meaningful result and need not match Torch cast overflow.
 Calls on one model share mutable workspace; the caller must order stream switching.
 Partial accumulation retains one prepared centroid snapshot until its completed
 contribution is consumed. Eligible resident replay records label staging
 independently of the epoch of capture, then scatters last-pass labels before the
 next replay. Graph-bound CuTe bindings remain owned until after graph reset;
 clearing pending-batch operands does not retire those bindings.
+CuTe FP8 JIT conversion consumes each assignment's encoded workspace for
+statistics on the ordered stream before the next assignment reuses it. Pending
+code-unit totals retain one unit choice and decode scale only at completion;
+seed initialization still explicitly encodes and decodes its selected rows.
 
 ## Numerical limits
 

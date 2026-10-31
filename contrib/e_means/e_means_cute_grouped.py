@@ -38,8 +38,8 @@ _COMPILED = {}
 class _TileSelectSm90(_RowOwnedAssignSm90):
     def __init__(self, operand_type, tile_k, tile_m, stages):
         # Integer selection carries raw keys, rather than packed centroid IDs.
-        super().__init__(tile_k, tile_m, stages, 1 if tile_m == 64 else 2)
-        self.operand_type = BFloat16
+        super().__init__(operand_type, tile_k, tile_m, stages,
+                         1 if tile_m == 64 else 2)
         self.score_type = Float32
 
     @cute.jit
@@ -81,13 +81,6 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
                 take = best < row_min[row]
                 row_min[row] = best if take else row_min[row]
                 row_id[row] = block if take else row_id[row]
-
-    @cute.jit
-    def gemm(self, tiled_mma, accumulator, q_fragment, c_fragment,
-             zero_init: cutlass.Constexpr[bool] = True,
-             wg_wait: cutlass.Constexpr[int] = 0):
-        sm90_utils.gemm(tiled_mma, accumulator, q_fragment, c_fragment,
-                        zero_init=zero_init, wg_wait=wg_wait)
 
     @cute.jit
     def store(self, q, output_values, output_labels,
