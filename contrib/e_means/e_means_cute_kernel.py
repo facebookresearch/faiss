@@ -1,0 +1,672 @@
+# Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+#
+# NativeRowVecLoad below is adapted from QuACK 0.6.5 RowVecLoad.begin_loop.
+# Copyright (c) 2025-2026, Han Guo, Tri Dao. Licensed under Apache-2.0.
+# Meta modified it to preserve int32 metadata and removed unrelated modes.
+# Native INT8 packed reduction adapts PR #280 at e8e288285e885064b477a882e237fcc47da8a9b2.
+
+"""One fixed SM90 floating/native-INT8 GEMM-plus-argmin assignment kernel.
+
+The schedule uses cluster (2,1) with non-serpentine 33-cluster N panels.
+All operands use CTA (128,192). BF16 uses TILE_K=64 with ping-pong
+scheduling; E4M3 uses TILE_K=128 with cooperative scheduling and stock FP32
+promotion of each contraction tile. Native INT8 uses TILE_K=128 with
+ping-pong scheduling and INT32 accumulation. The kernel reduces packed
+``(score, centroid id)`` keys per input row.
+"""
+
+from functools import partial
+import hashlib
+from pathlib import Path
+from typing import NamedTuple, Optional
+
+import cutlass
+import cutlass.cute as cute
+from cutlass import Boolean, Float32, Int8, Int32, Int64, const_expr
+import torch
+
+from quack import layout_utils, sm90_utils, utils as quack_utils
+from quack.cache import jit_cache
+from quack.compile_utils import make_fake_tensor as fake_tensor
+from quack.cute_dsl_utils import (
+    get_device_capacity,
+    get_max_active_clusters,
+    mlir_namedtuple,
+    torch2cute_dtype_map,
+)
+from quack.epilogue.mixin import ComposableEpiMixin
+from quack.epilogue.ops import (
+    EpiOp,
+    EpiSmemBytes,
+    RowVecLoad,
+    _lane_warp_info_n,
+)
+from quack.gemm_sm90 import GemmSm90
+from quack.gemm_tvm_ffi_utils import (
+    compile_gemm_kernel,
+    get_major,
+    make_fake_gemm_tensors,
+    make_fake_varlen_args,
+    make_scheduler_args,
+    make_varlen_args,
+)
+from quack.rounding import RoundingMode
+from quack.sm90_utils import partition_for_epilogue
+from quack.tile_scheduler import (
+    RasterOrderOption,
+    TileScheduler,
+    TileSchedulerOptions,
+)
+
+from .e_means_cute_argmin import (
+    INITIAL_KEY,
+    encode_argmin_key,
+    INTEGER_INITIAL_KEY,
+    finalize_int8_outputs,
+    launch_argmin_decode,
+    prepare_argmin_decode,
+    require_tensor,
+)
+
+
+TILE_M = 128
+TILE_N = 192
+_STAGED_ROW_BYTES = 128
+CLUSTER_M = 2
+CLUSTER_N = 1
+BLOCKED_N_CLUSTERS = 33
+
+
+def _persistent_cache_source_key():
+    digest = hashlib.sha256()
+    for path in (
+        Path(__file__),
+        Path(__file__).with_name("e_means_cute_argmin.py"),
+    ):
+        source = path.read_bytes()
+        digest.update(path.name.encode() + b"\0")
+        digest.update(len(source).to_bytes(8, "big"))
+        digest.update(source)
+    return digest.hexdigest()
+
+
+# Every downstream Faiss module inlined into the artifact must participate.
+_PERSISTENT_CACHE_SOURCE_KEY = _persistent_cache_source_key()
+
+
+class NativeRowVecLoad(RowVecLoad):
+    """QuACK row-vector load modified to retain the source element type."""
+
+    @cute.jit
+    def begin(self, gemm, param, smem_tensor, ctx):
+        source, _ = super().begin(gemm, param, smem_tensor, ctx)
+        source_subtile = cute.group_modes(source, 3, cute.rank(source))[
+            None, None, None, 0
+        ]
+        registers = cute.make_rmem_tensor(
+            source_subtile.layout, source_subtile.element_type
+        )
+        return [source, registers]
+
+    @cute.jit
+    def begin_loop(self, gemm, state, epi_coord):
+        source, registers = state
+        should_load = Boolean(True)
+        if const_expr(gemm.epi_m_major):
+            should_load = epi_coord[0] == 0
+        if should_load:
+            current = cute.group_modes(source, 3, cute.rank(source))[
+                None, None, None, epi_coord
+            ]
+            loaded = cute.make_rmem_tensor(
+                current.layout, current.element_type
+            )
+            cute.autovec_copy(
+                cute.filter_zeros(current), cute.filter_zeros(loaded)
+            )
+            registers.store(loaded.load())
+        return registers
+
+
+def _blocked_scheduler_args(max_active):
+    return TileSchedulerOptions(
+        max_active_clusters=Int32(max_active),
+        raster_order=RasterOrderOption.AlongN,
+        max_swizzle_size=Int32(BLOCKED_N_CLUSTERS),
+    )
+
+
+@cute.jit
+def _blocked_swizzle(params, cluster_id_in_problem: Int32):
+    n_group, within_n_group = divmod(
+        cluster_id_in_problem, params.num_clusters_in_group_fdd
+    )
+    cid_m, cid_n = Int32(0), Int32(0)
+    if n_group < params.num_groups_regular:
+        cid_m, n_in = divmod(within_n_group, params.group_size_fdd)
+        cid_n = n_group * Int32(params.group_size_fdd.divisor) + n_in
+    else:
+        cid_m, n_in = divmod(within_n_group, params.group_size_tail_fdd)
+        cid_n = (
+            params.num_groups_regular * Int32(params.group_size_fdd.divisor)
+            + n_in
+        )
+    return cid_m, cid_n
+
+
+class _BlockedTileScheduler(TileScheduler):
+    """Persistent monotonic-M traversal over 33-cluster N panels."""
+
+    @cute.jit
+    def _swizzle_cta(self, cluster_id_in_problem: Int32, *, loc=None, ip=None):
+        return _blocked_swizzle(self.params, cluster_id_in_problem)
+
+
+class _AtomicRowArgMin(EpiOp):
+    """Reduce a 192-centroid tile and publish one packed key per row."""
+
+    def param_fields(self):
+        return [(self.name, object, None)]
+
+    def to_params(self, gemm, args):
+        return {self.name: getattr(args, self.name)}
+
+    def epi_m_major_score(self, arg_tensor, gemm):
+        return -1
+
+    def smem_bytes(
+        self, arg_tensor, cta_tile_shape_mnk, epi_tile, warp_shape_mnk=None
+    ):
+        return EpiSmemBytes()
+
+    @cute.jit
+    def begin(self, gemm, param, smem_tensor, ctx):
+        score_type = Int32 if const_expr(gemm.acc_dtype is Int32) else Float32
+        vector_layout = cute.make_layout(
+            (ctx.tile_M, ctx.tile_N), stride=(1, 0)
+        )
+        state_layout = ctx.partition_for_epilogue_fn(
+            cute.make_rmem_tensor(vector_layout, score_type)
+        ).layout
+        return (
+            cute.make_rmem_tensor(state_layout, score_type),
+            cute.make_rmem_tensor(state_layout, Int32),
+        )
+
+    @cute.jit
+    def begin_loop(self, gemm, state, epi_coord):
+        minima, indices = state
+        current_min = minima[None, None, None, epi_coord[0], epi_coord[1]]
+        current_idx = indices[None, None, None, epi_coord[0], epi_coord[1]]
+        if const_expr(epi_coord[1] == 0):
+            if const_expr(gemm.acc_dtype is Int32):
+                cute.filter_zeros(current_min).fill(0x7FFFFFFF)
+            else:
+                cute.filter_zeros(current_min).fill(Float32.inf)
+            cute.filter_zeros(current_idx).fill(0x7FFFFFFF)
+        return current_min, current_idx
+
+    @cute.jit
+    def end_loop_stage(
+        self,
+        gemm,
+        param,
+        state,
+        epi_coord,
+        epi_tile,
+        tiled_copy_t2r,
+        tiled_copy_r2s,
+        tidx,
+    ):
+        epi_tile_shape = cute.zipped_divide(
+            cute.make_layout(gemm.cta_tile_shape_mnk[:2]), epi_tile
+        ).shape[1]
+        if const_expr(epi_coord[1] != epi_tile_shape[1] - 1):
+            return None
+        return (
+            False,
+            (
+                state,
+                epi_coord,
+                epi_tile,
+                tiled_copy_t2r,
+                tiled_copy_r2s,
+                tidx,
+            ),
+        )
+
+    @cute.jit
+    def end_loop_finish(
+        self,
+        gemm,
+        param,
+        staged,
+        tile_coord_mnkl,
+        varlen_manager,
+    ):
+        (
+            state,
+            epi_coord,
+            epi_tile,
+            tiled_copy_t2r,
+            tiled_copy_r2s,
+            tidx,
+        ) = staged
+        minima, indices = state
+        current_min = minima[None, None, None, epi_coord[0], epi_coord[1]]
+        current_idx = indices[None, None, None, epi_coord[0], epi_coord[1]]
+        tiled_copy = (
+            tiled_copy_t2r if tiled_copy_t2r is not None else tiled_copy_r2s
+        )
+        reference_src = tiled_copy_t2r is None
+        lanes_in_n, warps_in_n, _, is_lane_n_leader = _lane_warp_info_n(
+            tiled_copy, reference_src, tidx
+        )
+        if const_expr(lanes_in_n > 1):
+            values = cute.filter_zeros(current_min)
+            ids = cute.filter_zeros(current_idx)
+            for i in cutlass.range(cute.size(values), unroll_full=True):
+                columns = lanes_in_n // 2
+                while columns > 0:
+                    other_value = cute.arch.shuffle_sync_bfly(
+                        values[i], offset=columns
+                    )
+                    other_id = cute.arch.shuffle_sync_bfly(
+                        ids[i], offset=columns
+                    )
+                    take_other = (other_value < values[i]) | (
+                        (other_value == values[i]) & (other_id < ids[i])
+                    )
+                    values[i] = other_value if take_other else values[i]
+                    ids[i] = other_id if take_other else ids[i]
+                    columns //= 2
+        assert warps_in_n == 1
+
+        partition = partial(
+            partition_for_epilogue,
+            epi_tile=epi_tile,
+            tiled_copy=tiled_copy,
+            tidx=tidx,
+            reference_src=reference_src,
+        )
+        coordinates = partition(
+            cute.make_identity_tensor(gemm.cta_tile_shape_mnk[:2])
+        )[None, None, None, epi_coord[0], epi_coord[1]]
+        row_min = layout_utils.convert_layout_zero_stride(
+            current_min, current_min.layout
+        )[None, 0]
+        row_idx = layout_utils.convert_layout_zero_stride(
+            current_idx, current_min.layout
+        )[None, 0]
+        row_coordinates = layout_utils.convert_layout_zero_stride(
+            coordinates, current_min.layout
+        )[None, 0]
+
+        tile_m = gemm.cta_tile_shape_mnk[0]
+        batch_idx = tile_coord_mnkl[3]
+        limit_m = min(
+            varlen_manager.len_m(batch_idx) - tile_coord_mnkl[0] * tile_m,
+            tile_m,
+        )
+        batch_keys = param[batch_idx, None, 0]
+        output = cute.local_tile(
+            batch_keys, (tile_m,), (tile_coord_mnkl[0],)
+        )
+        if is_lane_n_leader:
+            for m in cutlass.range(cute.size(row_coordinates, mode=[0])):
+                local_row = row_coordinates[m][0]
+                if local_row < limit_m:
+                    key = (
+                        row_min[m].to(Int64) * Int64(0x100000000)
+                        + row_idx[m].to(Int64)
+                        if const_expr(gemm.acc_dtype is Int32)
+                        else encode_argmin_key(row_min[m], row_idx[m])
+                    )
+                    cute.arch.atomic_min(
+                        quack_utils.elem_pointer(output, local_row).llvm_ptr,
+                        key,
+                        sem="relaxed",
+                        scope="gpu",
+                    )
+
+
+class _GemmAssignMinSm90(ComposableEpiMixin, GemmSm90):
+    _epi_ops = (
+        RowVecLoad("mCentroidNorms"),
+        NativeRowVecLoad("mCentroidIds"),
+        _AtomicRowArgMin("mLocalReduce"),
+    )
+    _extra_param_fields = ()
+
+    def __init__(self, *args, **kwargs):
+        # Use stock per-K-tile FP32 promotion for E4M3 ranking.
+        kwargs.setdefault("fp8_fast_accum", args[1] is not cutlass.Float8E4M3FN)
+        super().__init__(*args, **kwargs)
+
+    @mlir_namedtuple
+    class EpilogueArguments(NamedTuple):
+        mCentroidNorms: Optional[cute.Tensor] = None
+        mCentroidIds: Optional[cute.Tensor] = None
+        mLocalReduce: Optional[cute.Tensor] = None
+
+    def epi_to_underlying_arguments(self, args, *, loc=None, ip=None):
+        self.rounding_mode = RoundingMode.RN
+        return self.EpilogueParams(**self._epi_ops_to_params_dict(args))
+
+    def get_scheduler_class(self, varlen_m=False):
+        if varlen_m:
+            raise ValueError("the fixed scheduler does not support varlen M")
+        return _BlockedTileScheduler
+
+
+def _use_int32_accumulator(gemm):
+    gemm.acc_dtype = Int32
+
+
+def _flatten_layout(shape, stride):
+    if not isinstance(shape, tuple):
+        if not isinstance(shape, int) or not isinstance(stride, int):
+            raise RuntimeError("epilogue layout is not compile-time constant")
+        return [(shape, stride)]
+    if not isinstance(stride, tuple) or len(shape) != len(stride):
+        raise RuntimeError("epilogue layout shape and stride differ")
+    pairs = []
+    for sub_shape, sub_stride in zip(shape, stride):
+        pairs.extend(_flatten_layout(sub_shape, sub_stride))
+    return pairs
+
+
+def _static_offsets(layout):
+    offsets = [0]
+    for extent, stride in _flatten_layout(
+        tuple(layout.shape), tuple(layout.stride)
+    ):
+        offsets = [
+            base + step * stride
+            for step in range(extent)
+            for base in offsets
+        ]
+    return offsets
+
+
+def _assert_candidate_order(state_layout, id_layout):
+    """Prove each aliased row slot visits strictly increasing IDs."""
+    state = _static_offsets(state_layout)
+    ids = _static_offsets(id_layout)
+    if len(state) != len(ids):
+        raise RuntimeError("score and ID fragments have different sizes")
+    last_by_row = {}
+    for row, candidate in zip(state, ids):
+        previous = last_by_row.get(row)
+        if previous is not None and candidate <= previous:
+            raise RuntimeError("centroid candidates are not ordered by ID")
+        last_by_row[row] = candidate
+    return len(state), len(last_by_row)
+
+
+class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
+    _schedule_guard_ran = False
+    _order_guard_ran = False
+
+    def _setup_attributes(self, epilogue_args):
+        super()._setup_attributes(epilogue_args)
+        if self.acc_dtype is Int32 and (
+            self.mma_is_rs
+            or self.fp8_slow_accum
+            or self.transform_a is not None
+            or self.split_k != 1
+        ):
+            raise RuntimeError("native INT8 assignment requires plain SS WGMMA and no split-K")
+        tile = tuple(self.cta_tile_shape_mnk)
+        actual = (
+            tile[:2],
+            tuple(self.cluster_shape_mnk),
+            tuple(self.atom_layout_mnk),
+            tuple(self.epi_tile),
+            tuple(self.epi_tile_shape),
+            bool(self.epi_m_major),
+        )
+        fp8 = self.mma_a_dtype is cutlass.Float8E4M3FN
+        expected = (
+            (TILE_M, TILE_N),
+            (CLUSTER_M, CLUSTER_N, 1),
+            (2 if fp8 else 1, 1, 1),
+            (128 if fp8 else 64, 32),
+            (1 if fp8 else 2, 6),
+            True,
+        )
+        if fp8 and (self.pingpong or not self.fp8_slow_accum):
+            raise RuntimeError("FP8 requires accurate cooperative accumulation")
+        if actual != expected:
+            raise RuntimeError(
+                "fixed CuTe assignment schedule changed: %r" % (actual,)
+            )
+        if tile[2] * self.mma_a_dtype.width != 1024:
+            raise RuntimeError("CuTe TILE_K must stage exactly 128 bytes")
+        type(self)._schedule_guard_ran = True
+
+    @cute.jit
+    def mma(self, ab_pipeline, ab_read_state, mma_fn, acc, acc_slow,
+            k_tile_cnt, warp_group_idx):
+        # Stock RMEM recast preserves storage; only this native SS-WGMMA uses it.
+        if const_expr(self.acc_dtype is Int32):
+            if const_expr(mma_fn.func is not sm90_utils.gemm_w_idx
+                          or len(mma_fn.args) != 4 or bool(mma_fn.keywords)):
+                raise RuntimeError("native INT8 bound MMA call changed")
+            acc = cute.recast_tensor(acc, Int32)
+            mma_fn = partial(sm90_utils.gemm_w_idx, mma_fn.args[0], acc,
+                             *mma_fn.args[2:])
+        return super().mma(ab_pipeline, ab_read_state, mma_fn, acc, acc_slow,
+                           k_tile_cnt, warp_group_idx)
+
+    def epi_retile_acc(self, acc, tRS_rD, tiled_copy_r2s):
+        if self.acc_dtype is Int32:
+            acc = cute.recast_tensor(acc, Int32)
+        return super().epi_retile_acc(acc, tRS_rD, tiled_copy_r2s)
+
+    @cute.jit
+    def epi_visit_subtile(self, params, tensors, accumulator, c=None):
+        norms = tensors.get("mCentroidNorms")
+        centroid_ids = tensors.get("mCentroidIds")
+        tile_min, tile_idx = tensors.get("mLocalReduce")
+        _assert_candidate_order(tile_min.layout, centroid_ids.layout)
+        type(self)._order_guard_ran = True
+        for i in cutlass.range(cute.size(tile_min), unroll_full=True):
+            score = (norms[i] - Int32(2) * accumulator[i]
+                     if const_expr(self.acc_dtype is Int32)
+                     else norms[i] - 2.0 * accumulator[i])
+            take = score < tile_min[i]
+            tile_min[i] = score if take else tile_min[i]
+            tile_idx[i] = centroid_ids[i] if take else tile_idx[i]
+        return ()
+
+
+@jit_cache
+def _compile_ordered(
+    operand,
+    tile_k,
+    a_major,
+    b_major,
+    device_capacity,
+    source_cache_key,
+):
+    del source_cache_key  # Used by jit_cache when selecting a disk entry.
+    a, b, d, c, m, _, _, batch_axis = make_fake_gemm_tensors(
+        operand, operand, None, None, a_major, b_major, None, None
+    )
+    epi_n = cute.sym_int()
+    integer_scores = operand is Int8
+    epilogue = _GemmAssignMinSm90.EpilogueArguments(
+        mCentroidNorms=fake_tensor(
+            Int32 if integer_scores else Float32,
+            (batch_axis, epi_n), leading_dim=1, divisibility=4
+        ),
+        mCentroidIds=fake_tensor(
+            Int32, (batch_axis, epi_n), leading_dim=1, divisibility=4
+        ),
+        mLocalReduce=fake_tensor(
+            Int64, (batch_axis, m, 1), leading_dim=2, divisibility=1
+        ),
+    )
+    _OrderedGemmAssignMinSm90._schedule_guard_ran = False
+    _OrderedGemmAssignMinSm90._order_guard_ran = False
+    compiled = compile_gemm_kernel(
+        _OrderedGemmAssignMinSm90,
+        operand,
+        (TILE_M, TILE_N, tile_k),
+        (CLUSTER_M, CLUSTER_N, 1),
+        operand is not cutlass.Float8E4M3FN,
+        True,
+        False,
+        False,
+        device_capacity,
+        a,
+        b,
+        d,
+        c,
+        epilogue,
+        _blocked_scheduler_args(1),
+        make_fake_varlen_args(False, False, False, None),
+        post_init=_use_int32_accumulator if integer_scores else None,
+    )
+    if not _OrderedGemmAssignMinSm90._schedule_guard_ran:
+        raise RuntimeError("QuACK did not invoke the fixed schedule guard")
+    if not _OrderedGemmAssignMinSm90._order_guard_ran:
+        raise RuntimeError("candidate order was not proved during compilation")
+    return compiled
+
+
+def _centroid_metadata(prepared):
+    k = prepared.num_centroids
+    padded_k = ((k + TILE_N - 1) // TILE_N) * TILE_N
+    integer_scores = prepared.centroids.dtype is torch.int8
+    norm_dtype = torch.int32 if integer_scores else torch.float32
+    require_tensor(
+        prepared.norms,
+        "centroid norms",
+        dtype=norm_dtype,
+        shape=(k,),
+        device=prepared.centroids.device,
+    )
+    require_tensor(
+        prepared.padded_norms,
+        "padded centroid norms",
+        dtype=norm_dtype,
+        shape=(1, padded_k),
+        device=prepared.centroids.device,
+    )
+    if prepared.padded_norms[:, :k].data_ptr() != prepared.norms.data_ptr():
+        raise ValueError("padded norms must alias the logical norm prefix")
+    ids = torch.full(
+        (1, padded_k),
+        0x7FFFFFFF,
+        dtype=torch.int32,
+        device=prepared.centroids.device,
+    )
+    ids[:, :k] = torch.arange(
+        k, dtype=torch.int32, device=prepared.centroids.device
+    )[None]
+    return ids
+
+
+class PreparedTiledGemm(NamedTuple):
+    compiled: object
+    a: torch.Tensor
+    b: torch.Tensor
+    epilogue: object
+    scheduler: object
+    varlen: object
+    decode: object
+
+
+@torch.no_grad()
+def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None):
+    """Compile and bind one stable private full-or-tail workspace."""
+    centroids = prepared.centroids
+    if (
+        rows.ndim != 2
+        or centroids.ndim != 2
+        or rows.shape[1] != centroids.shape[1]
+    ):
+        raise ValueError("rows and centroids must be rank two with equal d")
+    if (
+        rows.dtype not in (torch.bfloat16, torch.float8_e4m3fn, torch.int8)
+        or centroids.dtype is not rows.dtype
+        or rows.device != centroids.device
+        or not rows.is_cuda
+    ):
+        raise ValueError("CuTe operands must be same-device CUDA BF16/E4M3/INT8")
+    if rows.stride(-1) != 1 or centroids.stride(-1) != 1:
+        raise ValueError("CuTe operands must have unit inner stride")
+    element_bytes = rows.element_size()
+    if (
+        rows.stride(-2) * element_bytes % 16
+        or centroids.stride(-2) * element_bytes % 16
+    ):
+        raise ValueError("CuTe row pitches must be 16-byte aligned")
+    ids = _centroid_metadata(prepared)
+    integer_scores = rows.dtype is torch.int8
+    if integer_scores:
+        if rows.shape[1] > 43919:
+            raise ValueError("INT8 assignment requires d <= 43919")
+        require_tensor(row_norms, "integer row norms", dtype=torch.int32,
+                       shape=(len(rows),), device=rows.device)
+    keys = torch.full(
+        (1, rows.shape[0], 1),
+        INTEGER_INITIAL_KEY if integer_scores else INITIAL_KEY,
+        dtype=torch.int64,
+        device=rows.device,
+    )
+    a = rows.unsqueeze(0)
+    b = centroids.unsqueeze(0)
+    tile_k = _STAGED_ROW_BYTES // element_bytes
+    compiled = _compile_ordered(
+        Int8 if integer_scores else torch2cute_dtype_map[rows.dtype],
+        tile_k,
+        get_major(a, "m", "k"),
+        get_major(b, "n", "k"),
+        get_device_capacity(rows.device),
+        _PERSISTENT_CACHE_SOURCE_KEY,
+    )
+    return PreparedTiledGemm(
+        compiled,
+        a,
+        b,
+        _GemmAssignMinSm90.EpilogueArguments(
+            mCentroidNorms=prepared.padded_norms,
+            mCentroidIds=ids,
+            mLocalReduce=keys,
+        ),
+        make_scheduler_args(
+            get_max_active_clusters(CLUSTER_M * CLUSTER_N),
+            BLOCKED_N_CLUSTERS,
+            None,
+        ),
+        make_varlen_args(None, None, None),
+        ((keys, row_norms, scores, codes) if integer_scores
+         else prepare_argmin_decode(keys, codes, scores)),
+    )
+
+
+@torch.no_grad()
+def launch_tiled_gemm(prepared, labels_out=None, distance_out=None):
+    """Launch assignment and decode/reset into the actual output destinations."""
+    prepared.compiled(
+        prepared.a,
+        prepared.b,
+        None,
+        None,
+        prepared.epilogue,
+        prepared.scheduler,
+        prepared.varlen,
+        None,
+        None,
+    )
+    if prepared.a.dtype is torch.int8:
+        finalize_int8_outputs(prepared.decode, labels_out, distance_out)
+    else:
+        launch_argmin_decode(prepared.decode, labels_out)
