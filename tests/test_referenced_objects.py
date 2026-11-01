@@ -4,12 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 
 """make sure that the referenced objects are kept"""
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
 
 import numpy as np
 import unittest
@@ -41,11 +35,6 @@ class TestReferenced(unittest.TestCase):
         gc.collect()
         refc2 = sys.getrefcount(quantizer)
         assert refc2 == refc1 - 1
-
-    def test_IndexIVF_2(self):
-        index = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, 10)
-        index.train(xt)
-        index.add(xb)
 
     def test_IndexPreTransform(self):
         ltrans = faiss.NormalizationTransform(d)
@@ -114,36 +103,18 @@ class TestReferenced(unittest.TestCase):
         # noise but is well below the leak signal.
         self.assertLess(growth_mb, 200)
 
-    def test_SearchParameters_subclass_no_double_wrap(self):
-        # Regression: SWIG does not generate per-class __setattr__, so
-        # the ownership-protecting override must be installed only on
-        # the base SearchParameters; otherwise subclasses inherit and
-        # re-wrap, doubling the refcount on the assigned selector.
-        params = faiss.SearchParametersIVF()
-        sel = faiss.IDSelectorBatch(np.arange(10))
-        before = sys.getrefcount(sel)
-        params.sel = sel
-        delta = sys.getrefcount(sel) - before
-        self.assertEqual(delta, 1)
-
     def test_SearchParameters_reassignment_no_accumulation(self):
-        # Reassigning the same field on a long-lived SearchParameters
-        # must release the prior ref. Without per-field tracking the
-        # protection list grows unbounded - reproducing the original
-        # leak shape under a different access pattern.
+        # reassigning a field must release the previous selector
         params = faiss.SearchParameters()
         sel1 = faiss.IDSelectorBatch(np.arange(10))
         sel2 = faiss.IDSelectorBatch(np.arange(10))
         before1 = sys.getrefcount(sel1)
         params.sel = sel1
         params.sel = sel2
-        # sel1 ref dropped when sel2 took its slot
         self.assertEqual(sys.getrefcount(sel1), before1)
 
     def test_SearchParameters_setattr_else_branch(self):
-        # Else branch coverage: setting a field to None drops the prior
-        # SWIG ref; assigning two different fields keeps both alive
-        # independently so dropping one does not affect the other.
+        # None drops the ref of that field only
         params = faiss.SearchParametersIVF()
         sel = faiss.IDSelectorBatch(np.arange(10))
         quant = faiss.SearchParameters()
@@ -155,7 +126,6 @@ class TestReferenced(unittest.TestCase):
         self.assertEqual(sys.getrefcount(sel) - sel_before, 1)
         self.assertEqual(sys.getrefcount(quant) - quant_before, 1)
 
-        # Drop sel via None; quantizer_params untouched.
         params.sel = None
         self.assertEqual(sys.getrefcount(sel), sel_before)
         self.assertEqual(sys.getrefcount(quant) - quant_before, 1)

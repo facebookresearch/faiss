@@ -136,6 +136,21 @@ void search_with_parameters(
         size_t* nb_dis = nullptr,
         double* ms_per_stage = nullptr);
 
+/** search an IndexIVF, possibly embedded in an IndexPreTransform, scoring
+ * every code with InvertedListScanner::distance_to_code, one call per code,
+ * as callers that run their own scan loop do (search() uses scan_codes,
+ * which batches codes). Meant for benchmarking that path. Each query is
+ * scanned by one thread; queries run in parallel.
+ */
+void search_with_distance_to_code(
+        const Index* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        size_t nprobe);
+
 /** same as search_with_parameters but for range search */
 void range_search_with_parameters(
         const Index* index,

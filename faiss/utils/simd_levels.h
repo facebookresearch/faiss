@@ -41,6 +41,65 @@ enum class SIMDLevel {
 };
 
 /***************************************************************
+ * FAISS_SIMD_TU(L): 1 if the library contains SIMD level L
+ * (COMPILE_SIMD_L) and the current translation unit can use the
+ * instructions of L (compiler macro), else 0. Use it to guard level
+ * code in headers that common files also include, for example
+ * `#if FAISS_SIMD_TU(AVX512)`. It is function-like, so a header that
+ * uses it without including this file fails to compile.
+ ***************************************************************/
+#ifdef SWIG
+#define FAISS_SIMD_TU(level) 0
+#else
+
+#if defined(COMPILE_SIMD_AVX2) && defined(__AVX2__)
+#define FAISS_SIMD_TU_AVX2 1
+#else
+#define FAISS_SIMD_TU_AVX2 0
+#endif
+
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#define FAISS_SIMD_TU_AVX512 1
+#else
+#define FAISS_SIMD_TU_AVX512 0
+#endif
+
+#if defined(COMPILE_SIMD_AVX512_VPOPCNT) && defined(__AVX512VPOPCNTDQ__)
+#define FAISS_SIMD_TU_AVX512_VPOPCNT 1
+#else
+#define FAISS_SIMD_TU_AVX512_VPOPCNT 0
+#endif
+
+#if defined(COMPILE_SIMD_AVX512_SPR) && defined(__AVX512FP16__)
+#define FAISS_SIMD_TU_AVX512_SPR 1
+#else
+#define FAISS_SIMD_TU_AVX512_SPR 0
+#endif
+
+// __aarch64__ is not defined by MSVC, which cannot compile the NEON code.
+#if defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
+#define FAISS_SIMD_TU_ARM_NEON 1
+#else
+#define FAISS_SIMD_TU_ARM_NEON 0
+#endif
+
+#if defined(COMPILE_SIMD_ARM_SVE) && defined(__ARM_FEATURE_SVE)
+#define FAISS_SIMD_TU_ARM_SVE 1
+#else
+#define FAISS_SIMD_TU_ARM_SVE 0
+#endif
+
+#if defined(COMPILE_SIMD_RISCV_RVV) && defined(__riscv_vector)
+#define FAISS_SIMD_TU_RISCV_RVV 1
+#else
+#define FAISS_SIMD_TU_RISCV_RVV 0
+#endif
+
+#define FAISS_SIMD_TU(level) FAISS_SIMD_TU_##level
+
+#endif // SWIG
+
+/***************************************************************
  * SINGLE_SIMD_LEVEL: the SIMD level for code without explicit SL context.
  *
  * In static mode: resolves to the compiled-in level (zero overhead).
@@ -186,6 +245,11 @@ struct FAISS_API SIMDConfig {
     /// ops give no throughput gain, so the fast-scan QBS path prefers the
     /// 256-bit kernel.
     static bool avx512_split;
+
+    /// Scalar table lookups beat gathers (AMD Zen 3, Zen 4 and Zen 5,
+    /// families 0x19 and 0x1A), so the 8-bit PQ code-distance kernels use
+    /// the scalar path instead of gathers.
+    static bool scalar_gather;
 
     static SIMDLevel auto_detect_simd_level();
 

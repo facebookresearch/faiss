@@ -234,24 +234,57 @@ class TestCuvsKnnGpu(unittest.TestCase):
 
 @_skip_unless_cuvs_build
 class TestCuvsCagra(unittest.TestCase):
-    """Catch: GpuIndexCagra construction + cuVS CAGRA graph build."""
+    """Catch: Dataset bindings, CAGRA build/search, and CPU graph import."""
+
+    def check_cagra(self, binary):
+        n, d = 512, 19
+        random = np.random.RandomState(4321 if binary else 1234)
+        if binary:
+            xb = random.randint(0, 2**32, (n, d), dtype=np.uint32).astype("uint8")
+        else:
+            xb = random.uniform(-1, 1, (n, d)).astype("float32")
+        res = faiss.StandardGpuResources()
+        config = faiss.GpuIndexCagraConfig()
+        config.build_algo = faiss.graph_build_algo_NN_DESCENT
+        config.graph_degree = 16
+        config.intermediate_graph_degree = 32
+        if binary:
+            index = faiss.GpuIndexBinaryCagra(res, d * 8, config)
+            imported = faiss.GpuIndexBinaryCagra(res, d * 8, config)
+            cpu = faiss.IndexBinaryHNSWCagra()
+        else:
+            index = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2, config)
+            imported = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2, config)
+            cpu = faiss.IndexHNSWCagra()
+        host = faiss.Dataset.viewHost(xb)
+        storage = faiss.Dataset.makeDevicePadded(res, host, 0)
+        index.train(storage)
+        cpu.base_level_only = True
+        index.copyTo(cpu)
+        empty = np.zeros_like(xb)
+        empty_host = faiss.Dataset.viewHost(empty)
+        destination = faiss.Dataset.makeDevicePadded(res, empty_host, 0)
+        imported.copyFrom(cpu, destination)
+        del cpu
+        np.testing.assert_array_equal(destination.copyToHost(), xb)
+        for searched in (index, imported):
+            self.assertEqual(searched.ntotal, n)
+            self.assertTrue(searched.isSearchReady())
+            distances, labels = searched.search(xb[:8], 1)
+            self.assertTrue(np.all((labels >= 0) & (labels < n)))
+            self_hits = labels[:, 0] == np.arange(8)
+            # Match the C++ Dataset smoke fixtures' accepted threshold.
+            self.assertGreaterEqual(np.count_nonzero(self_hits), 6)
+            np.testing.assert_allclose(distances[self_hits], 0, atol=1e-5)
+            searched.reset()
 
     @skip_if_no_gpu
     def test_gpu_index_cagra(self):
-        d, n, nq = 32, 2000, 5
-        np.random.seed(42)
-        xb = np.random.random((n, d)).astype("float32")
+        self.check_cagra(binary=False)
 
-        res = faiss.StandardGpuResources()
-        index = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2)
-        index.train(xb)
-        # CAGRA is a graph-based index; ntotal reflects the training set.
-        self.assertEqual(index.ntotal, n)
-
-        D, I = index.search(xb[:nq], 10)
-        self.assertEqual(I.shape, (nq, 10))
-        # CAGRA is approximate, so allow itself-as-first-NN as the contract.
-        np.testing.assert_array_equal(I[:, 0], np.arange(nq))
+    @skip_if_no_gpu
+    def test_gpu_index_binary_cagra(self):
+        self.check_cagra(binary=True)
 
 
 # Keep in step with the libcuvs-cu13 pin in pyproject-gpu-cuvs.toml. The

@@ -7,8 +7,6 @@
 
 // ARM NEON compilation unit for the simdlib-based fused distance kernel.
 
-#ifdef COMPILE_SIMD_ARM_NEON
-
 #include <faiss/impl/simdlib/simdlib_neon.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/distances_fused/simdlib_kernel-inl.h>
@@ -53,5 +51,3 @@ bool exhaustive_L2sqr_fused_cmax<SIMDLevel::ARM_NEON>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_ARM_NEON

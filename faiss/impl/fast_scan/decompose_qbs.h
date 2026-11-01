@@ -20,10 +20,11 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/fast_scan/kernels_simd256.h>
 #include <faiss/impl/fast_scan/kernels_simd512.h>
-#ifdef COMPILE_SIMD_ARM_NEON
+#if FAISS_SIMD_TU(ARM_NEON)
 #include <faiss/impl/fast_scan/kernels_neon.h>
 #endif
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -31,7 +32,7 @@ using namespace simd_result_handlers;
 
 /*
  * Unified kernel: selects 256-bit vs 512-bit path based on
- * compile-time __AVX512F__ guard.
+ * compile-time COMPILE_SIMD_AVX512 && __AVX512F__ guard.
  *
  * KernelSL selects the SIMD type width used for the inner accumulation
  * loop.  In DD mode the caller passes the dispatch level so the kernel
@@ -48,7 +49,7 @@ void kernel_accumulate_block(
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
-#ifdef __AVX512F__
+#if FAISS_SIMD_TU(AVX512)
     if constexpr (
             KernelSL == SIMDLevel::AVX512 ||
             KernelSL == SIMDLevel::AVX512_VPOPCNT ||
