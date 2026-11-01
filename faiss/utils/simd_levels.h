@@ -251,6 +251,10 @@ struct FAISS_API SIMDConfig {
     /// the scalar path instead of gathers.
     static bool scalar_gather;
 
+    /// Same CPUs as scalar_gather. The AVX-512 QT_fp16 and QT_bf16 distance
+    /// loops use four accumulators per code at a large d.
+    static bool sq_avx512_4_accumulators;
+
     static SIMDLevel auto_detect_simd_level();
 
     /// Whether this faiss build dispatches SIMD at runtime.

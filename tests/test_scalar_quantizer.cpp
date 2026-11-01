@@ -292,6 +292,7 @@ void check_sq_distance_path_parity(
             simd_dis[3]);
     for (int k = 0; k < 4; k++) {
         expect_distance_near(scalar_dis[k], simd_dis[k]);
+        EXPECT_EQ(simd_dis[k], simd_dc->query_to_code(query_codes[k]));
     }
 
     std::vector<uint8_t> bundle(4 * sq.code_size, 0);
@@ -793,6 +794,41 @@ TEST(ScalarQuantizer, RVVFP16DistancePathParity) {
                     faiss::ScalarQuantizer::QT_fp16,
                     metric,
                     d);
+        }
+    }
+}
+
+// The 16-bit float quantizers at AVX2 and AVX512 select one accumulator or
+// four per code from d and SIMDConfig::sq_avx512_4_accumulators. d = 111 has a
+// 15-lane masked tail, d = 120 runs the AVX2 one-accumulator loop, and d = 568
+// runs the 64-wide loop, three remainder blocks and an 8-lane tail.
+TEST(ScalarQuantizer, Float16AccumulatorLoopParity) {
+    struct RestoreFlag {
+        bool original = faiss::SIMDConfig::sq_avx512_4_accumulators;
+        ~RestoreFlag() {
+            faiss::SIMDConfig::sq_avx512_4_accumulators = original;
+        }
+    } restore_flag;
+    faiss::SIMDConfig::sq_avx512_4_accumulators = true;
+    for (faiss::SIMDLevel level :
+         {faiss::SIMDLevel::AVX512, faiss::SIMDLevel::AVX2}) {
+        if (!faiss::SIMDConfig::is_simd_level_available(level)) {
+            continue;
+        }
+        for (auto qtype :
+             {faiss::ScalarQuantizer::QT_fp16,
+              faiss::ScalarQuantizer::QT_bf16}) {
+            for (auto metric :
+                 {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+                for (size_t d : {111, 120, 568}) {
+                    SCOPED_TRACE(
+                            testing::Message()
+                            << "level=" << static_cast<int>(level)
+                            << " qtype=" << static_cast<int>(qtype)
+                            << " metric=" << metric << " d=" << d);
+                    check_sq_distance_path_parity(level, qtype, metric, d);
+                }
+            }
         }
     }
 }
