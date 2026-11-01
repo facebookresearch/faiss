@@ -1018,10 +1018,24 @@
 <codeline lineno="900"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>v3<sp/>=<sp/>_mm_add_ps(v1,<sp/>v2);</highlight></codeline>
 <codeline lineno="901"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>_mm_cvtss_f32(v3);</highlight></codeline>
 <codeline lineno="902"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="903"><highlight class="normal"></highlight></codeline>
-<codeline lineno="904"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="905"><highlight class="normal"></highlight></codeline>
-<codeline lineno="906"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="903"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="904"><highlight class="comment">///<sp/>(s[0]<sp/>+<sp/>s[2])<sp/>+<sp/>(s[1]<sp/>+<sp/>s[3])</highlight></codeline>
+<codeline lineno="905"><highlight class="comment"></highlight><highlight class="normal">FAISS_ALWAYS_INLINE<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reduce_4(__m128<sp/>s)<sp/>{</highlight></codeline>
+<codeline lineno="906"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>h<sp/>=<sp/>_mm_add_ps(s,<sp/>_mm_movehl_ps(s,<sp/>s));</highlight></codeline>
+<codeline lineno="907"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>_mm_cvtss_f32(_mm_add_ss(h,<sp/>_mm_movehdup_ps(h)));</highlight></codeline>
+<codeline lineno="908"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="909"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="910"><highlight class="comment">///<sp/>reduce_4<sp/>of<sp/>four<sp/>vectors<sp/>at<sp/>once,<sp/>with<sp/>the<sp/>same<sp/>order<sp/>for<sp/>each,<sp/>so<sp/>a</highlight></codeline>
+<codeline lineno="911"><highlight class="comment">///<sp/>batched<sp/>distance<sp/>is<sp/>bit-identical<sp/>to<sp/>the<sp/>single<sp/>one.</highlight></codeline>
+<codeline lineno="912"><highlight class="comment"></highlight><highlight class="normal">FAISS_ALWAYS_INLINE<sp/>__m128<sp/>reduce_4x4(__m128<sp/>a,<sp/>__m128<sp/>b,<sp/>__m128<sp/>c,<sp/>__m128<sp/>d)<sp/>{</highlight></codeline>
+<codeline lineno="913"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>ab<sp/>=<sp/>_mm_add_ps(_mm_unpacklo_ps(a,<sp/>b),<sp/>_mm_unpackhi_ps(a,<sp/>b));</highlight></codeline>
+<codeline lineno="914"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>cd<sp/>=<sp/>_mm_add_ps(_mm_unpacklo_ps(c,<sp/>d),<sp/>_mm_unpackhi_ps(c,<sp/>d));</highlight></codeline>
+<codeline lineno="915"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>_mm_add_ps(_mm_movelh_ps(ab,<sp/>cd),<sp/>_mm_movehl_ps(cd,<sp/>ab));</highlight></codeline>
+<codeline lineno="916"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="917"><highlight class="normal"></highlight></codeline>
+<codeline lineno="918"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="919"><highlight class="normal"></highlight></codeline>
+<codeline lineno="920"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/simdlib/simdlib_avx2.h"/>
   </compounddef>

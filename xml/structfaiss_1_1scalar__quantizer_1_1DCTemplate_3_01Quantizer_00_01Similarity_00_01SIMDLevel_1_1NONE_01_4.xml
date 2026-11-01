@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="30" column="5" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="34" column="5" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="34" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="32" column="15" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="36" column="15" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -107,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="34" column="5" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="34" bodyend="35"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="38" column="5" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="38" bodyend="39"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1aa91d64fa00bf30733a7a7be43b5be650" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="37" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="37" bodyend="45"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="41" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="41" bodyend="49"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1aaff19881965684e88f1534b668bbdc69" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="47" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="47" bodyend="57"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="51" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="51" bodyend="61"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a26623e7801c7f8d3c5c557f05e29c609" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -171,7 +171,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="59" column="10" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="59" bodyend="61"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="63" column="10" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="63" bodyend="65"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a4bbe35806c4b44e2ee4067ddcf97fa94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="63" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="63" bodyend="66"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="67" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="67" bodyend="70"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1afe72e89676a46858f98bf2aa5b807a7b" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -214,7 +214,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="68" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="68" bodyend="70"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="72" column="11" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="72" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ac0f4f27493877ec60ef4b7bfdb1a740a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -222,7 +222,7 @@
         <argsstring>(const uint8_t *code_0, const uint8_t *code_1, const uint8_t *code_2, const uint8_t *code_3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3) const</argsstring>
         <name>query_to_codes_batch_4</name>
         <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_01_4_1a4f83bb135b02ea6ea031a3eb05fc6dc4">query_to_codes_batch_4</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a590bf9cdd1ed9026dda79eab03c5d929">query_to_codes_batch_4</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code_0</declname>
@@ -544,7 +544,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="29" column="1" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="29" bodyend="71"/>
+    <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="33" column="1" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="33" bodyend="75"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</scope><name>code_size</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</scope><name>codes</name></member>

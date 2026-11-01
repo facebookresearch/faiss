@@ -13,7 +13,7 @@
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::Codec8bit&lt; THE_LEVEL_TO_DISPATCH &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" prot="public">faiss::scalar_quantizer::DCTemplate</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</innerclass>
-    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, THE_LEVEL_TO_DISPATCH &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, THE_LEVEL_TO_DISPATCH, four_acc &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull" prot="public">faiss::scalar_quantizer::DCTurboQuantFull</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte" prot="public">faiss::scalar_quantizer::DistanceComputerByte</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</innerclass>
@@ -263,7 +263,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="136" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="136" declcolumn="20"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="140" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="140" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="quantizers_8h_1a58372b4312405a8863e41082b9bd9c92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -459,6 +459,74 @@
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="340" column="16" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="340" bodyend="348"/>
       </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1a155a6f22c8783ab1999e09cc50af7e8f" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL2</declname>
+            <defname>SL2</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::scalar_quantizer::is_dimension_compatible</definition>
+        <argsstring>(size_t d, ScalarQuantizer::QuantizerType qtype)</argsstring>
+        <name>is_dimension_compatible</name>
+        <qualifiedname>faiss::scalar_quantizer::is_dimension_compatible</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="353" column="16" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="353" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1a6dedabe334413536cf705364f97a5f8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Quantizer</type>
+          </param>
+          <param>
+            <type>class Sim</type>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL2</declname>
+            <defname>SL2</defname>
+          </param>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::scalar_quantizer::with_dc_template</definition>
+        <argsstring>(size_t d, F f)</argsstring>
+        <name>with_dc_template</name>
+        <qualifiedname>faiss::scalar_quantizer::with_dc_template</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>F</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Calls f with the <ref refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" kindref="compound">DCTemplate</ref> type for (<ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref>, Sim, SL2) and d. Only the 16-bit float quantizers use it. Four accumulators per code hide the FMA latency at a large d. At a small d their reduction costs more than it saves. At AVX512 they are faster only on AMD (<ref refid="structfaiss_1_1SIMDConfig_1adcca99e2366c0057ffe978d23575563f" kindref="member">SIMDConfig::sq_avx512_4_accumulators</ref>). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="368" column="6" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="368" bodyend="377"/>
+      </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1abe3d240b2efb670c775e45054fa874f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
         </templateparamlist>
@@ -485,7 +553,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="355" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="355" bodyend="451"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="384" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="384" bodyend="480"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1abe2e7ac2fd556dfc65f3c4633b25d231" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -521,7 +589,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="458" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="458" bodyend="623"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="487" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="487" bodyend="655"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a633a0625bc3ff5fb2e8a0f9813990208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -553,7 +621,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="630" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="630" bodyend="642"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="662" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="662" bodyend="674"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a18cda87f7f14bce99d80b0b2cf695df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -605,7 +673,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="649" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="649" bodyend="877"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="681" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="681" bodyend="909"/>
       </memberdef>
       <memberdef kind="function" id="training_8h_1a7832c78df26bd9df1561e07d4da31891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
