@@ -13,6 +13,7 @@ import numpy as np
 
 from faiss.contrib.e_means import Emeans, DistributedEmeans
 from faiss.contrib.e_means.e_means import _epoch_seed
+from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
 from faiss.contrib.e_means import e_means
 from e_means_test_utils import EmeansReferenceContracts
 
@@ -201,6 +202,291 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 _cpu_gloo_replica, args=("file://" + directory + "/group",),
                 nprocs=2, join=True, start_method="spawn"
             )
+
+    def test_stateless_cast_and_cpu_scope(self):
+        for bad_dimension, bad_dtype in ((0, torch.float16), (1, torch.float32)):
+            with self.assertRaises(ValueError):
+                CastQuantizer(bad_dimension, bad_dtype)
+        for dtype in (torch.float16, torch.bfloat16):
+            with self.subTest(dtype=dtype):
+                q = CastQuantizer(2, dtype)
+                q.train()
+                self.assertTrue(q.is_trained)
+                self.assertEqual(q.code_size, 4)
+                self.assertIs(q.to("cpu"), q)
+                x = torch.tensor([[1.001, 9., 3.001, 9.],
+                                  [2.001, 9., 4.001, 9.]], requires_grad=True)[:, ::2]
+                saved = x.detach().clone()
+                codes = q.compute_codes(x)
+                self.assertTrue(codes.is_contiguous())
+                self.assertFalse(codes.requires_grad)
+                torch.testing.assert_close(q.decode(codes), x.to(dtype).float(), rtol=0, atol=0)
+                torch.testing.assert_close(x, saved, rtol=0, atol=0)
+                q.validate(x)
+                for bad in (x[0], x[:, :1], x.detach().to_sparse()):
+                    with self.assertRaises(ValueError):
+                        q.compute_codes(bad)
+                with self.assertRaises(TypeError):
+                    q.compute_codes(x.to(torch.int32))
+                with self.assertRaises(TypeError):
+                    q.decode(x)
+                with self.assertRaises(ValueError):
+                    q.to("meta")
+                for value in (float("nan"), float("inf")):
+                    with self.assertRaises(ValueError):
+                        q.validate(torch.full((1, 2), value))
+                for rows in (x, saved.numpy()):
+                    with self.assertRaisesRegex(ValueError, "quantizer=None"):
+                        Emeans(2, 1, quantizer=q).train(rows)
+                with self.assertRaises(ValueError):
+                    Emeans(3, 1, quantizer=q)
+                # Native CPU low-precision acceptance begins at P03.
+                model = Emeans(2, 1, niter=1, batch_size=2, alpha0=0.5)
+                model.train(codes)
+                torch.testing.assert_close(model.centroids, codes.float().mean(0, keepdim=True))
+                self.assertEqual(model.centroids.dtype, torch.float32)
+                model.begin(2, codes[:1].float())
+                partial = model.accumulate(codes[:1])
+                self.assertIsNone(partial["sums"])
+                self.assertIsNone(partial["counts"])
+                with self.assertRaisesRegex(ValueError, "complete the pending"):
+                    model.update({})
+                stats = model.accumulate(codes[1:])
+                model.update(stats)
+                model.end_epoch()
+                torch.testing.assert_close(model.finalize(), codes.float().mean(0, keepdim=True))
+        half = CastQuantizer(1, torch.float16)
+        half.validate(torch.tensor([[65504.]]))
+        with self.assertRaises(ValueError):
+            half.validate(torch.tensor([[65505.]]))
+        # Unchecked conversion follows Torch; it is not a validating API.
+        torch.testing.assert_close(half.compute_codes(torch.tensor([[65520.]])),
+                                   torch.tensor([[65520.]]).half(), rtol=0, atol=0)
+
+    def _known_centroids(self, centroids, **kwargs):
+        """Install fixed means through the documented external-statistics API."""
+        k, d = centroids.shape
+        model = Emeans(d, k, niter=1, batch_size=k, alpha0=1, **kwargs)
+        model.begin(k, centroids)
+        model.update(dict(sums=centroids.clone(),
+                          counts=torch.ones(k, device=centroids.device),
+                          objective=torch.zeros((), dtype=torch.float64, device=centroids.device),
+                          n=k))
+        model.end_epoch()
+        torch.testing.assert_close(model.finalize(), centroids, rtol=0, atol=0)
+        return model
+
+    @unittest.skipUnless(torch.cuda.is_available() and getattr(torch.version, "hip", None) is None
+                         and torch.cuda.get_device_capability() >= (8, 0), "NVIDIA SM80 required")
+    def test_represented_assignment_norms_ties_and_high_finite(self):
+        for dtype in (torch.float16, torch.bfloat16):
+            for n, k, d in ((17, 7, 3), (31, 13, 65)):
+                with self.subTest(dtype=dtype, shape=(n, k, d)):
+                    rng = torch.Generator(device="cuda").manual_seed(123+d)
+                    rows = torch.randn(n, d, generator=rng, device="cuda")/4
+                    centroids = torch.randn(k, d, generator=rng, device="cuda")/4
+                    reference = (
+                        rows.to(dtype).float()[:, None]
+                        - centroids.to(dtype).float()[None]
+                    ).square().sum(2)
+                    expected_distance, expected_labels = reference.min(1)
+                    for quantizer in (None, CastQuantizer(d, dtype)):
+                        model = self._known_centroids(
+                            centroids,
+                            quantizer=quantizer,
+                            assignment_chunk_size=5,
+                            centroid_chunk_size=2,
+                        )
+                        distance, labels = model.assign(rows.to(dtype) if quantizer is None else rows)
+                        torch.testing.assert_close(labels, expected_labels, rtol=0, atol=0)
+                        torch.testing.assert_close(distance, expected_distance, atol=2e-4, rtol=2e-5)
+                        self.assertEqual((distance.dtype, labels.dtype), (torch.float32, torch.int64))
+            small = (1.0001, 1.0004) if dtype == torch.float16 else (1.001, 1.002)
+            centroids = torch.tensor([[small[0], 0.], [small[1], 0.], [3., 0.]], device="cuda")
+            rows = centroids[1:2].clone()
+            self.assertEqual(int(torch.cdist(rows, centroids).argmin(1)), 1)
+            torch.testing.assert_close(centroids[0].to(dtype), centroids[1].to(dtype), rtol=0, atol=0)
+            model = self._known_centroids(centroids, centroid_chunk_size=1)
+            distance, labels = model.assign(rows.to(dtype))
+            self.assertEqual(int(labels[0]), 0)
+            self.assertEqual(float(distance[0]), 0)
+        rows = torch.tensor([[-0.4678138, 0.03789843, -0.6960376]], device="cuda")
+        centroids = torch.tensor([[-0.8843690, 1.0697185, -0.7981653],
+                                  [0.4984003, 0.5734861, -0.5365824]], device="cuda")
+        represented = (
+            rows.bfloat16().float()[:, None]
+            - centroids.bfloat16().float()[None]
+        ).square().sum(2)
+        wrong_norm = centroids.square().sum(1) - 2 * (
+            rows.bfloat16().float()[:, None]
+            * centroids.bfloat16().float()[None]
+        ).sum(2)
+        self.assertEqual(int(represented.argmin(1)), 0)
+        self.assertEqual(int(wrong_norm.argmin(1)), 1)
+        model = self._known_centroids(centroids, centroid_chunk_size=1)
+        distance, labels = model.assign(rows.bfloat16())
+        self.assertEqual(int(labels[0]), 0)
+        torch.testing.assert_close(distance, represented[:, 0], atol=1e-6, rtol=0)
+        centroids = torch.tensor([[300.], [302.]], device="cuda")
+        rows = torch.tensor([[300.], [301.]], device="cuda", dtype=torch.float16)
+        self.assertGreater(float(centroids[0].square().sum()), torch.finfo(torch.float16).max)
+        distance, labels = self._known_centroids(centroids, centroid_chunk_size=1).assign(rows)
+        torch.testing.assert_close(labels, torch.zeros(2, dtype=torch.int64, device="cuda"), rtol=0, atol=0)
+        torch.testing.assert_close(distance, torch.tensor([0., 1.], device="cuda"), rtol=0, atol=0)
+
+    @unittest.skipUnless(torch.cuda.is_available() and getattr(torch.version, "hip", None) is None
+                         and torch.cuda.get_device_capability() >= (8, 0), "NVIDIA SM80 required")
+    def test_represented_empty_metadata_split_and_range(self):
+        for dtype in (torch.float16, torch.bfloat16):
+            with self.subTest(dtype=dtype):
+                model = Emeans(1, 2, niter=1, batch_size=2, alpha0=0.5,
+                               capture_assignments=True)
+                model.begin(4, torch.tensor([[0.], [10.]], device="cuda"))
+                empty = model.accumulate(torch.empty((0, 1), dtype=dtype, device="cuda"))
+                self.assertEqual(empty["n"], 0)
+                with self.assertRaisesRegex(ValueError, "dtype must be consistent"):
+                    model.accumulate(torch.empty((0, 1), device="cuda"))
+                model.update(dict(sums=torch.tensor([[2.], [0.]], device="cuda"),
+                                  counts=torch.tensor([2., 0.], device="cuda"),
+                                  objective=torch.zeros((), dtype=torch.float64, device="cuda"), n=2))
+                rows = torch.ones((2, 1), dtype=dtype, device="cuda")
+                before = model.current_centroids().clone()
+                partial = model.accumulate(rows[:1])
+                self.assertEqual(partial["n"], 1)
+                self.assertIsNone(partial["sums"])
+                self.assertIsNone(partial["counts"])
+                with self.assertRaisesRegex(ValueError, "dtype must be consistent"):
+                    model.accumulate(rows[1:].float())
+                torch.testing.assert_close(model.current_centroids(), before, rtol=0, atol=0)
+                stats = model.accumulate(rows[1:])
+                torch.testing.assert_close(stats["labels"], torch.zeros(1, dtype=torch.int64, device="cuda"), rtol=0, atol=0)
+                self.assertEqual(stats["sums"].dtype, torch.float32)
+                self.assertEqual(stats["counts"].dtype, torch.float32)
+                model.update(stats)
+                model.end_epoch()
+                torch.testing.assert_close(model.finalize(), torch.tensor([[1.], [10.]], device="cuda"), rtol=0, atol=0)
+                maximum = torch.finfo(dtype).max
+                donor = torch.tensor([[0., 0.], [1., 1.], [1., 2.], [maximum, 0.]], device="cuda")
+                child = torch.tensor([[0., 0.], [1.0001, 0.9999], [2., 1.], [maximum, 0.]], device="cuda")
+                ordinary = child[2].clone()
+                previous = torch.cuda.get_sync_debug_mode()
+                try:
+                    torch.cuda.set_sync_debug_mode("error")
+                    e_means._separate_splits(donor, child, dtype)
+                finally:
+                    torch.cuda.set_sync_debug_mode(previous)
+                self.assertFalse(bool((donor.to(dtype) == child.to(dtype)).all(1).any()))
+                torch.testing.assert_close(child[2], ordinary, rtol=0, atol=0)
+                self.assertLess(float(child[3, 0]), maximum)
+                torch.testing.assert_close(child[:2, 1], torch.tensor([0., 0.9999], device="cuda"), rtol=0, atol=0)
+        for dtype, value in ((torch.float16, 65504.), (torch.bfloat16, 70000.)):
+            rows = torch.full((2, 1), value, device="cuda", dtype=dtype)
+            model = Emeans(1, 1, niter=1, batch_size=2, alpha0=0.5)
+            model.train(rows, rows[:1].float())
+            torch.testing.assert_close(model.centroids, rows[:1].float(), rtol=0, atol=0)
+            torch.testing.assert_close(model.assign(rows)[0], torch.zeros(2, device="cuda"), rtol=0, atol=0)
+        model = Emeans(1, 2, niter=1, batch_size=2, alpha0=0.5)
+        rows = torch.full((10, 1), 65504., device="cuda", dtype=torch.float16)
+        before_split = []
+        apply_splits = model._apply_splits
+
+        def checked_split(*args):
+            centroids, usage = model._centroids.clone(), model._usage.clone()
+            try:
+                return apply_splits(*args)
+            except ValueError:
+                before_split.append(True)
+                torch.testing.assert_close(model._centroids, centroids, rtol=0, atol=0)
+                torch.testing.assert_close(model._usage, usage, rtol=0, atol=0)
+                raise
+
+        with mock.patch.object(model, "_apply_splits", checked_split), self.assertRaisesRegex(ValueError, "65504"):
+            model.train(rows, rows[:2].float())
+        self.assertTrue(before_split)
+        self.assertEqual(model.n_splits, 0)
+        rows = torch.zeros((2, 2), device="cuda", dtype=torch.bfloat16)
+        with mock.patch.object(torch.version, "hip", "test"), self.assertRaisesRegex(RuntimeError, "SM80"):
+            Emeans(2, 2).train(rows)
+        with mock.patch.object(torch.cuda, "get_device_capability", return_value=(7, 5)), self.assertRaisesRegex(RuntimeError, "SM80"):
+            Emeans(2, 2).train(rows)
+
+    @unittest.skipUnless(
+        torch.cuda.is_available() and getattr(torch.version, "hip", None) is None
+        and torch.cuda.get_device_capability() >= (8, 0), "NVIDIA SM80 required"
+    )
+    def test_native_and_cast_represented_means(self):
+        x = torch.tensor([[1.001], [1.002], [3.001], [3.002]], device="cuda")
+        mean_initial = torch.tensor([[1.0], [3.0]], device="cuda")
+        for dtype in (torch.float16, torch.bfloat16):
+            with self.subTest(dtype=dtype):
+                q = CastQuantizer(1, dtype)
+                codes = q.compute_codes(x)
+                native = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+                cast = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5, quantizer=q)
+                native.train(codes, mean_initial)
+                cast.train(x, mean_initial)
+                expected = codes.float().reshape(2, 2, 1).mean(dim=1)
+                torch.testing.assert_close(native.centroids, expected, atol=0, rtol=0)
+                torch.testing.assert_close(cast.centroids, expected, atol=0, rtol=0)
+                torch.testing.assert_close(native.obj, cast.obj, atol=0, rtol=0)
+                dn, ln = native.assign(codes)
+                dc, lc = cast.assign(x)
+                torch.testing.assert_close(dn, dc, atol=0, rtol=0)
+                torch.testing.assert_close(ln, lc)
+                self.assertEqual((native.centroids.dtype, dn.dtype),
+                                 (torch.float32, torch.float32))
+                # Retained decimal T2/N17/B4 fixture includes the final row.
+                rows = torch.arange(34, device="cuda", dtype=torch.float32).reshape(17, 2)/10
+                represented = CastQuantizer(2, dtype).compute_codes(rows)
+                initial = represented[[0, 5, 10, 16]].float()
+                saved_rows, saved_initial = rows.clone(), initial.clone()
+                args = dict(niter=2, batch_size=4, alpha0=0.5, seed=7)
+                reference = Emeans(2, 4, assignment_chunk_size=2, centroid_chunk_size=2, **args)
+                reference.train(represented, initial)
+                q = CastQuantizer(2, dtype)
+                cast = Emeans(2, 4, quantizer=q, assignment_chunk_size=2, centroid_chunk_size=2, **args)
+                cast.train(rows, initial)
+                unblocked = Emeans(2, 4, assignment_chunk_size=64, centroid_chunk_size=16, **args)
+                unblocked.train(represented, initial)
+                caller = Emeans(2, 4, quantizer=q, assignment_chunk_size=2, centroid_chunk_size=2, **args)
+                caller_initial = initial.clone()
+                caller.begin(len(rows), caller_initial)
+                caller_initial.fill_(-7)
+                current = caller.current_centroids()
+                self.assertEqual((current.dtype, current.device), (torch.float32, initial.device))
+                torch.testing.assert_close(current, initial, rtol=0, atol=0)
+                for epoch in range(2):
+                    generator = torch.Generator(device="cuda").manual_seed(_epoch_seed(7, epoch))
+                    order = torch.randperm(len(rows), generator=generator, device="cuda")
+                    for begin in range(0, len(rows), 4):
+                        batch = rows[order[begin:begin+4]]
+                        before = caller.current_centroids().clone()
+                        for start in range(0, len(batch), 2):
+                            stats = caller.accumulate(batch[start:start+2])
+                            if start + 2 < len(batch):
+                                self.assertIsNone(stats["sums"])
+                                self.assertIsNone(stats["counts"])
+                                torch.testing.assert_close(caller.current_centroids(), before, rtol=0, atol=0)
+                        self.assertEqual(stats["sums"].dtype, torch.float32)
+                        self.assertEqual(stats["counts"].dtype, torch.float32)
+                        self.assertEqual(stats["objective"].dtype, torch.float64)
+                        caller.update(stats)
+                    caller.end_epoch()
+                result = caller.finalize()
+                for other in (cast, unblocked, caller):
+                    torch.testing.assert_close(other.centroids, reference.centroids, atol=1e-6, rtol=1e-6)
+                    torch.testing.assert_close(other.obj, reference.obj, atol=3e-5, rtol=1e-6)
+                    for field in ("nsplit", "imbalance_factor"):
+                        self.assertEqual([s[field] for s in other.iteration_stats],
+                                         [s[field] for s in reference.iteration_stats])
+                torch.testing.assert_close(cast.assign(rows)[0], reference.assign(represented)[0], atol=1e-6, rtol=1e-6)
+                torch.testing.assert_close(rows, saved_rows, rtol=0, atol=0)
+                torch.testing.assert_close(initial, saved_initial, rtol=0, atol=0)
+                saved_result = result.clone()
+                caller.reset()
+                caller.train(rows, initial)
+                torch.testing.assert_close(caller.centroids, saved_result, atol=1e-6, rtol=1e-6)
+                torch.testing.assert_close(result, saved_result, rtol=0, atol=0)
 
     def test_local_update_has_no_group_argument(self):
         model = Emeans(1, 1, niter=1, batch_size=2, alpha0=0.5)
@@ -474,12 +760,20 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available(), "CUDA not available")
     def test_cuda_replay_failure_drains_and_model_recovers(self):
-        # This roster has a ragged tail under the existing three-epoch recipe;
-        # the old 17-row case resolved to batch1 and never tested a tail.
+        cases = [(torch.float32, None)]
+        if not torch.version.hip and torch.cuda.get_device_capability() >= (8, 0):
+            cases.extend(((torch.bfloat16, None),
+                          (torch.float32, CastQuantizer(3, torch.bfloat16))))
+        for dtype, quantizer in cases:
+            with self.subTest(dtype=dtype, quantizer=quantizer is not None):
+                self._check_cuda_replay_failure(dtype, quantizer)
+
+    def _check_cuda_replay_failure(self, dtype, quantizer):
         x = (torch.arange(93, device="cuda", dtype=torch.float32) / 8).reshape(31, 3)
         initial = x[[0, 5, 10, 16]].clone()
+        x = x.to(dtype)
         saved_input, saved_initial = x.clone(), initial.clone()
-        model = Emeans(3, 4, niter=3, seed=7, capture_assignments=True)
+        model = Emeans(3, 4, niter=3, seed=7, quantizer=quantizer, capture_assignments=True)
         replay, reset = torch.cuda.CUDAGraph.replay, torch.cuda.CUDAGraph.reset
 
         class InjectedFailure(BaseException):
@@ -527,7 +821,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model.train(x, initial)
                 self.assertTrue(recovered)
                 reference = Emeans(3, 4, niter=3, seed=7, assignment_chunk_size=2,
-                                   capture_assignments=True)
+                                   quantizer=quantizer, capture_assignments=True)
                 # The explicit override keeps this reference eager.
                 reference.train(x, initial)
                 torch.testing.assert_close(model.centroids, reference.centroids, rtol=0, atol=0)
@@ -539,16 +833,33 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
 
         # A one-epoch capture already owns closing sums at capture time.
         recovered = []
-        single = Emeans(3, 4, niter=1, seed=7, capture_assignments=True)
+        single = Emeans(3, 4, niter=1, seed=7, quantizer=quantizer,
+                        capture_assignments=True)
         with mock.patch.object(torch.cuda.CUDAGraph, "replay", counted_replay):
             single.train(x, initial)
         self.assertTrue(recovered)
         eager = Emeans(3, 4, niter=1, seed=7, assignment_chunk_size=2,
-                       capture_assignments=True)
+                       quantizer=quantizer, capture_assignments=True)
         eager.train(x, initial)
         torch.testing.assert_close(single.centroids, eager.centroids, rtol=0, atol=0)
         torch.testing.assert_close(single.obj, eager.obj, rtol=0, atol=0)
         torch.testing.assert_close(single.assignments, eager.assignments, rtol=0, atol=0)
+
+    def test_assign_resolves_independently_without_changing_training_recipe(self):
+        model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5)
+        rows = torch.tensor([[0.], [2.], [10.], [12.]])
+        centroids, captured = model.train(rows, rows[[0, 2]])
+        recipe = dict(model.recipe)
+        model._input_dtype = torch.bfloat16  # Represents a completed BF16 run.
+        distance, labels = model.assign(rows)
+        torch.testing.assert_close(distance, torch.ones(4), rtol=0, atol=0)
+        torch.testing.assert_close(labels, torch.tensor([0, 0, 1, 1]), rtol=0, atol=0)
+        self.assertIs(model.centroids, centroids)
+        self.assertIs(model.assignments, captured)
+        self.assertEqual(model.recipe, recipe)
+        self.assertEqual(model._input_dtype, torch.bfloat16)
+        self.assertEqual(model.assignment_recipe['representation'], 'float32')
+        self.assertEqual(model.assignment_recipe['assignment_backend'], 'native')
 
 
 if __name__ == "__main__":
