@@ -21,6 +21,18 @@ median held-out MSE over ten seeds. Download Deep1B as described in
 
 The final line reports the measured median test MSE for that run.
 
+demo_e_means_distributed.py
+---------------------------
+
+Runs synchronous row-distributed CPU/GPU training on generated rank-local batches,
+with replicated centroids and the same public numerical lifecycle:
+
+    torchrun --standalone --nproc-per-node=2 demos/demo_e_means_distributed.py
+
+Use `--transport dense` or `--transport sparse` to override the conservative
+automatic choice. No dataset download is required. This is an integration
+example, not a disk-loading or performance measurement.
+
 
 demo_ondisk_ivf.py
 ------------------
