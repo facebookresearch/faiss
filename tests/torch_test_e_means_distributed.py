@@ -7,6 +7,7 @@
 import datetime
 import tempfile
 import unittest
+import importlib.util
 
 import torch
 import torch.distributed as dist
@@ -111,14 +112,14 @@ def _rows(begin, end, device):
             .expand(-1, 2).contiguous() / 8)
 
 
-def _training(group, transport, device, alpha=0.5, quantizer=None):
+def _training(group, transport, device, alpha=0.5, quantizer=None, backend="native"):
     """Replica/EMA/revival agreement; floating tolerance, not a universal oracle."""
     rank, ranks = dist.get_rank(group), dist.get_world_size(group)
     batch, population = 2 * ranks, 11 * ranks
     initial = torch.tensor([[0., 0.], [5., 5.], [100., 100.]], device=device)
     args = dict(niter=2, batch_size=batch, alpha0=alpha, seed=7,
                 assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
-    model = DistributedEmeans(2, 3, group=group, transport=transport, **args)
+    model = DistributedEmeans(2, 3, group=group, transport=transport, assignment_backend=backend, **args)
     reference = Emeans(2, 3, **args)
     caller_initial = initial + 1000 * rank
     saved_initial = caller_initial.clone()
@@ -238,9 +239,13 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only):
                 for transport in ("dense", "sparse"):
                     _training(dist.group.WORLD, transport, device,
                               quantizer=CastQuantizer(2, torch.bfloat16))
+                if importlib.util.find_spec("triton") is not None:
+                    for transport in ("dense", "sparse"):
+                        _training(dist.group.WORLD, transport, device, backend="triton")
             else:
                 with unittest.TestCase().assertRaisesRegex(RuntimeError, "SM80"):
-                    Emeans(2, 1, quantizer=CastQuantizer(2, torch.bfloat16)).train(
+                    Emeans(2, 1, quantizer=CastQuantizer(2, torch.bfloat16),
+                           assignment_backend="native").train(
                         torch.zeros((2, 2), device=device))
     finally:
         if subgroup_only and rank in (1, 2) and subgroup is not None:
