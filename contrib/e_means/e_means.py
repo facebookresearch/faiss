@@ -318,6 +318,14 @@ def _get_triton_int8_functions():
     return assign_int8_rows, prepare_int8_centroids
 
 
+def _get_cute_functions():
+    try:
+        from . import e_means_cute as cute
+    except ImportError as error:
+        raise ImportError("CuTe assignment requires its pinned optional dependencies") from error
+    return cute._assign_rows, cute._prepare_centroids, cute._check_device
+
+
 class Emeans:
     """Cluster vectors with mini-batch exponential moving averages.
 
@@ -358,11 +366,16 @@ class Emeans:
         retain last-pass labels in original input order after resident train.
         Defaults to True; False opts out without disabling CUDA graph replay.
 
-    assignment_backend : {"auto", "native", "triton"}, optional
+    assignment_backend : {"auto", "native", "triton", "cute"}, optional
         Auto is the default and resolves available compatible backends without changing input precision. Triton requires NVIDIA CUDA SM80 or later and
         a compatible Triton installation. It uses bounded tiled/split assignment,
         IEEE dot input precision for FP32 inputs, and no runtime autotuning or backend fallback.
         centroid_chunk_size applies only to native Torch assignment.
+        CuTe supports native BF16 or explicit BF16 CastQuantizer on exactly SM90,
+        with quack-kernels==0.6.5, nvidia-cutlass-dsl==4.7.1 and cuda-python>=13,<14.
+        It ranks native FP32 scores, choosing lower IDs for bit-equal scores;
+        a float64-only tie need not select the lowest ID. No fallback.
+        Calls using one model share mutable CuTe workspace and require caller ordering.
     quantizer : CastQuantizer, Fp8Quantizer or Int8Quantizer, optional
         Explicit represented-value conversion for CUDA batches. CastQuantizer
         provides FP16/BF16 conversion, with optional default-off centering.
@@ -467,10 +480,12 @@ class Emeans:
         self.capture_assignments = bool(capture_assignments)
         self.spherical = bool(spherical)
         self.assignment_backend = assignment_backend
-        if assignment_backend not in ('auto', 'native', 'triton'):
-            raise ValueError("assignment_backend must be auto, native or triton")
+        if assignment_backend not in ('auto', 'native', 'triton', 'cute'):
+            raise ValueError("assignment_backend must be auto, native, triton or cute")
         if assignment_backend == "triton" and self.k > 2**31 - 256:
             raise ValueError("Triton assignment requires k <= 2**31 - 256")
+        if assignment_backend == "cute" and self.k > 2**31 - 192:
+            raise ValueError("CuTe padded centroid IDs must fit signed int32")
         self.quantizer = quantizer
         self._centered_cast = False
         self._fp8_quantizer = self._int8_quantizer = False
@@ -495,6 +510,12 @@ class Emeans:
                     raise ValueError("INT8 assignment requires d <= 43919")
             if self._fp8_quantizer and assignment_backend not in ('auto', 'triton'):
                 raise ValueError("FP8 requires Triton assignment")
+
+        if assignment_backend == "cute" and quantizer is not None:
+            import torch
+
+            if quantizer.dtype != torch.bfloat16:
+                raise ValueError("CuTe assignment requires BF16")
 
         _validate_params(
             self.d,
@@ -540,6 +561,7 @@ class Emeans:
         self.assignment_recipe = None
         self._cast_fit_token = None
         self._fp8_peak = None
+        self._cute_assignment_cache = None
         self._unit_centroids = self._unit_version = None
         self._unit_generation = 0
 
@@ -623,36 +645,54 @@ class Emeans:
 
     def _resolve_assignment_backend(self, x):
         """Resolve metadata once; never retry selected execution failures."""
-        if self.assignment_backend != 'auto' or self._resolved_assignment_backend is not None:
+        if self.assignment_backend != "auto" or self._resolved_assignment_backend is not None:
             return
-        if not _is_torch_tensor(x) or x.device.type == 'cpu':
-            self._resolved_assignment_backend = 'native'
+        if not _is_torch_tensor(x) or x.device.type == "cpu":
+            self._resolved_assignment_backend = "native"
             return
         import torch
+
         dtype = self.quantizer.dtype if self.quantizer is not None else x.dtype
-        cuda = getattr(torch.version, 'hip', None) is None and torch.cuda.get_device_capability(x.device) >= (8, 0)
+        cuda = (getattr(torch.version, "hip", None) is None
+                and torch.cuda.get_device_capability(x.device) >= (8, 0))
         if dtype in (torch.int8, torch.uint8):
             from .e_means_int8 import _check_int8_support
             _check_int8_support(x.device)
             if self.d > 43919:
-                raise ValueError('INT8 assignment requires d <= 43919')
-        elif dtype == getattr(torch, 'float8_e4m3fn', None):
+                raise ValueError("INT8 assignment requires d <= 43919")
+        elif dtype == getattr(torch, "float8_e4m3fn", None):
             from .e_means_fp8 import _check_fp8_support
             _check_fp8_support(x.device)
-        if cuda and self.k <= 2 ** 31 - 256:
+        if cuda and dtype is torch.bfloat16 and self.k <= 2**31 - 192:
+            try:
+                from . import e_means_cute as cute
+            except ImportError:
+                pass  # Optional module absent, before any preparation/execution.
+            else:
+                try:
+                    cute._check_device(x.device)
+                    cute._check_extent("d", self.d)
+                    cute._check_padded_span("centroid", cute._padded_extent(self.k, 192), self.d)
+                    _get_triton_assign_rows()  # Existing CuTe update dependency.
+                except (ImportError, RuntimeError, ValueError):
+                    pass  # Only compatibility checks; no kernel is invoked here.
+                else:
+                    self._resolved_assignment_backend = "cute"
+                    return
+        if cuda and self.k <= 2**31 - 256:
             try:
                 _get_triton_assign_rows()
             except ImportError:
                 pass
             else:
-                self._resolved_assignment_backend = 'triton'
+                self._resolved_assignment_backend = "triton"
                 return
         floating = dtype in (torch.float32, torch.float16, torch.bfloat16)
-        native = dtype is torch.float32 or (cuda and 'out_dtype' in (torch.addmm.__doc__ or ''))
+        native = (dtype is torch.float32 or (cuda and "out_dtype" in (torch.addmm.__doc__ or "")))
         if floating and native:
-            self._resolved_assignment_backend = 'native'
+            self._resolved_assignment_backend = "native"
             return
-        raise RuntimeError('auto assignment has no compatible backend for this device and representation')
+        raise RuntimeError("auto assignment has no compatible backend for this device and representation")
 
     def _prepare_input(self, x, allow_empty=False, prepare=True):
         self._check_cast_fit()
@@ -662,6 +702,8 @@ class Emeans:
             raise TypeError("x and centroids must use the same array type")
         if self.quantizer is not None and (not is_torch or state.device.type != "cuda"):
             raise ValueError("CPU E-means requires quantizer=None")
+        if self._assignment_backend == "cute" and (not is_torch or state.device.type != "cuda"):
+            raise ValueError("CuTe assignment requires CUDA tensors")
         if self._assignment_backend == "triton":
             if not is_torch or state.device.type != "cuda":
                 raise ValueError("Triton assignment requires CUDA tensors")
@@ -698,6 +740,11 @@ class Emeans:
         ):
             raise ValueError("spherical assignment requires unencoded floating operands")
         self._resolve_assignment_backend(x)
+        if self._assignment_backend == "cute":
+            if dtype != torch.bfloat16:
+                raise ValueError("CuTe assignment requires native BF16 or BF16 CastQuantizer")
+            _, _, check = _get_cute_functions()
+            check(x.device)
         if dtype in (torch.int8, torch.uint8):
             from .e_means_int8 import _check_int8_support
 
@@ -771,6 +818,19 @@ class Emeans:
 
         if self.spherical and centroids is self._centroids:
             centroids = self._readout()
+        if self._assignment_backend == "cute":
+            _, prepare, _ = _get_cute_functions()
+            self._cute_assignment_cache = prepare(
+                centroids,
+                self._cute_assignment_cache,
+                spherical=self.spherical,
+                transform=(
+                    self.quantizer
+                    if getattr(self, "_centered_cast", False)
+                    else None
+                ),
+            )
+            return self._cute_assignment_cache, None
         dtype = self._input_dtype or torch.float32
         if dtype in (torch.int8, torch.uint8):
             from .e_means_quantizer import _transform
@@ -876,7 +936,7 @@ class Emeans:
 
     def _apply_splits(self, source, target):
         if (type(self) is Emeans and getattr(self, "_is_torch", False) and self._centroids.is_cuda
-                and self._assignment_backend in ("triton",)
+                and self._assignment_backend in ("triton", "cute")
                 and self.d <= 1024):
             import torch
 
@@ -886,6 +946,7 @@ class Emeans:
                 if _write_float_splits(self._centroids, self._usage, source, target,
                                        self._input_dtype, _SPLIT_EPSILON, self.quantizer):
                     self.n_splits += len(source)
+                    self._invalidate_readout()
                     return len(source)
         centroids = self._centroids[source]
         if _is_torch_tensor(centroids):
@@ -943,7 +1004,7 @@ class Emeans:
         self._invalidate_readout()
         return len(source)
 
-    def _assign_rows(self, x, centroids, centroid_norm=None, distance_out=None):
+    def _assign_rows(self, x, centroids, centroid_norm=None, distance_out=None, labels_out=None):
         """Private assignment; native bytes may retain exact INT64 distances."""
         if _is_torch_tensor(x):
             import torch
@@ -951,6 +1012,9 @@ class Emeans:
             if distance_out is not None and distance_out.dtype == torch.int64:
                 if self.quantizer is not None or self._input_dtype not in (torch.int8, torch.uint8):
                     raise ValueError("INT64 distances require native-byte input and quantizer=None")
+            if self._assignment_backend == "cute":
+                assign, _, _ = _get_cute_functions()
+                return assign(x, centroids, distance_out, labels_out)
             if self._assignment_backend == "triton":
                 import torch
 
@@ -1027,6 +1091,8 @@ class Emeans:
         centroids = _as_float32_matrix(init_centroids, "init_centroids", is_torch)
         if centroids.shape != (self.k, self.d):
             raise ValueError("init_centroids must have shape (k, d)")
+        if self.assignment_backend == "cute" and (not is_torch or centroids.device.type != "cuda"):
+            raise ValueError("CuTe assignment requires CUDA tensors")
         if self.assignment_backend == "triton" and (not is_torch or centroids.device.type != "cuda"):
             raise ValueError("Triton assignment requires CUDA tensors")
         if self.quantizer is not None and (not is_torch or centroids.device.type != "cuda"):
@@ -1271,8 +1337,7 @@ class Emeans:
                 self._batch_objective = self._objective.new_zeros(())
                 # Retain represented operands through the whole contribution.
                 if self.spherical:
-                    self._readout(force=self._centroids.is_cuda
-                                  and torch.cuda.is_current_stream_capturing())
+                    self._readout(force=raw)  # Record projection on every graph replay.
                 self._batch_centroids, self._batch_norm = (
                     self._prepare_torch_assignment(self._centroids) if n else (None, None)
                 )
@@ -1293,7 +1358,7 @@ class Emeans:
             code_units = self._batch_code_units
             native_stats = (type(self) is Emeans and self.quantizer is None
                             and self._centroids.is_cuda
-                            and self._assignment_backend in ("triton",)
+                            and self._assignment_backend in ("triton", "cute")
                             and n > 0 and target <= 2**24
                             and x.dtype in (torch.int8, torch.uint8, torch.float16)
                             and not torch.are_deterministic_algorithms_enabled())
@@ -1469,7 +1534,7 @@ class Emeans:
 
             fused = False
             if (ids is None and self._centroids.is_cuda
-                    and self._assignment_backend in ("triton",)):
+                    and self._assignment_backend in ("triton", "cute")):
                 from .e_means_triton import ema_update
 
                 fused = ema_update(sums, counts, self._centroids, self._usage,
@@ -1697,6 +1762,10 @@ class Emeans:
         graph = torch.cuda.CUDAGraph()
         # The training call retains its pool across epochs until graph teardown.
         pool = torch.cuda.MemPool()
+        cached = self._cute_assignment_cache
+        if cached is not None:
+            # Capture must record a refresh, even if prime left a valid mirror.
+            cached.source_version = None
         captured = False
         stats = None
         try:
@@ -1719,11 +1788,14 @@ class Emeans:
             captured = True
             current.wait_stream(stream)
         finally:
+            if cached is not None:
+                cached.source_version = None
             if not captured:
                 # No retry/rollback of failed capture or execution errors.
                 stats = None
                 graph.reset()
-        return graph, pool, stats and stats["sums"]
+                self._cute_assignment_cache = None
+        return graph, cached, pool, stats and stats["sums"]
 
     def train(self, x, init_centroids=None):
         """Train a dense supported matrix through the same caller-driven loop.
@@ -1770,7 +1842,8 @@ class Emeans:
         rates = None
         order = index = rate = epoch_rates = position = batches = None
         graph_has_sums = False
-        graph = pool = closing = None
+        graph = cached = pool = closing = None
+        captured_bindings = ()
         assignments = batch_labels = None
         try:
             if self._replay_eligible(x):
@@ -1816,8 +1889,11 @@ class Emeans:
                     if replay and primed:
                         if graph is None:
                             graph_has_sums = self._pass_sums is not None
-                            graph, pool, closing = self._capture_step(
+                            graph, cached, pool, closing = self._capture_step(
                                 x, index, rate, batches, epoch_rates, position, batch_labels)
+                            captured_bindings = tuple(cached.bindings.values()) if cached is not None else ()
+                        if self._cute_assignment_cache is not cached:
+                            raise RuntimeError("centroid preparation changed during replay")
                         graph.replay()
                         if assignments is not None and epoch == len(self.recipe["epoch_rows"]) - 1:
                             # Consume captured row IDs before the next replay.
@@ -1866,7 +1942,8 @@ class Emeans:
                 self._failed = True
                 raise
             finally:
-                graph = closing = pool = None  # noqa: F841 - release pool after reset
+                del captured_bindings
+                graph = cached = closing = pool = None  # noqa: F841 - release pool after reset
                 order = shuffled = batches = None
                 index = rate = epoch_rates = position = None
                 batch_labels = None
@@ -1904,6 +1981,7 @@ class Emeans:
                 is_torch, is_torch and x.is_cuda
             ),
         )
+        self._cute_assignment_cache = evaluation._cute_assignment_cache
         return result
 
     def _assign(self, x):
@@ -1924,7 +2002,8 @@ class Emeans:
             import torch
 
         x = self._prepare_input(x)
-        centroids = self.centroids.detach() if is_torch else self.centroids
+        centroids = (self.centroids.detach()
+                     if is_torch and self._assignment_backend != "cute" else self.centroids)
         assignment_chunk_size = self._get_assignment_chunk_size(
             is_torch, is_torch and self.centroids.is_cuda)
 
@@ -1950,9 +2029,11 @@ class Emeans:
 
         for begin in range(0, len(x), assignment_chunk_size):
             end = min(begin + assignment_chunk_size, len(x))
-            distance[begin:end], labels[begin:end] = self._assign_rows(
-                self._prepare_rows(x[begin:end]), centroids, centroid_norm
-            )
+            rows = self._prepare_rows(x[begin:end])
+            if self._assignment_backend == "cute":
+                self._assign_rows(rows, centroids, centroid_norm, distance[begin:end], labels[begin:end])
+            else:
+                distance[begin:end], labels[begin:end] = self._assign_rows(rows, centroids, centroid_norm)
         if self.spherical:
             distance *= -0.5
         return distance, labels
