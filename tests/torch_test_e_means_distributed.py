@@ -14,6 +14,7 @@ import torch.distributed as dist
 
 from faiss.contrib.e_means import DistributedEmeans, Emeans
 from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
+from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
 
 
 def _replicas(value, group):
@@ -112,15 +113,22 @@ def _rows(begin, end, device):
             .expand(-1, 2).contiguous() / 8)
 
 
-def _training(group, transport, device, alpha=0.5, quantizer=None, backend="native"):
+def _training(group, transport, device, alpha=0.5, quantizer=None, backend="native", byte_dtype=None):
     """Replica/EMA/revival agreement; floating tolerance, not a universal oracle."""
     rank, ranks = dist.get_rank(group), dist.get_world_size(group)
     batch, population = 2 * ranks, 11 * ranks
     initial = torch.tensor([[0., 0.], [5., 5.], [100., 100.]], device=device)
+    def represented(rows):
+        if byte_dtype is not None:
+            return (8 * rows + (128 if byte_dtype == torch.uint8 else 0)).to(byte_dtype)
+        return quantizer.compute_codes(rows) if isinstance(quantizer, Int8Quantizer) else rows
+    if byte_dtype is not None:
+        initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
     args = dict(niter=2, batch_size=batch, alpha0=alpha, seed=7,
                 assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
     model = DistributedEmeans(2, 3, group=group, transport=transport, assignment_backend=backend, **args)
-    reference = Emeans(2, 3, **args)
+    reference = Emeans(2, 3, assignment_backend=backend if byte_dtype is not None
+                       or isinstance(quantizer, Int8Quantizer) else "native", **args)
     caller_initial = initial + 1000 * rank
     saved_initial = caller_initial.clone()
     model.begin(population, caller_initial)
@@ -137,10 +145,23 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
             n = min(batch, population - begin)
             local_n = n // ranks
             start = begin + rank * local_n
-            local = _rows(start, start + local_n, device)
+            local = represented(_rows(start, start + local_n, device))
             saved_local = local.clone()
-            model.update(model.accumulate(local))
-            reference.update(reference.accumulate(_rows(begin, begin + n, device)))
+            before = model.current_centroids().clone()
+            if rank == 0 and len(local) > 1:
+                partial = model.accumulate(local[:1])
+                assert partial['sums'] is None and partial['counts'] is None
+                with unittest.TestCase().assertRaisesRegex(ValueError, 'complete the pending'):
+                    model.update({})
+                torch.testing.assert_close(model.current_centroids(), before, rtol=0, atol=0)
+                stats = model.accumulate(local[1:])
+            else:
+                stats = model.accumulate(local)
+            expected_dtype = torch.int64 if byte_dtype is not None else torch.float32
+            assert stats["sums"].dtype == stats["counts"].dtype == expected_dtype
+            model.update(stats)
+            assert model._epoch_rows == begin + n
+            reference.update(reference.accumulate(represented(_rows(begin, begin + n, device))))
             torch.testing.assert_close(local, saved_local, rtol=0, atol=0)
             _detached(model)
             _replicas(model._centroids, group)
@@ -165,6 +186,44 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
     saved_final = final.clone()
     model.reset()
     torch.testing.assert_close(final, saved_final, rtol=0, atol=0)
+
+
+def _integer_external_totals(group, transport, device):
+    """Odd counts above FP32 exactness discriminate typed transport by values."""
+    c, rank = 2**24 + 1, dist.get_rank(group)
+    model = DistributedEmeans(
+        1,
+        3,
+        group=group,
+        transport=transport,
+        assignment_backend="triton",
+        niter=1,
+        batch_size=2 * c,
+        alpha0=1,
+        seed=7,
+    )
+    model.begin(2*c, torch.tensor([[254.], [255.], [4.]], device=device))
+    counts = torch.tensor([c, 0, 0] if rank == 0 else [c-1, 1, 0],
+                          device=device, dtype=torch.int64)
+    sums = (counts * torch.tensor([254, 255, 0], device=device))[:, None]
+    objective = torch.zeros((), device=device, dtype=torch.float64, requires_grad=True)
+    saved_sums, saved_counts = sums.clone(), counts.clone()
+    model.update(dict(sums=sums, counts=counts, objective=objective, n=c))
+    expected_counts = torch.tensor([2*c-1, 1, 0], device=device, dtype=torch.int64)
+    expected_sums = (expected_counts * torch.tensor([254, 255, 0], device=device))[:, None]
+    assert model._pass_counts.dtype == model._pass_sums.dtype == torch.int64
+    torch.testing.assert_close(model._pass_counts, expected_counts, rtol=0, atol=0)
+    torch.testing.assert_close(model._pass_sums, expected_sums, rtol=0, atol=0)
+    torch.testing.assert_close(sums, saved_sums, rtol=0, atol=0)
+    torch.testing.assert_close(counts, saved_counts, rtol=0, atol=0)
+    _detached(model)
+    model.end_epoch()
+    # Revival may change an empty cluster; closing retains that current value.
+    current_empty = model._centroids[2].clone()
+    final = model.finalize()
+    torch.testing.assert_close(final[:2], torch.tensor([[254.], [255.]], device=device), rtol=0, atol=0)
+    torch.testing.assert_close(final[2], current_empty, rtol=0, atol=0)
+    _replicas(final, group)
 
 
 def _invalid_sizes(group, transport, device):
@@ -222,6 +281,9 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only):
                 for transport in ("dense", "sparse"):
                     _global_totals(subgroup, transport, device)
                     _training(subgroup, transport, device)
+                if (torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0))
+                        and importlib.util.find_spec("triton") is not None):
+                    _training(subgroup, "sparse", device, backend="triton", byte_dtype=torch.uint8)
             else:
                 with unittest.TestCase().assertRaisesRegex(ValueError, "group must contain the caller"):
                     DistributedEmeans(1, 2, group=subgroup)
@@ -242,6 +304,15 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only):
                 if importlib.util.find_spec("triton") is not None:
                     for transport in ("dense", "sparse"):
                         _training(dist.group.WORLD, transport, device, backend="triton")
+                        if torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0)):
+                            _integer_external_totals(dist.group.WORLD, transport, device)
+                            for dtype in (torch.int8, torch.uint8):
+                                _training(dist.group.WORLD, transport, device,
+                                          backend="triton", byte_dtype=dtype)
+                            q = Int8Quantizer(2)
+                            q.train(_rows(0, 24, device))
+                            _training(dist.group.WORLD, transport, device,
+                                      backend="triton", quantizer=q)
             else:
                 with unittest.TestCase().assertRaisesRegex(RuntimeError, "SM80"):
                     Emeans(2, 1, quantizer=CastQuantizer(2, torch.bfloat16),
