@@ -39,6 +39,8 @@ int faiss_IndexReplicas_remove_replica(
         FaissIndexReplicas* index,
         FaissIndex* replica);
 
+int faiss_IndexReplicas_count(const FaissIndexReplicas* index);
+
 FaissIndex* faiss_IndexReplicas_at(FaissIndexReplicas* index, int i);
 
 #ifdef __cplusplus
