@@ -10,6 +10,18 @@ demo_auto_tune.py
 Demonstrates the auto-tuning functionality of Faiss
 
 
+demo_e_means.py
+---------------
+
+Runs the DEEP1M e-means quality experiment on a PyTorch device and reports the
+median held-out MSE over ten seeds. Download Deep1B as described in
+`../benchs/README.md` and pass the directory containing `deep1b/`:
+
+    python demos/demo_e_means.py --data-dir /path/to/data
+
+The final line reports the measured median test MSE for that run.
+
+
 demo_ondisk_ivf.py
 ------------------
 
