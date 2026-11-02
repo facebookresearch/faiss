@@ -295,7 +295,8 @@ values have no meaningful encoding result. Use `q.validate(x)` when needed.
 CuTe BF16/E4M3 assignment is an explicit optional backend on exactly NVIDIA SM90,
 requiring `quack-kernels==0.6.5`, `nvidia-cutlass-dsl==4.7.1` and
 `cuda-python>=13,<14`, plus Triton for dense CUDA EMA updates.
-Native Torch/CPU/NumPy updates do not require Triton. Supply native BF16 rows with `quantizer=None`, or use
+Native Torch/CPU/NumPy updates do not require Triton. Supply native BF16 rows with
+`quantizer=None`, or use
 `CastQuantizer(d, torch.bfloat16)` for per-chunk floating conversion; select
 `assignment_backend="cute"`. It uses resource-constrained tiled/row-owned
 assignment, native FP32 score ranking and no runtime autotuning; the only
@@ -347,6 +348,17 @@ statistics on the ordered stream before the next assignment reuses it. Pending
 code-unit totals retain one unit choice and decode scale only at completion;
 seed initialization still explicitly encodes and decodes its selected rows.
 
+CuTe also accepts native INT8/UINT8 on SM90, with the same 43,919 dimension
+bound and caller-owned `Int8Quantizer` workflow above. Select
+`assignment_backend="cute"` when training native codes; floating-to-INT8 JIT
+is unsupported. Integer scores and lower-ID ties are exact; wide final distances
+are reconstructed through INT64 before returning FP32 values.
+
+Supplied chunks keep one frozen batch snapshot on either byte backend. Raw
+INT64 sums/counts remain hidden until the prescribed local batch is complete;
+scratch, unsigned shifting and oversized fallback use that whole target.
+Calibrated INT8 contributions retain decoded FP32 statistics.
+
 ## Numerical limits
 
 Low precision can round distinct rows or centroid operands to the same values.
@@ -359,7 +371,7 @@ large common offset can cancel small distance differences. Native FP32 follows
 the caller's Torch matmul settings; this fallback is not a direct-distance
 accuracy guarantee.
 
-Pass native INT8/UINT8 tensors with `quantizer=None` on supported Triton
+Pass native INT8/UINT8 tensors with `quantizer=None` on supported Triton/CuTe
 CUDA backends to retain integer statistics within the documented bounds.
 Converting byte data to floating point uses FP32 statistics and loses that
 exact-total contract. Floating and calibrated inputs retain FP32 statistics,
