@@ -36,7 +36,9 @@ class TestCuteDispatch(unittest.TestCase):
         with patch.object(torch.cuda, 'get_device_properties', return_value=self.properties()):
             for b, k, d in cells:
                 with self.subTest(b=b, k=k, d=d):
-                    plan = backend._grouped_plan(b, self.prepared(k, d))
+                    plan = backend._grouped_plan(
+                        b, self.prepared(k, d), torch.float32
+                    )
                     if plan is not None:
                         _validate_plan(b, k, d, torch.bfloat16, plan,
                                        self.properties().shared_memory_per_block_optin)
@@ -44,9 +46,14 @@ class TestCuteDispatch(unittest.TestCase):
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_identical_operation_metadata_has_identical_choice(self):
         with patch.object(torch.cuda, 'get_device_properties', return_value=self.properties()):
-            plain = backend._grouped_plan(70001, self.prepared(32768, 113))
-            centered = backend._grouped_plan(70001, self.prepared(32768, 113,
-                                             transform=object()))
+            plain = backend._grouped_plan(
+                70001, self.prepared(32768, 113), torch.float32
+            )
+            centered = backend._grouped_plan(
+                70001,
+                self.prepared(32768, 113, transform=object()),
+                torch.float32,
+            )
         self.assertEqual(plain, centered)
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
@@ -66,7 +73,7 @@ class TestCuteDispatch(unittest.TestCase):
         with patch.object(backend, '_grouped_plan', return_value=object()), patch.object(
                 backend, '_new_grouped_binding', side_effect=failure) as factory:
             with self.assertRaises(ImportError) as caught:
-                backend._binding_for(17, prepared)
+                backend._binding_for(17, prepared, torch.float32)
         self.assertIs(caught.exception, failure)
         self.assertEqual(factory.call_count, 1)
         self.assertFalse(prepared.bindings)
