@@ -160,8 +160,8 @@ runs:
             pip install --break-system-packages --upgrade "nvidia-nvjitlink>=13.3,<14"
           fi
         else
-          # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
-          conda install -y -q -p "$CONDA" "pytorch<2.5" -c pytorch
+          "$CONDA/bin/python" -m pip install "torch==2.15.0+cpu" --break-system-packages --index-url https://download.pytorch.org/whl/cpu
+          "$CONDA/bin/python" -c "import sysconfig, torch; assert torch.__file__.startswith(sysconfig.get_paths()['purelib']), torch.__file__; assert torch.__version__ == '2.15.0+cpu' and torch.version.cuda is None and torch.version.hip is None, torch.__version__"
         fi
     - name: ROCm - Install dependencies
       if: inputs.rocm == 'ON'
@@ -415,7 +415,8 @@ runs:
       run: |
         conda list -p "$CONDA" --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-        pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+        LD_PRELOAD="$CONDA/lib/libstdc++.so.6" \
+          pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
       if: inputs.gpu == 'ON'
       shell: bash
