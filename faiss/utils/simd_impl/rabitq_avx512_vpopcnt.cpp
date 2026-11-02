@@ -30,8 +30,6 @@
  * the AVX512 implementation to avoid duplicating that code path.
  */
 
-#ifdef COMPILE_SIMD_AVX512_VPOPCNT
-
 #include <faiss/utils/popcount.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
@@ -469,5 +467,3 @@ float compute_inner_product<SIMDLevel::AVX512_VPOPCNT>(
 }
 
 } // namespace faiss::rabitq::multibit
-
-#endif // COMPILE_SIMD_AVX512_VPOPCNT

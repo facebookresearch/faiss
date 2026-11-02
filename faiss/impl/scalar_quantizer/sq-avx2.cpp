@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
 #include <cstring>
@@ -16,6 +14,7 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/utils/simd_impl/masked_sum-avx2.h>
 
 namespace faiss {
 
@@ -242,8 +241,8 @@ struct QuantizerTemplate<
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
 struct QuantizerLloydMax<1, SIMDLevel::AVX2>
-        : QuantizerLloydMax<1, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<1, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<1, SIMDLevel::AVX2> {
+    using Base = QuantizerLloydMaxBase<1, SIMDLevel::AVX2>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -281,8 +280,8 @@ struct QuantizerLloydMax<1, SIMDLevel::AVX2>
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization,facebook-hte-ShadowingClass)
 template <>
 struct QuantizerLloydMax<2, SIMDLevel::AVX2>
-        : QuantizerLloydMax<2, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<2, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<2, SIMDLevel::AVX2> {
+    using Base = QuantizerLloydMaxBase<2, SIMDLevel::AVX2>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -341,8 +340,8 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
 #define DEFINE_LLOYD_MAX_AVX2_MULTIBIT(NBITS, UNPACK_EXPR)                   \
     template <>                                                              \
     struct QuantizerLloydMax<NBITS, SIMDLevel::AVX2>                         \
-            : QuantizerLloydMax<NBITS, SIMDLevel::NONE> {                    \
-        using Base = QuantizerLloydMax<NBITS, SIMDLevel::NONE>;              \
+            : QuantizerLloydMaxBase<NBITS, SIMDLevel::AVX2> {                \
+        using Base = QuantizerLloydMaxBase<NBITS, SIMDLevel::AVX2>;          \
                                                                              \
         QuantizerLloydMax(size_t d, const std::vector<float>& trained)       \
                 : Base(d, trained) {                                         \
@@ -372,8 +371,8 @@ DEFINE_LLOYD_MAX_AVX2_MULTIBIT(4, unpack_8x4bit_to_u32(code, i));
 // 8-bit Lloyd-Max: indices are raw bytes, no bit packing.
 template <>
 struct QuantizerLloydMax<8, SIMDLevel::AVX2>
-        : QuantizerLloydMax<8, SIMDLevel::NONE> {
-    using Base = QuantizerLloydMax<8, SIMDLevel::NONE>;
+        : QuantizerLloydMaxBase<8, SIMDLevel::AVX2> {
+    using Base = QuantizerLloydMaxBase<8, SIMDLevel::AVX2>;
 
     QuantizerLloydMax(size_t d, const std::vector<float>& trained)
             : Base(d, trained) {
@@ -403,9 +402,9 @@ struct QuantizerLloydMax<8, SIMDLevel::AVX2>
  **********************************************************/
 
 template <>
-struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16<SIMDLevel::NONE> {
+struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16Base<SIMDLevel::AVX2> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {
+            : QuantizerFP16Base<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -421,9 +420,9 @@ struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16<SIMDLevel::NONE> {
  **********************************************************/
 
 template <>
-struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
+struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16Base<SIMDLevel::AVX2> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {
+            : QuantizerBF16Base<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -442,9 +441,9 @@ struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
 
 template <>
 struct Quantizer8bitDirect<SIMDLevel::AVX2>
-        : Quantizer8bitDirect<SIMDLevel::NONE> {
+        : Quantizer8bitDirectBase<SIMDLevel::AVX2> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {
+            : Quantizer8bitDirectBase<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -462,9 +461,9 @@ struct Quantizer8bitDirect<SIMDLevel::AVX2>
 
 template <>
 struct Quantizer8bitDirectSigned<SIMDLevel::AVX2>
-        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
+        : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {
+            : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2>(d, trained) {
         assert(d % 8 == 0);
     }
 
@@ -604,8 +603,18 @@ struct SimilarityIP<SIMDLevel::AVX2> {
  * Distance computers
  **********************************************************/
 
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
+namespace {
+
+/// 8 lanes to 4: lanes j and j + 4 summed into lane j.
+FAISS_ALWAYS_INLINE __m128 reduce_8_to_4(__m256 a) {
+    return _mm_add_ps(_mm256_castps256_ps128(a), _mm256_extractf128_ps(a, 1));
+}
+
+} // namespace
+
+template <class Quantizer, class Similarity, bool four_acc>
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2, four_acc>
+        : SQDistanceComputer {
     using Sim = Similarity;
 
     Quantizer quant;
@@ -628,7 +637,40 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
         }
     }
 
+    /// Similarity terms of one code with four accumulators.
+    FAISS_ALWAYS_INLINE __m256
+    accumulate_4(const float* x, const uint8_t* code) const {
+        struct Acc : Similarity {
+            Acc() : Similarity(nullptr) {}
+        };
+        Acc s[4];
+        for (int j = 0; j < 4; j++) {
+            s[j].begin_8();
+        }
+        const size_t d = quant.d;
+        size_t i = 0;
+        for (; i + 32 <= d; i += 32) {
+            for (int j = 0; j < 4; j++) {
+                s[j].add_8_components_2(
+                        quant.reconstruct_8_components(
+                                code, static_cast<int>(i + 8 * j)),
+                        simd8float32(x + i + 8 * j));
+            }
+        }
+        for (; i < d; i += 8) {
+            s[0].add_8_components_2(
+                    quant.reconstruct_8_components(code, static_cast<int>(i)),
+                    simd8float32(x + i));
+        }
+        return _mm256_add_ps(
+                _mm256_add_ps(s[0].accu8.f, s[1].accu8.f),
+                _mm256_add_ps(s[2].accu8.f, s[3].accu8.f));
+    }
+
     float compute_distance(const float* x, const uint8_t* code) const {
+        if constexpr (four_acc) {
+            return reduce_4(reduce_8_to_4(accumulate_4(x, code)));
+        }
         Similarity sim(x);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
@@ -699,6 +741,21 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) const final {
+        if constexpr (four_acc) {
+            alignas(16) float dis[4];
+            _mm_store_ps(
+                    dis,
+                    reduce_4x4(
+                            reduce_8_to_4(accumulate_4(q, code_0)),
+                            reduce_8_to_4(accumulate_4(q, code_1)),
+                            reduce_8_to_4(accumulate_4(q, code_2)),
+                            reduce_8_to_4(accumulate_4(q, code_3))));
+            dis0 = dis[0];
+            dis1 = dis[1];
+            dis2 = dis[2];
+            dis3 = dis[3];
+            return;
+        }
         Similarity sim0(q);
         Similarity sim1(q);
         Similarity sim2(q);
@@ -855,54 +912,8 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX2>
     }
 };
 
-/**********************************************************
- * TurboQuant masked_sum AVX2 specialization
- **********************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-float turboq_masked_sum<SIMDLevel::AVX2>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    const __m256i bit_masks = _mm256_set_epi32(128, 64, 32, 16, 8, 4, 2, 1);
-    __m256 acc = _mm256_setzero_ps();
-    size_t full_bytes = d / 8;
-    for (size_t byte_idx = 0; byte_idx < full_bytes; byte_idx++) {
-        __m256i byte_broadcast =
-                _mm256_set1_epi32(static_cast<int>(bits[byte_idx]));
-        __m256i masked = _mm256_and_si256(byte_broadcast, bit_masks);
-        __m256i cmp = _mm256_cmpeq_epi32(masked, bit_masks);
-        __m256 mask = _mm256_castsi256_ps(cmp);
-        __m256 vals = _mm256_loadu_ps(arr + byte_idx * 8);
-        acc = _mm256_add_ps(acc, _mm256_and_ps(mask, vals));
-    }
-    __m128 hi = _mm256_extractf128_ps(acc, 1);
-    __m128 lo = _mm256_castps256_ps128(acc);
-    __m128 sum128 = _mm_add_ps(lo, hi);
-    __m128 shuf = _mm_movehdup_ps(sum128);
-    __m128 sums = _mm_add_ps(sum128, shuf);
-    shuf = _mm_movehl_ps(shuf, sums);
-    sums = _mm_add_ss(sums, shuf);
-    float result = _mm_cvtss_f32(sums);
-    size_t tail_start = full_bytes * 8;
-    if (tail_start < d) {
-        uint8_t last_byte = bits[full_bytes];
-        for (size_t j = tail_start; j < d; j++) {
-            if (last_byte & (1 << (j - tail_start))) {
-                result += arr[j];
-            }
-        }
-    }
-    return result;
-}
-
 } // namespace scalar_quantizer
 } // namespace faiss
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
-
-#endif // COMPILE_SIMD_AVX2

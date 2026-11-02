@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512_VPOPCNT
-
 #define THE_SIMD_LEVEL SIMDLevel::AVX512_VPOPCNT
 #include <faiss/utils/hamming_distance/hamming_computer-avx512_vpopcnt.h>
 #include <faiss/utils/hamming_distance/hamming_impl.h>
@@ -20,5 +18,3 @@
 // Fails the build if the batch path stops being selected for this computer.
 static_assert(faiss::has_hamming_batch<
               faiss::HammingComputer20_tpl<faiss::SIMDLevel::AVX512_VPOPCNT>>);
-
-#endif // COMPILE_SIMD_AVX512_VPOPCNT

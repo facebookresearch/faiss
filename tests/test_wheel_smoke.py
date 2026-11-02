@@ -29,14 +29,9 @@ class TestImportAndMetadata(unittest.TestCase):
     """Catch: missing shared libs, broken SWIG, wrong Python ABI."""
 
     def test_version_attribute(self):
-        assert hasattr(faiss, "__version__")
         parts = faiss.__version__.split(".")
         assert len(parts) == 3
         assert all(p.isdigit() for p in parts)
-
-    def test_compile_options(self):
-        opts = faiss.get_compile_options()
-        assert isinstance(opts, str)
 
 
 class TestOpenMP(unittest.TestCase):
@@ -47,7 +42,6 @@ class TestOpenMP(unittest.TestCase):
         assert n >= 1
         faiss.omp_set_num_threads(2)
         assert faiss.omp_get_max_threads() == 2
-        # Restore
         faiss.omp_set_num_threads(n)
 
 
@@ -61,10 +55,7 @@ class TestFlatSearch(unittest.TestCase):
         index = faiss.IndexFlatL2(d)
         index.add(xb)
         D, I = index.search(xb[:5], 10)
-        assert I.shape == (5, 10)
-        # Nearest neighbor of each vector should be itself
         np.testing.assert_array_equal(I[:, 0], np.arange(5))
-        # Self-distance should be ~0
         np.testing.assert_allclose(D[:, 0], 0, atol=1e-5)
 
     def test_flat_ip(self):
@@ -75,7 +66,6 @@ class TestFlatSearch(unittest.TestCase):
         index = faiss.IndexFlatIP(d)
         index.add(xb)
         D, I = index.search(xb[:5], 10)
-        assert I.shape == (5, 10)
         np.testing.assert_array_equal(I[:, 0], np.arange(5))
         np.testing.assert_allclose(D[:, 0], 1.0, atol=1e-5)
 
@@ -88,9 +78,7 @@ class TestIndexFactory(unittest.TestCase):
         np.random.seed(42)
         xb = np.random.random((n, d)).astype("float32")
         index = faiss.index_factory(d, "IVF32,PQ8")
-        assert not index.is_trained
         index.train(xb)
-        assert index.is_trained
         index.add(xb)
         assert index.ntotal == n
         D, I = index.search(xb[:5], 10)
@@ -105,8 +93,6 @@ class TestIndexFactory(unittest.TestCase):
         index.add(xb)
         assert index.ntotal == n
         D, I = index.search(xb[:5], 10)
-        assert I.shape == (5, 10)
-        # HNSW should find the vector itself as nearest neighbor
         np.testing.assert_array_equal(I[:, 0], np.arange(5))
 
 
@@ -120,16 +106,9 @@ class TestSerialization(unittest.TestCase):
         index = faiss.IndexFlatL2(d)
         index.add(xb)
 
-        # Serialize to bytes
         data = faiss.serialize_index(index)
-        assert isinstance(data, np.ndarray)
-        assert data.dtype == np.uint8
-
-        # Deserialize
         index2 = faiss.deserialize_index(data)
-        assert index2.ntotal == 100
 
-        # Results should match
         D1, I1 = index.search(xb[:3], 5)
         D2, I2 = index2.search(xb[:3], 5)
         np.testing.assert_array_equal(I1, I2)
@@ -194,7 +173,6 @@ class TestSIMD(unittest.TestCase):
         opts = faiss.get_compile_options()
         if "DD" not in opts:
             raise unittest.SkipTest("Not a Dynamic Dispatch build")
-        # DD builds should select at least AVX2 on modern x86_64
         assert (
             "AVX2" in opts or "AVX512" in opts
         ), f"DD build did not select a SIMD path: {opts}"

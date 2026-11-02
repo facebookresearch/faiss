@@ -31,8 +31,7 @@ def knn_ground_truth(
 
     if ngpu:
         LOG.info("running on %d GPUs" % ngpu)
-        co = faiss.GpuMultipleClonerOptions()
-        co.shard = shard
+        co = _multiple_cloner_options(shard)
         index = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
 
     # compute ground-truth by blocks, and add to heaps
@@ -177,8 +176,7 @@ def range_ground_truth(
         ngpu = faiss.get_num_gpus()
     if ngpu:
         LOG.info("running on %d GPUs" % ngpu)
-        co = faiss.GpuMultipleClonerOptions()
-        co.shard = shard
+        co = _multiple_cloner_options(shard)
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
 
     # compute ground-truth by blocks
@@ -308,8 +306,7 @@ def range_search_max_results(
 
     if ngpu:
         LOG.info("running on %d GPUs" % ngpu)
-        co = faiss.GpuMultipleClonerOptions()
-        co.shard = shard
+        co = _multiple_cloner_options(shard)
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
     else:
         index_gpu = None
@@ -392,3 +389,12 @@ def exponential_query_iterator(xq, start_bs=32, max_bs=20000):
         if bs < max_bs:
             bs *= 2
         i += len(xqi)
+
+
+def _multiple_cloner_options(shard):
+    # The Metal backend reports a GPU but has no multi-device cloner options.
+    if not hasattr(faiss, "GpuMultipleClonerOptions"):
+        return None
+    co = faiss.GpuMultipleClonerOptions()
+    co.shard = shard
+    return co

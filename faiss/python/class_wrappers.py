@@ -74,6 +74,193 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
     setattr(the_class, name, replacement)
 
 
+def handle_Dataset(the_class):
+    """NumPy adapters for the existing Dataset storage operations."""
+    numeric_types = {
+        np.dtype("float32"): faiss.Float32,
+        np.dtype("float16"): faiss.Float16,
+        np.dtype("int8"): faiss.Int8,
+        np.dtype("uint8"): faiss.UInt8,
+    }
+    dtypes = {value: key for key, value in numeric_types.items()}
+
+    def replacement_viewHost(x):
+        """View a two-dimensional NumPy array without copying it.
+
+        Supports float32, float16, int8 and uint8, with contiguous columns
+        and a positive row stride. Dimensions and strides are in elements;
+        binary vectors use uint8 with a dimension in bytes, not bits.
+        The Dataset retains the array. Keep its contents unchanged while
+        in use. For caller-managed raw pointers use viewHost_c.
+        """
+        if not isinstance(x, np.ndarray) or x.ndim != 2:
+            raise TypeError(
+                "Dataset.viewHost requires a two-dimensional NumPy array"
+            )
+        if x.dtype not in numeric_types:
+            raise TypeError("Dataset supports float32, float16, int8 and uint8")
+        n, d = x.shape
+        if x.size and (
+            x.strides[1] != x.itemsize
+            or x.strides[0] < d * x.itemsize
+            or x.strides[0] % x.itemsize
+        ):
+            raise ValueError(
+                "Dataset requires contiguous columns and nonoverlapping rows"
+            )
+        stride = x.strides[0] // x.itemsize if x.size else d
+        result = the_class.viewHost_c(
+            faiss.cast_integer_to_void_ptr(x.ctypes.data),
+            n,
+            d,
+            numeric_types[x.dtype],
+            stride,
+        )
+        result.referenced_objects = [x]
+        return result
+
+    def replacement_view(self):
+        """Return a non-owning Dataset view that retains its source Dataset."""
+        result = self.view_c()
+        result.referenced_objects = [self]
+        return result
+
+    def replacement_copyToHost(self):
+        """Return a packed NumPy copy, waiting for device work to finish.
+
+        The result owns its storage and has the Dataset's logical shape
+        and dtype. For a caller-supplied raw destination use copyToHost_c.
+        """
+        result = np.empty(
+            (self.getNumRows(), self.getDim()),
+            dtype=dtypes[self.getNumericType()],
+        )
+        self.copyToHost_c(swig_ptr(result))
+        return result
+
+    the_class.viewHost_c = staticmethod(the_class.viewHost)
+    the_class.viewHost = staticmethod(replacement_viewHost)
+    replace_method(the_class, "view", replacement_view)
+    replace_method(the_class, "copyToHost", replacement_copyToHost)
+
+
+def handle_GpuIndexCagra(the_class):
+    """Use Dataset build overloads and retain the current Dataset in Python."""
+    # Declare this attribute for handle_Index's checked __setattr__.
+    the_class._dataset = None
+
+    def replacement_train(self, dataset):
+        """Build the entire graph from a Dataset, borrowing its vector storage.
+
+        Compatible device storage makes the index search ready. Otherwise,
+        attach populated padded device storage with updateDataset before
+        searching. The index retains the Dataset until replacement or reset.
+        """
+        if not isinstance(dataset, faiss.Dataset):
+            raise TypeError(
+                "CAGRA train requires a Dataset; "
+                "use Dataset.viewHost or makeDevicePadded"
+            )
+        if self.is_trained:
+            return
+        self.train_c(dataset)
+        self._dataset = dataset
+
+    def replacement_add(self, dataset):
+        """Build from a Dataset, with the same semantics as train(dataset).
+
+        Incremental additions are unsupported; reset before rebuilding.
+        """
+        if not isinstance(dataset, faiss.Dataset):
+            raise TypeError(
+                "CAGRA add requires a Dataset; "
+                "use Dataset.viewHost or makeDevicePadded"
+            )
+        if self.is_trained:
+            return
+        self.add_c(dataset)
+        self._dataset = dataset
+
+    def replacement_updateDataset(self, dataset):
+        """Attach populated device storage and retain its Dataset."""
+        self.updateDataset_c(dataset)
+        self._dataset = dataset
+
+    def replacement_copyFrom(self, index, dataset=None):
+        """Import a CPU graph, optionally filling and retaining a Dataset.
+
+        Without a Dataset, the import is graph-only and not search ready.
+        """
+        self.copyFrom_c(index, dataset)
+        self._dataset = dataset
+
+    def replacement_reset(self):
+        """Clear the index and release its reference to the Dataset."""
+        self.reset_c()
+        self._dataset = None
+
+    # handle_Index / handle_IndexBinary already preserved the SWIG methods.
+    the_class.train = replacement_train
+    the_class.add = replacement_add
+    replace_method(the_class, "updateDataset", replacement_updateDataset)
+    replace_method(the_class, "copyFrom", replacement_copyFrom)
+    replace_method(the_class, "reset", replacement_reset)
+
+
+def handle_IndexIDMapDataset(the_class):
+    """Forward Dataset builds and keep storage alive on the wrapped index."""
+    original_train = the_class.train
+    original_add_with_ids = the_class.add_with_ids
+    the_class._dataset = None
+
+    def dataset_owner(self):
+        # Constructors retain the original Python child. Cloned IDMaps own
+        # their C++ child instead, so retain the Dataset on that IDMap.
+        owner = self
+        while isinstance(owner, (faiss.IndexIDMap, faiss.IndexBinaryIDMap)):
+            refs = getattr(owner, "referenced_objects", ())
+            if not refs or not isinstance(refs[0], (faiss.Index, faiss.IndexBinary)):
+                break
+            owner = refs[0]
+        return owner
+
+    def replacement_train(self, x, *args, **kwargs):
+        if not isinstance(x, faiss.Dataset):
+            return original_train(self, x, *args, **kwargs)
+        if args or kwargs:
+            raise TypeError("Dataset training takes no additional arguments")
+        owner = dataset_owner(self)
+        was_trained = owner.is_trained
+        self.train_c(x)
+        if not was_trained:
+            owner._dataset = x
+
+    def replacement_add_with_ids(self, x, ids, *args, **kwargs):
+        if not isinstance(x, faiss.Dataset):
+            return original_add_with_ids(self, x, ids, *args, **kwargs)
+        if args or kwargs:
+            raise TypeError("Dataset addition takes no additional arguments")
+        owner = dataset_owner(self)
+        was_trained = owner.is_trained
+        n = self.index.ntotal - self.ntotal if was_trained else x.getNumRows()
+        ids = np.ascontiguousarray(ids, dtype="int64")
+        if ids.shape != (n,):
+            raise ValueError("expected one ID for each unmapped vector")
+        self.add_with_ids_c(x, swig_ptr(ids))
+        if not was_trained:
+            owner._dataset = x
+
+    def replacement_reset(self):
+        owner = dataset_owner(self)
+        self.reset_c()
+        if hasattr(owner, "_dataset"):
+            owner._dataset = None
+
+    the_class.train = replacement_train
+    the_class.add_with_ids = replacement_add_with_ids
+    replace_method(the_class, "reset", replacement_reset)
+
+
 def handle_Clustering(the_class):
 
     def replacement_train(self, x, index, weights=None):
