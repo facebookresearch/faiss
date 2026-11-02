@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Stateless FP16/BF16 casts for represented-value GPU E-means.
+"""Torch casts and affine arithmetic for represented-value GPU E-means.
 
 Codes are native Torch tensors, not packed CPU bytes. Conversion and decoding
 check metadata only. Call validate explicitly for finite/range checks; it may
@@ -171,3 +171,11 @@ def _ldexp(value, exponent):
         with torch.cuda.device(value.device):
             return torch.ldexp(value, exponent)
     return torch.ldexp(value, exponent)
+
+
+def _transform(value, quantizer):
+    if quantizer is None:
+        return value
+    if quantizer._bias is None:
+        return value * quantizer.scale
+    return torch.add(quantizer._bias, value, alpha=quantizer.scale)
