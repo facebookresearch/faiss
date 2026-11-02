@@ -142,6 +142,8 @@ class TestContribImports(unittest.TestCase):
     def test_contrib_modules(self):
         import faiss.contrib.datasets
         import faiss.contrib.evaluation
+        from faiss.contrib.e_means import Emeans
+        assert callable(Emeans)
         import faiss.contrib.inspect_tools
         import faiss.contrib.ivf_tools
         import faiss.contrib.exhaustive_search

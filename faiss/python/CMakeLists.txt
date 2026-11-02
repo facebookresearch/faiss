@@ -514,6 +514,11 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/"
   PATTERN "*_fb.py" EXCLUDE
 )
 
+# Install contrib/e_means subpackage documentation
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/e_means/README.md"
+  DESTINATION faiss/contrib/e_means
+)
+
 # Install contrib/torch subpackage data files
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/torch/"
   DESTINATION faiss/contrib/torch
