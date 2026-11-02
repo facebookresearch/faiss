@@ -3482,7 +3482,6 @@ class PiPNN:
     c_max: int
     c_min: int
     leader_cap: int
-    replicas: int
     leader_fraction: float
     alpha: float
     fanout: Int32Vector
@@ -3496,7 +3495,7 @@ class PiPNN:
     ntotal: int
 
     def __init__(self, R: int = 64) -> None: ...
-    def effective_alpha(self, metric: MetricType, cosine: bool = False) -> float: ...
+    def effective_alpha(self, metric: MetricType) -> float: ...
     def check_params(self) -> None: ...
     def reset(self) -> None: ...
 

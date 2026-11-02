@@ -6,6 +6,7 @@
  */
 
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_impl/masked_sum-avx512.h>
 
 #include <immintrin.h>
 
@@ -15,7 +16,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
 #include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
-#include <faiss/utils/simd_impl/fp16_kernels.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -49,46 +49,6 @@ int sgemm_(
 
 namespace faiss {
 
-namespace detail {
-
-template <>
-void fp16_madd<SIMDLevel::AVX512>(
-        size_t d,
-        const uint16_t* x,
-        float w,
-        float* c) {
-    const __m512 wv = _mm512_set1_ps(w);
-    size_t j = 0;
-    for (; j + 16 <= d; j += 16) {
-        const __m512 xv = _mm512_cvtph_ps(
-                _mm256_loadu_si256(reinterpret_cast<const __m256i*>(x + j)));
-        _mm512_storeu_ps(
-                c + j,
-                _mm512_add_ps(_mm512_loadu_ps(c + j), _mm512_mul_ps(xv, wv)));
-    }
-    for (; j < d; ++j) {
-        c[j] += decode_fp16(x[j]) * w;
-    }
-}
-
-template <>
-void fp16_to_fp32_kernel<SIMDLevel::AVX512>(
-        size_t n,
-        const uint16_t* x,
-        float* out) {
-    size_t j = 0;
-    for (; j + 16 <= n; j += 16) {
-        const __m256i h =
-                _mm256_loadu_si256(reinterpret_cast<const __m256i*>(x + j));
-        _mm512_storeu_ps(out + j, _mm512_cvtph_ps(h));
-    }
-    for (; j < n; ++j) {
-        out[j] = decode_fp16(x[j]);
-    }
-}
-
-} // namespace detail
-
 template <>
 void fvec_madd<SIMDLevel::AVX512>(
         const size_t n,
@@ -118,6 +78,19 @@ void fvec_madd<SIMDLevel::AVX512>(
         _mm512_mask_storeu_ps(c + idx, mask, abmul);
     }
 }
+
+template <>
+float fvec_masked_sum<SIMDLevel::AVX512>(
+        const float* x,
+        const uint8_t* bits,
+        size_t d) {
+    return masked_sum<SIMDLevel::AVX512>(x, bits, d);
+}
+
+// Internal linkage: the same template is compiled with other -m flags in
+// the other per-SIMD distances TU, and a shared symbol would let the linker
+// hand one level the other's code.
+namespace {
 
 template <size_t DIM>
 void fvec_L2sqr_ny_y_transposed_D(
@@ -191,6 +164,8 @@ void fvec_L2sqr_ny_y_transposed_D(
         }
     }
 }
+
+} // namespace
 
 template <>
 void fvec_L2sqr_ny_transposed<SIMDLevel::AVX512>(

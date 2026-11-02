@@ -7,8 +7,6 @@
 
 // -*- c++ -*-
 
-#ifdef COMPILE_SIMD_AVX512
-
 #include <faiss/impl/PolysemousTraining.h>
 #include <faiss/impl/polysemous_training/dispatch.h>
 #include <faiss/utils/popcount.h>
@@ -280,5 +278,3 @@ double distances_cost_update<SIMDLevel::AVX512>(
 
 } // namespace polysemous_training
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512

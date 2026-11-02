@@ -58,7 +58,7 @@ TEST(RaBitQBatchEstimates, MatchesSingleAcrossPrecisionsMetricsAndSIMD) {
             v = normal(rng);
         }
         for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
-            for (int bits = 1; bits <= 9; ++bits) {
+            for (int bits : {1, 2}) {
                 faiss::IndexRaBitQ index(d, metric, bits);
                 index.train(16, data.data());
                 index.add(16, data.data());

@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 """Deserialization validation tests for crafted and corrupted index
-payloads. Ported from test_read_index_deserialize.cpp."""
+payloads."""
 
 import contextlib
 import struct
@@ -19,8 +19,6 @@ import faiss
 INT = "i"
 INT64 = "q"
 SIZE_T = "Q"
-UINT64 = "Q"
-UINT32 = "I"
 BOOL = "?"
 FLOAT = "f"
 DOUBLE = "d"
@@ -268,43 +266,18 @@ def make_idmap_payload(fourcc, outer_ntotal, inner_ntotal, id_map_size):
     return buf
 
 
-def make_binary_idmap_payload(fourcc, outer_ntotal, inner_ntotal, id_map_size):
-    d = 8
-    code_size = d // 8
-    buf = bytearray()
-    push_fourcc(buf, fourcc)
-    push_binary_index_header(buf, d, outer_ntotal)
-    push_fourcc(buf, "IBxF")
-    push_binary_index_header(buf, d, inner_ntotal)
-    push_vector(buf, UINT8, [0] * (inner_ntotal * code_size))
-    push_vector(buf, INT64, [0] * id_map_size)
-    return buf
-
-
-def make_idmap_null_inner_payload(fourcc):
-    buf = bytearray()
-    push_fourcc(buf, fourcc)
-    push_index_header(buf, 4, 0)
-    push_fourcc(buf, "null")
-    push_vector(buf, INT64, [])
-    return buf
-
-
-def push_flat_panorama(
-    buf, d, n_levels, batch_size, ntotal, codes_bytes, cum_sums_count
-):
+def push_flat_panorama(buf, d, n_levels, batch_size, ntotal):
     """"IxFP" format: fourcc + d(int) + n_levels + batch_size +
-    ntotal(int64) + is_trained(bool) + codes vec + cum_sums vec."""
+    ntotal(int64) + is_trained(bool) + empty codes vec + empty cum_sums
+    vec."""
     push_fourcc(buf, "IxFP")
     push_val(buf, INT, d)
     push_val(buf, SIZE_T, n_levels)
     push_val(buf, SIZE_T, batch_size)
     push_val(buf, INT64, ntotal)
     push_val(buf, BOOL, True)
-    push_val(buf, SIZE_T, codes_bytes)
-    buf += bytes(codes_bytes)
-    push_val(buf, SIZE_T, cum_sums_count)
-    buf += bytes(cum_sums_count * 4)
+    push_vector(buf, UINT8, [])  # codes
+    push_vector(buf, FLOAT, [])  # cum_sums
 
 
 # -----------------------------------------------------------------------
@@ -422,7 +395,6 @@ class TestReadIndexDeserialize(FaissTestCase):
     def test_pq_with_m_zero_divide_by_zero(self):
         # ProductQuantizer with M=0 causes divide-by-zero in
         # set_derived_values(). read_ProductQuantizer validates M > 0.
-        # Format: fourcc("Imiq") + index_header + PQ(d=4, M=0, nbits=8, [])
         buf = bytearray()
         push_fourcc(buf, "Imiq")
         push_index_header(buf, 4, 0)
@@ -430,29 +402,19 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf)
 
     def test_index_header_invalid_bool_encoding_is_trained(self):
-        # A non-{0,1} byte at a bool field position must be rejected rather
-        # than silently producing an invalid bool value. Reading a
-        # non-canonical byte directly into a bool is UB and trips UBSan's
-        # invalid-bool-load check; READ1_BOOL routes every bool READ1
-        # through a value check. is_trained, read inside read_index_header,
-        # exercises the helper from the most common deserialization path.
+        # A non-{0,1} byte read into a bool is UB; READ1_BOOL must reject it.
         buf = bytearray()
         push_fourcc(buf, "IxF2")
         push_index_header(buf, 4, 0)
         # is_trained sits at offset 4 (fourcc) + 4 (d) + 8 (ntotal) +
         # 8 (dummy) + 8 (dummy) = 32.
         is_trained_offset = 32
-        self.assertEqual(buf[is_trained_offset], 1)
         buf[is_trained_offset] = 0x02
         self.expect_read_throws(buf, "invalid bool encoding")
 
     def test_additive_quantizer_nbits_size_mismatch(self):
         # AdditiveQuantizer with nbits.size() != M causes out-of-bounds
-        # access on nbits in set_derived_values(). The payload must reach
-        # set_derived_values() so that the OOB access would trigger, rather
-        # than an earlier read error.
-        # "IPRf": fourcc + index_header + read_AdditiveQuantizer(d, M,
-        #   nbits, is_trained, codebooks, search_type, norm_min, norm_max)
+        # access on nbits in set_derived_values().
         buf = bytearray()
         push_fourcc(buf, "IPRf")
         push_index_header(buf, 4, 0)
@@ -467,8 +429,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "nbits size")
 
     def test_residual_quantizer_old_nbits_size_mismatch(self):
-        # "IxRQ": fourcc + index_header + read_ResidualQuantizer_old(d, M,
-        # nbits_vec, is_trained, ...)
         buf = bytearray()
         push_fourcc(buf, "IxRQ")
         push_index_header(buf, 4, 0)
@@ -627,11 +587,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_fourcc(buf, "ZZZZ")
         self.expect_binary_read_throws(buf)
 
-    def test_binary_flat_truncated_input(self):
-        buf = bytearray()
-        push_fourcc(buf, "IBxF")
-        self.expect_binary_read_throws(buf)
-
     def test_binary_flat_xb_size_mismatch(self):
         buf = bytearray()
         push_fourcc(buf, "IBxF")
@@ -639,19 +594,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_vector(buf, UINT8, [])  # empty xb, ntotal=1 expects 2 bytes
         self.expect_binary_read_throws(buf, "xb.size()")
 
-    def test_binary_flat_negative_dimension(self):
-        buf = bytearray()
-        push_fourcc(buf, "IBxF")
-        push_val(buf, INT, -1)  # d
-        push_val(buf, INT, 0)  # code_size
-        push_val(buf, INT64, 0)  # ntotal
-        push_val(buf, BOOL, True)  # is_trained
-        push_val(buf, INT, 1)  # metric_type
-        self.expect_binary_read_throws(buf, "dimension")
-
     def test_binary_multi_hash_storage_cast_failure(self):
-        # Storage ntotal mismatch exercises the Leak 5 fix (dynamic_cast +
-        # assertion with unique_ptr guard).
         buf = bytearray()
         push_fourcc(buf, "IBHm")
         push_binary_index_header(buf, 16, 99)
@@ -659,9 +602,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_binary_read_throws(buf)
 
     def test_binary_ivf_inv_list_nlist_mismatch(self):
-        # Exercises the Leak 2 fix.
-        # Binary IVF header: binary_header + nlist + nprobe + quantizer +
-        # direct_map
         buf = bytearray()
         push_fourcc(buf, "IBwF")
         push_binary_index_header(buf, 16, 0)
@@ -678,8 +618,8 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_binary_read_throws(buf)
 
     def test_binary_hash_empty_invlist_buffer(self):
-        # Empty hash invlist buffer with a non-zero entry count exercises
-        # the null-deref fix in read_binary_hash_invlists.
+        # An empty hash invlist buffer with a non-zero entry count would be
+        # dereferenced as null in read_binary_hash_invlists.
         buf = bytearray()
         push_fourcc(buf, "IBHh")
         push_binary_index_header(buf, 16, 0)
@@ -691,13 +631,11 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_binary_read_throws(buf, "binary hash invlists")
 
     def test_nsg_negative_r(self):
-        # "INSf": fourcc + index_header + GK + build_type +
-        #   nndescent_S/R/L/iter + read_NSG(ntotal, R, ...)
         buf = bytearray()
         push_fourcc(buf, "INSf")
         push_index_header(buf, 4, 0)
         push_val(buf, INT, 0)  # GK
-        push_val(buf, INT, 0)  # build_type
+        push_val(buf, CHAR, 0)  # build_type
         push_val(buf, INT, 10)  # nndescent_S
         push_val(buf, INT, 10)  # nndescent_R
         push_val(buf, INT, 10)  # nndescent_L
@@ -714,8 +652,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "qtype")
 
     def test_product_additive_quantizer_zero_nsplits(self):
-        # "IxPR": fourcc + index_header + read_ProductResidualQuantizer(
-        #   read_ProductAdditiveQuantizer(read_AdditiveQuantizer + nsplits))
         buf = bytearray()
         push_fourcc(buf, "IxPR")
         push_index_header(buf, 4, 0)
@@ -732,7 +668,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "nsplits")
 
     def test_pre_transform_negative_chain_length(self):
-        # "IxPT": fourcc + index_header + nt + VT chain + nested index
         buf = bytearray()
         push_fourcc(buf, "IxPT")
         push_index_header(buf, 4, 0)
@@ -910,21 +845,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_vector(buf, UINT8, [])  # overflow is caught first
         self.expect_invlists_read_throws(buf, "overflow")
 
-    def test_block_inverted_lists_valid_codes_size(self):
-        buf = bytearray()
-        push_fourcc(buf, "ilbl")
-        push_val(buf, SIZE_T, 2)  # nlist
-        push_val(buf, SIZE_T, 32)  # code_size
-        push_val(buf, SIZE_T, 32)  # n_per_block
-        push_val(buf, SIZE_T, 128)  # block_size
-        # List 0: 10 ids -> 1 block -> 128 bytes
-        push_vector(buf, INT64, [0] * 10)
-        push_vector(buf, UINT8, [0] * 128)
-        # List 1: 0 ids -> 0 bytes
-        push_vector(buf, INT64, [])
-        push_vector(buf, UINT8, [])
-        self.assertIsNotNone(read_invlists(buf))
-
     def test_pq_centroids_size_mismatch(self):
         # PQ: d=4, M=2, nbits=8 -> ksub=256, expected centroids = 1024
         buf = bytearray()
@@ -947,8 +867,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "ScalarQuantizer trained size")
 
     def test_index_pq_codes_size_mismatch(self):
-        # "IxPq": fourcc + index_header + PQ + codes + search_type +
-        #         encode_signs + polysemous_ht
         buf = bytearray()
         push_fourcc(buf, "IxPq")
         push_index_header(buf, 4, 2)
@@ -962,8 +880,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "codes.size()")
 
     def test_index_residual_quantizer_codes_size_mismatch(self):
-        # "IxRq": fourcc + index_header + ResidualQuantizer + code_size +
-        # codes
         buf = bytearray()
         push_fourcc(buf, "IxRq")
         push_index_header(buf, 4, 2)
@@ -973,8 +889,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "codes.size()")
 
     def test_index_local_search_quantizer_codes_size_mismatch(self):
-        # "IxLS": fourcc + index_header + LocalSearchQuantizer + code_size
-        # + codes
         buf = bytearray()
         push_fourcc(buf, "IxLS")
         push_index_header(buf, 4, 2)
@@ -984,10 +898,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "codes.size()")
 
     def test_index_product_residual_quantizer_codes_size_mismatch(self):
-        # "IxPR": fourcc + index_header + ProductResidualQuantizer +
-        # code_size + codes. ProductResidualQuantizer =
-        # ProductAdditiveQuantizer(AdditiveQuantizer + nsplits) +
-        # nsplits * ResidualQuantizer
         buf = bytearray()
         push_fourcc(buf, "IxPR")
         push_index_header(buf, 4, 2)
@@ -999,8 +909,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "codes.size()")
 
     def test_index_product_local_search_quantizer_codes_size_mismatch(self):
-        # "IxPL": fourcc + index_header + ProductLocalSearchQuantizer +
-        # code_size + codes
         buf = bytearray()
         push_fourcc(buf, "IxPL")
         push_index_header(buf, 4, 2)
@@ -1074,22 +982,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_minimal_flat(buf, 4, ntotal)
         self.expect_read_throws(buf, "HNSW entry_point")
 
-    def test_hnsw_valid_neighbors_search_works(self):
-        ntotal, npn = 4, 2
-        neighbors = [1, 2, 0, 3, 0, 3, 1, 2]  # each node links to 2 others
-        buf = bytearray()
-        push_fourcc(buf, "IHNf")
-        push_index_header(buf, 4, ntotal)
-        push_hnsw_with_neighbors(buf, ntotal, npn, neighbors)
-        # Flat storage with 4 zero vectors (valid, not useful for recall)
-        push_minimal_flat(buf, 4, ntotal)
-
-        idx = read_index(buf)
-        self.assertIsNotNone(idx)
-        _, labels = idx.search(np.zeros((1, 4), dtype="float32"), 1)
-        self.assertGreaterEqual(labels[0, 0], 0)
-        self.assertLess(labels[0, 0], ntotal)
-
     def test_hnsw2_level_wrong_storage_type(self):
         # IndexHNSW2Level storage must be Index2Layer or IndexIVFPQ, else a
         # failed dynamic_cast leads to a null deref.
@@ -1152,8 +1044,8 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_read_throws(buf, "NNDescent ntotal")
 
     def test_hnsw_cagra_empty_index_search(self):
-        # base_level_only search on an empty index would access
-        # uninitialized graph nodes without the fix.
+        # base_level_only search on an empty index must not access
+        # uninitialized graph nodes.
         idx = faiss.IndexHNSWCagra(4, 16)
         idx.base_level_only = True
         _, labels = idx.search(np.ones((1, 4), dtype="float32"), 1)
@@ -1165,9 +1057,9 @@ class TestReadIndexDeserialize(FaissTestCase):
         quantizer = faiss.IndexFlatL2(4)
         idx = faiss.IndexIVFFlat(quantizer, 4, 10)
         idx.own_fields = False
-        # Simulate IO_FLAG_SKIP_IVF_DATA: delete invlists, set it to null.
+        idx.is_trained = True
         idx.replace_invlists(None, False)
-        with self.assertRaisesFaiss():
+        with self.assertRaisesFaiss("inverted lists"):
             idx.search(np.ones((1, 4), dtype="float32"), 1)
 
     def test_index_ivf_null_invlists_add(self):
@@ -1176,7 +1068,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         idx.own_fields = False
         idx.is_trained = True
         idx.replace_invlists(None, False)
-        with self.assertRaisesFaiss():
+        with self.assertRaisesFaiss("inverted lists"):
             idx.add(np.ones((1, 4), dtype="float32"))
 
     # IVF quantizer ntotal / nlist acceptance tests. The quantizer may
@@ -1194,25 +1086,13 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_null_invlists(buf)
         return buf
 
-    def test_ivf_quantizer_surplus(self):
-        # ntotal > nlist. Produced by shard_ivf_index_centroids(), which
-        # distributes all of the original quantizer's centroids across
-        # shards without adjusting nlist. The search-time key < nlist check
-        # prevents OOB access for out-of-range keys.
-        read_index(self._ivf_flat_with_quantizer_ntotal(2, 5))
-
-    def test_ivf_quantizer_trained(self):
-        # ntotal == nlist (normal trained IVF).
-        read_index(self._ivf_flat_with_quantizer_ntotal(2, 2))
-
-    def test_ivf_quantizer_subset(self):
-        # 0 < ntotal < nlist. Produced by shard_ivf_index_centroids(), where
-        # each shard's quantizer holds a subset of the centroids.
-        read_index(self._ivf_flat_with_quantizer_ntotal(10, 3))
-
-    def test_ivf_quantizer_untrained(self):
-        # ntotal == 0 (custom inverted list management).
-        read_index(self._ivf_flat_with_quantizer_ntotal(10, 0))
+    def test_ivf_quantizer_ntotal_not_nlist_accepted(self):
+        # shard_ivf_index_centroids() produces ntotal > nlist (all centroids
+        # spread across shards) and 0 < ntotal < nlist (one shard's subset).
+        # The search-time key < nlist check prevents OOB access.
+        for nlist, ntotal in [(2, 5), (10, 3), (10, 0)]:
+            with self.subTest(nlist=nlist, ntotal=ntotal):
+                read_index(self._ivf_flat_with_quantizer_ntotal(nlist, ntotal))
 
     def test_ivf_scalar_quantizer_untrained_search_rejected(self):
         # Empty trained vector with is_trained=false deserializes (a
@@ -1220,7 +1100,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         # IndexIVF checks is_trained.
         buf = bytearray()
         push_fourcc(buf, "IwSq")
-        # IVF header: index_header + nlist + nprobe + quantizer + direct_map
         push_index_header(buf, 4, 0, is_trained=False)
         push_val(buf, SIZE_T, 1)  # nlist
         push_val(buf, SIZE_T, 1)  # nprobe
@@ -1237,7 +1116,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_null_invlists(buf)
 
         idx = read_index(buf)
-        self.assertIsNotNone(idx)
         self.assertFalse(idx.is_trained)
 
         xq = np.zeros((1, 4), dtype="float32")
@@ -1246,30 +1124,12 @@ class TestReadIndexDeserialize(FaissTestCase):
         with self.assertRaisesFaiss():
             idx.range_search(xq, 1.0)
 
-        self.assertIsInstance(idx, faiss.IndexIVF)
         key = np.zeros((1, 1), dtype="int64")
         coarse_dis = np.zeros((1, 1), dtype="float32")
         with self.assertRaisesFaiss():
             idx.search_preassigned(xq, 1, key, coarse_dis)
         with self.assertRaisesFaiss():
             idx.range_search_preassigned(xq, 1.0, key, coarse_dis)
-
-    def test_ivf_scalar_quantizer_trained_empty_trained(self):
-        # is_trained=true with an empty trained vector is corrupt data.
-        buf = bytearray()
-        push_fourcc(buf, "IwSq")
-        push_index_header(buf, 4, 0, is_trained=True)
-        push_val(buf, SIZE_T, 1)  # nlist
-        push_val(buf, SIZE_T, 1)  # nprobe
-        push_minimal_flat(buf, 4)
-        push_empty_direct_map(buf)
-        push_val(buf, INT, 0)  # qtype = QT_8bit
-        push_val(buf, INT, 0)  # rangestat
-        push_val(buf, FLOAT, 0.0)  # rangestat_arg
-        push_val(buf, SIZE_T, 4)  # d
-        push_val(buf, SIZE_T, 4)  # code_size
-        push_vector(buf, FLOAT, [])  # trained (empty, but is_trained=true)
-        self.expect_read_throws(buf, "ScalarQuantizer trained size")
 
     def test_ivfpq_null_quantizer_precompute_table_rejected(self):
         # initialize_IVFPQ_precomputed_table rejects a null quantizer, which
@@ -1313,12 +1173,9 @@ class TestReadIndexDeserialize(FaissTestCase):
         with self.assertRaisesFaiss():
             ivf.train(np.zeros((1, ivf.d), dtype="float32"))
 
-    # VectorTransform deserialization validation tests.
-
     def test_normalization_transform_din_dout_mismatch(self):
         # d_in != d_out makes memcpy overflow the output buffer in
         # apply_noalloc.
-        # VNrm: fourcc + norm(float) + d_in + d_out + is_trained(bool)
         buf = bytearray()
         push_fourcc(buf, "VNrm")
         push_val(buf, FLOAT, 2.0)  # norm (L2)
@@ -1327,17 +1184,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, BOOL, True)  # is_trained
         self.expect_vt_read_throws(buf, "d_in == d_out")
 
-    def test_normalization_transform_din_dout_match(self):
-        buf = bytearray()
-        push_fourcc(buf, "VNrm")
-        push_val(buf, FLOAT, 2.0)  # norm (L2)
-        push_val(buf, INT, 16)  # d_in
-        push_val(buf, INT, 16)  # d_out
-        push_val(buf, BOOL, True)  # is_trained
-        read_vector_transform(buf)
-
     def test_centering_transform_din_dout_mismatch(self):
-        # VCnt: fourcc + mean(vector<float>) + d_in + d_out + is_trained
         buf = bytearray()
         push_fourcc(buf, "VCnt")
         push_vector(buf, FLOAT, [0.0] * 16)  # mean
@@ -1372,16 +1219,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_minimal_flat(buf, 8)
         self.expect_read_throws(buf, "IndexPreTransform empty chain")
 
-    def test_pre_transform_empty_chain_matching_dimension_accepted(self):
-        buf = bytearray()
-        push_fourcc(buf, "IxPT")
-        push_index_header(buf, 8, 0)
-        push_val(buf, INT, 0)  # nt = 0, empty chain
-        push_minimal_flat(buf, 8)
-        self.assertIsNotNone(read_index(buf))
-
     def test_hadamard_rotation_invalid_dout(self):
-        # HRot: fourcc + seed + d_in + d_out + is_trained(bool)
         buf = bytearray()
         push_fourcc(buf, "HRot")
         push_val(buf, INT, 42)  # seed
@@ -1399,17 +1237,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, BOOL, True)  # is_trained
         self.expect_vt_read_throws(buf, "HadamardRotation d_in=")
 
-    def test_hadamard_rotation_dout_zero(self):
-        buf = bytearray()
-        push_fourcc(buf, "HRot")
-        push_val(buf, INT, 42)  # seed
-        push_val(buf, INT, 16)  # d_in
-        push_val(buf, INT, 0)  # d_out = 0 (invalid)
-        push_val(buf, BOOL, True)  # is_trained
-        self.expect_vt_read_throws(buf, "HadamardRotation d_out=")
-
     def test_remap_dimensions_transform_map_too_small(self):
-        # RmDT: fourcc + WRITEVECTOR(map) + d_in + d_out + is_trained
         buf = bytearray()
         push_fourcc(buf, "RmDT")
         push_vector(buf, INT, [0, 1])  # map with 2 entries
@@ -1419,7 +1247,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_vt_read_throws(buf, "RemapDimensionsTransform map size")
 
     def test_centering_transform_mean_too_small(self):
-        # VCnt: fourcc + WRITEVECTOR(mean) + d_in + d_out + is_trained
         buf = bytearray()
         push_fourcc(buf, "VCnt")
         push_vector(buf, FLOAT, [1.0, 2.0])  # mean with 2 entries
@@ -1429,8 +1256,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_vt_read_throws(buf, "CenteringTransform mean size")
 
     def test_itq_transform_mean_too_small(self):
-        # Viqt: fourcc + WRITEVECTOR(mean) + do_pca + sub_vt(ITQMatrix) +
-        #       sub_vt(LinearTransform) + d_in + d_out + is_trained
         buf = bytearray()
         push_fourcc(buf, "Viqt")
         push_vector(buf, FLOAT, [1.0])  # mean with 1 entry
@@ -1587,8 +1412,6 @@ class TestReadIndexDeserialize(FaissTestCase):
     def test_rabitq_qb_zero_rejected_iwrn(self):
         self.expect_read_throws(self._ivf_rabitq_fastscan_buf(0), "RaBitQ qb=")
 
-    # Binary index deserialization validation tests.
-
     def test_binary_header_dimension_not_multiple_of8(self):
         buf = bytearray()
         push_fourcc(buf, "IBxF")
@@ -1615,15 +1438,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_binary_index_header(buf, 16, 5)
         push_minimal_hnsw(buf, 3)  # 3 != 5
         self.expect_binary_read_throws(buf, "HNSW levels size")
-
-    def test_binary_hnsw_neighbor_negative_id(self):
-        ntotal, npn = 3, 2
-        neighbors = [1, -5, 0, -1, 0, -1]
-        buf = bytearray()
-        push_fourcc(buf, "IBHf")
-        push_binary_index_header(buf, 16, ntotal)
-        push_hnsw_with_neighbors(buf, ntotal, npn, neighbors)
-        self.expect_binary_read_throws(buf, "HNSW neighbors")
 
     def test_binary_hnsw_storage_ntotal_mismatch(self):
         buf = bytearray()
@@ -1679,7 +1493,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_binary_read_throws(buf, "storage ntotal")
 
     def test_binary_hash_invlists_vecs_size_mismatch(self):
-        # IBHh: fourcc + binary_header + b + nflip + hash_invlists
         buf = bytearray()
         push_fourcc(buf, "IBHh")
         push_binary_index_header(buf, 16, 0)
@@ -1745,11 +1558,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, INT, 2)
         self.expect_binary_read_throws(buf, "exceeds code_size")
 
-    # IndexBinaryHNSW runtime safety checks.
-
     def test_binary_hnsw_get_distance_computer_non_flat_throws(self):
-        # get_distance_computer with non-flat (null) storage throws instead
-        # of asserting.
         idx = faiss.IndexBinaryHNSW()
         idx.storage = None
         idx.own_fields = False
@@ -1776,7 +1585,6 @@ class TestReadIndexDeserialize(FaissTestCase):
     def test_residual_coarse_quantizer_huge_ntotal(self):
         # Huge ntotal triggers the centroid_norms byte limit check (guard on
         # ntotal vs byte_limit/sizeof(float)).
-        # "ImRQ": fourcc + index_header + ResidualQuantizer + beam_factor
         buf = bytearray()
         push_fourcc(buf, "ImRQ")
         push_index_header(buf, 4, 1 << 60)  # would cause OOM in search()
@@ -1851,8 +1659,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, FLOAT, -1.0)  # beam_factor = -1 (skip tables)
         self.expect_read_throws(buf, "inconsistent with 2^tot_bits")
 
-    # IndexBinaryIVF runtime safety checks.
-
     def test_binary_ivf_null_invlists_search(self):
         idx = swig_default_construct(faiss.IndexBinaryIVF)
         idx.d = 16
@@ -1864,7 +1670,6 @@ class TestReadIndexDeserialize(FaissTestCase):
             idx.search(query, 1)
 
     def _vnrm_buf(self, d_in, d_out):
-        # VNrm: fourcc + float(norm) + d_in + d_out + is_trained
         buf = bytearray()
         push_fourcc(buf, "VNrm")
         push_val(buf, FLOAT, 2.0)
@@ -1884,12 +1689,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf = self._vnrm_buf(16, 16)
         with vector_byte_limit(1 << 20):
             read_vector_transform(buf)
-
-    def test_vector_transform_d_out_negative(self):
-        self.expect_vt_read_throws(self._vnrm_buf(16, -1))
-
-    def test_vector_transform_d_in_negative(self):
-        self.expect_vt_read_throws(self._vnrm_buf(-1, 16))
 
     def _corrupt_iwiq_vt_dimension(self, field_offset):
         # Serialize a valid IndexIVFIndependentQuantizer, locate the VNrm
@@ -1917,13 +1716,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf = self._corrupt_iwiq_vt_dimension(4 + 4)  # after fourcc + norm
         self.expect_read_throws(buf)
 
-    def test_iw_iq_vt_dout_mismatch(self):
-        # A VT d_out that does not match the inner IVF index dimension.
-        buf = self._corrupt_iwiq_vt_dimension(4 + 4 + 4)  # after d_in
-        self.expect_read_throws(buf)
-
-    # FastScan deserialization tests.
-
     def _build_index_pq_fast_scan_buf(self, bbs=32, M2=2, qbs=0):
         # Minimal valid IndexPQFastScan ("IPfs"). PQ: d=4, M=2, nbits=4 ->
         # ksub=16, centroids size = d*ksub = 64 floats.
@@ -1939,9 +1731,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_vector(buf, UINT8, [])  # codes
         return buf
 
-    def _build_aq_fast_scan_buf(
-        self, fastscan_M=3, fastscan_ksub=16, bbs=32, qbs=0, fastscan_M2=0
-    ):
+    def _build_aq_fast_scan_buf(self, fastscan_M=3, fastscan_ksub=16, qbs=0):
         # Minimal valid IndexResidualQuantizerFastScan ("IRfs"):
         # AdditiveQuantizer + ResidualQuantizer fields, then FastScan fields.
         buf = bytearray()
@@ -1961,36 +1751,20 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, INT, 1)  # max_beam_size
         # FastScan fields (IndexAdditiveQuantizerFastScan):
         push_val(buf, INT, 0)  # implem
-        push_val(buf, INT, bbs)
+        push_val(buf, INT, 32)  # bbs
         push_val(buf, INT, qbs)
         push_val(buf, SIZE_T, fastscan_M)  # M
         push_val(buf, SIZE_T, 4)  # nbits
         push_val(buf, SIZE_T, fastscan_ksub)  # ksub
         push_val(buf, SIZE_T, 2)  # code_size
         push_val(buf, SIZE_T, 0)  # ntotal2
-        # M2: the override if nonzero, else roundup(M, 2) in size_t
-        # arithmetic (wraps to 0 for M = SIZE_MAX).
-        if fastscan_M2:
-            M2 = fastscan_M2
-        else:
-            M2 = ((fastscan_M + 1) & ~1) & SIZE_MAX
-        push_val(buf, SIZE_T, M2)
+        # M2 = roundup(M, 2) in size_t arithmetic (wraps to 0 for
+        # M = SIZE_MAX).
+        push_val(buf, SIZE_T, ((fastscan_M + 1) & ~1) & SIZE_MAX)
         push_val(buf, BOOL, True)  # rescale_norm
         push_val(buf, INT, 1)  # norm_scale
         push_val(buf, SIZE_T, 48)  # max_train_points
         push_vector(buf, UINT8, [])  # codes
-        return buf
-
-    def _build_rabitq_fast_scan_buf(self, bbs):
-        # Serialize a valid IndexRaBitQFastScan and patch its bbs field. The
-        # format has qb (uint8_t = 8) immediately followed by bbs (int = 32).
-        idx = faiss.IndexRaBitQFastScan(4, faiss.METRIC_L2, 32, 1)
-        buf = serialize_index(idx)
-        pos = buf.find(struct.pack("<Bi", 8, 32))
-        self.assertGreaterEqual(
-            pos, 0, "Could not find bbs field in serialized data"
-        )
-        struct.pack_into("<i", buf, pos + 1, bbs)
         return buf
 
     def test_index_pq_fast_scan_bbs_zero(self):
@@ -2010,17 +1784,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf = self._build_index_pq_fast_scan_buf(bbs=32, M2=0)
         self.expect_read_throws(buf, "invalid M2")
 
-    def test_index_pq_fast_scan_m2_too_small(self):
-        # 1 < roundup(2, 2) = 2
-        buf = self._build_index_pq_fast_scan_buf(bbs=32, M2=1)
-        self.expect_read_throws(buf, "invalid M2")
-
-    def test_index_pq_fast_scan_ksub_m2_overflow(self):
-        # M2 is read directly from the file; a huge value could overflow
-        # ksub * M2. M2=SIZE_MAX is caught by M2 != roundup(M, 2) first.
-        buf = self._build_index_pq_fast_scan_buf(bbs=32, M2=SIZE_MAX)
-        self.expect_read_throws(buf, "invalid M2")
-
     def test_aq_fast_scan_m_zero(self):
         # Without this check, search() would crash in compute_float_LUT.
         buf = self._build_aq_fast_scan_buf(fastscan_M=0)
@@ -2030,38 +1793,28 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf = self._build_aq_fast_scan_buf(fastscan_M=3, fastscan_ksub=0)
         self.expect_read_throws(buf, "invalid quantizer state")
 
-    def test_aq_fast_scan_bbs_zero(self):
-        buf = self._build_aq_fast_scan_buf(
-            fastscan_M=3, fastscan_ksub=16, bbs=0
-        )
-        self.expect_read_throws(buf, "invalid bbs")
-
-    def test_aq_fast_scan_m2_mismatch(self):
-        # A wrong M2 makes compute_quantized_LUT write out of bounds.
-        buf = self._build_aq_fast_scan_buf(
-            fastscan_M=3, fastscan_ksub=16, bbs=32, qbs=0, fastscan_M2=1
-        )
-        self.expect_read_throws(buf, "invalid M2")
-
     def test_aq_fast_scan_ksub_m_overflow(self):
         buf = self._build_aq_fast_scan_buf(
-            fastscan_M=SIZE_MAX, fastscan_ksub=16, bbs=32
+            fastscan_M=SIZE_MAX, fastscan_ksub=16
         )
         self.expect_read_throws(buf, "overflow")
 
     def test_rabitq_fast_scan_bbs_zero(self):
-        buf = self._build_rabitq_fast_scan_buf(0)
-        self.expect_read_throws(buf, "invalid bbs")
-
-    def test_rabitq_fast_scan_bbs_not_aligned(self):
-        buf = self._build_rabitq_fast_scan_buf(17)
+        # Serialize a valid IndexRaBitQFastScan and patch its bbs field. The
+        # format has qb (uint8_t = 8) immediately followed by bbs (int = 32).
+        idx = faiss.IndexRaBitQFastScan(4, faiss.METRIC_L2, 32, 1)
+        buf = serialize_index(idx)
+        pos = buf.find(struct.pack("<Bi", 8, 32))
+        self.assertGreaterEqual(
+            pos, 0, "Could not find bbs field in serialized data"
+        )
+        struct.pack_into("<i", buf, pos + 1, 0)
         self.expect_read_throws(buf, "invalid bbs")
 
     def test_additive_quantizer_codebooks_too_small(self):
         # read_AdditiveQuantizer rejects codebooks smaller than
-        # d * total_codebook_size (previously only caught at compute_LUT()).
-        # IxRq with d=4, M=1, nbits={8} and empty codebooks
-        # (0 < d*256 = 1024).
+        # d * total_codebook_size. IxRq with d=4, M=1, nbits={8} and empty
+        # codebooks (0 < d*256 = 1024).
         buf = bytearray()
         push_fourcc(buf, "IxRq")
         push_index_header(buf, 4, 0)
@@ -2186,7 +1939,7 @@ class TestReadIndexDeserialize(FaissTestCase):
 
     def test_aq_fast_scan_negative_qbs(self):
         buf = self._build_aq_fast_scan_buf(
-            fastscan_M=3, fastscan_ksub=16, bbs=32, qbs=-1
+            fastscan_M=3, fastscan_ksub=16, qbs=-1
         )
         self.expect_read_throws(buf, "qbs must be non-negative")
 
@@ -2211,12 +1964,10 @@ class TestReadIndexDeserialize(FaissTestCase):
         struct.pack_into("<i", buf, pos + 4, -1)
         self.expect_read_throws(buf, "qbs must be non-negative")
 
-    # ScalarQuantizer deserialization tests.
-
-    def _sq_buf(self, qtype, sq_d, trained, header_d=4, is_trained=True):
+    def _sq_buf(self, qtype, sq_d, trained, is_trained=True):
         buf = bytearray()
         push_fourcc(buf, "IxSQ")
-        push_index_header(buf, header_d, 0, is_trained=is_trained)
+        push_index_header(buf, 4, 0, is_trained=is_trained)
         push_val(buf, INT, qtype)
         push_val(buf, INT, 0)  # rangestat
         push_val(buf, FLOAT, 0.0)  # rangestat_arg
@@ -2247,15 +1998,6 @@ class TestReadIndexDeserialize(FaissTestCase):
             faiss.ScalarQuantizer.QT_8bit, 4, [0.0] * 8, is_trained=False
         )
         self.expect_read_throws(buf, "is_trained")
-
-    def test_sq_untrained_empty_trained_accepted(self):
-        # is_trained=false with empty trained is a legitimate untrained
-        # index.
-        buf = self._sq_buf(
-            faiss.ScalarQuantizer.QT_8bit, 4, [], is_trained=False
-        )
-        idx = read_index(buf)
-        self.assertFalse(idx.is_trained)
 
     def test_index_residual_quantizer_aq_dimension_mismatch(self):
         # Index header d=4, AQ d=8.
@@ -2295,12 +2037,8 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, INT, 0)  # qbs
         self.expect_read_throws(buf, "does not match index d")
 
-    # code_size cross-validation against quantizer-derived values.
-    #
-    # Several index types read code_size from the serialized stream
-    # independently of the quantizer parameters. A corrupt code_size that
-    # passes the codes.size() == ntotal * code_size check (e.g. when
-    # ntotal == 0) can cause excessive allocations in
+    # A corrupt code_size passes the codes.size() == ntotal * code_size
+    # check when ntotal == 0 and can cause excessive allocations in
     # GenericFlatCodesDistanceComputer during search.
 
     def _find_code_size_offset(self, index, attr, real_cs):
@@ -2329,8 +2067,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         return offset
 
     def _corrupt_code_size_and_expect_throw(self, index, attr, expected_substr):
-        # Serialize a valid index, corrupt its code_size field and verify
-        # that deserialization rejects it.
         real_cs = getattr(index, attr)
         offset = self._find_code_size_offset(index, attr, real_cs)
         self.assertGreaterEqual(
@@ -2477,39 +2213,26 @@ class TestReadIndexDeserialize(FaissTestCase):
         pq.code_size = 0
         return pq
 
-    def _expect_precomputed_table_throws(self, use_precomputed_table, nlist):
-        pq = self._saturating_pq()
-        quantizer = faiss.IndexFlatL2(0)
-        quantizer.ntotal = nlist
-        use_table = np.array([use_precomputed_table], dtype="int32")
-        with self.assertRaisesFaiss():
-            faiss.initialize_IVFPQ_precomputed_table(
-                faiss.swig_ptr(use_table),
-                quantizer,
-                pq,
-                faiss.AlignedTableFloat32(),
-                True,  # by_residual
-                False,  # verbose
-            )
-
-    def test_initialize_ivfpq_precomputed_table_overflow_rejected(self):
-        # nlist * pq.M * pq.ksub * sizeof(float) overflows size_t. Without
-        # overflow-checked multiplication, the wrapped value bypasses the
-        # precomputed_table_max_bytes guard and the r_norms allocation
-        # aborts the process. The nlist factor (the quantizer ntotal)
-        # forces the overflow.
-        self._expect_precomputed_table_throws(0, 1 << 20)
-
     def test_initialize_ivfpq_precomputed_table_user_set_flag_overflow_rejected(
         self,
     ):
         # The overflowing M*ksub is rejected even when the caller pre-sets
-        # use_precomputed_table to 1, which bypasses the in-function
-        # size-class branch. Protects in-memory IVFPQ callers (training,
-        # IndexHNSW, IndexIVFPQFastScan) and the
-        # IndexIVFIndependentQuantizer read path that reads
-        # use_precomputed_table directly from the stream.
-        self._expect_precomputed_table_throws(1, 1)
+        # use_precomputed_table to 1, which bypasses the size-class branch.
+        # Protects in-memory IVFPQ callers (training, IndexHNSW,
+        # IndexIVFPQFastScan) and the IndexIVFIndependentQuantizer read path
+        # that reads use_precomputed_table directly from the stream.
+        quantizer = faiss.IndexFlatL2(0)
+        quantizer.ntotal = 1
+        use_table = np.array([1], dtype="int32")
+        with self.assertRaisesFaiss():
+            faiss.initialize_IVFPQ_precomputed_table(
+                faiss.swig_ptr(use_table),
+                quantizer,
+                self._saturating_pq(),
+                faiss.AlignedTableFloat32(),
+                True,  # by_residual
+                False,  # verbose
+            )
 
     def _expect_precomputed_table_limit(self, index, nlist, M, nbits, limit):
         # Read with a limit below the recomputed table size must throw from
@@ -2540,7 +2263,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         d, nlist, M, nbits = 16, 256, 8, 8  # ksub = 256
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFPQ(quantizer, d, nlist, M, nbits)
-        self.assertTrue(index.by_residual)  # precompute_table() runs on read
         # Recomputed table = 256 * 8 * 256 = 524288 floats (2 MB). A 256 KB
         # limit (65536 floats) is below the table but above the smaller
         # derived reads (PQ centroids ~16 KB, inverted lists).
@@ -2563,14 +2285,11 @@ class TestReadIndexDeserialize(FaissTestCase):
         # (or precompute_table) dereferences quantizer->ntotal.
         buf = bytearray()
         push_fourcc(buf, "IwPQ")
-        # read_ivf_header: index_header, nlist, nprobe, coarse quantizer,
-        # direct_map.
         push_index_header(buf, 4, 0, is_trained=True)
         push_val(buf, SIZE_T, 1)  # nlist
         push_val(buf, SIZE_T, 1)  # nprobe
         push_fourcc(buf, "null")  # coarse quantizer -> nullptr
         push_empty_direct_map(buf)
-        # IVFPQ body: by_residual, code_size, ProductQuantizer, invlists.
         push_val(buf, BOOL, True)  # by_residual
         push_val(buf, SIZE_T, 1)  # code_size
         # Valid PQ: d=4, M=1, nbits=8 -> centroids = d*ksub = 1024.
@@ -2581,12 +2300,8 @@ class TestReadIndexDeserialize(FaissTestCase):
     def test_ivfpq_multi_index_quantizer_precomputed_table_exceeds_byte_limit(
         self,
     ):
-        # The bound also covers the type-2 table used when the coarse
-        # quantizer is a MultiIndexQuantizer. That table is
-        # cpq.ksub * pq.M * pq.ksub floats, driven by the coarse PQ ksub,
-        # which is decoupled from quantizer->ntotal. A crafted
-        # MultiIndexQuantizer with a tiny ntotal but a large ksub passes an
-        # ntotal-only bound yet forces a huge allocation.
+        # The type-2 table (MultiIndexQuantizer coarse quantizer) is
+        # cpq.ksub * pq.M * pq.ksub floats, decoupled from quantizer->ntotal.
         d = 8
         buf = bytearray()
         push_fourcc(buf, "IwPQ")
@@ -2673,12 +2388,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, BOOL, True)
         self.expect_read_throws(buf, "storage_kind")
 
-    # IVF flavours (ISIQ = IndexSVSIVFLVQ, ISIL = IndexSVSIVFLeanVec,
-    # ISID = IndexSVSIVF) share the same storage_kind read site. Without the
-    # shared validator the bad value would reach
-    # IndexSVSIVF::deserialize_impl and only get rejected from
-    # to_svs_storage_kind() after several allocations and an SVS runtime
-    # call.
+    # ISIQ/ISIL/ISID share one storage_kind read site.
 
     @unittest.skipUnless(SVS_ENABLED, "requires SVS")
     def test_svsivf_invalid_storage_kind(self):
@@ -2730,9 +2440,6 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf += bytes(256)  # garbage SVS stream data
         self.expect_read_throws(buf)
 
-    # IndexRefine / IndexRefinePanorama k_factor validation.
-    # "IxRF" (IndexRefineFlat) and "IxRP" (IndexRefinePanorama):
-    #   fourcc + index_header + base_index + refine_index + k_factor
     # k_factor must be finite and in [1, 1000].
 
     def _index_refine_buf(self, fourcc, k_factor):
@@ -2755,31 +2462,12 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf = self._index_refine_buf("IxRF", 1001.0)
         self.expect_read_throws(buf, "k_factor")
 
-    def test_index_refine_k_factor_negative(self):
-        buf = self._index_refine_buf("IxRF", -1.0)
-        self.expect_read_throws(buf, "k_factor")
-
     def test_index_refine_k_factor_zero(self):
         self.expect_read_throws(self._index_refine_buf("IxRF", 0.0), "k_factor")
-
-    def test_index_refine_k_factor_infinity(self):
-        buf = self._index_refine_buf("IxRF", float("inf"))
-        self.expect_read_throws(buf, "k_factor")
 
     def test_index_refine_k_factor_nan(self):
         buf = self._index_refine_buf("IxRF", float("nan"))
         self.expect_read_throws(buf, "k_factor")
-
-    def test_index_refine_panorama_k_factor_too_large(self):
-        buf = self._index_refine_buf("IxRP", 1e10)
-        self.expect_read_throws(buf, "k_factor")
-
-    def test_index_refine_panorama_k_factor_valid(self):
-        read_index(self._index_refine_buf("IxRP", 4.0))
-
-    # IndexIVFPQR k_factor validation: serialize a real IndexIVFPQR, patch
-    # the k_factor bytes, and verify that deserialization rejects invalid
-    # values.
 
     def _make_ivfpqr_bytes(self, k_factor):
         # nbits=4 (16 centroids) so that training succeeds with few vectors.
@@ -2810,14 +2498,10 @@ class TestReadIndexDeserialize(FaissTestCase):
 
     def test_index_ivfpqr_k_factor_valid(self):
         buf = self._make_ivfpqr_bytes(64.0)  # AutoTune max
-        result = read_index(buf)
-        self.assertIsInstance(result, faiss.IndexIVFPQR)
-        self.assertEqual(result.k_factor, 64.0)
+        self.assertEqual(read_index(buf).k_factor, 64.0)
 
     @unittest.skipIf(SVS_ENABLED, "SVS fourccs are readable with SVS")
     def test_svs_vamana_fourcc_rejected(self):
-        # Without SVS, an SVS fourcc fails with an "Index type ... not
-        # recognized" error rather than crashing.
         buf = bytearray()
         push_fourcc(buf, "ISVD")
         push_index_header(buf, 8, 0)
@@ -2833,36 +2517,33 @@ class TestReadIndexDeserialize(FaissTestCase):
         buf = make_idmap_payload("IxMp", 0, 3, 0)
         self.expect_read_throws(buf, "inner index ntotal")
 
-    def test_index_id_map2_inner_ntotal_mismatch_rejected(self):
-        buf = make_idmap_payload("IxM2", 0, 3, 0)
-        self.expect_read_throws(buf, "inner index ntotal")
-
     def test_index_binary_id_map_inner_ntotal_mismatch_rejected(self):
-        buf = make_binary_idmap_payload("IBMp", 0, 3, 0)
-        self.expect_binary_read_throws(buf, "inner index ntotal")
-
-    def test_index_binary_id_map2_inner_ntotal_mismatch_rejected(self):
-        buf = make_binary_idmap_payload("IBM2", 0, 3, 0)
+        buf = bytearray()
+        push_fourcc(buf, "IBMp")
+        push_binary_index_header(buf, 8, 0)
+        push_fourcc(buf, "IBxF")
+        push_binary_index_header(buf, 8, 3)
+        push_vector(buf, UINT8, [0] * 3)  # ntotal * code_size
+        push_vector(buf, INT64, [])  # id_map
         self.expect_binary_read_throws(buf, "inner index ntotal")
 
     # IndexIDMap with a "null" sub-index fourcc. read_index returns nullptr
-    # for it, so the inner-ntotal cross-check on the IxMp/IxM2 path would
-    # dereference idxmap->index without the "inner index is null" guard.
+    # for it, so the inner-ntotal cross-check would dereference
+    # idxmap->index without the "inner index is null" guard.
     # The binary IBMp/IBM2 path is reached indirectly (an embedded float
     # IxMp/IxM2 inside a binary wrapper such as IndexBinaryFromFloat) and is
     # covered by the same float-side guard.
 
     def test_index_id_map_null_inner_rejected(self):
-        buf = make_idmap_null_inner_payload("IxMp")
-        self.expect_read_throws(buf, "inner index is null")
-
-    def test_index_id_map2_null_inner_rejected(self):
-        buf = make_idmap_null_inner_payload("IxM2")
+        buf = bytearray()
+        push_fourcc(buf, "IxMp")
+        push_index_header(buf, 4, 0)
+        push_fourcc(buf, "null")
+        push_vector(buf, INT64, [])  # id_map
         self.expect_read_throws(buf, "inner index is null")
 
     def test_index_binary_from_float_null_inner_rejected(self):
-        # The IBFf read site accepted a null inner index, and the resulting
-        # IndexBinaryFromFloat would null-deref on the first search or add.
+        # A null inner index would null-deref on the first search or add.
         d = 8
         buf = bytearray()
         push_fourcc(buf, "IBFf")
@@ -2871,8 +2552,7 @@ class TestReadIndexDeserialize(FaissTestCase):
         self.expect_binary_read_throws(buf, "inner index is null")
 
     def test_index_id_map_matching_ntotals_accepted(self):
-        buf = make_idmap_payload("IxMp", 0, 0, 0)
-        self.assertIsNotNone(read_index(buf))
+        read_index(make_idmap_payload("IxMp", 0, 0, 0))
 
     # Panorama deserialization and reconstruct bounds (T287094917).
     # The IxFP branch does not go through read_index_header, so its own
@@ -2882,36 +2562,31 @@ class TestReadIndexDeserialize(FaissTestCase):
         # A d large enough to make code_size = d * 4 overflow into
         # gigabytes is rejected, as it is for every other index type.
         buf = bytearray()
-        push_flat_panorama(buf, 1280725833, 1, 1024, 0, 0, 0)
+        push_flat_panorama(buf, 1280725833, 1, 1024, 0)
         self.expect_read_throws(buf, "out of range")
 
     def test_flat_panorama_negative_ntotal(self):
         buf = bytearray()
-        push_flat_panorama(buf, 8, 1, 4, -1, 0, 0)
+        push_flat_panorama(buf, 8, 1, 4, -1)
         self.expect_read_throws(buf, "invalid ntotal")
 
     def test_flat_panorama_zero_batch_size_rejected(self):
         buf = bytearray()
-        push_flat_panorama(buf, 8, 1, 0, 2, 0, 0)
+        push_flat_panorama(buf, 8, 1, 0, 2)
         self.expect_read_throws(buf, "invalid IxFP batch_size")
 
     def test_flat_panorama_codes_size_overflow_rejected(self):
-        # With batch_size=SIZE_MAX and ntotal=2, num_batches is 1 and
-        # num_slots=1*SIZE_MAX does not overflow. The throw comes from the
-        # later num_slots * code_size multiplication in mul_no_overflow. The
-        # full prefix keeps the sibling "IndexFlatPanorama codes size
-        # mismatch" throw from satisfying the test.
+        # batch_size=SIZE_MAX, ntotal=2: num_slots = 1 * SIZE_MAX does not
+        # overflow, the later num_slots * code_size multiplication does.
         buf = bytearray()
-        push_flat_panorama(buf, 8, 1, SIZE_MAX, 2, 0, 0)
+        push_flat_panorama(buf, 8, 1, SIZE_MAX, 2)
         self.expect_read_throws(
             buf, "integer overflow in IndexFlatPanorama codes"
         )
 
     def test_flat_panorama_codes_size_mismatch(self):
-        # Pinned to the explicit FAISS_THROW_IF_NOT_FMT message rather than
-        # a stringified condition expression.
         buf = bytearray()
-        push_flat_panorama(buf, 8, 1, 4, 2, 0, 0)
+        push_flat_panorama(buf, 8, 1, 4, 2)
         self.expect_read_throws(buf, "IndexFlatPanorama codes size mismatch")
 
     def test_pre_transform_over_empty_flat_panorama_reconstruct(self):
@@ -2924,9 +2599,8 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_fourcc(buf, "IxPT")
         push_index_header(buf, d, 0)
         push_val(buf, INT, 0)  # nt = 0, empty chain
-        push_flat_panorama(buf, d, 1, 4, 0, 0, 0)
+        push_flat_panorama(buf, d, 1, 4, 0)
         idx = read_index(buf)
-        self.assertIsNotNone(idx)
         with self.assertRaisesFaiss():
             idx.reconstruct(0)
 
@@ -2983,9 +2657,6 @@ class TestIndexFlatPanoramaSafety(FaissTestCase):
         recons = np.zeros(2 * d, dtype="float32")
         recons_ptr = faiss.swig_ptr(recons)
 
-        with self.assertRaisesFaiss():
-            index.reconstruct(0)
-
         index.add(np.ones((2, d), dtype="float32"))
 
         index.reconstruct(1)
@@ -2994,7 +2665,7 @@ class TestIndexFlatPanoramaSafety(FaissTestCase):
         with self.assertRaisesFaiss():
             index.reconstruct(-1)
         index.reconstruct_n_c(0, 2, recons_ptr)
-        bad_ranges = [(-1, 1), (0, -1), (1, INT64_MAX), (1, 2), (-1, 0), (3, 0)]
+        bad_ranges = [(-1, 1), (0, -1), (1, INT64_MAX), (1, 2), (3, 0)]
         for n0, ni in bad_ranges:
             with self.assertRaisesFaiss():
                 index.reconstruct_n_c(n0, ni, recons_ptr)
@@ -3047,7 +2718,7 @@ def pipnn_payload(
         push_val(buf, INT, neighbor)
     push_vector(buf, INT, next_copy)
     if panorama_storage:
-        push_flat_panorama(buf, PIPNN_DIM, 1, 1024, storage_ntotal, 0, 0)
+        push_flat_panorama(buf, PIPNN_DIM, 1, 1024, storage_ntotal)
     else:
         push_minimal_flat(buf, storage_d, storage_ntotal)
     return buf

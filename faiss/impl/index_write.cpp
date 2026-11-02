@@ -432,7 +432,9 @@ static void write_PiPNN(const PiPNN& pipnn, IOWriter* f) {
     WRITE1(pipnn.c_max);
     WRITE1(pipnn.c_min);
     WRITE1(pipnn.leader_cap);
-    WRITE1(pipnn.replicas);
+    // Former replicas field, kept so that the format does not change.
+    const int replicas = 1;
+    WRITE1(replicas);
     WRITE1(pipnn.leader_fraction);
     WRITE1(pipnn.alpha);
     WRITEVECTOR(pipnn.fanout);

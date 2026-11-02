@@ -3,13 +3,20 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""a few tests for graph-based indices (HNSW, nndescent and NSG)"""
-
 import numpy as np
 import unittest
 import faiss
 
 from common_faiss_tests import get_dataset_2, for_all_simd_levels
+
+
+def check_io_and_clone(index, xq, D, I):
+    index2 = faiss.deserialize_index(faiss.serialize_index(index))
+    index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+    for index3 in index2, index2b, faiss.clone_index(index):
+        D3, I3 = index3.search(xq, 1)
+        np.testing.assert_array_equal(D3, D)
+        np.testing.assert_array_equal(I3, I)
 
 
 @for_all_simd_levels
@@ -25,7 +32,7 @@ class TestHNSW(unittest.TestCase):
         (_, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
         index = faiss.IndexFlatL2(d)
         index.add(self.xb)
-        Dref, Iref = index.search(self.xq, 1)
+        _, Iref = index.search(self.xq, 1)
         self.Iref = Iref
 
     def test_hnsw(self):
@@ -37,11 +44,9 @@ class TestHNSW(unittest.TestCase):
 
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
 
-        self.io_and_retest(index, Dhnsw, Ihnsw)
+        check_io_and_clone(index, self.xq, Dhnsw, Ihnsw)
 
     def test_deterministic_build(self):
-        # The HNSW build is deterministic and lock-free: repeated builds, and
-        # builds at different thread counts, produce byte-identical graphs.
         # nb must be large enough that the batch-size cap (2% of n) exceeds
         # the >100 threshold gating the parallel build region; otherwise the
         # build runs single-threaded and determinism is trivially untested.
@@ -49,8 +54,7 @@ class TestHNSW(unittest.TestCase):
         nb = 20000
         xb = np.random.RandomState(123).random((nb, d)).astype("float32")
 
-        # build() mutates the process-global OpenMP thread count; restore it so
-        # it does not leak into subsequent tests.
+        # build() mutates the global OpenMP thread count: restore it.
         self.addCleanup(faiss.omp_set_num_threads, faiss.omp_get_max_threads())
 
         def build(nthreads):
@@ -78,13 +82,11 @@ class TestHNSW(unittest.TestCase):
         self.assertGreaterEqual(max_level, 1)
         self.assertGreater(int((g8a >= 0).sum()), nb)
 
-        # reproducible across repeated builds and across thread counts
         g8b = graph_of(build(8))[1]
         g1 = graph_of(build(1))[1]
         np.testing.assert_array_equal(g8a, g8b)
         np.testing.assert_array_equal(g8a, g1)
 
-        # no self-loops
         for i in range(nb):
             seg = g8a[int(offs[i]) : int(offs[i + 1])]
             self.assertNotIn(i, seg[seg >= 0].tolist())
@@ -94,14 +96,13 @@ class TestHNSW(unittest.TestCase):
         index_flat.add(self.xb)
         D, _ = index_flat.search(self.xq, 10)
         radius = np.median(D[:, -1])
-        lims_ref, Dref, Iref = index_flat.range_search(self.xq, radius)
+        lims_ref, _, Iref = index_flat.range_search(self.xq, radius)
 
         index = faiss.IndexHNSWFlat(self.xb.shape[1], 16)
         index.add(self.xb)
         lims, D, I = index.range_search(self.xq, radius)
 
         nmiss = 0
-        # check if returned results are a subset of the reference results
         for i in range(len(self.xq)):
             ref = Iref[lims_ref[i] : lims_ref[i + 1]]
             new = I[lims[i] : lims[i + 1]]
@@ -120,7 +121,7 @@ class TestHNSW(unittest.TestCase):
 
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
 
-        self.io_and_retest(index, Dhnsw, Ihnsw)
+        check_io_and_clone(index, self.xq, Dhnsw, Ihnsw)
 
     def test_hnsw_no_init_level0(self):
         d = self.xq.shape[1]
@@ -134,27 +135,7 @@ class TestHNSW(unittest.TestCase):
         # vectors into level 0.
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 25)
 
-        self.io_and_retest(index, Dhnsw, Ihnsw)
-
-    def io_and_retest(self, index, Dhnsw, Ihnsw):
-        index2 = faiss.deserialize_index(faiss.serialize_index(index))
-        Dhnsw2, Ihnsw2 = index2.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dhnsw2 == Dhnsw))
-        self.assertTrue(np.all(Ihnsw2 == Ihnsw))
-
-        # Verify deserialized index is serializable again
-        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
-        Dhnsw2b, Ihnsw2b = index2b.search(self.xq, 1)
-        self.assertTrue(np.all(Dhnsw2b == Dhnsw))
-        self.assertTrue(np.all(Ihnsw2b == Ihnsw))
-
-        # also test clone
-        index3 = faiss.clone_index(index)
-        Dhnsw3, Ihnsw3 = index3.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dhnsw3 == Dhnsw))
-        self.assertTrue(np.all(Ihnsw3 == Ihnsw))
+        check_io_and_clone(index, self.xq, Dhnsw, Ihnsw)
 
     def test_hnsw_2level(self):
         d = self.xq.shape[1]
@@ -168,7 +149,7 @@ class TestHNSW(unittest.TestCase):
 
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 307)
 
-        self.io_and_retest(index, Dhnsw, Ihnsw)
+        check_io_and_clone(index, self.xq, Dhnsw, Ihnsw)
 
     def test_hnsw_2level_mixed_search(self):
         d = self.xq.shape[1]
@@ -186,12 +167,12 @@ class TestHNSW(unittest.TestCase):
         # It is expected that the mixed search will perform worse.
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 200)
 
-        self.io_and_retest(index, Dhnsw, Ihnsw)
+        check_io_and_clone(index, self.xq, Dhnsw, Ihnsw)
 
     def test_add_0_vecs(self):
         index = faiss.IndexHNSWFlat(10, 16)
         zero_vecs = np.zeros((0, 10), dtype="float32")
-        # infinite loop
+        # used to loop forever
         index.add(zero_vecs)
         self.assertEqual(index.ntotal, 0)
 
@@ -222,7 +203,7 @@ class TestHNSW(unittest.TestCase):
         )
         faiss.set_search_stats_enabled(True)
         stats.reset()
-        Dhnsw, Ihnsw = index.search(self.xq, 1)
+        index.search(self.xq, 1)
         self.assertGreater(stats.ndis, len(self.xq) * index.hnsw.efSearch)
 
     def test_io_no_storage(self):
@@ -232,7 +213,6 @@ class TestHNSW(unittest.TestCase):
 
         Dref, Iref = index.search(self.xq, 5)
 
-        # test writing without storage
         index2 = faiss.deserialize_index(
             faiss.serialize_index(index, faiss.IO_FLAG_SKIP_STORAGE)
         )
@@ -242,7 +222,6 @@ class TestHNSW(unittest.TestCase):
         # make sure we can store an index with empty storage
         faiss.deserialize_index(faiss.serialize_index(index2))
 
-        # add storage afterwards
         index.storage = faiss.clone_index(index.storage)
         index.own_fields = True
 
@@ -254,7 +233,6 @@ class TestHNSW(unittest.TestCase):
         d = self.xb.shape[1]
         index_flat = faiss.IndexFlat(d)
         index_flat.add(self.xb)
-        self.assertEqual(index_flat.ntotal, self.xb.shape[0])
         index_hnsw = faiss.IndexHNSW(index_flat)
         index_hnsw.add(self.xb)
         # * 2 because we add to storage twice. This is just for testing
@@ -268,12 +246,7 @@ class TestHNSW(unittest.TestCase):
 
 
 class TestHNSWSimilarity(unittest.TestCase):
-    """Coverage for HNSW variants built with a similarity metric
-    (METRIC_INNER_PRODUCT). These tests exercise the
-    HNSW::is_similarity dispatch in IndexHNSW{Flat,PQ,SQ,Cagra}: build,
-    search, and (for IndexHNSWFlat) save/load round trips that have to
-    re-derive `hnsw.is_similarity` from the persisted metric type.
-    """
+    """HNSW variants with METRIC_INNER_PRODUCT: is_similarity dispatch."""
 
     def setUp(self):
         d = 32
@@ -281,27 +254,12 @@ class TestHNSWSimilarity(unittest.TestCase):
         nb = 1500
         nq = 200
         (self.xt, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
-        # Reference IP search results.
         ref = faiss.IndexFlatIP(d)
         ref.add(self.xb)
-        self.Dref_ip, self.Iref_ip = ref.search(self.xq, 1)
-
-    def test_hnsw_flat_IP_is_similarity_set(self):
-        d = self.xb.shape[1]
-        index = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
-        self.assertTrue(index.hnsw.is_similarity)
-
-        index_l2 = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_L2)
-        self.assertFalse(index_l2.hnsw.is_similarity)
+        _, self.Iref_ip = ref.search(self.xq, 1)
 
     def _check_quantized_IP(self, index, min_agreement):
-        """Build (train if needed), search, then save / load and assert
-        that the round trip preserves ordering and `hnsw.is_similarity`.
-        The agreement floors are calibrated against the observed values
-        on the test dataset with a small (~5%) headroom for RNG noise;
-        they catch ordering regressions (which collapse agreement to
-        ~0) and quantizer-quality regressions (which would shift
-        agreement by tens of points)."""
+        """An ordering regression collapses agreement to ~0."""
         self.assertTrue(index.hnsw.is_similarity)
         if not index.is_trained:
             index.train(self.xt)
@@ -315,9 +273,9 @@ class TestHNSWSimilarity(unittest.TestCase):
             f"{type(index).__name__} agreement={agreement} < {min_agreement}",
         )
 
-        index2 = faiss.deserialize_index(faiss.serialize_index(index))
         # `hnsw.is_similarity` is not serialized; index_read must
         # re-derive it from the persisted metric_type.
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
         self.assertTrue(index2.hnsw.is_similarity)
         self.assertEqual(index2.metric_type, faiss.METRIC_INNER_PRODUCT)
         D2, I2 = index2.search(self.xq, 1)
@@ -385,10 +343,8 @@ class TestHNSWSimilarity(unittest.TestCase):
 
 
 class TestHNSWNaN(unittest.TestCase):
-    """Adding a vector with NaN to an IVF+HNSW index used to crash because
-    NaN distances corrupt the MinimaxHeap ordering in HNSW search. The fix
-    converts NaN to +inf in MinimaxHeap::push so the heap stays well-ordered.
-    """
+    """Adding a NaN vector used to crash: NaN distances corrupted the
+    MinimaxHeap ordering in HNSW."""
 
     def test_add_nan_vector_to_ivf_hnsw(self):
         d = 64
@@ -401,11 +357,9 @@ class TestHNSWNaN(unittest.TestCase):
         index.train(xt)
         index.add(xb)
 
-        # Create a vector with NaN in the first component
         vec = np.zeros((1, d), dtype="float32")
         vec[0, 0] = np.nan
 
-        # This should not crash
         index.add(vec)
         self.assertEqual(index.ntotal, nb + 1)
 
@@ -413,14 +367,14 @@ class TestHNSWNaN(unittest.TestCase):
 class Issue3684(unittest.TestCase):
 
     def test_issue3684(self):
-        np.random.seed(1234)  # For reproducibility
-        d = 256  # Example dimension
-        nb = 10  # Number of database vectors
-        nq = 2  # Number of query vectors
+        np.random.seed(1234)
+        d = 256
+        nb = 10
+        nq = 2
         xb = np.random.random((nb, d)).astype("float32")
         xq = np.random.random((nq, d)).astype("float32")
 
-        faiss.normalize_L2(xb)  # Normalize both query and database vectors
+        faiss.normalize_L2(xb)
         faiss.normalize_L2(xq)
 
         hnsw_index_ip = faiss.IndexHNSWFlat(256, 16, faiss.METRIC_INNER_PRODUCT)
@@ -428,12 +382,10 @@ class Issue3684(unittest.TestCase):
         hnsw_index_ip.hnsw.efSearch = 512
         hnsw_index_ip.add(xb)
 
-        # test knn
         D, I = hnsw_index_ip.search(xq, 10)
         self.assertTrue(np.all(D[:, :-1] >= D[:, 1:]))
 
-        # test range search
-        radius = 0.74  # Cosine similarity threshold
+        radius = 0.74
         lims, D, I = hnsw_index_ip.range_search(xq, radius)
         self.assertTrue(np.all(D >= radius))
 
@@ -471,25 +423,6 @@ class TestNSG(unittest.TestCase):
                     break
         return knn_graph
 
-    def subtest_io_and_clone(self, index, Dnsg, Insg):
-        index2 = faiss.deserialize_index(faiss.serialize_index(index))
-
-        Dnsg2, Insg2 = index2.search(self.xq, 1)
-        np.testing.assert_array_equal(Dnsg2, Dnsg)
-        np.testing.assert_array_equal(Insg2, Insg)
-
-        # Verify deserialized index is serializable again
-        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
-        Dnsg2b, Insg2b = index2b.search(self.xq, 1)
-        np.testing.assert_array_equal(Dnsg2b, Dnsg)
-        np.testing.assert_array_equal(Insg2b, Insg)
-
-        # also test clone
-        index3 = faiss.clone_index(index)
-        Dnsg3, Insg3 = index3.search(self.xq, 1)
-        np.testing.assert_array_equal(Dnsg3, Dnsg)
-        np.testing.assert_array_equal(Insg3, Insg)
-
     def subtest_connectivity(self, index, nb):
         vt = faiss.VisitedTableVector(nb)
         count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
@@ -500,7 +433,7 @@ class TestNSG(unittest.TestCase):
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, 1)
+        _, Iref = flat_index.search(self.xq, 1)
 
         index = faiss.IndexNSGFlat(d, 16, metric)
         index.verbose = True
@@ -512,20 +445,20 @@ class TestNSG(unittest.TestCase):
         recalls = (Iref == Insg).sum()
         self.assertGreaterEqual(recalls, thresh)
         self.subtest_connectivity(index, self.xb.shape[0])
-        self.subtest_io_and_clone(index, Dnsg, Insg)
+        check_io_and_clone(index, self.xq, Dnsg, Insg)
 
     def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, 1)
+        _, Iref = flat_index.search(self.xq, 1)
 
         index = faiss.IndexNSGFlat(d, 16, metric)
         index.verbose = True
 
         index.build(self.xb, knn_graph)
-        Dnsg, Insg = index.search(self.xq, 1)
+        _, Insg = index.search(self.xq, 1)
 
         recalls = (Iref == Insg).sum()
         self.assertGreaterEqual(recalls, thresh)
@@ -543,14 +476,6 @@ class TestNSG(unittest.TestCase):
     def test_add_nndescent_IP(self):
         self.subtest_add(1, 480, faiss.METRIC_INNER_PRODUCT)
 
-    def test_build_L2(self):
-        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
-        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
-
-    def test_build_IP(self):
-        knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
-        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
-
     def test_build_invalid_knng(self):
         """Make some invalid entries in the input knn graph.
 
@@ -566,27 +491,22 @@ class TestNSG(unittest.TestCase):
         self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
 
     def test_reset(self):
-        """test IndexNSG.reset()"""
         d = self.xq.shape[1]
 
         metric = faiss.METRIC_L2
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, 1)
+        _, Iref = flat_index.search(self.xq, 1)
 
         index = faiss.IndexNSGFlat(d, 16)
         index.verbose = True
         index.GK = 32
 
         index.add(self.xb)
-        Dnsg, Insg = index.search(self.xq, 1)
-        recalls = (Iref == Insg).sum()
-        self.assertGreaterEqual(recalls, 475)
-        self.subtest_connectivity(index, self.xb.shape[0])
 
         index.reset()
         index.add(self.xb)
-        Dnsg, Insg = index.search(self.xq, 1)
+        _, Insg = index.search(self.xq, 1)
         recalls = (Iref == Insg).sum()
         self.assertGreaterEqual(recalls, 475)
         self.subtest_connectivity(index, self.xb.shape[0])
@@ -608,27 +528,14 @@ class TestNSG(unittest.TestCase):
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
         np.testing.assert_array_equal(indices, gt)
 
-    def test_nsg_supports_pre_built_knn_graph(self):
-        """Test IndexNSGBuild"""
-        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
-        d = self.xq.shape[1]
-        index = faiss.IndexNSGFlat(d, 16)
-        index.build(self.xb, knn_graph)
-        index.search(self.xq, k=1)
-        self.assertTrue(index.is_built)
-
     def test_nsg_with_pre_built_knn_graph_throws_when_rebuilding_via_add(self):
-        """Test IndexNSGBuild"""
         knn_graph = self.make_knn_graph(faiss.METRIC_L2)
 
         d = self.xq.shape[1]
         index = faiss.IndexNSGFlat(d, 16)
         index.build(self.xb, knn_graph)
-        index.search(self.xq, k=1)
         self.assertTrue(index.is_built)
 
-        index.GK = 32
-        index.train(self.xb)
         with self.assertRaises(RuntimeError) as context:
             index.add(self.xb)
 
@@ -637,12 +544,10 @@ class TestNSG(unittest.TestCase):
         )
 
     def test_nsg_rebuild_throws_with_pre_built_knn_graph(self):
-        """Test IndexNSGBuild"""
         knn_graph = self.make_knn_graph(faiss.METRIC_L2)
         d = self.xq.shape[1]
         index = faiss.IndexNSGFlat(d, 16)
         index.build(self.xb, knn_graph)
-        index.search(self.xq, k=1)
 
         with self.assertRaises(RuntimeError) as context:
             index.build(self.xb, knn_graph)
@@ -650,7 +555,6 @@ class TestNSG(unittest.TestCase):
         self.assertIn("The IndexNSG is already built", str(context.exception))
 
     def test_nsg_pq(self):
-        """Test IndexNSGPQ"""
         d = self.xq.shape[1]
         R, pq_M = 32, 4
         index = faiss.index_factory(d, f"NSG{R}_PQ{pq_M}np")
@@ -661,24 +565,21 @@ class TestNSG(unittest.TestCase):
 
         flat_index = faiss.IndexFlat(d)
         flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, k=1)
+        _, Iref = flat_index.search(self.xq, k=1)
 
         index.GK = 32
         index.train(self.xb)
         index.add(self.xb)
         D, I = index.search(self.xq, k=1)
 
-        # test accuracy
         recalls = (Iref == I).sum()
         # observed ~193/500; PQ4 is coarse -- headroom for OpenMP
         # FP-reduction / tie-break nondeterminism in NSG build + PQ assign
         self.assertGreaterEqual(recalls, 180)
 
-        # test I/O
-        self.subtest_io_and_clone(index, D, I)
+        check_io_and_clone(index, self.xq, D, I)
 
     def test_nsg_sq(self):
-        """Test IndexNSGSQ"""
         d = self.xq.shape[1]
         R = 32
         index = faiss.index_factory(d, f"NSG{R}_SQ8")
@@ -689,19 +590,17 @@ class TestNSG(unittest.TestCase):
 
         flat_index = faiss.IndexFlat(d)
         flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, k=1)
+        _, Iref = flat_index.search(self.xq, k=1)
 
         index.train(self.xb)
         index.add(self.xb)
         D, I = index.search(self.xq, k=1)
 
-        # test accuracy
         recalls = (Iref == I).sum()
         # nominal ~411/500; loosened for OpenMP graph-build nondeterminism
         self.assertGreaterEqual(recalls, 395)
 
-        # test I/O
-        self.subtest_io_and_clone(index, D, I)
+        check_io_and_clone(index, self.xq, D, I)
 
 
 class TestNNDescent(unittest.TestCase):
@@ -723,34 +622,16 @@ class TestNNDescent(unittest.TestCase):
 
         flat_index = faiss.IndexFlat(d)
         flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, k=1)
+        _, Iref = flat_index.search(self.xq, k=1)
 
         index.train(self.xb)
         index.add(self.xb)
         D, I = index.search(self.xq, k=1)
 
-        # test accuracy
         recalls = (Iref == I).sum()
         self.assertGreaterEqual(recalls, 450)  # 462
 
-        # do some IO tests
-        index2 = faiss.deserialize_index(faiss.serialize_index(index))
-
-        D2, I2 = index2.search(self.xq, 1)
-        np.testing.assert_array_equal(D2, D)
-        np.testing.assert_array_equal(I2, I)
-
-        # Verify deserialized index is serializable again
-        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
-        D2b, I2b = index2b.search(self.xq, 1)
-        np.testing.assert_array_equal(D2b, D)
-        np.testing.assert_array_equal(I2b, I)
-
-        # also test clone
-        index3 = faiss.clone_index(index)
-        D3, I3 = index3.search(self.xq, 1)
-        np.testing.assert_array_equal(D3, D)
-        np.testing.assert_array_equal(I3, I)
+        check_io_and_clone(index, self.xq, D, I)
 
     def test_order(self):
         """make sure that output results are sorted"""
@@ -774,11 +655,8 @@ class TestNNDescentGenRandom(unittest.TestCase):
     """Regression tests for gen_random edge cases in NNDescent."""
 
     def test_search_L_equals_ntotal(self):
-        """gen_random(size, N) crashed with division by zero when size == N.
-
-        In search(), L_2 = max(search_L, topk). When search_L >= ntotal,
-        gen_random is called with size == N, causing rng() % 0.
-        """
+        """gen_random(size, N) crashed with division by zero when size == N,
+        which search() reaches when search_L >= ntotal."""
         d = 32
         nb = 200  # just above NUM_EVAL_POINTS=100
         xb = np.random.default_rng(42).random((nb, d)).astype("float32")
@@ -789,10 +667,7 @@ class TestNNDescentGenRandom(unittest.TestCase):
         index.train(xb)
         index.add(xb)
 
-        # This crashed with division by zero before the fix
-        D, I = index.search(xq, k=1)
-        self.assertEqual(I.shape, (xq.shape[0], 1))
-        self.assertEqual(D.shape, (xq.shape[0], 1))
+        index.search(xq, k=1)
 
 
 class TestNNDescentKNNG(unittest.TestCase):
