@@ -32,8 +32,9 @@ without clamping rounding error. EMA updates retain raw FP32 coordinates;
 assignment, readout and closing output use projected directions, with zero
 directions staying zero. `current_centroids()` borrows one reusable effective
 FP32 direction cache under the existing read-window and stream contract. The
-cache requires `4 * k * d` additional bytes. This mode supports native floating
-input and cast quantizers, including existing eligible resident CUDA replay.
+cache requires `4 * k_local * d` additional bytes; replicated models store the
+full table on each rank. This mode supports the existing floating backends and
+cast quantizers; encoded FP8/byte formats and IVF+spherical are unsupported.
 
 For caller-driven batches, supply FP32 initial centroids and the global row
 count. `train` uses the same numerical operations with seeded initialization
@@ -74,7 +75,7 @@ each prefix from that epoch's seeded permutation; caller-driven training
 supplies the prescribed counts. Assignment, EMA and revival continue during
 closing. Finalize uses collected means with no new scan. Unvisited resident
 captured IDs are `-1` when closing is short. Every rounded epoch count must
-divide by the group size when a derived model uses equal contributions.
+divide by the group size; sharder's extra frozen scan still covers `N`.
 The caller owns loading, ordering, transfers and prefetch. Supplied
 input chunks can be smaller than one statistical batch:
 
@@ -134,7 +135,8 @@ final floating division/output rounding is not an exact rational or code contrac
 
 ## Train results and last-pass labels
 
-Capture defaults on; `capture_assignments=False` opts out. Enabled capture returns caller-owned INT64
+Capture defaults on. Set `capture_assignments=False` to opt out. With capture
+enabled, caller-driven accumulation returns caller-owned INT64
 `stats["labels"]` during only the final caller-driven epoch. These labels cover
 only the current supplied chunk, in supplied order (empty for an empty call),
 and later calls cannot overwrite them. They stay on the execution device;
@@ -143,13 +145,17 @@ there is no implicit host copy, gather or dataset-wide caller-loop retention.
 After successful resident `train`, `km.assignments` contains the last training
 pass's labels in original input order. It is `None` before completion, on reset
 or failure, and after starting a new train attempt, including failed preflight.
-Caller-driven runs leave it `None`. Resident `train` returns `(centroids, assignments)`;
-labels are None with capture disabled. Objective history remains in `obj`;
-`finalize` still returns centroids. Last-pass labels are the codes used for closing means,
+Caller-driven runs leave it `None`. Resident `train` returns
+`(km.centroids, km.assignments)`; labels are `None` with the capture opt-out.
+The moving objective remains in `km.obj`. `finalize` still returns centroids.
+Returned outputs alias model attributes: copy before mutating. Retained output
+references survive reset and later runs. Last-pass labels are the codes used for closing means,
 not necessarily nearest to the returned centroids: call `assign` explicitly
 for that additional search.
 
-Default resident capture retains8N bytes plus staging/workspace; the explicit opt-out adds no label output/storage. Capture enabled still
+Resident capture retains 8N label bytes (80 MB for10M rows, 80 GB for10B),
+plus existing staging/workspace; sharded ranks retain 8N_local. The explicit
+opt-out adds no label output/storage. Capture enabled still
 permits eligible resident CUDA replay: one stable 8*batch byte label buffer is
 written in captured earlier epochs too, followed by final-epoch scatter to the
 8*N byte retained output. Caller loops need 8*supplied_rows bytes per retained
@@ -194,6 +200,46 @@ FP32. Conversion/decoding check metadata without CUDA value scans. Call
 follows Torch cast semantics. The existing internally generated FP16 split
 range guard remains. CPU computes supplied represented floating values in FP32
 and requires `quantizer=None`, even though the cast helper can execute on CPU.
+
+The default `assignment_backend="auto"` uses the actual input device and
+effective dtype, including an explicit quantizer. CPU uses native without
+optional GPU imports. CUDA BF16 prefers compatible public CuTe on exact SM90
+with its pinned stack/ABI/resources, otherwise eligible Triton, then supported
+native. FP32/FP16 use eligible Triton then native. Encoded FP8/bytes use their
+supported backend and never decode/cast into a fallback format. All existing
+format, hardware, shape and spherical guards apply. No candidate means an
+error; selected compilation/runtime failures propagate without retry. Auto
+selects an existing backend; CuTe selects its assignment kernel separately.
+
+This auto resolver retains dtype, dependency and shape-based choices. Replacing
+it with hardware-only selection is deferred together with missing CuTe FP16/FP32
+and other support; the current behavior does not meet that intended policy.
+No implicit precision conversion is introduced by the grouped release.
+
+There is no implicit FP32-to-FP16/BF16 conversion. With quantizer=None, BF16
+training followed by FP32 `assign` evaluates FP32 inputs against the learned
+FP32 centroids. Explicit quantizers keep their existing codec semantics.
+The requested value stays in `km.assignment_backend`; the training recipe
+records `assignment_backend_requested`, resolved `assignment_backend`,
+representation and chunks. Before caller input metadata, auto may be unresolved.
+First typed input, including an empty call, fixes the run dtype/backend and
+chunks; capture/replay does not resolve again. Standalone `assign` resolves
+per call and reports `km.assignment_recipe`, preserving the training recipe.
+Backend/package choices can change rounded rankings without changing dtype.
+
+Default auto also applies to replicated and centroid-sharded execution.
+Callers must establish common effective codecs and required statistical/chunk
+schedules before communication-bearing row operations. Requested-auto sharders
+use the old native chunk bound independent of the chosen compute backend, so
+backend differences alone do not change broadcast sizes/order. Explicit
+backends and chunk overrides keep their existing behavior/configuration contract.
+Use an explicit common supported backend when uniform computation across a
+heterogeneous group is required. Sharded models still require quantizer=None.
+IVF retains its own assignment engine: auto keeps native auxiliary execution
+and the old chunk bound, without changing coarse routing or FP16 fine scoring.
+No new agreement collective is added: replicated partial accumulation still
+communicates nothing and permits differing supplied chunk sizes/call counts.
+No automatic cross-rank codec/configuration verification is added.
 
 `assignment_backend="triton"` explicitly selects optional Triton CUDA assignment
 instead of automatic backend selection. It requires NVIDIA SM80 or
@@ -303,8 +349,8 @@ assignment, native FP32 score ranking and no runtime autotuning; the only
 fallback is the warned dependency-absent grouping provider described below.
 For BF16 L2, a coarse `B * K >= 2**31` work threshold and legal grid/resources
 select tile selection plus grouping and recovery. This uses actual local
-assignment chunk B and local K across resident, caller and replica
-operations; centered casts use the same prepared-operand rule.
+assignment chunk B and local K across resident, caller, replica and centroid
+sharder operations; centered casts use the same prepared-operand rule.
 Grouping prefers `cuda-cccl`
 (`cuda.compute` CountingIterator, SortOrder, make_lower_bound and
 make_radix_sort; tested with 1.2.0). When that Python distribution is genuinely
@@ -399,6 +445,36 @@ Torch is required for the second command. GPU/backend and two-/three-GPU
 cases report explicit skips when their dependencies or devices are unavailable;
 those skips do not establish qualification of the unavailable scopes.
 
+### CUDA centroid ownership
+
+`from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids`
+uses an explicit caller-owned group. Unlike `DistributedEmeans`, each rank
+owns only a contiguous centroid shard: constructor `k` is global, instance
+`k` and returned centroids are local; `global_k` and `centroid_begin` locate
+that shard. `begin` takes only the local FP32 initial centroids. All ranks
+must use identical parameters and the same lifecycle/collective order, with
+equal contributions and global rows, batches and centroids divisible by the
+group size. Supported CUDA input/backend combinations require `quantizer=None`.
+Rows are broadcast in bounded chunks; statistics and EMA remain with owners.
+Owner compaction and revival reads can synchronize with the host; broadcasts
+and reductions are serialized.
+Raw INT8/UINT8 winners compare exact integer distances, then break ties by
+lowest global centroid ID. Caller labels, when enabled, describe only that
+caller's last-training-pass rows in original supplied order.
+Floating winners compare exported FP32 distances, so near-tie labels can differ
+from an unsharded run.
+
+`finalize()` uses final-training-pass statistics. Optional
+`final_closing_mean(batches)` instead scans fresh rows against a frozen completed
+training snapshot before finalization; every row must appear exactly once.
+Empty centroids retain their current positions. Above global N=2**24,
+floating scan sums use FP64 (8 rather than 4 bytes/entry), with FP64 division
+before FP32 output. Raw sums stay INT64; smaller floating scans stay FP32.
+Budget for coexistence with training tables, per-chunk conversions, counts,
+divisor and final mean/output temporaries. This does not guarantee stable
+common-offset assignment or arbitrary-size reductions. See the small
+`demos/demo_e_means_sharded.py` resident/generated-chunk example.
+
 ## Explicit optional centered Cast
 
 Optional L2 centering is explicit and defaults off:
@@ -407,7 +483,7 @@ Optional L2 centering is explicit and defaults off:
 q = CastQuantizer(d, torch.bfloat16, center=True)
 q.train(representative_training_sample)  # Prefer original FP32, before model use.
 q.to(x.device)
-model = Emeans(d, k, quantizer=q)       # Backend and other defaults are unchanged.
+model = Emeans(d, k, quantizer=q)
 centroids, last_pass_labels = model.train(x)
 objective = model.obj[-1]
 ```
@@ -461,23 +537,3 @@ existing graph pool lifetime. This is an explicit memory/work cost, not a speed
 claim. Streaming, distribution and replay retain the common decoded-row
 contract; their qualification results are tracked separately from CPU codec
 tests. INT8/FP8 calibration policies and all default routing remain unchanged.
-
-
-## Train API defaults
-
-Resident train returns (centroids, last_pass_assignments), with capture on by
-default and capture_assignments=False yielding None labels. Objective history
-remains in obj. Labels precede closing means; no extra assignment search.
-Outputs alias owned model results; copy before mutating. Capture retains8N
-bytes plus staging/workspace. Caller loops retain only supplied-chunk labels.
-
-Auto is the default assignment backend, selecting available compatible
-implementations from actual device/effective input dtype without an implicit
-precision conversion. Training fixes metadata for its run; standalone assign
-resolves per call and reports assignment_recipe. Selected execution errors
-propagate without retry. CPU uses native without optional GPU imports.
-
-This auto resolver retains dtype, dependency and shape-based choices. Replacing
-it with hardware-only selection is deferred together with missing CuTe FP16/FP32
-and other support; the current behavior does not meet that intended policy.
-No implicit precision conversion is introduced by the grouped release.
