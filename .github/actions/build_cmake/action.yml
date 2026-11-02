@@ -163,6 +163,18 @@ runs:
           "$CONDA/bin/python" -m pip install "torch==2.15.0+cpu" --break-system-packages --index-url https://download.pytorch.org/whl/cpu
           "$CONDA/bin/python" -c "import sysconfig, torch; assert torch.__file__.startswith(sysconfig.get_paths()['purelib']), torch.__file__; assert torch.__version__ == '2.15.0+cpu' and torch.version.cuda is None and torch.version.hip is None, torch.__version__"
         fi
+    - name: Prepare native crash reporting
+      id: crash-diagnostics
+      if: inputs.metal != 'ON'
+      shell: bash
+      run: |
+        if directory=$(mktemp -d "$RUNNER_TEMP/faiss-crashes.XXXXXX") \
+            && "$CONDA/bin/python" "$GITHUB_ACTION_PATH/native-crash-report" --start --state "$directory" \
+            && echo "directory=$directory" >> "$GITHUB_OUTPUT"; then
+          echo 'Native crash reporting prepared'
+        else
+          echo 'Native crash reporting unavailable on this runner'
+        fi
     - name: ROCm - Install dependencies
       if: inputs.rocm == 'ON'
       shell: bash
@@ -297,6 +309,13 @@ runs:
       if: inputs.metal != 'ON'
       shell: bash
       run: |
+        if ulimit -c unlimited 2>/dev/null; then
+          echo 'NATIVE_CRASH_MECHANISM {"mechanism":"ulimit","result":"raised"}'
+        else
+          "$CONDA/bin/python" "$GITHUB_ACTION_PATH/native-crash-report" --enable-core "$$" \
+            || echo 'NATIVE_CRASH_MECHANISM {"mechanism":"core_limit","result":"failed"}'
+        fi
+        echo "Core limit soft=$(ulimit -Sc) hard=$(ulimit -Hc)"
         conda list -p "$CONDA" --show-channel-urls
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
@@ -413,6 +432,14 @@ runs:
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
       run: |
+        if ulimit -c unlimited 2>/dev/null; then
+          echo 'NATIVE_CRASH_MECHANISM {"mechanism":"ulimit","result":"raised"}'
+        else
+          "$CONDA/bin/python" "$GITHUB_ACTION_PATH/native-crash-report" --enable-core "$$" \
+            || echo 'NATIVE_CRASH_MECHANISM {"mechanism":"core_limit","result":"failed"}'
+        fi
+        echo "Core limit soft=$(ulimit -Sc) hard=$(ulimit -Hc)"
+        export PYTHONFAULTHANDLER=1
         conda list -p "$CONDA" --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         LD_PRELOAD="$CONDA/lib/libstdc++.so.6" \
@@ -421,6 +448,14 @@ runs:
       if: inputs.gpu == 'ON'
       shell: bash
       run: |
+        if ulimit -c unlimited 2>/dev/null; then
+          echo 'NATIVE_CRASH_MECHANISM {"mechanism":"ulimit","result":"raised"}'
+        else
+          "$CONDA/bin/python" "$GITHUB_ACTION_PATH/native-crash-report" --enable-core "$$" \
+            || echo 'NATIVE_CRASH_MECHANISM {"mechanism":"core_limit","result":"failed"}'
+        fi
+        echo "Core limit soft=$(ulimit -Sc) hard=$(ulimit -Hc)"
+        export PYTHONFAULTHANDLER=1
         conda list -p "$CONDA" --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
@@ -437,8 +472,18 @@ runs:
         conda list -p "$CONDA" --show-channel-urls
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
+    - name: Native crash report
+      if: failure() && inputs.metal != 'ON' && steps.crash-diagnostics.outputs.directory != ''
+      shell: bash
+      run: |
+        status=0
+        timeout --kill-after=10s 300s "$CONDA/bin/python" "$GITHUB_ACTION_PATH/native-crash-report" \
+          --state "${{ steps.crash-diagnostics.outputs.directory }}" || status=$?
+        if [ "$status" -ne 0 ]; then
+          echo "NATIVE CRASH REPORT: incomplete (reporter exit $status)"
+        fi
     - name: Upload test results
-      if: inputs.upload_artifacts == 'true'
+      if: always() && inputs.upload_artifacts == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}-svs=${{ inputs.svs }}
