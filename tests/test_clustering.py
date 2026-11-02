@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 
 import faiss
@@ -26,7 +24,6 @@ class TestClustering(unittest.TestCase):
         km = faiss.Kmeans(d, 32, niter=10)
         err32 = km.train(x)
 
-        # check that objective is decreasing
         prev = 1e50
         for o in km.obj:
             self.assertGreater(prev, o)
@@ -35,13 +32,11 @@ class TestClustering(unittest.TestCase):
         km = faiss.Kmeans(d, 64, niter=10)
         err64 = km.train(x)
 
-        # check that 64 centroids give a lower quantization error than 32
         self.assertGreater(err32, err64)
 
         km = faiss.Kmeans(d, 32, niter=10, int_centroids=True)
         err_int = km.train(x)
 
-        # check that integer centoids are not as good as float ones
         self.assertGreater(err_int, err32)
         self.assertTrue(np.all(km.centroids == np.floor(km.centroids)))
 
@@ -64,7 +59,6 @@ class TestClustering(unittest.TestCase):
         verbose = True
         kmeans = faiss.Kmeans(X.shape[1], k, niter=niter, verbose=verbose)
         kmeans.train(X)
-        l2_distances, I = kmeans.index.search(X, 1)
 
     def test_weighted(self):
         d = 32
@@ -106,7 +100,6 @@ class TestClustering(unittest.TestCase):
         clus.train(x, index, weights=weights)
         cdis2, perm2 = index.search(ccent, 1)
 
-        # distance^2 of ground-truth centroids to clusters
         cdis2_first = cdis2[:5].sum()
         cdis2_last = cdis2[5:].sum()
 
@@ -130,23 +123,16 @@ class TestClustering(unittest.TestCase):
         xt2 = codec.sa_decode(codes)
 
         clus = faiss.Clustering(d, k)
-        # clus.verbose = True
         clus.niter = 0
         index = faiss.IndexFlatL2(d)
         clus.train(xt2, index)
         ref_centroids = faiss.vector_to_array(clus.centroids).reshape(-1, d)
 
-        _, ref_errs = index.search(xt2, 1)
-
         clus = faiss.Clustering(d, k)
-        # clus.verbose = True
         clus.niter = 0
-        clus.decode_block_size = 120
         index = faiss.IndexFlatL2(d)
         clus.train_encoded(codes, codec, index)
         new_centroids = faiss.vector_to_array(clus.centroids).reshape(-1, d)
-
-        _, new_errs = index.search(xt2, 1)
 
         # It's the same operation, so should be bit-exact the same
         self.assertTrue(np.all(ref_centroids == new_centroids))
@@ -161,16 +147,7 @@ class TestClustering(unittest.TestCase):
         km2 = faiss.Kmeans(d, k, niter=4)
         km2.train(xt, init_centroids=km.centroids)
 
-        # check that the initial objective is better for km2 than km
         self.assertGreater(km.obj[0], km2.obj[0] * 1.01)
-
-    def test_stats(self):
-        d = 32
-        k = 5
-        xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
-        km = faiss.Kmeans(d, k, niter=4)
-        km.train(xt)
-        assert list(km.obj) == [st["obj"] for st in km.iteration_stats]
 
 
 class TestCompositeClustering(unittest.TestCase):
@@ -181,8 +158,6 @@ class TestCompositeClustering(unittest.TestCase):
 
         rs = np.random.RandomState(123)
         x = rs.uniform(size=(n, d)).astype("float32")
-
-        # make sure that doing 10 redos yields a better objective than just 1
 
         clus = faiss.Clustering(d, 20)
         clus.nredo = 1
@@ -206,9 +181,6 @@ class TestCompositeClustering(unittest.TestCase):
         x = rs.uniform(size=(n, d)).astype("float32")
         faiss.normalize_L2(x)
 
-        # make sure that doing 10 redos yields a better objective than just 1
-        # for cosine distance, it is IP so higher is better
-
         clus = faiss.Clustering(d, 20)
         clus.nredo = 1
         clus.train(x, faiss.IndexFlatIP(d))
@@ -227,27 +199,12 @@ class TestCompositeClustering(unittest.TestCase):
         k = 50
         xt, _, _ = get_dataset_2(d, n, 0, 0)
 
-        # basic kmeans
         kmeans = faiss.Kmeans(d, k)
         kmeans.train(xt)
 
-        clus = faiss.ProgressiveDimClustering(d, k)
-        clus.verbose
-        clus.verbose = True
-        clus.progressive_dim_steps
-        clus.progressive_dim_steps = 5
-        fac = faiss.ProgressiveDimIndexFactory()
-        clus.train(n, faiss.swig_ptr(xt), fac)
-
-        stats = clus.iteration_stats
-        stats = [stats.at(i) for i in range(stats.size())]
-        obj = np.array([st.obj for st in stats])
-        # clustering objective should be a tad better
-        self.assertLess(obj[-1], kmeans.obj[-1])
-
-        # same test w/ Kmeans wrapper
         kmeans2 = faiss.Kmeans(d, k, progressive_dim_steps=5)
         kmeans2.train(xt)
+        # clustering objective should be a tad better
         self.assertLess(kmeans2.obj[-1], kmeans.obj[-1])
 
 

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #define THE_SIMD_LEVEL SIMDLevel::AVX2
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
@@ -19,5 +17,3 @@
 #include <faiss/impl/pq_code_distance/PQDistanceComputer_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader,facebook-unused-include-check)
 #include <faiss/impl/pq_code_distance/IVFPQScanner_impl.h>
-
-#endif // COMPILE_SIMD_AVX2

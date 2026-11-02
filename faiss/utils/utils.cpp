@@ -32,6 +32,7 @@
 #include <set>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -39,6 +40,7 @@
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/simd_impl/fp16_kernels.h>
+#include <faiss/utils/sorting.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -474,6 +476,51 @@ void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
         const auto i = static_cast<std::size_t>(i_);
         cs[i] = bvec_checksum(d, a + i * d);
     }
+}
+
+size_t find_duplicate_codes(
+        size_t n,
+        size_t code_size,
+        const uint8_t* codes,
+        int64_t* rep) {
+    constexpr int64_t nbucket = 1 << 16;
+    std::vector<uint64_t> hash(n), bucket(n);
+    // the low bits of a checksum only depend on the low bits of its inputs
+#pragma omp parallel for
+    for (int64_t i = 0; i < int64_t(n); i++) {
+        hash[i] = SplitMix64RandomGenerator(
+                          bvec_checksum(code_size, codes + i * code_size))
+                          .next();
+        bucket[i] = hash[i] % nbucket;
+    }
+    std::vector<int64_t> lims(nbucket + 1), order(n);
+    bucket_sort(n, bucket.data(), nbucket, lims.data(), order.data());
+
+    size_t n_distinct = 0;
+#pragma omp parallel for schedule(dynamic) reduction(+ : n_distinct)
+    for (int64_t b = 0; b < nbucket; b++) {
+        int64_t* begin = order.data() + lims[b];
+        int64_t* end = order.data() + lims[b + 1];
+        std::sort(begin, end, [&](int64_t x, int64_t y) {
+            return std::pair(hash[x], x) < std::pair(hash[y], y);
+        });
+        const int64_t* group = begin;
+        for (const int64_t* r = begin; r < end; r++) {
+            if (hash[*r] != hash[*group]) {
+                group = r;
+            }
+            const int64_t* q = group;
+            while (q < r &&
+                   memcmp(codes + *q * code_size,
+                          codes + *r * code_size,
+                          code_size) != 0) {
+                q++;
+            }
+            rep[*r] = *q;
+            n_distinct += q == r;
+        }
+    }
+    return n_distinct;
 }
 
 const float* fvecs_maybe_subsample(

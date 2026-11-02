@@ -12,6 +12,7 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
 
 namespace faiss {
 namespace gpu_metal {
@@ -40,6 +41,15 @@ faiss::Index* index_cpu_to_gpu(
 
 /// Copy Metal index back to CPU. Caller owns returned index.
 faiss::Index* index_gpu_to_cpu(const faiss::Index* index);
+
+/// Clone CPU IndexBinaryFlat to Metal. Caller owns the returned index.
+faiss::IndexBinary* index_binary_cpu_to_gpu(
+        StandardMetalResourcesHolder* res,
+        int device,
+        const faiss::IndexBinary* index);
+
+/// Clone MetalIndexBinaryFlat back to CPU. Caller owns the returned index.
+faiss::IndexBinary* index_binary_gpu_to_cpu(const faiss::IndexBinary* index);
 
 } // namespace gpu_metal
 } // namespace faiss

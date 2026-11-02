@@ -24,7 +24,6 @@ struct TestLoop {
     static void test(
             const uint8_t* const container,
             faiss::BitstringReader& br) {
-        // validate
         const intptr_t uintreader_data = faiss::cppcontrib::detail::
                 UintReaderRaw<N_ELEMENTS, CODE_BITS, CPOS>::get(container);
         const intptr_t bitstringreader_data = br.read(CODE_BITS);
@@ -35,7 +34,6 @@ struct TestLoop {
                 << ") for N_ELEMENTS=" << N_ELEMENTS
                 << ", CODE_BITS=" << CODE_BITS << ", CPOS=" << CPOS;
 
-        //
         TestLoop<N_ELEMENTS, CODE_BITS, CPOS + 1>::test(container, br);
     }
 };
@@ -54,22 +52,18 @@ void TestUintReader() {
     std::default_random_engine rng;
     std::uniform_int_distribution<uint64_t> u(0, 1 << CODE_BITS);
 
-    // do several attempts
     for (size_t attempt = 0; attempt < 10; attempt++) {
         // allocate a buffer. This way, not std::vector
         std::unique_ptr<uint8_t[]> container(new uint8_t[CODE_BYTES]);
-        // make it empty
         for (size_t i = 0; i < CODE_BYTES; i++) {
             container.get()[i] = 0;
         }
 
-        // populate it
         faiss::BitstringWriter bw(container.get(), CODE_BYTES);
         for (size_t i = 0; i < N_ELEMENTS; i++) {
             bw.write(u(rng), CODE_BITS);
         }
 
-        // read it back and verify against bitreader
         faiss::BitstringReader br(container.get(), CODE_BYTES);
 
         TestLoop<N_ELEMENTS, CODE_BITS, 0>::test(container.get(), br);

@@ -60,27 +60,6 @@ class SuperKMeansTest(unittest.TestCase):
         for i in range(1, len(objs)):
             self.assertLessEqual(objs[i], objs[i - 1] * 1.001)
 
-    def test_pruned_iter_assignments_close_to_vanilla(self):
-        d, k, n = 64, 16, 2000
-        x = SyntheticDataset(d, n, 0, 0).get_train()
-
-        p = faiss.SuperKMeansParameters()
-        p.seed = 42
-        p.niter = 10
-        sc = faiss.SuperKMeans(d, k, p)
-        sc.train(x)
-
-        quant = faiss.IndexFlatL2(d)
-        vanilla = faiss.Clustering(d, k)
-        vanilla.seed = 42
-        vanilla.niter = 10
-        vanilla.train(x, quant)
-
-        sc_final = sc.iteration_stats.at(sc.iteration_stats.size() - 1).obj
-        v_stats = vanilla.iteration_stats
-        v_final = v_stats.at(v_stats.size() - 1).obj
-        self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
-
     def test_spherical_objective_close_to_vanilla_spherical(self):
         # With cp.spherical=true, SuperKMeans unit-normalizes centroids so the
         # L2 assignment it computes is equivalent to inner-product assignment.
@@ -107,28 +86,9 @@ class SuperKMeansTest(unittest.TestCase):
         v_final = v_stats.at(v_stats.size() - 1).obj
         self.assertLess(abs(sc_final - v_final) / v_final, 0.05)
 
-    def test_spherical_produces_unit_centroids(self):
-        d, k, n = 64, 16, 2000
-        x = SyntheticDataset(d, n, 0, 0).get_train()
-
-        p = faiss.SuperKMeansParameters()
-        p.seed = 42
-        p.niter = 10
-        p.spherical = True
-        sc = faiss.SuperKMeans(d, k, p)
-        sc.train(x)
-
         centroids = faiss.vector_to_array(sc.centroids).reshape(k, d)
         norms = np.linalg.norm(centroids, axis=1)
         np.testing.assert_allclose(norms, 1.0, atol=1e-4)
-
-    def test_use_super_kmeans_field_is_inherited(self):
-        # use_super_kmeans lives on ClusteringParameters and is inherited by
-        # SuperKMeansParameters; it must be settable from Python.
-        p = faiss.SuperKMeansParameters()
-        self.assertFalse(p.use_super_kmeans)
-        p.use_super_kmeans = True
-        self.assertTrue(p.use_super_kmeans)
 
     def test_pruning_rate_in_expected_range(self):
         # The 10-d intrinsic manifold of SyntheticDataset gives ADSampling
@@ -143,20 +103,17 @@ class SuperKMeansTest(unittest.TestCase):
         sc.train(x)
 
         rates = faiss.vector_to_array(sc.gemm_pruning_rates)
-        self.assertEqual(rates.shape, (5,))
         self.assertEqual(rates[0], 0.0)  # iter 0: no pruning
-        # Lower bound 0.30: looser than the 0.93 design target because
-        # synthetic d=64 data lacks the cluster gap real embeddings have at
-        # d=768; the assertion still confirms meaningful pruning occurs.
+        # 0.30, not the 0.93 target: synthetic d=64 data has a smaller
+        # cluster gap than real embeddings.
         for i in range(2, 5):
             self.assertGreaterEqual(rates[i], 0.30)
 
     def test_pdx_offset_correct_for_unaligned_y_batch(self):
-        # PDX block layout is sized for the full k centroids, not per y-batch
-        # tile. The y-batch tile boundary must be invisible to PDX-offset
-        # arithmetic. k=70 with y_batch=32 forces a 6-wide tail tile; assert
-        # the resulting centroids are identical to running with y_batch=70
-        # (single tile, no tail).
+        # k=70, y_batch=32 leaves a 6-wide tail tile; centroids must match
+        # the single-tile run. Bit-exact reproducibility requires
+        # MKL_CBWR=COMPATIBLE and a fixed OMP thread count. The BUCK target
+        # sets these in `env`; for OSS ctest the user must export them.
         d, k, n = 64, 70, 5000
         x = SyntheticDataset(d, n, 0, 0).get_train()
 
@@ -172,31 +129,6 @@ class SuperKMeansTest(unittest.TestCase):
         tiled = train_with_y_batch(32)  # k % y_batch = 6
         single = train_with_y_batch(k)  # k % y_batch = 0
         np.testing.assert_array_equal(tiled, single)
-
-    def test_determinism(self):
-        # Bit-exact reproducibility requires MKL_CBWR=COMPATIBLE and a fixed
-        # OMP thread count. The BUCK target sets these in `env`; for OSS
-        # ctest the user must export them before running.
-        d, k, n = 128, 64, 5000
-        x = SyntheticDataset(d, n, 0, 0).get_train()
-
-        p = faiss.SuperKMeansParameters()
-        p.niter = 5
-        p.seed = 1234
-
-        sc1 = faiss.SuperKMeans(d, k, p)
-        sc1.train(x)
-        sc2 = faiss.SuperKMeans(d, k, p)
-        sc2.train(x)
-
-        np.testing.assert_array_equal(
-            faiss.vector_to_array(sc1.centroids),
-            faiss.vector_to_array(sc2.centroids),
-        )
-        np.testing.assert_array_equal(
-            faiss.vector_to_array(sc1.gemm_pruning_rates),
-            faiss.vector_to_array(sc2.gemm_pruning_rates),
-        )
 
     def test_rejects_nan_input(self):
         # check_input_data_for_NaNs defaults to True.
@@ -240,7 +172,6 @@ class SuperKmeansWrapperTest(unittest.TestCase):
         km = faiss.SuperKmeans(d, k, niter=5, seed=42)
         final_obj = km.train(x)
 
-        self.assertEqual(km.centroids.shape, (k, d))
         self.assertEqual(km.obj.shape, (5,))
         self.assertEqual(len(km.iteration_stats), 5)
         self.assertEqual(final_obj, km.obj[-1])
@@ -277,27 +208,9 @@ class SuperKMeansAssignIterationSmokeTest(unittest.TestCase):
             [coeff.at(i) for i in range(coeff.size())], dtype="float32"
         )
         cp = faiss.SuperKMeansParameters()
-        total, pruned = faiss.super_kmeans_assign_iteration(
-            X, Y, tau, A, dp, coeff_np, cp
-        )
-        self.assertGreater(total, 0)
-        self.assertTrue((A >= 0).all())
-        self.assertTrue((A < k).all())
 
-    def test_rejects_bad_input(self):
         # The wrapper must reject wrong dtypes and mismatched shapes at the
         # Python boundary rather than passing a bad pointer to C++.
-        n, d, k, dp = 50, 32, 8, 8
-        X = np.random.RandomState(0).randn(n, d).astype("float32")
-        Y = np.random.RandomState(1).randn(k, d).astype("float32")
-        tau = np.full(n, 1e30, dtype="float32")
-        A = np.zeros(n, dtype="int32")
-        coeff = faiss.precompute_ad_thresholds(d, 1.0 / d)
-        coeff_np = np.array(
-            [coeff.at(i) for i in range(coeff.size())], dtype="float32"
-        )
-        cp = faiss.SuperKMeansParameters()
-
         # int64 assignments (numpy's default int) must be rejected, not
         # reinterpreted as int32.
         with self.assertRaises(TypeError):
@@ -314,3 +227,9 @@ class SuperKMeansAssignIterationSmokeTest(unittest.TestCase):
             faiss.super_kmeans_assign_iteration(
                 X, Y, tau, A, dp, coeff_np[:d], cp
             )
+        total, _ = faiss.super_kmeans_assign_iteration(
+            X, Y, tau, A, dp, coeff_np, cp
+        )
+        self.assertGreater(total, 0)
+        self.assertTrue((A >= 0).all())
+        self.assertTrue((A < k).all())

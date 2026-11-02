@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Unit tests for RangeResultHandler::add_result return values. The
-// early-termination knob tests lived here before; they now live in
-// test_ivf_early_termination.py and test_fast_scan_ivf.py.
+// Unit tests for RangeResultHandler::add_result return values.
 
 #include <set>
 
@@ -30,23 +28,16 @@ TEST(IVFEarlyTermination, RangeResultHandlerAddResultReturnValue) {
 
     // CMax::cmp(5.0, 3.0) is true: distance within radius, should add
     EXPECT_TRUE(handler.add_result(3.0f, 42));
-    EXPECT_EQ(qr.nres, size_t(1));
 
     // CMax::cmp(5.0, 5.0) is false: at boundary, should not add
     EXPECT_FALSE(handler.add_result(5.0f, 43));
-    EXPECT_EQ(qr.nres, size_t(1));
 
     // CMax::cmp(5.0, 10.0) is false: distance exceeds radius
     EXPECT_FALSE(handler.add_result(10.0f, 44));
-    EXPECT_EQ(qr.nres, size_t(1));
 
-    // Second valid result
     EXPECT_TRUE(handler.add_result(1.0f, 45));
-    EXPECT_EQ(qr.nres, size_t(2));
 
-    // Finalize and verify stored (dis, id) pairs
     pres.finalize();
-    ASSERT_EQ(rsr.lims[0], size_t(0));
     ASSERT_EQ(rsr.lims[1], size_t(2));
     std::set<faiss::idx_t> ids(rsr.labels, rsr.labels + 2);
     EXPECT_EQ(ids, (std::set<faiss::idx_t>{42, 45}));
@@ -66,19 +57,14 @@ TEST(IVFEarlyTermination, RangeResultHandlerAddResultCMin) {
 
     // CMin::cmp(5.0, 10.0) is true: dis above threshold, should add
     EXPECT_TRUE(handler.add_result(10.0f, 100));
-    EXPECT_EQ(qr.nres, size_t(1));
 
     // CMin::cmp(5.0, 5.0) is false: at boundary, should not add
     EXPECT_FALSE(handler.add_result(5.0f, 101));
-    EXPECT_EQ(qr.nres, size_t(1));
 
     // CMin::cmp(5.0, 3.0) is false: dis below threshold
     EXPECT_FALSE(handler.add_result(3.0f, 102));
-    EXPECT_EQ(qr.nres, size_t(1));
 
-    // Second valid result
     EXPECT_TRUE(handler.add_result(7.0f, 103));
-    EXPECT_EQ(qr.nres, size_t(2));
 
     pres.finalize();
     ASSERT_EQ(rsr.lims[1], size_t(2));

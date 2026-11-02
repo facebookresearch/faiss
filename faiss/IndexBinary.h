@@ -52,6 +52,10 @@ struct IndexBinary {
      * @param x      training vectors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
+
+    /// Train from caller-controlled storage. Unsupported by default.
+    virtual void train(const gpu::Dataset& dataset);
+
     virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             train(n, static_cast<const uint8_t*>(x));
@@ -66,6 +70,10 @@ struct IndexBinary {
      * @param x      input matrix, size n * d / 8
      */
     virtual void add(idx_t n, const uint8_t* x) = 0;
+
+    /// Add caller-controlled storage. Unsupported by default.
+    virtual void add(const gpu::Dataset& dataset);
+
     virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             add(n, static_cast<const uint8_t*>(x));

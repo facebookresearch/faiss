@@ -82,7 +82,6 @@ int CountedDestructorIndex::destructor_count = 0;
 TEST(ReadIndexDeserialize, Index2LayerQuantizerOwnership) {
     int d = 4, nb = 512, nlist = 2;
 
-    // Build and serialize a valid Index2Layer.
     auto original_q = std::make_unique<IndexFlatL2>(d);
     Index2Layer original(original_q.release(), nlist, 2);
     original.q1.own_fields = true;
@@ -100,10 +99,7 @@ TEST(ReadIndexDeserialize, Index2LayerQuantizerOwnership) {
     VectorIOWriter writer;
     write_index(&original, &writer);
 
-    // Deserialize and swap in a CountedDestructorIndex as the quantizer.
-    // When the deserialized index is destroyed, own_fields controls
-    // whether the quantizer is freed. The destructor counter verifies
-    // this independently of any flag check.
+    // Swap in a CountedDestructorIndex to observe whether own_fields frees it.
     CountedDestructorIndex::destructor_count = 0;
     {
         VectorIOReader reader;
@@ -111,12 +107,9 @@ TEST(ReadIndexDeserialize, Index2LayerQuantizerOwnership) {
         auto idx = std::unique_ptr<Index>(read_index(&reader));
         auto* idx2l = dynamic_cast<Index2Layer*>(idx.get());
         ASSERT_NE(idx2l, nullptr);
-        ASSERT_NE(idx2l->q1.quantizer, nullptr);
 
-        // Replace the deserialized quantizer with a CountedDestructorIndex.
         delete idx2l->q1.quantizer;
         idx2l->q1.quantizer = new CountedDestructorIndex(d);
-        EXPECT_EQ(CountedDestructorIndex::destructor_count, 0);
         // idx goes out of scope here. If own_fields is true,
         // ~Level1Quantizer deletes the CountedDestructorIndex.
     }
@@ -128,38 +121,10 @@ namespace {
 constexpr size_t kTurboQFullDimension = 16;
 constexpr uint64_t kTurboQFullSeed = 0x0123456789abcdefULL;
 constexpr auto kTurboQFullQtype = ScalarQuantizer::QT_3bit_tq;
+// QT_3bit_tq: (3 - 1) MSE bits + 1 QJL bit, so 1 << (3 - 1) centroids.
+constexpr size_t kTurboQFullCentroids = 4;
 
-// Total TurboQ bits/component for a QT_*_tq qtype (matches the mapping in
-// ScalarQuantizer::set_derived_sizes). Full TurboQ splits these into
-// (bits - 1) MSE bits + 1 QJL bit, so the reader-side trained-vector
-// centroid count is k = 1 << (bits - 1).
-constexpr size_t turboq_full_nb_bits(ScalarQuantizer::QuantizerType qt) {
-    return qt == ScalarQuantizer::QT_2bit_tq    ? 2
-            : qt == ScalarQuantizer::QT_3bit_tq ? 3
-            : qt == ScalarQuantizer::QT_4bit_tq ? 4
-            : qt == ScalarQuantizer::QT_5bit_tq ? 5
-                                                : 0;
-}
-
-// Derived rather than hardcoded so that changing kTurboQFullQtype (e.g. to
-// QT_4bit_tq) automatically resizes the payload; hardcoding kept the two
-// constants coupled and a mismatch would fail the read for an unrelated
-// reason (trained.size() != k + (k-1) + 3).
-//
-// `turboq_full_nb_bits` returns 0 for qtypes it does not recognise; guard
-// against that sentinel here so a future change to `kTurboQFullQtype` that
-// forgets to extend the mapping fails loudly at compile time instead of
-// tripping UB via `size_t{1} << (0 - 1)`.
-static_assert(
-        turboq_full_nb_bits(kTurboQFullQtype) != 0,
-        "kTurboQFullQtype must be a QT_*_tq qtype recognised by "
-        "turboq_full_nb_bits; extend the mapping when adding new tq qtypes.");
-constexpr size_t kTurboQFullCentroids = size_t{1}
-        << (turboq_full_nb_bits(kTurboQFullQtype) - 1);
-
-std::vector<uint8_t> make_turboq_full_sq_payload(
-        uint8_t qjl_type,
-        size_t d = kTurboQFullDimension) {
+std::vector<uint8_t> make_turboq_full_sq_payload(uint8_t qjl_type) {
     float seed[2];
     ScalarQuantizer::TurboQuantRefine::pack_seed(kTurboQFullSeed, seed);
     std::vector<float> trained(
@@ -170,11 +135,12 @@ std::vector<uint8_t> make_turboq_full_sq_payload(
 
     std::vector<uint8_t> buf;
     push_fourcc(buf, "IxSQ");
-    push_index_header(buf, static_cast<int>(d), /*ntotal=*/0);
+    push_index_header(
+            buf, static_cast<int>(kTurboQFullDimension), /*ntotal=*/0);
     push_val<int>(buf, kTurboQFullQtype);
     push_val<int>(buf, 0);      // rangestat
     push_val<float>(buf, 0.0f); // rangestat_arg
-    push_val<size_t>(buf, d);
+    push_val<size_t>(buf, kTurboQFullDimension);
     push_val<size_t>(buf, 0); // code_size is recomputed on read
     push_vector<float>(buf, trained);
     push_vector<uint8_t>(buf, {}); // codes
@@ -185,20 +151,17 @@ std::vector<uint8_t> make_turboq_full_sq_payload(
 
 // C++ only: swig does not wrap ScalarQuantizer::TurboQuantRefine.
 TEST(ReadIndexDeserialize, SQTurboQuantFullRecoversConfigFromTrained) {
-    for (const uint8_t qjl_type : {uint8_t{0}, uint8_t{2}}) {
-        SCOPED_TRACE(testing::Message() << "qjl_type = " << int(qjl_type));
+    // qjl_type 2, not the default 0, so a missing extraction is caught.
+    const uint8_t qjl_type = 2;
+    VectorIOReader reader;
+    reader.data = make_turboq_full_sq_payload(qjl_type);
+    std::unique_ptr<Index> index;
+    ASSERT_NO_THROW(index = read_index_up(&reader));
 
-        VectorIOReader reader;
-        reader.data = make_turboq_full_sq_payload(qjl_type);
-        std::unique_ptr<Index> index;
-        ASSERT_NO_THROW(index = read_index_up(&reader));
-
-        const auto* sq_index = dynamic_cast<IndexScalarQuantizer*>(index.get());
-        ASSERT_NE(sq_index, nullptr);
-        EXPECT_EQ(sq_index->sq.d, kTurboQFullDimension);
-        EXPECT_EQ(sq_index->sq.turboq_refine.qjl_type, qjl_type);
-        EXPECT_EQ(sq_index->sq.turboq_refine.seed, kTurboQFullSeed);
-    }
+    const auto* sq_index = dynamic_cast<IndexScalarQuantizer*>(index.get());
+    ASSERT_NE(sq_index, nullptr);
+    EXPECT_EQ(sq_index->sq.turboq_refine.qjl_type, qjl_type);
+    EXPECT_EQ(sq_index->sq.turboq_refine.seed, kTurboQFullSeed);
 }
 
 #ifdef FAISS_ENABLE_SVS

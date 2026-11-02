@@ -30,7 +30,7 @@ def make_index(index_key, x):
 
 
 class TestPairsDecoding(unittest.TestCase):
-    def check_search_centroid(self, index_key):
+    def check_pairs_decoding(self, index_key):
         xb = make_data(nb)
         index = make_index(index_key, xb)
 
@@ -48,16 +48,6 @@ class TestPairsDecoding(unittest.TestCase):
             )
             self.assertIn(i, set(ids.tolist()))
 
-    def check_search_and_return_centroids(self, index_key):
-        xb = make_data(nb)
-        index = make_index(index_key, xb)
-
-        centroid_ids = np.empty(nb, dtype=np.int64)
-        faiss.search_centroid(
-            index, faiss.swig_ptr(xb), nb, faiss.swig_ptr(centroid_ids)
-        )
-
-        ivf = faiss.extract_index_ivf(index)
         ivf.nprobe = 4
 
         xq = make_data(nq)
@@ -94,14 +84,8 @@ class TestPairsDecoding(unittest.TestCase):
             )
             self.assertIn(result_no, set(ids.tolist()))
 
-    def test_search_centroid_ivf_flat(self):
-        self.check_search_centroid("IVF32,Flat")
+    def test_ivf_flat(self):
+        self.check_pairs_decoding("IVF32,Flat")
 
-    def test_search_centroid_pca_ivf_flat(self):
-        self.check_search_centroid("PCA16,IVF32,Flat")
-
-    def test_search_and_return_centroids_ivf_flat(self):
-        self.check_search_and_return_centroids("IVF32,Flat")
-
-    def test_search_and_return_centroids_pca_ivf_flat(self):
-        self.check_search_and_return_centroids("PCA16,IVF32,Flat")
+    def test_pca_ivf_flat(self):
+        self.check_pairs_decoding("PCA16,IVF32,Flat")

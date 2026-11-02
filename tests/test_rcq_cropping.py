@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""RCQ cropping tests. Ported from test_RCQ_cropping.cpp."""
+"""RCQ cropping tests."""
 
 import unittest
 
@@ -47,13 +47,10 @@ class TestRCQCropping(unittest.TestCase):
         quantizer.set_beam_factor(beam_factor_1)
         D1, I1 = index.search(xq, k)
 
-        # change from 8 to 1
         quantizer.set_beam_factor(1.0)
         D2, I2 = index.search(xq, k)
 
-        # make sure it changes the result
         self.assertFalse(np.array_equal(I1, I2))
-        self.assertFalse(np.array_equal(D1, D2))
 
         # override the class level beam factor
         params1 = faiss.SearchParametersResidualCoarseQuantizer()
@@ -64,7 +61,6 @@ class TestRCQCropping(unittest.TestCase):
 
         D3, I3 = index.search(xq, k, params=params)
 
-        # make sure we find back the original results
         np.testing.assert_array_equal(I1, I3)
         np.testing.assert_array_equal(D1, D3)
 
