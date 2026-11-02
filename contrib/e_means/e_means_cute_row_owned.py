@@ -7,9 +7,9 @@
 # Adapted from PR #280 cute_kmeans/cute/row_owned.py at
 # e8e288285e885064b477a882e237fcc47da8a9b2.
 
-"""Low-dimension SM90 BF16 row-owned assignment kernel.
+"""Low-dimension SM90 floating row-owned assignment kernel.
 
-BF16 operands rank FP32 scores. A compile-time layout proof establishes
+Floating operands rank FP32 scores. A compile-time layout proof establishes
 increasing centroid visitation order, and the cross-lane reduction explicitly
 breaks ties by centroid ID.
 """
@@ -20,6 +20,7 @@ import cutlass
 import cutlass.cute as cute
 from cutlass import (
     BFloat16,
+    Float8E4M3FN,
     Float32,
     Int32,
     Int64,
@@ -99,11 +100,13 @@ class _RowOwnedAssignSm90:
 
     def __init__(
         self,
+        operand_type,
         tile_k,
         tile_m,
         stages,
         mma_warpgroups,
     ):
+        self.operand_type = operand_type
         self.tile_k = tile_k
         self.tile_m = tile_m
         self.stages = stages
@@ -112,26 +115,24 @@ class _RowOwnedAssignSm90:
     @cute.jit
     def __call__(self, q, centroids, norms, values, labels, stream):
         tiled_mma = hopper_utils.make_trivial_tiled_mma(
-            BFloat16,
-            BFloat16,
+            self.operand_type,
+            self.operand_type,
             cute.nvgpu.OperandMajorMode.K,
             cute.nvgpu.OperandMajorMode.K,
             Float32,
             atom_layout_mnk=(self.mma_warpgroups, 1, 1),
             tiler_mn=(64, TILE_N),
         )
-        # QuACK's fp8_fast_accum=True is a mainloop policy, not an MMA-atom
-        # option: it disables the separate per-K-tile acc_slow promotion.
-        # sm90_utils.gemm below uses the same supported fast construction,
-        # accumulating all K slices directly into this FP32 fragment.
+        # FP8 uses the same per-128-coordinate FP32 promotion as stock QuACK.
+        # The synchronous centroid-block schedule follows.
         q_layout = sm90_utils.make_smem_layout(
-            BFloat16,
+            self.operand_type,
             LayoutEnum.ROW_MAJOR,
             (self.tile_m, self.tile_k),
             None,
         )
         c_layout = sm90_utils.make_smem_layout(
-            BFloat16,
+            self.operand_type,
             LayoutEnum.ROW_MAJOR,
             (TILE_N, self.tile_k),
             self.stages,
@@ -140,10 +141,10 @@ class _RowOwnedAssignSm90:
             (TILE_N, self.stages), stride=(1, TILE_N)
         )
         q_bytes = cute.size_in_bytes(
-            BFloat16, cute.select(q_layout, mode=[0, 1])
+            self.operand_type, cute.select(q_layout, mode=[0, 1])
         )
         c_bytes = cute.size_in_bytes(
-            BFloat16, cute.select(c_layout, mode=[0, 1])
+            self.operand_type, cute.select(c_layout, mode=[0, 1])
         )
         n_bytes = TILE_N * Float32.width // 8
         q_atom, q_tensor = cpasync.make_tiled_tma_atom(
@@ -166,12 +167,12 @@ class _RowOwnedAssignSm90:
             c_barriers: cute.struct.MemRange[cutlass.Int64, self.stages * 2]
             q: cute.struct.Align[
                 cute.struct.MemRange[
-                    BFloat16, cute.cosize(q_layout)
+                    self.operand_type, cute.cosize(q_layout)
                 ], 1024
             ]
             centroids: cute.struct.Align[
                 cute.struct.MemRange[
-                    BFloat16, cute.cosize(c_layout)
+                    self.operand_type, cute.cosize(c_layout)
                 ], 1024
             ]
             norms: cute.struct.Align[
@@ -365,6 +366,30 @@ class _RowOwnedAssignSm90:
                 row_id[row] = centroid if take else row_id[row]
 
     @cute.jit
+    def gemm(self, tiled_mma, accumulator, q_fragment, c_fragment,
+             zero_init: cutlass.Constexpr[bool] = True,
+             wg_wait: cutlass.Constexpr[int] = 0):
+        if const_expr(self.operand_type is Float8E4M3FN):
+            promoted = cute.make_rmem_tensor(accumulator.layout, Float32)
+            promoted.fill(0.0)
+            mma_atom = cute.make_mma_atom(tiled_mma.op)
+            # Four k32 atoms form stock QuACK's k128 FP8 promotion interval.
+            for begin in cutlass.range_constexpr(0, cute.size(q_fragment.shape[2]), 4):
+                cute.nvgpu.warpgroup.fence()
+                mma_atom.set(cute.nvgpu.warpgroup.Field.ACCUMULATE, False)
+                for k in cutlass.range_constexpr(begin, min(begin + 4, cute.size(q_fragment.shape[2]))):
+                    cute.gemm(mma_atom, accumulator, q_fragment[None, None, k],
+                              c_fragment[None, None, k], accumulator)
+                    mma_atom.set(cute.nvgpu.warpgroup.Field.ACCUMULATE, True)
+                cute.nvgpu.warpgroup.commit_group()
+                cute.nvgpu.warpgroup.wait_group(0)
+                promoted.store(promoted.load() + accumulator.load())
+            accumulator.store(promoted.load())
+        else:
+            sm90_utils.gemm(tiled_mma, accumulator, q_fragment, c_fragment,
+                            zero_init=zero_init, wg_wait=wg_wait)
+
+    @cute.jit
     def mma(
         self,
         q,
@@ -421,7 +446,7 @@ class _RowOwnedAssignSm90:
                 tiled_mma.partition_shape_C((self.tile_m, TILE_N)),
                 Float32,
             )
-            sm90_utils.gemm(
+            self.gemm(
                 tiled_mma,
                 accumulator,
                 q_fragment,
@@ -483,13 +508,22 @@ def _required_smem(tile_k, tile_m, stages, element_bytes):
     )
 
 
-def row_owned_plan(batch, clusters, dim, device):
+def _operand_type(dtype):
+    if dtype is torch.bfloat16:
+        return BFloat16
+    if dtype is torch.float8_e4m3fn:
+        return Float8E4M3FN
+    raise ValueError("row-owned operands must be BF16 or E4M3")
+
+
+def row_owned_plan(batch, clusters, dim, device, dtype=torch.bfloat16):
     """Choose an existing tile with at least one CTA per SM when possible.
 
     Prefer the larger row tile only when its grid covers the device and its
     three-stage workspace fits. This is a conservative resource/occupancy rule,
     not a measured performance crossover or a batch-size admission table.
     """
+    _operand_type(dtype)
     if not _row_owned_shape_legal(batch, clusters, dim):
         return None
     properties = torch.cuda.get_device_properties(device)
@@ -497,9 +531,9 @@ def row_owned_plan(batch, clusters, dim, device):
     tile_k = _row_owned_tile_k(dim)
     stages = 3
     tile_m = 128 if _ceil_div(batch, 128) >= properties.multi_processor_count else 64
-    if _required_smem(tile_k, tile_m, stages, 2) > smem:
+    if _required_smem(tile_k, tile_m, stages, dtype.itemsize) > smem:
         tile_m = 64
-        if _required_smem(tile_k, tile_m, stages, 2) > smem:
+        if _required_smem(tile_k, tile_m, stages, dtype.itemsize) > smem:
             return None
     return tile_k, tile_m, stages
 
@@ -514,13 +548,8 @@ class PreparedRowOwned(NamedTuple):
 
 
 def _validate_operand(tensor, name, device):
-    require_tensor(
-        tensor,
-        name,
-        dtype=torch.bfloat16,
-        device=device,
-        contiguous=False,
-    )
+    require_tensor(tensor, name, device=device, contiguous=False)
+    _operand_type(tensor.dtype)
     if tensor.ndim != 2 or tensor.stride(1) != 1:
         raise ValueError("%s must be rank two with unit inner stride" % name)
     if (
@@ -539,13 +568,14 @@ def prepare_row_owned(
     labels,
     plan,
 ):
-    """Compile and bind one BF16 row-owned assignment operation.
+    """Compile and bind one floating row-owned assignment operation.
 
-    It returns bare FP32 scores, matching the tiled BF16 contract.
+    It returns bare FP32 scores, matching the tiled floating contract.
     """
     from .e_means_cute import _require_stack
 
     centroids = prepared.centroids
+    operand_type = _operand_type(rows.dtype)
     _require_stack()
     _validate_operand(rows, "row-owned rows", rows.device)
     _validate_operand(centroids, "row-owned centroids", rows.device)
@@ -617,6 +647,7 @@ def prepare_row_owned(
     if compiled is None:
         compiled = cute.compile(
             _RowOwnedAssignSm90(
+                operand_type,
                 tile_k,
                 tile_m,
                 stages,

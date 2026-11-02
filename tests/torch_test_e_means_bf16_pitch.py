@@ -23,7 +23,7 @@ class TestBf16Pitch(unittest.TestCase):
         ):
             with self.subTest(rows=rows, dim=dim):
                 backend._check_padded_span('rows', rows, dim)
-                value = backend._aligned_bf16(rows, dim, 'meta')
+                value = backend._aligned_operand(rows, dim, 'meta', torch.bfloat16)
                 pitch = value.stride(0)
                 self.assertEqual(value.device.type, 'meta')
                 self.assertEqual(tuple(value.shape), (rows, dim))
@@ -40,9 +40,11 @@ class TestBf16Pitch(unittest.TestCase):
 
     def test_small_storage_suffix_and_other_dtypes(self):
         cases = [(torch.bfloat16, dim) for dim in (1, 8, 9, 16, 17, 24, 25, 96, 100, 256)]
+        cases += [(dtype, 17) for dtype in (torch.float32, torch.float16,
+                                            torch.float8_e4m3fn, torch.int8, torch.uint8)]
         for dtype, dim in cases:
             with self.subTest(dtype=dtype, dim=dim):
-                rows = backend._aligned_bf16(3, dim, 'cpu')
+                rows = backend._aligned_operand(3, dim, 'cpu', dtype)
                 pitch = rows.stride(0)
                 self.assertEqual(tuple(rows.shape), (3, dim))
                 self.assertEqual(rows.dtype, dtype)
@@ -81,7 +83,7 @@ class TestBf16Pitch(unittest.TestCase):
                 rows, centroids = row_storage[:, :dim], centroid_storage[:, :dim]
                 rows.copy_(rows_source)
                 centroids.copy_(centroids_source)
-                prepared = backend._prepare_centroids(centroids_source)
+                prepared = backend._prepare_centroids(centroids_source, dtype=torch.bfloat16)
                 prepared.centroids = centroids
                 keys = prepared.norms.double()[None] - 2 * rows.double() @ centroids.double().T
                 expected_labels = keys.argmin(1)

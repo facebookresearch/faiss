@@ -8,11 +8,13 @@
 # Copyright (c) 2025-2026, Han Guo, Tri Dao. Licensed under Apache-2.0.
 # Meta modified it to preserve int32 metadata and removed unrelated modes.
 
-"""One fixed SM90 BF16 GEMM-plus-argmin assignment kernel.
+"""One fixed SM90 BF16/E4M3 GEMM-plus-argmin assignment kernel.
 
-The only schedule is CTA (M,N,K) = (128,192,64), cluster (2,1), with
-non-serpentine 33-cluster N panels. It ranks native FP32 tensor-core scores
-and atomically reduces packed ``(score, centroid id)`` keys per input row.
+The schedule uses cluster (2,1) with non-serpentine 33-cluster N panels.
+Both operands use CTA (128,192). BF16 uses TILE_K=64 with ping-pong
+scheduling; E4M3 uses TILE_K=128 with cooperative scheduling and stock FP32
+promotion of each contraction tile. The kernel reduces packed
+``(score, centroid id)`` keys per input row.
 """
 
 from functools import partial
@@ -69,7 +71,7 @@ from .e_means_cute_argmin import (
 
 TILE_M = 128
 TILE_N = 192
-TILE_K = 64
+_STAGED_ROW_BYTES = 128
 CLUSTER_M = 2
 CLUSTER_N = 1
 BLOCKED_N_CLUSTERS = 33
@@ -327,6 +329,11 @@ class _GemmAssignMinSm90(ComposableEpiMixin, GemmSm90):
     )
     _extra_param_fields = ()
 
+    def __init__(self, *args, **kwargs):
+        # Use stock per-K-tile FP32 promotion for E4M3 ranking.
+        kwargs.setdefault("fp8_fast_accum", args[1] is not cutlass.Float8E4M3FN)
+        super().__init__(*args, **kwargs)
+
     @mlir_namedtuple
     class EpilogueArguments(NamedTuple):
         mCentroidNorms: Optional[cute.Tensor] = None
@@ -390,26 +397,32 @@ class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
 
     def _setup_attributes(self, epilogue_args):
         super()._setup_attributes(epilogue_args)
+        tile = tuple(self.cta_tile_shape_mnk)
         actual = (
-            tuple(self.cta_tile_shape_mnk),
+            tile[:2],
             tuple(self.cluster_shape_mnk),
             tuple(self.atom_layout_mnk),
             tuple(self.epi_tile),
             tuple(self.epi_tile_shape),
             bool(self.epi_m_major),
         )
+        fp8 = self.mma_a_dtype is cutlass.Float8E4M3FN
         expected = (
-            (TILE_M, TILE_N, TILE_K),
+            (TILE_M, TILE_N),
             (CLUSTER_M, CLUSTER_N, 1),
-            (1, 1, 1),
-            (64, 32),
-            (2, 6),
+            (2 if fp8 else 1, 1, 1),
+            (128 if fp8 else 64, 32),
+            (1 if fp8 else 2, 6),
             True,
         )
+        if fp8 and (self.pingpong or not self.fp8_slow_accum):
+            raise RuntimeError("FP8 requires accurate cooperative accumulation")
         if actual != expected:
             raise RuntimeError(
                 "fixed CuTe assignment schedule changed: %r" % (actual,)
             )
+        if tile[2] * self.mma_a_dtype.width != 1024:
+            raise RuntimeError("CuTe TILE_K must stage exactly 128 bytes")
         type(self)._schedule_guard_ran = True
 
     @cute.jit
@@ -428,9 +441,15 @@ class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
 
 
 @jit_cache
-def _compile_ordered(a_major, b_major, device_capacity, source_cache_key):
+def _compile_ordered(
+    operand,
+    tile_k,
+    a_major,
+    b_major,
+    device_capacity,
+    source_cache_key,
+):
     del source_cache_key  # Used by jit_cache when selecting a disk entry.
-    operand = torch2cute_dtype_map[torch.bfloat16]
     a, b, d, c, m, _, _, batch_axis = make_fake_gemm_tensors(
         operand, operand, None, None, a_major, b_major, None, None
     )
@@ -451,9 +470,9 @@ def _compile_ordered(a_major, b_major, device_capacity, source_cache_key):
     compiled = compile_gemm_kernel(
         _OrderedGemmAssignMinSm90,
         operand,
-        (TILE_M, TILE_N, TILE_K),
+        (TILE_M, TILE_N, tile_k),
         (CLUSTER_M, CLUSTER_N, 1),
-        True,
+        operand is not cutlass.Float8E4M3FN,
         True,
         False,
         False,
@@ -525,16 +544,20 @@ def prepare_tiled_gemm(rows, prepared, codes, scores):
     ):
         raise ValueError("rows and centroids must be rank two with equal d")
     if (
-        rows.dtype is not torch.bfloat16
-        or centroids.dtype is not torch.bfloat16
+        rows.dtype not in (torch.bfloat16, torch.float8_e4m3fn)
+        or centroids.dtype is not rows.dtype
         or rows.device != centroids.device
         or not rows.is_cuda
     ):
-        raise ValueError("CuTe operands must be same-device CUDA BF16")
+        raise ValueError("CuTe operands must be same-device CUDA BF16/E4M3")
     if rows.stride(-1) != 1 or centroids.stride(-1) != 1:
         raise ValueError("CuTe operands must have unit inner stride")
-    if rows.stride(-2) % 8 or centroids.stride(-2) % 8:
-        raise ValueError("CuTe BF16 row pitches must be 16-byte aligned")
+    element_bytes = rows.element_size()
+    if (
+        rows.stride(-2) * element_bytes % 16
+        or centroids.stride(-2) * element_bytes % 16
+    ):
+        raise ValueError("CuTe row pitches must be 16-byte aligned")
     ids = _centroid_metadata(prepared)
     keys = torch.full(
         (1, rows.shape[0], 1),
@@ -544,7 +567,10 @@ def prepare_tiled_gemm(rows, prepared, codes, scores):
     )
     a = rows.unsqueeze(0)
     b = centroids.unsqueeze(0)
+    tile_k = _STAGED_ROW_BYTES // element_bytes
     compiled = _compile_ordered(
+        torch2cute_dtype_map[rows.dtype],
+        tile_k,
         get_major(a, "m", "k"),
         get_major(b, "n", "k"),
         get_device_capacity(rows.device),
