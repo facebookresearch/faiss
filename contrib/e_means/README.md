@@ -157,8 +157,8 @@ chunk output. These costs are separate from existing assignment workspace and
 input permutation; input chunking does not remove centroid-state memory.
 
 Default resident CUDA `train` may replay full batches through a CUDA graph.
-Capture and instantiation are part of each training call. The graph and private
-pool are retained across epoch reports, then retired
+Capture and instantiation are part of each training call. The graph, private
+pool and captured bindings are retained across epoch reports, then retired
 at training-call teardown. Exceptional teardown drains pending work before
 graph reset and owner release. Explicit
 overrides, custom models/codecs, tails and very wide accumulation stay eager.
@@ -292,13 +292,58 @@ Without a quantizer, native signed/unsigned bytes retain their numeric units.
 Calibration, device placement and validation are explicit; unchecked nonfinite
 values have no meaningful encoding result. Use `q.validate(x)` when needed.
 
+CuTe BF16 assignment is an explicit optional backend on exactly NVIDIA SM90,
+requiring `quack-kernels==0.6.5`, `nvidia-cutlass-dsl==4.7.1` and
+`cuda-python>=13,<14`, plus Triton for dense CUDA EMA updates.
+Native Torch/CPU/NumPy updates do not require Triton. Supply native BF16 rows with `quantizer=None`, or use
+`CastQuantizer(d, torch.bfloat16)` for per-chunk floating conversion; select
+`assignment_backend="cute"`. It uses resource-constrained tiled/row-owned
+assignment, native FP32 score ranking and no runtime autotuning; the only
+fallback is the warned dependency-absent grouping provider described below.
+For BF16 L2, a coarse `B * K >= 2**31` work threshold and legal grid/resources
+select tile selection plus grouping and recovery. This uses actual local
+assignment chunk B and local K across resident, caller and replica
+operations; centered casts use the same prepared-operand rule.
+Grouping prefers `cuda-cccl`
+(`cuda.compute` CountingIterator, SortOrder, make_lower_bound and
+make_radix_sort; tested with 1.2.0). When that Python distribution is genuinely
+absent, CuTe emits one `RuntimeWarning` and uses stable Torch sort/search grouping,
+measured about 0.6–2.4% slower in complete large/caller calls. Install
+`cuda-cccl` for maximum performance. An installed but broken CCCL import raises;
+there is no public provider knob or shape/sharding-dependent provider choice. No
+input-content scan is added. BF16 CuTe workspaces prefer 32B-aligned row pitches while retaining
+legal 16B storage at the existing span limit; this affects every BF16 CuTe route.
+CCCL grouping adds 16B per row plus 8B per tile-prefix entry and queried scratch;
+Torch grouping retains 16B per row plus 12B per prefix and uses opaque internal
+sort/search scratch. Bindings expose their selected provider for diagnostics and
+share mutable cached storage under the existing ordered-stream/capture lifetime
+contract.
+
+The work threshold is a coarse empirical bracket, not a densely measured
+crossover or an address bound. Small calls retain the incumbent even when
+warmed grouped timing wins; one DEEP1M first-fit control cost 6.22s more with
+grouping. At the same large geometry, all-one-tile and 90%-one-tile replay were
+57% and 50% slower respectively; their frequency is unknown. This concentration
+limitation is accepted for this release, with no recovery-row-stripe change.
+Specialized K-tail, additional grouped dtype, wide addressing and broader graph
+work remain unfinished; this release does not claim those gaps repaired.
+Spherical BF16 keeps the incumbent kernels; grouped routing for that metric
+remains deferred despite sharing the represented dot-product primitive.
+Bit-equal scores select the lower centroid ID; FP64-only ties can differ.
+Calls on one model share mutable workspace; the caller must order stream switching.
+Partial accumulation retains one prepared centroid snapshot until its completed
+contribution is consumed. Eligible resident replay records label staging
+independently of the epoch of capture, then scatters last-pass labels before the
+next replay. Graph-bound CuTe bindings remain owned until after graph reset;
+clearing pending-batch operands does not retire those bindings.
+
 ## Numerical limits
 
 Low precision can round distinct rows or centroid operands to the same values.
 Calibration can reduce this loss on some data, but it cannot guarantee distinct
 assignments or recover information already lost in the supplied representation.
 Use native FP32 input with `quantizer=None` and native Torch or Triton assignment
-when representation loss is unacceptable. These CUDA
+when representation loss is unacceptable; CuTe FP32 is unsupported. These CUDA
 paths use expanded L2 ranking (`centroid_norm - 2*dot`) in ordinary mode, so a
 large common offset can cancel small distance differences. Native FP32 follows
 the caller's Torch matmul settings; this fallback is not a direct-distance
@@ -384,6 +429,17 @@ The actual model's existing FP16 split-range guard rejects its much larger
 Faiss perturbation at such an origin before repair. No universal split or
 large-origin training guarantee is claimed.
 
+Native/Triton FP16/BF16 and CuTe BF16 use their existing device/stack guards.
+CuTe's host preparation performs subtraction **on CUDA**, then uses the existing
+BF16 affine mirror kernel. This first implementation adds a temporary FP32
+`K*d` tensor (`4*K*d` logical bytes) and one subtraction per mirror refresh;
+unchanged cached assignments avoid it. The cache retains the fit tensor and
+refreshes existing mirror storage; captured temporary storage follows the
+existing graph pool lifetime. This is an explicit memory/work cost, not a speed
+claim. Streaming, distribution and replay retain the common decoded-row
+contract; their qualification results are tracked separately from CPU codec
+tests. INT8/FP8 calibration policies and all default routing remain unchanged.
+
 
 ## Train API defaults
 
@@ -398,3 +454,8 @@ implementations from actual device/effective input dtype without an implicit
 precision conversion. Training fixes metadata for its run; standalone assign
 resolves per call and reports assignment_recipe. Selected execution errors
 propagate without retry. CPU uses native without optional GPU imports.
+
+This auto resolver retains dtype, dependency and shape-based choices. Replacing
+it with hardware-only selection is deferred together with missing CuTe FP16/FP32
+and other support; the current behavior does not meet that intended policy.
+No implicit precision conversion is introduced by the grouped release.
