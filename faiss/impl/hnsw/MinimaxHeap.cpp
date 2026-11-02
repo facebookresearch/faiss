@@ -11,9 +11,16 @@
 
 namespace faiss {
 
-// Runtime-dispatched pop_min (NONE + AVX2 + AVX512 only).
+// Runtime-dispatched pop_min (NONE + AVX2 + AVX512, plus RISCV_RVV when
+// compiled in). The COMPILE_SIMD_RISCV_RVV guard matches the #ifdef'd
+// RISCV_RVV case in with_selected_simd_levels, so the extra bit is inert
+// on other architectures.
 constexpr int MINIMAX_HEAP_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512))
+#ifdef COMPILE_SIMD_RISCV_RVV
+        | (1 << int(SIMDLevel::RISCV_RVV))
+#endif
+        ;
 
 template <class HC_>
 int MinimaxHeapT<HC_>::pop_min(float* vmin_out) {
