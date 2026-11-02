@@ -9,6 +9,7 @@ CPU tests qualify codec/metadata only; CPU E-means still rejects quantizers.
 GPU tests are small synthetic contracts, not accuracy or performance claims.
 """
 import gc
+import importlib.util
 import unittest
 import weakref
 from unittest import mock
@@ -192,6 +193,8 @@ class TestCenteredCastCPU(unittest.TestCase):
 class _GPUContracts:
     def arms(self):
         backends = ["native"]
+        if importlib.util.find_spec("triton") is not None:
+            backends.append("triton")
         return [(backend, dtype) for backend in backends
                 for dtype in (torch.float16, torch.bfloat16)]
 
@@ -205,7 +208,7 @@ class _GPUContracts:
                 codes, expected_labels = q.compute_codes(x), torch.tensor([0, 1, 0, 1, 0], device="cuda")
                 decoded = q.decode(codes)
                 model = Emeans(2, 2, niter=1, batch_size=3, alpha0=1, quantizer=q,
-                               assignment_chunk_size=2,
+                               assignment_backend=backend, assignment_chunk_size=2,
                                capture_assignments=True)
                 model.begin(5, initial)
                 handle = model.current_centroids()
@@ -248,7 +251,7 @@ class _GPUContracts:
                 q = CastQuantizer(1, dtype, center=True)
                 initial = torch.ones(1, 1, device="cuda")
                 model = Emeans(1, 1, niter=1, batch_size=3, alpha0=1,
-                               quantizer=q)
+                               quantizer=q, assignment_backend=backend)
                 with self.assertRaisesRegex(RuntimeError, "trained explicitly"):
                     model.begin(3, initial)
                 q.train(torch.tensor([[2**-24]]))
@@ -286,7 +289,7 @@ class _GPUContracts:
                 ids = torch.arange(129, device="cuda")
                 x = q.shift + torch.stack(((ids % 4).float(), (ids % 3).float() / 4,
                                            (ids % 5).float() / 8), dim=1)
-                args = dict(niter=2, seed=10, quantizer=q,
+                args = dict(niter=2, seed=10, quantizer=q, assignment_backend=backend,
                             capture_assignments=True)
                 batch, _ = _resolve_recipe(129, 4, 2, "throughput", None, None)
                 eager = Emeans(3, 4, assignment_chunk_size=batch, **args)

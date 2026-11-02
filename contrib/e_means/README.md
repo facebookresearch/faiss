@@ -175,6 +175,16 @@ follows Torch cast semantics. The existing internally generated FP16 split
 range guard remains. CPU computes supplied represented floating values in FP32
 and requires `quantizer=None`, even though the cast helper can execute on CPU.
 
+`assignment_backend="triton"` explicitly selects optional Triton CUDA assignment
+instead of automatic backend selection. It requires NVIDIA SM80 or
+later, supports the same FP32/FP16/BF16 represented inputs and cast quantizer,
+and retains the shared lifecycle/statistics. FP32 dots request IEEE precision.
+It uses bounded centroid tiles and split-K partial results without runtime
+autotuning or backend fallback. `centroid_chunk_size` applies only to native
+Torch; Triton chooses its internal tile geometry. Conservative known-size
+parallelism/work-per-partition rules are performance defaults, not hardware
+legality or a portable crossover. Padded physical index/label bounds still apply.
+
 CPU or GPU callers use `DistributedEmeans(d, k, group=group, transport="auto", ...)`
 with an initialized, caller-owned process group. Group and transport are fixed
 at construction. `begin(global_n, init_centroids)` takes matching NumPy FP32
@@ -220,6 +230,11 @@ unsupported. See
 ## Numerical limits
 
 Low precision can round distinct rows or centroid operands to the same values.
+Use native FP32 input with `quantizer=None` and native Torch or Triton assignment
+when representation loss is unacceptable. These CUDA
+paths still use expanded L2 ranking (`centroid_norm - 2*dot`), so a large common
+offset can cancel small distance differences. Native FP32 follows the caller's
+Torch matmul settings; this fallback is not a direct-distance accuracy guarantee.
 
 The training objective follows the moving-pass assignments, not the returned
 closing centroids. When precision matters, also assess the final centroids on
@@ -300,3 +315,9 @@ default and capture_assignments=False yielding None labels. Objective history
 remains in obj. Labels precede closing means; no extra assignment search.
 Outputs alias owned model results; copy before mutating. Capture retains8N
 bytes plus staging/workspace. Caller loops retain only supplied-chunk labels.
+
+Auto is the default assignment backend, selecting available compatible
+implementations from actual device/effective input dtype without an implicit
+precision conversion. Training fixes metadata for its run; standalone assign
+resolves per call and reports assignment_recipe. Selected execution errors
+propagate without retry. CPU uses native without optional GPU imports.
