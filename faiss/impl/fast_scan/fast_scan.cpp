@@ -16,6 +16,11 @@
 
 namespace faiss {
 
+void SIMDResultHandlerToFloat::end() {
+    normalizers = nullptr;
+    scan_cnt = 0;
+}
+
 using namespace simd_result_handlers;
 
 /***************************************************************

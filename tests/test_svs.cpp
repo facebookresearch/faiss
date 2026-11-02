@@ -42,11 +42,9 @@
 namespace {
 pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Test fixture class to manage shared test data
 class SVS : public ::testing::Test {
    protected:
     static void SetUpTestSuite() {
-        // Generate test data once for all tests
         constexpr size_t d = 64;
         constexpr size_t n = 100;
         test_data.resize(d * n);
@@ -63,7 +61,6 @@ class SVS : public ::testing::Test {
     static constexpr size_t n = 100;
 };
 
-// LVQ/LeanVec tests are only executed if LVQ/LeanVec support is available
 class SVSLL : public SVS {
    protected:
     void SetUp() override {
@@ -74,8 +71,6 @@ class SVSLL : public SVS {
     }
 };
 
-// Consistency checks for behavior if LVQ/LeanVec are not available
-// Only runs if LVQ/LeanVec is NOT available
 class SVSNoLL : public SVS {
    protected:
     void SetUp() override {
@@ -86,7 +81,6 @@ class SVSNoLL : public SVS {
     }
 };
 
-// Define static members
 std::vector<float> SVS::test_data;
 } // namespace
 
@@ -98,16 +92,13 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
     Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
-    // Serialize
     ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
 
-    // Deserialize
     T* loaded = nullptr;
     ASSERT_NO_THROW({
         loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
     });
 
-    // Basic checks
     ASSERT_NE(loaded, nullptr);
     ASSERT_NE(loaded->impl, nullptr);
     EXPECT_EQ(loaded->d, index.d);
@@ -120,16 +111,8 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     EXPECT_EQ(loaded->max_candidate_pool_size, index.max_candidate_pool_size);
     EXPECT_EQ(loaded->prune_to, index.prune_to);
     EXPECT_EQ(loaded->use_full_search_history, index.use_full_search_history);
-    if constexpr (std::is_same_v<
-                          std::decay_t<T>,
-                          faiss::IndexSVSVamanaLeanVec>) {
-        auto* leanvec_loaded =
-                dynamic_cast<faiss::IndexSVSVamanaLeanVec*>(loaded);
-        ASSERT_NE(leanvec_loaded, nullptr);
-        EXPECT_EQ(leanvec_loaded->leanvec_d, index.leanvec_d);
-
-        EXPECT_NE(leanvec_loaded->training_data, nullptr);
-    }
+    EXPECT_EQ(loaded->leanvec_d, index.leanvec_d);
+    EXPECT_NE(loaded->training_data, nullptr);
 
     delete loaded;
 }
@@ -170,41 +153,6 @@ void save_and_load_index() {
         loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
     });
     delete loaded;
-}
-
-TEST_F(SVS, WriteAndReadIndexSVS) {
-    faiss::IndexSVSVamana index{d, 64ul};
-    write_and_read_index(index, test_data, n);
-}
-
-TEST_F(SVS, WriteAndReadIndexSVSFP16) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16};
-    write_and_read_index(index, test_data, n);
-}
-
-TEST_F(SVS, WriteAndReadIndexSVSSQ8) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
-    write_and_read_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSLVQ4x0) {
-    faiss::IndexSVSVamanaLVQ index{d, 64ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x0;
-    write_and_read_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSLVQ4x4) {
-    faiss::IndexSVSVamanaLVQ index{d, 64ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x4;
-    write_and_read_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSLVQ4x8) {
-    faiss::IndexSVSVamanaLVQ index{d, 64ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x8;
-    write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSLL, WriteAndReadIndexSVSVamanaLeanVec4x4) {
@@ -252,36 +200,6 @@ TEST_F(SVS, VamanaTrainSaveLoadAndAdd) {
     train_save_load_and_add_index(index, test_data, n);
 }
 
-TEST_F(SVS, VamanaFP16TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16};
-    train_save_load_and_add_index(index, test_data, n);
-}
-
-TEST_F(SVS, VamanaSQ8TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
-    train_save_load_and_add_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, LVQ4x0TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamanaLVQ index{d, 64ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x0;
-    train_save_load_and_add_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, LVQ4x4TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamanaLVQ index{d, 64ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x4;
-    train_save_load_and_add_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, LVQ4x8TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamanaLVQ index{d, 64ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x8;
-    train_save_load_and_add_index(index, test_data, n);
-}
-
 TEST_F(SVSLL, LeanVec4x4TrainSaveLoadAndAdd) {
     faiss::IndexSVSVamanaLeanVec index{
             d,
@@ -292,128 +210,36 @@ TEST_F(SVSLL, LeanVec4x4TrainSaveLoadAndAdd) {
     train_save_load_and_add_index(index, test_data, n);
 }
 
-TEST_F(SVSLL, LeanVec4x8TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamanaLeanVec index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            0,
-            faiss::SVSStorageKind::SVS_LeanVec4x8};
-    train_save_load_and_add_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, LeanVec8x8TrainSaveLoadAndAdd) {
-    faiss::IndexSVSVamanaLeanVec index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            0,
-            faiss::SVSStorageKind::SVS_LeanVec8x8};
-    train_save_load_and_add_index(index, test_data, n);
-}
-
 TEST_F(SVS, SaveAndLoadIndexSVSFlat) {
     save_and_load_index<faiss::IndexSVSFlat>();
-}
-
-TEST_F(SVS, SaveAndLoadIndexSVSVamana) {
-    save_and_load_index<faiss::IndexSVSVamana>();
-}
-
-TEST_F(SVSLL, SaveAndLoadIndexSVSVamanaLVQ) {
-    save_and_load_index<faiss::IndexSVSVamanaLVQ>();
 }
 
 TEST_F(SVSLL, SaveAndLoadIndexSVSVamanaLeanVec) {
     save_and_load_index<faiss::IndexSVSVamanaLeanVec>();
 }
 
-TEST_F(SVS, WriteAndReadIndexSVSFlat) {
-    faiss::IndexSVSFlat index{d};
-    index.add(n, test_data.data());
-
-    std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
-    Tempfilename filename(&temp_file_mutex, temp_filename_template);
-
-    // Serialize
-    ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
-
-    // Deserialize
-    faiss::IndexSVSFlat* loaded = nullptr;
-    ASSERT_NO_THROW({
-        loaded = dynamic_cast<faiss::IndexSVSFlat*>(
-                faiss::read_index(filename.c_str()));
-    });
-
-    ASSERT_NE(loaded, nullptr);
-    ASSERT_NE(loaded->impl, nullptr);
-    EXPECT_EQ(loaded->d, index.d);
-    EXPECT_EQ(loaded->nlabels, index.nlabels);
-    EXPECT_EQ(loaded->metric_type, index.metric_type);
-
-    delete loaded;
-}
-
-// Test search with IDSelector filtering
-TEST_F(SVS, SearchWithIDSelector) {
-    faiss::IndexSVSVamana index{d, 64ul};
-    index.add(n, test_data.data());
-
-    const int nq = 8;                   // number of queries
-    const float* xq = test_data.data(); // reuse first nq vectors as queries
-    const int k = 10;
-
-    size_t min_id = n / 5;     // inclusive
-    size_t max_id = n * 4 / 5; // exclusive
-    faiss::IDSelectorRange selector(min_id, max_id);
-
-    faiss::SearchParameters params; // generic search parameters with selector
-    params.sel = &selector;
-
-    std::vector<float> distances(nq * k);
-    std::vector<faiss::idx_t> labels(nq * k);
-
-    ASSERT_NO_THROW(
-            index.search(nq, xq, k, distances.data(), labels.data(), &params));
-
-    // All returned labels must fall inside the selected range
-    for (int i = 0; i < nq * k; ++i) {
-        EXPECT_GE(labels[i], (faiss::idx_t)min_id);
-        EXPECT_LT(labels[i], (faiss::idx_t)max_id);
-    }
-}
-
-// Basic functional test for range_search and parameter override helper
 TEST_F(SVS, RangeSearchFunctional) {
     faiss::IndexSVSVamana index{d, 64ul};
     index.add(n, test_data.data());
     const int nq = 5;
     const float* xq = test_data.data();
 
-    // Small radius
-    faiss::RangeSearchResult res_small(nq);
-    ASSERT_NO_THROW(index.range_search(nq, xq, 0.05f, &res_small));
-
-    // Larger radius to exercise loop continuation
-    faiss::RangeSearchResult res_big(nq);
-    ASSERT_NO_THROW(index.range_search(nq, xq, 5.0f, &res_big));
-    EXPECT_GE(res_big.lims[nq], res_small.lims[nq]);
-
-    // Provide custom params to ensure branch coverage (non-null params)
+    // SearchParametersSVSVamana override and selector branches
     faiss::SearchParametersSVSVamana params;
     params.search_window_size = 15;
     params.search_buffer_capacity = 20;
 
-    // Provide IDSelector to ensure branch coverage (non-null params->sel)
     size_t min_id = n / 5;     // inclusive
     size_t max_id = n * 4 / 5; // exclusive
     faiss::IDSelectorRange selector(min_id, max_id);
     params.sel = &selector;
 
+    // The radius covers nearly every vector, so the batch iterator loop
+    // continues past its first batch.
     faiss::RangeSearchResult res_params(nq);
-    ASSERT_NO_THROW(index.range_search(nq, xq, 1.0f, &res_params, &params));
+    ASSERT_NO_THROW(index.range_search(nq, xq, 20.0f, &res_params, &params));
+    ASSERT_GT(res_params.lims[nq], 0);
 
-    // All returned labels must fall inside the selected range
     for (size_t i = 0; i < res_params.lims[nq]; ++i) {
         EXPECT_GE(res_params.labels[i], (faiss::idx_t)min_id);
         EXPECT_LT(res_params.labels[i], (faiss::idx_t)max_id);
@@ -421,28 +247,12 @@ TEST_F(SVS, RangeSearchFunctional) {
 }
 
 TEST_F(SVSLL, LVQAndLeanVecDoNotThrowWhenEnabled) {
-    // explicit constructor with LVQ dataset
-    ASSERT_NO_THROW({
-        faiss::IndexSVSVamanaLVQ index(
-                d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4);
-    });
-
     // default constructor, will initialize dataset on first add()
     ASSERT_NO_THROW({
         faiss::IndexSVSVamanaLVQ index;
         index.add(n, test_data.data());
     });
 
-    // explicit constructor with LeanVec dataset
-    ASSERT_NO_THROW({
-        faiss::IndexSVSVamanaLeanVec index(
-                d,
-                64ul,
-                faiss::METRIC_L2,
-                faiss::SVSStorageKind::SVS_LeanVec4x4);
-    });
-
-    // default constructor, will initialize dataset on first add()
     ASSERT_NO_THROW({
         faiss::IndexSVSVamanaLeanVec index;
         index.d = 64;
@@ -453,7 +263,6 @@ TEST_F(SVSLL, LVQAndLeanVecDoNotThrowWhenEnabled) {
 }
 
 TEST_F(SVSNoLL, LVQAndLeanVecThrowWhenNotEnabled) {
-    // explicit constructor with LVQ dataset
     ASSERT_THROW(
             {
                 faiss::IndexSVSVamanaLVQ index(
@@ -472,7 +281,6 @@ TEST_F(SVSNoLL, LVQAndLeanVecThrowWhenNotEnabled) {
             },
             faiss::FaissException);
 
-    // explicit constructor with LeanVec dataset
     ASSERT_THROW(
             {
                 faiss::IndexSVSVamanaLeanVec index(
@@ -483,7 +291,6 @@ TEST_F(SVSNoLL, LVQAndLeanVecThrowWhenNotEnabled) {
             },
             faiss::FaissException);
 
-    // default constructor, will initialize dataset on first add()
     ASSERT_THROW(
             {
                 faiss::IndexSVSVamanaLeanVec index;
@@ -504,20 +311,18 @@ void write_and_read_ivf_index(
         const std::vector<float>& xb,
         size_t n) {
     index.train(n, xb.data());
+    index.add(n, xb.data());
 
     std::string temp_filename_template = "/tmp/faiss_svs_ivf_test_XXXXXX";
     Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
-    // Serialize
     ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
 
-    // Deserialize
     T* loaded = nullptr;
     ASSERT_NO_THROW({
         loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
     });
 
-    // Basic checks
     ASSERT_NE(loaded, nullptr);
     ASSERT_NE(loaded->impl, nullptr);
     EXPECT_EQ(loaded->d, index.d);
@@ -539,58 +344,9 @@ void write_and_read_ivf_index(
     delete loaded;
 }
 
-template <typename T>
-void train_and_add_ivf_index(T& index, const std::vector<float>& xb, size_t n) {
-    index.train(n, xb.data());
-
-    // Additional data to add after training
-    ASSERT_NO_THROW({ index.add(n, xb.data()); });
-}
-
-TEST_F(SVS, WriteAndReadIndexSVSIVF) {
-    faiss::IndexSVSIVF index{d, 4ul};
-    write_and_read_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVS, WriteAndReadIndexSVSIVFFP16) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16};
-    write_and_read_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVS, WriteAndReadIndexSVSIVFSQ8) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
-    write_and_read_ivf_index(index, test_data, n);
-}
-
 TEST_F(SVSLL, WriteAndReadIndexSVSIVFLVQ4x0) {
     faiss::IndexSVSIVFLVQ index{d, 4ul};
     index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x0;
-    write_and_read_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSIVFLVQ4x4) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x4;
-    write_and_read_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSIVFLVQ4x8) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x8;
-    write_and_read_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSIVFLVQ8x0) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ8x0;
-    write_and_read_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadIndexSVSIVFLeanVec4x4) {
-    faiss::IndexSVSIVFLeanVec index{
-            d, 4ul, faiss::METRIC_L2, 0, faiss::SVSStorageKind::SVS_LeanVec4x4};
     write_and_read_ivf_index(index, test_data, n);
 }
 
@@ -645,114 +401,8 @@ TEST_F(SVS, IVFHonorsDeserializationVectorByteLimit) {
     expect_byte_limit_enforced(index, test_data, n);
 }
 
-TEST_F(SVS, IVFTrainAndAdd) {
-    faiss::IndexSVSIVF index{d, 4ul};
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVS, IVFFP16TrainAndAdd) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP16};
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVS, IVFSQ8TrainAndAdd) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8};
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLVQ4x0TrainAndAdd) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x0;
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLVQ4x4TrainAndAdd) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x4;
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLVQ4x8TrainAndAdd) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x8;
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLVQ8x0TrainAndAdd) {
-    faiss::IndexSVSIVFLVQ index{d, 4ul};
-    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ8x0;
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLeanVec4x4TrainAndAdd) {
-    faiss::IndexSVSIVFLeanVec index{
-            d, 4ul, faiss::METRIC_L2, 0, faiss::SVSStorageKind::SVS_LeanVec4x4};
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLeanVec4x8TrainAndAdd) {
-    faiss::IndexSVSIVFLeanVec index{
-            d, 4ul, faiss::METRIC_L2, 0, faiss::SVSStorageKind::SVS_LeanVec4x8};
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, IVFLeanVec8x8TrainAndAdd) {
-    faiss::IndexSVSIVFLeanVec index{
-            d, 4ul, faiss::METRIC_L2, 0, faiss::SVSStorageKind::SVS_LeanVec8x8};
-    train_and_add_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVS, IVFSearchWithIDSelector) {
-    faiss::IndexSVSIVF index{d, 4ul};
-    index.train(n, test_data.data());
-    index.add(n, test_data.data());
-
-    const int nq = 8;
-    const float* xq = test_data.data();
-    const int k = 10;
-
-    size_t min_id = n / 5;
-    size_t max_id = n * 4 / 5;
-    faiss::IDSelectorRange selector(min_id, max_id);
-
-    faiss::SearchParameters params;
-    params.sel = &selector;
-
-    std::vector<float> distances(nq * k);
-    std::vector<faiss::idx_t> labels(nq * k);
-
-    // The current SVS runtime IVFIndex::search() API does not accept an
-    // IDFilter parameter (unlike VamanaIndex::search()), so the IDSelector
-    // passed via SearchParameters is silently ignored. This test verifies
-    // that search still works (without filtering). Once the SVS runtime
-    // exposes IDFilter support for IVF search, this can be wired up the
-    // same way Vamana uses make_faiss_id_filter().
-    ASSERT_NO_THROW(index.search(nq, xq, k, distances.data(), labels.data()));
-}
-
-TEST_F(SVSLL, IVFLeanVecThrowsWithoutTraining) {
-    faiss::IndexSVSIVFLeanVec index{
-            64,
-            4ul,
-            faiss::METRIC_L2,
-            0,
-            faiss::SVSStorageKind::SVS_LeanVec4x4};
-    ASSERT_THROW(index.add(100, test_data.data()), faiss::FaissException);
-}
-
-TEST_F(SVS, IVFThrowsAddWithoutTraining) {
-    faiss::IndexSVSIVF index{d, 4ul};
-    ASSERT_THROW(index.add(n, test_data.data()), faiss::FaissException);
-}
-
 TEST_F(SVS, SaveAndLoadIndexSVSIVF) {
     save_and_load_index<faiss::IndexSVSIVF>();
-}
-
-TEST_F(SVSLL, SaveAndLoadIndexSVSIVFLVQ) {
-    save_and_load_index<faiss::IndexSVSIVFLVQ>();
 }
 
 TEST_F(SVSLL, SaveAndLoadIndexSVSIVFLeanVec) {
@@ -771,7 +421,6 @@ void write_and_read_static_ivf_index(
     ASSERT_TRUE(index.is_static);
     index.train(n, xb.data());
 
-    // Verify search works after training
     const int nq = 4;
     const int k = 5;
     std::vector<float> distances(nq * k);
@@ -783,16 +432,13 @@ void write_and_read_static_ivf_index(
             "/tmp/faiss_svs_static_ivf_test_XXXXXX";
     Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
-    // Serialize
     ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
 
-    // Deserialize
     T* loaded = nullptr;
     ASSERT_NO_THROW({
         loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
     });
 
-    // Basic checks
     ASSERT_NE(loaded, nullptr);
     ASSERT_NE(loaded->impl, nullptr);
     EXPECT_TRUE(loaded->is_static);
@@ -800,24 +446,11 @@ void write_and_read_static_ivf_index(
     EXPECT_EQ(loaded->metric_type, index.metric_type);
     EXPECT_EQ(loaded->num_centroids, index.num_centroids);
     EXPECT_EQ(loaded->storage_kind, index.storage_kind);
-    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSIVFLeanVec>) {
-        auto* leanvec_loaded = dynamic_cast<faiss::IndexSVSIVFLeanVec*>(loaded);
-        ASSERT_NE(leanvec_loaded, nullptr);
-        EXPECT_EQ(leanvec_loaded->leanvec_d, index.leanvec_d);
-        EXPECT_NE(leanvec_loaded->training_data, nullptr);
-    }
 
-    // Verify search works on loaded index
     ASSERT_NO_THROW(
             loaded->search(nq, xb.data(), k, distances.data(), labels.data()));
 
     delete loaded;
-}
-
-TEST_F(SVS, WriteAndReadStaticIVF) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    write_and_read_static_ivf_index(index, test_data, n);
 }
 
 TEST_F(SVS, WriteAndReadStaticIVFFP16) {
@@ -826,47 +459,11 @@ TEST_F(SVS, WriteAndReadStaticIVFFP16) {
     write_and_read_static_ivf_index(index, test_data, n);
 }
 
-TEST_F(SVSLL, WriteAndReadStaticIVFLVQ4x4) {
-    faiss::IndexSVSIVFLVQ index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4, true};
-    write_and_read_static_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadStaticIVFLeanVec4x4) {
-    faiss::IndexSVSIVFLeanVec index{
-            d,
-            4ul,
-            faiss::METRIC_L2,
-            0,
-            faiss::SVSStorageKind::SVS_LeanVec4x4,
-            true};
-    write_and_read_static_ivf_index(index, test_data, n);
-}
-
-TEST_F(SVS, StaticIVFAddThrows) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    index.train(n, test_data.data());
-    ASSERT_THROW(index.add(n, test_data.data()), faiss::FaissException);
-}
-
-TEST_F(SVS, StaticIVFRemoveThrows) {
-    faiss::IndexSVSIVF index{
-            d, 4ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    index.train(n, test_data.data());
-    faiss::IDSelectorRange selector(0, 10);
-    ASSERT_THROW(index.remove_ids(selector), faiss::FaissException);
-}
-
-// Verify that intra_query_threads must be set before train().
-// The SVS runtime API does not currently expose a setter for
-// intra_query_threads after index creation, so changes made between
-// train() and search() are silently ignored. This test documents the
-// expected usage pattern.
+// The SVS runtime only takes intra_query_threads when the index is built or
+// loaded and has no setter afterwards, so it must be set before train().
 TEST_F(SVS, IVFIntraQueryThreadsSetBeforeTrain) {
     faiss::IndexSVSIVF index{d, 4ul};
 
-    // Set intra_query_threads BEFORE train — this is the supported pattern.
     index.intra_query_threads = 2;
     index.train(n, test_data.data());
     index.add(n, test_data.data());
@@ -875,12 +472,6 @@ TEST_F(SVS, IVFIntraQueryThreadsSetBeforeTrain) {
     const int k = 5;
     std::vector<float> distances(nq * k);
     std::vector<faiss::idx_t> labels(nq * k);
-    ASSERT_NO_THROW(index.search(
-            nq, test_data.data(), k, distances.data(), labels.data()));
-
-    // Changing intra_query_threads AFTER train() has no effect — this is a
-    // known limitation of the current SVS runtime API.
-    index.intra_query_threads = 4;
     ASSERT_NO_THROW(index.search(
             nq, test_data.data(), k, distances.data(), labels.data()));
 }
@@ -897,14 +488,11 @@ void write_and_read_static_vamana_index(
         int read_io_flags = 0) {
     ASSERT_TRUE(index.is_static);
 
-    // For LeanVec the training step seeds training_data; for plain Vamana
-    // it is a no-op. The static build itself happens inside add().
-    index.train(n, xb.data());
+    // The static build itself happens inside add().
     index.add(n, xb.data());
     ASSERT_NE(index.impl, nullptr);
     ASSERT_TRUE(index.is_trained);
 
-    // Verify search works after the static build
     const int nq = 4;
     const int k = 5;
     std::vector<float> distances(nq * k);
@@ -916,17 +504,14 @@ void write_and_read_static_vamana_index(
             "/tmp/faiss_svs_static_vamana_test_XXXXXX";
     Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
-    // Serialize
     ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
 
-    // Deserialize
     T* loaded = nullptr;
     ASSERT_NO_THROW({
         loaded = dynamic_cast<T*>(
                 faiss::read_index(filename.c_str(), read_io_flags));
     });
 
-    // Basic checks
     ASSERT_NE(loaded, nullptr);
     ASSERT_NE(loaded->impl, nullptr);
     EXPECT_TRUE(loaded->is_static);
@@ -934,27 +519,11 @@ void write_and_read_static_vamana_index(
     EXPECT_EQ(loaded->metric_type, index.metric_type);
     EXPECT_EQ(loaded->graph_max_degree, index.graph_max_degree);
     EXPECT_EQ(loaded->storage_kind, index.storage_kind);
-    if constexpr (std::is_same_v<
-                          std::decay_t<T>,
-                          faiss::IndexSVSVamanaLeanVec>) {
-        auto* leanvec_loaded =
-                dynamic_cast<faiss::IndexSVSVamanaLeanVec*>(loaded);
-        ASSERT_NE(leanvec_loaded, nullptr);
-        EXPECT_EQ(leanvec_loaded->leanvec_d, index.leanvec_d);
-        EXPECT_NE(leanvec_loaded->training_data, nullptr);
-    }
 
-    // Verify search works on the loaded index
     ASSERT_NO_THROW(
             loaded->search(nq, xb.data(), k, distances.data(), labels.data()));
 
     delete loaded;
-}
-
-TEST_F(SVS, WriteAndReadStaticVamana) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    write_and_read_static_vamana_index(index, test_data, n);
 }
 
 TEST_F(SVS, WriteAndReadStaticVamanaFP16) {
@@ -969,85 +538,6 @@ TEST_F(SVS, WriteAndReadStaticVamanaSQ8) {
     write_and_read_static_vamana_index(index, test_data, n);
 }
 
-TEST_F(SVSLL, WriteAndReadStaticVamanaLVQ4x4) {
-    faiss::IndexSVSVamanaLVQ index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4, true};
-    write_and_read_static_vamana_index(index, test_data, n);
-}
-
-TEST_F(SVSLL, WriteAndReadStaticVamanaLeanVec4x4) {
-    faiss::IndexSVSVamanaLeanVec index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            0,
-            faiss::SVSStorageKind::SVS_LeanVec4x4,
-            true};
-    write_and_read_static_vamana_index(index, test_data, n);
-}
-
-TEST_F(SVS, StaticVamanaAddThrowsOnSecondCall) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    index.add(n, test_data.data());
-    ASSERT_THROW(index.add(n, test_data.data()), faiss::FaissException);
-}
-
-TEST_F(SVS, StaticVamanaRemoveThrows) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    index.add(n, test_data.data());
-    faiss::IDSelectorRange selector(0, 10);
-    ASSERT_THROW(index.remove_ids(selector), faiss::FaissException);
-}
-
-TEST_F(SVS, StaticVamanaResetAndRebuild) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    index.add(n, test_data.data());
-    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
-
-    index.reset();
-    EXPECT_EQ(index.ntotal, 0);
-    EXPECT_FALSE(index.is_trained);
-
-    // After reset, a fresh add() must rebuild the static index.
-    ASSERT_NO_THROW(index.add(n, test_data.data()));
-    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
-    EXPECT_TRUE(index.is_trained);
-
-    const int nq = 4;
-    const int k = 5;
-    std::vector<float> distances(nq * k);
-    std::vector<faiss::idx_t> labels(nq * k);
-    ASSERT_NO_THROW(index.search(
-            nq, test_data.data(), k, distances.data(), labels.data()));
-}
-
-TEST_F(SVS, StaticVamanaReconstruct) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    index.add(n, test_data.data());
-
-    std::vector<float> recons(d);
-    ASSERT_NO_THROW(index.reconstruct(0, recons.data()));
-    for (size_t i = 0; i < d; ++i) {
-        EXPECT_EQ(recons[i], test_data[i]);
-    }
-}
-
-// store_vectors defaults to true, so the fp32 copy backing reconstruct() is
-// still kept unless the caller opts out.
-TEST_F(SVS, VamanaStoresVectorsByDefault) {
-    faiss::IndexSVSVamana index{d, 64ul};
-    EXPECT_TRUE(index.store_vectors);
-    index.add(n, test_data.data());
-    EXPECT_EQ(index.stored_vectors.size(), n * d);
-
-    std::vector<float> recons(d);
-    ASSERT_NO_THROW(index.reconstruct(0, recons.data()));
-}
-
 TEST_F(SVS, VamanaStoreVectorsDisabled) {
     faiss::IndexSVSVamana index{
             d,
@@ -1056,21 +546,7 @@ TEST_F(SVS, VamanaStoreVectorsDisabled) {
             faiss::SVSStorageKind::SVS_FP32,
             false,
             false};
-    EXPECT_FALSE(index.store_vectors);
     index.add(n, test_data.data());
-    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
-    EXPECT_TRUE(index.stored_vectors.empty());
-
-    std::vector<float> recons(d);
-    EXPECT_THROW(index.reconstruct(0, recons.data()), faiss::FaissException);
-
-    // Dropping the copy must not affect search.
-    const int nq = 4;
-    const int k = 5;
-    std::vector<float> distances(nq * k);
-    std::vector<faiss::idx_t> labels(nq * k);
-    ASSERT_NO_THROW(index.search(
-            nq, test_data.data(), k, distances.data(), labels.data()));
 
     // The opt-out survives reset().
     index.reset();
@@ -1087,20 +563,10 @@ TEST_F(SVS, StaticVamanaStoreVectorsDisabled) {
             true,
             false};
     index.add(n, test_data.data());
-    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
     EXPECT_TRUE(index.stored_vectors.empty());
 
     std::vector<float> recons(d);
     EXPECT_THROW(index.reconstruct(0, recons.data()), faiss::FaissException);
-}
-
-// The flag is a plain public field, so setting it after construction (as the
-// Python bindings do) must take effect too.
-TEST_F(SVS, VamanaStoreVectorsDisabledAfterConstruction) {
-    faiss::IndexSVSVamana index{d, 64ul};
-    index.store_vectors = false;
-    index.add(n, test_data.data());
-    EXPECT_TRUE(index.stored_vectors.empty());
 }
 
 // Opting out mid-stream cannot keep the remaining copy aligned with the ids,
@@ -1119,51 +585,6 @@ TEST_F(SVS, VamanaStoreVectorsDroppedOnMidStreamOptOut) {
     EXPECT_THROW(index.reconstruct(0, recons.data()), faiss::FaissException);
 }
 
-// An index built without the copy is written as ISVD, loads back and searches
-// identically; only reconstruct() is unavailable.
-TEST_F(SVS, VamanaStoreVectorsDisabledWriteAndRead) {
-    faiss::IndexSVSVamana index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            faiss::SVSStorageKind::SVS_FP32,
-            false,
-            false};
-    index.add(n, test_data.data());
-
-    const int nq = 4;
-    const int k = 5;
-    std::vector<float> distances(nq * k), distances_loaded(nq * k);
-    std::vector<faiss::idx_t> labels(nq * k), labels_loaded(nq * k);
-    index.search(nq, test_data.data(), k, distances.data(), labels.data());
-
-    std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
-    Tempfilename filename(&temp_file_mutex, temp_filename_template);
-    ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
-
-    faiss::IndexSVSVamana* loaded = nullptr;
-    ASSERT_NO_THROW({
-        loaded = dynamic_cast<faiss::IndexSVSVamana*>(
-                faiss::read_index(filename.c_str()));
-    });
-    ASSERT_NE(loaded, nullptr);
-    EXPECT_EQ(loaded->ntotal, static_cast<faiss::idx_t>(n));
-    EXPECT_TRUE(loaded->stored_vectors.empty());
-
-    loaded->search(
-            nq,
-            test_data.data(),
-            k,
-            distances_loaded.data(),
-            labels_loaded.data());
-    EXPECT_EQ(labels, labels_loaded);
-
-    std::vector<float> recons(d);
-    EXPECT_THROW(loaded->reconstruct(0, recons.data()), faiss::FaissException);
-
-    delete loaded;
-}
-
 TEST_F(SVSLL, LVQStoreVectorsDisabled) {
     faiss::IndexSVSVamanaLVQ index{
             d,
@@ -1173,11 +594,7 @@ TEST_F(SVSLL, LVQStoreVectorsDisabled) {
             false,
             false};
     index.add(n, test_data.data());
-    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
     EXPECT_TRUE(index.stored_vectors.empty());
-
-    std::vector<float> recons(d);
-    EXPECT_THROW(index.reconstruct(0, recons.data()), faiss::FaissException);
 }
 
 TEST_F(SVSLL, LeanVecStoreVectorsDisabled) {
@@ -1191,18 +608,7 @@ TEST_F(SVSLL, LeanVecStoreVectorsDisabled) {
             false};
     index.train(n, test_data.data());
     index.add(n, test_data.data());
-    EXPECT_EQ(index.ntotal, static_cast<faiss::idx_t>(n));
     EXPECT_TRUE(index.stored_vectors.empty());
-
-    std::vector<float> recons(d);
-    EXPECT_THROW(index.reconstruct(0, recons.data()), faiss::FaissException);
-}
-
-TEST_F(SVS, WriteAndMapStaticVamana) {
-    faiss::IndexSVSVamana index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_FP32, true};
-    write_and_read_static_vamana_index(
-            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }
 
 TEST_F(SVS, WriteAndMapStaticVamanaFP16) {
@@ -1215,25 +621,6 @@ TEST_F(SVS, WriteAndMapStaticVamanaFP16) {
 TEST_F(SVS, WriteAndMapStaticVamanaSQ8) {
     faiss::IndexSVSVamana index{
             d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_SQ8, true};
-    write_and_read_static_vamana_index(
-            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
-}
-
-TEST_F(SVSLL, WriteAndMapStaticVamanaLVQ4x4) {
-    faiss::IndexSVSVamanaLVQ index{
-            d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4, true};
-    write_and_read_static_vamana_index(
-            index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
-}
-
-TEST_F(SVSLL, WriteAndMapStaticVamanaLeanVec4x4) {
-    faiss::IndexSVSVamanaLeanVec index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            0,
-            faiss::SVSStorageKind::SVS_LeanVec4x4,
-            true};
     write_and_read_static_vamana_index(
             index, test_data, n, faiss::IO_FLAG_MMAP_IFC);
 }

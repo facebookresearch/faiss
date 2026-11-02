@@ -22,6 +22,16 @@ shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
+# setup.py runs either beside staged build inputs or in the CMake Python
+# build directory, whose sibling gpu_metal directory contains the shaders.
+for metallib in (
+    "MetalDistance.metallib",
+    "../gpu_metal/MetalDistance.metallib",
+):
+    if os.path.exists(metallib):
+        shutil.copyfile(metallib, "faiss/MetalDistance.metallib")
+        break
+
 if os.path.exists("__init__.pyi"):
     shutil.copyfile("__init__.pyi", "faiss/__init__.pyi")
 if os.path.exists("py.typed"):
@@ -134,7 +144,7 @@ setup(
     install_requires=["numpy", "packaging"],
     packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
     package_data={
-        "faiss": ["*.so", "*.pyd", "*.a", "*.pyi", "py.typed"],
+        "faiss": ["*.so", "*.pyd", "*.a", "*.metallib", "*.pyi", "py.typed"],
     },
     zip_safe=False,
 )

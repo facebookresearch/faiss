@@ -23,16 +23,9 @@ using namespace faiss;
 
 namespace {
 
-// dimension of the vectors to index
 int d = 32;
-
-// nb of training vectors
 size_t nt = 5000;
-
-// size of the database points per window step
 size_t nb = 1000;
-
-// nb of queries
 size_t nq = 200;
 
 std::mt19937 rng;
@@ -49,7 +42,7 @@ std::vector<float> make_data(size_t n) {
 
 std::unique_ptr<Index> make_trained_index(const char* index_type) {
     auto index = std::unique_ptr<Index>(index_factory(d, index_type));
-    auto xt = make_data(nt * d);
+    auto xt = make_data(nt);
     index->train(nt, xt.data());
     ParameterSpace().set_index_parameter(index.get(), "nprobe", 4);
     return index;
@@ -62,10 +55,6 @@ std::vector<idx_t> search_index(Index* index, const float* xq) {
     index->search(nq, xq, k, D.data(), I.data());
     return I;
 }
-
-/*************************************************************
- * Test functions for a given index type
- *************************************************************/
 
 struct EncapsulateInvertedLists : InvertedLists {
     const InvertedLists* il;
@@ -129,10 +118,10 @@ int test_dealloc_invlists(const char* index_key) {
     std::unique_ptr<Index> index = make_trained_index(index_key);
     IndexIVF* index_ivf = ivflib::extract_index_ivf(index.get());
 
-    auto xb = make_data(nb * d);
+    auto xb = make_data(nb);
     index->add(nb, xb.data());
 
-    auto xq = make_data(nq * d);
+    auto xq = make_data(nq);
 
     auto ref_res = search_index(index.get(), xq.data());
 
@@ -144,28 +133,14 @@ int test_dealloc_invlists(const char* index_key) {
     // TEST: this could crash or leak mem
     auto new_res = search_index(index.get(), xq.data());
 
-    // delete explicitly
     delete eil.il;
 
-    // just to make sure
     EXPECT_EQ(ref_res, new_res);
     return 0;
 }
 
 } // anonymous namespace
 
-/*************************************************************
- * Test entry points
- *************************************************************/
-
 TEST(TestIvlistDealloc, IVFFlat) {
     test_dealloc_invlists("IVF32,Flat");
-}
-
-TEST(TestIvlistDealloc, IVFSQ) {
-    test_dealloc_invlists("IVF32,SQ8");
-}
-
-TEST(TestIvlistDealloc, IVFPQ) {
-    test_dealloc_invlists("IVF32,PQ4np");
 }

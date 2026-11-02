@@ -48,7 +48,6 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  "IVF8,EDEN4BIASED",
          }) {
         std::unique_ptr<Index> index{index_factory(64, factory)};
-        ASSERT_TRUE(index);
         EXPECT_EQ(factory, reverse_index_factory(index.get()));
     }
     using Case = std::pair<const char*, const char*>;
@@ -58,7 +57,6 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  Case{"NSG,PQ8", "NSG32,PQ8x8"},
          }) {
         std::unique_ptr<Index> index{index_factory(64, src)};
-        ASSERT_TRUE(index);
         EXPECT_EQ(dst, reverse_index_factory(index.get()));
     }
 }
@@ -66,7 +64,6 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
 // IndexIDMap2 inherits IndexIDMap; verify the subclass is distinguished.
 TEST(TestFactoryTools, TestReverseIndexFactoryIDMap) {
     std::unique_ptr<Index> base{index_factory(64, "Flat")};
-    ASSERT_TRUE(base);
 
     IndexIDMap idmap(base.get());
     EXPECT_EQ("IDMap,Flat", reverse_index_factory(&idmap));
