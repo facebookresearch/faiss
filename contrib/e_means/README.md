@@ -519,9 +519,15 @@ that shard. `begin` takes only the local FP32 initial centroids. All ranks
 must use identical parameters and the same lifecycle/collective order, with
 equal contributions and global rows, batches and centroids divisible by the
 group size. Supported CUDA input/backend combinations require `quantizer=None`.
-Rows are broadcast in bounded chunks; statistics and EMA remain with owners.
-Owner compaction and revival reads can synchronize with the host; broadcasts
-and reductions are serialized.
+Statistics and EMA remain with owners. Each training contribution is gathered into
+one rank-ordered global CUDA matrix, and winners are reduced once over the matrix.
+All-gather adds a global-batch matrix on every GPU. Native
+assignment retains bounded compute chunks; IVF plans the full gathered
+batch within its search workspace budget. Statistics still accumulate in
+source/chunk order, and label outputs contain only the caller's own rows.
+Equal contribution sizes and the existing ordered collective contract apply.
+Owner compaction and revival reads can synchronize with the host. Centroid
+initialization and revival use their existing broadcasts; batch rows use all-gather.
 Raw INT8/UINT8 winners compare exact integer distances, then break ties by
 lowest global centroid ID. Caller labels, when enabled, describe only that
 caller's last-training-pass rows in original supplied order.
@@ -538,6 +544,16 @@ Budget for coexistence with training tables, per-chunk conversions, counts,
 divisor and final mean/output temporaries. This does not guarantee stable
 common-offset assignment or arbitrary-size reductions. See the small
 `demos/demo_e_means_sharded.py` resident/generated-chunk example.
+
+`final_closing_mean(batches, assignments=codes, chunk_rows=65536)` instead
+recomputes means from saved final-epoch global labels without assignment
+search. Supply CPU int32/int64 codes in source-row order and iterate batches
+in that same order. Rows are exchanged only with their saved centroid owner;
+final-pass sum storage is reused at training precision and observed counts
+must equal final-epoch counts. Empty clusters keep their current positions.
+Codes of `-1` skip rows omitted from a partial final epoch. This mode requires
+`spherical=False`; its additional CPU code storage and routing buffers are
+the caller's responsibility. The SSD demo uses this fixed-code mode by default.
 
 ## Explicit optional centered Cast
 
