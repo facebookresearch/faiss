@@ -162,6 +162,7 @@ set(FAISS_SRC
   index_factory.cpp
   impl/AdSampling.cpp
   impl/AuxIndexStructures.cpp
+  impl/DistanceComputer.cpp
   impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
   impl/ClusteringHelpers.cpp

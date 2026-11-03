@@ -223,3 +223,48 @@ class TestPQTables(unittest.TestCase):
         # ksub = 4 is not a multiple of 8, so the dsub2 kernels must be
         # skipped in favour of the generic path
         self.do_test(16, 2, nbit=2)
+
+
+@for_all_simd_levels
+class TestPQDistancesToCodes(unittest.TestCase):
+    def check(self, index, xt, n=203):
+        codes = index.pq.compute_codes(xt[:n])
+        scanner = index.get_InvertedListScanner(False, None, None)
+        scanner.set_query(faiss.swig_ptr(xt[0]))
+        scanner.set_list(0, 0)
+        distances = np.empty(n, dtype="float32")
+        scanner.distances_to_codes(
+            n, faiss.swig_ptr(codes), faiss.swig_ptr(distances)
+        )
+        np.testing.assert_allclose(
+            distances,
+            [scanner.distance_to_code(faiss.swig_ptr(c)) for c in codes],
+            rtol=1e-5,
+        )
+
+    def test_8bit(self):
+        # With scalar_gather clear, M = 30 takes the block kernel (M % 4 != 0
+        # reaches its tail) and M = 128 the per-code fallback. n is not a
+        # multiple of the block size; inner product makes dis0 nonzero.
+        rs = np.random.RandomState(456)
+        original = faiss.cvar.SIMDConfig_scalar_gather
+        faiss.cvar.SIMDConfig_scalar_gather = False
+        try:
+            for M in [30, 128]:
+                with self.subTest(M=M):
+                    xt = rs.rand(10000, 4 * M).astype("float32")
+                    index = faiss.index_factory(
+                        4 * M, f"IVF1,PQ{M}np", faiss.METRIC_INNER_PRODUCT
+                    )
+                    index.train(xt)
+                    self.check(index, xt)
+        finally:
+            faiss.cvar.SIMDConfig_scalar_gather = original
+
+    def test_fastscan(self):
+        # the default distances_to_codes steps by code_size
+        rs = np.random.RandomState(456)
+        xt = rs.rand(2000, 32).astype("float32")
+        index = faiss.index_factory(32, "IVF1,PQ16x4fs")
+        index.train(xt)
+        self.check(index, xt, n=50)

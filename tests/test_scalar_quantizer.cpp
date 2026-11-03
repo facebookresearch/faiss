@@ -292,6 +292,7 @@ void check_sq_distance_path_parity(
             simd_dis[3]);
     for (int k = 0; k < 4; k++) {
         expect_distance_near(scalar_dis[k], simd_dis[k]);
+        EXPECT_EQ(simd_dis[k], simd_dc->query_to_code(query_codes[k]));
     }
 
     std::vector<uint8_t> bundle(4 * sq.code_size, 0);
@@ -343,6 +344,55 @@ void check_sq_distance_path_parity(
         expect_distance_near(
                 scalar_scanner->distance_to_code(code),
                 simd_scanner->distance_to_code(code));
+    }
+}
+
+// The IVF scanner scores most codes of an inverted list four at a time and
+// the rest one at a time, so the batch must return exactly the single-code
+// distances. Both are also checked against the inner product with the
+// decoded vectors, which bounds the rounding of the precomputed QT_8bit form
+// much tighter than the parity check against the scalar path.
+void check_sq8_ip_batch_matches_single(faiss::SIMDLevel level, size_t d) {
+    ScopedSIMDLevel scoped(level);
+    const size_t n = 64;
+    std::vector<float> xb = make_normalized_vectors(n, d);
+    std::vector<float> xq(d);
+    faiss::float_randn(xq.data(), d, 4321);
+    faiss::fvec_renorm_L2(d, 1, xq.data());
+
+    faiss::ScalarQuantizer sq(d, faiss::ScalarQuantizer::QT_8bit);
+    sq.train(n, xb.data());
+    std::vector<uint8_t> codes(sq.code_size * n);
+    sq.compute_codes(xb.data(), codes.data(), n);
+    std::vector<float> decoded(n * d);
+    sq.decode(codes.data(), decoded.data(), n);
+
+    std::unique_ptr<faiss::ScalarQuantizer::SQDistanceComputer> dc(
+            sq.get_distance_computer(faiss::METRIC_INNER_PRODUCT));
+    ASSERT_NE(dc, nullptr);
+    dc->set_query(xq.data());
+
+    const size_t cs = sq.code_size;
+    for (size_t i = 0; i < n; i += 4) {
+        const uint8_t* c = codes.data() + i * cs;
+        float dis[4];
+        dc->query_to_codes_batch_4(
+                c,
+                c + cs,
+                c + 2 * cs,
+                c + 3 * cs,
+                dis[0],
+                dis[1],
+                dis[2],
+                dis[3]);
+        for (size_t k = 0; k < 4; k++) {
+            EXPECT_EQ(dis[k], dc->query_to_code(c + k * cs));
+            double ref = 0;
+            for (size_t j = 0; j < d; j++) {
+                ref += double(xq[j]) * decoded[(i + k) * d + j];
+            }
+            EXPECT_NEAR(dis[k], ref, 1e-5);
+        }
     }
 }
 
@@ -690,6 +740,39 @@ TEST(ScalarQuantizer, LloydMaxSimdBoundaryEncodeParity) {
     }
 }
 
+// d = 24 and 72 are multiples of 8 but not 16: AVX512 falls back to AVX2.
+// From d = 384 the loops have four accumulators per code. d = 400 adds one
+// remainder block at AVX512 and two at AVX2. d = 456 falls back to AVX2 and
+// adds one there.
+TEST(ScalarQuantizer, SQ8InnerProductSimdDistancePathParity) {
+    struct RestoreFlag {
+        bool original = faiss::SIMDConfig::sq_avx512_4_accumulators;
+        ~RestoreFlag() {
+            faiss::SIMDConfig::sq_avx512_4_accumulators = original;
+        }
+    } restore_flag;
+    faiss::SIMDConfig::sq_avx512_4_accumulators = true;
+    const std::vector<faiss::SIMDLevel> levels =
+            available_sq_parity_simd_levels();
+    if (levels.empty()) {
+        GTEST_SKIP() << "No SIMD level available for SQ8 parity tests";
+    }
+
+    for (faiss::SIMDLevel level : levels) {
+        for (size_t d : {8, 16, 24, 64, 72, 128, 384, 400, 456}) {
+            SCOPED_TRACE(
+                    testing::Message()
+                    << faiss::to_string(level) << " d=" << d);
+            check_sq_distance_path_parity(
+                    level,
+                    faiss::ScalarQuantizer::QT_8bit,
+                    faiss::METRIC_INNER_PRODUCT,
+                    d);
+            check_sq8_ip_batch_matches_single(level, d);
+        }
+    }
+}
+
 // Dimensions straddle VLMAX = VLEN / 4 (e32m8) for VLEN 128 to 2048.
 // QT_fp16 is in RVVFP16DistancePathParity.
 TEST(ScalarQuantizer, RVVDistancePathParity) {
@@ -793,6 +876,41 @@ TEST(ScalarQuantizer, RVVFP16DistancePathParity) {
                     faiss::ScalarQuantizer::QT_fp16,
                     metric,
                     d);
+        }
+    }
+}
+
+// The 16-bit float quantizers at AVX2 and AVX512 select one accumulator or
+// four per code from d and SIMDConfig::sq_avx512_4_accumulators. d = 111 has a
+// 15-lane masked tail, d = 120 runs the AVX2 one-accumulator loop, and d = 568
+// runs the 64-wide loop, three remainder blocks and an 8-lane tail.
+TEST(ScalarQuantizer, Float16AccumulatorLoopParity) {
+    struct RestoreFlag {
+        bool original = faiss::SIMDConfig::sq_avx512_4_accumulators;
+        ~RestoreFlag() {
+            faiss::SIMDConfig::sq_avx512_4_accumulators = original;
+        }
+    } restore_flag;
+    faiss::SIMDConfig::sq_avx512_4_accumulators = true;
+    for (faiss::SIMDLevel level :
+         {faiss::SIMDLevel::AVX512, faiss::SIMDLevel::AVX2}) {
+        if (!faiss::SIMDConfig::is_simd_level_available(level)) {
+            continue;
+        }
+        for (auto qtype :
+             {faiss::ScalarQuantizer::QT_fp16,
+              faiss::ScalarQuantizer::QT_bf16}) {
+            for (auto metric :
+                 {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+                for (size_t d : {111, 120, 568}) {
+                    SCOPED_TRACE(
+                            testing::Message()
+                            << "level=" << static_cast<int>(level)
+                            << " qtype=" << static_cast<int>(qtype)
+                            << " metric=" << metric << " d=" << d);
+                    check_sq_distance_path_parity(level, qtype, metric, d);
+                }
+            }
         }
     }
 }
