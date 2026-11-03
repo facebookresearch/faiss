@@ -16,6 +16,7 @@ from faiss.contrib.e_means.e_means import (
     _epoch_seed,
     _resolve_recipe,
     _scheduled_alpha,
+    _step_law,
 )
 from e_means_test_utils import EmeansReferenceContracts
 
@@ -45,13 +46,26 @@ class TestEmeansRecipe(unittest.TestCase):
             ),
         ]
         for case in cases:
-            n, k, niter, operating_point, expected_batch, expected_alpha = case
-            with self.subTest(n=n, k=k, operating_point=operating_point):
+            n, k, niter, batch_law, expected_batch, expected_alpha = case
+            with self.subTest(n=n, k=k, batch_law=batch_law):
                 batch, alpha = _resolve_recipe(
-                    n, k, niter, operating_point, None, None
+                    n, k, niter, batch_law, None, None
                 )
                 self.assertEqual(batch, expected_batch)
                 self.assertAlmostEqual(alpha, expected_alpha)
+
+    def test_batch_size_alone_takes_the_step_law(self):
+        batch, alpha = _resolve_recipe(1_000_000, 16_384, 3, "throughput",
+                                       8_192, None)
+        self.assertEqual(batch, 8_192)
+        self.assertEqual(alpha, _step_law(1_000_000, 16_384, 3, 8_192))
+        x = np.arange(64, dtype="float32").reshape(32, 2)
+        km = Emeans(2, 4, niter=1, batch_size=8)
+        km.train(x)
+        self.assertEqual(km.recipe["name"], "manual_batch")
+        self.assertIsNone(km.recipe["batch_law"])
+        self.assertEqual(km.recipe["alpha0_source"], "step_law")
+        self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
     def test_derived_recipe_metadata(self):
         x = np.arange(124, dtype="float32").reshape(31, 4)
@@ -143,7 +157,8 @@ assert 'torch' not in sys.modules
         self.assertIs(centroids, km.centroids)
         self.assertIs(captured_labels, km.assignments)
         self.assertEqual(km.recipe["name"], "manual")
-        self.assertIsNone(km.recipe["operating_point"])
+        self.assertIsNone(km.recipe["batch_law"])
+        self.assertEqual(km.recipe["alpha0_source"], "given")
         distance, labels = km.assign(x)
         np.testing.assert_array_equal(labels, [0, 0, 1, 1])
         np.testing.assert_array_equal(distance, [1.0, 1.0, 1.0, 1.0])
