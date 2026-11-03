@@ -135,3 +135,7 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
 
     def _local_assignment(self, rows, prepared):
         return prepared.search_1nn(rows)
+
+    def _local_assignment_batch(self, rows, prepared):
+        # IVF bounds its own search workspace; plan all queries together.
+        return self._local_assignment(rows, prepared)

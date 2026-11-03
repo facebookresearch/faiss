@@ -1,0 +1,83 @@
+{
+  "n": 1000000000,
+  "k": 2097152,
+  "workers": 4,
+  "synthetic_codes": true,
+  "read_threads": 4,
+  "direct": true,
+  "elapsed_s": 76.26880046498263,
+  "ranks": [
+    {
+      "rank": 0,
+      "elapsed_s": 76.26880046498263,
+      "kernel_bytes": 257012113408,
+      "closing": {
+        "rows": 1000000000,
+        "assignment_mse": 89.2249239739311,
+        "saved_assignments": true,
+        "chunk_rows": 65536,
+        "time_s": 76.2686749100103
+      },
+      "loader": {
+        "bytes_read": 257000000000,
+        "wait_s": 36.31758902076399,
+        "windows": 477
+      },
+      "peak_gpu_bytes": 13711846912
+    },
+    {
+      "rank": 1,
+      "elapsed_s": 76.26866162300576,
+      "kernel_bytes": 257017577472,
+      "closing": {
+        "rows": 1000000000,
+        "assignment_mse": 89.2249239739311,
+        "saved_assignments": true,
+        "chunk_rows": 65536,
+        "time_s": 76.26853779098019
+      },
+      "loader": {
+        "bytes_read": 257000000000,
+        "wait_s": 27.66029593796702,
+        "windows": 477
+      },
+      "peak_gpu_bytes": 13712113664
+    },
+    {
+      "rank": 2,
+      "elapsed_s": 76.26869090698892,
+      "kernel_bytes": 257013669888,
+      "closing": {
+        "rows": 1000000000,
+        "assignment_mse": 89.2249239739311,
+        "saved_assignments": true,
+        "chunk_rows": 65536,
+        "time_s": 76.26857095002197
+      },
+      "loader": {
+        "bytes_read": 257000000000,
+        "wait_s": 22.367288211535197,
+        "windows": 477
+      },
+      "peak_gpu_bytes": 13712679936
+    },
+    {
+      "rank": 3,
+      "elapsed_s": 76.26871308096452,
+      "kernel_bytes": 257017577472,
+      "closing": {
+        "rows": 1000000000,
+        "assignment_mse": 89.2249239739311,
+        "saved_assignments": true,
+        "chunk_rows": 65536,
+        "time_s": 76.26858854200691
+      },
+      "loader": {
+        "bytes_read": 257000000000,
+        "wait_s": 16.688162767502945,
+        "windows": 477
+      },
+      "peak_gpu_bytes": 13711657984
+    }
+  ]
+}
