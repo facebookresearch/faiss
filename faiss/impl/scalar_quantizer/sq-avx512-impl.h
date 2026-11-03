@@ -11,6 +11,7 @@
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/impl/scalar_quantizer/sq8_coefficients.h>
 #include <faiss/impl/simdlib/simdlib_avx512.h>
 #include <cstring>
 
@@ -796,6 +797,133 @@ struct DCTemplate<Quantizer, Similarity, THE_LEVEL_TO_DISPATCH, four_acc>
         dis1 = sim1.result_16();
         dis2 = sim2.result_16();
         dis3 = sim3.result_16();
+    }
+};
+
+// QT_8bit + IP: the precomputed form of the AVX2 specialization, 16 dims per
+// convert and FMA.
+template <bool four_acc>
+struct DCTemplate<
+        QuantizerTemplate<
+                Codec8bit<THE_LEVEL_TO_DISPATCH>,
+                QuantizerTemplateScaling::NON_UNIFORM,
+                THE_LEVEL_TO_DISPATCH>,
+        SimilarityIP<THE_LEVEL_TO_DISPATCH>,
+        THE_LEVEL_TO_DISPATCH,
+        four_acc> : SQDistanceComputer {
+    using Quantizer = QuantizerTemplate<
+            Codec8bit<THE_LEVEL_TO_DISPATCH>,
+            QuantizerTemplateScaling::NON_UNIFORM,
+            THE_LEVEL_TO_DISPATCH>;
+    using Sim = SimilarityIP<THE_LEVEL_TO_DISPATCH>;
+
+    Quantizer quant;
+    std::vector<float> a, rmin, qa;
+    float bias = 0;
+
+    DCTemplate(size_t d, const std::vector<float>& trained)
+            : quant(d, trained), a(d), rmin(d), qa(d) {
+        sq8::make_coefficients(trained.data(), d, a.data(), rmin.data());
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+        bias = 0;
+        for (size_t i = 0; i < quant.d; i++) {
+            qa[i] = x[i] * a[i];
+            bias += x[i] * rmin[i];
+        }
+    }
+
+    static FAISS_ALWAYS_INLINE __m512 codes_16(const uint8_t* code) {
+        return _mm512_cvtepi32_ps(
+                _mm512_cvtepu8_epi32(_mm_loadu_si128((const __m128i*)code)));
+    }
+
+    /// sum_i qa[i] * code[i] of N codes, in 4 lanes each. The N codes share
+    /// each qa load. With four_acc, dims i + 16 * j of each 64 go to
+    /// accumulator j of the code, so a code sums the same way for any N.
+    template <size_t N>
+    FAISS_ALWAYS_INLINE void accumulate(
+            const uint8_t* const* codes,
+            __m128* sums) const {
+        constexpr size_t n_acc = four_acc ? 4 : 1;
+        __m512 acc[N][n_acc];
+        for (size_t n = 0; n < N; n++) {
+            for (size_t j = 0; j < n_acc; j++) {
+                acc[n][j] = _mm512_setzero_ps();
+            }
+        }
+        const size_t d = quant.d;
+        size_t i = 0;
+        if constexpr (four_acc) {
+            for (; i + 64 <= d; i += 64) {
+                for (size_t j = 0; j < 4; j++) {
+                    const __m512 qa16 = _mm512_loadu_ps(qa.data() + i + 16 * j);
+                    for (size_t n = 0; n < N; n++) {
+                        acc[n][j] = _mm512_fmadd_ps(
+                                qa16,
+                                codes_16(codes[n] + i + 16 * j),
+                                acc[n][j]);
+                    }
+                }
+            }
+        }
+        for (; i < d; i += 16) {
+            const __m512 qa16 = _mm512_loadu_ps(qa.data() + i);
+            for (size_t n = 0; n < N; n++) {
+                acc[n][0] = _mm512_fmadd_ps(
+                        qa16, codes_16(codes[n] + i), acc[n][0]);
+            }
+        }
+        for (size_t n = 0; n < N; n++) {
+            __m512 sum = acc[n][0];
+            if constexpr (four_acc) {
+                sum = _mm512_add_ps(
+                        _mm512_add_ps(acc[n][0], acc[n][1]),
+                        _mm512_add_ps(acc[n][2], acc[n][3]));
+            }
+            sums[n] = reduce_16_to_4(sum);
+        }
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        __m128 sum;
+        accumulate<1>(&code, &sum);
+        return bias + reduce_4(sum);
+    }
+
+    void query_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const final {
+        const uint8_t* codes[4] = {code_0, code_1, code_2, code_3};
+        __m128 sums[4];
+        accumulate<4>(codes, sums);
+        alignas(16) float dis[4];
+        _mm_store_ps(dis, reduce_4x4(sums[0], sums[1], sums[2], sums[3]));
+        dis0 = bias + dis[0];
+        dis1 = bias + dis[1];
+        dis2 = bias + dis[2];
+        dis3 = bias + dis[3];
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        const uint8_t* c1 = codes + i * code_size;
+        const uint8_t* c2 = codes + j * code_size;
+        Sim sim(nullptr);
+        sim.begin_16();
+        for (size_t k = 0; k < quant.d; k += 16) {
+            simd16float32 x1 = quant.reconstruct_16_components(c1, k);
+            simd16float32 x2 = quant.reconstruct_16_components(c2, k);
+            sim.add_16_components_2(x1, x2);
+        }
+        return sim.result_16();
     }
 };
 
