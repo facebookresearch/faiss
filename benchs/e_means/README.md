@@ -157,11 +157,42 @@ bytes read, and exits before training. Up to 10,000 sampled rows determine the g
 
 Training uses two pinned host windows per rank. A background scan reads only
 requested 64 MiB chunks, in file order, and extraction workers restore the
-requested random row order. A dedicated CUDA stream copies the next batch
+requested random row order. Distinct-row windows use the reference's linear
+mask/inverse planner; duplicate requests fall back to a stable sort. Planning
+allocates a one-byte mask and then a four-byte inverse entry per shard row,
+plus request-sized arrays (a 1 GB inverse map at 250 million rows per rank).
+These planning arrays are additional to the host-window RAM budget.
+Aligned read buffers are reused within each scan;
+extraction reads payload views directly from them, skipping bvecs headers
+without an intermediate full-chunk copy. A buffer is reused only after its
+extraction completes. A dedicated CUDA stream copies the next batch
 while the current batch trains. Prefetch is always enabled and automatically
 chooses the number of batches per window within `--ssd-ram-gib` (default
 16 GiB per rank, for both windows). `--ssd-read-threads`,
 `--ssd-extract-threads` and `--ssd-chunk-mib` control the scan pipeline.
+
+Both sharded training demos use all-gather for batch communication.
+Each accumulation call gathers the full global batch in rank order and
+reduces winner arrays once for that batch. IVF searches the gathered batch
+together, using its existing workspace budget; native assignment still
+bounds compute chunks. Owned sums are accumulated in the existing source/chunk
+order, and captured labels describe only this rank's supplied rows.
+The gathered FP32 buffer uses `global_batch * d * 4` additional bytes per
+GPU (8 GiB at 2,097,152 rows and d=1024); startup logs show this allocation.
+Saved-assignment closing continues to route rows directly to their owners.
+
+`--batch-size` overrides the global training batch size across all workers.
+For example, `--launch 4 --batch-size 262144` uses 65,536 rows per worker
+per batch. The value must be positive, no larger than `--n`, and divisible
+by the worker count. The fitted EMA step is recomputed for the overridden
+batch size. Omitting the flag uses the default quality recipe.
+
+Progress logs show `steps=current/total` within each epoch and `batch_mse`
+at `--verbose-every` intervals, including the first and final batches.
+Every batch's MSE is also saved in each epoch's `iteration_stats["batch_mse"]`
+list in the reports and output files. These are squared L2 distances in the
+original data units, summed across centroid owners and divided by the global
+batch row count, against the centroids before that batch's update.
 
 `--ssd-prefetch-chunk-groups` defaults to 4: it shuffles scan chunks into
 four groups, then
@@ -170,18 +201,31 @@ used once per epoch. Batches within a window draw from that group's subset of
 chunks; this changes batch composition compared with a uniform permutation.
 Use `--ssd-prefetch-chunk-groups 1` for the uniform permutation.
 
-The default `--final-closing-mean` makes a fresh sequential pass, assigns
-against one frozen final centroid snapshot, and replaces occupied centroids
-by their assigned means. It scans each source row once without random-window
-rescans. `--no-final-closing-mean` uses the existing closing means from the
-last moving training pass. Reports include the moving-pass MSE, frozen closing
-assignment MSE, SSD bytes read, consumer wait time and peak GPU allocation.
+The default `--final-closing-mean` saves final-epoch labels as CPU int32 codes
+in original source-row order, then makes a sequential no-search pass. Each
+row is sent only to its saved centroid owner; closing reuses the final-pass
+sum table and checks that counts match the saved training assignments.
+Empty clusters retain their final EMA positions. The codes use four bytes
+per source row, additional to the prefetch budget (0.931 GiB per rank for
+1B rows across four ranks). This matches the reference's fixed-code closing
+algorithm and changes results compared with the previous fresh-assignment
+scan against frozen final centroids. `--no-final-closing-mean` finalizes the
+already-accumulated last-pass sums without another SSD pass.
+Reports include moving-pass MSE, fixed-code closing MSE and closing time,
+SSD bytes read, consumer wait time and peak GPU allocation.
 Saved centroid shards include the centering mean and scale; reconstruct
 original-space centroids as `centroids * scale + mean`.
 
+Sequential closing scans use one batch per pinned host window, with two
+windows per worker, regardless of the training prefetch RAM budget. This lets
+GPU processing start after reading one batch and overlaps the next batch's
+read with computation.
+Routing exchanges use chunks of at most 65,536 rows per rank to bound
+temporary GPU memory independently of the training batch size.
+
 `--self-test` verifies direct reads across file boundaries, duplicate random
 requests, permutation coverage, partial batches, asynchronous copies, the
-single sequential scan and frozen closing means.
+single sequential scan and saved-assignment closing means without search.
 
 For a smaller SSD run with `N=10M` and `k=2**17`:
 

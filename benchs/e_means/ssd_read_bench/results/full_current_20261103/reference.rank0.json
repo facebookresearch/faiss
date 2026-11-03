@@ -1,0 +1,87 @@
+{
+  "rank": 0,
+  "seed": 0,
+  "scale": 18.908304355870428,
+  "stage_seconds": 3.9016823768615723,
+  "index_seconds": 30.339365915977396,
+  "train_loop_wall": 595.9937214851379,
+  "total_seconds": 648.2751848697662,
+  "logs": {
+    "epochs": [
+      0,
+      1,
+      2
+    ],
+    "train_mse": [
+      625.2918745601502,
+      397.5895788093561,
+      393.85923468254094
+    ],
+    "val_mse": [
+      650.3718172453,
+      416.3105912327751,
+      412.873446595072
+    ],
+    "test_mse": [
+      648.8537878115897,
+      415.3359447324222,
+      411.7972237710844
+    ],
+    "train_compute_seconds": 412.94352245295886,
+    "eval_seconds": 0.40066314401337877,
+    "final_closing_scan_seconds": 182.49584881600458,
+    "final_closing_scan_rows_global": 1000000000,
+    "epoch_timing_epochs": [
+      1,
+      2
+    ],
+    "epoch_training_seconds": [
+      205.53301363898208,
+      207.41050881397678
+    ],
+    "epoch_eval_seconds": [
+      0.2066128269652836,
+      0.19405031704809517
+    ],
+    "epoch_closing_scan_seconds": [
+      0.0,
+      182.49584881600458
+    ],
+    "epoch_wall_seconds": [
+      205.73995679197833,
+      390.1006569120218
+    ],
+    "train_mse_fixed_codes": 0.3858215212583365,
+    "n_empty_at_capture": 0,
+    "capture_rows_global": 1000000000,
+    "capture_steps": 477
+  },
+  "ssd_prefetch": [
+    {
+      "windows": 6,
+      "steps": 476,
+      "n_prefetch": 93,
+      "stall_s": 25.459336553059984,
+      "scan_s": 103.73680674808566,
+      "bytes_read": 576021856256,
+      "plan_s": 10.547218978987075
+    },
+    {
+      "windows": 6,
+      "steps": 477,
+      "n_prefetch": 93,
+      "stall_s": 16.357143763976637,
+      "scan_s": 94.6587783859577,
+      "bytes_read": 576021856256,
+      "plan_s": 10.607690842880402
+    }
+  ],
+  "device_summary": {
+    "disk_read_iops": 72146.0,
+    "disk_read_gb": 5635.0,
+    "disk_read_gb_s": 9.455,
+    "disk_util_pct": 44.5,
+    "disk_devices": 8,
+    "disk_scope": "node"
+  }
+}

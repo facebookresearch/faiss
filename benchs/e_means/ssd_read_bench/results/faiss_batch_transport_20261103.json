@@ -1,0 +1,319 @@
+{
+  "n": 1000000000,
+  "k": 2097152,
+  "batch_size": 2097152,
+  "workers": 4,
+  "nlist": 4096,
+  "nprobe": 4,
+  "assignment_chunk_size": 65536,
+  "excludes_ssd": true,
+  "frozen_centroids": true,
+  "reports": [
+    {
+      "transport": "broadcast",
+      "turn": 0,
+      "max_elapsed_s": 0.9170236939680763,
+      "ranks": [
+        {
+          "rank": 0,
+          "transport": "broadcast",
+          "turn": 0,
+          "elapsed_s": 0.91654212604044,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 16672310272
+        },
+        {
+          "rank": 1,
+          "transport": "broadcast",
+          "turn": 0,
+          "elapsed_s": 0.9165814199950546,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 16671894016
+        },
+        {
+          "rank": 2,
+          "transport": "broadcast",
+          "turn": 0,
+          "elapsed_s": 0.91655114403693,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 16670171136
+        },
+        {
+          "rank": 3,
+          "transport": "broadcast",
+          "turn": 0,
+          "elapsed_s": 0.9170236939680763,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 16701551104
+        }
+      ]
+    },
+    {
+      "transport": "all_gather",
+      "turn": 0,
+      "max_elapsed_s": 0.4801914789713919,
+      "ranks": [
+        {
+          "rank": 0,
+          "transport": "all_gather",
+          "turn": 0,
+          "elapsed_s": 0.4801914789713919,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29644390400,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 1,
+          "transport": "all_gather",
+          "turn": 0,
+          "elapsed_s": 0.4800776070333086,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29646832640,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 2,
+          "transport": "all_gather",
+          "turn": 0,
+          "elapsed_s": 0.48013164300937206,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29647598592,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 3,
+          "transport": "all_gather",
+          "turn": 0,
+          "elapsed_s": 0.48016983800334856,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29648199168,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        }
+      ]
+    },
+    {
+      "transport": "broadcast",
+      "turn": 1,
+      "max_elapsed_s": 0.9085442270152271,
+      "ranks": [
+        {
+          "rank": 0,
+          "transport": "broadcast",
+          "turn": 1,
+          "elapsed_s": 0.908098327985499,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 24815770112
+        },
+        {
+          "rank": 1,
+          "transport": "broadcast",
+          "turn": 1,
+          "elapsed_s": 0.9080622050096281,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 24815798784
+        },
+        {
+          "rank": 2,
+          "transport": "broadcast",
+          "turn": 1,
+          "elapsed_s": 0.9080628830124624,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 24815798784
+        },
+        {
+          "rank": 3,
+          "transport": "broadcast",
+          "turn": 1,
+          "elapsed_s": 0.9085442270152271,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 24815798272
+        }
+      ]
+    },
+    {
+      "transport": "all_gather",
+      "turn": 1,
+      "max_elapsed_s": 0.4852938069961965,
+      "ranks": [
+        {
+          "rank": 0,
+          "transport": "all_gather",
+          "turn": 1,
+          "elapsed_s": 0.48527306597679853,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29644390400,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 1,
+          "transport": "all_gather",
+          "turn": 1,
+          "elapsed_s": 0.48517182003706694,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29646846976,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 2,
+          "transport": "all_gather",
+          "turn": 1,
+          "elapsed_s": 0.485236405977048,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29648497664,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 3,
+          "transport": "all_gather",
+          "turn": 1,
+          "elapsed_s": 0.4852938069961965,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 29648199168,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        }
+      ]
+    },
+    {
+      "transport": "broadcast",
+      "turn": 2,
+      "max_elapsed_s": 0.9176832750090398,
+      "ranks": [
+        {
+          "rank": 0,
+          "transport": "broadcast",
+          "turn": 2,
+          "elapsed_s": 0.9172333010355942,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 31761385472
+        },
+        {
+          "rank": 1,
+          "transport": "broadcast",
+          "turn": 2,
+          "elapsed_s": 0.9171987100271508,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 31760997376
+        },
+        {
+          "rank": 2,
+          "transport": "broadcast",
+          "turn": 2,
+          "elapsed_s": 0.917204721015878,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 31759274496
+        },
+        {
+          "rank": 3,
+          "transport": "broadcast",
+          "turn": 2,
+          "elapsed_s": 0.9176832750090398,
+          "gathers": 0,
+          "reductions": 65,
+          "broadcasts": 32,
+          "peak_gpu_bytes": 31790653952
+        }
+      ]
+    },
+    {
+      "transport": "all_gather",
+      "turn": 2,
+      "max_elapsed_s": 0.4843447169987485,
+      "ranks": [
+        {
+          "rank": 0,
+          "transport": "all_gather",
+          "turn": 2,
+          "elapsed_s": 0.4843447169987485,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 44727248896,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 1,
+          "transport": "all_gather",
+          "turn": 2,
+          "elapsed_s": 0.484211374016013,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 44729587200,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 2,
+          "transport": "all_gather",
+          "turn": 2,
+          "elapsed_s": 0.4842887429986149,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 44731280384,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        },
+        {
+          "rank": 3,
+          "transport": "all_gather",
+          "turn": 2,
+          "elapsed_s": 0.4843334120232612,
+          "gathers": 1,
+          "reductions": 3,
+          "broadcasts": 0,
+          "peak_gpu_bytes": 44730953216,
+          "different_local_labels": 0,
+          "different_owned_counts": 0
+        }
+      ]
+    }
+  ]
+}

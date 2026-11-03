@@ -1,0 +1,68 @@
+{
+  "implementation": "faiss",
+  "mode": "shuffled",
+  "n": 1000000000,
+  "workers": 4,
+  "window_rows": 52428800,
+  "read_threads": 1,
+  "extract_threads": 4,
+  "direct": true,
+  "linux_cache_flushed": false,
+  "read_seconds": 146.43847832700703,
+  "wall_seconds": 146.4692043850082,
+  "payload_bytes": 1024000000000,
+  "bytes_read": 2056000000000,
+  "kernel_bytes_read": 2056109842432,
+  "kernel_disk_GB_per_second": 14.040775798288257,
+  "disk_GB_per_second": 14.040025705599131,
+  "payload_GB_per_second": 6.9926976276913955,
+  "window_seconds": [
+    24.845491286017932,
+    28.92582278896589,
+    29.039975440013222,
+    30.954601839010138,
+    32.67258697299985
+  ],
+  "ranks": [
+    {
+      "rank": 0,
+      "setup_seconds": 26.76569131098222,
+      "counters": {
+        "bytes_read": 514000000000,
+        "windows": 5
+      },
+      "kernel_bytes_read": 514023546880,
+      "validated_rows": 80
+    },
+    {
+      "rank": 1,
+      "setup_seconds": 26.773549395031296,
+      "counters": {
+        "bytes_read": 514000000000,
+        "windows": 5
+      },
+      "kernel_bytes_read": 514031378432,
+      "validated_rows": 80
+    },
+    {
+      "rank": 2,
+      "setup_seconds": 26.85061973601114,
+      "counters": {
+        "bytes_read": 514000000000,
+        "windows": 5
+      },
+      "kernel_bytes_read": 514023538688,
+      "validated_rows": 80
+    },
+    {
+      "rank": 3,
+      "setup_seconds": 27.098014352028258,
+      "counters": {
+        "bytes_read": 514000000000,
+        "windows": 5
+      },
+      "kernel_bytes_read": 514031378432,
+      "validated_rows": 80
+    }
+  ]
+}
