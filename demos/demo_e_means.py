@@ -12,7 +12,7 @@ import numpy as np
 import torch
 
 from faiss.contrib import datasets
-from faiss.contrib.e_means import Emeans
+from faiss.contrib.e_means import TorchEmeans as Emeans
 
 
 def main():

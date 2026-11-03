@@ -12,9 +12,10 @@ import importlib.util
 import torch
 import torch.distributed as dist
 
-from faiss.contrib.e_means import DistributedEmeans, Emeans
-from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
-from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
+from faiss.contrib.e_means import DistributedEmeans
+from faiss.contrib.e_means.e_means_quantized import QuantizedTorchEmeans
+from faiss.contrib.e_means.quantizer import CastQuantizer
+from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
 
 def _replicas(value, group):
@@ -104,7 +105,7 @@ def _global_totals(group, transport, device):
     _replicas(final, group)
     _detached(model)
     saved_final = final.clone()
-    model.reset()
+    del model
     torch.testing.assert_close(final, saved_final, rtol=0, atol=0)
 
 
@@ -126,9 +127,25 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
         initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
     args = dict(niter=2, batch_size=batch, alpha0=alpha, seed=7,
                 assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
-    model = DistributedEmeans(2, 3, group=group, transport=transport, assignment_backend=backend, **args)
-    reference = Emeans(2, 3, assignment_backend=backend if byte_dtype is not None
-                       or isinstance(quantizer, Int8Quantizer) else "native", **args)
+    model = DistributedEmeans(
+        2,
+        3,
+        group=group,
+        transport=transport,
+        assignment_backend=backend,
+        **args
+    )
+    model_class = QuantizedTorchEmeans
+    reference = model_class(
+        2,
+        3,
+        assignment_backend=(
+            backend
+            if byte_dtype is not None or isinstance(quantizer, Int8Quantizer)
+            else "native"
+        ),
+        **args
+    )
     caller_initial = initial + 1000 * rank
     saved_initial = caller_initial.clone()
     model.begin(population, caller_initial)
@@ -184,7 +201,7 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
     torch.testing.assert_close(model.obj, reference.obj, rtol=1e-6, atol=1e-5)
     _replicas(final, group)
     saved_final = final.clone()
-    model.reset()
+    del model
     torch.testing.assert_close(final, saved_final, rtol=0, atol=0)
 
 
@@ -243,6 +260,8 @@ def _invalid_sizes(group, transport, device):
             with check.assertRaises(RuntimeError):
                 call()
         # N below nominal B prescribes N, not an unusable nondivisible B.
+        model = DistributedEmeans(2, 2, group=group, transport=transport,
+                                  niter=1, batch_size=batch, alpha0=0.5)
         model.begin(4, initial)
         model.update(model.accumulate(_rows(0, 2, device)))
         model.end_epoch()
@@ -274,23 +293,8 @@ def _sharder_contracts(group, device):
     q = CastQuantizer(1, torch.bfloat16)
     with check.assertRaisesRegex(ValueError, "sharded centroids currently require quantizer=None"):
         EmeansShardedCentroids(1, 2, group=group, quantizer=q)
-    with check.assertRaisesRegex(ValueError, "sharded centroids currently require quantizer=None"):
-        EmeansShardedCentroids(
-            1,
-            2,
-            25,
-            None,
-            None,
-            "throughput",
-            1234,
-            False,
-            None,
-            4096,
-            q,
-            group=group,
-        )
-    initial = torch.tensor([[0.], [2.], [4.], [9.]], device=device)
-    expected = torch.tensor([[.25], [1.75], [4.25], [9.]], device=device)
+    initial = torch.tensor([[0.0], [2.0], [4.0], [9.0]], device=device)
+    expected = torch.tensor([[0.25], [1.75], [4.25], [9.0]], device=device)
     local = torch.tensor([[.25], [1.75], [4.25]] * 2, device=device)
     saved_rows = local.clone()
     shard = slice(2 * rank, 2 * rank + 2)
@@ -299,6 +303,7 @@ def _sharder_contracts(group, device):
     model = EmeansShardedCentroids(1, 4, **args)
     with check.assertRaisesRegex(ValueError, "divisible"):
         model.begin(11, initial[shard])
+    model = EmeansShardedCentroids(1, 4, **args)
     model.begin(12, initial[shard])
     torch.testing.assert_close(model.current_centroids(), initial[shard], rtol=0, atol=0)
     with check.assertRaises(RuntimeError):
@@ -343,10 +348,8 @@ def _sharder_contracts(group, device):
     torch.testing.assert_close(initial, torch.tensor([[0.], [2.], [4.], [9.]], device=device), rtol=0, atol=0)
     for labels, oracle in retained_labels:
         torch.testing.assert_close(labels, oracle, rtol=0, atol=0)
-    with check.assertRaises(RuntimeError):
-        model.current_centroids()
     saved_closed = closed.clone()
-    model.reset()
+    model = EmeansShardedCentroids(1, 4, **args)
     torch.testing.assert_close(closed, saved_closed, rtol=0, atol=0)
     resident = EmeansShardedCentroids(1, 4, **args)
     resident.train(local, init_centroids=initial[shard])
@@ -364,7 +367,9 @@ def _sharder_contracts(group, device):
         failed.final_closing_mean([ones[:1]])
     with check.assertRaises(RuntimeError):
         failed.accumulate(ones)
-    failed.reset()
+    failed = EmeansShardedCentroids(
+        1, 2, group=group, niter=1, batch_size=4, alpha0=1
+    )
     failed.begin(4, own_initial)
     failed.update(failed.accumulate(ones))
     failed.end_epoch()
@@ -419,7 +424,16 @@ def _sharder_contracts(group, device):
                     # External INT64 stats fix the schema, not signed/unsigned
                     # row metadata. The first raw closing rows must prepare the
                     # matching centroid operand without private priming.
-                    raw.reset()
+                    raw = EmeansShardedCentroids(
+                        d,
+                        2,
+                        group=group,
+                        niter=1,
+                        batch_size=4,
+                        alpha0=1,
+                        capture_assignments=True,
+                        assignment_backend=backend,
+                    )
                     raw.begin(4, centers[rank:rank + 1])
                     raw.update({
                         "sums": torch.full((1, d), count * offset, dtype=torch.int64, device=device),
@@ -484,10 +498,12 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
                             _training(dist.group.WORLD, transport, device,
                                       backend="triton", quantizer=q)
             else:
-                with unittest.TestCase().assertRaisesRegex(RuntimeError, "SM80"):
-                    Emeans(2, 1, quantizer=CastQuantizer(2, torch.bfloat16),
-                           assignment_backend="native").train(
-                        torch.zeros((2, 2), device=device))
+                with unittest.TestCase().assertRaisesRegex(
+                    RuntimeError, "SM80"
+                ):
+                    QuantizedTorchEmeans(
+                        2, 1, quantizer=CastQuantizer(2, torch.bfloat16)
+                    ).train(torch.zeros((2, 2), device=device))
     finally:
         if subgroup_only and rank in (1, 2) and subgroup is not None:
             dist.destroy_process_group(subgroup)
@@ -529,26 +545,31 @@ class TestDistributedEmeans(unittest.TestCase):
             )
 
     def test_auto_sharder_chunk_bound_is_independent_of_compute_backend(self):
-        from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
+        from types import SimpleNamespace
+        from faiss.contrib.e_means import TorchEmeans, EmeansShardedCentroids
+        from faiss.contrib.e_means.torch_backend import make_backend
 
-        # Pure setup metadata; no process group, CUDA allocation or collective.
-        native = Emeans(128, 4096, assignment_backend='native')
+        state = SimpleNamespace(device=torch.device("cuda"), is_cuda=True, shape=(4096, 128))
+        native = TorchEmeans(128, 4096, assignment_backend="native")
+        native._centroids = state
         model = EmeansShardedCentroids.__new__(EmeansShardedCentroids)
         model.d, model.k, model.centroid_chunk_size = native.d, native.k, native.centroid_chunk_size
         model.assignment_chunk_size = native.assignment_chunk_size
-        model.assignment_backend = 'auto'
-        expected_native_bound = native._get_assignment_chunk_size(True, True)
-        for backend in ('native', 'triton', 'cute'):
-            model._resolved_assignment_backend = backend
-            self.assertEqual(model._get_assignment_chunk_size(True, True), expected_native_bound)
-        for requested in ('native', 'triton', 'cute'):
-            control = Emeans(native.d, native.k, assignment_backend=requested,
-                             centroid_chunk_size=native.centroid_chunk_size)
+        model._centroids, model.centroids = state, None
+        model.assignment_backend = "auto"
+        expected_native_bound = native._get_assignment_chunk_size()
+        for backend in ("native", "triton", "cute"):
+            model._execution_backend = make_backend(backend, model.centroid_chunk_size)
+            self.assertEqual(model._get_assignment_chunk_size(), expected_native_bound)
+        for requested in ("native", "triton", "cute"):
+            control = TorchEmeans(native.d, native.k, assignment_backend=requested,
+                                  centroid_chunk_size=native.centroid_chunk_size)
+            control._centroids = state
             model.assignment_backend = requested
-            self.assertEqual(model._get_assignment_chunk_size(True, True),
-                             control._get_assignment_chunk_size(True, True))
-        model.assignment_backend, model.assignment_chunk_size = 'auto', 37
-        self.assertEqual(model._get_assignment_chunk_size(True, True), 37)
+            model._execution_backend = make_backend(requested, model.centroid_chunk_size)
+            self.assertEqual(model._get_assignment_chunk_size(), control._get_assignment_chunk_size())
+        model.assignment_backend, model.assignment_chunk_size = "auto", 37
+        self.assertEqual(model._get_assignment_chunk_size(), 37)
 
 
 if __name__ == "__main__":

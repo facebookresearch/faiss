@@ -39,7 +39,7 @@ import torch
 from quack import copy_utils, layout_utils, pipeline as quack_pipeline
 from quack import sm90_utils
 
-from .e_means_cute_argmin import require_tensor
+from .cute_argmin import require_tensor
 
 
 TILE_N = 128
@@ -53,7 +53,7 @@ _SMEM_OVERHEAD = 2048
 def _assert_candidate_order(coordinates, tiled_mma, tile_m):
     """Prove this geometry's row slots visit strictly increasing centroid IDs.
 
-    Adapted from ``e_means_cute_kernel._assert_candidate_order`` for the
+    Adapted from ``cute_kernel._assert_candidate_order`` for the
     row-owned accumulator. Thread zero's slice carries the whole geometry:
     its layout is asserted equal to the compiled thread's, so a real thread's
     candidate is thread zero's plus one offset that is constant over the
@@ -563,7 +563,6 @@ class _RowOwnedAssignSm90:
                         output_labels[row] = row_id[local].to(Int64)
 
 
-
 def _ceil_div(value, divisor):
     return (value + divisor - 1) // divisor
 
@@ -647,7 +646,7 @@ def prepare_row_owned(
     Floating operands return FP32 scores, matching the tiled floating contract.
     Native bytes rank INT32 scores and return reconstructed FP32/INT64 distances.
     """
-    from .e_means_cute import _require_stack
+    from .cute import _require_stack
 
     centroids = prepared.centroids
     operand_type = _operand_type(rows.dtype)

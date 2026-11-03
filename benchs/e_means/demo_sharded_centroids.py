@@ -29,11 +29,12 @@ else:
     from dino_data import DinoBvecs, DinoQueries, query_mse
 
 from faiss.contrib.e_means import (
-    Emeans,
+    TorchEmeans as Emeans,
     EmeansShardedCentroids,
     EmeansShardedCentroidsIVF,
 )
-from faiss.contrib.e_means.e_means import _epoch_seed, _torch_generator
+from faiss.contrib.e_means.base import _epoch_seed
+from faiss.contrib.e_means.e_means_torch import _torch_generator
 
 
 def launch(args, worker):

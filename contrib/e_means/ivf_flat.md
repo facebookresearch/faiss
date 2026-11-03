@@ -31,8 +31,7 @@ reduced in INT64. Each owner routes and searches locally; no probe-ID broadcast
 is added. Global winner reduction retains lowest-global-ID ties.
 
 Current EMA, sums/counts, objective, integer/wide-statistics and optional frozen
-closing semantics remain. Finalize retains the IVF cache; reset or a new begin
-clears it. Recipe additions are `index_factory` and `nprobe`. Revival retains
+closing semantics remain. Finalize retains the IVF cache. Each training run uses a fresh object. Recipe additions are `index_factory` and `nprobe`. Revival retains
 FP16 separation.
 
 ## Index options and mutable precision policy
