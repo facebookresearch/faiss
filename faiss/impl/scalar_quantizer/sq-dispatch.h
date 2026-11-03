@@ -359,10 +359,10 @@ constexpr bool is_dimension_compatible(
             is_dimension_compatible<SL2>(d);
 }
 
-/// Calls f with the DCTemplate type for (Quantizer, Sim, SL2) and d. Only the
-/// 16-bit float quantizers use it. Four accumulators per code hide the FMA
-/// latency at a large d. At a small d their reduction costs more than it
-/// saves. At AVX512 they are faster only on AMD
+/// Calls f with the DCTemplate type for (Quantizer, Sim, SL2) and d. The
+/// 16-bit float quantizers and the QT_8bit inner product use it. Four
+/// accumulators per code hide the FMA latency at a large d. At a small d their
+/// reduction costs more than it saves. At AVX512 they are faster only on AMD
 /// (SIMDConfig::sq_avx512_4_accumulators).
 template <class Quantizer, class Sim, SIMDLevel SL2, class F>
 auto with_dc_template(size_t d, F f) {
@@ -374,6 +374,21 @@ auto with_dc_template(size_t d, F f) {
         }
     }
     return f.template operator()<DCTemplate<Quantizer, Sim, SL2>>();
+}
+
+/// with_dc_template for QT_8bit. Only its inner product has a four-accumulator
+/// loop.
+template <class Sim, SIMDLevel SL2, class F>
+auto with_8bit_dc_template(size_t d, F f) {
+    using Quantizer = QuantizerTemplate<
+            Codec8bit<SL2>,
+            QuantizerTemplateScaling::NON_UNIFORM,
+            SL2>;
+    if constexpr (Sim::metric_type == METRIC_INNER_PRODUCT) {
+        return with_dc_template<Quantizer, Sim, SL2>(d, f);
+    } else {
+        return f.template operator()<DCTemplate<Quantizer, Sim, SL2>>();
+    }
 }
 
 /*******************************************************************
@@ -517,13 +532,7 @@ SQDistanceComputer* select_distance_computer_body(
                     SL2>(d, trained);
 
         case ScalarQuantizer::QT_8bit:
-            return new DCTemplate<
-                    QuantizerTemplate<
-                            Codec8bit<SL2>,
-                            QuantizerTemplateScaling::NON_UNIFORM,
-                            SL2>,
-                    Sim,
-                    SL2>(d, trained);
+            return with_8bit_dc_template<Sim, SL2>(d, new_dc);
 
         case ScalarQuantizer::QT_6bit:
             return new DCTemplate<
@@ -733,13 +742,7 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         Similarity,
                         SL2>>();
             case ScalarQuantizer::QT_8bit:
-                return scan.template operator()<DCTemplate<
-                        QuantizerTemplate<
-                                Codec8bit<SL2>,
-                                QuantizerTemplateScaling::NON_UNIFORM,
-                                SL2>,
-                        Similarity,
-                        SL2>>();
+                return with_8bit_dc_template<Similarity, SL2>(d, scan);
             case ScalarQuantizer::QT_4bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
