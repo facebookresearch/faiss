@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 import torch
-from faiss.contrib.e_means import e_means_cute as backend
+from faiss.contrib.e_means import cute as backend
 
 
 GROUPED_READY = backend._stack_status()[0]
@@ -28,7 +28,7 @@ class TestCuteDispatch(unittest.TestCase):
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_any_selected_plan_is_legal(self):
-        from faiss.contrib.e_means.e_means_cute_grouped import _validate_plan
+        from faiss.contrib.e_means.cute_grouped import _validate_plan
 
         # Probe metadata properties; benchmark validation decides route performance.
         cells = [(3, 128, 7), (70001, 32768, 113),
@@ -58,7 +58,7 @@ class TestCuteDispatch(unittest.TestCase):
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_validation_errors_remain_errors(self):
-        from faiss.contrib.e_means.e_means_cute_grouped import _validate_plan
+        from faiss.contrib.e_means.cute_grouped import _validate_plan
 
         with self.assertRaisesRegex(ValueError, 'explicit'):
             _validate_plan(3, 128, 7, torch.bfloat16, 'invalid', 232448)

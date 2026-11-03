@@ -92,12 +92,31 @@ class TestIVFFlat(unittest.TestCase):
     def test_original_alias_empty_queries_and_workspace_failure(self):
         # Reject unsupported composition before superclass/group work, even
         # when no process group exists, in both accepted core call forms.
-        positional = (1, 1, 1, None, None, 'throughput', 1234, False,
-                      None, 4096, None, 'native', False, True)
-        with patch.object(EmeansShardedCentroids, '__init__',
-                          side_effect=AssertionError('entered group constructor')) as base:
-            for args, kwargs in (((2, 4), dict(spherical=True)), (positional, {})):
-                with self.subTest(positional=len(args) == 14):
+        positional = (
+            1,
+            1,
+            1,
+            None,
+            None,
+            'throughput',
+            1234,
+            False,
+            None,
+            4096,
+            'native',
+            False,
+            True,
+        )
+        with patch.object(
+            EmeansShardedCentroids,
+            '__init__',
+            side_effect=AssertionError('entered group constructor'),
+        ) as base:
+            for args, kwargs in (
+                ((2, 4), {'spherical': True}),
+                (positional, {}),
+            ):
+                with self.subTest(positional=len(args) == 13):
                     with self.assertRaisesRegex(ValueError, 'spherical=True'):
                         EmeansShardedCentroidsIVF(*args, group=None, **kwargs)
             base.assert_not_called()
@@ -291,9 +310,10 @@ class TestIVFFlat(unittest.TestCase):
         torch.testing.assert_close(scores.double(), expected.min()[None], rtol=2e-6, atol=3e-6)
 
     def test_original_floating_training_inputs_reach_inherited_preparation(self):
+        from faiss.contrib.e_means import QuantizedTorchEmeans
+
         model = object.__new__(EmeansShardedCentroidsIVF)
-        model.d, model.quantizer, model.assignment_backend = 8, None, 'native'
-        model.assignment_chunk_size = None
+        QuantizedTorchEmeans.__init__(model, 8, 2, assignment_backend='native')
         model._centroids, model.centroids = torch.zeros((2, 8)), None
         model._batch_stats = torch.zeros((2, 9))
         model._fp8_quantizer = model._int8_quantizer = model.spherical = False
@@ -444,7 +464,10 @@ class BlockTorch(importlib.abc.MetaPathFinder):
 sys.meta_path.insert(0, BlockTorch())
 import faiss.contrib.e_means as package
 assert 'torch' not in sys.modules
-assert set(package.__all__) == {'Emeans', 'DistributedEmeans', 'EmeansShardedCentroids', 'EmeansShardedCentroidsIVF'}
+assert set(package.__all__) == {
+    'Emeans', 'NumpyEmeans', 'TorchEmeans', 'QuantizedTorchEmeans',
+    'DistributedEmeans', 'EmeansShardedCentroids', 'EmeansShardedCentroidsIVF',
+}
 try:
     package.EmeansShardedCentroidsIVF
 except ImportError:
@@ -455,25 +478,26 @@ else:
         subprocess.run([sys.executable, '-c', optional, str(source)], check=True, timeout=30)
 
     def test_auto_keeps_ivf_auxiliary_backend_and_chunk_bound(self):
-        # Metadata only: IVF keeps its own engine, without group/GPU execution.
-        from faiss.contrib.e_means import Emeans
+        from faiss.contrib.e_means import TorchEmeans
+        from faiss.contrib.e_means.torch_backend import make_backend
 
-        native = Emeans(128, 4096, assignment_backend='native')
-        model = EmeansShardedCentroidsIVF.__new__(EmeansShardedCentroidsIVF)
-        model.d, model.k, model.centroid_chunk_size = native.d, native.k, native.centroid_chunk_size
-        model.assignment_chunk_size = native.assignment_chunk_size
-        for requested, backend in (('auto', 'native'), ('native', 'native'), ('triton', 'triton')):
-            control = Emeans(native.d, native.k, assignment_backend=backend,
-                             centroid_chunk_size=native.centroid_chunk_size)
+        state = torch.empty((4096, 128), device="meta")
+        for requested, backend in (("auto", "native"), ("native", "native"), ("triton", "triton")):
+            model = EmeansShardedCentroidsIVF.__new__(EmeansShardedCentroidsIVF)
+            control = TorchEmeans(128, 4096, assignment_backend=backend)
+            model.d, model.k, model.centroid_chunk_size = control.d, control.k, control.centroid_chunk_size
+            model.assignment_chunk_size = None
+            model._centroids, model.centroids = state, None
+            control._centroids = state
             model.assignment_backend = requested
-            model._resolved_assignment_backend = None if requested == 'auto' else requested
+            model._resolved_assignment_backend = None if requested == "auto" else requested
+            model._execution_backend = make_backend(backend, model.centroid_chunk_size)
             model._resolve_assignment_backend(None)
             self.assertEqual(model.assignment_backend, requested)
             self.assertEqual(model._assignment_backend, backend)
-            self.assertEqual(model._get_assignment_chunk_size(True, True),
-                             control._get_assignment_chunk_size(True, True))
-        model.assignment_backend, model.assignment_chunk_size = 'auto', 23
-        self.assertEqual(model._get_assignment_chunk_size(True, True), 23)
+            self.assertEqual(model._get_assignment_chunk_size(), control._get_assignment_chunk_size())
+            model.assignment_chunk_size = 23
+            self.assertEqual(model._get_assignment_chunk_size(), 23)
 
 
 def finite_output_regression(device):
@@ -588,7 +612,10 @@ def sharded_contract(rank, rendezvous):
         model.end_epoch()
         result = model.finalize()
         assert torch.isfinite(result).all() and model._ivf is not None
-        model.reset()
+        model = EmeansShardedCentroidsIVF(
+            2, 4, group=dist.group.WORLD, niter=1, batch_size=8, alpha0=.25,
+            nlist=3, nprobe=3, coarse_niter=1, assignment_chunk_size=2,
+            search_workspace_bytes=4096, capture_assignments=True, seed=7)
         assert model._ivf is None
     finally:
         dist.destroy_process_group()

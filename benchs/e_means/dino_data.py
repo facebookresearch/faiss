@@ -50,7 +50,7 @@ def query_mse(model, batches):
     import torch
     import torch.distributed as dist
 
-    from faiss.contrib.e_means import Emeans
+    from faiss.contrib.e_means import TorchEmeans as Emeans
 
     with torch.no_grad():
         centroids = (

@@ -8,16 +8,61 @@ splitting active ones. `Emeans` has a Faiss-style `train`/`assign` interface:
 from faiss.contrib.e_means import Emeans
 
 km = Emeans(d, k, niter=25)
-km.train(x)
+centroids, captured_labels = km.train(x)
 distances, labels = km.assign(x)
 ```
+
+Choose the implementation explicitly:
+
+- `Emeans` (also `NumpyEmeans`) uses NumPy and Faiss, converting inputs to FP32.
+- `TorchEmeans` accepts floating tensors on CPU or CUDA. CPU computes in FP32;
+  CUDA supports FP32, FP16 and BF16 operands with FP32 model state and outputs.
+- `QuantizedTorchEmeans` accepts native FP8/INT8/UINT8 codes or an explicit
+  calibrated quantizer on CUDA. Raw bytes use INT64 statistics; calibrated
+  representations use decoded units and FP32 model state and outputs.
+
+```python
+from faiss.contrib.e_means import TorchEmeans, QuantizedTorchEmeans
+
+km = TorchEmeans(d, k, niter=25)
+km.train(torch_rows)
+```
+
+The NumPy module never imports Torch. `e_means_torch.py` defines `TorchEmeans`;
+`e_means_quantized.py` defines its subclass `QuantizedTorchEmeans`. These modules
+import Torch at module load; the package loads them when requested. Buck tensor
+callers add `fbcode//faiss/contrib:e_means_torch` alongside their existing
+contrib dependency. Triton and CuTe remain optional backend dependencies.
+Tensor callers use `TorchEmeans` or `QuantizedTorchEmeans`; the package-level
+`Emeans` is NumPy only.
+`TorchEmeans` delegates represented centroid preparation, assignment and optional
+fused operations to `TorchBackend`, `TritonBackend` or `CuteBackend`
+in `torch_backend.py`. Ordinary accumulation, EMA updates and splits live in `TorchBackend`.
+`TritonBackend` uses fused kernels when supported and calls `super()` for
+the ordinary implementation; `CuteBackend` inherits those operations. Each
+model owns one selected backend, including its workspace and capture resources;
+optional kernel dependencies remain lazy. The model owns epoch/batch accounting,
+EMA and revival decisions, finalization and CUDA graph scheduling.
+
+All implementations share recipe resolution and the caller-driven lifecycle.
+Each object represents one run: call `train` or `begin` once, then create a
+fresh object for another run or after execution failure. Call ordering remains
+the caller's responsibility.
+Arguments, shapes, finite values, representation, device and call ordering are
+caller responsibilities; the trainers do not validate them. The NumPy
+constructor exposes no quantizer, centroid chunk or assignment backend option;
+it always uses Faiss. Integer arithmetic bounds and failed-run guards remain.
+FP64 inputs are converted to FP32 by NumPy; native FP64 clustering is unsupported.
 
 The default statistical batch size and EMA step are selected together; set
 `batch_size` and `alpha0` together to override them. With the default
 `spherical=False`, NumPy input uses exact Faiss L2 assignment. PyTorch input
 stays on its CPU or CUDA device and does not call Faiss; PyTorch is optional.
-The native backend is the reference path for
-dense Euclidean clustering; supported low-precision and byte formats are
+Torch defaults to automatic backend selection from device and dtype metadata,
+without implicit precision conversion. Hopper BF16 prefers compatible CuTe;
+otherwise it selects Triton or supported native Torch. Explicit selections
+remain fixed. Label capture defaults to True; set capture_assignments=False
+to opt out. The native backend is the reference path for dense Euclidean clustering; supported low-precision and byte formats are
 described below. See `demos/demo_e_means.py` in the source checkout for a DEEP1M
 example.
 
@@ -51,14 +96,13 @@ centroids = km.finalize()
 
 During an active run, `km.current_centroids()` borrows the evolving FP32 model
 coordinates without copying their data. `km.centroids` remains final-only.
-The getter is available after `begin`, including completed epochs, until
-`finalize`; before `begin`, after `reset` and after `finalize` it raises
-`RuntimeError`. NumPy returns a non-writeable view; Torch returns a detached
+Use the getter after `begin`, including completed epochs, until
+`finalize`. NumPy returns a non-writeable view; Torch returns a detached
 alias on the model device. Neither is immutable or safe for concurrent mutation.
-Do not write through it. Finish readers before `update`, `end_epoch`, `finalize`,
-`reset` or a new `begin`, then reacquire; old handles are not valid current
-state after reset/finalize/new begin. Use `.copy()` or `.clone()` explicitly for
-an independent snapshot. CUDA callers order producer, reader and subsequent
+Do not write through it. Finish readers before `update`, `end_epoch` or
+`finalize`, then reacquire; old handles are not valid current state after
+`finalize`. Use `.copy()` or `.clone()` explicitly for an independent snapshot.
+CUDA callers order producer, reader and subsequent
 mutation streams themselves; the getter adds no synchronization or collective.
 These are FP32 model coordinates, not rounded or encoded assignment operands;
 external assignment engines remain responsible for their representation policy.
@@ -68,9 +112,9 @@ including its final remainder; `total_steps` is their sum. Integer budgets
 keep full passes and the fitted recipe `(N,E)`. Fractional `niter=2.4` runs
 `N + round(.4*N) + N` rows, with the fractional prefix before the full moving
 closing pass. Below one pass, only `round(niter*N)` rows form moving closing.
-Round the fractional float product with Python's ties-to-even rule, omit a
-zero remainder and reject a budget below one that rounds to zero rows.
-Nonfinite and nonpositive budgets are rejected. Resident training selects
+Round the fractional float product with Python's ties-to-even rule and omit a
+zero fractional remainder. Supply a finite, positive budget that visits at least
+one row. Resident training selects
 each prefix from that epoch's seeded permutation; caller-driven training
 supplies the prescribed counts. Assignment, EMA and revival continue during
 closing. Finalize uses collected means with no new scan. Unvisited resident
@@ -99,18 +143,14 @@ and keep their provenance yourself; there is no stale-copy token validation.
 An earlier Torch objective tensor can also change on extension; its receipt's
 host `n` remains the count at that call. Copy/clone complete retained statistics.
 
-Overfill raises `ValueError` before tensor work; positive input after completion
-raises `RuntimeError` until update. Incomplete update raises `ValueError` even
-for an external replacement. These preflight errors preserve pending progress.
-Empty calls validate metadata without clearing/converting pending totals.
-Before positive input they return zeros and allow a complete external update.
-`end_epoch`/`finalize` reject incomplete state. Reset/new begin discard it;
-execution failure invalidates the run until reset/new begin, without rollback,
-automatic retry or a successful-call synchronization.
-CPU callers can sum all four statistics fields
-with their own communication and call local `update`. CUDA requires finite
-caller-validated values fitting the chosen format; metadata is always checked, with
-no implicit CUDA value scan. NumPy/Torch CPU validation still checks finiteness.
+Callers supply the prescribed batch sizes, complete each batch before updating,
+and complete each epoch before `end_epoch` or `finalize`. Empty calls preserve
+pending totals; before positive input they return zeros. Discard the object to
+abandon pending state. Execution failure invalidates the run; create a fresh
+object. There is no rollback, automatic retry or successful-call synchronization.
+CPU callers can sum all four statistics fields with their own communication
+and call local `update`. Supply finite values with the expected shapes, dtypes
+and devices, fitting the selected representation.
 Floating statistical batches above 2²⁴ rows use temporary FP64 sums/counts
 accumulation across supplied chunks, with one FP32 conversion at completion.
 This requires additional memory and computation; there is no extra K*d table
@@ -118,11 +158,8 @@ for ordinary batches.
 
 Floating or explicitly quantized inputs retain FP32 statistics. Raw CUDA
 INT8/UINT8 with `quantizer=None` instead returns matching INT64 sums/counts,
-including small, empty and tail batches. Native input metadata or the first
-external matching pair fixes the run's schema. Later incompatible statistics
-raise "statistics dtype must match the run's fixed statistics schema"; input
-metadata must also match the selected schema and native format. Previous FP32
-contributions are not silently widened into an integer run.
+including small, empty and tail batches. The first input or external statistics pair selects the run's schema;
+subsequent input and statistics must use the same schema and native format.
 Raw integer runs require declared global `255*global_n <= 2**53`. Whole local
 batches up to 2²⁴ rows use bounded INT32 scratch, reconstructing UINT8 totals
 in INT64 once at completion. Larger batches retain exact FP64 integer scatter
@@ -143,8 +180,8 @@ and later calls cannot overwrite them. They stay on the execution device;
 there is no implicit host copy, gather or dataset-wide caller-loop retention.
 
 After successful resident `train`, `km.assignments` contains the last training
-pass's labels in original input order. It is `None` before completion, on reset
-or failure, and after starting a new train attempt, including failed preflight.
+pass's labels in original input order. It is `None` before completion or on
+failure.
 Caller-driven runs leave it `None`. Resident `train` returns
 `(km.centroids, km.assignments)`; labels are `None` with the capture opt-out.
 The moving objective remains in `km.obj`. `finalize` still returns centroids.
@@ -182,7 +219,9 @@ are means of the final pass's own assignments in ordinary mode; never-assigned
 centroids retain their current positions. `obj` remains the moving-pass objective, rather than a score against the
 closing means. `train` returns the centroids and last-pass assignments.
 
-CUDA native Torch accepts FP32, FP16 and BF16. With `quantizer=None`, the
+`TorchEmeans` accepts floating tensors and has no `quantizer` argument.
+Cast inputs explicitly, for example `km.train(x.to(torch.bfloat16))`.
+CUDA native Torch accepts FP32, FP16 and BF16. The
 first batch (including a typed empty batch) fixes the native dtype for the run.
 FP32 initial centroids do not select that dtype. Norms, dot products and FP32
 statistics use the same represented rows; centroid operands follow that format.
@@ -193,13 +232,15 @@ settings. FP16/BF16 assignment requires NVIDIA SM80 or later and Torch
 
 For explicit batchwise conversion, use
 `CastQuantizer(d, torch.float16)` or `CastQuantizer(d, torch.bfloat16)` from
-`faiss.contrib.e_means.e_means_quantizer`, passed as `quantizer=q`. Its `train` is a no-op;
+`faiss.contrib.e_means.quantizer`, passed as `quantizer=q` to
+`QuantizedTorchEmeans`. All quantizer state, encoding, decoding and quantized
+statistics belong to that class. `CastQuantizer.train` is a no-op;
 `compute_codes` returns native typed Torch rows and `decode` widens them to
 FP32. Conversion/decoding check metadata without CUDA value scans. Call
 `q.validate(x)` explicitly to check finite/range hazards; unchecked overflow
 follows Torch cast semantics. The existing internally generated FP16 split
-range guard remains. CPU computes supplied represented floating values in FP32
-and requires `quantizer=None`, even though the cast helper can execute on CPU.
+range guard remains. CPU computations use supplied represented floating
+values in FP32.
 
 The default `assignment_backend="auto"` uses the actual input device and
 effective dtype, including an explicit quantizer. CPU uses native without
@@ -260,13 +301,13 @@ legality or a portable crossover. Padded physical index/label bounds still apply
 
 CPU or GPU callers use `DistributedEmeans(d, k, group=group, transport="auto", ...)`
 with an initialized, caller-owned process group. Group and transport are fixed
-at construction. `begin(global_n, init_centroids)` takes matching NumPy FP32
-arrays or Torch tensors on each rank and broadcasts its owned FP32 centroid
+at construction. `begin(global_n, init_centroids)` takes matching Torch tensors
+on each rank and broadcasts its owned FP32 centroid
 state from group rank zero. CPU state requires Gloo and quantizer=None; CUDA
 retains the supported backend/representation combinations. Root values are
-authoritative; caller arrays are never modified.
+authoritative; caller tensors are never modified.
 The remaining `accumulate`/`update`/`end_epoch`/`finalize` lifecycle is shared
-with `Emeans`; distributed `train(x)` is rejected. Centroid state is replicated;
+with the Torch implementations; distributed `train(x)` is rejected. Centroid state is replicated;
 the caller supplies matching recipes/codecs and disjoint rank-local contributions
 to each prescribed global batch. Every batch, including the final tail, must
 divide evenly by group size; this is checked at `begin` before broadcasting.
@@ -293,11 +334,12 @@ row counts can still have different occupied-centroid counts, which sparse
 transport discovers separately. Divergent collective schedules remain a caller
 error; this API does not recover from them. Revival IDs are
 selected by group rank zero and broadcast; every replica applies the same
-split. NumPy and Torch CPU use the same class lifecycle and dense/sparse/auto
-transports with Gloo. External assignment engines can call `update` with LOCAL
+split. Torch CPU uses dense/sparse/auto transports with Gloo. External assignment
+engines can call `update` with LOCAL
 FP32 sums/counts, an FP64 objective and the prescribed LOCAL `n`, without
-calling `accumulate`. Statistics must match the model's array type. NumPy
-buffers are staged in owned storage; sparse results remain NumPy arrays. Local
+calling `accumulate`. Supply Torch statistics on the model device; external
+statistics are packed into owned workspace and sparse results remain tensors.
+Local
 `Emeans.update` still performs no communication. Unequal row contributions are
 unsupported. See
 `demos/demo_e_means_distributed.py` in the source checkout for a small
@@ -306,12 +348,13 @@ unsupported. See
 For calibrated E4M3 on qualified Triton CUDA GPUs, use an explicit quantizer:
 
 ```python
-from faiss.contrib.e_means.e_means_fp8 import Fp8Quantizer
+from faiss.contrib.e_means import QuantizedTorchEmeans
+from faiss.contrib.e_means.quantizer_fp8 import Fp8Quantizer
 q = Fp8Quantizer(x.shape[1])
 q.train(representative_sample)
 q.to(x.device)
 q.validate(x)  # optional explicit finite/range scan
-km = Emeans(x.shape[1], k, quantizer=q, assignment_backend="triton")
+km = QuantizedTorchEmeans(x.shape[1], k, quantizer=q, assignment_backend="triton")
 km.train(x)  # floating chunks encode during assignment
 # Alternatively: km.train(q.compute_codes(x))
 centroids = km.centroids  # already decoded FP32; do not decode again
@@ -331,13 +374,14 @@ Native INT8/UINT8 assignment uses exact INT32 ranking (dimension at most
 An explicit INT8 quantizer returns decoded centroids and distances:
 
 ```python
-from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
+from faiss.contrib.e_means import QuantizedTorchEmeans
+from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
 q = Int8Quantizer(d)
 q.train(representative_sample)
 q.to(x.device)
 codes = q.compute_codes(x)  # rounds and clips finite outliers, in bounded chunks
-km = Emeans(d, k, quantizer=q, assignment_backend="triton")
+km = QuantizedTorchEmeans(d, k, quantizer=q, assignment_backend="triton")
 km.train(codes)  # matching native codes only; no floating-to-INT8 JIT
 ```
 
@@ -348,8 +392,8 @@ values have no meaningful encoding result. Use `q.validate(x)` when needed.
 CuTe BF16/E4M3 assignment is an explicit optional backend on exactly NVIDIA SM90,
 requiring `quack-kernels==0.6.5`, `nvidia-cutlass-dsl==4.7.1` and
 `cuda-python>=13,<14`, plus Triton for dense CUDA EMA updates.
-Native Torch/CPU/NumPy updates do not require Triton. Supply native BF16 rows with
-`quantizer=None`, or use
+Native Torch/CPU/NumPy updates do not require Triton. Supply native BF16 rows to
+`TorchEmeans`, or use `QuantizedTorchEmeans` with
 `CastQuantizer(d, torch.bfloat16)` for per-chunk floating conversion; select
 `assignment_backend="cute"`. It uses resource-constrained tiled/row-owned
 assignment, native FP32 score ranking and no runtime autotuning; the only
@@ -417,7 +461,7 @@ Calibrated INT8 contributions retain decoded FP32 statistics.
 Low precision can round distinct rows or centroid operands to the same values.
 Calibration can reduce this loss on some data, but it cannot guarantee distinct
 assignments or recover information already lost in the supplied representation.
-Use native FP32 input with `quantizer=None` and native Torch or Triton assignment
+Use `TorchEmeans` with native FP32 input and native Torch or Triton assignment
 when representation loss is unacceptable; CuTe FP32 is unsupported. These CUDA
 paths use expanded L2 ranking (`centroid_norm - 2*dot`) in ordinary mode, so a
 large common offset can cancel small distance differences. Native FP32 follows
