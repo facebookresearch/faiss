@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="418" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="418" bodyend="421"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="419" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="419" bodyend="422"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01THE__LEVEL__TO__DISPATCH_01_4_1aef41c5683a067370cd8d98e833a61001" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE <ref refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kindref="compound">simd16float32</ref></type>
@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="424" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="424" bodyend="428"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="425" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="425" bodyend="429"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a10f49ab3c411812a66ec8689c6da98ef" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -175,7 +175,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="416" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="417" bodyend="429"/>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="417" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="418" bodyend="430"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a22acd65687618a06af283761c1086e84" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>d</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectBase_1a40de9ade9742a5358e958d365fb9744e" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::Quantizer8bitDirect&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_vector</name></member>

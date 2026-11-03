@@ -223,6 +223,7 @@
         <name>query_to_codes_batch_4</name>
         <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4</qualifiedname>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a590bf9cdd1ed9026dda79eab03c5d929">query_to_codes_batch_4</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a47a3d9d76741df09048afad1e673eaf5">query_to_codes_batch_4</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code_0</declname>

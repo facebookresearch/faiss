@@ -853,6 +853,31 @@
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" kind="function"><name>partial_dot_product</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" kind="function"><name>partial_dot_product_batch_4</name></member>
   </compound>
+  <compound refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275" kind="struct"><name>faiss::scalar_quantizer::DCTemplate&lt; QuantizerTemplate&lt; Codec8bit&lt; THE_LEVEL_TO_DISPATCH &gt;, QuantizerTemplateScaling::NON_UNIFORM, THE_LEVEL_TO_DISPATCH &gt;, SimilarityIP&lt; THE_LEVEL_TO_DISPATCH &gt;, THE_LEVEL_TO_DISPATCH, four_acc &gt;</name>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1ac85b001904e0d40f69bbcc46f9f2bec5" kind="typedef"><name>Quantizer</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a386f8fbddf5417e5e5a5b1924439db2d" kind="typedef"><name>Sim</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1ab13c90264be0ee6e250aa222be5f9537" kind="variable"><name>quant</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a0a6be44104684ea477528ffe00a28125" kind="variable"><name>a</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a9b3d6e37d6aeb4833998bbb3e99b95be" kind="variable"><name>rmin</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1afc86a73c17f697a213a8753e8586db0a" kind="variable"><name>qa</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1ab89afa585adccf15adb2c6a61b505585" kind="variable"><name>bias</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" kind="variable"><name>q</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1abfa2fec06cadd19391556efbe0049a8d" kind="function"><name>DCTemplate</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a03cb163feb7c7b48ef8ff1d7a85e4b84" kind="function"><name>set_query</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a2639f7c9f7757a78530a96ddcf63be2e" kind="function"><name>accumulate</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1af2ab19db3f5d908979a3446ebc7fc24b" kind="function"><name>query_to_code</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a47a3d9d76741df09048afad1e673eaf5" kind="function"><name>query_to_codes_batch_4</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a661d08885e5308188cbb2f2a305cb8d0" kind="function"><name>symmetric_dis</name></member>
+    <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a68ef6365d3a9e98d8d2a17519f684744" kind="function"><name>distance_to_code_batch_4</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1af90121af7a0e041aa6f42ab828d1aa84" kind="function"><name>distances_batch_4</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" kind="function"><name>partial_dot_product</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" kind="function"><name>partial_dot_product_batch_4</name></member>
+    <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a912b2981b72f65492d691d2c72985009" kind="function"><name>codes_16</name></member>
+  </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull" kind="struct"><name>faiss::scalar_quantizer::DCTurboQuantFull</name>
     <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a73e7f8e5e107f5741390e3a6a525b94e" kind="typedef"><name>Sim</name></member>
     <member refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1ac03f28a3a109bc0f40ff21e32329b5f1" kind="variable"><name>SUM_LEVEL</name></member>
@@ -15917,6 +15942,7 @@
     <member refid="sq-dispatch_8h_1a9aafc3129d3bd359d2a36d1684100b28" kind="function"><name>is_dimension_compatible</name></member>
     <member refid="sq-dispatch_8h_1a155a6f22c8783ab1999e09cc50af7e8f" kind="function"><name>is_dimension_compatible</name></member>
     <member refid="sq-dispatch_8h_1a6dedabe334413536cf705364f97a5f8b" kind="function"><name>with_dc_template</name></member>
+    <member refid="sq-dispatch_8h_1ab3138bff79a76f60906109e6d2f21202" kind="function"><name>with_8bit_dc_template</name></member>
     <member refid="sq-dispatch_8h_1abe3d240b2efb670c775e45054fa874f7" kind="function"><name>sq_select_quantizer&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="sq-dispatch_8h_1abe2e7ac2fd556dfc65f3c4633b25d231" kind="function"><name>select_distance_computer_body</name></member>
     <member refid="sq-dispatch_8h_1a633a0625bc3ff5fb2e8a0f9813990208" kind="function"><name>sq_select_distance_computer&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>

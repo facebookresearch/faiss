@@ -358,6 +358,7 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a26623e7801c7f8d3c5c557f05e29c609">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a9f1c66330ffa63e711fcb6e9f61b9ac3">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a70b8f3ba5e391e8ea569d59a09846163">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a03cb163feb7c7b48ef8ff1d7a85e4b84">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a863b58ae95fe9f0d1191819e982b7715">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acd7effc0f77263d0383197e8856f1527">set_query</reimplementedby>
@@ -386,6 +387,7 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a4bbe35806c4b44e2ee4067ddcf97fa94">symmetric_dis</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a0df411d47b43611b17c311685fbc09e3">symmetric_dis</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1aa62cd64083e1dcf451ff69428e050e0c">symmetric_dis</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275_1a661d08885e5308188cbb2f2a305cb8d0">symmetric_dis</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull_1a2e3b35dc7d1c02493ce7e5f127376058">symmetric_dis</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -444,7 +446,7 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;</label>
         <link refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer"/>
         <childnode refid="1" relation="public-inheritance">
@@ -468,25 +470,31 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="11">
+        <label>faiss::scalar_quantizer::DCTemplate&lt; QuantizerTemplate&lt; Codec8bit&lt; THE_LEVEL_TO_DISPATCH &gt;, QuantizerTemplateScaling::NON_UNIFORM, THE_LEVEL_TO_DISPATCH &gt;, SimilarityIP&lt; THE_LEVEL_TO_DISPATCH &gt;, THE_LEVEL_TO_DISPATCH, four_acc &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01QuantizerTemplate_3_01Codec8bit_3_01THE__LEVE292c8f418b2d0496968ddf4aa7f39275"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="7">
         <label>faiss::scalar_quantizer::DCTurboQuantFull&lt; NBits, Similarity, SL2 &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DCTurboQuantFull"/>
         <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SL &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte"/>
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss::scalar_quantizer::DistanceComputerByteSigned&lt; Similarity, SL &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByteSigned"/>
         <childnode refid="5" relation="public-inheritance">

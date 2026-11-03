@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="592" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="592" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="593" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="593" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="594" column="15" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="594" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="595" column="15" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="595" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a8dd4d7c0d80603bf8b895fbee4bf2542" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="597" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="597" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="598" column="17" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="598" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a085bfade8ec653e5d202d7e5c3b8b873" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="598" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="598" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="599" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="599" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a1b440b942a6fec05bef818bede709822" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -89,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="599" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="599" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="600" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="600" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -148,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="601" column="27" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="601" bodyend="605"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="602" column="27" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="602" bodyend="606"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a34417af943f993e7a546f72f4952eb43" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>constexpr bool</type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="616" column="27" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="616" bodyend="620"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="617" column="27" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="617" bodyend="621"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -187,7 +187,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="607" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="607" bodyend="612"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="608" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="608" bodyend="613"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a9d197a91524ffa431f3496f3bcb6d675" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE void</type>
@@ -218,7 +218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="624" column="30" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="624" bodyend="638"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="625" column="30" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="625" bodyend="639"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a1a27de3fe73917f8185f9d456f13bdf3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE __m512</type>
@@ -241,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="642" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="642" bodyend="669"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="643" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="643" bodyend="670"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1aff226fbdb0cdb498def2165a06f4ed6d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -263,7 +263,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="671" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="671" bodyend="684"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="672" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="672" bodyend="685"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a6085138d9160ad5c80dba9c53a6887a3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -285,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="686" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="686" bodyend="706"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="687" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="687" bodyend="707"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a70b8f3ba5e391e8ea569d59a09846163" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -305,7 +305,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="708" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="708" bodyend="720"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="709" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="709" bodyend="721"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a4e9cdbb830a9a7e715e926bad3881317" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -323,7 +323,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="722" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="722" bodyend="730"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="723" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="723" bodyend="731"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1aa62cd64083e1dcf451ff69428e050e0c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -347,7 +347,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="732" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="732" bodyend="735"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="733" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="733" bodyend="736"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a225f3def052a48fccf38c89502fcb13b" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -366,7 +366,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="737" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="737" bodyend="743"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="738" column="11" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="738" bodyend="744"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a590bf9cdd1ed9026dda79eab03c5d929" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -414,7 +414,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="745" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="745" bodyend="799"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="746" column="10" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="746" bodyend="800"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -696,7 +696,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="590" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="591" bodyend="800"/>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="591" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="592" bodyend="801"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a1a27de3fe73917f8185f9d456f13bdf3" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, THE_LEVEL_TO_DISPATCH, four_acc &gt;</scope><name>accumulate_4</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01THE__LEVEL__TO__DISPATCH_00_01four__acc_01_4_1a9d197a91524ffa431f3496f3bcb6d675" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, THE_LEVEL_TO_DISPATCH, four_acc &gt;</scope><name>add_tail</name></member>

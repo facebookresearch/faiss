@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="105" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="105" bodyend="112"/>
+        <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="106" column="5" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="106" bodyend="113"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4_1a97f74ed35e49a280f4d82a98707f709b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE void</type>
@@ -105,7 +105,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="103" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="103" bodyend="113"/>
+    <location file="faiss/impl/scalar_quantizer/sq-avx512-impl.h" line="104" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-avx512-impl.h" bodystart="104" bodyend="114"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01THE__LEVEL__TO__DISPATCH_01_4_1a772fb8c143f2144ec0f730d56ae97471" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec8bit&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_16_components</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4_1abeacbc7b1d73eb2c1ef1cd5e74495a26" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec8bit&lt; THE_LEVEL_TO_DISPATCH &gt;</scope><name>decode_component</name></member>

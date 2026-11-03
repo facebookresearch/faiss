@@ -3,6 +3,7 @@
   <compounddef id="sq8__coefficients_8h" kind="file" language="C++">
     <compoundname>sq8_coefficients.h</compoundname>
     <includes local="no">cstddef</includes>
+    <includedby refid="sq-avx512-impl_8h" local="no">faiss/impl/scalar_quantizer/sq-avx512-impl.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/impl/scalar_quantizer/sq8_coefficients.h</label>
@@ -14,6 +15,18 @@
         <label>cstddef</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/impl/scalar_quantizer/sq-avx512-impl.h</label>
+        <link refid="sq-avx512-impl_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/scalar_quantizer/sq8_coefficients.h</label>
+        <link refid="sq8__coefficients_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1sq8">faiss::sq8</innernamespace>
     <briefdescription>
