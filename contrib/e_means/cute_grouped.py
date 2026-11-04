@@ -24,8 +24,8 @@ import cutlass.utils.hopper_helpers as hopper_utils
 import torch
 from quack import layout_utils, sm90_utils
 
-from .e_means_cute_argmin import require_tensor
-from .e_means_cute_row_owned import (
+from .cute_argmin import require_tensor
+from .cute_row_owned import (
     TILE_N, _RowOwnedAssignSm90, _assert_candidate_order, _operand_type,
     _required_smem, _row_owned_shape_legal, _validate_operand,
 )
@@ -302,7 +302,7 @@ def _compile(kind, operation, operands, key):
 @torch.no_grad()
 def prepare_grouped(rows, prepared, values, labels, plan):
     """Bind an explicitly planned raw-key path; retain all fixed grouping buffers."""
-    from .e_means_cute import _require_stack
+    from .cute import _require_stack
     from .e_means_grouping import prepare_grouping
 
     _require_stack()

@@ -62,7 +62,7 @@ from quack.tile_scheduler import (
     TileSchedulerOptions,
 )
 
-from .e_means_cute_argmin import (
+from .cute_argmin import (
     INITIAL_KEY,
     encode_argmin_key,
     INTEGER_INITIAL_KEY,
@@ -85,7 +85,7 @@ def _persistent_cache_source_key():
     digest = hashlib.sha256()
     for path in (
         Path(__file__),
-        Path(__file__).with_name("e_means_cute_argmin.py"),
+        Path(__file__).with_name("cute_argmin.py"),
     ):
         source = path.read_bytes()
         digest.update(path.name.encode() + b"\0")
